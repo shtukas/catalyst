@@ -62,14 +62,13 @@ class Ninja
         objects = []
         metric = Ninja::metric()
         objects << {
-            "uuid" => "44a372b9-32d4-4fb7-884d-efba45616961",
+            "uuid" => "90d11712",
             "metric" => metric,
-            "announce" => "(#{"%.3f" % metric}) ninja training",
+            "announce" => "ninja training",
             "commands" => [],
             "command-interpreter" => lambda{|object, command|  
                 system('ninja play')
                 $NINJA_GLOBAL_STATE["catalyst-objects"] = Ninja::getCatalystObjectsFromScratch()
-                [nil, false]
             }
         } 
         objects

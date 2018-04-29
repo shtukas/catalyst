@@ -62,14 +62,14 @@ class CatalystObjects
             ["TimeCommitments", lambda { TimeCommitments::getCatalystObjects() }],
             ["StreamKiller", lambda { StreamKiller::getCatalystObjects() }],
             ["GuardianTime", lambda { GuardianTime::getCatalystObjects() }],
-            ["x-laniakea", lambda { XLaniakea::getCatalystObjects() }],
+            ["XLaniakea", lambda { XLaniakea::getCatalystObjects() }],
             ["RequirementsReviewReminder", lambda{ RequirementsReviewReminder::getCatalystObjects() }],
             ["Kimchee", lambda{ Kimchee::getCatalystObjects() }]
         ]
 
         struct1 = sources.map{|pair|
             startTime = Time.new.to_f
-            xobjects  = pair[1].call() 
+            xobjects  = pair[1].call()
             queryTime = Time.new.to_f - startTime
             {
                 "domain"  => pair[0],
@@ -98,6 +98,8 @@ class CatalystObjects
             "commands"            => [],
             "command-interpreter" => lambda{ |command, object| }
         }
+
+        objects = DoNotShowUntil::transform(objects)
 
         objects
     end

@@ -108,20 +108,18 @@ class StreamKiller
         targetuuid = Stream::getUUIDs().sample
         objects = []
         objects << {
-            "uuid" => "2662371C-44C0-422B-83FF-FAB12B76FDED",
+            "uuid" => "2662371C",
             "metric" => metric,
-            "announce" => "(#{"%.3f" % metric}) -> stream killer (ideal: #{idealCount}, ideal-1%: #{idealCount*0.99}, current: #{currentCount}) target uuid: #{targetuuid}",
+            "announce" => "-> stream killer (ideal: #{idealCount}, ideal-1%: #{idealCount*0.99}, current: #{currentCount}) target uuid: #{targetuuid}",
             "commands" => [],
             "command-interpreter" => lambda{|object, command| 
                 targetuuid = object["target-uuid"]
-                searchobjects = CatalystObjects::all()
-                    .select{|object| object['announce'].downcase.include?(targetuuid) }
-                if searchobjects.size>0 then
-                    searchobject = searchobjects.first
-                    Jupiter::putsObjectWithShellDisplay(searchobject, [])
+                targetobjects = CatalystObjects::all()
+                    .select{|object| object["uuid"]==targetuuid }
+                if targetobjects.size>0 then
+                    targetobject = targetobjects.first
+                    Jupiter::interactiveDisplayObjectAndProcessCommand(targetobject)
                 end
-                [nil, false]
-
             },
             "target-uuid" => targetuuid
         }
