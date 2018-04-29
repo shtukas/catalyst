@@ -56,7 +56,7 @@ require 'find'
 # Jupiter::selectDisplayObjects()
 # Jupiter::object2Line_v1(object)
 # Jupiter::interactiveDisplayObjectAndProcessCommand(object)
-# Jupiter::doExcecute(expression, object)
+# Jupiter::doExecute(object, expression)
 # Jupiter::main()
 
 class Jupiter
@@ -83,7 +83,7 @@ class Jupiter
         `/usr/bin/env tput cols`.to_i
     end
 
-    def self.doExcecute(expression, object)
+    def self.doExecute(object, expression)
 
         if expression == 'help' then
             Jupiter::putshelp()
@@ -105,9 +105,10 @@ class Jupiter
         end
 
         if expression == 'info' then
-            puts "WaveDevOps::getArchiveSizeInMegaBytes(): #{WaveDevOps::getArchiveSizeInMegaBytes()}"
-            puts "Stream item count: #{Stream::getUUIDs().size}"
-            puts "x-laniakea item count: #{FIFOQueue::values(nil, "2477F469-6A18-4CAF-838A-E05703585A28").count}"
+            puts "WaveDevOps::getArchiveSizeInMegaBytes(): #{WaveDevOps::getArchiveSizeInMegaBytes()}".green
+            puts "Stream item count: #{Stream::getUUIDs().size}".green
+            puts "x-laniakea item count: #{FIFOQueue::values(nil, "2477F469-6A18-4CAF-838A-E05703585A28").count}".green
+            puts "REQUIREMENTS OFF: #{RequirementsOperator::currentlyUnsatisfifiedRequirements().join(", ")}".green
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -318,7 +319,7 @@ class Jupiter
         print Jupiter::object2Line_v1(object) + " : "
         givenCommand = STDIN.gets().strip
         command = givenCommand.size>0 ? givenCommand : ( object["default-expression"] ? object["default-expression"] : "" )
-        Jupiter::doExcecute(command, object)
+        Jupiter::doExecute(object, command)
     end
 
     def self.main()
@@ -349,8 +350,9 @@ DoNotShowUntil::init()
 
 if ARGV[0]=="monitor" then
     loop {
-        objects = Jupiter::selectDisplayObjects().first(Jupiter::screenHeight()-2)
+        objects = Jupiter::selectDisplayObjects().first(Jupiter::screenHeight()-3)
         system("clear")
+        puts "REQUIREMENTS OFF: #{RequirementsOperator::currentlyUnsatisfifiedRequirements().join(", ")}".green
         objects.each{|object|
             puts Jupiter::object2Line_v0(object)
         }

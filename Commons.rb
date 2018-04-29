@@ -43,6 +43,10 @@ class DoNotShowUntil
             if !DoNotShowUntil::isactive(object) then
                 object["do-not-show-metric"] = object["metric"]
                 object["do-not-show-until-datetime"] = @@mapping[object["uuid"]]
+                # next we try to promote any do-not-show-until-datetime contained in a shceduler of a wave item, with a target in the future
+                if object["do-not-show-until-datetime"].nil? and object["schedule"] and object["schedule"]["do-not-show-until-datetime"] and (Time.new.to_s < object["schedule"]["do-not-show-until-datetime"]) then
+                    object["do-not-show-until-datetime"] = object["schedule"]["do-not-show-until-datetime"]
+                end
                 object["metric"] = 0
             end
             object
