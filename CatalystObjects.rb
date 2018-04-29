@@ -87,7 +87,7 @@ class CatalystObjects
                 "metric"              => 0.3,
                 "announce"            => "-> Catalyst generation is taking too long for #{offender["domain"]} (#{offender["time"]} seconds)",
                 "commands"            => [],
-                "command-interpreter" => lambda{ |command, object| }
+                "command-interpreter" => lambda{ |object, command| }
             }
         end
 
@@ -96,7 +96,7 @@ class CatalystObjects
             "metric"              => 0.2,
             "announce"            => "-- sleep time ---------------------------------------------------",
             "commands"            => [],
-            "command-interpreter" => lambda{ |command, object| }
+            "command-interpreter" => lambda{ |object, command| }
         }
 
         objects = DoNotShowUntil::transform(objects)

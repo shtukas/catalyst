@@ -67,7 +67,7 @@ class XLaniakea
                     "metric"              => 1,
                     "announce"            => "looks like x-laniakea is completed",
                     "commands"            => ["done"],
-                    "command-interpreter" => lambda{ |command, object| }
+                    "command-interpreter" => lambda{ |object, command| }
                 }
             ]
         else
@@ -88,7 +88,7 @@ class XLaniakea
             item["description"] = description
             item["announce"] = "(#{"%.3f" % item["metric"]}) [#{item["uuid"]}] x-laniakea: #{description}"
             item["commands"] = ["done"]
-            item["command-interpreter"] = lambda{ |command, object| 
+            item["command-interpreter"] = lambda{ |object, command| 
                 if command=="done" then
                     item = FIFOQueue::takeFirstOrNull(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
                     puts "Terminating:"
