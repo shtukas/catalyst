@@ -12,6 +12,10 @@ require "/Galaxy/local-resources/Ruby-Libraries/KeyValueStore.rb"
 
 # -------------------------------------------------------------------------------------
 
+NINJA_BINARY_FILEPATH = "/Galaxy/LucilleOS/Binaries/ninja"
+NINJA_DROPOFF_FOLDERPATH = "/Galaxy/DataBank/Catalyst/Ninja-DropOff"
+NINJA_ITEMS_REPOSITORY_FOLDERPATH = "/Galaxy/DataBank/Ninja/Items"
+
 class Ninja
 
     # Ninja::collectDropOffObjects()
@@ -56,9 +60,7 @@ class Ninja
 
     # Ninja::getCatalystObjectsFromScratch()
     def self.getCatalystObjectsFromScratch()
-
         Ninja::collectDropOffObjects()
-
         objects = []
         metric = Ninja::metric()
         objects << {
@@ -67,8 +69,7 @@ class Ninja
             "announce" => "ninja training",
             "commands" => [],
             "command-interpreter" => lambda{|object, command|  
-                system('ninja play')
-                $NINJA_GLOBAL_STATE["catalyst-objects"] = Ninja::getCatalystObjectsFromScratch()
+                Ninja::commandInterpreter(object, commands)
             }
         } 
         objects
@@ -77,23 +78,20 @@ class Ninja
     # Ninja::getCatalystObjects()
     def self.getCatalystObjects()
         Ninja::collectDropOffObjects()
-        $NINJA_GLOBAL_STATE["catalyst-objects"]
+        JSON.parse(KeyValueStore::getOrDefaultValue(nil, "B64F5806-5864-49E8-9FD3-AE7B90719C19", "[]"))
+            .map{ |object|
+                object["command-interpreter"] = lambda{|object, command| Ninja::commandInterpreter(object, command) } # overriding this after deserialistion 
+                object
+            }
+    end
+
+    # Ninja::commandInterpreter(object, command)
+    def self.commandInterpreter(object, command)
+        system('ninja play')
+        KeyValueStore::set(nil, "B64F5806-5864-49E8-9FD3-AE7B90719C19", JSON.generate(Ninja::getCatalystObjectsFromScratch()))
     end
 end
 
 # -------------------------------------------------------------------------------------
 
-NINJA_BINARY_FILEPATH = "/Galaxy/LucilleOS/Binaries/ninja"
-NINJA_DROPOFF_FOLDERPATH = "/Galaxy/DataBank/Catalyst/Ninja-DropOff"
-NINJA_ITEMS_REPOSITORY_FOLDERPATH = "/Galaxy/DataBank/Ninja/Items"
-
-$NINJA_GLOBAL_STATE = {}
-=begin
-    GLOBAL STATE = {
-        "catalyst-objects": Array[CatalystObjects]
-    }
-=end
-$NINJA_GLOBAL_STATE["catalyst-objects"] = Ninja::getCatalystObjectsFromScratch()
-
-# We update $NINJA_GLOBAL_STATE["catalyst-objects"] once at start up and then everytime we interact with one of the objects 
-
+KeyValueStore::set(nil, "B64F5806-5864-49E8-9FD3-AE7B90719C19", JSON.generate(Ninja::getCatalystObjectsFromScratch()))

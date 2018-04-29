@@ -32,6 +32,8 @@ require 'colorize'
 
 # -------------------------------------------------------------------------------------
 
+STREAM_PERFECT_NUMBER = 6
+
 # StreamClassification::getItemClassificationOrNull(uuid)
 # StreamClassification::setItemClassification(uuid, classification)
 # StreamClassification::updateItemClassification(uuid, classification, totalTimeSpan)
@@ -323,7 +325,7 @@ class Stream
 
     def self.objectCommandHandler(object, command)
         status = Stream::objectCommandHandlerCore(object, command)
-        $STREAM_GLOBAL_STATE["catalyst-objects"] = Stream::getCatalystObjectsFromDisk()
+        KeyValueStore::set(nil, "7DC2D872-1045-41B8-AE85-9F81F7699B7A", JSON.generate(Stream::getCatalystObjectsFromDisk()))
         status
     end
 
@@ -337,7 +339,11 @@ class Stream
     end
 
     def self.getCatalystObjects()
-        $STREAM_GLOBAL_STATE["catalyst-objects"]
+        JSON.parse(KeyValueStore::getOrDefaultValue(nil, "7DC2D872-1045-41B8-AE85-9F81F7699B7A", "[]"))
+            .map{|object| 
+                object["command-interpreter"] = lambda{|object, command| Stream::objectCommandHandler(object, command) } # overriding this after deserialistion 
+                object
+            }
     end
 end
 
@@ -348,19 +354,7 @@ LucilleCore::assert(
     Stream::simplifyURLCarryingString("{ 1223 } [] line: todo: [ 173] http://www.mit.edu/~xela/tao.html")=="http://www.mit.edu/~xela/tao.html"
 )
 
-# -------------------------------------------------------------------------------------
-
-STREAM_PERFECT_NUMBER = 6
-
-$STREAM_GLOBAL_STATE = {}
-=begin
-    GLOBAL STATE = {
-        "catalyst-objects": Array[CatalystObjects]
-    }
-=end
-$STREAM_GLOBAL_STATE["catalyst-objects"] = Stream::getCatalystObjectsFromDisk()
-
-# We update $STREAM_GLOBAL_STATE["catalyst-objects"] once at start up and then everytime we interact with one of the objects 
+KeyValueStore::set(nil, "7DC2D872-1045-41B8-AE85-9F81F7699B7A", JSON.generate(Stream::getCatalystObjectsFromDisk()))
 
 # -------------------------------------------------------------------------------------
 
