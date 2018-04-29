@@ -48,7 +48,8 @@ require 'find'
 # Jupiter::emailSyncOnSchedule(verbose)
 # Jupiter::screenHeight()
 # Jupiter::screenWidth()
-# Jupiter::object2Line_v1(object, indx)
+# Jupiter::object2Line_v0(object)
+# Jupiter::object2Line_v1(object)
 # Jupiter::putshelp()
 # Jupiter::editTextUsingTextmate(text)
 # Jupiter::processItemDescriptionPossiblyAsTextEditorInvitation(description)
@@ -345,6 +346,18 @@ RequirementsOperator::init()
 DoNotShowUntil::init()
 
 # -----------------------------------------------------------------
+
+if ARGV[0]=="monitor" then
+    loop {
+        objects = Jupiter::selectDisplayObjects().first(Jupiter::screenHeight()-2)
+        system("clear")
+        objects.each{|object|
+            puts Jupiter::object2Line_v0(object)
+        }
+        sleep 30
+    }
+    exit
+end
 
 Thread.new { 
     sleep 60
