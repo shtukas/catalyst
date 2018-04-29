@@ -88,7 +88,7 @@ class XLaniakea
             item["description"] = description
             item["announce"] = "(#{"%.3f" % item["metric"]}) [#{item["uuid"]}] x-laniakea: #{description}"
             item["commands"] = ["done"]
-            item["default-expression"] = "done"
+            item["default-expression"] = nil
             item["command-interpreter"] = lambda{ |object, command| 
                 if command=="done" then
                     FIFOQueue::takeFirstOrNull(nil, "2477F469-6A18-4CAF-838A-E05703585A28")

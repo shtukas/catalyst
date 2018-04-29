@@ -47,6 +47,7 @@ require_relative "GuardianTime.rb"
 require_relative "x-laniakea.rb"
 require_relative "RequirementsReviewReminder.rb"
 require_relative "Kimchee.rb"
+require_relative "x-laniakea-killer.rb"
 
 # ----------------------------------------------------------------------
 
@@ -64,7 +65,8 @@ class CatalystObjects
             ["GuardianTime", lambda { GuardianTime::getCatalystObjects() }],
             ["XLaniakea", lambda { XLaniakea::getCatalystObjects() }],
             ["RequirementsReviewReminder", lambda{ RequirementsReviewReminder::getCatalystObjects() }],
-            ["Kimchee", lambda{ Kimchee::getCatalystObjects() }]
+            ["Kimchee", lambda{ Kimchee::getCatalystObjects() }],
+            ["XLaniakeaKiller", lambda{ XLaniakeaKiller::getCatalystObjects() }]
         ]
 
         struct1 = sources.map{|pair|
