@@ -349,10 +349,7 @@ end
 
 # -------------------------------------------------------------------------------------
 
-LucilleCore::assert(
-    "4e29669a-a5de-4100-ac70-a2e0b59dabc9",
-    Stream::simplifyURLCarryingString("{ 1223 } [] line: todo: [ 173] http://www.mit.edu/~xela/tao.html")=="http://www.mit.edu/~xela/tao.html"
-)
+LucilleCore::assert(Stream::simplifyURLCarryingString("{ 1223 } [] line: todo: [ 173] http://www.mit.edu/~xela/tao.html")=="http://www.mit.edu/~xela/tao.html")
 
 KeyValueStore::set(nil, "7DC2D872-1045-41B8-AE85-9F81F7699B7A", JSON.generate(Stream::getCatalystObjectsFromDisk()))
 

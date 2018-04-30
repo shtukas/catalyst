@@ -338,15 +338,15 @@ class Jupiter
 
 end
 
-LucilleCore::assert("PascalMiscUtils 1.0", Jupiter::datetimeSpecification2232ToDatetime("+0 days") == "#{DateTime.now.to_time.to_s}")
-LucilleCore::assert("PascalMiscUtils 1.5", Jupiter::datetimeSpecification2232ToDatetime("+1.6 days") == "#{( DateTime.now + 1.6 ).to_time.to_s}")
-LucilleCore::assert("PascalMiscUtils 1.6", Jupiter::datetimeSpecification2232ToDatetime("+0 hours") == "#{DateTime.now.to_time.to_s}")
-LucilleCore::assert("PascalMiscUtils 1.5", Jupiter::datetimeSpecification2232ToDatetime("+0 day") == "#{DateTime.now.to_time.to_s}")
-LucilleCore::assert("PascalMiscUtils 1.5", Jupiter::datetimeSpecification2232ToDatetime("+1.6 day") == "#{( DateTime.now + 1.6 ).to_time.to_s}")
-LucilleCore::assert("PascalMiscUtils 1.6", Jupiter::datetimeSpecification2232ToDatetime("+0 hour") == "#{DateTime.now.to_time.to_s}")
-LucilleCore::assert("PascalMiscUtils 1.7", Jupiter::datetimeSpecification2232ToDatetime("+1.6 hour") == "#{( Time.new + 1.6*3600 ).to_s}")
-LucilleCore::assert("PascalMiscUtils 2.0", Jupiter::datetimeSpecification2232ToDatetime("+1@12:32") == "#{( DateTime.now + 1 ).to_date.to_s} 12:32:00 #{Time.new.to_s[-5,5]}")
-LucilleCore::assert("PascalMiscUtils 3.0", Jupiter::datetimeSpecification2232ToDatetime("2017-06-19@12:32") == "2017-06-19 12:32:00 #{Time.new.to_s[-5,5]}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+0 days") == "#{DateTime.now.to_time.to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+1.6 days") == "#{( DateTime.now + 1.6 ).to_time.to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+0 hours") == "#{DateTime.now.to_time.to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+0 day") == "#{DateTime.now.to_time.to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+1.6 day") == "#{( DateTime.now + 1.6 ).to_time.to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+0 hour") == "#{DateTime.now.to_time.to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+1.6 hour") == "#{( Time.new + 1.6*3600 ).to_s}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("+1@12:32") == "#{( DateTime.now + 1 ).to_date.to_s} 12:32:00 #{Time.new.to_s[-5,5]}")
+LucilleCore::assert(Jupiter::datetimeSpecification2232ToDatetime("2017-06-19@12:32") == "2017-06-19 12:32:00 #{Time.new.to_s[-5,5]}")
 
 # -----------------------------------------------------------------
 
