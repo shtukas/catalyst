@@ -98,6 +98,11 @@ class Jupiter
             return
         end
 
+        if expression == 'clear' then
+            system("clear")
+            return
+        end
+
         if expression == 'expose' then
             puts JSON.pretty_generate(object)
             LucilleCore::pressEnterToContinue()
@@ -211,6 +216,7 @@ class Jupiter
         puts "    wave: <wave description>"
         puts "    stream: <stream description>"
         puts "    lib # Invoques the Librarian interactive"
+        puts "    clear # clear the screen"
         puts ""
         puts "Special Object Commands:"
         puts "    expose # pring the object"
