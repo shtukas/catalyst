@@ -144,6 +144,7 @@ class Jupiter
             folderpath = "#{CATALYST_COMMON_PATH_TO_STREAM_DOMAIN_FOLDER}/strm2/#{LucilleCore::timeStringL22()}"
             FileUtils.mkpath folderpath
             File.open("#{folderpath}/description.txt", 'w') {|f| f.write(description) }
+            puts "created item: #{folderpath}"
             return
         end
 
