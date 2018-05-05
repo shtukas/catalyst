@@ -47,8 +47,6 @@ require "/Galaxy/local-resources/Ruby-Libraries/KeyValueStore.rb"
     KeyValueStore::destroy(repositorypath or nil, key)
 =end
 
-require_relative "Stream.rb"
-
 require "/Galaxy/local-resources/Ruby-Libraries/FIFOQueue.rb"
 =begin
     # The set of values that we support is whatever that can be json serialisable.
@@ -58,6 +56,8 @@ require "/Galaxy/local-resources/Ruby-Libraries/FIFOQueue.rb"
     FIFOQueue::getFirstOrNull(repositorylocation or nil, queueuuid)
     FIFOQueue::takeFirstOrNull(repositorylocation or nil, queueuuid)
 =end
+
+require_relative "x-laniakea.rb"
 
 # -------------------------------------------------------------------------------------
 
@@ -84,36 +84,27 @@ class XLaniakeaKiller
         currentCount.to_f/(0.01*idealCount) - (idealCount*0.99).to_f/(0.01*idealCount)
     end
     def self.getCatalystObjects()
-        curve = XLaniakeaKiller::getCurve()
-        idealCount = XLaniakeaKiller::computeIdealCountFromCurve(curve)
-        currentCount = FIFOQueue::size(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
-        metric = XLaniakeaKiller::computeMetric(currentCount, idealCount)
-        if metric < 0.2 then
-            curveX = XLaniakeaKiller::shiftCurve(curve)
-            idealCountX  = XLaniakeaKiller::computeIdealCountFromCurve(curveX)
-            metricX = XLaniakeaKiller::computeMetric(currentCount, idealCountX)
-            if metricX < 0.2 then
-                puts "XLaniakeaKiller, shifting curve on disk (metric: #{metric} -> #{metricX})"
-                puts JSON.pretty_generate(curve)
-                puts JSON.pretty_generate(curveX)
+        curve1 = XLaniakeaKiller::getCurve()
+        idealCount1 = XLaniakeaKiller::computeIdealCountFromCurve(curve1)
+        currentCount1 = FIFOQueue::size(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
+        metric1 = XLaniakeaKiller::computeMetric(currentCount1, idealCount1)
+        if metric1 < 0.2 then
+            curve2 = XLaniakeaKiller::shiftCurve(curve1)
+            idealCount2  = XLaniakeaKiller::computeIdealCountFromCurve(curve2)
+            metric2 = XLaniakeaKiller::computeMetric(currentCount1, idealCount2)
+            if metric2 < 0.2 then
+                puts "XLaniakeaKiller, shifting curve on disk (metric1: #{metric1} -> #{metric2})"
+                puts JSON.pretty_generate(curve1)
+                puts JSON.pretty_generate(curve2)
                 LucilleCore::pressEnterToContinue()
-                File.open("/Galaxy/DataBank/Catalyst/XLaniakeaKiller/curve-#{LucilleCore::timeStringL22()}.json", "w"){|f| f.puts( JSON.pretty_generate(curveX) ) }
-                curve = curveX
+                File.open("/Galaxy/DataBank/Catalyst/XLaniakeaKiller/curve-#{LucilleCore::timeStringL22()}.json", "w"){|f| f.puts( JSON.pretty_generate(curve2) ) }
+                metric1 = metric2
             end
         end
-        [
-            {
-                "uuid" => "A3B08A86",
-                "metric" => metric,
-                "announce" => "-> x-laniakea killer (ideal: #{idealCount}, ideal-1%: #{idealCount*0.99}, current: #{currentCount})",
-                "commands" => [],
-                "command-interpreter" => lambda{|object, command| 
-                    if ( targetobject = XLaniakea::getCatalystObjects().first ) then
-                        Jupiter::interactiveDisplayObjectAndProcessCommand(targetobject)
-                    end
-                }
-            }
-        ]
+        targetobject = XLaniakea::getCatalystObjects().first
+        targetobject["metric"] = metric1
+        targetobject["announce"] = "(x-laniakea killer) #{targetobject["announce"]}"
+        [ targetobject ]
     end
 end
 

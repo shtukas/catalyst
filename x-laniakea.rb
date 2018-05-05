@@ -35,9 +35,9 @@ require 'digest/sha1'
 # -------------------------------------------------------------------------------------
 
 # XLaniakea::getCatalystObjects()
+# XLaniakea::processAnnounce(announce)
 
 class XLaniakea
-
     def self.importData()
         datafilepath = "/Galaxy/DataBank/Catalyst/x-laniakea-genesis.json"
         data = JSON.parse(IO.read(datafilepath))
@@ -66,7 +66,6 @@ class XLaniakea
         false
     end
 
-    # XLaniakea::processAnnounce(announce)
     def self.processAnnounce(announce)
         if (indx = announce.index("}")) then
             return XLaniakea::processAnnounce(announce[indx+1,announce.size].strip)
@@ -110,8 +109,8 @@ class XLaniakea
            defaultExpression = "open done" 
         end
         item["description"] = description
-        item["announce"] = "(#{"%.3f" % item["metric"]}) [#{item["uuid"]}] x-laniakea: #{description}"
-        item["commands"] = ["done", ">stream"]
+        item["announce"] = "x-laniakea: #{description}"
+        item["commands"] = ["open", "done", ">stream"]
         item["default-expression"] = defaultExpression
         item["command-interpreter"] = lambda{ |object, command| 
             if command=="open" then
@@ -127,9 +126,6 @@ class XLaniakea
                 File.open("#{targetfolderpath}/readme.txt", "w"){|f| f.puts(item["description"]) }
             end
         }
-        [
-            item
-        ]
-
+        [ item ]
     end
 end
