@@ -117,7 +117,6 @@ end
 # Stream::getItemDescription(folderpath)
 # Stream::getuuid(folderpath)
 # Stream::getUUIDs()
-# Stream::simplifyURLCarryingString(string)
 # Stream::naturalTargetUnderLocation(location): (type, address) , where type is "file" or "url"
 # Stream::folderpathToCatalystObject(folderpath, indx, streamName)
 # Stream::performObjectClosing(object)
@@ -156,18 +155,6 @@ class Stream
         }.flatten
     end
 
-    def self.simplifyURLCarryingString(string)
-        return string if /http/.match(string).nil?
-        [/^\{\s\d*\s\}/, /^\[\]/, /^line:/, /^todo:/, /^url:/, /^\[\s*\d*\s*\]/]
-            .each{|regex|
-                if ( m = regex.match(string) ) then
-                    string = string[m.to_s.size, string.size].strip
-                    return Stream::simplifyURLCarryingString(string)
-                end
-            }
-        string
-    end
-
     def self.naturalTargetUnderLocation(location)
         value = @@naturalTargets[location]
         return value if value
@@ -183,7 +170,7 @@ class Stream
                     if filepath[-4,4]==".txt" then
                         if IO.read(filepath).strip.lines.to_a.size==1 then
                             line = IO.read(filepath).strip
-                            line = Stream::simplifyURLCarryingString(line)
+                            line = Saturn::simplifyURLCarryingString(line)
                             if line.start_with?("http") then
                                 ["url", line]
                             else

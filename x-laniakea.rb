@@ -35,7 +35,6 @@ require 'digest/sha1'
 # -------------------------------------------------------------------------------------
 
 # XLaniakea::getCatalystObjects()
-# XLaniakea::processAnnounce(announce)
 
 class XLaniakea
     def self.importData()
@@ -66,22 +65,6 @@ class XLaniakea
         false
     end
 
-    def self.processAnnounce(announce)
-        if (indx = announce.index("}")) then
-            return XLaniakea::processAnnounce(announce[indx+1,announce.size].strip)
-        end
-        if (announce[0,2]=="[]") then
-            return XLaniakea::processAnnounce(announce[2,announce.size].strip)
-        end
-        if (announce[0,4]=="url:") then
-            return XLaniakea::processAnnounce(announce[4,announce.size].strip)
-        end
-        if (announce[0,5]=="line:") then
-            return XLaniakea::processAnnounce(announce[5,announce.size].strip)
-        end
-        announce
-    end
-
     def self.getCatalystObjects()
         item = FIFOQueue::getFirstOrNull(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
         if item.nil? then
@@ -103,7 +86,7 @@ class XLaniakea
         while (item["metric"]+0.1)<0.5 do
             item["metric"] = item["metric"]+0.1
         end
-        description = XLaniakea::processAnnounce(item["announce"])
+        description = Saturn::simplifyURLCarryingString(item["announce"])
         defaultExpression = nil
         if description.start_with?("http") then
            defaultExpression = "open done" 

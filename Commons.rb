@@ -17,6 +17,7 @@ CATALYST_COMMON_PATH_TO_STREAM_DOMAIN_FOLDER = "/Galaxy/DataBank/Catalyst/Stream
 
 # Saturn::currentHour()
 # Saturn::currentDay()
+# Saturn::simplifyURLCarryingString(string)
 
 class Saturn
     def self.currentHour()
@@ -24,6 +25,17 @@ class Saturn
     end
     def self.currentDay()
         Time.new.to_s[0,10]
+    end
+    def self.simplifyURLCarryingString(string)
+        return string if /http/.match(string).nil?
+        [/^\{\s\d*\s\}/, /^\[\]/, /^line:/, /^todo:/, /^url:/, /^\[\s*\d*\s*\]/]
+            .each{|regex|
+                if ( m = regex.match(string) ) then
+                    string = string[m.to_s.size, string.size].strip
+                    return Saturn::simplifyURLCarryingString(string)
+                end
+            }
+        string
     end
 end
 
