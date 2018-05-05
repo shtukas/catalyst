@@ -59,7 +59,7 @@ class StreamGlobalDataBaseInterface
         $STREAM_GLOBAL_DATABASE["items:times"] = {} if $STREAM_GLOBAL_DATABASE["items:times"].nil?
         $STREAM_GLOBAL_DATABASE["items:times"][uuid] = [] if $STREAM_GLOBAL_DATABASE["items:times"][uuid].nil?
         $STREAM_GLOBAL_DATABASE["items:times"][uuid]
-            .select{|pair| (Time.new.to_i - pair[0]) < 86400 }
+            .select{|pair| (Time.new.to_i - pair[0]) < 86400*7 }
             .map{|pair| pair[1] }
             .inject(0, :+)
     end
@@ -67,7 +67,7 @@ class StreamGlobalDataBaseInterface
     def self.getStreamTotalTimeInSecondsLastWeek()
         $STREAM_GLOBAL_DATABASE["stream:times"] = [] if $STREAM_GLOBAL_DATABASE["stream:times"].nil?
         $STREAM_GLOBAL_DATABASE["stream:times"]
-            .select{|pair| (Time.new.to_i - pair[0]) < 86400 }
+            .select{|pair| (Time.new.to_i - pair[0]) < 86400*7 }
             .map{|pair| pair[1] }
             .inject(0, :+)
     end
