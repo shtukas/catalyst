@@ -212,8 +212,7 @@ class Stream
         description = Stream::getItemDescription(folderpath)
         isRunning = StreamGlobalDataBaseInterface::trueIfItemIsRunning(uuid)
         metric = isRunning ? 2 : Stream::metric(indx, StreamGlobalDataBaseInterface::getItemTotalTimeInSecondsLastWeek(uuid), StreamGlobalDataBaseInterface::getStreamTotalTimeInSecondsLastWeek())
-        metric = ( KeyValueStore::getOrNull(nil, "796c6f6b-bc6b-4a55-b576-09c7494be23d:#{uuid}") != Time.new.to_s[0, 10] ) ? metric : 0
-        commands = ( isRunning ? ["stop"] : ["start"] ) + ["folder", "completed", "set-description", "!today", "rotate", ">lib"]
+        commands = ( isRunning ? ["stop"] : ["start"] ) + ["folder", "completed", "set-description", "rotate", ">lib"]
         defaultExpression = ( isRunning ? "" : "start" )
         announce = "stream: #{Stream::naturalTargetToDisplayName(Stream::naturalTargetUnderLocation(folderpath))} (#{"%.2f" % ( StreamGlobalDataBaseInterface::getItemTotalTimeInSecondsLastWeek(uuid).to_f/3600 )} hours past week)"
         {
@@ -266,9 +265,6 @@ class Stream
         end
         if command=="completed" then
             Stream::performObjectClosing(object)
-        end
-        if command=='!today' then
-            KeyValueStore::set(nil, "796c6f6b-bc6b-4a55-b576-09c7494be23d:#{uuid}", Time.new.to_s[0, 10])
         end
         if command=='rotate' then
             sourcelocation = object["item-folderpath"]
