@@ -149,7 +149,18 @@ end
 # KillersCurvesManagement::computeMetric(currentCount, idealCount)
 # KillersCurvesManagement::shiftCurveIfOpportunity(folderpath, currentCount1)
 
+# KillersCurvesManagement::trueIfCanShiftCurveForFolderpath(folderpath)
+# KillersCurvesManagement::setLastCurveChangeDateForFolderpath(folderpath, date)
+
 class KillersCurvesManagement
+    def self.trueIfCanShiftCurveForFolderpath(folderpath)
+        KeyValueStore::getOrNull(nil, "53f628bf-a119-4d9d-b48c-664c81b69047:#{folderpath}") != Saturn::currentDay()
+    end
+
+    def self.setLastCurveChangeDateForFolderpath(folderpath, date)
+        KeyValueStore::set(nil, "53f628bf-a119-4d9d-b48c-664c81b69047:#{folderpath}", date)
+    end
+
     def self.getCurve(folderpath)
         filename = Dir.entries(folderpath)
             .select{|filename| filename[0,1] != "." }
@@ -157,19 +168,24 @@ class KillersCurvesManagement
             .last
         JSON.parse(IO.read("#{folderpath}/#{filename}"))
     end
+
     def self.shiftCurve(curve)
         curve = curve.clone
         curve["starting-count"] = curve["starting-count"]-10
         curve["ending-unixtime"] = curve["ending-unixtime"]-86400
         curve
     end
+
     def self.computeIdealCountFromCurve(curve)
         curve["starting-count"] - curve["starting-count"]*(Time.new.to_i - curve["starting-unixtime"]).to_f/(curve["ending-unixtime"] - curve["starting-unixtime"])
     end
+
     def self.computeMetric(currentCount, idealCount)
         currentCount.to_f/(0.01*idealCount) - (idealCount*0.99).to_f/(0.01*idealCount)
     end
+
     def self.shiftCurveIfOpportunity(folderpath, currentCount1)
+        return if !KillersCurvesManagement::trueIfCanShiftCurveForFolderpath(folderpath)
         curve1 = KillersCurvesManagement::getCurve(folderpath)
         idealCount1 = KillersCurvesManagement::computeIdealCountFromCurve(curve1)
         metric1 = KillersCurvesManagement::computeMetric(currentCount1, idealCount1)
@@ -183,6 +199,7 @@ class KillersCurvesManagement
                 puts JSON.pretty_generate(curve2)
                 LucilleCore::pressEnterToContinue()
                 File.open("#{folderpath}/curve-#{LucilleCore::timeStringL22()}.json", "w"){|f| f.puts( JSON.pretty_generate(curve2) ) }
+                KillersCurvesManagement::setLastCurveChangeDateForFolderpath(folderpath, Saturn::currentDay())
             end
         end
     end
