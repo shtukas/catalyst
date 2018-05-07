@@ -172,7 +172,6 @@ class KillersCurvesManagement
     def self.shiftCurve(curve)
         curve = curve.clone
         curve["starting-count"] = curve["starting-count"]-10
-        curve["ending-unixtime"] = curve["ending-unixtime"]-86400
         curve
     end
 
