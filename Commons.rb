@@ -141,3 +141,49 @@ class TodayOrNotToday
         KeyValueStore::getOrNull(nil, "9e8881b5-3bf7-4a08-b454-6b8b827cd0e0:#{Saturn::currentDay()}:#{uuid}").nil?
     end
 end
+
+
+# KillersCurvesManagement::getCurve(folderpath)
+# KillersCurvesManagement::shiftCurve(curve)
+# KillersCurvesManagement::computeIdealCountFromCurve(curve)
+# KillersCurvesManagement::computeMetric(currentCount, idealCount)
+# KillersCurvesManagement::shiftCurveIfOpportunity(folderpath, currentCount1)
+
+class KillersCurvesManagement
+    def self.getCurve(folderpath)
+        filename = Dir.entries(folderpath)
+            .select{|filename| filename[0,1] != "." }
+            .sort
+            .last
+        JSON.parse(IO.read("#{folderpath}/#{filename}"))
+    end
+    def self.shiftCurve(curve)
+        curve = curve.clone
+        curve["starting-count"] = curve["starting-count"]-10
+        curve["ending-unixtime"] = curve["ending-unixtime"]-86400
+        curve
+    end
+    def self.computeIdealCountFromCurve(curve)
+        curve["starting-count"] - curve["starting-count"]*(Time.new.to_i - curve["starting-unixtime"]).to_f/(curve["ending-unixtime"] - curve["starting-unixtime"])
+    end
+    def self.computeMetric(currentCount, idealCount)
+        currentCount.to_f/(0.01*idealCount) - (idealCount*0.99).to_f/(0.01*idealCount)
+    end
+    def self.shiftCurveIfOpportunity(folderpath, currentCount1)
+        curve1 = KillersCurvesManagement::getCurve(folderpath)
+        idealCount1 = KillersCurvesManagement::computeIdealCountFromCurve(curve1)
+        metric1 = KillersCurvesManagement::computeMetric(currentCount1, idealCount1)
+        if metric1 < 0.2 then
+            curve2 = KillersCurvesManagement::shiftCurve(curve1)
+            idealCount2 = KillersCurvesManagement::computeIdealCountFromCurve(curve2)
+            metric2 = KillersCurvesManagement::computeMetric(currentCount1, idealCount2)
+            if metric2 < 0.2 then
+                puts "#{folderpath}, shifting curve on disk (metric1: #{metric1} -> #{metric2})"
+                puts JSON.pretty_generate(curve1)
+                puts JSON.pretty_generate(curve2)
+                LucilleCore::pressEnterToContinue()
+                File.open("#{folderpath}/curve-#{LucilleCore::timeStringL22()}.json", "w"){|f| f.puts( JSON.pretty_generate(curve2) ) }
+            end
+        end
+    end
+end

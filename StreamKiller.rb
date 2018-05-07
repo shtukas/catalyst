@@ -94,46 +94,12 @@ class StreamKiller
             .first
     end
 
-    def self.getCurve()
-        filename = Dir.entries("/Galaxy/DataBank/Catalyst/StreamKiller")
-            .select{|filename| filename[0,1] != "." }
-            .sort
-            .last
-        JSON.parse(IO.read("/Galaxy/DataBank/Catalyst/StreamKiller/#{filename}"))
-    end
-
-    def self.shiftCurve(curve)
-        curve = curve.clone
-        curve["starting-count"] = curve["starting-count"]-10
-        curve["ending-unixtime"] = curve["ending-unixtime"]-86400
-        curve
-    end
-
-    def self.computeIdealCountFromCurve(curve)
-        curve["starting-count"] - curve["starting-count"]*(Time.new.to_i - curve["starting-unixtime"]).to_f/(curve["ending-unixtime"] - curve["starting-unixtime"])
-    end
-
-    def self.computeMetric(currentCount1, idealCount1)
-        currentCount1.to_f/(0.01*idealCount1) - (idealCount1*0.99).to_f/(0.01*idealCount1)
-    end
-
     def self.getCatalystObjects()
-        curve1 = StreamKiller::getCurve()
-        idealCount1 = StreamKiller::computeIdealCountFromCurve(curve1)
         currentCount1 = Dir.entries("/Galaxy/DataBank/Catalyst/Stream/strm1").size
-        metric1 = StreamKiller::computeMetric(currentCount1, idealCount1)
-        if metric1 < 0.2 then
-            curve2 = StreamKiller::shiftCurve(curve1)
-            idealCount2 = StreamKiller::computeIdealCountFromCurve(curve2)
-            metric2 = StreamKiller::computeMetric(currentCount1, idealCount2)
-            if metric2 < 0.2 then
-                puts "StreamKiller, shifting curve on disk (metric1: #{metric1} -> #{metric2})"
-                puts JSON.pretty_generate(curve1)
-                puts JSON.pretty_generate(curve2)
-                LucilleCore::pressEnterToContinue()
-                File.open("/Galaxy/DataBank/Catalyst/StreamKiller/curve-#{LucilleCore::timeStringL22()}.json", "w"){|f| f.puts( JSON.pretty_generate(curve2) ) }
-            end
-        end
+        KillersCurvesManagement::shiftCurveIfOpportunity("/Galaxy/DataBank/Catalyst/StreamKiller", currentCount1)
+        curve1 = KillersCurvesManagement::getCurve("/Galaxy/DataBank/Catalyst/StreamKiller")
+        idealCount1 = KillersCurvesManagement::computeIdealCountFromCurve(curve1)
+        metric1 = KillersCurvesManagement::computeMetric(currentCount1, idealCount1)
         targetobject = Stream::getCatalystObjects().sample
         if targetobject then
             targetobject["metric"] = metric1

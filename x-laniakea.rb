@@ -62,6 +62,7 @@ class XLaniakea
         return true if item["announce"].include?("real world haskell")
         return true if item["announce"].include?("Data-Islands/Mathematics")
         return true if item["announce"].include?("1.Education/3.Undergraduate")
+        return true if item["announce"].include?("Functional Analisys (R&S)")
         false
     end
 
