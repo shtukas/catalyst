@@ -66,8 +66,8 @@ require_relative "Vienna.rb"
 class ViennaKiller
     def self.getCatalystObjects()
         currentCount1 = Vienna::getUnreadLinks().size
-        KillersCurvesManagement::shiftCurveIfOpportunity("/Galaxy/DataBank/Catalyst/ViennaKiller", currentCount1)
-        curve1 = KillersCurvesManagement::getCurve("/Galaxy/DataBank/Catalyst/ViennaKiller")
+        KillersCurvesManagement::shiftCurveIfOpportunity("/Galaxy/DataBank/Catalyst/Killers-Curves/Vienna", currentCount1)
+        curve1 = KillersCurvesManagement::getCurve("/Galaxy/DataBank/Catalyst/Killers-Curves/Vienna")
         idealCount1 = KillersCurvesManagement::computeIdealCountFromCurve(curve1)
         metric1 = KillersCurvesManagement::computeMetric(currentCount1, idealCount1)        
         targetobject = Vienna::getCatalystObjects().first

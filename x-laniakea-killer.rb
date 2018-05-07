@@ -66,8 +66,8 @@ require_relative "x-laniakea.rb"
 class XLaniakeaKiller
     def self.getCatalystObjects()
         currentCount1 = FIFOQueue::size(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
-        KillersCurvesManagement::shiftCurveIfOpportunity("/Galaxy/DataBank/Catalyst/XLaniakeaKiller", currentCount1)
-        curve1 = KillersCurvesManagement::getCurve("/Galaxy/DataBank/Catalyst/XLaniakeaKiller")
+        KillersCurvesManagement::shiftCurveIfOpportunity("/Galaxy/DataBank/Catalyst/Killers-Curves/XLaniakea", currentCount1)
+        curve1 = KillersCurvesManagement::getCurve("/Galaxy/DataBank/Catalyst/Killers-Curves/XLaniakea")
         idealCount1 = KillersCurvesManagement::computeIdealCountFromCurve(curve1)
         metric1 = KillersCurvesManagement::computeMetric(currentCount1, idealCount1) 
         targetobject = XLaniakea::getCatalystObjects().first
