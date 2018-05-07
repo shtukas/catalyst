@@ -37,6 +37,14 @@ require 'digest/sha1'
 # XLaniakea::getCatalystObjects()
 
 class XLaniakea
+    def self.todayCount()
+        KeyValueStore::getOrDefaultValue(nil, "fa2e35f5-2a0d-4ecd-b66c-df47fcafc61e:#{Saturn::currentDay()}", "0").to_i
+    end
+
+    def self.increaseTodayCount()
+        KeyValueStore::set(nil, "fa2e35f5-2a0d-4ecd-b66c-df47fcafc61e:#{Saturn::currentDay()}", XLaniakea::todayCount()+1)
+    end
+
     def self.importData()
         datafilepath = "/Galaxy/DataBank/Catalyst/x-laniakea-genesis.json"
         data = JSON.parse(IO.read(datafilepath))
@@ -84,9 +92,8 @@ class XLaniakea
             FIFOQueue::takeFirstOrNull(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
             return XLaniakea::getCatalystObjects()
         end
-        while (item["metric"]+0.1)<0.5 do
-            item["metric"] = item["metric"]+0.1
-        end
+        item["today-count"] = XLaniakea::todayCount()
+        item["metric"] = 0.5*Math.exp(-XLaniakea::todayCount().to_f/20)
         description = Saturn::simplifyURLCarryingString(item["announce"])
         defaultExpression = nil
         if description.start_with?("http") then
@@ -102,6 +109,7 @@ class XLaniakea
             end
             if command=="done" then
                 FIFOQueue::takeFirstOrNull(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
+                XLaniakea::increaseTodayCount()
             end
             if command==">stream" then
                 item = FIFOQueue::takeFirstOrNull(nil, "2477F469-6A18-4CAF-838A-E05703585A28")
