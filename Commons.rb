@@ -357,7 +357,7 @@ class FolderProbe
                         return {
                             "target-type" => "line",
                             "text" => line,
-                            "announce" => line
+                            "announce" => "line: #{line}"
                         }
                     end
                 else

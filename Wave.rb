@@ -163,20 +163,21 @@ class WaveTimelineUtils
         FileUtils.mv("#{folderpath}",targetFolder)
     end
 
-    def self.commands(schedule)
+    def self.commands(folderProbeMetadata)
         ['open', 'done', '<uuid>', 'recast', 'folder', 'destroy', ">stream", '>lib']
     end
 
-    def self.defaultExpression(announce, schedule)
-        if schedule["@"].start_with?("every") then
-            if announce.include?("http") then
-                "open done"
-            else
-                "done"
-            end
-        else
-            "open done"
+    def self.defaultExpression(folderProbeMetadata)
+        if folderProbeMetadata["target-type"] == "openable-file" then
+            return "open done"
         end
+        if folderProbeMetadata["target-type"] == "url" then
+            return "open done"
+        end
+        if folderProbeMetadata["target-type"] == "folder" then
+            return "open done"
+        end
+        "done"
     end
 
     def self.objectuuidToCatalystObject(objectuuid)
@@ -197,8 +198,8 @@ class WaveTimelineUtils
         object['uuid'] = objectuuid
         object['metric'] = metric
         object['announce'] = announce
-        object['commands'] = WaveTimelineUtils::commands(schedule)
-        object["default-expression"] = WaveTimelineUtils::defaultExpression(announce, schedule)
+        object['commands'] = WaveTimelineUtils::commands(folderProbeMetadata)
+        object["default-expression"] = WaveTimelineUtils::defaultExpression(folderProbeMetadata)
         object['command-interpreter'] = lambda {|object, command| WaveInterface::interpreter(object, command) }
         object['schedule'] = schedule
         object["item-folder-probe-metadata"] = folderProbeMetadata
