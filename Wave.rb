@@ -218,7 +218,7 @@ class WaveTimelineUtils
             else
                 ""
             end
-        "[#{WaveSchedules::scheduleToAnnounce(schedule)}] #{folderProbeMetadata["announce"]}#{p6}"
+        "[#{WaveSchedules::scheduleToAnnounce(schedule)}] #{folderProbeMetadata["announce"]}#{p6}" 
     end
 
     def self.removeWaveMetadataFilesAtLocation(location)
