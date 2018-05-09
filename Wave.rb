@@ -218,7 +218,9 @@ class WaveTimelineUtils
             else
                 ""
             end
-        "#{folderProbeMetadata["announce"]}#{p6}"    
+        schedule.delete("uuid")
+        schedule.delete("type")
+        "#{JSON.generate(schedule)} #{folderProbeMetadata["announce"]}#{p6}"
     end
 
     def self.removeWaveMetadataFilesAtLocation(location)
