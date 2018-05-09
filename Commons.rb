@@ -317,9 +317,14 @@ class FolderProbe
                 .select{|filename| File.basename(filename)[0, 4] != 'wave' }
                 .select{|filename| File.basename(filename)[0, 8] != 'catalyst' }
             if filepaths.size == 0 then
-                metadata["target-type"] = "virtually-empty-wave-folder"
-                if metadata["announce"].nil? then
-                    metadata["announce"] = "virtually-empty-wave-folder without catalyst-description.txt"
+                if metadata["announce"].start_with?("http") then 
+                    metadata["target-type"] = "url"
+                    metadata["url"] = metadata["announce"]
+                else
+                    metadata["target-type"] = "virtually-empty-wave-folder"
+                    if metadata["announce"].nil? then
+                        metadata["announce"] = "virtually-empty-wave-folder without catalyst-description.txt"
+                    end
                 end
             end
             if filepaths.size == 1 then
