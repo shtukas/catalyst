@@ -218,11 +218,7 @@ class WaveTimelineUtils
             else
                 ""
             end
-        schedule.delete("uuid")
-        schedule.delete("type")
-        schedule.delete("unixtime")
-        schedule.map{|key, value| "#{key}:#{value}" }.join(", ")
-        "[#{schedule.map{|key, value| "#{key}:#{value}" }.join(", ")}] #{folderProbeMetadata["announce"]}#{p6}"
+        "[#{WaveSchedules::scheduleToAnnounce(schedule)}] #{folderProbeMetadata["announce"]}#{p6}"
     end
 
     def self.removeWaveMetadataFilesAtLocation(location)
