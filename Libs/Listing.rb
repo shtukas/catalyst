@@ -25,7 +25,7 @@ class Listing
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
-            "[misc] search | speed | commands | nyx",
+            "[misc] search | speed | commands",
         ].join("\n")
     end
 
@@ -263,11 +263,6 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             NxNotes::edit(item)
-            return
-        end
-
-        if Interpreting::match("nyx", input) then
-            Nyx::main()
             return
         end
 

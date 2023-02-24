@@ -5,7 +5,7 @@ class CoreData
 
     # CoreData::coreDataReferenceTypes()
     def self.coreDataReferenceTypes()
-        ["nyx directory", "unique string", "text", "url", "aion point", "Dx8Unit", "OpenCycle Directory"]
+        ["unique string", "text", "url", "aion point", "Dx8Unit", "OpenCycle Directory"]
     end
 
     # CoreData::interactivelySelectCoreDataReferenceType()
@@ -21,12 +21,6 @@ class CoreData
         referencetype = CoreData::interactivelySelectCoreDataReferenceType()
         if referencetype.nil? then
             return "null"
-        end
-        if referencetype == "nyx directory" then
-            folderpath = NyxDirectories::makeNew(uuid)
-            system("open '#{folderpath}'")
-            LucilleCore::pressEnterToContinue()
-            return "nyx-directory:#{uuid}"
         end
         if referencetype == "unique string" then
             uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
@@ -67,9 +61,6 @@ class CoreData
         if referenceString == "null" then
             return ""
         end
-        if referenceString.start_with?("nyx-directory") then
-            return " (nyx directory)"
-        end
         if referenceString.start_with?("unique-string") then
             str = referenceString.split(":")[1]
             return " (unique string: #{str})"
@@ -102,11 +93,6 @@ class CoreData
         if referenceString == "null" then
             puts "Accessing null reference string. Nothing to do."
             LucilleCore::pressEnterToContinue()
-            return
-        end
-        if referenceString.start_with?("nyx-directory") then
-            directoryId = referenceString.split(":")[1]
-            NyxDirectories::access(directoryId)
             return
         end
         if referenceString.start_with?("unique-string") then
@@ -166,11 +152,6 @@ class CoreData
     def self.edit(referenceString)
         if referenceString == "null" then
             return CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        end
-        if referenceString.start_with?("nyx-directory") then
-            directoryId = referenceString.split(":")[1]
-            NyxDirectories::access(directoryId)
-            return
         end
         if referenceString.start_with?("unique-string") then
             uniquestring = referenceString.split(":")[1]
