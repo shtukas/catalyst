@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-cd ~/Galaxy/Software/github.com/shtukas/stargate
+cd ~/Galaxy/Software/github.com/shtukas/catalyst
 rbenv local 3.2.0
 ruby bin/catalyst.rb
 
