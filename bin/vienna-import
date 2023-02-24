@@ -41,9 +41,9 @@ viennaLinkFeeder = ViennaLinkFeeder.new()
 loop {
     link = viennaLinkFeeder.next()
     break if link.nil?
-    #puts "vienna: #{link}"
+    puts "vienna: #{link}"
     item = NxHeads::viennaUrl(link)
-    #puts JSON.pretty_generate(item)
+    puts JSON.pretty_generate(item)
     viennaLinkFeeder.done(link)
     sleep 0.1
 }

@@ -665,7 +665,7 @@ class Listing
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("8fba6ab0-ce92-46af-9e6b-ce86371d643d", 3600*12) then
                 if Config::thisInstanceId() == "Lucille20-pascal" then 
-                    system("#{File.dirname(__FILE__)}/bin/vienna-import")
+                    system("#{File.dirname(__FILE__)}/../bin/vienna-import")
                 end
             end
 
