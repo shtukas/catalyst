@@ -84,11 +84,11 @@ class NxBoards
 
     # NxBoards::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxBoards::boardItemsOrdered(board["uuid"])
+        boardItems = NxHeads::bItemsOrdered(board["uuid"])
         return 1 if boardItems.empty?
         boardItems
             .first(20)
-            .each{|item| puts NxBoardItems::toString(item) }
+            .each{|item| puts NxHeads::toString(item) }
         loop {
             position = LucilleCore::askQuestionAnswerAsString("position: ")
             next if position == ""
@@ -134,12 +134,7 @@ class NxBoards
             .map {|packet| packet["board"] }
     end
 
-    # NxBoards::boardItems(boarduuid)
-    def self.boardItems(boarduuid)
-        NxBoardItems::items().select{|item| item["boarduuid"] == boarduuid }
-    end
-
-    # NxBoards::boardItemsOrdered(boarduuid)
+    # NxHeads::bItemsOrdered(boarduuid)
     def self.boardItemsOrdered(boarduuid)
         NxBoards::boardItems(boarduuid)
             .sort{|i1, i2| i1["boardposition"] <=> i2["boardposition"] }
@@ -206,7 +201,7 @@ class NxBoards
             }
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
 
-        items = NxBoards::boardItemsOrdered(board["uuid"])
+        items = NxHeads::bItemsOrdered(board["uuid"])
 
         store.register(board, (tops+waves+items).empty?)
         line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
@@ -281,7 +276,7 @@ class NonBoardItemToBoardMapping
     # NonBoardItemToBoardMapping::interactivelyOffersToAttach(item)
     def self.interactivelyOffersToAttach(item)
         return nil if item["mikuType"] == "NxBoard"
-        return nil if item["mikuType"] == "NxBoardItem"
+        return nil if item["mikuType"] == "NxHead" and item["boarding"]["boarduuid"]
         return nil if N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
         puts "attaching board for accounting"
         board = NxBoards::interactivelySelectOneOrNull()

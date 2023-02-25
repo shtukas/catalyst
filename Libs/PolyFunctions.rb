@@ -16,18 +16,6 @@ class PolyFunctions
             return accounts
         end
 
-        if item["mikuType"] == "NxBoardItem" then
-            accounts << {
-                "description" => "[self]",
-                "number"      => item["uuid"]
-            }
-            boarduuid = item["boarduuid"]
-            board = NxBoards::getItemOfNull(boarduuid)
-            extraAccounts = PolyFunctions::itemsToBankingAccounts(board)
-            accounts = accounts + extraAccounts
-            return accounts
-        end
-
         # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems() which are exactly the Wave priority:ns:leisure items
         if item["mikuType"] == "Wave" and item["priority"] == "ns:leisure" then
             accounts << {
@@ -36,12 +24,21 @@ class PolyFunctions
             }
         end
 
-        # scheduler1 "cfad053c-bb83-4728-a3c5-4fb357845fd9" monitors the NxHeads::listingItems() is are the NxHead items
+        # scheduler1 "cfad053c-bb83-4728-a3c5-4fb357845fd9" monitors the NxHeads::listingItems(nil) is are the NxHead items
         if item["mikuType"] == "NxHead" then
-            accounts << {
-                "description" => "scheduler1 (cf)",
-                "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
-            }
+            if item["boarding"]["boarduuid"] then
+                # Boarded item
+                accounts << {
+                    "description" => "(board)",
+                    "number"      => item["boarding"]["boarduuid"]
+                }
+            else
+                # Regular NxList item
+                accounts << {
+                    "description" => "scheduler1 (cf)",
+                    "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
+                }
+            end
         end
 
         accounts << {
@@ -68,9 +65,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
-        end
-        if item["mikuType"] == "NxBoardItem" then
-            return NxBoardItems::toString(item)
         end
         if item["mikuType"] == "NxOpen" then
             return NxOpens::toString(item)

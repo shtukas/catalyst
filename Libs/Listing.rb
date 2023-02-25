@@ -173,11 +173,10 @@ class Listing
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return if option.nil?
             if option == "NxBoard" then
-                board = NxBoards::interactivelySelectOne()
-                NxBoardItems::interactivelyIssueNewOrNull(board)
+                NxHeads::interactivelyIssueNewBoardedOrNull()
             end
             if option == "NxList" then
-                NxHeads::interactivelyIssueNewOrNull()
+                NxHeads::interactivelyIssueNewBoardlessOrNull()
             end
         end
 
@@ -441,8 +440,8 @@ class Listing
                 "lambda" => lambda { Waves::leisureItems() }
             },
             {
-                "name" => "NxHeads::listingItems()",
-                "lambda" => lambda { NxHeads::listingItems() }
+                "name" => "NxHeads::listingItems(nil)",
+                "lambda" => lambda { NxHeads::listingItems(nil) }
             },
             {
                 "name" => "Waves::itemForPriority(ns:leisure)",
@@ -514,7 +513,7 @@ class Listing
             {
                 "name"      => "head",
                 "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
-                "generator" => lambda{ NxHeads::listingItems() } 
+                "generator" => lambda{ NxHeads::listingItems(nil) } 
             },
             {
                 "name"      => "open cycles (general)",

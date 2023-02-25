@@ -9,7 +9,7 @@ class The99Percent
 
     # The99Percent::count()
     def self.count()
-        N3Objects::getMikuTypeCount("NxBoardItem") + N3Objects::getMikuTypeCount("NxHead") + N3Objects::getMikuTypeCount("NxTail")
+        N3Objects::getMikuTypeCount("NxHead") + N3Objects::getMikuTypeCount("NxTail")
     end
 
     # The99Percent::getCurrentCount()

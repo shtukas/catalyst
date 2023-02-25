@@ -7,6 +7,13 @@ class NxHeads
         N3Objects::getMikuType("NxHead")
     end
 
+    # NxHeads::bItemsOrdered(boarduuid or nil)
+    def self.bItemsOrdered(boarduuid)
+        NxHeads::items()
+            .select{|item| item["boarding"]["boarduuid"] == boarduuid }
+            .sort{|i1, i2| i1["boarding"]["position"] <=> i2["boarding"]["position"] }
+    end
+
     # NxHeads::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
@@ -25,8 +32,8 @@ class NxHeads
     # --------------------------------------------------
     # Makers
 
-    # NxHeads::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # NxHeads::interactivelyIssueNewBoardlessOrNull()
+    def self.interactivelyIssueNewBoardlessOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
@@ -39,7 +46,34 @@ class NxHeads
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "position"    => position
+            "boarding"    => {
+                "boarduuid" => nil,
+                "position"  => item["position"]
+            }
+        }
+        NxHeads::commit(item)
+        item
+    end
+
+    # NxHeads::interactivelyIssueNewBoardedOrNull()
+    def self.interactivelyIssueNewBoardedOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+        uuid  = SecureRandom.uuid
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        board = NxBoards::interactivelySelectOne()
+        position = NxBoards::interactivelyDecideNewBoardPosition(board)
+        item = {
+            "uuid"        => uuid,
+            "mikuType"    => "NxHead",
+            "unixtime"    => Time.new.to_i,
+            "datetime"    => Time.new.utc.iso8601,
+            "description" => description,
+            "field11"     => coredataref,
+            "boarding"    => {
+                "boarduuid" => board["uuid"],
+                "position"  => position
+            }
         }
         NxHeads::commit(item)
         item
@@ -56,7 +90,10 @@ class NxHeads
             "datetime"    => Time.new.utc.iso8601,
             "description" => "Watch '#{title}' on Netflix",
             "field11"     => nil,
-            "position"    => position
+            "boarding"    => {
+                "boarduuid" => nil,
+                "position"  => item["position"]
+            }
         }
         NxHeads::commit(item)
         item
@@ -75,7 +112,10 @@ class NxHeads
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "position"    => position
+            "boarding"    => {
+                "boarduuid" => nil,
+                "position"  => item["position"]
+            }
         }
         NxTails::commit(item)
         item
@@ -95,7 +135,10 @@ class NxHeads
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "position"    => position
+            "boarding"    => {
+                "boarduuid" => nil,
+                "position"  => item["position"]
+            }
         }
         NxTails::commit(item)
         item
@@ -115,7 +158,10 @@ class NxHeads
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "position"    => position
+            "boarding"    => {
+                "boarduuid" => nil,
+                "position"  => item["position"]
+            }
         }
         NxHeads::commit(item)
         item
@@ -124,64 +170,82 @@ class NxHeads
     # --------------------------------------------------
     # Data
 
+    # NxHeads::isBoarded(item)
+    def self.isBoarded(item)
+        !item["boarding"]["boarduuid"].nil?
+    end
+
     # NxHeads::toString(item)
     def self.toString(item)
-        rt = BankUtils::recoveredAverageHoursPerDay(item["uuid"])
-        "(stream) (#{"%5.2f" % rt}) #{item["description"]} (pos: #{item["position"].round(3)})"
+        if NxHeads::isBoarded(item) then
+            "(bi) (pos: #{item["boarding"]["position"].round(3)}) #{item["description"]}"
+        else
+            rt = BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+            "(list) (#{"%5.2f" % rt}) #{item["description"]}"
+        end
     end
 
     # NxHeads::startZone()
     def self.startZone()
-        NxHeads::items().map{|item| item["position"] }.sort.take(3).inject(0, :+).to_f/3
+        NxHeads::bItemsOrdered(nil).map{|item| item["boarding"]["position"] }.sort.take(3).inject(0, :+).to_f/3
     end
 
     # NxHeads::startPosition()
     def self.startPosition()
-        positions = NxHeads::items().map{|item| item["position"] }
+        positions = NxHeads::bItemsOrdered(nil).map{|item| item["boarding"]["position"] }
         return NxTails::frontPosition() - 1 if positions.empty?
         positions.min
     end
 
     # NxHeads::endPosition()
     def self.endPosition()
-        positions = NxHeads::items().map{|item| item["position"] }
+        positions = NxHeads::bItemsOrdered(nil).map{|item| item["boarding"]["position"] }
         return NxTails::frontPosition() - 1 if positions.empty?
         positions.max
     end
 
-    # NxHeads::listingItems()
-    def self.listingItems()
-        items = NxHeads::items()
-            .sort{|i1, i2| i1["position"] <=> i2["position"] }
-            .take(3)
-            .map {|item|
-                {
-                    "item" => item,
-                    "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+    # NxHeads::listingItems(boarduuid or nil)
+    def self.listingItems(boarduuid)
+        if boarduuid.nil? then
+
+            items = NxHeads::bItemsOrdered(nil)
+                .sort{|i1, i2| i1["boarding"]["position"] <=> i2["boarding"]["position"] }
+                .take(3)
+                .map {|item|
+                    {
+                        "item" => item,
+                        "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+                    }
                 }
-            }
-            .select{|packet| packet["rt"] < 1 }
-            .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
-            .map {|packet| packet["item"] }
+                .select{|packet| packet["rt"] < 1 }
+                .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
+                .map {|packet| packet["item"] }
 
-        return items if items.size > 0
+            return items if items.size > 0
 
-        # If we reach this point it means that all first three items have a rt >= 1,
-        # let's try the next three and we stop at them.
+            # If we reach this point it means that all first three items have a rt >= 1,
+            # let's try the next three and we stop at them.
 
-        NxHeads::items()
-            .sort{|i1, i2| i1["position"] <=> i2["position"] }
-            .drop(3)
-            .take(3)
-            .map {|item|
-                {
-                    "item" => item,
-                    "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+            NxHeads::bItemsOrdered(nil)
+                .sort{|i1, i2| i1["boarding"]["position"] <=> i2["boarding"]["position"] }
+                .drop(3)
+                .take(3)
+                .map {|item|
+                    {
+                        "item" => item,
+                        "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+                    }
                 }
-            }
-            .select{|packet| packet["rt"] < 1 }
-            .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
-            .map {|packet| packet["item"] }
+                .select{|packet| packet["rt"] < 1 }
+                .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
+                .map {|packet| packet["item"] }
+
+        else
+
+            NxHeads::bItemsOrdered(boarduuid)
+                .sort{|i1, i2| i1["boarding"]["position"] <=> i2["boarding"]["position"] }
+
+        end
     end
 
     # NxHeads::listingRunningItems()
