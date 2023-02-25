@@ -612,7 +612,7 @@ class Listing
 
         NxTops::itemsInOrder()
             .each{|item|
-                bx = Lookups::getValueOrNull("NonBoardItemToBoardMapping", item["uuid"])
+                bx = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
                 next if !(bx.nil? or NxBalls::itemIsRunning(item))
                 store.register(item, true)
                 spacecontrol.putsline Listing::itemToListingLine(store, item)

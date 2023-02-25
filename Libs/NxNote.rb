@@ -3,7 +3,7 @@ class NxNotes
 
     # NxNotes::getTextOrNull(item)
     def self.getTextOrNull(item)
-        Lookups::getValueOrNull("NxNotes", item["uuid"])
+        N2KVStore::getOrNull("NxNotes:#{item["uuid"]}")
     end
 
     # NxNotes::getText(item)
@@ -13,7 +13,7 @@ class NxNotes
 
     # NxNotes::commit(item, text)
     def self.commit(item, text)
-        Lookups::commit("NxNotes", item["uuid"], text)
+        N2KVStore::set("NxNotes:#{item["uuid"]}", text)
     end
 
     # NxNotes::toStringSuffix(item)

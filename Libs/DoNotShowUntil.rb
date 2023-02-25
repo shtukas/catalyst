@@ -3,12 +3,12 @@ class DoNotShowUntil
 
     # DoNotShowUntil::setUnixtime(uuid, unixtime)
     def self.setUnixtime(uuid, unixtime)
-        Lookups::commit("DoNotShowUntil", uuid, unixtime)
+        N2KVStore::set("DoNotShowUntil:#{uuid}", unixtime)
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(uuid)
     def self.getUnixtimeOrNull(uuid)
-        Lookups::getValueOrNull("DoNotShowUntil", uuid)
+        N2KVStore::getOrNull("DoNotShowUntil:#{uuid}")
     end
 
     # DoNotShowUntil::isVisible(uuid)

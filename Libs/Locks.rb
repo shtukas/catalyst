@@ -4,21 +4,21 @@ class Locks
 
     # Locks::lock(uuid, domain)
     def self.lock(uuid, domain)
-        Lookups::commit("Locks", uuid, domain)
+        N2KVStore::set("Locks:#{uuid}", domain)
     end
 
     # Locks::isLocked(uuid)
     def self.isLocked(uuid)
-        !Lookups::getValueOrNull("Locks", uuid).nil?
+        !N2KVStore::getOrNull("Locks:#{uuid}").nil?
     end
 
     # Locks::locknameOrNull(uuid)
     def self.locknameOrNull(uuid)
-        Lookups::getValueOrNull("Locks", uuid)
+        N2KVStore::getOrNull("Locks:#{uuid}")
     end
 
     # Locks::unlock(uuid)
     def self.unlock(uuid)
-        Lookups::destroy("Locks", uuid)
+        N2KVStore::destroy("Locks:#{uuid}")
     end
 end

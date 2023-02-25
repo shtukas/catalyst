@@ -4,12 +4,12 @@ class Skips
 
     # Skips::skip(uuid, unixtime)
     def self.skip(uuid, unixtime)
-        Lookups::commit("Skips", uuid, unixtime)
+        N2KVStore::set("Skips:#{uuid}", unixtime)
     end
 
     # Skips::getUnixtimeOrNull(uuid)
     def self.getUnixtimeOrNull(uuid)
-        Lookups::getValueOrNull("Skips", uuid)
+        N2KVStore::getOrNull("Skips:#{uuid}")
     end
 
     # Skips::isSkipped(uuid)

@@ -49,7 +49,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        board = Lookups::getValueOrNull("NonBoardItemToBoardMapping", item["uuid"])
+        board = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
         if board then
             extraAccounts = PolyFunctions::itemsToBankingAccounts(board)
             accounts = accounts + extraAccounts

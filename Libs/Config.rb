@@ -30,7 +30,7 @@ class Config
 
     # Config::pathToDataCenter()
     def self.pathToDataCenter()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/Stargate-DataCenter"
+        "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst"
     end
 
     # Config::getOrNull(key)

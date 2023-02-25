@@ -4,6 +4,12 @@ class NxBalls
     # ---------------------------------
     # IO
 
+    # NxBalls::commitBall(item, nxball)
+    def self.commitBall(item, nxball)
+        filepath = "#{Config::pathToDataCenter()}/NxBalls/#{item["uuid"]}.ball"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(nxball)) }
+    end
+
     # NxBalls::issueNxBall(item, accounts)
     def self.issueNxBall(item, accounts)
         nxball = {
@@ -12,12 +18,21 @@ class NxBalls
             "accounts"       => accounts,
             "sequencestart"  => nil
         }
-        Lookups::commit("NxBalls", item["uuid"], nxball)
+        NxBalls::commitBall(item, nxball)
     end
 
     # NxBalls::getNxballOrNull(item)
     def self.getNxballOrNull(item)
-        Lookups::getValueOrNull("NxBalls", item["uuid"])
+        filepath = "#{Config::pathToDataCenter()}/NxBalls/#{item["uuid"]}.ball"
+        return nil if !File.exist?(filepath)
+        JSON.parse(IO.read(filepath))
+    end
+
+    # NxBalls::destroyNxBall(item)
+    def self.destroyNxBall(item)
+        filepath = "#{Config::pathToDataCenter()}/NxBalls/#{item["uuid"]}.ball"
+        return nil if !File.exist?(filepath)
+        FileUtils.rm(filepath)
     end
 
     # ---------------------------------
@@ -64,12 +79,12 @@ class NxBalls
     # NxBalls::stop(item)
     def self.stop(item)
         if NxBalls::itemIsBallFree(item) then
-            Lookups::destroy("NxBalls", item["uuid"])
+            NxBalls::destroyNxBall(item)
             return
         end
         if NxBalls::itemIsPaused(item) then
             puts "stopping paused item, nothing to do..."
-            Lookups::destroy("NxBalls", item["uuid"])
+            NxBalls::destroyNxBall(item)
             return
         end
         # Item is running
@@ -79,7 +94,7 @@ class NxBalls
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
             BankCore::put(account["number"], timespanInSeconds)
         }
-        Lookups::destroy("NxBalls", item["uuid"])
+        NxBalls::destroyNxBall(item)
     end
 
     # NxBalls::pause(item)
@@ -93,7 +108,7 @@ class NxBalls
         }
         nxball["type"] = "paused"
         nxball["sequencestart"] = nxball["sequencestart"] || Time.new.to_i
-        Lookups::commit("NxBalls", item["uuid"], nxball)
+        NxBalls::commitBall(item, nxball)
     end
 
     # NxBalls::pursue(item)
@@ -103,7 +118,7 @@ class NxBalls
         nxball["type"]          = "running"
         nxball["startunixtime"] = Time.new.to_i
         nxball["sequencestart"] = nxball["sequencestart"] || nxball["startunixtime"]
-        Lookups::commit("NxBalls", item["uuid"], nxball)
+        NxBalls::commitBall(item, nxball)
     end
 
     # ---------------------------------
