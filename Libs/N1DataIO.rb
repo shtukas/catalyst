@@ -157,9 +157,9 @@ class N1DataIO
 
     # N1DataIO::getMikuTypeAtFile(mikuType, filepath)
     def self.getMikuTypeAtFile(mikuType, filepath)
-        key = "#{mikuType}:#{filepath}"
-        if $N1DataIO_Cache_MikuTypesAtFile[key] then
-            return $N1DataIO_Cache_MikuTypesAtFile[key].clone
+        cachekey = "#{mikuType}:#{filepath}"
+        if $N1DataIO_Cache_MikuTypesAtFile[cachekey] then
+            return $N1DataIO_Cache_MikuTypesAtFile[cachekey].clone
         end
 
         objects = []
@@ -174,7 +174,7 @@ class N1DataIO
         end
         db.close
 
-        $N1DataIO_Cache_MikuTypesAtFile[key] = objects
+        $N1DataIO_Cache_MikuTypesAtFile[cachekey] = objects
 
         objects
     end

@@ -87,10 +87,10 @@ class N2KVStore
 
     # N2KVStore::getValueAtFilepathOrNull(key, filepath)
     def self.getValueAtFilepathOrNull(key, filepath)
-        key = "#{key}:#{filepath}"
-        if $N2KVStore_Cache_ValueAtFile[key] then
-            value = $N2KVStore_Cache_ValueAtFile[key].clone
-            return ( value == "null" ? nil : value )
+        cachekey = "#{key}:#{filepath}"
+        if $N2KVStore_Cache_ValueAtFile[cachekey] then
+            value = $N2KVStore_Cache_ValueAtFile[cachekey].clone
+            return ( (value == "null") ? nil : value )
         end
 
         value = nil
@@ -99,11 +99,11 @@ class N2KVStore
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("select * from records where key=?", [key]) do |row|
-            value = JSON.parse(row["value"])
+            value = JSON.parse(row["value"].to_s) # .to_s beccause when I migrated DoNotShowUntil, the values were stored as integers
         end
         db.close
 
-        $N2KVStore_Cache_ValueAtFile[key] = ( value ? value : "null" )
+        $N2KVStore_Cache_ValueAtFile[cachekey] = ( value ? value : "null" )
 
         value
     end

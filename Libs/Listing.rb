@@ -604,7 +604,7 @@ class Listing
 
         Listing::printDesktop(spacecontrol)
 
-        NxOpens::itemsBoardFree()
+        NxOpens::listingItems(nil)
             .each{|item|
                 store.register(item, false)
                 spacecontrol.putsline "(#{store.prefixString()}) (open) #{item["description"]} #{NonBoardItemToBoardMapping::toStringSuffix(item)}".yellow

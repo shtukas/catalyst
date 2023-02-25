@@ -214,7 +214,7 @@ class NxBoards
             line = line.green
         end
         spacecontrol.putsline line
-        NxOpens::itemsForBoard(boarduuid).each{|item|
+        NxOpens::listingItems(boarduuid).each{|item|
             store.register(item, false)
             spacecontrol.putsline "(#{store.prefixString()}) (open) #{item["description"]}".yellow
         }
@@ -280,13 +280,14 @@ class NonBoardItemToBoardMapping
 
     # NonBoardItemToBoardMapping::interactivelyOffersToAttach(item)
     def self.interactivelyOffersToAttach(item)
-        return if item["mikuType"] == "NxBoard"
-        return if item["mikuType"] == "NxBoardItem"
-        return if N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
+        return nil if item["mikuType"] == "NxBoard"
+        return nil if item["mikuType"] == "NxBoardItem"
+        return nil if N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
         puts "attaching board for accounting"
         board = NxBoards::interactivelySelectOneOrNull()
-        return if board.nil?
+        return nil if board.nil?
         N2KVStore::set("NonBoardItemToBoardMapping:#{item["uuid"]}", board)
+        board
     end
 
     # NonBoardItemToBoardMapping::hasValue(item)
