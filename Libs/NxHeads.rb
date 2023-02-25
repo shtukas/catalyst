@@ -48,7 +48,7 @@ class NxHeads
             "field11"     => coredataref,
             "boarding"    => {
                 "boarduuid" => nil,
-                "position"  => item["position"]
+                "position"  => position
             }
         }
         NxHeads::commit(item)
@@ -57,12 +57,12 @@ class NxHeads
 
     # NxHeads::interactivelyIssueNewBoardedOrNull()
     def self.interactivelyIssueNewBoardedOrNull()
+        board = NxBoards::interactivelySelectOne()
+        position = NxBoards::interactivelyDecideNewBoardPosition(board)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board = NxBoards::interactivelySelectOne()
-        position = NxBoards::interactivelyDecideNewBoardPosition(board)
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxHead",

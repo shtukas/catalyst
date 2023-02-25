@@ -173,11 +173,13 @@ class Listing
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return if option.nil?
             if option == "NxBoard" then
-                NxHeads::interactivelyIssueNewBoardedOrNull()
+                item = NxHeads::interactivelyIssueNewBoardedOrNull()
             end
             if option == "NxList" then
-                NxHeads::interactivelyIssueNewBoardlessOrNull()
+                item = NxHeads::interactivelyIssueNewBoardlessOrNull()
             end
+            return if item.nil?
+            puts JSON.pretty_generate(item)
         end
 
         if Interpreting::match("exit", input) then

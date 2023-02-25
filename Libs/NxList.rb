@@ -24,7 +24,10 @@ class NxList
                     newitem = item.clone
                     newitem["uuid"] = newuuid
                     newitem["mikuType"] = "NxHead"
-                    newitem["position"] = NxList::midposition()
+                    newitem["boarding"] = {
+                        "boarduuid" => nil,
+                        "position"  => NxList::midposition()
+                    }
                     NxHeads::commit(newitem)
                     control = NxHeads::getItemOfNull(newuuid)
                     if control.nil? then
