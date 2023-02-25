@@ -2,6 +2,9 @@
 # create table elements (uuid string primary key, mikuType string, nhash string)
 # File naming convention: <l22>,<l22>.sqlite
 
+$N1DataIO_Cache_MikuTypesAtFile = {}
+$N1DataIO_Cache_ObjectAtFile = {}
+
 class N1DataIO
 
     # --------------------------------------
@@ -152,6 +155,55 @@ class N1DataIO
         end
     end
 
+    # N1DataIO::getMikuTypeAtFile(mikuType, filepath)
+    def self.getMikuTypeAtFile(mikuType, filepath)
+        key = "#{mikuType}:#{filepath}"
+        if $N1DataIO_Cache_MikuTypesAtFile[key] then
+            return $N1DataIO_Cache_MikuTypesAtFile[key].clone
+        end
+
+        objects = []
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from elements where mikuType=?", [mikuType]) do |row|
+            nhash = row["nhash"]
+            datablob = N1DataIO::getBlobOrNull(nhash)
+            objects << JSON.parse(datablob)
+        end
+        db.close
+
+        $N1DataIO_Cache_MikuTypesAtFile[key] = objects
+
+        objects
+    end
+
+    # N1DataIO::getObjectAtFilepathOrNull(uuid, filepath)
+    def self.getObjectAtFilepathOrNull(uuid, filepath)
+        key = "#{uuid}:#{filepath}"
+        if $N1DataIO_Cache_ObjectAtFile[key] then
+            object = $N1DataIO_Cache_ObjectAtFile[key].clone
+            return ( object == "null" ? nil : object )
+        end
+
+        object = nil
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from elements where uuid=?", [uuid]) do |row|
+            nhash = row["nhash"]
+            datablob = N1DataIO::getBlobOrNull(nhash)
+            object = JSON.parse(datablob)
+        end
+        db.close
+
+        $N1DataIO_Cache_ObjectAtFile[key] = ( object ? object : "null" )
+
+        object
+    end
+
     # --------------------------------------
     # Interface
 
@@ -211,16 +263,7 @@ class N1DataIO
     def self.getObjectOrNull(uuid)
         object = nil
         N1DataIO::getIndicesExistingFilepaths().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select * from elements where uuid=?", [uuid]) do |row|
-                nhash = row["nhash"]
-                datablob = N1DataIO::getBlobOrNull(nhash)
-                object = JSON.parse(datablob)
-            end
-            db.close
+            object = N1DataIO::getObjectAtFilepathOrNull(uuid, filepath)
             break if object
         }
         object
@@ -230,16 +273,9 @@ class N1DataIO
     def self.getMikuType(mikuType)
         objects = []
         N1DataIO::getIndicesExistingFilepaths().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select * from elements where mikuType=?", [mikuType]) do |row|
-                nhash = row["nhash"]
-                datablob = N1DataIO::getBlobOrNull(nhash)
-                objects << JSON.parse(datablob)
-            end
-            db.close
+            N1DataIO::getMikuTypeAtFile(mikuType, filepath).each{|object|
+                objects << object
+            }
         }
         objects
     end

@@ -94,7 +94,8 @@ class Lookups
 
         lookupKey = "#{filepath}:#{uuid}"
         if $LookupsCache[lookupKey] then
-            return $LookupsCache[lookupKey]
+            value = $LookupsCache[lookupKey]
+            return ( value == "null" ? nil : value )
         end
 
         value = nil
@@ -107,7 +108,7 @@ class Lookups
         end
         db.close
 
-        $LookupsCache[lookupKey] = value
+        $LookupsCache[lookupKey] = ( value.nil? ? "null" : value )
 
         value
     end
