@@ -6,17 +6,17 @@ class NxBoards
 
     # NxBoards::items()
     def self.items()
-        N1DataIO::getMikuType("NxBoard")
+        N3Objects::getMikuType("NxBoard")
     end
 
     # NxBoards::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        N1DataIO::getObjectOrNull(uuid)
+        N3Objects::getOrNull(uuid)
     end
 
     # NxBoards::commit(item)
     def self.commit(item)
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # --------------------------------------------

@@ -6,17 +6,17 @@ class Waves
 
     # Waves::items()
     def self.items()
-        N1DataIO::getMikuType("Wave")
+        N3Objects::getMikuType("Wave")
     end
 
     # Waves::commit(item)
     def self.commit(item)
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # Waves::destroy(itemuuid)
     def self.destroy(itemuuid)
-        N1DataIO::destroy(itemuuid)
+        N3Objects::destroy(itemuuid)
     end
 
     # --------------------------------------------------
@@ -159,7 +159,7 @@ class Waves
             "field11"          => coredataref,
             "priority"         => priority
         }
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
         item
     end
 
@@ -229,7 +229,7 @@ class Waves
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
         item["lastDoneDateTime"] = Time.now.utc.iso8601
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])

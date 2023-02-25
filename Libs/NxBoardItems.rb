@@ -4,17 +4,17 @@ class NxBoardItems
 
     # NxBoardItems::items()
     def self.items()
-        N1DataIO::getMikuType("NxBoardItem")
+        N3Objects::getMikuType("NxBoardItem")
     end
 
     # NxBoardItems::commit(item)
     def self.commit(item)
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # NxBoardItems::destroy(uuid)
     def self.destroy(uuid)
-        N1DataIO::destroy(uuid)
+        N3Objects::destroy(uuid)
     end
 
     # --------------------------------------------------

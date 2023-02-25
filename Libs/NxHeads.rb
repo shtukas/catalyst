@@ -4,22 +4,22 @@ class NxHeads
 
     # NxHeads::items()
     def self.items()
-        N1DataIO::getMikuType("NxHead")
+        N3Objects::getMikuType("NxHead")
     end
 
     # NxHeads::commit(item)
     def self.commit(item)
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # NxHeads::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        N1DataIO::getObjectOrNull(uuid)
+        N3Objects::getOrNull(uuid)
     end
 
     # NxHeads::destroy(uuid)
     def self.destroy(uuid)
-        N1DataIO::destroy(uuid)
+        N3Objects::destroy(uuid)
     end
 
     # --------------------------------------------------
@@ -66,7 +66,7 @@ class NxHeads
     def self.viennaUrl(url)
         description = "(vienna) #{url}"
         uuid  = SecureRandom.uuid
-        coredataref = "url:#{N1DataIO::putBlob(url)}"
+        coredataref = "url:#{N1Data::putBlob(url)}"
         position = NxList::midposition()
         item = {
             "uuid"        => uuid,
@@ -85,7 +85,7 @@ class NxHeads
     def self.bufferInImport(location)
         description = File.basename(location)
         uuid = SecureRandom.uuid
-        nhash = AionCore::commitLocationReturnHash(DatablobStoreElizabeth.new(), location)
+        nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
         coredataref = "aion-point:#{nhash}"
         position = NxList::midposition()
         item = {

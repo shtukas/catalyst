@@ -3,17 +3,17 @@ class NxTops
 
     # NxTops::items()
     def self.items()
-        N1DataIO::getMikuType("NxTop")
+        N3Objects::getMikuType("NxTop")
     end
 
     # NxTops::commit(item)
     def self.commit(item)
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # NxTops::destroy(uuid)
     def self.destroy(uuid)
-        N1DataIO::destroy(uuid)
+        N3Objects::destroy(uuid)
     end
 
     # NxTops::interactivelyDecideOrdinalOrNull(board)

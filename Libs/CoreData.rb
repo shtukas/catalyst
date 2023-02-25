@@ -28,18 +28,18 @@ class CoreData
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")
-            nhash = N1DataIO::putBlob(text)
+            nhash = N1Data::putBlob(text)
             return "text:#{nhash}"
         end
         if referencetype == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url: ")
-            nhash = N1DataIO::putBlob(url)
+            nhash = N1Data::putBlob(url)
             return "url:#{nhash}"
         end
         if referencetype == "aion point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(DatablobStoreElizabeth.new(), location)
+            nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
             return "aion-point:#{nhash}" 
         end
         if referencetype == "Dx8Unit" then
@@ -107,7 +107,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = N1DataIO::getBlobOrNull(nhash)
+            text = N1Data::getBlobOrNull(nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
@@ -116,7 +116,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = N1DataIO::getBlobOrNull(nhash)
+            url = N1Data::getBlobOrNull(nhash)
             puts "url: #{url}"
             CommonUtils::openUrlUsingSafari(url)
             LucilleCore::pressEnterToContinue()
@@ -129,7 +129,7 @@ class CoreData
             exportFoldername = "aion-point"
             exportFolder = "#{Config::pathToDesktop()}/#{exportFoldername}"
             FileUtils.mkdir(exportFolder)
-            AionCore::exportHashAtFolder(DatablobStoreElizabeth.new(), nhash, exportFolder)
+            AionCore::exportHashAtFolder(N1DataElizabeth.new(), nhash, exportFolder)
             LucilleCore::pressEnterToContinue()
             return
         end

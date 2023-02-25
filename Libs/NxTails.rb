@@ -4,17 +4,17 @@ class NxTails
 
     # NxTails::items()
     def self.items()
-        N1DataIO::getMikuType("NxTail")
+        N3Objects::getMikuType("NxTail")
     end
 
     # NxTails::commit(item)
     def self.commit(item)
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # NxTails::destroy(uuid)
     def self.destroy(uuid)
-        N1DataIO::destroy(uuid)
+        N3Objects::destroy(uuid)
     end
 
     # --------------------------------------------------

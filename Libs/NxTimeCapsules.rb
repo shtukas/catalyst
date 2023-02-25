@@ -2,10 +2,10 @@
 class NxTimeCapsules
     # NxTimeCapsules::operate()
     def self.operate()
-        N1DataIO::getMikuType("NxTimeCapsule").each{|item|
+        N3Objects::getMikuType("NxTimeCapsule").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 BankCore::put(item["account"], item["value"])
-                N1DataIO::destroy(item["uuid"])
+                N3Objects::destroy(item["uuid"])
             end
         }
     end
@@ -19,6 +19,6 @@ class NxTimeCapsules
             "account"  => account,
             "value"    => value
         }
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 end

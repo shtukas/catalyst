@@ -3,7 +3,7 @@ class Anniversaries
 
     # Anniversaries::items()
     def self.items()
-        N1DataIO::getMikuType("NxAnniversary")
+        N3Objects::getMikuType("NxAnniversary")
     end
 
     # ----------------------------------------------------------------
@@ -124,7 +124,7 @@ class Anniversaries
             "repeatType"          => repeatType,
             "lastCelebrationDate" => lastCelebrationDate
         }
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
         item
     end
 
@@ -155,10 +155,10 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        item = N1DataIO::getObjectOrNull(uuid)
+        item = N3Objects::getOrNull(uuid)
         return if item.nil?
         item["lastCelebrationDate"] = Time.new.to_s[0, 10]
-        N1DataIO::commitObject(item)
+        N3Objects::commit(item)
     end
 
     # Anniversaries::accessAndDone(anniversary)
@@ -166,7 +166,7 @@ class Anniversaries
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
             anniversary["lastCelebrationDate"] = Time.new.to_s[0, 10]
-            N1DataIO::commitObject(anniversary)
+            N3Objects::commit(anniversary)
         end
     end
 
