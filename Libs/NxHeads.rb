@@ -92,7 +92,7 @@ class NxHeads
             "field11"     => nil,
             "boarding"    => {
                 "boarduuid" => nil,
-                "position"  => item["position"]
+                "position"  => position
             }
         }
         NxHeads::commit(item)
@@ -114,7 +114,7 @@ class NxHeads
             "field11"     => coredataref,
             "boarding"    => {
                 "boarduuid" => nil,
-                "position"  => item["position"]
+                "position"  => position
             }
         }
         NxTails::commit(item)
@@ -137,7 +137,7 @@ class NxHeads
             "field11"     => coredataref,
             "boarding"    => {
                 "boarduuid" => nil,
-                "position"  => item["position"]
+                "position"  => position
             }
         }
         NxTails::commit(item)
@@ -160,7 +160,7 @@ class NxHeads
             "field11"     => coredataref,
             "boarding"    => {
                 "boarduuid" => nil,
-                "position"  => item["position"]
+                "position"  => position
             }
         }
         NxHeads::commit(item)
