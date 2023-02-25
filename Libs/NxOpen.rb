@@ -3,17 +3,17 @@ class NxOpens
 
     # NxOpens::items()
     def self.items()
-        ObjectStore2::objects("NxOpens")
+        N1DataIO::getMikuType("NxOpen")
     end
 
     # NxOpens::commit(item)
     def self.commit(item)
-        ObjectStore2::commit("NxOpens", item)
+        N1DataIO::commitObject(item)
     end
 
     # NxOpens::destroy(uuid)
     def self.destroy(uuid)
-        ObjectStore2::destroy("NxOpens", uuid)
+        N1DataIO::destroy(uuid)
     end
 
     # NxOpens::interactivelyIssueNullOrNull()

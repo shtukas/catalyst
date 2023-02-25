@@ -5,7 +5,7 @@ class TxManualCountDowns
 
     # TxManualCountDowns::items()
     def self.items()
-        ObjectStore2::objects("TxManualCountDowns")
+        N1DataIO::getMikuType("TxManualCountDown")
     end
 
     # TxManualCountDowns::issueNewOrNull()
@@ -24,13 +24,13 @@ class TxManualCountDowns
             "counter"     => dailyTarget,
             "lastUpdatedUnixtime" => nil
         }
-        ObjectStore2::commit("TxManualCountDowns", item)
+        N1DataIO::commitObject(item)
         item
     end
 
     # TxManualCountDowns::commit(item)
     def self.commit(item)
-        ObjectStore2::commit("TxManualCountDowns", item)
+        N1DataIO::commitObject(item)
     end
 
     # Data
@@ -41,7 +41,7 @@ class TxManualCountDowns
             if item["date"] != CommonUtils::today() then
                 item["date"] = CommonUtils::today()
                 item["counter"] = item["dailyTarget"]
-                ObjectStore2::commit("TxManualCountDowns", item)
+                N1DataIO::commitObject(item)
             end
         }
         TxManualCountDowns::items()

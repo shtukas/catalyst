@@ -274,13 +274,13 @@ class PolyActions
                     description = CommonUtils::editTextSynchronously(anniversary["description"]).strip
                     return if description == ""
                     anniversary["description"] = description
-                    ObjectStore2::commit("NxAnniversaries", anniversary)
+                    N1DataIO::commitObject(anniversary)
                 end
                 if action == "update start date" then
                     startdate = CommonUtils::editTextSynchronously(anniversary["startdate"])
                     return if startdate == ""
                     anniversary["startdate"] = startdate
-                    ObjectStore2::commit("NxAnniversaries", anniversary)
+                    N1DataIO::commitObject(anniversary)
                 end
             }
             return
@@ -299,11 +299,11 @@ class PolyActions
                 break if action.nil?
                 if action == "update description" then
                     item["description"] = CommonUtils::editTextSynchronously(item["description"])
-                    ObjectStore2::commit("Waves", item)
+                    N1DataIO::commitObject(item)
                 end
                 if action == "update wave pattern" then
                     item["nx46"] = Waves::makeNx46InteractivelyOrNull()
-                    ObjectStore2::commit("Waves", item)
+                    N1DataIO::commitObject(item)
                 end
                 if action == "perform done" then
                     Waves::performWaveNx46WaveDone(item)
@@ -312,7 +312,7 @@ class PolyActions
                 if action == "set days of the week" then
                     days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
                     item["onlyOnDays"] = days
-                    ObjectStore2::commit("Waves", item)
+                    N1DataIO::commitObject(item)
                 end
             }
             return

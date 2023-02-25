@@ -4,22 +4,22 @@ class NxHeads
 
     # NxHeads::items()
     def self.items()
-        ObjectStore2::objects("NxHeads")
+        N1DataIO::getMikuType("NxHead")
     end
 
     # NxHeads::commit(item)
     def self.commit(item)
-        ObjectStore2::commit("NxHeads", item)
+        N1DataIO::commitObject(item)
     end
 
     # NxHeads::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        ObjectStore2::getOrNull("NxHeads", uuid)
+        N1DataIO::getObjectOrNull(uuid)
     end
 
     # NxHeads::destroy(uuid)
     def self.destroy(uuid)
-        ObjectStore2::destroy("NxHeads", uuid)
+        N1DataIO::destroy(uuid)
     end
 
     # --------------------------------------------------

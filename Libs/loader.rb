@@ -182,8 +182,6 @@ require_relative "NxOpenCycles.rb"
 require_relative "N1DataIO.rb"
 require_relative "NxTimeCapsules.rb"
 
-require_relative "ObjectStore2.rb"
-
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

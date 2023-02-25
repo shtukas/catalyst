@@ -17,7 +17,7 @@ class N1DataIO
 
     # N1DataIO::getIndicesExistingFilepaths()
     def self.getIndicesExistingFilepaths()
-        LucilleCore::locationsAtFolder("#{N1DataIO::n1dataFolderpath()}/objects-indices")
+        LucilleCore::locationsAtFolder("#{N1DataIO::n1dataFolderpath()}/objects")
             .select{|filepath| filepath[-7, 7] == ".sqlite" }
     end
 
@@ -25,9 +25,9 @@ class N1DataIO
     def self.renameIndexFile(filepath)
         tokens = File.basename(filepath).gsub(".sqlite", "").split(IndexSplitSymbol) # we remove the .sqlite and split on `;`
         if tokens.size == 2 then
-            filepath2 = "#{N1DataIO::n1dataFolderpath()}/objects-indices/#{tokens[0]}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
+            filepath2 = "#{N1DataIO::n1dataFolderpath()}/objects/#{tokens[0]}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
         else
-            filepath2 = "#{N1DataIO::n1dataFolderpath()}/objects-indices/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
+            filepath2 = "#{N1DataIO::n1dataFolderpath()}/objects/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
         end
         FileUtils.mv(filepath, filepath2)
     end
@@ -87,59 +87,69 @@ class N1DataIO
     def self.updateIndex(uuid, mikuType, nhash)
         filepathszero = N1DataIO::getIndicesExistingFilepaths()
 
-        filepath = "#{N1DataIO::n1dataFolderpath()}/objects-indices/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("create table elements (uuid string primary key, mikuType string, nhash string)", [])
-        db.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [uuid, mikuType, nhash]
-        db.close
-
-        N1DataIO::deleteUUIDInIndexFiles(filepathszero, uuid)
-    end
-
-    # N1DataIO::filemerge()
-    def self.filemerge()
-        filepaths = N1DataIO::getIndicesExistingFilepaths()
-        return if filepaths.count <= IndexFileMaxCount
-
-        filepath1, filepath2 = filepaths.sort.reverse.take(2)
-
-        filepath = "#{N1DataIO::n1dataFolderpath()}/objects-indices/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
-        db3 = SQLite3::Database.new(filepath)
-        db3.busy_timeout = 117
-        db3.busy_handler { |count| true }
-        db3.results_as_hash = true
-        db3.execute("create table elements (uuid string primary key, mikuType string, nhash string)", [])
-
-        # We move all the objects from db1 to db3
-
-        db1 = SQLite3::Database.new(filepath1)
-        db1.busy_timeout = 117
-        db1.busy_handler { |count| true }
-        db1.results_as_hash = true
-        db1.execute("select * from elements", []) do |row|
-            db3.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["nhash"]]
+        if filepathszero.size < IndexFileMaxCount then
+            filepath = "#{N1DataIO::n1dataFolderpath()}/objects/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute("create table elements (uuid string primary key, mikuType string, nhash string)", [])
+            db.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [uuid, mikuType, nhash]
+            db.close
+            N1DataIO::deleteUUIDInIndexFiles(filepathszero, uuid)
+        else
+            filepath = filepathszero.pop
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.transaction
+            db.execute "delete from elements where uuid=?", [uuid]
+            db.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [uuid, mikuType, nhash]
+            db.commit
+            db.close
+            N1DataIO::renameIndexFile(filepath)
+            N1DataIO::deleteUUIDInIndexFiles(filepathszero, uuid)
         end
-        db1.close
 
-        # We move all the objects from db2 to db3
+        while N1DataIO::getIndicesExistingFilepaths().size > IndexFileMaxCount do
+            filepath1, filepath2 = N1DataIO::getIndicesExistingFilepaths().sort.reverse.take(2)
 
-        db2 = SQLite3::Database.new(filepath2)
-        db2.busy_timeout = 117
-        db2.busy_handler { |count| true }
-        db2.results_as_hash = true
-        db2.execute("select * from objects", []) do |row|
-            db3.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["nhash"]]
+            filepath = "#{N1DataIO::n1dataFolderpath()}/objects/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
+            db3 = SQLite3::Database.new(filepath)
+            db3.busy_timeout = 117
+            db3.busy_handler { |count| true }
+            db3.results_as_hash = true
+            db3.execute("create table elements (uuid string primary key, mikuType string, nhash string)", [])
+
+            # We move all the elements from db1 to db3
+
+            db1 = SQLite3::Database.new(filepath1)
+            db1.busy_timeout = 117
+            db1.busy_handler { |count| true }
+            db1.results_as_hash = true
+            db1.execute("select * from elements", []) do |row|
+                db3.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["nhash"]]
+            end
+            db1.close
+
+            # We move all the elements from db2 to db3
+
+            db2 = SQLite3::Database.new(filepath2)
+            db2.busy_timeout = 117
+            db2.busy_handler { |count| true }
+            db2.results_as_hash = true
+            db2.execute("select * from elements", []) do |row|
+                db3.execute "insert into elements (uuid, mikuType, nhash) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["nhash"]]
+            end
+            db2.close
+
+            db3.close
+
+            # Let's now delete the two files
+            FileUtils.rm(filepath1)
+            FileUtils.rm(filepath2)
         end
-        db2.close
-
-        db3.close
-
-        # Let's now delete the two files
-        FileUtils.rm(filepath1)
-        FileUtils.rm(filepath2)
     end
 
     # --------------------------------------
@@ -195,7 +205,6 @@ class N1DataIO
         datablob = JSON.generate(object)
         nhash = N1DataIO::putBlob(datablob)
         N1DataIO::updateIndex(object["uuid"], object["mikuType"], nhash)
-        N1DataIO::filemerge()
     end
 
     # N1DataIO::getObjectOrNull(uuid)
@@ -233,6 +242,22 @@ class N1DataIO
             db.close
         }
         objects
+    end
+
+    # N1DataIO::getMikuTypeCount(mikuType)
+    def self.getMikuTypeCount(mikuType)
+        count = 0
+        N1DataIO::getIndicesExistingFilepaths().each{|filepath|
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute("select count(*) as _count_ from elements where mikuType=?", [mikuType]) do |row|
+                count = count + row["_count_"]
+            end
+            db.close
+        }
+        count
     end
 
     # N1DataIO::destroy(uuid)

@@ -6,17 +6,17 @@ class NxBoards
 
     # NxBoards::items()
     def self.items()
-        ObjectStore2::objects("NxBoards")
+        N1DataIO::getMikuType("NxBoard")
     end
 
     # NxBoards::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        ObjectStore2::getOrNull("NxBoards", uuid)
+        N1DataIO::getObjectOrNull(uuid)
     end
 
     # NxBoards::commit(item)
     def self.commit(item)
-        ObjectStore2::commit("NxBoards", item)
+        N1DataIO::commitObject(item)
     end
 
     # --------------------------------------------

@@ -4,17 +4,17 @@ class NxTails
 
     # NxTails::items()
     def self.items()
-        ObjectStore2::objects("NxTails")
+        N1DataIO::getMikuType("NxTail")
     end
 
     # NxTails::commit(item)
     def self.commit(item)
-        ObjectStore2::commit("NxTails", item)
+        N1DataIO::commitObject(item)
     end
 
     # NxTails::destroy(uuid)
     def self.destroy(uuid)
-        ObjectStore2::destroy("NxTails", uuid)
+        N1DataIO::destroy(uuid)
     end
 
     # --------------------------------------------------

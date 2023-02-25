@@ -6,17 +6,17 @@ class NxOndates
 
     # NxOndates::items()
     def self.items()
-        ObjectStore2::objects("NxOndates")
+        N1DataIO::getMikuType("NxOndate")
     end
 
     # NxOndates::commit(item)
     def self.commit(item)
-        ObjectStore2::commit("NxOndates", item)
+        N1DataIO::commitObject(item)
     end
 
     # NxOndates::destroy(uuid)
     def self.destroy(uuid)
-        ObjectStore2::destroy("NxOndates", uuid)
+        N1DataIO::destroy(uuid)
     end
 
     # NxOndates::interactivelyIssueNullOrNull()

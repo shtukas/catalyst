@@ -6,7 +6,6 @@ class Waves
 
     # Waves::items()
     def self.items()
-        # ObjectStore2::objects("Waves")
         N1DataIO::getMikuType("Wave")
     end
 

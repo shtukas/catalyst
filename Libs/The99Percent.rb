@@ -9,20 +9,7 @@ class The99Percent
 
     # The99Percent::count()
     def self.count()
-        (ObjectStore2::filepaths("NxBoardItems") + ObjectStore2::filepaths("NxHeads") + ObjectStore2::filepaths("NxTails"))
-            .map{|filepath|
-                count = nil
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select count(*) as count from objects", []) do |row|
-                    count = row["count"]
-                end
-                db.close
-                count
-            }
-            .inject(0, :+)
+        N1DataIO::getMikuTypeCount("NxBoardItem") + N1DataIO::getMikuTypeCount("NxHead") + N1DataIO::getMikuTypeCount("NxTail")
     end
 
     # The99Percent::getCurrentCount()
