@@ -58,6 +58,6 @@ class The99Percent
         reference = The99Percent::getReference()
         current = The99Percent::getCurrentCount()
         ratio   = The99Percent::ratio()
-        "> inventory: #{current}, differential: #{ratio}, reference: #{reference["count"]} @ #{reference["datetime"]}"
+        "> (inventory: #{current}) (differential: #{ratio}) (reference: #{reference["count"]} @ #{reference["datetime"]})"
     end
 end
