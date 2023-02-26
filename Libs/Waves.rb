@@ -115,7 +115,7 @@ class Waves
         end
         if nx46["type"] == 'every-this-day-of-the-month' then
             cursor = Time.new.to_i + 86400
-            while Time.at(cursor).strftime("%d") != nx46["value"] do
+            while Time.at(cursor).strftime("%d") != nx46["value"].rjust(2, "0") do
                 cursor = cursor + 3600
             end
            return cursor
