@@ -5,7 +5,7 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => item["description"],
+            "description" => nil,
             "number"      => item["uuid"]
         }
 
