@@ -52,6 +52,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            NxProjects::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxTail" then
             NxTails::access(item)
             return
@@ -107,6 +112,13 @@ class PolyActions
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxOndates::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxProjects::destroy(item["uuid"])
             end
             return
         end
@@ -190,6 +202,12 @@ class PolyActions
             end
             if option == "keep running" then
             end
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
+            NxBalls::start(item)
+            NxProjects::access(item)
             return
         end
 

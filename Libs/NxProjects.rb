@@ -45,6 +45,7 @@ class NxProjects
     def self.listingItems()
         items = NxProjects::items()
         return [] if items.empty?
+        return[items.first] if items.size == 1
         if items.select{|item| item["active"] }.size == 0 then
             puts "> We have no active NxProjects. Let's activate one"
             item = LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| NxProjects::toString(item) })
@@ -68,5 +69,10 @@ class NxProjects
             return [item]
         end
         items.select{|item| item["active"] } # there should only be one
+    end
+
+    # NxProjects::access(item)
+    def self.access(item)
+        CoreData::access(item["field11"])
     end
 end
