@@ -134,12 +134,6 @@ class NxBoards
             .map {|packet| packet["board"] }
     end
 
-    # NxHeads::bItemsOrdered(boarduuid)
-    def self.boardItemsOrdered(boarduuid)
-        NxBoards::boardItems(boarduuid)
-            .sort{|i1, i2| i1["boardposition"] <=> i2["boardposition"] }
-    end
-
     # NxBoards::boardsOrdered()
     def self.boardsOrdered()
         NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
