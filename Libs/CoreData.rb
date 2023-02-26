@@ -5,7 +5,7 @@ class CoreData
 
     # CoreData::coreDataReferenceTypes()
     def self.coreDataReferenceTypes()
-        ["unique string", "text", "url", "aion point", "Dx8Unit", "OpenCycle Directory"]
+        ["text", "url", "aion point", "unique string", "OpenCycle Directory", "Dx8Unit"]
     end
 
     # CoreData::interactivelySelectCoreDataReferenceType()
@@ -126,7 +126,7 @@ class CoreData
             nhash = referenceString.split(":")[1]
             puts "CoreData, accessing aion point: #{nhash}"
             exportId = SecureRandom.hex(4)
-            exportFoldername = "aion-point"
+            exportFoldername = "aion-point-#{exportId}"
             exportFolder = "#{Config::pathToDesktop()}/#{exportFoldername}"
             FileUtils.mkdir(exportFolder)
             AionCore::exportHashAtFolder(N1DataElizabeth.new(), nhash, exportFolder)

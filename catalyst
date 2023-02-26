@@ -1,6 +1,9 @@
-#!/bin/zsh
+#!/usr/bin/ruby
 
-cd ~/Galaxy/Software/github.com/shtukas/catalyst
-rbenv local 3.2.0
-ruby bin/catalyst.rb
+# encoding: UTF-8
 
+require_relative "Libs/loader.rb"
+
+# ----------------------------------------------------------------------------
+
+Listing::mainProgram2Pure()
