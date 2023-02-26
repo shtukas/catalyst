@@ -270,7 +270,12 @@ class NonBoardItemToBoardMapping
     # NonBoardItemToBoardMapping::interactivelyOffersToAttach(item)
     def self.interactivelyOffersToAttach(item)
         return nil if item["mikuType"] == "NxBoard"
-        return nil if item["mikuType"] == "NxHead" and item["boarding"]["boarduuid"]
+        return nil if item["mikuType"] == "NxHead"
+        if item["mikuType"] == "NxProject" then
+            puts "> NxProjects cannot be boarded"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
         return nil if N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
         puts "attaching board for accounting"
         board = NxBoards::interactivelySelectOneOrNull()

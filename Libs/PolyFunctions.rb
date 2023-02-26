@@ -4,11 +4,12 @@ class PolyFunctions
     def self.itemsToBankingAccounts(item)
         accounts = []
 
+        accounts << {
+            "description" => item["description"],
+            "number"      => item["uuid"]
+        }
+
         if item["mikuType"] == "NxBoard" then
-            accounts << {
-                "description" => item["description"],
-                "number"      => item["uuid"]
-            }
             accounts << {
                 "description" => "capsule: #{item["capsule"]}",
                 "number"      => item["capsule"]
@@ -16,40 +17,42 @@ class PolyFunctions
             return accounts
         end
 
-        # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems() which are exactly the Wave priority:ns:leisure items
+        if item["mikuType"] == "NxHead" and item["boarding"]["boarduuid"] then
+            accounts << {
+                "description" => "(board)",
+                "number"      => item["boarding"]["boarduuid"]
+            }
+            return accounts
+        end
+
+        if item["mikuType"] == "NxHead" and item["boarding"]["boarduuid"].nil? then
+            accounts << {
+                "description" => "scheduler1: head",
+                "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
+            }
+            return accounts
+        end
+
+        board = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
+        if board then
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(board)
+        end
+
+        # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems() which are exactly the Wave priority ns:leisure items
         if item["mikuType"] == "Wave" and item["priority"] == "ns:leisure" then
             accounts << {
-                "description" => "scheduler1 (d3)",
+                "description" => "scheduler1: wave/leisure",
                 "number"      => "d36d653e-80e0-4141-b9ff-f26197bbce2b"
             }
         end
 
-        # scheduler1 "cfad053c-bb83-4728-a3c5-4fb357845fd9" monitors the NxHeads::listingItems(nil) is are the NxHead items
-        if item["mikuType"] == "NxHead" then
-            if item["boarding"]["boarduuid"] then
-                # Boarded item
-                accounts << {
-                    "description" => "(board)",
-                    "number"      => item["boarding"]["boarduuid"]
-                }
-            else
-                # Regular NxList item
-                accounts << {
-                    "description" => "scheduler1 (cf)",
-                    "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
-                }
-            end
-        end
 
-        accounts << {
-            "description" => "[self]",
-            "number"      => item["uuid"]
-        }
-
-        board = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
-        if board then
-            extraAccounts = PolyFunctions::itemsToBankingAccounts(board)
-            accounts = accounts + extraAccounts
+        # scheduler1 "5b0347b2-8a97-4578-820e-f21baf7af7eb" monitors NxProjects
+        if item["mikuType"] == "NxProject" then
+            accounts << {
+                "description" => "scheduler1: projects",
+                "number"      => "5b0347b2-8a97-4578-820e-f21baf7af7eb"
+            }
         end
 
         accounts

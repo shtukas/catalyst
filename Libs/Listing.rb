@@ -518,9 +518,14 @@ class Listing
                 "generator" => lambda{ NxHeads::listingItems(nil) } 
             },
             {
-                "name"      => "open cycles (general)",
+                "name"      => "open cycles",
                 "account"   => "1057b16e-d486-4451-a165-67c92dfd5268",
                 "generator" => lambda{ NxOpenCycles::listingItems() }
+            },
+            {
+                "name"      => "projects",
+                "account"   => "5b0347b2-8a97-4578-820e-f21baf7af7eb",
+                "generator" => lambda{ NxProjects::listingItems() }
             }
         ]
         .map{|packet|
@@ -537,8 +542,8 @@ class Listing
 
     # Listing::scheduler1line()
     def self.scheduler1line()
-        a1 = Listing::scheduler1data().map{|packet| "#{packet["name"]}: #{packet["rt"].round(2)}" }
-        "(scheduler1, #{a1.join(", ")})"
+        a1 = Listing::scheduler1data().map{|packet| "(#{packet["name"]}: #{packet["rt"].round(2)})" }
+        "scheduler1: #{a1.join(" ")}"
     end
 
     # Listing::sheduler1items()
@@ -681,6 +686,7 @@ class Listing
             NxBoards::timeManagement()
             NxList::dataManagement()
             NxTimeCapsules::operate()
+            NxHeads::dataManagement()
 
             store = ItemStore.new()
 

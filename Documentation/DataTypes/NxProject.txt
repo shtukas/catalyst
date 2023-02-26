@@ -1,0 +1,12 @@
+
+NxProject:
+    "uuid"        : String
+    "mikuType"    : "NxProject"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "field11"     : null or CoreData reference string
+    "active"      : Boolean
+
+Non Boarded NxHeads that have more than 3 hours in the bank become NxProjects. There is always only one of them active. NxProject is an entire sheduler one domain. NxProjects cannot be boarded.
+
