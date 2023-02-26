@@ -38,7 +38,6 @@ class N1Data
 
     # N1Data::getBlobOrNull(nhash)
     def self.getBlobOrNull(nhash)
-        puts "nhash: #{nhash}"
         filename = "#{nhash}.data"
         folderpath = "#{N1Data::folderpath()}/#{nhash[7, 2]}"
         filepath = "#{folderpath}/#{filename}"
