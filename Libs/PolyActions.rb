@@ -102,9 +102,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOpen" then
+        if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOpens::destroy(item["uuid"])
+                NxFloats::destroy(item["uuid"])
             end
             return
         end

@@ -1,47 +1,47 @@
 
-class NxOpens
+class NxFloats
 
-    # NxOpens::items()
+    # NxFloats::items()
     def self.items()
-        N3Objects::getMikuType("NxOpen")
+        N3Objects::getMikuType("NxFloat")
     end
 
-    # NxOpens::commit(item)
+    # NxFloats::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # NxOpens::destroy(uuid)
+    # NxFloats::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
 
-    # NxOpens::interactivelyIssueNullOrNull()
+    # NxFloats::interactivelyIssueNullOrNull()
     def self.interactivelyIssueNullOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxOpen",
+            "mikuType"    => "NxFloat",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description
         }
         puts JSON.pretty_generate(item)
-        NxOpens::commit(item)
+        NxFloats::commit(item)
         item
     end
 
-    # NxOpens::toString(item)
+    # NxFloats::toString(item)
     def self.toString(item)
-        "(open) #{item["description"]}"
+        "(float) #{item["description"]}"
     end
 
-    # NxOpens::listingItems(boarduuid)
+    # NxFloats::listingItems(boarduuid)
     def self.listingItems(boarduuid)
         if boarduuid then
-            NxOpens::items()
+            NxFloats::items()
                 .select{|item|
                     (lambda{|item|
                         board = BoardsAndItems::getBoardOrNull(item)
@@ -51,7 +51,7 @@ class NxOpens
                     }).call(item)
                 }
         else
-            NxOpens::items()
+            NxFloats::items()
                 .select{|item| BoardsAndItems::getBoardOrNull(item).nil? }
         end
 

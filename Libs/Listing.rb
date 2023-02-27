@@ -281,7 +281,7 @@ class Listing
         end
 
         if Interpreting::match("open", input) then
-            item = NxOpens::interactivelyIssueNullOrNull()
+            item = NxFloats::interactivelyIssueNullOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
@@ -613,10 +613,10 @@ class Listing
 
         Listing::printDesktop(spacecontrol)
 
-        NxOpens::listingItems(nil)
+        NxFloats::listingItems(nil)
             .each{|item|
                 store.register(item, false)
-                spacecontrol.putsline "(#{store.prefixString()}) (open) #{item["description"]} #{BoardsAndItems::toStringSuffix(item)}".yellow
+                spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]} #{BoardsAndItems::toStringSuffix(item)}"
             }
 
         NxTops::itemsInOrder()

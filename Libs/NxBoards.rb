@@ -210,9 +210,9 @@ class NxBoards
             line = line.green
         end
         spacecontrol.putsline line
-        NxOpens::listingItems(boarduuid).each{|item|
+        NxFloats::listingItems(boarduuid).each{|item|
             store.register(item, false)
-            spacecontrol.putsline "(#{store.prefixString()}) (open) #{item["description"]}".yellow
+            spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]}"
         }
 
         lockedItems, items = items.partition{|item| Locks::isLocked(item["uuid"]) }
