@@ -44,7 +44,7 @@ class NxOpens
             NxOpens::items()
                 .select{|item|
                     (lambda{|item|
-                        board = NonBoardItemToBoardMapping::getBoardOrNull(item)
+                        board = BoardsAndItems::getBoardOrNull(item)
                         return false if board.nil?
                         return false if (board["uuid"] != boarduuid)
                         true
@@ -52,7 +52,7 @@ class NxOpens
                 }
         else
             NxOpens::items()
-                .select{|item| NonBoardItemToBoardMapping::getBoardOrNull(item).nil? }
+                .select{|item| BoardsAndItems::getBoardOrNull(item).nil? }
         end
 
     end

@@ -14,6 +14,13 @@ class NxBoards
         N3Objects::getOrNull(uuid)
     end
 
+    # NxBoards::getItemFailIfMissing(uuid)
+    def self.getItemFailIfMissing(uuid)
+        board = NxBoards::getItemOfNull(uuid)
+        return board if board
+        raise "looking for a board that should exists. item: #{JSON.pretty_generate(item)}"
+    end
+
     # NxBoards::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
@@ -175,7 +182,7 @@ class NxBoards
 
         tops = NxTops::itemsInOrder().select{|item|
             (lambda{
-                bx = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
+                bx = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
                 return false if bx.nil?
                 return false if bx["uuid"] != boarduuid
                 true
@@ -187,7 +194,7 @@ class NxBoards
         waves = Waves::items()
             .select{|item|
                 (lambda{
-                    bx = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
+                    bx = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
                     return false if bx.nil?
                     return false if bx["uuid"] != boarduuid
                     true
@@ -259,56 +266,51 @@ class NxBoards
     end
 end
 
-class NonBoardItemToBoardMapping
+class BoardsAndItems
 
-    # NonBoardItemToBoardMapping::attach(item, board or nil)
-    def self.attach(item, board)
+    # BoardsAndItems::attachToItem(item, board or nil)
+    def self.attachToItem(item, board)
         return if board.nil?
-        N2KVStore::set("NonBoardItemToBoardMapping:#{item["uuid"]}", board)
+        item["boarduuid"] = board["uuid"]
+        N3Objects::commit(item)
     end
 
-    # NonBoardItemToBoardMapping::interactivelyOffersToAttach(item)
+    # BoardsAndItems::interactivelyOffersToAttach(item)
     def self.interactivelyOffersToAttach(item)
+        return nil if item["boarduuid"]
         return nil if item["mikuType"] == "NxBoard"
-        return nil if item["mikuType"] == "NxHead"
         if item["mikuType"] == "NxProject" then
             puts "> NxProjects cannot be boarded"
             LucilleCore::pressEnterToContinue()
             return
         end
-        return nil if N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
-        puts "attaching board for accounting"
         board = NxBoards::interactivelySelectOneOrNull()
         return nil if board.nil?
-        N2KVStore::set("NonBoardItemToBoardMapping:#{item["uuid"]}", board)
+        item["boarduuid"] = board["uuid"]
+        N3Objects::commit(item)
         board
     end
 
-    # NonBoardItemToBoardMapping::hasValue(item)
-    def self.hasValue(item)
-        !N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}").nil?
-    end
-
-    # NonBoardItemToBoardMapping::getBoardOrNull(item)
+    # BoardsAndItems::getBoardOrNull(item)
     def self.getBoardOrNull(item)
-        N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
+        return nil if item["boarduuid"].nil?
+        NxBoards::getItemFailIfMissing(item["boarduuid"])
     end
 
-    # NonBoardItemToBoardMapping::belongsToThisBoard(item, board or nil)
+    # BoardsAndItems::belongsToThisBoard(item, board or nil)
     def self.belongsToThisBoard(item, board)
         if board.nil? then
-            !NonBoardItemToBoardMapping::hasValue(item)
+            item["boarduuid"].nil?
         else
-            b2 = NonBoardItemToBoardMapping::getBoardOrNull(item)
-            return false if b2.nil?
-            b2["uuid"] == board["uuid"]
+            item["boarduuid"] == board["uuid"]
         end
     end
 
-    # NonBoardItemToBoardMapping::toStringSuffix(item)
+    # BoardsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
-        board = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
-        return "" if board.nil?
+        return "" if item["boarduuid"].nil?
+        board = NxBoards::getItemFailIfMissing(item["boarduuid"])
         " (board: #{board["description"]})".green
     end
+
 end

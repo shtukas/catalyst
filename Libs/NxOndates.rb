@@ -68,7 +68,7 @@ class NxOndates
     # NxOndates::listingItems(board or nil)
     def self.listingItems(board)
         NxOndates::items()
-            .select{|item| NonBoardItemToBoardMapping::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
     end
 

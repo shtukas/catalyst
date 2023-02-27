@@ -52,7 +52,7 @@ class NxTops
         }
         puts JSON.pretty_generate(item)
         NxTops::commit(item)
-        NonBoardItemToBoardMapping::attach(item, board)
+        BoardsAndItems::attachToItem(item, board)
         item
     end
 
@@ -69,7 +69,7 @@ class NxTops
     # NxTops::itemsForBoard(board or nil)
     def self.itemsForBoard(board)
         NxTops::itemsInOrder()
-            .select{|item| NonBoardItemToBoardMapping::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
     end
 
     # NxTops::listingItems(board or nil)

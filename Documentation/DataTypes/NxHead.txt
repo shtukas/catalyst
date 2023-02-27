@@ -7,9 +7,4 @@ NxHead:
     "description" : String
     "field11"     : null or CoreData reference string
     "position"    : Float
-    "boarding"    : Boarding
-
-Boarding {
-    "boarduuid" : nil or NxBoard's uuid
-    "position"  : Floal
-}
+    "boarduuid"   : nil or uuid

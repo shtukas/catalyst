@@ -5,7 +5,7 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => nil,
+            "description" => "self",
             "number"      => item["uuid"]
         }
 
@@ -17,15 +17,20 @@ class PolyFunctions
             return accounts
         end
 
-        if item["mikuType"] == "NxHead" and item["boarding"]["boarduuid"] then
+        if item["mikuType"] == "NxHead" and item["boarduuid"] then
+            board = NxBoards::getOrNull(item["boarduuid"])
             accounts << {
-                "description" => "(board)",
-                "number"      => item["boarding"]["boarduuid"]
+                "description" => "board: #{board["description"]}",
+                "number"      => item["boarduuid"]
+            }
+            accounts << {
+                "description" => "capsule: #{board["capsule"]}",
+                "number"      => board["capsule"]
             }
             return accounts
         end
 
-        if item["mikuType"] == "NxHead" and item["boarding"]["boarduuid"].nil? then
+        if item["mikuType"] == "NxHead" and item["boarduuid"].nil? then
             accounts << {
                 "description" => "scheduler1: head",
                 "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
@@ -33,9 +38,16 @@ class PolyFunctions
             return accounts
         end
 
-        board = N2KVStore::getOrNull("NonBoardItemToBoardMapping:#{item["uuid"]}")
+        board = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
         if board then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(board)
+            accounts << {
+                "description" => "board: #{board["description"]}",
+                "number"      => item["boarduuid"]
+            }
+            accounts << {
+                "description" => "capsule: #{board["capsule"]}",
+                "number"      => board["capsule"]
+            }
         end
 
         # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems() which are exactly the Wave priority ns:leisure items
@@ -45,7 +57,6 @@ class PolyFunctions
                 "number"      => "d36d653e-80e0-4141-b9ff-f26197bbce2b"
             }
         end
-
 
         # scheduler1 "5b0347b2-8a97-4578-820e-f21baf7af7eb" monitors NxProjects
         if item["mikuType"] == "NxProject" then

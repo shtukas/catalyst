@@ -187,7 +187,7 @@ class Waves
     def self.itemForPriority(priority)
         Waves::items()
             .select{|item| item["priority"] == priority }
-            .select{|item| !NonBoardItemToBoardMapping::hasValue(item) }
+            .select{|item| !item["boarduuid"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             }
@@ -198,7 +198,7 @@ class Waves
     def self.topItems()
         Waves::items()
             .select{|item| item["priority"] == "ns:today" or item["nx46"]["type"] == "sticky" }
-            .select{|item| !NonBoardItemToBoardMapping::hasValue(item) }
+            .select{|item| !item["boarduuid"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             }
