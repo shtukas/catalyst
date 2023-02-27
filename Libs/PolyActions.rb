@@ -253,23 +253,7 @@ class PolyActions
     def self.landing(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            loop {
-                actions = ["update description", "update start date"]
-                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
-                break if action.nil?
-                if action == "update description" then
-                    description = CommonUtils::editTextSynchronously(anniversary["description"]).strip
-                    return if description == ""
-                    anniversary["description"] = description
-                    N3Objects::commit(anniversary)
-                end
-                if action == "update start date" then
-                    startdate = CommonUtils::editTextSynchronously(anniversary["startdate"])
-                    return if startdate == ""
-                    anniversary["startdate"] = startdate
-                    N3Objects::commit(anniversary)
-                end
-            }
+            Anniversaries::landing(item)
             return
         end
 
@@ -279,29 +263,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            loop {
-                puts Waves::toString(item)
-                actions = ["update description", "update wave pattern", "perform done", "set days of the week"]
-                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
-                break if action.nil?
-                if action == "update description" then
-                    item["description"] = CommonUtils::editTextSynchronously(item["description"])
-                    N3Objects::commit(item)
-                end
-                if action == "update wave pattern" then
-                    item["nx46"] = Waves::makeNx46InteractivelyOrNull()
-                    N3Objects::commit(item)
-                end
-                if action == "perform done" then
-                    Waves::performWaveNx46WaveDone(item)
-                    return
-                end
-                if action == "set days of the week" then
-                    days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                    item["onlyOnDays"] = days
-                    N3Objects::commit(item)
-                end
-            }
+            Waves::landing(item)
             return
         end
 

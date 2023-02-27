@@ -252,4 +252,31 @@ class Waves
         puts Waves::toString(item).green
         CoreData::access(item["field11"])
     end
+
+    # Waves::landing(item)
+    def self.landing(item)
+        loop {
+            puts Waves::toString(item)
+            actions = ["update description", "update wave pattern", "perform done", "set days of the week"]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
+            break if action.nil?
+            if action == "update description" then
+                item["description"] = CommonUtils::editTextSynchronously(item["description"])
+                N3Objects::commit(item)
+            end
+            if action == "update wave pattern" then
+                item["nx46"] = Waves::makeNx46InteractivelyOrNull()
+                N3Objects::commit(item)
+            end
+            if action == "perform done" then
+                Waves::performWaveNx46WaveDone(item)
+                return
+            end
+            if action == "set days of the week" then
+                days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
+                item["onlyOnDays"] = days
+                N3Objects::commit(item)
+            end
+        }
+    end
 end

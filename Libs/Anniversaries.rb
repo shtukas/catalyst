@@ -180,4 +180,25 @@ class Anniversaries
             PolyActions::landing(anniversary)
         }
     end
+
+    # Anniversaries::landing(item)
+    def self.landing(item)
+        loop {
+            actions = ["update description", "update start date"]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
+            break if action.nil?
+            if action == "update description" then
+                description = CommonUtils::editTextSynchronously(anniversary["description"]).strip
+                return if description == ""
+                anniversary["description"] = description
+                N3Objects::commit(anniversary)
+            end
+            if action == "update start date" then
+                startdate = CommonUtils::editTextSynchronously(anniversary["startdate"])
+                return if startdate == ""
+                anniversary["startdate"] = startdate
+                N3Objects::commit(anniversary)
+            end
+        }
+    end
 end
