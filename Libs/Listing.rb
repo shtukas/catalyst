@@ -394,7 +394,10 @@ class Listing
         end
 
         if input == "wave" then
-            Waves::issueNewWaveInteractivelyOrNull()
+            item = Waves::issueNewWaveInteractivelyOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::interactivelyOffersToAttach(item)
             return
         end
 
