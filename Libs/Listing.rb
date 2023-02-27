@@ -548,7 +548,7 @@ class Listing
 
     # Listing::sheduler1items()
     def self.sheduler1items()
-        items = Listing::scheduler1runningItems() + Listing::scheduler1data().first["generator"].call()
+        items = Listing::scheduler1runningItems() + Listing::scheduler1data().map{|packet| packet["generator"].call() }.flatten
         items.reduce([]){|selected, item|
             if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                 selected
