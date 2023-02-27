@@ -21,7 +21,7 @@ class Listing
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | drop | top | desktop | priority",
-            "[divings] anniversaries | ondates | waves | todos | desktop | open",
+            "[divings] anniversaries | ondates | waves | todos | desktop | float",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -280,7 +280,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("open", input) then
+        if Interpreting::match("float", input) then
             item = NxFloats::interactivelyIssueNullOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
