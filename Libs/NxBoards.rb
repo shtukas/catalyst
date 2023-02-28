@@ -180,40 +180,24 @@ class NxBoards
             exit
         end
 
-        tops = NxTops::itemsInOrder().select{|item|
-            (lambda{
-                bx = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
-                return false if bx.nil?
-                return false if bx["uuid"] != boarduuid
-                true
-            }).call()
-        }
+        tops = NxTops::listingItems(board)
+
+        floats = NxFloats::listingItems(boarduuid)
 
         ondates = NxOndates::listingItems(board)
 
-        waves = Waves::items()
-            .select{|item|
-                (lambda{
-                    bx = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
-                    return false if bx.nil?
-                    return false if bx["uuid"] != boarduuid
-                    true
-                }).call()
-            }
+        waves = (Waves::topItems(board) + Waves::timedItems(board) + Waves::leisureItems(board))
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
 
         items = NxHeads::bItemsOrdered(board["uuid"])
 
-        store.register(board, (tops+waves+items).empty?)
+        store.register(board, (tops+floats+ondates+waves+items).empty?)
         line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
         if NxBalls::itemIsRunning(board) or NxBalls::itemIsPaused(board) then
             line = line.green
         end
+        
         spacecontrol.putsline line
-        NxFloats::listingItems(boarduuid).each{|item|
-            store.register(item, false)
-            spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]}"
-        }
 
         lockedItems, items = items.partition{|item| Locks::isLocked(item["uuid"]) }
 
@@ -227,6 +211,11 @@ class NxBoards
             next if !DoNotShowUntil::isVisible(item["uuid"]) and !NxBalls::itemIsRunning(item["uuid"])
             store.register(item, true)
             spacecontrol.putsline (Listing::itemToListingLine(store, item))
+        }
+
+        floats.each{|item|
+            store.register(item, false)
+            spacecontrol.putsline Listing::itemToListingLine(store, item)
         }
 
         ondates.each{|item|

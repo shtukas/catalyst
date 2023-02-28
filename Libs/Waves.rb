@@ -194,25 +194,27 @@ class Waves
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end
 
-    # Waves::topItems()
-    def self.topItems()
+    # Waves::topItems(board or nil)
+    def self.topItems(board)
         Waves::items()
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .select{|item| item["priority"] == "ns:today" or item["nx46"]["type"] == "sticky" }
-            .select{|item| !item["boarduuid"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end
 
-    # Waves::timedItems()
-    def self.timedItems()
+    # Waves::timedItems(board or nil)
+    def self.timedItems(board)
         Waves::itemForPriority("ns:today-or-tomorrow")
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
     end
 
-    # Waves::leisureItems()
-    def self.leisureItems()
+    # Waves::leisureItems(board)
+    def self.leisureItems(board)
         Waves::itemForPriority("ns:leisure")
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
     end
 
     # Waves::leisureRunningItems()

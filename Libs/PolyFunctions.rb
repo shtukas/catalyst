@@ -50,7 +50,7 @@ class PolyFunctions
             }
         end
 
-        # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems() which are exactly the Wave priority ns:leisure items
+        # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems(nil) which are exactly the Wave priority ns:leisure items
         if item["mikuType"] == "Wave" and item["priority"] == "ns:leisure" then
             accounts << {
                 "description" => "scheduler1: wave/leisure",

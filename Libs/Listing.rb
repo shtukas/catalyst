@@ -432,8 +432,8 @@ class Listing
                 "lambda" => lambda { NxOndates::listingItems(nil) }
             },
             {
-                "name" => "Waves::topItems()",
-                "lambda" => lambda { Waves::topItems() }
+                "name" => "Waves::topItems(nil)",
+                "lambda" => lambda { Waves::topItems(nil) }
             },
             {
                 "name" => "TxManualCountDowns::listingItems()",
@@ -448,8 +448,8 @@ class Listing
                 "lambda" => lambda { Waves::itemForPriority("ns:today-or-tomorrow") }
             },
             {
-                "name" => "Waves::leisureItems()",
-                "lambda" => lambda { Waves::leisureItems() }
+                "name" => "Waves::leisureItems(nil)",
+                "lambda" => lambda { Waves::leisureItems(nil) }
             },
             {
                 "name" => "NxHeads::listingItems(nil)",
@@ -520,7 +520,7 @@ class Listing
             {
                 "name"      => "wave/leisure",
                 "account"   => "d36d653e-80e0-4141-b9ff-f26197bbce2b",
-                "generator" => lambda{ Waves::leisureItems() } 
+                "generator" => lambda{ Waves::leisureItems(nil) } 
             },
             {
                 "name"      => "head",
@@ -573,10 +573,10 @@ class Listing
         [
             Anniversaries::listingItems(),
             NxOndates::listingItems(nil),
-            Waves::topItems(),
+            Waves::topItems(nil),
             TxManualCountDowns::listingItems(),
             NxBoards::listingItems(),
-            Waves::timedItems(),
+            Waves::timedItems(nil),
             Listing::sheduler1items(),
         ]
             .flatten
@@ -626,10 +626,8 @@ class Listing
                 spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]}"
             }
 
-        NxTops::itemsInOrder()
+        NxTops::listingItems(nil)
             .each{|item|
-                bx = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
-                next if !(bx.nil? or NxBalls::itemIsRunning(item))
                 store.register(item, true)
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
