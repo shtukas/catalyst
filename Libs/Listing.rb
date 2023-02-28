@@ -21,7 +21,7 @@ class Listing
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | drop | top | desktop | priority",
-            "[divings] anniversaries | ondates | waves | todos | desktop | float",
+            "[divings] anniversaries | ondates | waves | todos | desktop | float | project",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -323,6 +323,13 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
+        if Interpreting::match("project", input) then
+            item = NxProjects::interactivelyIssueNullOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 

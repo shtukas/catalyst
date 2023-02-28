@@ -279,6 +279,7 @@ class BoardsAndItems
     def self.interactivelyOffersToAttach(item)
         return nil if item["boarduuid"]
         return nil if item["mikuType"] == "NxBoard"
+        return nil if item["mikuType"] == "NxProject"
         if item["mikuType"] == "NxProject" then
             puts "> NxProjects cannot be boarded"
             LucilleCore::pressEnterToContinue()
