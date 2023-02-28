@@ -26,6 +26,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBoardTail" then
+            NxBoardTails::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -102,6 +107,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBoardTail" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxBoardTails::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxFloats::destroy(item["uuid"])
@@ -165,6 +177,12 @@ class PolyActions
 
         if item["mikuType"] == "NxBoard" then
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxBoardTail" then
+            NxBalls::start(item)
+            NxProjects::access(item)
             return
         end
 
@@ -298,22 +316,5 @@ class PolyActions
             return
         end
         raise "not implemented for mikuType: #{item["mikuType"]}"
-    end
-
-    # PolyActions::destroy(item)
-    def self.destroy(item)
-        allowedMikuTypes = ["Wave"]
-        if !allowedMikuTypes.include?(item["mikuType"]) then
-            puts "destruction operation is only valid for: #{allowedMikuTypes.join(", ")}"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        if !LucilleCore::askQuestionAnswerAsBoolean("confirm destruction of #{item["mikuType"]} '#{PolyFunctions::toString(item).green}' ") then
-            return
-        end
-        if item["mikuType"] == "Wave" then
-            Waves::destroy(item["uuid"])
-            return
-        end
     end
 end

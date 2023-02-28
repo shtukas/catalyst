@@ -21,7 +21,7 @@ class Listing
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | drop | top | desktop | priority",
-            "[divings] anniversaries | ondates | waves | todos | desktop | float | project",
+            "[divings] anniversaries | ondates | waves | todos | desktop | float | project | boardtail",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -109,6 +109,13 @@ class Listing
             return
         end
 
+        if Interpreting::match("boardtail", input) then
+            item = NxBoardTails::interactivelyIssueNullOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            return
+        end
+
         if Interpreting::match("commands", input) then
             puts Listing::listingCommands().yellow
             LucilleCore::pressEnterToContinue()
@@ -132,14 +139,6 @@ class Listing
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
-            return
-        end
-
-        if Interpreting::match("destroy *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            PolyActions::destroy(item)
             return
         end
 

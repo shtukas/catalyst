@@ -72,7 +72,7 @@ class NxBoards
                 "(late by #{-timeLeftInDays.round(2)} days)"
             end
 
-        "(board) #{item["description"].ljust(8)} #{str0} #{str1} #{str2}"
+        "#{"(board)".green} #{item["description"].ljust(8)} #{str0} #{str1} #{str2}"
     end
 
     # NxBoards::interactivelySelectOneOrNull()
@@ -180,62 +180,37 @@ class NxBoards
             exit
         end
 
-        tops = NxTops::listingItems(board)
+        items = [ 
+                    NxTops::listingItems(board),
+                    NxFloats::listingItems(boarduuid),
+                    NxOndates::listingItems(board),
+                    Waves::topItems(board),
+                    Waves::timedItems(board),
+                    Waves::leisureItems(board),
+                    NxHeads::bItemsOrdered(boarduuid),
+                    NxBoardTails::listingItems()
+                ]
+                .flatten
+                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
 
-        floats = NxFloats::listingItems(boarduuid)
-
-        ondates = NxOndates::listingItems(board)
-
-        waves = (Waves::topItems(board) + Waves::timedItems(board) + Waves::leisureItems(board))
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
-
-        items = NxHeads::bItemsOrdered(board["uuid"])
-
-        store.register(board, (tops+floats+ondates+waves+items).empty?)
+        store.register(board, items.empty?)
         line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
-        if NxBalls::itemIsRunning(board) or NxBalls::itemIsPaused(board) then
+        if NxBalls::itemIsActive(board) then
             line = line.green
         end
-        
         spacecontrol.putsline line
 
         lockedItems, items = items.partition{|item| Locks::isLocked(item["uuid"]) }
 
-        lockedItems
-            .each{|item|
-                store.register(item, false)
-                spacecontrol.putsline (Listing::itemToListingLine(store, item))
-            }
-
-        tops.each{|item|
-            next if !DoNotShowUntil::isVisible(item["uuid"]) and !NxBalls::itemIsRunning(item["uuid"])
+        items.each{|item|
             store.register(item, true)
             spacecontrol.putsline (Listing::itemToListingLine(store, item))
         }
 
-        floats.each{|item|
+        lockedItems.each{|item|
             store.register(item, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, item)
+            spacecontrol.putsline (Listing::itemToListingLine(store, item)).yellow
         }
-
-        ondates.each{|item|
-            next if !DoNotShowUntil::isVisible(item["uuid"]) and !NxBalls::itemIsRunning(item["uuid"])
-            store.register(item, true)
-            spacecontrol.putsline (Listing::itemToListingLine(store, item))
-        }
-
-        waves.each{|item|
-            next if !DoNotShowUntil::isVisible(item["uuid"]) and !NxBalls::itemIsRunning(item["uuid"])
-            store.register(item, true)
-            spacecontrol.putsline (Listing::itemToListingLine(store, item))
-        }
-
-        items.take(6)
-            .each{|item|
-                next if !DoNotShowUntil::isVisible(item["uuid"]) and !NxBalls::itemIsRunning(item["uuid"])
-                store.register(item, true)
-                spacecontrol.putsline (Listing::itemToListingLine(store, item))
-            }
     end
 
     # NxBoards::bottomDisplay(store, spacecontrol, boarduuid) 

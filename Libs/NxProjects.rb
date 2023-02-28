@@ -31,7 +31,6 @@ class NxProjects
             "field11"     => coredataref,
             "active"      => false
         }
-        puts JSON.pretty_generate(item)
         NxProjects::commit(item)
         item
     end

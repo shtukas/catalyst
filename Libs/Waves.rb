@@ -259,7 +259,7 @@ class Waves
     def self.landing(item)
         loop {
             puts Waves::toString(item)
-            actions = ["update description", "update wave pattern", "perform done", "set days of the week"]
+            actions = ["update description", "update wave pattern", "perform done", "set days of the week", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
@@ -278,6 +278,11 @@ class Waves
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
                 item["onlyOnDays"] = days
                 N3Objects::commit(item)
+            end
+            if action == "destroy" then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then
+                    Waves::destroy(item["uuid"])
+                end
             end
         }
     end
