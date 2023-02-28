@@ -596,7 +596,7 @@ class Listing
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{BoardsAndItems::toStringSuffix(item)} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
         if Locks::isLocked(item["uuid"]) then
             line = "#{line} [lock: #{Locks::locknameOrNull(item["uuid"])}]".yellow
         end
@@ -623,7 +623,7 @@ class Listing
         NxFloats::listingItems(nil)
             .each{|item|
                 store.register(item, false)
-                spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]} #{BoardsAndItems::toStringSuffix(item)}"
+                spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]}"
             }
 
         NxTops::itemsInOrder()
