@@ -241,19 +241,14 @@ class BoardsAndItems
 
     # BoardsAndItems::interactivelyOffersToAttach(item)
     def self.interactivelyOffersToAttach(item)
-        return nil if item["boarduuid"]
-        return nil if item["mikuType"] == "NxBoard"
-        return nil if item["mikuType"] == "NxProject"
-        if item["mikuType"] == "NxProject" then
-            puts "> NxProjects cannot be boarded"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
+        return item if item["boarduuid"]
+        return item if item["mikuType"] == "NxBoard"
+        return item if item["mikuType"] == "NxProject"
         board = NxBoards::interactivelySelectOneOrNull()
-        return nil if board.nil?
+        return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
-        board
+        item
     end
 
     # BoardsAndItems::getBoardOrNull(item)

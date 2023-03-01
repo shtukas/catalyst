@@ -694,6 +694,7 @@ class Listing
             NxList::dataManagement()
             NxTimeCapsules::operate()
             NxHeads::dataManagement()
+            NxOpenCycles::dataManagement()
 
             store = ItemStore.new()
 

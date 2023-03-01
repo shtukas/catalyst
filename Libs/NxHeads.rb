@@ -149,7 +149,7 @@ class NxHeads
             "description" => description,
             "field11"     => coredataref,
             "position"    => position,
-            "boarduuid"   => board["uuid"],
+            "boarduuid"   => nil,
         }
         NxHeads::commit(item)
         item

@@ -25,3 +25,5 @@ reference strings categories:
             "nhash"           => String
             "parts"           => Array[String]
         }
+
+    - "open-cycle:#{foldername}"
