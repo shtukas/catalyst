@@ -86,7 +86,11 @@ class NxOpenCycles
             .each{|folderpath|
                 markfilepath = "#{folderpath}/.catalyst-d369f24b"
                 if File.exist?(markfilepath) then
-                    next if IO.read(markfilepath) == "ignore-permanently-c079ee025d7f"
+                    if IO.read(markfilepath) == "ignore-permanently-c079ee025d7f" then
+                        next 
+                    end
+                end
+                if File.exist?(markfilepath) then
                     item = JSON.parse(IO.read(markfilepath))
                     if N3Objects::getOrNull(item["uuid"]) then
                         # nothing to do

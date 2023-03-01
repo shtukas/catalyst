@@ -143,7 +143,11 @@ class N3Objects
             db2.busy_handler { |count| true }
             db2.results_as_hash = true
             db2.execute("select * from objects", []) do |row|
-                db3.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
+                begin
+                    db3.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
+                rescue SQLite3::ConstraintException
+                    puts "> found a duplicate uuid when moving this: #{row}"
+                end
             end
             db2.close
 
