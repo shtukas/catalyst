@@ -251,6 +251,7 @@ class NxHeads
 
     # NxHeads::dataManagement()
     def self.dataManagement()
+        return if !Config::isPrimaryInstance()
         NxHeads::items()
             .select{|item| !NxHeads::isBoarded(item) }
             .select{|item| BankCore::getValue(item["uuid"]) > (3600 * 3.14159) }

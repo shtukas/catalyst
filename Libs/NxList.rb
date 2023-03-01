@@ -13,6 +13,7 @@ class NxList
 
     # NxList::dataManagement()
     def self.dataManagement()
+        return if !Config::isPrimaryInstance()
         if NxHeads::items().size < 3 then
             item1 = NxTails::getFrontElementOrNull()
             item2 = NxTails::getEndElementOrNull()

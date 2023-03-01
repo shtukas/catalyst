@@ -677,8 +677,8 @@ class Listing
             end
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("8fba6ab0-ce92-46af-9e6b-ce86371d643d", 3600*12) then
-                if Config::thisInstanceId() == "Lucille20-pascal" then 
-                    system("#{File.dirname(__FILE__)}/../bin/vienna-import")
+                if Config::isPrimaryInstance() then 
+                    system("#{File.dirname(__FILE__)}/../vienna-import")
                 end
             end
 
@@ -690,11 +690,13 @@ class Listing
                     LucilleCore::removeFileSystemLocation(location)
                 }
 
-            NxBoards::timeManagement()
-            NxList::dataManagement()
-            NxTimeCapsules::operate()
-            NxHeads::dataManagement()
-            NxOpenCycles::dataManagement()
+            if !Config::isPrimaryInstance() then
+                NxBoards::timeManagement()
+                NxList::dataManagement()
+                NxTimeCapsules::operate()
+                NxHeads::dataManagement()
+                NxOpenCycles::dataManagement()
+            end
 
             store = ItemStore.new()
 

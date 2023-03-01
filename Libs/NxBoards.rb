@@ -151,9 +151,10 @@ class NxBoards
 
     # NxBoards::timeManagement()
     def self.timeManagement()
+        return if !Config::isPrimaryInstance()
         NxBoards::items().each{|item|
 
-            # If the board's capsule is over flowing, meaning its positive value is moer than 50% of the time commitment for the board
+            # If the board's capsule is over flowing, meaning its positive value is more than 50% of the time commitment for the board
             # Meaning we did more than 100% of time commitment then we issue NxTimeCapsules
             if BankCore::getValue(item["capsule"]) >= 0.5*item["hours"]*3600 then
                 puts "NxBoards::timeManagement(), code to be written"

@@ -2,6 +2,7 @@
 class NxTimeCapsules
     # NxTimeCapsules::operate()
     def self.operate()
+        return if !Config::isPrimaryInstance()
         N3Objects::getMikuType("NxTimeCapsule").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 BankCore::put(item["account"], item["value"])

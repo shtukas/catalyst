@@ -61,13 +61,8 @@ class Config
         Config::getOrFail("instanceId")
     end
 
-    # Config::allInstanceIds()
-    def self.allInstanceIds()
-        ["Lucille18-pascal", "Lucille20-pascal", "Lucille20-guardian", "Lucille23"]
-    end
-
-    # Config::theOtherInstanceIds()
-    def self.theOtherInstanceIds()
-        Config::allInstanceIds() - [Config::getOrFail("instanceId")]
+    # Config::isPrimaryInstance()
+    def self.isPrimaryInstance()
+        Config::thisInstanceId() == "Lucille20-pascal"
     end
 end

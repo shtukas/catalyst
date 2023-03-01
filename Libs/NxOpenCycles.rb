@@ -81,6 +81,7 @@ class NxOpenCycles
 
     # NxOpenCycles::dataManagement()
     def self.dataManagement()
+        return if !Config::isPrimaryInstance()
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles")
             .select{|folderpath| File.basename(folderpath).start_with?("20") }
             .each{|folderpath|
