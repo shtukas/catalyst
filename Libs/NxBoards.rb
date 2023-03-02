@@ -203,16 +203,16 @@ class NxBoards
 
         lockedItems, items = items.partition{|item| Locks::isLocked(item["uuid"]) }
 
+        lockedItems.each{|item|
+            store.register(item, false)
+            spacecontrol.putsline (Listing::itemToListingLine(store, item)).yellow
+        }
+
         items.each{|item|
             # We are not doing default on floats
             canBeDefault = item["mikuType"] != "NxFloat"
             store.register(item, canBeDefault) 
             spacecontrol.putsline (Listing::itemToListingLine(store, item))
-        }
-
-        lockedItems.each{|item|
-            store.register(item, false)
-            spacecontrol.putsline (Listing::itemToListingLine(store, item)).yellow
         }
     end
 

@@ -311,10 +311,6 @@ class PolyActions
     def self.editDescription(item)
         puts "edit description:"
         item["description"] = CommonUtils::editTextSynchronously(item["description"])
-        if item["mikuType"] == "NxHead" then
-            NxHeads::commit(item)
-            return
-        end
-        raise "not implemented for mikuType: #{item["mikuType"]}"
+        N3Objects::commit(item)
     end
 end

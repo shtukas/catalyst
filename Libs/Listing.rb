@@ -234,6 +234,15 @@ class Listing
         end
 
         if Interpreting::match("lock", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            domain = LucilleCore::askQuestionAnswerAsString("domain: ")
+            Locks::lock(item["uuid"], domain)
+            return
+        end
+
+        if Interpreting::match("lock *", input) then
             item = store.getDefault()
             return if item.nil?
             domain = LucilleCore::askQuestionAnswerAsString("domain: ")
@@ -617,6 +626,12 @@ class Listing
 
         spacecontrol.putsline ""
 
+        lockedItems
+            .each{|item|
+                store.register(item, false)
+                spacecontrol.putsline Listing::itemToListingLine(store, item)
+            }
+
         Listing::printDesktop(spacecontrol)
 
         NxFloats::listingItems(nil)
@@ -644,14 +659,6 @@ class Listing
                 end
 
                 store.register(item, !Skips::isSkipped(item["uuid"]))
-                spacecontrol.putsline Listing::itemToListingLine(store, item)
-            }
-
-        spacecontrol.putsline ""
-
-        lockedItems
-            .each{|item|
-                store.register(item, false)
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
 
