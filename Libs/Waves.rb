@@ -198,7 +198,7 @@ class Waves
     def self.topItems(board)
         Waves::items()
             .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
-            .select{|item| item["priority"] == "ns:today" or item["nx46"]["type"] == "sticky" }
+            .select{|item| item["priority"] == "ns:today" or item["nx46"]["type"] == "sticky" or item["nx46"]["type"] == "every-this-day-of-the-month" or item["nx46"]["type"] == "every-this-day-of-the-week" }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             }

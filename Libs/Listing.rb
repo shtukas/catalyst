@@ -578,6 +578,7 @@ class Listing
             TxManualCountDowns::listingItems(),
             NxBoards::listingItems(),
             Waves::timedItems(nil),
+            NxProjects::listingItems(),
             Listing::sheduler1items(),
         ]
             .flatten
