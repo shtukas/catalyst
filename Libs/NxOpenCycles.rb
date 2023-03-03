@@ -10,75 +10,6 @@ class NxOpenCycles
         }]
     end
 
-    # NxOpenCycles::commandInterpreter(input)
-    def self.commandInterpreter(input)
-
-        if Interpreting::match("boardtail", input) then
-            return NxBoardTails::interactivelyIssueNullOrNull()
-        end
-
-        if Interpreting::match("drop", input) then
-            options = ["NxBoard", "NxList"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            return nil if option.nil?
-            if option == "NxBoard" then
-                return NxHeads::interactivelyIssueNewBoardedOrNull()
-            end
-            if option == "NxList" then
-                return NxHeads::interactivelyIssueNewBoardlessOrNull()
-            end
-        end
-
-        if Interpreting::match("ondate", input) then
-            item = NxOndates::interactivelyIssueNullOrNull()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return BoardsAndItems::interactivelyOffersToAttach(item)
-        end
-
-        if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNullOrNull()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return BoardsAndItems::interactivelyOffersToAttach(item)
-        end
-
-        if Interpreting::match("priority", input) then
-            item = NxHeads::priority()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return BoardsAndItems::interactivelyOffersToAttach(item)
-        end
-
-        if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNullOrNull()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return item
-        end
-
-        if Interpreting::match("today", input) then
-            item = NxOndates::interactivelyIssueNewTodayOrNull()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return BoardsAndItems::interactivelyOffersToAttach(item)
-        end
-
-        if Interpreting::match("top", input) then
-            item = NxTops::interactivelyIssueNullOrNull()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return item
-        end
-
-        if input == "wave" then
-            item = Waves::issueNewWaveInteractivelyOrNull()
-            return nil if item.nil?
-            puts JSON.pretty_generate(item)
-            return BoardsAndItems::interactivelyOffersToAttach(item)
-        end
-    end
-
     # NxOpenCycles::dataManagement()
     def self.dataManagement()
         return if !Config::isPrimaryInstance()
@@ -113,11 +44,7 @@ class NxOpenCycles
                         next
                     end
                     if option == "make a catalyst item" then
-                        command = LucilleCore::askQuestionAnswerAsString("command: ")
-                        if command == "" then
-                            return
-                        end
-                        item = NxOpenCycles::commandInterpreter(command)
+                        item = PolyActions::dropmaking()
                         if item.nil? then
                             return
                         end

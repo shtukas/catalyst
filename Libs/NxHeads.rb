@@ -55,10 +55,10 @@ class NxHeads
 
     # NxHeads::interactivelyIssueNewBoardedOrNull()
     def self.interactivelyIssueNewBoardedOrNull()
-        board = NxBoards::interactivelySelectOne()
-        position = NxBoards::interactivelyDecideNewBoardPosition(board)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
+        board = NxBoards::interactivelySelectOne()
+        position = NxBoards::interactivelyDecideNewBoardPosition(board)
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         item = {

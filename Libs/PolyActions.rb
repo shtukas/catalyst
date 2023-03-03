@@ -316,4 +316,56 @@ class PolyActions
         item["description"] = CommonUtils::editTextSynchronously(item["description"])
         N3Objects::commit(item)
     end
+
+    # PolyActions::dropmaking()
+    def self.dropmaking()
+        item = nil
+        options = ["float", "top", "today", "ondate", "wave", "countdown", "head", "project", "boardtail", "tail"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        return nil if option.nil?
+        if option == "float" then
+            item = NxFloats::interactivelyIssueNullOrNull()
+        end
+        if option == "top" then
+            item = NxTops::interactivelyIssueNullOrNull()
+        end
+        if option == "today" then
+            item = NxOndates::interactivelyIssueNewTodayOrNull()
+        end
+        if option == "ondate" then
+            item = NxOndates::interactivelyIssueNullOrNull()
+        end
+        if option == "wave" then
+            item = Waves::issueNewWaveInteractivelyOrNull()
+        end
+        if option == "countdown" then
+            item = TxManualCountDowns::issueNewOrNull()
+        end
+        if option == "countdown" then
+            item = TxManualCountDowns::issueNewOrNull()
+        end
+        if option == "head (boarded or boardless)" then
+            ops = ["boardless", "boarded"]
+            op = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ops)
+            if op = "boardless" then
+                item = NxHeads::interactivelyIssueNewBoardlessOrNull()
+            end
+            if op = "boarded" then
+                item = NxHeads::interactivelyIssueNewBoardedOrNull()
+            end
+        end
+        if option == "project" then
+            item = NxProjects::interactivelyIssueNullOrNull()
+        end
+        if option == "boardtail" then
+            item = NxBoards::interactivelyIssueNewOrNull()
+        end
+        if option == "tail" then
+            item = NxTails::interactivelyIssueNewOrNull()
+        end
+        if item then
+            puts JSON.pretty_generate(item)
+        end
+        return item
+    end
 end

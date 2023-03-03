@@ -21,7 +21,7 @@ class Listing
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | drop | top | desktop | priority",
-            "[divings] anniversaries | ondates | waves | todos | desktop | float | project | boardtail",
+            "[divings] anniversaries | ondates | waves | todos | desktop | float | project | boardtail | head | tail",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -173,17 +173,7 @@ class Listing
         end
 
         if Interpreting::match("drop", input) then
-            options = ["NxBoard", "NxList"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            return if option.nil?
-            if option == "NxBoard" then
-                item = NxHeads::interactivelyIssueNewBoardedOrNull()
-            end
-            if option == "NxList" then
-                item = NxHeads::interactivelyIssueNewBoardlessOrNull()
-            end
-            return if item.nil?
-            puts JSON.pretty_generate(item)
+            PolyActions::dropmaking()
         end
 
         if Interpreting::match("exit", input) then
@@ -204,6 +194,18 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("head", input) then
+            ops = ["NxHead (without board)", "NxHead (with board)"]
+            op = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ops)
+            if op = "NxHead (without board)" then
+                item = NxHeads::interactivelyIssueNewBoardlessOrNull()
+            end
+            if op = "NxHead (with board)" then
+                item = NxHeads::interactivelyIssueNewBoardedOrNull()
+            end
             return
         end
 
@@ -395,6 +397,11 @@ class Listing
 
         if Interpreting::match("speed", input) then
             Listing::speedTest()
+            return
+        end
+
+        if Interpreting::match("tail", input) then
+            NxTails::interactivelyIssueNewOrNull()
             return
         end
 
