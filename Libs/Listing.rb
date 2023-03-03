@@ -19,8 +19,8 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | float | head | tail | drop",
+            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
+            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | float | tail | drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -51,14 +51,6 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
-            return
-        end
-
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            item["skipped"] = true
-            N3Objects::commit(item)
             return
         end
 
@@ -157,8 +149,8 @@ class Listing
             return if item.nil?
             unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
-            if item["skipped"] then
-                item["skipped"] = false
+            if item["parked"] then
+                item["parked"] = false
                 N3Objects::commit(item)
             end
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
@@ -190,8 +182,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("head", input) then
-            NxHeads::interactivelyIssueNewOrNull()
+        if Interpreting::match("tail", input) then
+            NxTails::interactivelyIssueNewOrNull()
             return
         end
 
@@ -226,23 +218,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("lock", input) then
-            item = store.getDefault()
-            return if item.nil?
-            item["locked"] = true
-            N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("lock *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            item["locked"] = true
-            N3Objects::commit(item)
-            return
-        end
-
         if Interpreting::match("manual countdown", input) then
             TxManualCountDowns::issueNewOrNull()
             return
@@ -250,7 +225,7 @@ class Listing
 
         if Interpreting::match("netflix", input) then
             title = LucilleCore::askQuestionAnswerAsString("title: ")
-            NxHeads::netflix(title)
+            NxTails::netflix(title)
         end
 
         if Interpreting::match("note", input) then
@@ -296,6 +271,23 @@ class Listing
             return
         end
 
+        if Interpreting::match("park", input) then
+            item = store.getDefault()
+            return if item.nil?
+            item["parked"] = true
+            N3Objects::commit(item)
+            return
+        end
+
+        if Interpreting::match("park *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item["parked"] = true
+            N3Objects::commit(item)
+            return
+        end
+
         if Interpreting::match("pause *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
@@ -320,7 +312,7 @@ class Listing
         end
 
         if Interpreting::match("priority", input) then
-            item = NxHeads::priority()
+            item = NxTails::priority()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
@@ -376,11 +368,6 @@ class Listing
 
         if Interpreting::match("speed", input) then
             Listing::speedTest()
-            return
-        end
-
-        if Interpreting::match("tail", input) then
-            NxTails::interactivelyIssueNewOrNull()
             return
         end
 
@@ -451,8 +438,8 @@ class Listing
                 "lambda" => lambda { Waves::leisureItems(nil) }
             },
             {
-                "name" => "NxHeads::listingItems(nil)",
-                "lambda" => lambda { NxHeads::listingItems(nil) }
+                "name" => "NxTails::listingItems(nil)",
+                "lambda" => lambda { NxTails::listingItems(nil) }
             },
             {
                 "name" => "Waves::itemForPriority(ns:leisure)",
@@ -522,9 +509,9 @@ class Listing
                 "generator" => lambda{ Waves::leisureItems(nil) } 
             },
             {
-                "name"      => "head",
+                "name"      => "tail",
                 "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
-                "generator" => lambda{ NxHeads::listingItems(nil) } 
+                "generator" => lambda{ NxTails::listingItems(nil) } 
             }
         ]
         .map{|packet|
@@ -536,7 +523,7 @@ class Listing
 
     # Listing::scheduler1runningItems()
     def self.scheduler1runningItems()
-        Waves::leisureRunningItems() + NxHeads::listingRunningItems()
+        Waves::leisureRunningItems() + NxTails::listingRunningItems()
     end
 
     # Listing::scheduler1line()
@@ -586,8 +573,8 @@ class Listing
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
-        if item["locked"] then
-            line = "#{line} (locked)".yellow
+        if item["parked"] then
+            line = "#{line} (parked)".yellow
         end
         if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
             line = line.green
@@ -604,14 +591,6 @@ class Listing
         spacecontrol.putsline ""
 
         items = Listing::items()
-
-        lockedItems, items = items.partition{|item| item["locked"] }
-
-        lockedItems
-            .each{|item|
-                store.register(item, false)
-                spacecontrol.putsline Listing::itemToListingLine(store, item)
-            }
 
         Listing::printDesktop(spacecontrol)
 
@@ -639,7 +618,7 @@ class Listing
                     next
                 end
 
-                store.register(item, !item["skipped"])
+                store.register(item, !item["parked"])
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
 
@@ -672,14 +651,13 @@ class Listing
             LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTails-FrontElements-BufferIn")
                 .each{|location|
                     next if File.basename(location).start_with?(".")
-                    item = NxHeads::bufferInImport(location)
+                    item = NxTails::bufferInImport(location)
                     puts "Picked up from NxTails-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
                     LucilleCore::removeFileSystemLocation(location)
                 }
 
             if !Config::isPrimaryInstance() then
                 NxBoards::timeManagement()
-                NxList::dataManagement()
                 NxTimeCapsules::operate()
                 NxOpenCycles::dataManagement()
             end

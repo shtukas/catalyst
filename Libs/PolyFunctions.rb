@@ -17,7 +17,7 @@ class PolyFunctions
             return accounts
         end
 
-        if item["mikuType"] == "NxHead" and item["boarduuid"] then
+        if item["mikuType"] == "NxTail" and item["boarduuid"] then
             board = NxBoards::getOrNull(item["boarduuid"])
             accounts << {
                 "description" => "board: #{board["description"]}",
@@ -30,9 +30,9 @@ class PolyFunctions
             return accounts
         end
 
-        if item["mikuType"] == "NxHead" and item["boarduuid"].nil? then
+        if item["mikuType"] == "NxTail" and item["boarduuid"].nil? then
             accounts << {
-                "description" => "scheduler1: head",
+                "description" => "scheduler1: tail",
                 "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
             }
             return accounts
@@ -83,9 +83,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTail" then
             return NxTails::toString(item)
-        end
-        if item["mikuType"] == "NxHead" then
-            return NxHeads::toString(item)
         end
         if item["mikuType"] == "NxTop" then
             return NxTops::toString(item)

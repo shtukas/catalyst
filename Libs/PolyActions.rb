@@ -47,11 +47,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxHead" then
-            NxHeads::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxTail" then
             NxTails::access(item)
             return
@@ -79,8 +74,8 @@ class PolyActions
 
         NxBalls::stop(item)
        
-        # Removing lock, if any.
-        item["locked"] = false
+        # Removing park, if any.
+        item["parked"] = false
         item["skipped"] = false
 
         # order: alphabetical order
@@ -117,13 +112,6 @@ class PolyActions
         if item["mikuType"] == "NxTop" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTops::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxHead" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxHeads::destroy(item["uuid"])
             end
             return
         end
@@ -173,25 +161,6 @@ class PolyActions
             end
             if option == "redate" then
                 NxOndates::redate(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxHead" then
-            NxBalls::start(item)
-            NxHeads::access(item)
-            options = ["done (destroy)", "do not display until", "keep running"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", options)
-            return if option.nil?
-            if option == "done (destroy)" then
-                NxHeads::destroy(item["uuid"])
-            end
-            if option == "do not show until" then
-                unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
-                return if unixtime.nil?
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            end
-            if option == "keep running" then
             end
             return
         end
@@ -284,7 +253,7 @@ class PolyActions
     # PolyActions::dropmaking(useCoreData: true)
     def self.dropmaking(useCoreData: true)
         item = nil
-        options = ["float", "top", "today", "ondate", "wave", "countdown", "head", "tail"]
+        options = ["float", "top", "today", "ondate", "wave", "countdown", "tail"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
         if option == "float" then
@@ -304,9 +273,6 @@ class PolyActions
         end
         if option == "countdown" then
             item = TxManualCountDowns::issueNewOrNull(useCoreData: useCoreData)
-        end
-        if option == "head" then
-            item = NxHeads::interactivelyIssueNewOrNull(useCoreData: useCoreData)
         end
         if option == "tail" then
             item = NxTails::interactivelyIssueNewOrNull(useCoreData: useCoreData)

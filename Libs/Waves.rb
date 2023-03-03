@@ -231,7 +231,7 @@ class Waves
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
         item["lastDoneDateTime"] = Time.now.utc.iso8601
-        item["locked"] = false
+        item["parked"] = false
         N3Objects::commit(item)
 
         # We control display using DoNotShowUntil

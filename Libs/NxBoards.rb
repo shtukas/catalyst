@@ -91,11 +91,11 @@ class NxBoards
 
     # NxBoards::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxHeads::bItemsOrdered(board["uuid"])
+        boardItems = NxTails::bItemsOrdered(board["uuid"])
         return 1 if boardItems.empty?
         boardItems
             .first(20)
-            .each{|item| puts NxHeads::toString(item) }
+            .each{|item| puts NxTails::toString(item) }
         loop {
             position = LucilleCore::askQuestionAnswerAsString("position: ")
             next if position == ""
@@ -188,8 +188,7 @@ class NxBoards
                     Waves::topItems(board),
                     Waves::timedItems(board),
                     Waves::leisureItems(board),
-                    NxHeads::bItemsOrdered(boarduuid),
-                    NxTails::listingItems(boarduuid)
+                    NxTails::bItemsOrdered(boarduuid)
                 ]
                 .flatten
                 .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
@@ -201,9 +200,9 @@ class NxBoards
         end
         spacecontrol.putsline line
 
-        lockedItems, items = items.partition{|item| item["locked"] }
+        parkedItems, items = items.partition{|item| item["parked"] }
 
-        lockedItems.each{|item|
+        parkedItems.each{|item|
             store.register(item, false)
             spacecontrol.putsline (Listing::itemToListingLine(store, item)).yellow
         }
