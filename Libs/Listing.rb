@@ -20,8 +20,8 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | drop | top | desktop | priority",
-            "[divings] anniversaries | ondates | waves | todos | desktop | float | project | boardtail | head | tail",
+            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | float | project | head | tail | drop",
+            "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -110,13 +110,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("boardtail", input) then
-            item = NxBoardTails::interactivelyIssueNullOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("commands", input) then
             puts Listing::listingCommands().yellow
             LucilleCore::pressEnterToContinue()
@@ -198,14 +191,7 @@ class Listing
         end
 
         if Interpreting::match("head", input) then
-            ops = ["NxHead (without board)", "NxHead (with board)"]
-            op = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ops)
-            if op = "NxHead (without board)" then
-                item = NxHeads::interactivelyIssueNewBoardlessOrNull()
-            end
-            if op = "NxHead (with board)" then
-                item = NxHeads::interactivelyIssueNewBoardedOrNull()
-            end
+            NxHeads::interactivelyIssueNewOrNull()
             return
         end
 
@@ -675,7 +661,6 @@ class Listing
 
         spacecontrol.putsline "> #{Listing::scheduler1line()}"
         spacecontrol.putsline The99Percent::line()
-        spacecontrol.putsline "> anniversary | manual countdown | wave | today | ondate | drop | top | desktop".yellow
     end
 
     # Listing::mainProgram2Pure()

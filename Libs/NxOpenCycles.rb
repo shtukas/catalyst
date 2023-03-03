@@ -35,7 +35,7 @@ class NxOpenCycles
                         next
                     end
                     if option == "make a catalyst item" then
-                        item = PolyActions::dropmaking()
+                        item = PolyActions::dropmaking(useCoreData: false)
                         if item.nil? then
                             return
                         end

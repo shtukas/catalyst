@@ -19,12 +19,12 @@ class NxOndates
         N3Objects::destroy(uuid)
     end
 
-    # NxOndates::interactivelyIssueNullOrNull()
-    def self.interactivelyIssueNullOrNull()
+    # NxOndates::interactivelyIssueNullOrNull(useCoreData: true)
+    def self.interactivelyIssueNullOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
         datetime = CommonUtils::interactivelySelectDateTimeIso8601UsingDateCode()
         item = {
             "uuid"        => uuid,
@@ -39,12 +39,12 @@ class NxOndates
         item
     end
 
-    # NxOndates::interactivelyIssueNewTodayOrNull()
-    def self.interactivelyIssueNewTodayOrNull()
+    # NxOndates::interactivelyIssueNewTodayOrNull(useCoreData: true)
+    def self.interactivelyIssueNewTodayOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("today (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxOndate",

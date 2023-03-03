@@ -26,11 +26,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoardTail" then
-            NxBoardTails::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -107,13 +102,6 @@ class PolyActions
         if item["mikuType"] == "NxBoard" then
             puts "There is no done action on NxBoards. If it was running, I have stopped it."
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if item["mikuType"] == "NxBoardTail" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxBoardTails::destroy(item["uuid"])
-            end
             return
         end
 
@@ -317,51 +305,38 @@ class PolyActions
         N3Objects::commit(item)
     end
 
-    # PolyActions::dropmaking()
-    def self.dropmaking()
+    # PolyActions::dropmaking(useCoreData: true)
+    def self.dropmaking(useCoreData: true)
         item = nil
-        options = ["float", "top", "today", "ondate", "wave", "countdown", "head", "project", "boardtail", "tail"]
+        options = ["float", "top", "today", "ondate", "wave", "countdown", "project", "head", "tail"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
         if option == "float" then
-            item = NxFloats::interactivelyIssueNullOrNull()
+            item = NxFloats::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "top" then
-            item = NxTops::interactivelyIssueNullOrNull()
+            item = NxTops::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "today" then
-            item = NxOndates::interactivelyIssueNewTodayOrNull()
+            item = NxOndates::interactivelyIssueNewTodayOrNull(useCoreData: useCoreData)
         end
         if option == "ondate" then
-            item = NxOndates::interactivelyIssueNullOrNull()
+            item = NxOndates::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "wave" then
-            item = Waves::issueNewWaveInteractivelyOrNull()
+            item = Waves::issueNewWaveInteractivelyOrNull(useCoreData: useCoreData)
         end
         if option == "countdown" then
-            item = TxManualCountDowns::issueNewOrNull()
+            item = TxManualCountDowns::issueNewOrNull(useCoreData: useCoreData)
         end
-        if option == "countdown" then
-            item = TxManualCountDowns::issueNewOrNull()
-        end
-        if option == "head (boarded or boardless)" then
-            ops = ["boardless", "boarded"]
-            op = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ops)
-            if op = "boardless" then
-                item = NxHeads::interactivelyIssueNewBoardlessOrNull()
-            end
-            if op = "boarded" then
-                item = NxHeads::interactivelyIssueNewBoardedOrNull()
-            end
+        if option == "head" then
+            item = NxHeads::interactivelyIssueNewOrNull(useCoreData: useCoreData)
         end
         if option == "project" then
-            item = NxProjects::interactivelyIssueNullOrNull()
-        end
-        if option == "boardtail" then
-            item = NxBoards::interactivelyIssueNewOrNull()
+            item = NxProjects::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "tail" then
-            item = NxTails::interactivelyIssueNewOrNull()
+            item = NxTails::interactivelyIssueNewOrNull(useCoreData: useCoreData)
         end
         if item then
             puts JSON.pretty_generate(item)

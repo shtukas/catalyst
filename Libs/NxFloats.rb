@@ -16,8 +16,8 @@ class NxFloats
         N3Objects::destroy(uuid)
     end
 
-    # NxFloats::interactivelyIssueNullOrNull()
-    def self.interactivelyIssueNullOrNull()
+    # NxFloats::interactivelyIssueNullOrNull(useCoreData: true)
+    def self.interactivelyIssueNullOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid

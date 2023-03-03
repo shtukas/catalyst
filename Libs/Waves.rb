@@ -139,14 +139,14 @@ class Waves
         "#{item["type"]}: #{item["value"]}"
     end
 
-    # Waves::issueNewWaveInteractivelyOrNull()
-    def self.issueNewWaveInteractivelyOrNull()
+    # Waves::issueNewWaveInteractivelyOrNull(useCoreData: true)
+    def self.issueNewWaveInteractivelyOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
         priority = Waves::interactivelySelectPriority()
         item = {
             "uuid"             => uuid,

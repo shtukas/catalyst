@@ -35,8 +35,8 @@ class NxTops
         end
     end
 
-    # NxTops::interactivelyIssueNullOrNull()
-    def self.interactivelyIssueNullOrNull()
+    # NxTops::interactivelyIssueNullOrNull(useCoreData: true)
+    def self.interactivelyIssueNullOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid

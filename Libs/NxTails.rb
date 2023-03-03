@@ -20,13 +20,13 @@ class NxTails
     # --------------------------------------------------
     # Makers
 
-    # NxTails::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # NxTails::interactivelyIssueNewOrNull(useCoreData: true)
+    def self.interactivelyIssueNewOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        position = NxList::midposition()
+        coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
+        board = NxBoards::interactivelySelectOneOrNull()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTail",
@@ -34,7 +34,7 @@ class NxTails
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "position"    => boardposition
+            "boarduuid"   => board ? board["uuid"] : nil
         }
         NxTails::commit(item)
         item
@@ -43,30 +43,35 @@ class NxTails
     # --------------------------------------------------
     # Data
 
+    # NxTails::bItems(boarduuidOpt)
+    def self.bItems(boarduuidOpt)
+        NxTails::items()
+            .select{|item| item["boarduuid"] == boarduuidOpt }
+    end
+
     # NxTails::toString(item)
     def self.toString(item)
-        "(#{"%8.3f" % item["position"]}) #{item["description"]}"
+        "(tail) #{item["description"]}"
     end
 
-    # NxTails::frontPosition()
-    def self.frontPosition()
-        positions = NxTails::items().map{|item| item["position"] }
-        return 0 if positions.empty?
-        positions.min
-    end
-
-    # NxTails::getFrontElementOrNull()
-    def self.getFrontElementOrNull()
-        NxTails::items()
-            .sort{|i1, i2| i1["position"] <=> i2["position"]}
+    # NxTails::getFrontElementOrNull(boarduuidOpt)
+    def self.getFrontElementOrNull(boarduuidOpt)
+        NxTails::bItems(boarduuidOpt)
+            .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"]}
             .first
     end
 
-    # NxTails::getEndElementOrNull()
-    def self.getEndElementOrNull()
-        NxTails::items()
-            .sort{|i1, i2| i1["position"] <=> i2["position"]}
+    # NxTails::getEndElementOrNull(boarduuidOpt)
+    def self.getEndElementOrNull(boarduuidOpt)
+        NxTails::bItems(boarduuidOpt)
+            .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"]}
             .last
+    end
+
+    # NxTails::listingItems(boarduuidOpt)
+    def self.listingItems(boarduuidOpt)
+        # We only call this function while displaying a board, not while displaying the main listing
+        NxTails::bItems(boarduuidOpt)
     end
 
     # --------------------------------------------------

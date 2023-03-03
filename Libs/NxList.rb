@@ -1,22 +1,12 @@
 
 class NxList
 
-    # NxList::priorityposition()
-    def self.priorityposition()
-        0.5 * (NxHeads::endPosition() + NxTails::frontPosition())
-    end
-
-    # NxList::midposition()
-    def self.midposition()
-        0.5 * (NxHeads::endPosition() + NxTails::frontPosition())
-    end
-
     # NxList::dataManagement()
     def self.dataManagement()
         return if !Config::isPrimaryInstance()
         if NxHeads::items().size < 3 then
-            item1 = NxTails::getFrontElementOrNull()
-            item2 = NxTails::getEndElementOrNull()
+            item1 = NxTails::getFrontElementOrNull(nil)
+            item2 = NxTails::getEndElementOrNull(nil)
             [item1, item2]
                 .compact
                 .each{|item|
@@ -25,7 +15,7 @@ class NxList
                     newitem = item.clone
                     newitem["uuid"] = newuuid
                     newitem["mikuType"]  = "NxHead"
-                    newitem["position"]  = NxList::midposition()
+                    newitem["position"]  = NxHeads::endPositionNext()
                     newitem["boarduuid"] = nil
                     NxHeads::commit(newitem)
                     control = NxHeads::getItemOfNull(newuuid)

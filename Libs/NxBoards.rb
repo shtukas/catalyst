@@ -189,7 +189,7 @@ class NxBoards
                     Waves::timedItems(board),
                     Waves::leisureItems(board),
                     NxHeads::bItemsOrdered(boarduuid),
-                    NxBoardTails::listingItems()
+                    NxTails::listingItems(boarduuid)
                 ]
                 .flatten
                 .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
