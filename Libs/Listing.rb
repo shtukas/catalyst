@@ -548,11 +548,6 @@ class Listing
                 "generator" => lambda{ NxHeads::listingItems(nil) } 
             },
             {
-                "name"      => "open cycles",
-                "account"   => "1057b16e-d486-4451-a165-67c92dfd5268",
-                "generator" => lambda{ NxOpenCycles::listingItems() }
-            },
-            {
                 "name"      => "projects",
                 "account"   => "5b0347b2-8a97-4578-820e-f21baf7af7eb",
                 "generator" => lambda{ NxProjects::listingItems() }
