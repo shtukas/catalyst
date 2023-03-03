@@ -67,7 +67,7 @@ class NxProjects
             NxProjects::commit(item)
             return [item]
         end
-        items.select{|item| item["active"] } # there should only be one
+        items.select{|item| item["active"] } + items.select{|item| !item["active"] }.sort{|p1, p2| p1["unixtime"] <=> p2["unixtime"] } # there should only be one active, the other are in case of DoNotShowUntil
     end
 
     # NxProjects::access(item)
