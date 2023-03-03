@@ -234,19 +234,19 @@ class Listing
         end
 
         if Interpreting::match("lock", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            item = store.getDefault()
             return if item.nil?
-            domain = LucilleCore::askQuestionAnswerAsString("domain: ")
-            Locks::lock(item["uuid"], domain)
+            item["locked"] = true
+            N3Objects::commit(item)
             return
         end
 
         if Interpreting::match("lock *", input) then
-            item = store.getDefault()
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
             return if item.nil?
-            domain = LucilleCore::askQuestionAnswerAsString("domain: ")
-            Locks::lock(item["uuid"], domain)
+            item["locked"] = true
+            N3Objects::commit(item)
             return
         end
 
@@ -605,8 +605,8 @@ class Listing
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
-        if Locks::isLocked(item["uuid"]) then
-            line = "#{line} [lock: #{Locks::locknameOrNull(item["uuid"])}]".yellow
+        if item["locked"] then
+            line = "#{line} (locked)".yellow
         end
         if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
             line = line.green
@@ -620,11 +620,11 @@ class Listing
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3)
 
+        spacecontrol.putsline ""
+
         items = Listing::items()
 
-        lockedItems, items = items.partition{|item| Locks::isLocked(item["uuid"]) }
-
-        spacecontrol.putsline ""
+        lockedItems, items = items.partition{|item| item["locked"] }
 
         lockedItems
             .each{|item|

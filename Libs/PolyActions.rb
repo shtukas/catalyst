@@ -88,7 +88,9 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        Locks::unlock(item["uuid"])
+       
+        # Removing lock, if any.
+        item["locked"] = false
 
         # order: alphabetical order
 

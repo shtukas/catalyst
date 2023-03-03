@@ -201,7 +201,7 @@ class NxBoards
         end
         spacecontrol.putsline line
 
-        lockedItems, items = items.partition{|item| Locks::isLocked(item["uuid"]) }
+        lockedItems, items = items.partition{|item| item["locked"] }
 
         lockedItems.each{|item|
             store.register(item, false)
