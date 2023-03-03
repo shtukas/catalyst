@@ -57,7 +57,8 @@ class Listing
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
-            Skips::skip(item["uuid"], Time.new.to_f + 3600*1.5)
+            item["skipped"] = true
+            N3Objects::commit(item)
             return
         end
 
@@ -163,6 +164,10 @@ class Listing
             return if item.nil?
             unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
+            if item["skipped"] then
+                item["skipped"] = false
+                N3Objects::commit(item)
+            end
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
             return
         end
@@ -658,7 +663,7 @@ class Listing
                     next
                 end
 
-                store.register(item, !Skips::isSkipped(item["uuid"]))
+                store.register(item, !item["skipped"])
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
 

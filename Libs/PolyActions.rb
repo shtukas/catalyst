@@ -91,6 +91,7 @@ class PolyActions
        
         # Removing lock, if any.
         item["locked"] = false
+        item["skipped"] = false
 
         # order: alphabetical order
 
