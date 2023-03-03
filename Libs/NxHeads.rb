@@ -188,44 +188,25 @@ class NxHeads
     # NxHeads::listingItems(boarduuid or nil)
     def self.listingItems(boarduuid)
         if boarduuid.nil? then
-
             items = NxHeads::bItemsOrdered(nil)
-                .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                .take(3)
-                .map {|item|
-                    {
-                        "item" => item,
-                        "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+    
+            i1s = items.take(3)
+            i2s = items.drop(3).take(3)
+
+            i1s = i1s
+                    .map {|item|
+                        {
+                            "item" => item,
+                            "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
+                        }
                     }
-                }
-                .select{|packet| packet["rt"] < 1 }
-                .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
-                .map {|packet| packet["item"] }
+                    .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
+                    .map {|packet| packet["item"] }
 
-            return items if items.size > 0
-
-            # If we reach this point it means that all first three items have a rt >= 1,
-            # let's try the next three and we stop at them.
-
-            NxHeads::bItemsOrdered(nil)
-                .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                .drop(3)
-                .take(3)
-                .map {|item|
-                    {
-                        "item" => item,
-                        "rt"   => BankUtils::recoveredAverageHoursPerDay(item["uuid"])
-                    }
-                }
-                .select{|packet| packet["rt"] < 1 }
-                .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
-                .map {|packet| packet["item"] }
-
+            return i1s + i2s
         else
-
             NxHeads::bItemsOrdered(boarduuid)
                 .sort{|i1, i2| i1["position"] <=> i2["position"] }
-
         end
     end
 
