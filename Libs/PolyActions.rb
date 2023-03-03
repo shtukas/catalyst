@@ -52,11 +52,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            NxProjects::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxTail" then
             NxTails::access(item)
             return
@@ -119,13 +114,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxProjects::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTop" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTops::destroy(item["uuid"])
@@ -171,12 +159,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoardTail" then
-            NxBalls::start(item)
-            NxProjects::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxBalls::start(item)
             NxOndates::access(item)
@@ -211,12 +193,6 @@ class PolyActions
             end
             if option == "keep running" then
             end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            NxBalls::start(item)
-            NxProjects::access(item)
             return
         end
 
@@ -308,7 +284,7 @@ class PolyActions
     # PolyActions::dropmaking(useCoreData: true)
     def self.dropmaking(useCoreData: true)
         item = nil
-        options = ["float", "top", "today", "ondate", "wave", "countdown", "project", "head", "tail"]
+        options = ["float", "top", "today", "ondate", "wave", "countdown", "head", "tail"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
         if option == "float" then
@@ -331,9 +307,6 @@ class PolyActions
         end
         if option == "head" then
             item = NxHeads::interactivelyIssueNewOrNull(useCoreData: useCoreData)
-        end
-        if option == "project" then
-            item = NxProjects::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "tail" then
             item = NxTails::interactivelyIssueNewOrNull(useCoreData: useCoreData)

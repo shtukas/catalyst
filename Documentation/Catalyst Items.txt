@@ -8,4 +8,4 @@ Cross types conventions:
     - "locked"    : boolean # true if the item is locked in the listing
     - "skipped"   : boolean # true if the item is skipped in the listing
 
-(1) Not for NxBoards and NxProjects.
+(1) Not for NxBoards.

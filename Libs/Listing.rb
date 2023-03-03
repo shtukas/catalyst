@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> skip default | lock (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | float | project | head | tail | drop",
+            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | float | head | tail | drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -327,13 +327,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNullOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("redate", input) then
             item = store.getDefault()
             return if item.nil?
@@ -532,11 +525,6 @@ class Listing
                 "name"      => "head",
                 "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
                 "generator" => lambda{ NxHeads::listingItems(nil) } 
-            },
-            {
-                "name"      => "projects",
-                "account"   => "5b0347b2-8a97-4578-820e-f21baf7af7eb",
-                "generator" => lambda{ NxProjects::listingItems() }
             }
         ]
         .map{|packet|
@@ -578,7 +566,6 @@ class Listing
             TxManualCountDowns::listingItems(),
             NxBoards::listingItems(),
             Waves::timedItems(nil),
-            NxProjects::listingItems(),
             Listing::sheduler1items(),
         ]
             .flatten
@@ -694,7 +681,6 @@ class Listing
                 NxBoards::timeManagement()
                 NxList::dataManagement()
                 NxTimeCapsules::operate()
-                NxHeads::dataManagement()
                 NxOpenCycles::dataManagement()
             end
 

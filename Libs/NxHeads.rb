@@ -222,20 +222,4 @@ class NxHeads
     def self.access(item)
         CoreData::access(item["field11"])
     end
-
-    # NxHeads::dataManagement()
-    def self.dataManagement()
-        return if !Config::isPrimaryInstance()
-        NxHeads::items()
-            .select{|item| !NxHeads::isBoarded(item) }
-            .select{|item| BankCore::getValue(item["uuid"]) > (3600 * 3.14159) }
-            .each{|item|
-                puts "> NxHead item '#{item["description"]}' has #{(BankCore::getValue(item["uuid"]).to_f/3600).round(2)} hours in the bank"
-                puts "> recasting as NxProject"
-                LucilleCore::pressEnterToContinue()
-                item["mikuType"] = "NxProject"
-                item["active"] = false
-                N3Objects::commit(item)
-            }
-    end
 end

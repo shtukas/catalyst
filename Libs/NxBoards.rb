@@ -246,7 +246,6 @@ class BoardsAndItems
     def self.interactivelyOffersToAttach(item)
         return item if item["boarduuid"]
         return item if item["mikuType"] == "NxBoard"
-        return item if item["mikuType"] == "NxProject"
         board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]

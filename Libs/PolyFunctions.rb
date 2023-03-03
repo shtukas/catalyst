@@ -58,14 +58,6 @@ class PolyFunctions
             }
         end
 
-        # scheduler1 "5b0347b2-8a97-4578-820e-f21baf7af7eb" monitors NxProjects
-        if item["mikuType"] == "NxProject" then
-            accounts << {
-                "description" => "scheduler1: projects",
-                "number"      => "5b0347b2-8a97-4578-820e-f21baf7af7eb"
-            }
-        end
-
         accounts
     end
 
@@ -88,9 +80,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
-        end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
         end
         if item["mikuType"] == "NxTail" then
             return NxTails::toString(item)
