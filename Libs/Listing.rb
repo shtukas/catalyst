@@ -637,7 +637,6 @@ class Listing
         NxBoards::boardsOrdered().each{|item|
             NxBoards::informationDisplay(store, spacecontrol, item["uuid"])
         }
-        spacecontrol.putsline ""
 
         items = Listing::items(nil)
 
@@ -646,6 +645,19 @@ class Listing
         activeItems, items = items.partition{|item| NxBalls::itemIsActive(item) }
 
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
+
+        parkedItems, items = items.partition{|item| item["parked"] }
+
+        if parkedItems.size > 0 then
+            spacecontrol.putsline ""
+            parkedItems
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    spacecontrol.putsline Listing::itemToListingLine(store, item)
+                }
+        end
+
+        spacecontrol.putsline ""
 
         (runningItems + pausedItems + items)
             .each{|item|
