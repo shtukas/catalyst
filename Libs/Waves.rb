@@ -169,17 +169,6 @@ class Waves
     # Data (2)
     # We do not display wave that are attached to a board (the board displays them)
 
-    # Waves::itemForPriority(priority)
-    def self.itemForPriority(priority)
-        Waves::items()
-            .select{|item| item["priority"] == priority }
-            .select{|item| !item["boarduuid"] }
-            .select{|item|
-                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-            }
-            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-    end
-
     # Waves::listingItemsPriority(board)
     def self.listingItemsPriority(board)
         Waves::items()

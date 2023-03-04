@@ -426,8 +426,8 @@ class Listing
                 "lambda" => lambda { NxBoards::listingItems() }
             },
             {
-                "name" => "Waves::itemForPriority(ns:today-or-tomorrow)",
-                "lambda" => lambda { Waves::itemForPriority("ns:today-or-tomorrow") }
+                "name" => "Waves::listingItemsPriority(nil)",
+                "lambda" => lambda { Waves::listingItemsPriority(nil) }
             },
             {
                 "name" => "Waves::listingItemsLeisure(nil)",
@@ -436,6 +436,18 @@ class Listing
             {
                 "name" => "NxTails::listingItems(nil)",
                 "lambda" => lambda { NxTails::listingItems(nil) }
+            },
+            {
+                "name" => "The99Percent::getReference()",
+                "lambda" => lambda { The99Percent::getReference() }
+            },
+            {
+                "name" => "The99Percent::getCurrentCount()",
+                "lambda" => lambda { The99Percent::getCurrentCount() }
+            },
+            {
+                "name" => "NxBoards::boardsOrdered()",
+                "lambda" => lambda { NxBoards::boardsOrdered() }
             },
         ]
 
@@ -456,10 +468,13 @@ class Listing
         padding = tests.map{|test| test["name"].size }.max
 
         # dry run to initialise things
+
         tests
             .each{|test|
                 test["lambda"].call()
             }
+
+        # tests
 
         results1 = tests
                     .map{|test|
@@ -473,7 +488,16 @@ class Listing
             {
                 "name" => "Listing::printListing()",
                 "lambda" => lambda { Listing::printListing(ItemStore.new()) }
-            }
+            },
+            {
+                "name" => "The99Percent::line()",
+                "lambda" => lambda { The99Percent::line() }
+            },
+            {
+                "name" => "Listing::items(nil)",
+                "lambda" => lambda { Listing::items(nil) }
+            },
+
         ]
                     .map{|test|
                         puts "running: #{test["name"]}"
@@ -484,7 +508,14 @@ class Listing
 
         puts ""
 
-        (results1 + results2)
+        results1
+            .each{|result|
+                printTestResults.call(result, padding)
+            }
+
+        puts ""
+
+        results2
             .each{|result|
                 printTestResults.call(result, padding)
             }
