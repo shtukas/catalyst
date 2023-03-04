@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | float | tail | drop",
+            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | orbital | tail | drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -256,7 +256,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("float", input) then
+        if Interpreting::match("orbital", input) then
             item = NxOrbitals::interactivelyIssueNullOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -646,7 +646,7 @@ class Listing
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
         parkedItems, items = items.partition{|item| item["parked"] }
 
-        floats, items = items.partition{|item| item["mikuType"] == "NxOrbital" }
+        orbitals, items = items.partition{|item| item["mikuType"] == "NxOrbital" }
 
         if parkedItems.size > 0 then
             spacecontrol.putsline ""
@@ -657,9 +657,9 @@ class Listing
                 }
         end
 
-        if floats.size > 0 then
+        if orbitals.size > 0 then
             spacecontrol.putsline ""
-            floats
+            orbitals
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     spacecontrol.putsline Listing::itemToListingLine(store, item)

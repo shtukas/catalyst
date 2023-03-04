@@ -252,10 +252,10 @@ class PolyActions
     # PolyActions::dropmaking(useCoreData: true)
     def self.dropmaking(useCoreData: true)
         item = nil
-        options = ["float", "top", "today", "ondate", "wave", "countdown", "tail"]
+        options = ["orbital", "top", "today", "ondate", "wave", "countdown", "tail"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
-        if option == "float" then
+        if option == "orbital" then
             item = NxOrbitals::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "top" then
