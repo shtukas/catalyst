@@ -589,7 +589,7 @@ class Listing
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
-        return false if !item["parked"]
+        return false if item["parked"]
         return false if item["mikuType"] == "NxFloat"
         return false if item["mikuType"] == "Scheduler1Listing"
         true
