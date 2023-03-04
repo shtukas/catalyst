@@ -18,21 +18,12 @@ class NxTops
 
     # NxTops::interactivelyDecideOrdinalOrNull(board)
     def self.interactivelyDecideOrdinalOrNull(board)
-        if board.nil? then
-            existingItems = NxTops::itemsInOrder()
-            return 1 if existingItems.empty?
-            existingItems.each{|item|
-                puts NxTops::toString(item)
-            }
-            LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-        else
-            existingItems = NxTops::itemsForBoard(board)
-            return 1 if existingItems.empty?
-            existingItems.each{|item|
-                puts NxTops::toString(item)
-            }
-            LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-        end
+        existingItems = NxTops::bItems(board)
+        return 1 if existingItems.empty?
+        existingItems.each{|item|
+            puts NxTops::toString(item)
+        }
+        LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
     end
 
     # NxTops::interactivelyIssueNullOrNull(useCoreData: true)
@@ -66,14 +57,14 @@ class NxTops
         NxTops::items().sort{|i1, i2| i1["ordinal"] <=> i2["ordinal"] }
     end
 
-    # NxTops::itemsForBoard(board or nil)
-    def self.itemsForBoard(board)
+    # NxTops::bItems(board or nil)
+    def self.bItems(board)
         NxTops::itemsInOrder()
             .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
     end
 
     # NxTops::listingItems(board or nil)
     def self.listingItems(board)
-        NxTops::itemsForBoard(board)
+        NxTops::bItems(board)
     end
 end
