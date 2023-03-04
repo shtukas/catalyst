@@ -51,7 +51,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTop" then
+        if item["mikuType"] == "NxToday" then
             return
         end
 
@@ -108,9 +108,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTop" then
+        if item["mikuType"] == "NxToday" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxTops::destroy(item["uuid"])
+                NxTodays::destroy(item["uuid"])
             end
             return
         end
@@ -259,7 +259,7 @@ class PolyActions
             item = NxOrbitals::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "top" then
-            item = NxTops::interactivelyIssueNullOrNull(useCoreData: useCoreData)
+            item = NxTodays::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "today" then
             item = NxOndates::interactivelyIssueNewTodayOrNull(useCoreData: useCoreData)

@@ -68,8 +68,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTail" then
             return NxTails::toString(item)
         end
-        if item["mikuType"] == "NxTop" then
-            return NxTops::toString(item)
+        if item["mikuType"] == "NxToday" then
+            return NxTodays::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]

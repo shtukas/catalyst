@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | top | desktop | priority | orbital | tail | drop",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -379,8 +379,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("top", input) then
-            item = NxTops::interactivelyIssueNullOrNull()
+        if Interpreting::match("today", input) then
+            item = NxTodays::interactivelyIssueNullOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -584,7 +584,7 @@ class Listing
             Anniversaries::listingItems(),
             Waves::listingItemsPriority(board),
             NxOrbitals::listingItems(board),
-            NxTops::listingItems(board),
+            NxTodays::listingItems(),
             NxOndates::listingItems(),
             TxManualCountDowns::listingItems(),
             NxBoards::listingItems(),
