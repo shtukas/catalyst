@@ -14,10 +14,9 @@ class PolyFunctions
                 "description" => "capsule: #{item["capsule"]}",
                 "number"      => item["capsule"]
             }
-            return accounts
         end
 
-        if item["mikuType"] == "NxTail" and item["boarduuid"] then
+        if item["boarduuid"] then
             board = NxBoards::getOrNull(item["boarduuid"])
             accounts << {
                 "description" => "board: #{board["description"]}",
@@ -27,33 +26,18 @@ class PolyFunctions
                 "description" => "capsule: #{board["capsule"]}",
                 "number"      => board["capsule"]
             }
-            return accounts
         end
 
         if item["mikuType"] == "NxTail" and item["boarduuid"].nil? then
             accounts << {
-                "description" => "scheduler1: tail",
+                "description" => "scheduler1: boardless NxTail",
                 "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
             }
-            return accounts
         end
 
-        board = N2KVStore::getOrNull("BoardsAndItems:#{item["uuid"]}")
-        if board then
+        if item["mikuType"] == "Wave" and !item["priority"] then
             accounts << {
-                "description" => "board: #{board["description"]}",
-                "number"      => item["boarduuid"]
-            }
-            accounts << {
-                "description" => "capsule: #{board["capsule"]}",
-                "number"      => board["capsule"]
-            }
-        end
-
-        # scheduler1 "d36d653e-80e0-4141-b9ff-f26197bbce2b" monitors Waves::leisureItems(nil) which are exactly the Wave priority ns:leisure items
-        if item["mikuType"] == "Wave" and item["priority"] == "ns:leisure" then
-            accounts << {
-                "description" => "scheduler1: wave/leisure",
+                "description" => "scheduler1: low priority Wave",
                 "number"      => "d36d653e-80e0-4141-b9ff-f26197bbce2b"
             }
         end
@@ -86,6 +70,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTop" then
             return NxTops::toString(item)
+        end
+        if item["mikuType"] == "Scheduler1Listing" then
+            return item["announce"]
         end
         if item["mikuType"] == "TxManualCountDown" then
             return "(countdown) #{item["description"]}: #{item["counter"]}"

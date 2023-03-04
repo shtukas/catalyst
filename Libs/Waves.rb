@@ -22,20 +22,6 @@ class Waves
     # --------------------------------------------------
     # Making
 
-    # Waves::interactivelySelectPriorityOrNull()
-    def self.interactivelySelectPriorityOrNull()
-        priorities = ["ns:today", "ns:today-or-tomorrow", "ns:leisure"]
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("priority:", priorities)
-    end
-
-    # Waves::interactivelySelectPriority()
-    def self.interactivelySelectPriority()
-        loop {
-            priority = Waves::interactivelySelectPriorityOrNull()
-            return priority if priority
-        }
-    end
-
     # Waves::makeNx46InteractivelyOrNull()
     def self.makeNx46InteractivelyOrNull()
 
@@ -147,7 +133,7 @@ class Waves
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
         coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
-        priority = Waves::interactivelySelectPriority()
+        priority = LucilleCore::askQuestionAnswerAsBoolean("should display as priority ? ")
         item = {
             "uuid"             => uuid,
             "mikuType"         => "Wave",
@@ -169,7 +155,7 @@ class Waves
     # Waves::toString(item)
     def self.toString(item)
         ago = "#{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
-        "(wave) #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::referenceStringToSuffixString(item["field11"])} (#{ago}) (#{item["priority"]}) 🌊"
+        "(wave) #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::referenceStringToSuffixString(item["field11"])} (#{ago})#{item["priority"] ? " (priority)" : ""} 🌊"
     end
 
     # Waves::toStringForSearch(item)
@@ -194,32 +180,26 @@ class Waves
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end
 
-    # Waves::topItems(board or nil)
-    def self.topItems(board)
+    # Waves::listingItemsPriority(board)
+    def self.listingItemsPriority(board)
         Waves::items()
+            .select{|item| item["priority"] }
             .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
-            .select{|item| item["priority"] == "ns:today" or item["nx46"]["type"] == "sticky" or item["nx46"]["type"] == "every-this-day-of-the-month" or item["nx46"]["type"] == "every-this-day-of-the-week" }
+            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             }
+    end
+
+    # Waves::listingItemsLeisure(board)
+    def self.listingItemsLeisure(board)
+        Waves::items()
+            .select{|item| !item["priority"] }
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-    end
-
-    # Waves::timedItems(board or nil)
-    def self.timedItems(board)
-        Waves::itemForPriority("ns:today-or-tomorrow")
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
-    end
-
-    # Waves::leisureItems(board)
-    def self.leisureItems(board)
-        Waves::itemForPriority("ns:leisure")
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
-    end
-
-    # Waves::leisureRunningItems()
-    def self.leisureRunningItems()
-        Waves::itemForPriority("ns:leisure").select{|item| NxBalls::itemIsActive(item) }
+            .select{|item|
+                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+            }
     end
 
     # -------------------------------------------------------------------------

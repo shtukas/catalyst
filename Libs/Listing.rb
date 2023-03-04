@@ -418,10 +418,6 @@ class Listing
                 "lambda" => lambda { NxOndates::listingItems(nil) }
             },
             {
-                "name" => "Waves::topItems(nil)",
-                "lambda" => lambda { Waves::topItems(nil) }
-            },
-            {
                 "name" => "TxManualCountDowns::listingItems()",
                 "lambda" => lambda { TxManualCountDowns::listingItems() }
             },
@@ -434,16 +430,12 @@ class Listing
                 "lambda" => lambda { Waves::itemForPriority("ns:today-or-tomorrow") }
             },
             {
-                "name" => "Waves::leisureItems(nil)",
-                "lambda" => lambda { Waves::leisureItems(nil) }
+                "name" => "Waves::listingItemsLeisure(nil)",
+                "lambda" => lambda { Waves::listingItemsLeisure(nil) }
             },
             {
                 "name" => "NxTails::listingItems(nil)",
                 "lambda" => lambda { NxTails::listingItems(nil) }
-            },
-            {
-                "name" => "Waves::itemForPriority(ns:leisure)",
-                "lambda" => lambda { Waves::itemForPriority("ns:leisure") }
             },
         ]
 
@@ -504,12 +496,12 @@ class Listing
     def self.scheduler1data()
         [
             {
-                "name"      => "wave/leisure",
+                "name"      => "low priority Wave",
                 "account"   => "d36d653e-80e0-4141-b9ff-f26197bbce2b",
-                "generator" => lambda{ Waves::leisureItems(nil) } 
+                "generator" => lambda{ Waves::listingItemsLeisure(nil) } 
             },
             {
-                "name"      => "tail",
+                "name"      => "boardless NxTail",
                 "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
                 "generator" => lambda{ NxTails::listingItems(nil) } 
             }
@@ -521,16 +513,27 @@ class Listing
         .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
     end
 
-    # Listing::scheduler1runningItems()
-    def self.scheduler1runningItems()
-        Waves::leisureRunningItems() + NxTails::listingRunningItems()
-    end
-
     # Listing::scheduler1line()
     def self.scheduler1line()
         a1 = Listing::scheduler1data().map{|packet| "(#{packet["name"]}: #{packet["rt"].round(2)})" }
-        "scheduler1: #{a1.join(" ")}"
+        "(scheduler1) #{a1.join(" ")}"
     end
+
+    # Listing::sheduler1ListingItem()
+    def self.sheduler1ListingItem()
+        {
+            "uuid"     => "bdaa4f5b-2a67-42c3-98fc-57d8c7a531bf",
+            "mikuType" => "Scheduler1Listing",
+            "announce" => Listing::scheduler1line()
+        }
+    end
+
+    # Listing::scheduler1runningItems()
+    def self.scheduler1runningItems()
+        Waves::items().select{|item| !item["priority"] }.select{|item| NxBalls::itemIsActive(item["uuid"]) } + NxTails::items().select{|item| NxBalls::itemIsActive(item["uuid"]) }
+    end
+
+
 
     # Listing::sheduler1items()
     def self.sheduler1items()
@@ -548,11 +551,13 @@ class Listing
     def self.items()
         [
             Anniversaries::listingItems(),
+            NxTops::listingItems(nil),
+            NxFloats::listingItems(nil),
             NxOndates::listingItems(nil),
-            Waves::topItems(nil),
             TxManualCountDowns::listingItems(),
+            Waves::listingItemsPriority(nil),
             NxBoards::listingItems(),
-            Waves::timedItems(nil),
+            [Listing::sheduler1ListingItem()],
             Listing::sheduler1items(),
         ]
             .flatten
@@ -582,6 +587,14 @@ class Listing
         line
     end
 
+    # Listing::canBeDefault(item)
+    def self.canBeDefault(item)
+        return false if !item["parked"]
+        return false if item["mikuType"] == "NxFloat"
+        return false if item["mikuType"] == "Scheduler1Listing"
+        true
+    end
+
     # Listing::printListing(store)
     def self.printListing(store)
         system("clear")
@@ -589,45 +602,25 @@ class Listing
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3)
 
         spacecontrol.putsline ""
+        spacecontrol.putsline The99Percent::line()
+        NxBoards::boardsOrdered().each{|item|
+            NxBoards::informationDisplay(store, spacecontrol, item["uuid"])
+        }
+        spacecontrol.putsline ""
 
         items = Listing::items()
 
         Listing::printDesktop(spacecontrol)
 
-        NxFloats::listingItems(nil)
-            .each{|item|
-                store.register(item, false)
-                spacecontrol.putsline "(#{store.prefixString()}) (float) #{item["description"]}"
-            }
-
-        NxTops::listingItems(nil)
-            .each{|item|
-                store.register(item, true)
-                spacecontrol.putsline Listing::itemToListingLine(store, item)
-            }
-
         activeItems, items = items.partition{|item| NxBalls::itemIsActive(item) }
 
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
 
-        (runningItems + pausedItems + items.take(12))
+        (runningItems + pausedItems + items)
             .each{|item|
-
-                if item["mikuType"] == "NxBoard" then
-                    NxBoards::listingDisplay(store, spacecontrol, item["uuid"])
-                    next
-                end
-
-                store.register(item, !item["parked"])
+                store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
-
-        NxBoards::bottomItems().each{|item|
-            NxBoards::bottomDisplay(store, spacecontrol, item["uuid"])
-        }
-
-        spacecontrol.putsline "> #{Listing::scheduler1line()}"
-        spacecontrol.putsline The99Percent::line()
     end
 
     # Listing::mainProgram2Pure()

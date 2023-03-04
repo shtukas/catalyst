@@ -113,6 +113,11 @@ class NxBoards
         BankUtils::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxBoards::rtTarget(item)
     end
 
+    # NxBoards::boardsOrdered()
+    def self.boardsOrdered()
+        NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
+    end
+
     # NxBoards::listingItems()
     def self.listingItems()
         NxBoards::items()
@@ -125,25 +130,6 @@ class NxBoards
             .select{|packet| packet["cr"] < 1 or NxBalls::itemIsActive(packet["board"]) }
             .sort{|p1, p2| p1["cr"] <=> p2["cr"] }
             .map {|packet| packet["board"] }
-    end
-
-    # NxBoards::bottomItems()
-    def self.bottomItems()
-        NxBoards::items()
-            .select{|board| !NxBalls::itemIsActive(board) }
-            .map {|board|
-                {
-                    "board" => board,
-                    "cr"    => NxBoards::completionRatio(board)
-                }
-            }
-            .sort{|p1, p2| p1["cr"] <=> p2["cr"] }
-            .map {|packet| packet["board"] }
-    end
-
-    # NxBoards::boardsOrdered()
-    def self.boardsOrdered()
-        NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
     end
 
     # ---------------------------------------------------------
@@ -172,55 +158,11 @@ class NxBoards
         }
     end
 
-    # NxBoards::listingDisplay(store, spacecontrol, boarduuid) 
-    def self.listingDisplay(store, spacecontrol, boarduuid)
+    # NxBoards::informationDisplay(store, spacecontrol, boarduuid) 
+    def self.informationDisplay(store, spacecontrol, boarduuid)
         board = NxBoards::getItemOfNull(boarduuid)
-
         if board.nil? then
-            puts "NxBoards::listingDisplay(boarduuid), board not found"
-            exit
-        end
-
-        items = [ 
-                    NxTops::listingItems(board),
-                    NxFloats::listingItems(boarduuid),
-                    NxOndates::listingItems(board),
-                    Waves::topItems(board),
-                    Waves::timedItems(board),
-                    Waves::leisureItems(board),
-                    NxTails::bItemsOrdered(boarduuid)
-                ]
-                .flatten
-                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
-
-        store.register(board, items.empty?)
-        line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
-        if NxBalls::itemIsActive(board) then
-            line = line.green
-        end
-        spacecontrol.putsline line
-
-        parkedItems, items = items.partition{|item| item["parked"] }
-
-        parkedItems.each{|item|
-            store.register(item, false)
-            spacecontrol.putsline (Listing::itemToListingLine(store, item)).yellow
-        }
-
-        items.each{|item|
-            # We are not doing default on floats
-            canBeDefault = item["mikuType"] != "NxFloat"
-            store.register(item, canBeDefault) 
-            spacecontrol.putsline (Listing::itemToListingLine(store, item))
-        }
-    end
-
-    # NxBoards::bottomDisplay(store, spacecontrol, boarduuid) 
-    def self.bottomDisplay(store, spacecontrol, boarduuid)
-        board = NxBoards::getItemOfNull(boarduuid)
-        padding = "      "
-        if board.nil? then
-            puts "NxBoards::bottomDisplay(boarduuid), board not found"
+            puts "NxBoards::informationDisplay(boarduuid), board not found"
             exit
         end
         store.register(board, false)
@@ -229,6 +171,54 @@ class NxBoards
             line = line.green
         end
         spacecontrol.putsline line
+    end
+
+    # NxBoards::listingProgram(board)
+    def self.listingProgram(board)
+
+        loop {
+
+            system("clear")
+
+            puts ""
+
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            store = ItemStore.new()
+
+            items = [ 
+                        NxTops::listingItems(board),
+                        NxFloats::listingItems(board["uuid"]),
+                        NxOndates::listingItems(board),
+                        Waves::listingItemsPriority(board),
+                        Waves::listingItemsLeisure(board),
+                        NxTails::bItemsOrdered(board["uuid"])
+                    ]
+                    .flatten
+                    .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
+
+            store.register(board, false)
+            line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
+            if NxBalls::itemIsActive(board) then
+                line = line.green
+            end
+            spacecontrol.putsline line
+
+            Listing::printDesktop(spacecontrol)
+
+            items.each{|item|
+                store.register(item, Listing::canBeDefault(item)) 
+                spacecontrol.putsline(Listing::itemToListingLine(store, item))
+            }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            next if input == ""
+
+            return if input == "exit"
+
+            Listing::listingCommandInterpreter(input, store, nil)
+        }
     end
 end
 

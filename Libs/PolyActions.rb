@@ -21,8 +21,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBoard" then
-            puts "We do not have access to the board item itself (if you want to rename it, you have to implement that one)"
-            LucilleCore::pressEnterToContinue()
+            NxBoards::listingProgram(item)
             return
         end
 
