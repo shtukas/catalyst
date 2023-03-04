@@ -643,14 +643,23 @@ class Listing
         Listing::printDesktop(spacecontrol)
 
         activeItems, items = items.partition{|item| NxBalls::itemIsActive(item) }
-
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
-
         parkedItems, items = items.partition{|item| item["parked"] }
+
+        floats, items = items.partition{|item| item["mikuType"] == "NxFloat" }
 
         if parkedItems.size > 0 then
             spacecontrol.putsline ""
             parkedItems
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    spacecontrol.putsline Listing::itemToListingLine(store, item)
+                }
+        end
+
+        if floats.size > 0 then
+            spacecontrol.putsline ""
+            floats
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     spacecontrol.putsline Listing::itemToListingLine(store, item)
