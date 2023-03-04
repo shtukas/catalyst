@@ -186,16 +186,7 @@ class NxBoards
 
             store = ItemStore.new()
 
-            items = [ 
-                        NxTops::listingItems(board),
-                        NxFloats::listingItems(board["uuid"]),
-                        NxOndates::listingItems(board),
-                        Waves::listingItemsPriority(board),
-                        Waves::listingItemsLeisure(board),
-                        NxTails::bItemsOrdered(board["uuid"])
-                    ]
-                    .flatten
-                    .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
+            items = Listing::items(board)
 
             store.register(board, false)
             line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"

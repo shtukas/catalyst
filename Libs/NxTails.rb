@@ -144,10 +144,10 @@ class NxTails
     # --------------------------------------------------
     # Data
 
-    # NxTails::bItemsOrdered(boarduuid or nil)
-    def self.bItemsOrdered(boarduuid)
+    # NxTails::bItemsOrdered(board)
+    def self.bItemsOrdered(board)
         NxTails::items()
-            .select{|item| item["boarduuid"] == boarduuid }
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 
@@ -207,9 +207,9 @@ class NxTails
         NxTails::positionsToNewPosition(positions)
     end
 
-    # NxTails::listingItems(boarduuid or nil)
-    def self.listingItems(boarduuid)
-        NxTails::bItemsOrdered(boarduuid).first(10)
+    # NxTails::listingItems(board)
+    def self.listingItems(board)
+        NxTails::bItemsOrdered(board).first(10)
     end
 
     # NxTails::listingRunningItems()

@@ -415,7 +415,7 @@ class Listing
             },
             {
                 "name" => "NxOndates::listingItems()",
-                "lambda" => lambda { NxOndates::listingItems(nil) }
+                "lambda" => lambda { NxOndates::listingItems() }
             },
             {
                 "name" => "TxManualCountDowns::listingItems()",
@@ -492,18 +492,18 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::scheduler1data()
-    def self.scheduler1data()
+    # Listing::scheduler1data(board)
+    def self.scheduler1data(board)
         [
             {
                 "name"      => "low priority Wave",
                 "account"   => "d36d653e-80e0-4141-b9ff-f26197bbce2b",
-                "generator" => lambda{ Waves::listingItemsLeisure(nil) } 
+                "generator" => lambda{ Waves::listingItemsLeisure(board) } 
             },
             {
                 "name"      => "boardless NxTail",
                 "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
-                "generator" => lambda{ NxTails::listingItems(nil) } 
+                "generator" => lambda{ NxTails::listingItems(board) } 
             }
         ]
         .map{|packet|
@@ -515,7 +515,7 @@ class Listing
 
     # Listing::scheduler1line()
     def self.scheduler1line()
-        a1 = Listing::scheduler1data().map{|packet| "(#{packet["name"]}: #{packet["rt"].round(2)})" }
+        a1 = Listing::scheduler1data(nil).map{|packet| "(#{packet["name"]}: #{packet["rt"].round(2)})" }
         "(scheduler1) #{a1.join(" ")}"
     end
 
@@ -535,9 +535,9 @@ class Listing
 
 
 
-    # Listing::sheduler1items()
-    def self.sheduler1items()
-        items = Listing::scheduler1runningItems() + Listing::scheduler1data().map{|packet| packet["generator"].call() }.flatten
+    # Listing::sheduler1Items(board)
+    def self.sheduler1Items(board)
+        items = Listing::scheduler1runningItems() + Listing::scheduler1data(board).map{|packet| packet["generator"].call() }.flatten
         items.reduce([]){|selected, item|
             if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                 selected
@@ -547,18 +547,18 @@ class Listing
         }
     end
 
-    # Listing::items()
-    def self.items()
+    # Listing::items(board)
+    def self.items(board)
         [
             Anniversaries::listingItems(),
-            NxTops::listingItems(nil),
-            NxFloats::listingItems(nil),
-            NxOndates::listingItems(nil),
+            Waves::listingItemsPriority(board),
+            NxFloats::listingItems(board),
+            NxTops::listingItems(board),
+            NxOndates::listingItems(),
             TxManualCountDowns::listingItems(),
-            Waves::listingItemsPriority(nil),
             NxBoards::listingItems(),
             [Listing::sheduler1ListingItem()],
-            Listing::sheduler1items(),
+            Listing::sheduler1Items(board),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
@@ -608,7 +608,7 @@ class Listing
         }
         spacecontrol.putsline ""
 
-        items = Listing::items()
+        items = Listing::items(nil)
 
         Listing::printDesktop(spacecontrol)
 

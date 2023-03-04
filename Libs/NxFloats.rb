@@ -38,22 +38,9 @@ class NxFloats
         "(float) #{item["description"]}"
     end
 
-    # NxFloats::listingItems(boarduuid)
-    def self.listingItems(boarduuid)
-        if boarduuid then
-            NxFloats::items()
-                .select{|item|
-                    (lambda{|item|
-                        board = BoardsAndItems::getBoardOrNull(item)
-                        return false if board.nil?
-                        return false if (board["uuid"] != boarduuid)
-                        true
-                    }).call(item)
-                }
-        else
-            NxFloats::items()
-                .select{|item| BoardsAndItems::getBoardOrNull(item).nil? }
-        end
-
+    # NxFloats::listingItems(board)
+    def self.listingItems(board)
+        NxFloats::items()
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
     end
 end
