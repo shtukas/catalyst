@@ -1,7 +1,7 @@
 
-NxFloat:
+NxOrbital:
     "uuid"        : String
-    "mikuType"    : "NxFloat"
+    "mikuType"    : "NxOrbital"
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String

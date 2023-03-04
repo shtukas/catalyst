@@ -257,7 +257,7 @@ class Listing
         end
 
         if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNullOrNull()
+            item = NxOrbitals::interactivelyIssueNullOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
@@ -583,7 +583,7 @@ class Listing
         [
             Anniversaries::listingItems(),
             Waves::listingItemsPriority(board),
-            NxFloats::listingItems(board),
+            NxOrbitals::listingItems(board),
             NxTops::listingItems(board),
             NxOndates::listingItems(),
             TxManualCountDowns::listingItems(),
@@ -621,7 +621,7 @@ class Listing
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if item["parked"]
-        return false if item["mikuType"] == "NxFloat"
+        return false if item["mikuType"] == "NxOrbital"
         return false if item["mikuType"] == "Scheduler1Listing"
         true
     end
@@ -646,7 +646,7 @@ class Listing
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
         parkedItems, items = items.partition{|item| item["parked"] }
 
-        floats, items = items.partition{|item| item["mikuType"] == "NxFloat" }
+        floats, items = items.partition{|item| item["mikuType"] == "NxOrbital" }
 
         if parkedItems.size > 0 then
             spacecontrol.putsline ""

@@ -56,8 +56,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
+        if item["mikuType"] == "NxOrbital" then
+            return NxOrbitals::toString(item)
         end
         if item["mikuType"] == "NxOpenCycles" then
             return item["description"]

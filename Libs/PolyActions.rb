@@ -94,9 +94,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxOrbital" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxFloats::destroy(item["uuid"])
+                NxOrbitals::destroy(item["uuid"])
             end
             return
         end
@@ -256,7 +256,7 @@ class PolyActions
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
         if option == "float" then
-            item = NxFloats::interactivelyIssueNullOrNull(useCoreData: useCoreData)
+            item = NxOrbitals::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "top" then
             item = NxTops::interactivelyIssueNullOrNull(useCoreData: useCoreData)
