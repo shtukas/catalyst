@@ -45,7 +45,7 @@ class NxTails
                 "boarduuid"   => board["uuid"],
             }
         else
-            position = NxTails::endPositionNext()
+            position = NxTails::nextPosition()
             item = {
                 "uuid"        => uuid,
                 "mikuType"    => "NxTail",
@@ -64,7 +64,7 @@ class NxTails
     # NxTails::netflix(title)
     def self.netflix(title)
         uuid  = SecureRandom.uuid
-        position = NxTails::endPositionNext()
+        position = NxTails::nextPosition()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTail",
@@ -84,7 +84,7 @@ class NxTails
         description = "(vienna) #{url}"
         uuid  = SecureRandom.uuid
         coredataref = "url:#{N1Data::putBlob(url)}"
-        position = NxTails::endPositionNext()
+        position = NxTails::nextPosition()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTail",
@@ -105,7 +105,7 @@ class NxTails
         uuid = SecureRandom.uuid
         nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
         coredataref = "aion-point:#{nhash}"
-        position = NxTails::endPositionNext()
+        position = NxTails::nextPosition()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTail",
@@ -180,9 +180,31 @@ class NxTails
         positions.max
     end
 
-    # NxTails::endPositionNext()
-    def self.endPositionNext()
-        NxTails::endPosition() + 0.5 + 0.5*rand
+    # NxTails::positionsToNewPosition(positions)
+    def self.positionsToNewPosition(positions)
+        if positions.empty? then
+            return 1
+        end
+
+        if positions.size < 3 then
+            return positions.max + 0.5 + 0.5*rand
+        end
+
+        # So we have at least 3 elements.
+        differences = positions.zip(positions.drop(1)).select{|pair| pair[1] }.map{|x1, x2| x2 - x1}
+
+        # We have at least two differences
+        average = differences.sum.to_f/(differences.size)
+        a1 = positions.zip(differences).select{|pair| pair[1] }
+        position, difference = a1.select{|pair| pair[1] >= average }.first
+
+        position + rand*difference
+    end
+
+    # NxTails::nextPosition()
+    def self.nextPosition()
+        positions = NxTails::items().map{|item| item["position"] }.take(100)
+        NxTails::positionsToNewPosition(positions)
     end
 
     # NxTails::listingItems(boarduuid or nil)
