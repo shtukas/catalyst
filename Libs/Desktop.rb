@@ -12,4 +12,21 @@ class Desktop
     def self.contents()
         IO.read(Desktop::filepath()).lines.first(10).join().strip
     end
+
+    # Desktop::announce()
+    def self.announce()
+        [
+            "Desktop:".green, 
+            Desktop::contents().lines.map{|line| "      #{line}" }.join()
+        ].join("\n")
+    end
+
+    # Desktop::listingItem()
+    def self.listingItem()
+        {
+            "uuid"     => SecureRandom.uuid, # random uuid so that we can't hide it
+            "mikuType" => "DesktopTx1",
+            "announce" => Desktop::announce()
+        }
+    end
 end

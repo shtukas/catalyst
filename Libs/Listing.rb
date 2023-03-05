@@ -581,8 +581,6 @@ class Listing
         Waves::items().select{|item| !item["priority"] }.select{|item| NxBalls::itemIsActive(item["uuid"]) } + NxTails::items().select{|item| NxBalls::itemIsActive(item["uuid"]) }
     end
 
-
-
     # Listing::sheduler1Items(board)
     def self.sheduler1Items(board)
         items = Listing::scheduler1runningItems() + Listing::scheduler1data(board).map{|packet| packet["generator"].call() }.flatten
@@ -601,6 +599,7 @@ class Listing
             Anniversaries::listingItems(),
             NxCherryPicks::listingItems(),
             NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
+            [Desktop::listingItem()],
             Waves::listingItemsPriority(board),
             NxOrbitals::listingItems(board),
             NxTodays::listingItems(),
@@ -619,17 +618,6 @@ class Listing
                     selected + [item]
                 end
             }
-    end
-
-    # Listing::printDesktop(spacecontrol)
-    def self.printDesktop(spacecontrol)
-        dskt = Desktop::contents()
-        if dskt and dskt.size > 0 then
-            spacecontrol.putsline ""
-            dskt = dskt.lines.map{|line| "      #{line}" }.join()
-            spacecontrol.putsline "Desktop:".green
-            spacecontrol.putsline dskt
-        end
     end
 
     # Listing::itemToListingLine(store or nil, item)
@@ -658,8 +646,6 @@ class Listing
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3 - 3)
-
-        Listing::printDesktop(spacecontrol)
 
         spacecontrol.putsline ""
 
