@@ -26,7 +26,7 @@ class PolyFunctions
         end
 
         if item["boarduuid"] then
-            board = NxBoards::getOrNull(item["boarduuid"])
+            board = NxBoards::getItemOfNull(item["boarduuid"])
             accounts << {
                 "description" => "board: #{board["description"]}",
                 "number"      => item["boarduuid"]
