@@ -54,23 +54,35 @@ class NxBoards
 
     # NxBoards::toString(item)
     def self.toString(item)
-        dayLoadInHours = item["hours"].to_f/5
-        dayDoneInHours = BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600
+        # we use the Board's ow bank account to compute the day completion ratio
+        dayTheoreticalInHours = item["hours"].to_f/5
+        todayDoneInHours = BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600
         completionRatio = NxBoards::completionRatio(item)
-        str0 = "(day: #{("%5.2f" % dayDoneInHours).to_s.green} of #{"%5.2f" % dayLoadInHours}, cr: #{("%4.2f" % completionRatio).to_s.green})"
+        str0 = "(day: #{("%5.2f" % todayDoneInHours).to_s.green} of #{"%5.2f" % dayTheoreticalInHours}, cr: #{("%4.2f" % completionRatio).to_s.green})"
 
-        loadDoneInHours = BankCore::getValue(item["capsule"]).to_f/3600 + item["hours"]
-        loadLeftInhours = item["hours"] - loadDoneInHours
-        str1 = "(done #{("%5.2f" % loadDoneInHours).to_s.green} out of #{item["hours"]})"
+        # but we use the capsule value for the target computations
+        capsuleValueInHours = BankCore::getValue(item["capsule"]).to_f/3600
+        str1 = "(done #{("%5.2f" % capsuleValueInHours).to_s.green} out of #{item["hours"]})"
 
-        timePassedInDays = (Time.new.to_i - item["lastResetTime"]).to_f/86400
-        timeLeftInDays = 7 - timePassedInDays
-        str2 = 
-            if timeLeftInDays > 0 then
-                "(#{timeLeftInDays.round(2)} days before reset)"
-            else
-                "(late by #{-timeLeftInDays.round(2)} days)"
-            end
+        hasReachedObjective = capsuleValueInHours >= item["hours"]
+        timeSinceResetInDays = (Time.new.to_i - item["lastResetTime"]).to_f/86400
+        itHassBeenAWeek = timeSinceResetInDays >= 7
+
+        if hasReachedObjective and itHassBeenAWeek then
+            str2 = "(awaiting data management)"
+        end
+
+        if hasReachedObjective and !itHassBeenAWeek then
+            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days before reset)"
+        end
+
+        if !hasReachedObjective and !itHassBeenAWeek then
+            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days left)"
+        end
+
+        if !hasReachedObjective and itHassBeenAWeek then
+            str2 = "(late by #{(timeSinceResetInDays-7).round(2)} days)"
+        end
 
         "#{"(board)".green} #{item["description"].ljust(8)} #{str0} #{str1} #{str2}"
     end
@@ -142,14 +154,14 @@ class NxBoards
 
             # If the board's capsule is over flowing, meaning its positive value is more than 50% of the time commitment for the board
             # Meaning we did more than 100% of time commitment then we issue NxTimeCapsules
-            if BankCore::getValue(item["capsule"]) >= 0.5*item["hours"]*3600 then
+            if BankCore::getValue(item["capsule"]) >= 1.5*item["hours"]*3600 then
                 puts "NxBoards::timeManagement(), code to be written"
                 exit
             end
 
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimeCapsule)
             # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
-            if BankCore::getValue(item["capsule"]) >= 0 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
+            if BankCore::getValue(item["capsule"]) >= item["hours"] and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 puts "resetting board's capsule time commitment: #{item["description"]}"
                 BankCore::put(item["capsule"], -item["hours"]*3600)
                 item["lastResetTime"] = Time.new.to_i

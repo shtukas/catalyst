@@ -309,6 +309,15 @@ class Listing
             return
         end
 
+        if Interpreting::match("unpark *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item["parked"] = false
+            N3Objects::commit(item)
+            return
+        end
+
         if Interpreting::match("park *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
@@ -700,7 +709,7 @@ class Listing
                     LucilleCore::removeFileSystemLocation(location)
                 }
 
-            if !Config::isPrimaryInstance() then
+            if Config::isPrimaryInstance() then
                 NxBoards::timeManagement()
                 NxTimeCapsules::operate()
                 NxOpenCycles::dataManagement()
