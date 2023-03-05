@@ -3,13 +3,6 @@ class PolyFunctions
     # PolyFunctions::itemsToBankingAccounts(item)
     def self.itemsToBankingAccounts(item)
 
-        accounts = []
-
-        accounts << {
-            "description" => "self",
-            "number"      => item["uuid"]
-        }
-
         if item["mikuType"] == "NxCherryPick" then
             object = N3Objects::getOrNull(item["targetuuid"])
             if object.nil? then
@@ -17,6 +10,13 @@ class PolyFunctions
             end
             return accounts + PolyFunctions::itemsToBankingAccounts(object)
         end
+
+        accounts = []
+
+        accounts << {
+            "description" => "self",
+            "number"      => item["uuid"]
+        }
 
         if item["mikuType"] == "NxBoard" then
             accounts << {
