@@ -617,29 +617,38 @@ class Listing
 
     # Listing::items(board)
     def self.items(board)
-        [
-            Anniversaries::listingItems(),
-            NxCherryPicks::listingItems(),
-            NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
-            Desktop::listingItems(),
-            Waves::listingItemsPriority(board),
-            NxOrbitals::listingItems(board),
-            NxTodays::listingItems(),
-            NxOndates::listingItems(),
-            TxManualCountDowns::listingItems(),
-            NxBoards::listingItems(),
-            [Listing::sheduler1ListingItem()],
-            Listing::sheduler1Items(board),
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
+        items = 
+            if board.nil? then
+                [
+                    Anniversaries::listingItems(),
+                    NxCherryPicks::listingItems(),
+                    NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
+                    Desktop::listingItems(),
+                    Waves::listingItemsPriority(nil),
+                    NxOrbitals::listingItems(nil),
+                    NxTodays::listingItems(),
+                    NxOndates::listingItems(),
+                    TxManualCountDowns::listingItems(),
+                    NxBoards::listingItems(),
+                   Listing::sheduler1Items(nil)
+                ]
+            else
+                [
+                    Waves::listingItemsPriority(board),
+                    NxOrbitals::listingItems(board),
+                    Listing::sheduler1Items(board)
+                ]
+            end
+            items
+                .flatten
+                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
+                .reduce([]){|selected, item|
+                    if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
     end
 
     # Listing::itemToListingLine(store or nil, item)

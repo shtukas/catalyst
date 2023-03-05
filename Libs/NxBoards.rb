@@ -141,7 +141,11 @@ class NxBoards
             }
             .select{|packet| packet["cr"] < 1 or NxBalls::itemIsActive(packet["board"]) }
             .sort{|p1, p2| p1["cr"] <=> p2["cr"] }
-            .map {|packet| packet["board"] }
+            .map {|packet|
+                board = packet["board"]
+                [board] + Listing::items(board)
+            }
+            .flatten
     end
 
     # ---------------------------------------------------------
