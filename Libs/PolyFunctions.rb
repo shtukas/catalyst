@@ -6,9 +6,9 @@ class PolyFunctions
         if item["mikuType"] == "NxCherryPick" then
             object = N3Objects::getOrNull(item["targetuuid"])
             if object.nil? then
-                return accounts
+                return []
             end
-            return accounts + PolyFunctions::itemsToBankingAccounts(object)
+            return PolyFunctions::itemsToBankingAccounts(object)
         end
 
         accounts = []
