@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | pick <n> | pick line | drop",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | pick <n> | pick line | unpick <n> |drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -302,6 +302,19 @@ class Listing
             return if item.nil?
             cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(item)
             puts JSON.pretty_generate(cherrypick)
+            return
+        end
+
+        if Interpreting::match("unpick *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxCherryPick" then
+                puts "The unpick command is only for NxCherryPick items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            NxCherryPicks::destroy(item["uuid"])
             return
         end
 
