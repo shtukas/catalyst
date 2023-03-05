@@ -93,7 +93,6 @@ class NxTails
             "description" => description,
             "field11"     => coredataref,
             "position"    => position,
-            "boarduuid"   => board["uuid"],
         }
         N3Objects::commit(item)
         item
