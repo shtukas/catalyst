@@ -612,7 +612,7 @@ class Listing
             Anniversaries::listingItems(),
             NxCherryPicks::listingItems(),
             NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
-            [Desktop::listingItem()],
+            Desktop::listingItems(),
             Waves::listingItemsPriority(board),
             NxOrbitals::listingItems(board),
             NxTodays::listingItems(),

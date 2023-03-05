@@ -21,12 +21,13 @@ class Desktop
         ].join("\n")
     end
 
-    # Desktop::listingItem()
-    def self.listingItem()
-        {
+    # Desktop::listingItems()
+    def self.listingItems()
+        return [] if Desktop::contents() == ""
+        [{
             "uuid"     => SecureRandom.uuid, # random uuid so that we can't hide it
             "mikuType" => "DesktopTx1",
             "announce" => Desktop::announce()
-        }
+        }]
     end
 end
