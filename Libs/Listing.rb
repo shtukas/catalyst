@@ -102,6 +102,36 @@ class Listing
             return
         end
 
+        if Interpreting::match("cherry line", input) then
+            line = LucilleCore::askQuestionAnswerAsString("line: ")
+            nxline = NxLines::issue(line)
+            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(nxline)
+            puts JSON.pretty_generate(cherrypick)
+            return
+        end
+
+        if Interpreting::match("cherry *", input) then
+            _, _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(item)
+            puts JSON.pretty_generate(cherrypick)
+            return
+        end
+
+        if Interpreting::match("unpick *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxCherryPick" then
+                puts "The unpick command is only for NxCherryPick items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            NxCherryPicks::destroy(item["uuid"])
+            return
+        end
+
         if Interpreting::match("commands", input) then
             puts Listing::listingCommands().yellow
             LucilleCore::pressEnterToContinue()
@@ -285,36 +315,6 @@ class Listing
             return if item.nil?
             item["parked"] = true
             N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("pick line", input) then
-            line = LucilleCore::askQuestionAnswerAsString("line: ")
-            nxline = NxLines::issue(line)
-            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(nxline)
-            puts JSON.pretty_generate(cherrypick)
-            return
-        end
-
-        if Interpreting::match("pick *", input) then
-            _, _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(item)
-            puts JSON.pretty_generate(cherrypick)
-            return
-        end
-
-        if Interpreting::match("unpick *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxCherryPick" then
-                puts "The unpick command is only for NxCherryPick items"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            NxCherryPicks::destroy(item["uuid"])
             return
         end
 
