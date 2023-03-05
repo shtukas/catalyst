@@ -158,13 +158,6 @@ class Waves
         "(wave) #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::referenceStringToSuffixString(item["field11"])} (#{ago})#{item["priority"] ? " (priority)" : ""} 🌊"
     end
 
-    # Waves::toStringForSearch(item)
-    def self.toStringForSearch(item)
-        ago = "#{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
-        isPendingStr = DoNotShowUntil::isVisible(item["uuid"]) ? " (pending)".green : ""
-        "(wave) #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::referenceStringToSuffixString(item["field11"])} (#{ago})#{isPendingStr} 🌊 [#{item["priority"]}]"
-    end
-
     # -------------------------------------------------------------------------
     # Data (2)
     # We do not display wave that are attached to a board (the board displays them)

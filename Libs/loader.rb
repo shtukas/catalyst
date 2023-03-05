@@ -174,6 +174,8 @@ require_relative "N1Data.rb"
 require_relative "NxTimeCapsules.rb"
 require_relative "N2KVStore.rb"
 require_relative "N3Objects.rb"
+require_relative "NxCherryPicks.rb"
+require_relative "NxLines.rb"
 
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"

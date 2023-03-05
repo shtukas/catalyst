@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | drop",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | cherry pick <n> | cherry line | drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -84,6 +84,23 @@ class Listing
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::dive()
+            return
+        end
+
+        if Interpreting::match("cherry line", input) then
+            line = LucilleCore::askQuestionAnswerAsString("line: ")
+            nxline = NxLines::issue(line)
+            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(nxline)
+            puts JSON.pretty_generate(cherrypick)
+            return
+        end
+
+        if Interpreting::match("cherry pick *", input) then
+            _, _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(item)
+            puts JSON.pretty_generate(cherrypick)
             return
         end
 
@@ -582,6 +599,8 @@ class Listing
     def self.items(board)
         [
             Anniversaries::listingItems(),
+            NxCherryPicks::listingItems(),
+            NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
             Waves::listingItemsPriority(board),
             NxOrbitals::listingItems(board),
             NxTodays::listingItems(),
@@ -593,6 +612,13 @@ class Listing
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
     end
 
     # Listing::printDesktop(spacecontrol)
@@ -631,58 +657,22 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3)
-
-        spacecontrol.putsline ""
-        spacecontrol.putsline The99Percent::line()
-        NxBoards::boardsOrdered().each{|item|
-            NxBoards::informationDisplay(store, spacecontrol, item["uuid"])
-        }
-
-        items = Listing::items(nil)
-
-        activeItems, items = items.partition{|item| NxBalls::itemIsActive(item) }
-        runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
-        parkedItems, items = items.partition{|item| item["parked"] }
-        orbitals, items = items.partition{|item| item["mikuType"] == "NxOrbital" }
-        todayxp, items = items.partition{|item| item["mikuType"] == "NxOndate" or item["mikuType"] == "NxToday" }
-
-        if parkedItems.size > 0 then
-            spacecontrol.putsline ""
-            parkedItems
-                .each{|item|
-                    store.register(item, false)
-                    spacecontrol.putsline Listing::itemToListingLine(store, item)
-                }
-        end
-
-        if orbitals.size > 0 then
-            spacecontrol.putsline ""
-            orbitals
-                .each{|item|
-                    store.register(item, false)
-                    spacecontrol.putsline Listing::itemToListingLine(store, item)
-                }
-        end
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3 - 3)
 
         Listing::printDesktop(spacecontrol)
 
-        if todayxp.size > 0 then
-            spacecontrol.putsline ""
-            todayxp
-                .each{|item|
-                    store.register(item, false)
-                    spacecontrol.putsline Listing::itemToListingLine(store, item)
-                }
-        end
-
         spacecontrol.putsline ""
 
-        (runningItems + pausedItems + items)
+        Listing::items(nil)
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
+
+        puts The99Percent::line()
+        NxBoards::boardsOrdered().each{|item|
+            NxBoards::informationDisplay(store, item["uuid"])
+        }
     end
 
     # Listing::mainProgram2Pure()
@@ -715,6 +705,7 @@ class Listing
                 NxBoards::timeManagement()
                 NxTimeCapsules::operate()
                 NxOpenCycles::dataManagement()
+                NxCherryPicks::dataManagement()
             end
 
             store = ItemStore.new()

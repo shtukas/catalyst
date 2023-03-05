@@ -1,0 +1,11 @@
+NxCherryPicks are the objects we use to structure a day. They are essentially pointers and set an execution order on objects of the listing. One reason they work well as defined is that we can now retrieve objects by their uuid considering our unified object repository.
+
+They are valid only until 23:59:59 on the day of creation
+
+NxCherryPick
+    "uuid"        => uuid
+    "mikuType"    => "NxCherryPick"
+    "unixtime"    => Float
+    "datetime"    => DateTime Iso 8601 UTC Zulu
+    "position"    => Float
+    "targetuuid"  => String

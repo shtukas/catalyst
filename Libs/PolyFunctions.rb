@@ -2,12 +2,21 @@ class PolyFunctions
 
     # PolyFunctions::itemsToBankingAccounts(item)
     def self.itemsToBankingAccounts(item)
+
         accounts = []
 
         accounts << {
             "description" => "self",
             "number"      => item["uuid"]
         }
+
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            if object.nil? then
+                return accounts
+            end
+            return accounts + PolyFunctions::itemsToBankingAccounts(object)
+        end
 
         if item["mikuType"] == "NxBoard" then
             accounts << {
@@ -56,6 +65,16 @@ class PolyFunctions
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
         end
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            if object.nil? then
+                return "(cherry picked) object not found"
+            end
+            return "(cherry picked @ #{item["position"]}) #{PolyFunctions::toString(object)}"
+        end
+        if item["mikuType"] == "NxLine" then
+            return "(line) #{item["description"]}"
+        end
         if item["mikuType"] == "NxOrbital" then
             return NxOrbitals::toString(item)
         end
@@ -82,13 +101,5 @@ class PolyFunctions
         end
         puts "I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c)"
-    end
-
-    # PolyFunctions::toStringForSearchListing(item)
-    def self.toStringForSearchListing(item)
-        if item["mikuType"] == "Wave" then
-            return Waves::toStringForSearch(item)
-        end
-        PolyFunctions::toString(item)
     end
 end

@@ -158,8 +158,8 @@ class NxBoards
         }
     end
 
-    # NxBoards::informationDisplay(store, spacecontrol, boarduuid) 
-    def self.informationDisplay(store, spacecontrol, boarduuid)
+    # NxBoards::informationDisplay(store, boarduuid) 
+    def self.informationDisplay(store, boarduuid)
         board = NxBoards::getItemOfNull(boarduuid)
         if board.nil? then
             puts "NxBoards::informationDisplay(boarduuid), board not found"
@@ -170,7 +170,7 @@ class NxBoards
         if NxBalls::itemIsRunning(board) or NxBalls::itemIsPaused(board) then
             line = line.green
         end
-        spacecontrol.putsline line
+        puts line
     end
 
     # NxBoards::listingProgram(board)
@@ -186,8 +186,6 @@ class NxBoards
 
             store = ItemStore.new()
 
-            items = Listing::items(board)
-
             store.register(board, false)
             line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
             if NxBalls::itemIsActive(board) then
@@ -197,7 +195,7 @@ class NxBoards
 
             Listing::printDesktop(spacecontrol)
 
-            items.each{|item|
+            Listing::items(board).each{|item|
                 store.register(item, Listing::canBeDefault(item)) 
                 spacecontrol.putsline(Listing::itemToListingLine(store, item))
             }

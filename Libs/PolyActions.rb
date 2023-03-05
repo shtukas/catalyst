@@ -25,6 +25,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            return if object.nil? 
+            return PolyActions::access(object)
+        end
+
+        if item["mikuType"] == "NxLine" then
+            puts "nxline: #{item["description"]}".green
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -94,6 +106,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            return if object.nil? 
+            PolyActions::done(object)
+            return
+        end
+
+        if item["mikuType"] == "NxLine" then
+            N3Objects::destroy(item["uuid"])
+            return
+        end
+
         if item["mikuType"] == "NxOrbital" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxOrbitals::destroy(item["uuid"])
@@ -142,6 +166,17 @@ class PolyActions
     def self.doubleDot(item)
 
         if item["mikuType"] == "NxBoard" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            return if object.nil? 
+            return PolyActions::doubleDot(object)
+        end
+
+        if item["mikuType"] == "NxLine" then
             PolyActions::access(item)
             return
         end
@@ -213,6 +248,12 @@ class PolyActions
         if item["mikuType"] == "NxBoard" then
             PolyActions::access(item)
             return
+        end
+
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            return if object.nil? 
+            return PolyActions::landing(object)
         end
 
         if item["mikuType"] == "Wave" then

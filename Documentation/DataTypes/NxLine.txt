@@ -1,0 +1,9 @@
+At the moment they are automatically created by cherry picking
+
+
+NxLine:
+    "uuid"        : String
+    "mikuType"    : "NxLine"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
