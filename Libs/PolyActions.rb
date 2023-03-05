@@ -108,8 +108,10 @@ class PolyActions
 
         if item["mikuType"] == "NxCherryPick" then
             object = N3Objects::getOrNull(item["targetuuid"])
-            return if object.nil? 
-            PolyActions::done(object)
+            if object then
+                PolyActions::done(object)
+            end
+            NxCherryPicks::destroy(item["uuid"])
             return
         end
 
