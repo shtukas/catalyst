@@ -599,6 +599,7 @@ class Listing
     def self.printDesktop(spacecontrol)
         dskt = Desktop::contents()
         if dskt and dskt.size > 0 then
+            spacecontrol.putsline ""
             dskt = dskt.lines.map{|line| "      #{line}" }.join()
             spacecontrol.putsline "Desktop:".green
             spacecontrol.putsline dskt
@@ -640,19 +641,17 @@ class Listing
 
         items = Listing::items(nil)
 
-        Listing::printDesktop(spacecontrol)
-
         activeItems, items = items.partition{|item| NxBalls::itemIsActive(item) }
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
         parkedItems, items = items.partition{|item| item["parked"] }
-
         orbitals, items = items.partition{|item| item["mikuType"] == "NxOrbital" }
+        todayxp, items = items.partition{|item| item["mikuType"] == "NxOndate" or item["mikuType"] == "NxToday" }
 
         if parkedItems.size > 0 then
             spacecontrol.putsline ""
             parkedItems
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
+                    store.register(item, false)
                     spacecontrol.putsline Listing::itemToListingLine(store, item)
                 }
         end
@@ -661,7 +660,18 @@ class Listing
             spacecontrol.putsline ""
             orbitals
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
+                    store.register(item, false)
+                    spacecontrol.putsline Listing::itemToListingLine(store, item)
+                }
+        end
+
+        Listing::printDesktop(spacecontrol)
+
+        if todayxp.size > 0 then
+            spacecontrol.putsline ""
+            todayxp
+                .each{|item|
+                    store.register(item, false)
                     spacecontrol.putsline Listing::itemToListingLine(store, item)
                 }
         end
