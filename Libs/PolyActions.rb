@@ -179,6 +179,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLine" then
+            NxBalls::start(item)
             PolyActions::access(item)
             return
         end
