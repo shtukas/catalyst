@@ -59,6 +59,9 @@ class PolyFunctions
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
+        if item["mikuType"] == "DeviceBackup" then
+            return item["announce"]
+        end
         if item["mikuType"] == "LambdX1" then
             return "(lambda) #{item["announce"]}"
         end

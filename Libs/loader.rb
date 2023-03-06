@@ -153,6 +153,7 @@ require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::isVisible(uid)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
+require_relative "DevicesBackups.rb"
 
 require_relative "Galaxy.rb"
 

@@ -10,6 +10,12 @@ class PolyActions
 
         # types in alphabetical order
 
+        if item["mikuType"] == "DeviceBackup" then
+            puts item["announce"]
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "LambdX1" then
             item["lambda"].call()
             return
@@ -91,6 +97,11 @@ class PolyActions
 
         # order: alphabetical order
 
+        if item["mikuType"] == "DeviceBackup" then
+            DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["instruction"]["period"] * 86400)
+            return
+        end
+
         if item["mikuType"] == "LambdX1" then
             return
         end
@@ -166,6 +177,11 @@ class PolyActions
 
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
+
+        if item["mikuType"] == "DeviceBackup" then
+            PolyActions::access(item)
+            return
+        end
 
         if item["mikuType"] == "NxBoard" then
             PolyActions::access(item)
@@ -290,6 +306,13 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
+
+        if item["mikuType"] == "DeviceBackup" then
+            puts "There is no description edit for DeviceBackups"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         puts "edit description:"
         item["description"] = CommonUtils::editTextSynchronously(item["description"])
         N3Objects::commit(item)
