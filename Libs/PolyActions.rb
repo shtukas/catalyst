@@ -175,7 +175,9 @@ class PolyActions
         if item["mikuType"] == "NxCherryPick" then
             object = N3Objects::getOrNull(item["targetuuid"])
             return if object.nil? 
-            return PolyActions::doubleDot(object)
+            NxBalls::start(item)
+            PolyActions::start(object)
+            return
         end
 
         if item["mikuType"] == "NxLine" then
