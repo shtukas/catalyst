@@ -30,7 +30,7 @@ class DevicesBackups
                 {
                     "uuid"       => instruction["operation"],
                     "mikuType"   => "DeviceBackup",
-                    "announce"   => instruction["operation"],
+                    "announce"   => "(backup) #{instruction["operation"]}",
                     "instruction" => instruction
                 }
             }
