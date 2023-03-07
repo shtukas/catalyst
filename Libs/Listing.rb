@@ -589,8 +589,8 @@ class Listing
         "(scheduler1) #{a1.join(" ")}"
     end
 
-    # Listing::sheduler1ListingItem()
-    def self.sheduler1ListingItem()
+    # Listing::sheduler1Indicator()
+    def self.sheduler1Indicator()
         {
             "uuid"     => "bdaa4f5b-2a67-42c3-98fc-57d8c7a531bf",
             "mikuType" => "Scheduler1Listing",
@@ -631,7 +631,8 @@ class Listing
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
                     NxBoards::listingItems(),
-                   Listing::sheduler1Items(nil)
+                    [Listing::sheduler1Indicator()],
+                    Listing::sheduler1Items(nil)
                 ]
             else
                 [
