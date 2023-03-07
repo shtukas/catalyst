@@ -245,6 +245,7 @@ class Waves
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then
                     Waves::destroy(item["uuid"])
+                    return
                 end
             end
         }
