@@ -148,7 +148,7 @@ class N2KVStore
             db3.busy_timeout = 117
             db3.busy_handler { |count| true }
             db3.results_as_hash = true
-            db3.execute("create table records (key string primary key, value string)", [])
+            db3.execute("create table records (key string, value string)", [])
 
             # We move all the records from db1 to db3
 
