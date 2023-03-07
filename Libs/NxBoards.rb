@@ -137,6 +137,7 @@ class NxBoards
         board1s, board2s = boards.partition{|board| NxBalls::itemIsActive(board) }
 
         board2s = board2s
+            .select{|board| DoNotShowUntil::isVisible(board["uuid"]) }
             .map {|board|
                 {
                     "board" => board,
