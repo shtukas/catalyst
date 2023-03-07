@@ -132,17 +132,23 @@ class NxBoards
 
     # NxBoards::listingItems()
     def self.listingItems()
-        NxBoards::items()
+        boards = NxBoards::items()
+
+        board1s, board2s = boards.partition{|board| NxBalls::itemIsActive(board) }
+
+        board2s = board2s
             .map {|board|
                 {
                     "board" => board,
                     "cr"    => NxBoards::completionRatio(board)
                 }
             }
-            .select{|packet| packet["cr"] < 1 or NxBalls::itemIsActive(packet["board"]) }
+            .select{|packet| packet["cr"] < 1 }
             .sort{|p1, p2| p1["cr"] <=> p2["cr"] }
-            .map {|packet|
-                board = packet["board"]
+            .map {|packet| packet["board"] }
+
+        (board1s + board2s)
+            .map {|board|
                 [board] + Listing::items(board)
             }
             .flatten
