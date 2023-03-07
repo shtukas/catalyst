@@ -643,7 +643,7 @@ class Listing
             end
             items
                 .flatten
-                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item["uuid"]) }
+                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item) }
                 .reduce([]){|selected, item|
                     if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
                         selected
