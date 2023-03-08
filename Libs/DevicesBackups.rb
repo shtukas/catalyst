@@ -24,7 +24,6 @@ class DevicesBackups
 
     # DevicesBackups::listingItems()
     def self.listingItems()
-        return [] if !Config::isPrimaryInstance()
         DevicesBackups::instructions()
             .map{|instruction|
                 {
