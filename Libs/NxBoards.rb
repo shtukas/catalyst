@@ -172,7 +172,7 @@ class NxBoards
 
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimeCapsule)
             # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
-            if BankCore::getValue(item["capsule"]) >= item["hours"] and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
+            if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 puts "resetting board's capsule time commitment: #{item["description"]}"
                 BankCore::put(item["capsule"], -item["hours"]*3600)
                 item["lastResetTime"] = Time.new.to_i
