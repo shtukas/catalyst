@@ -27,9 +27,9 @@ class DevicesBackups
         DevicesBackups::instructions()
             .map{|instruction|
                 {
-                    "uuid"       => instruction["operation"],
-                    "mikuType"   => "DeviceBackup",
-                    "announce"   => "(backup) #{instruction["operation"]}",
+                    "uuid"        => instruction["operation"],
+                    "mikuType"    => "DeviceBackup",
+                    "announce"    => "(backup) #{instruction["operation"]}",
                     "instruction" => instruction
                 }
             }
