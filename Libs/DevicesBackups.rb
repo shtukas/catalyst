@@ -24,13 +24,12 @@ class DevicesBackups
 
     # DevicesBackups::listingItems()
     def self.listingItems()
-        return [] if !Config::isPrimaryInstance()
         DevicesBackups::instructions()
             .map{|instruction|
                 {
-                    "uuid"       => instruction["operation"],
-                    "mikuType"   => "DeviceBackup",
-                    "announce"   => "(backup) #{instruction["operation"]}",
+                    "uuid"        => instruction["operation"],
+                    "mikuType"    => "DeviceBackup",
+                    "announce"    => "(backup) #{instruction["operation"]}",
                     "instruction" => instruction
                 }
             }

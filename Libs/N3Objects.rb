@@ -116,7 +116,7 @@ class N3Objects
         end
 
         while N3Objects::getExistingFilepaths().size > IndexFileMaxCount do
-            filepath1, filepath2 = N3Objects::getExistingFilepaths().sort.reverse.take(2)
+            filepath1, filepath2 = N3Objects::getExistingFilepaths().sort.reverse.take(2).reverse
 
             filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
             db3 = SQLite3::Database.new(filepath)
@@ -143,11 +143,8 @@ class N3Objects
             db2.busy_handler { |count| true }
             db2.results_as_hash = true
             db2.execute("select * from objects", []) do |row|
-                begin
-                    db3.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
-                rescue SQLite3::ConstraintException
-                    puts "> found a duplicate uuid when moving this: #{row}"
-                end
+                db3.execute "delete from objects where uuid=?", [row["uuid"]]
+                db3.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
             end
             db2.close
 
