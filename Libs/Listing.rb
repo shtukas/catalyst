@@ -656,8 +656,8 @@ class Listing
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{BoardsAndItems::toStringSuffix(item).green} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
-        if item["parked"] then
+        line = "#{storePrefix}#{BoardsAndItems::toStringSuffix(item)} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
+        if !Listing::canBeDefault(item) then
             line = "#{line} (parked)".yellow
         end
         if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
