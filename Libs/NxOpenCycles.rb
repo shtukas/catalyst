@@ -18,7 +18,7 @@ class NxOpenCycles
                     if N3Objects::getOrNull(item["uuid"]) then
                         # nothing to do
                     else
-                        FileUtils.rm(filepath)
+                        FileUtils.rm(markfilepath)
                         return
                     end
                 else

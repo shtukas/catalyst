@@ -141,14 +141,14 @@ class N2KVStore
         end
 
         while N2KVStore::existingFilepaths().size > IndexFileMaxCount do
-            filepath1, filepath2 = N2KVStore::existingFilepaths().sort.reverse.take(2)
+            filepath1, filepath2 = N2KVStore::existingFilepaths().sort.reverse.take(2).reverse
 
             filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
             db3 = SQLite3::Database.new(filepath)
             db3.busy_timeout = 117
             db3.busy_handler { |count| true }
             db3.results_as_hash = true
-            db3.execute("create table records (key string, value string)", [])
+            db3.execute("create table records (key string primary key, value string)", [])
 
             # We move all the records from db1 to db3
 
@@ -168,6 +168,7 @@ class N2KVStore
             db2.busy_handler { |count| true }
             db2.results_as_hash = true
             db2.execute("select * from records", []) do |row|
+                db3.execute "delete from records where key=?", [row["key"]]
                 db3.execute "insert into records (key, value) values (?, ?)", [row["key"], row["value"]] # we copy the value as encoded string without decoding it
             end
             db2.close
