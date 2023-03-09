@@ -1,10 +1,10 @@
 Catalyst items are json object with at least a uuid ("uuid") and a miku type ("mikuType"). 
 
-
 Cross types conventions:
 
     - "field11"   : coredata reference string
     - "boarduuid" : board uuid (1)
-    - "parked"    : boolean # true if the item is parked in the listing
+    - "parking"   : null or unixtime at which the item will no longer be parked
+                    In parking, the item is skipped and is displayed in yellow.
 
 (1) Not for NxBoards.
