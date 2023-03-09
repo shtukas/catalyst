@@ -150,7 +150,8 @@ class NxBoards
 
         (board1s + board2s)
             .map {|board|
-                [board] + Listing::items(board)
+                #[board] + Listing::items(board)
+                Listing::items(board)
             }
             .flatten
     end
