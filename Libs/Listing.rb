@@ -639,6 +639,7 @@ class Listing
                 ]
             else
                 [
+                    Desktop::listingItems(),
                     Waves::listingItemsPriority(board),
                     NxOrbitals::listingItems(board),
                     Listing::sheduler1Items(board)
