@@ -21,12 +21,14 @@ class NxOrbitals
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxOrbital",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
-            "description" => description
+            "description" => description,
+            "field11"     => coredataref
         }
         puts JSON.pretty_generate(item)
         NxOrbitals::commit(item)
