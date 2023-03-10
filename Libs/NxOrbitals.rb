@@ -37,7 +37,7 @@ class NxOrbitals
 
     # NxOrbitals::toString(item)
     def self.toString(item)
-        "(orbital) #{item["description"]}"
+        "(orbital) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # NxOrbitals::listingItems(board)
