@@ -157,6 +157,7 @@ class N2KVStore
             db1.busy_handler { |count| true }
             db1.results_as_hash = true
             db1.execute("select * from records", []) do |row|
+                db3.execute "delete from records where key=?", [row["key"]]
                 db3.execute "insert into records (key, value) values (?, ?)", [row["key"], row["value"]] # we copy the value as encoded string without decoding it
             end
             db1.close

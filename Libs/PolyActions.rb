@@ -92,7 +92,7 @@ class PolyActions
         NxBalls::stop(item)
        
         # Removing park, if any.
-        item["parked"] = false
+        item["parking"] = nil
         item["skipped"] = false
 
         # order: alphabetical order

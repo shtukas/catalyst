@@ -19,7 +19,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | pick <n> | pick line | unpick <n> |drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
@@ -51,6 +51,14 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
+            return
+        end
+
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            item["parking"] = Time.new.to_i
+            N3Objects::commit(item)
             return
         end
 
@@ -200,8 +208,8 @@ class Listing
             return if item.nil?
             unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
-            if item["parked"] then
-                item["parked"] = false
+            if item["parking"] then
+                item["parking"] = nil
                 N3Objects::commit(item)
             end
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
@@ -319,32 +327,6 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            return
-        end
-
-        if Interpreting::match("park", input) then
-            item = store.getDefault()
-            return if item.nil?
-            item["parked"] = true
-            N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("unpark *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            item["parked"] = false
-            N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("park *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            item["parked"] = true
-            N3Objects::commit(item)
             return
         end
 
@@ -652,7 +634,7 @@ class Listing
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
                     NxBoards::listingItems(),
-                    [Listing::sheduler1Indicator()],
+                    #[Listing::sheduler1Indicator()],
                     Listing::sheduler1Items(nil)
                 ]
             else
@@ -677,9 +659,9 @@ class Listing
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{BoardsAndItems::toStringSuffix(item).green} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
-        if item["parked"] then
-            line = "#{line} (parked)".yellow
+        line = "#{storePrefix}#{BoardsAndItems::toStringSuffix(item)} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
+        if !Listing::canBeDefault(item) then
+            line = line.yellow
         end
         if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
             line = line.green
@@ -689,8 +671,7 @@ class Listing
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
-        return false if item["parked"]
-        return false if item["mikuType"] == "NxOrbital"
+        return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*8)
         return false if item["mikuType"] == "Scheduler1Listing"
         true
     end
