@@ -129,6 +129,7 @@ class BankCore
         db1.busy_handler { |count| true }
         db1.results_as_hash = true
         db1.execute("select * from bank", []) do |row|
+            db2.execute "delete from bank where recordId = ?", [row["recordId"]]
             db2.execute "insert into bank (recordId, uuid, unixtime, date, value) values (?, ?, ?, ?, ?)", [row["recordId"], row["uuid"], row["unixtime"], row["date"], row["value"]]
         end
 
