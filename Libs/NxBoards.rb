@@ -58,11 +58,11 @@ class NxBoards
         dayTheoreticalInHours = item["hours"].to_f/5
         todayDoneInHours = BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600
         completionRatio = NxBoards::completionRatio(item)
-        str0 = "(day: #{("%5.2f" % todayDoneInHours).to_s.green} of #{"%5.2f" % dayTheoreticalInHours}, cr: #{("%4.2f" % completionRatio).to_s.green})"
+        str0 = "(day: #{("%5.2f" % todayDoneInHours).to_s} of #{"%5.2f" % dayTheoreticalInHours}, cr: #{("%4.2f" % completionRatio).to_s})"
 
         # but we use the capsule value for the target computations
         capsuleValueInHours = BankCore::getValue(item["capsule"]).to_f/3600
-        str1 = "(done #{("%5.2f" % capsuleValueInHours).to_s.green} out of #{item["hours"]})"
+        str1 = "(done #{("%5.2f" % capsuleValueInHours).to_s} out of #{item["hours"]})"
 
         hasReachedObjective = capsuleValueInHours >= item["hours"]
         timeSinceResetInDays = (Time.new.to_i - item["lastResetTime"]).to_f/86400
