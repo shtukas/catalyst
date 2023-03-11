@@ -164,11 +164,12 @@ class NxBoards
         return if !Config::isPrimaryInstance()
         NxBoards::items().each{|item|
 
-            # If the board's capsule is over flowing, meaning its positive value is more than 50% of the time commitment for the board
-            # Meaning we did more than 100% of time commitment then we issue NxTimeCapsules
-            if BankCore::getValue(item["capsule"]) >= 1.5*item["hours"]*3600 then
-                puts "NxBoards::timeManagement(), code to be written"
-                exit
+            # If at time of reset the board's capsule is over flowing, meaning
+            # its positive value is more than 50% of the time commitment for the board,
+            # meaning we did more than 100% of time commitment then we issue NxTimeCapsules
+            if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
+                overflow = 0.5*item["hours"]*3600
+                NxTimeCapsules::smooth_commit(item["capsule"], -overflow, 20)
             end
 
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimeCapsule)

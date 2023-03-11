@@ -11,15 +11,34 @@ class NxTimeCapsules
         }
     end
 
-    # NxTimeCapsules::issueCapsule(unixtime, account, value)
-    def self.issueCapsule(unixtime, account, value)
-        item = {
+    # NxTimeCapsules::makeCapsule(unixtime, account, value)
+    def self.makeCapsule(unixtime, account, value)
+        {
             "uuid"     => SecureRandom.uuid,
             "mikuType" => "NxTimeCapsule",
             "unixtime" => unixtime,
             "account"  => account,
             "value"    => value
         }
-        N3Objects::commit(item)
+    end
+
+    # NxTimeCapsules::smooth(accountnumber, value, periodInDays)
+    def self.smooth(accountnumber, value, periodInDays)
+        capsules = []
+        capsules << NxTimeCapsules::makeCapsule(Time.new.to_i, accountnumber, value)
+        unitpayment = -value.to_f/periodInDays
+        (1..periodInDays).each{|i|
+            capsules << NxTimeCapsules::makeCapsule(Time.new.to_i + 86400*i, accountnumber, unitpayment)
+        }
+        capsules
+    end
+
+    # NxTimeCapsules::smooth_commit(accountnumber, value, periodInDays)
+    def self.smooth_commit(accountnumber, value, periodInDays)
+        NxTimeCapsules::smooth(accountnumber, value, periodInDays).each{|capsule|
+            capsule["datetime"] = Time.at(capsule["unixtime"]).utc.iso8601
+            puts JSON.pretty_generate(capsule)
+            N3Objects::commit(capsule)
+        }
     end
 end
