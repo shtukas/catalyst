@@ -19,7 +19,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | note (<n>) | destroy <n>",
+            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | pick <n> | pick line | unpick <n> |drop",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
@@ -110,6 +110,16 @@ class Listing
             return
         end
 
+        if Interpreting::match("unboard *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item["boarduuid"] = nil
+            N3Objects::commit(item)
+            return
+        end
+
+
         if Interpreting::match("cherry line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
@@ -124,6 +134,17 @@ class Listing
             return if item.nil?
             cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(item)
             puts JSON.pretty_generate(cherrypick)
+            return
+        end
+
+        if Interpreting::match("coredata *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
+            return if reference.nil?
+            item["field11"] = reference
+            N3Objects::commit(item)
             return
         end
 

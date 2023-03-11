@@ -150,8 +150,11 @@ class NxBoards
 
         (board1s + board2s)
             .map {|board|
-                #[board] + Listing::items(board)
-                Listing::items(board)
+                [
+                    Waves::listingItemsPriority(board),
+                    NxOrbitals::listingItems(board),
+                    Listing::sheduler1Items(board)
+                ].flatten
             }
             .flatten
     end
@@ -217,8 +220,6 @@ class NxBoards
                 line = line.green
             end
             spacecontrol.putsline line
-
-            Listing::printDesktop(spacecontrol)
 
             Listing::items(board).each{|item|
                 store.register(item, Listing::canBeDefault(item)) 
