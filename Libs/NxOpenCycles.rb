@@ -40,6 +40,7 @@ class NxOpenCycles
                             return
                         end
                         item["field11"] = "open-cycle:#{File.basename(folderpath)}"
+                        item = BoardsAndItems::interactivelyOffersToAttach(item)
                         N3Objects::commit(item)
                         File.open(markfilepath, "w"){|f|
                             f.puts(JSON.pretty_generate(item))
