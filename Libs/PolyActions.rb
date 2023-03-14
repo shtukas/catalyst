@@ -48,6 +48,16 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOrbital" then
+            CoreData::access(item["field11"])
+            return
+        end
+
+        if item["mikuType"] == "NxFire" then
+            CoreData::access(item["field11"])
+            return
+        end
+
         if item["mikuType"] == "NxBoard" then
             puts NxBoards::toString(item)
             actions = ["set hours", "access items"]
@@ -66,10 +76,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTail" then
             NxTails::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxToday" then
             return
         end
 
@@ -117,6 +123,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOndate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxOndates::access(item)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxCherryPick" then
             object = N3Objects::getOrNull(item["targetuuid"])
             if object then
@@ -138,16 +151,16 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
+        if item["mikuType"] == "NxFire" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOndates::destroy(item["uuid"])
+                NxOrbitals::destroy(item["uuid"])
             end
             return
         end
 
-        if item["mikuType"] == "NxToday" then
+        if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxTodays::destroy(item["uuid"])
+                NxOndates::destroy(item["uuid"])
             end
             return
         end
@@ -196,46 +209,34 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOndate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxOndates::access(item)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxOrbital" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxFire" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxLine" then
             NxBalls::start(item)
             PolyActions::access(item)
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
-            NxBalls::start(item)
-            NxOndates::access(item)
-            options = ["done (destroy)", "run in background", "do not display until"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", options)
-            return if option.nil?
-            if option == "done (destroy)" then
-                NxOndates::destroy(todo["uuid"])
-            end
-            if option == "run in background" then
-                return
-            end
-            if option == "redate" then
-                NxOndates::redate(item)
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTail" then
             NxBalls::start(item)
             NxTails::access(item)
-            options = ["done (destroy)", "do not display until", "keep running"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", options)
-            return if option.nil?
-            if option == "done (destroy)" then
-                NxTails::destroy(item["uuid"])
-            end
-            if option == "do not show until" then
-                unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
-                return if unixtime.nil?
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            end
-            if option == "keep running" then
-            end
             return
         end
 
@@ -321,14 +322,14 @@ class PolyActions
     # PolyActions::dropmaking(useCoreData: true)
     def self.dropmaking(useCoreData: true)
         item = nil
-        options = ["orbital", "top", "today", "ondate", "wave", "countdown", "tail"]
+        options = ["fire", "orbital", "today", "ondate", "wave", "countdown", "tail"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
+        if option == "fire" then
+            item = NxFires::interactivelyIssueNullOrNull(useCoreData: useCoreData)
+        end
         if option == "orbital" then
             item = NxOrbitals::interactivelyIssueNullOrNull(useCoreData: useCoreData)
-        end
-        if option == "top" then
-            item = NxTodays::interactivelyIssueNullOrNull(useCoreData: useCoreData)
         end
         if option == "today" then
             item = NxOndates::interactivelyIssueNewTodayOrNull(useCoreData: useCoreData)

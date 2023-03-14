@@ -78,6 +78,9 @@ class PolyFunctions
             end
             return "(cherry picked @ #{item["position"]}) #{PolyFunctions::toString(object)}"
         end
+        if item["mikuType"] == "NxFire" then
+            return NxFires::toString(item)
+        end
         if item["mikuType"] == "NxLine" then
             return "(line) #{item["description"]}"
         end
@@ -92,9 +95,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTail" then
             return NxTails::toString(item)
-        end
-        if item["mikuType"] == "NxToday" then
-            return NxTodays::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]

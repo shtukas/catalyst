@@ -1,22 +1,22 @@
 
-class NxTodays
+class NxFires
 
-    # NxTodays::items()
+    # NxFires::items()
     def self.items()
-        N3Objects::getMikuType("NxToday")
+        N3Objects::getMikuType("NxFire")
     end
 
-    # NxTodays::commit(item)
+    # NxFires::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # NxTodays::destroy(uuid)
+    # NxFires::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
 
-    # NxTodays::interactivelyIssueNullOrNull(useCoreData: true)
+    # NxFires::interactivelyIssueNullOrNull(useCoreData: true)
     def self.interactivelyIssueNullOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -24,25 +24,25 @@ class NxTodays
         coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxToday",
+            "mikuType"    => "NxFire",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref
         }
         puts JSON.pretty_generate(item)
-        NxTodays::commit(item)
-        BoardsAndItems::attachToItem(item, board)
+        NxFires::commit(item)
         item
     end
 
-    # NxTodays::toString(item)
+    # NxFires::toString(item)
     def self.toString(item)
-        "(today) (#{"%5.2f" % item["ordinal"]}) #{item["description"]}"
+        "(fire) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
-    # NxTodays::listingItems()
-    def self.listingItems()
-        NxTodays::items()
+    # NxFires::listingItems(board)
+    def self.listingItems(board)
+        NxFires::items()
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
     end
 end

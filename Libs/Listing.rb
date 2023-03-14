@@ -20,7 +20,9 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | pick <n> | pick line | unpick <n> |drop",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | fire",
+            "[makers] drop",
+            "[makers] pick <n> | pick line | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -323,6 +325,14 @@ class Listing
             return
         end
 
+        if Interpreting::match("fire", input) then
+            item = NxFires::interactivelyIssueNullOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
         if Interpreting::match("pause", input) then
             item = store.getDefault()
             return if item.nil?
@@ -418,13 +428,6 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
-            return
-        end
-
-        if Interpreting::match("today", input) then
-            item = NxTodays::interactivelyIssueNullOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -629,8 +632,8 @@ class Listing
                     Desktop::listingItems(),
                     Waves::listingItemsPriority(nil),
                     DevicesBackups::listingItems(),
+                    NxFires::listingItems(nil),
                     NxOrbitals::listingItems(nil),
-                    NxTodays::listingItems(),
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
                     NxBoards::listingItems(),
