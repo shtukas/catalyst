@@ -644,6 +644,7 @@ class Listing
                 [
                     Waves::listingItemsPriority(board),
                     NxOrbitals::listingItems(board),
+                    NxFires::listingItems(board),
                     Listing::sheduler1Items(board)
                 ]
             end
