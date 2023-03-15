@@ -122,7 +122,7 @@ class Listing
         end
 
 
-        if Interpreting::match("cherry line", input) then
+        if Interpreting::match("pick line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
             cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(nxline)
@@ -130,7 +130,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("cherry *", input) then
+        if Interpreting::match("pick *", input) then
             _, _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
