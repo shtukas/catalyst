@@ -140,7 +140,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLine" then
-            N3Objects::destroy(item["uuid"])
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                N3Objects::destroy(item["uuid"])
+            end
             return
         end
 
