@@ -1,12 +1,17 @@
 
 class NxBalls
 
+    # NxBalls::pathToNyxBalls()
+    def self.pathToNyxBalls()
+        "#{Config::pathToGalaxy()}/DataBank/catalyst/NxBalls"
+    end
+
     # ---------------------------------
     # IO
 
     # NxBalls::commitBall(item, nxball)
     def self.commitBall(item, nxball)
-        filepath = "#{Config::pathToDataCenter()}/NxBalls/#{item["uuid"]}.ball"
+        filepath = "#{NxBalls::pathToNyxBalls()}/#{item["uuid"]}.ball"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(nxball)) }
     end
 
@@ -23,14 +28,14 @@ class NxBalls
 
     # NxBalls::getNxballOrNull(item)
     def self.getNxballOrNull(item)
-        filepath = "#{Config::pathToDataCenter()}/NxBalls/#{item["uuid"]}.ball"
+        filepath = "#{NxBalls::pathToNyxBalls()}/#{item["uuid"]}.ball"
         return nil if !File.exist?(filepath)
         JSON.parse(IO.read(filepath))
     end
 
     # NxBalls::destroyNxBall(item)
     def self.destroyNxBall(item)
-        filepath = "#{Config::pathToDataCenter()}/NxBalls/#{item["uuid"]}.ball"
+        filepath = "#{NxBalls::pathToNyxBalls()}/#{item["uuid"]}.ball"
         return nil if !File.exist?(filepath)
         FileUtils.rm(filepath)
     end
