@@ -39,8 +39,8 @@ class NxTimeCapsules
             capsule["datetime"] = Time.at(capsule["unixtime"]).utc.iso8601
             puts "NxTimeCapsule: account: #{accountnumber}; date: #{capsule["datetime"]}; #{value}".green
             puts JSON.pretty_generate(capsule)
+            LucilleCore::pressEnterToContinue()
             N3Objects::commit(capsule)
-            sleep 1
         }
     end
 end
