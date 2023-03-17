@@ -24,7 +24,7 @@ class N2KVStore
 
     # N2KVStore::renameFile(filepath)
     def self.renameFile(filepath)
-        filepath2 = "#{N2KVStore::folderpath()}/#{File.basename(filepath)[0, 22]}-#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
+        filepath2 = "#{N2KVStore::folderpath()}/#{File.basename(filepath)[0, 22]}@#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
         FileUtils.mv(filepath, filepath2)
     end
 
@@ -152,7 +152,7 @@ class N2KVStore
     def self.set(key, value)
         filepathszero = N2KVStore::existingFilepaths()
 
-        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
+        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }

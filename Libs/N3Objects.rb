@@ -25,7 +25,7 @@ class N3Objects
 
     # N3Objects::renameFile(filepath)
     def self.renameFile(filepath)
-        filepathv2 = "#{N3Objects::folderpath()}/#{File.basename(filepath)[0, 22]}-#{CommonUtils::timeStringL22()}.sqlite3"
+        filepathv2 = "#{N3Objects::folderpath()}/#{File.basename(filepath)[0, 22]}@#{CommonUtils::timeStringL22()}.sqlite3"
         FileUtils.mv(filepath, filepathv2)
     end
 
@@ -133,7 +133,7 @@ class N3Objects
         filepathszero = N3Objects::getExistingFilepaths()
 
         # Make a new file for the object
-        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
+        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
