@@ -100,6 +100,9 @@ class N3Objects
         N3Objects::deleteAtFiles(filepathszero, uuid)
 
         if N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl * 2 then
+
+            puts "N3Objects file management".green
+
             while N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl do
 
                 # We are taking the first two files (therefore the two oldest files and emptying the oldest)

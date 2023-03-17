@@ -9,8 +9,7 @@ class N2KVStore
     # --------------------------------------
     # Utils
 
-    IndexSplitSymbol = ","
-    IndexFileMaxCount = 32
+    IndexFileCountControlBase = 32
 
     # N2KVStore::folderpath()
     def self.folderpath()
@@ -25,12 +24,7 @@ class N2KVStore
 
     # N2KVStore::renameFile(filepath)
     def self.renameFile(filepath)
-        tokens = File.basename(filepath).gsub(".sqlite", "").split(IndexSplitSymbol) # we remove the .sqlite and split on `;`
-        if tokens.size == 2 then
-            filepath2 = "#{N2KVStore::folderpath()}/#{tokens[0]}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
-        else
-            filepath2 = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
-        end
+        filepath2 = "#{N2KVStore::folderpath()}/#{File.basename(filepath)[0, 22]}-#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
         FileUtils.mv(filepath, filepath2)
     end
 
@@ -115,70 +109,55 @@ class N2KVStore
     def self.set(key, value)
         filepathszero = N2KVStore::existingFilepaths()
 
-        if filepathszero.size < IndexFileMaxCount then
-            filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("create table records (key string primary key, value string)", [])
-            db.execute "insert into records (key, value) values (?, ?)", [key, JSON.generate(value)]
-            db.close
-            N2KVStore::deleteKeyInFiles(filepathszero, key)
-        else
-            filepath = filepathszero.pop
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.transaction
-            db.execute "delete from records where key=?", [key]
-            db.execute "insert into records (key, value) values (?, ?)", [key, JSON.generate(value)]
-            db.commit
-            db.close
-            N2KVStore::renameFile(filepath)
-            N2KVStore::deleteKeyInFiles(filepathszero, key)
-        end
+        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("create table records (key string primary key, value string)", [])
+        db.execute "insert into records (key, value) values (?, ?)", [key, JSON.generate(value)]
+        db.close
 
-        while N2KVStore::existingFilepaths().size > IndexFileMaxCount do
-            filepath1, filepath2 = N2KVStore::existingFilepaths().sort.reverse.take(2).reverse
+        N2KVStore::deleteKeyInFiles(filepathszero, key)
 
-            filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
-            db3 = SQLite3::Database.new(filepath)
-            db3.busy_timeout = 117
-            db3.busy_handler { |count| true }
-            db3.results_as_hash = true
-            db3.execute("create table records (key string primary key, value string)", [])
+        if N2KVStore::existingFilepaths().size > IndexFileCountControlBase * 2 then
 
-            # We move all the records from db1 to db3
+            puts "N2KVStore file management".green
 
-            db1 = SQLite3::Database.new(filepath1)
-            db1.busy_timeout = 117
-            db1.busy_handler { |count| true }
-            db1.results_as_hash = true
-            db1.execute("select * from records", []) do |row|
-                db3.execute "delete from records where key=?", [row["key"]]
-                db3.execute "insert into records (key, value) values (?, ?)", [row["key"], row["value"]] # we copy the value as encoded string without decoding it
+            while N2KVStore::existingFilepaths().size > IndexFileCountControlBase do
+                filepath1, filepath2 = N2KVStore::existingFilepaths().sort.take(2)
+
+                keyExistsAtFile = lambda {|db, key|
+                    flag = false
+                    db.busy_timeout = 117
+                    db.busy_handler { |count| true }
+                    db.results_as_hash = true
+                    db.execute("select key from objects where key=?", [key]) do |row|
+                        flag = true
+                    end
+                    flag
+                }
+
+                db1 = SQLite3::Database.new(filepath1)
+                db2 = SQLite3::Database.new(filepath2)
+
+                # We move all the records from db1 to db2
+
+                db1.busy_timeout = 117
+                db1.busy_handler { |count| true }
+                db1.results_as_hash = true
+                db1.execute("select * from records", []) do |row|
+                    next if keyExistsAtFile(db2, row["key"]) # The assumption is that the one in file2 is newer
+                    db2.execute "insert into records (key, value) values (?, ?)", [row["key"], row["value"]] # we copy the value as encoded string without decoding it
+                end
+
+                db1.close
+                db2.close
+
+                # Let's now delete the two files
+                FileUtils.rm(filepath1)
+                N2KVStore::renameFile(filepath2)
             end
-            db1.close
-
-            # We move all the records from db2 to db3
-
-            db2 = SQLite3::Database.new(filepath2)
-            db2.busy_timeout = 117
-            db2.busy_handler { |count| true }
-            db2.results_as_hash = true
-            db2.execute("select * from records", []) do |row|
-                db3.execute "delete from records where key=?", [row["key"]]
-                db3.execute "insert into records (key, value) values (?, ?)", [row["key"], row["value"]] # we copy the value as encoded string without decoding it
-            end
-            db2.close
-
-            db3.close
-
-            # Let's now delete the two files
-            FileUtils.rm(filepath1)
-            FileUtils.rm(filepath2)
         end
     end
 
