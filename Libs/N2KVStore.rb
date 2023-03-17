@@ -102,24 +102,8 @@ class N2KVStore
         value
     end
 
-    # --------------------------------------
-    # Interface
-
-    # N2KVStore::set(key, value)
-    def self.set(key, value)
-        filepathszero = N2KVStore::existingFilepaths()
-
-        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("create table records (key string primary key, value string)", [])
-        db.execute "insert into records (key, value) values (?, ?)", [key, JSON.generate(value)]
-        db.close
-
-        N2KVStore::deleteKeyInFiles(filepathszero, key)
-
+    # N2KVStore::fileManagement()
+    def self.fileManagement()
         if N2KVStore::existingFilepaths().size > IndexFileCountControlBase * 2 then
 
             puts "N2KVStore file management".green
@@ -159,6 +143,25 @@ class N2KVStore
                 N2KVStore::renameFile(filepath2)
             end
         end
+    end
+
+    # --------------------------------------
+    # Interface
+
+    # N2KVStore::set(key, value)
+    def self.set(key, value)
+        filepathszero = N2KVStore::existingFilepaths()
+
+        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("create table records (key string primary key, value string)", [])
+        db.execute "insert into records (key, value) values (?, ?)", [key, JSON.generate(value)]
+        db.close
+
+        N2KVStore::deleteKeyInFiles(filepathszero, key)
     end
 
     # N2KVStore::getOrNull(key)

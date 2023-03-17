@@ -80,25 +80,8 @@ class N3Objects
         }
     end
 
-    # N3Objects::update(uuid, mikuType, object)
-    def self.update(uuid, mikuType, object)
-
-        # Make a record of the existing files
-        filepathszero = N3Objects::getExistingFilepaths()
-
-        # Make a new file for the object
-        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("create table objects (uuid string primary key, mikuType string, object string)", [])
-        db.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [uuid, mikuType, JSON.generate(object)]
-        db.close
-
-        # Remove the object from the previously existing files
-        N3Objects::deleteAtFiles(filepathszero, uuid)
-
+    # N3Objects::fileManagement()
+    def self.fileManagement()
         if N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl * 2 then
 
             puts "N3Objects file management".green
@@ -141,6 +124,26 @@ class N3Objects
                 N3Objects::renameFile(filepath2)
             end
         end
+    end
+
+    # N3Objects::update(uuid, mikuType, object)
+    def self.update(uuid, mikuType, object)
+
+        # Make a record of the existing files
+        filepathszero = N3Objects::getExistingFilepaths()
+
+        # Make a new file for the object
+        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("create table objects (uuid string primary key, mikuType string, object string)", [])
+        db.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [uuid, mikuType, JSON.generate(object)]
+        db.close
+
+        # Remove the object from the previously existing files
+        N3Objects::deleteAtFiles(filepathszero, uuid)
     end
 
     # N3Objects::getMikuTypeAtFile(mikuType, filepath)

@@ -731,6 +731,9 @@ class Listing
                 NxTimeCapsules::operate()
                 NxOpenCycles::dataManagement()
                 NxCherryPicks::dataManagement()
+                N2KVStore::fileManagement()
+                N3Objects::fileManagement()
+                BankCore::fileManagement()
             end
 
             store = ItemStore.new()

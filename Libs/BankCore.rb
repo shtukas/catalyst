@@ -112,8 +112,8 @@ class BankCore
         value
     end
 
-    # BankCore::mergeFiles()
-    def self.mergeFiles()
+    # BankCore::fileManagement()
+    def self.fileManagement()
         if BankCore::filepaths().size > BankCore::capacitybase()*2 then
             puts "BankCore file management".green
             while BankCore::filepaths().size > BankCore::capacitybase() do
