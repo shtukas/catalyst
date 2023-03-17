@@ -1,5 +1,6 @@
 
 class NxTimeCapsules
+
     # NxTimeCapsules::operate()
     def self.operate()
         return if !Config::isPrimaryInstance()
