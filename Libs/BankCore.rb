@@ -40,18 +40,13 @@ class BankCore
         db.results_as_hash = true
         db.execute "insert into bank (recordId, uuid, unixtime, date, value) values (?, ?, ?, ?, ?)", [SecureRandom.hex, uuid, unixtime, date, value]
         db.close
-
-        while BankCore::filepaths().size > BankCore::capacity() do
-            filepath1, filepath2 = BankCore::filepaths()
-            BankCore::mergeFiles(filepath1, filepath2)
-        end
     end
 
     # ----------------------------------
     # Private (0)
 
-    # BankCore::capacity()
-    def self.capacity()
+    # BankCore::capacitybase()
+    def self.capacitybase()
         50
     end
 
@@ -117,31 +112,35 @@ class BankCore
         value
     end
 
-    # BankCore::mergeFiles(filepath1, filepath2)
-    def self.mergeFiles(filepath1, filepath2)
+    # BankCore::mergeFiles()
+    def self.mergeFiles()
+        if BankCore::filepaths().size > BankCore::capacitybase()*2 then
+            while BankCore::filepaths().size > BankCore::capacitybase() do
+                filepath1, filepath2 = BankCore::filepaths()
 
-        db1 = SQLite3::Database.new(filepath1)
-        db2 = SQLite3::Database.new(filepath2)
+                db1 = SQLite3::Database.new(filepath1)
+                db2 = SQLite3::Database.new(filepath2)
 
-        # We move all the objects from db1 to db2
+                # We move all the objects from db1 to db2
 
-        db1.busy_timeout = 117
-        db1.busy_handler { |count| true }
-        db1.results_as_hash = true
-        db1.execute("select * from bank", []) do |row|
-            db2.execute "delete from bank where recordId = ?", [row["recordId"]]
-            db2.execute "insert into bank (recordId, uuid, unixtime, date, value) values (?, ?, ?, ?, ?)", [row["recordId"], row["uuid"], row["unixtime"], row["date"], row["value"]]
+                db1.busy_timeout = 117
+                db1.busy_handler { |count| true }
+                db1.results_as_hash = true
+                db1.execute("select * from bank", []) do |row|
+                    db2.execute "delete from bank where recordId = ?", [row["recordId"]]
+                    db2.execute "insert into bank (recordId, uuid, unixtime, date, value) values (?, ?, ?, ?, ?)", [row["recordId"], row["uuid"], row["unixtime"], row["date"], row["value"]]
+                end
+
+                db1.close
+                db2.close
+
+                # Let's now delete the first file 
+                FileUtils.rm(filepath1)
+
+                # And rename the second one
+                filepath3 = "#{Config::pathToDataCenter()}/Bank/#{CommonUtils::timeStringL22()}.sqlite3"
+                FileUtils.mv(filepath2, filepath3)
+            end
         end
-
-        db1.close
-        db2.close
-
-        # Let's now delete the first file 
-        FileUtils.rm(filepath1)
-
-
-        # And rename the second one
-        filepath3 = "#{Config::pathToDataCenter()}/Bank/#{CommonUtils::timeStringL22()}.sqlite3"
-        FileUtils.mv(filepath2, filepath3)
     end
 end
