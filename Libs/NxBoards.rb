@@ -73,11 +73,11 @@ class NxBoards
         end
 
         if hasReachedObjective and !itHassBeenAWeek then
-            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days before reset)"
+            str2 = "(objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
         end
 
         if !hasReachedObjective and !itHassBeenAWeek then
-            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days left)"
+            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days left in period)"
         end
 
         if !hasReachedObjective and itHassBeenAWeek then
@@ -172,13 +172,17 @@ class NxBoards
             # meaning we did more than 100% of time commitment then we issue NxTimeCapsules
             if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 overflow = 0.5*item["hours"]*3600
+                puts "I am about to smooth board: board: #{item["description"]}, overflow: #{overflow}"
+                LucilleCore::pressEnterToContinue()
                 NxTimeCapsules::smooth_commit(item["capsule"], -overflow, 20)
             end
 
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimeCapsule)
             # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
             if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
-                puts "resetting board's capsule time commitment: #{item["description"]}"
+                puts "I am about to reset board: #{item["description"]}"
+                puts "resetting board's capsule time commitment: board: #{item["description"]}, decrease by #{item["hours"]} hours"
+                LucilleCore::pressEnterToContinue()
                 BankCore::put(item["capsule"], -item["hours"]*3600)
                 item["lastResetTime"] = Time.new.to_i
                 NxBoards::commit(item)

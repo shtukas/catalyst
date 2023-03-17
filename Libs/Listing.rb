@@ -675,7 +675,7 @@ class Listing
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
-        return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*8)
+        return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return false if item["mikuType"] == "Scheduler1Listing"
         true
     end
