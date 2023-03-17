@@ -73,11 +73,11 @@ class NxBoards
         end
 
         if hasReachedObjective and !itHassBeenAWeek then
-            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days before reset)"
+            str2 = "(objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
         end
 
         if !hasReachedObjective and !itHassBeenAWeek then
-            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days left)"
+            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days left in period)"
         end
 
         if !hasReachedObjective and itHassBeenAWeek then
