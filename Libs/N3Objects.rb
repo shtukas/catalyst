@@ -10,8 +10,7 @@ class N3Objects
     # --------------------------------------
     # Utils
 
-    IndexSplitSymbol = ","
-    IndexFileMaxCount = 122 # the original number of waves
+    IndexFileCountBaseControl = 50
 
     # N3Objects::folderpath()
     def self.folderpath()
@@ -26,12 +25,8 @@ class N3Objects
 
     # N3Objects::renameFile(filepath)
     def self.renameFile(filepath)
-        tokens = File.basename(filepath).gsub(".sqlite", "").split(IndexSplitSymbol) # we remove the .sqlite and split on `;`
-        if tokens.size != 2 then
-            raise "(error: 3b9087f7-20fe-4c28-a98f-2ea82d3c6940) impossible file rename for filepath: #{filepath}"
-        end
-        filepath2 = "#{N3Objects::folderpath()}/#{tokens[0]}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite" # we keep the creation l22 and set the update l22
-        FileUtils.mv(filepath, filepath2)
+        filepathv2 = "#{N3Objects::folderpath()}/#{File.basename(filepath)[0, 22]}-#{CommonUtils::timeStringL22()}.sqlite3"
+        FileUtils.mv(filepath, filepathv2)
     end
 
     # N3Objects::fileCardinal(filepath)
@@ -92,7 +87,7 @@ class N3Objects
         filepathszero = N3Objects::getExistingFilepaths()
 
         # Make a new file for the object
-        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}#{IndexSplitSymbol}#{CommonUtils::timeStringL22()}.sqlite"
+        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -104,42 +99,44 @@ class N3Objects
         # Remove the object from the previously existing files
         N3Objects::deleteAtFiles(filepathszero, uuid)
 
-        while N3Objects::getExistingFilepaths().size > IndexFileMaxCount do
+        if N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl * 2 then
+            while N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl do
 
-            # We are taking the first two files (therefore the two oldest files and emptying the oldest)
+                # We are taking the first two files (therefore the two oldest files and emptying the oldest)
 
-            filepath1, filepath2 = N3Objects::getExistingFilepaths().sort.take(2)
+                filepath1, filepath2 = N3Objects::getExistingFilepaths().sort.take(2)
 
-            uuidExistsAtFile = lambda {|db, uuid|
-                flag = false
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select uuid from objects where uuid=?", [uuid]) do |row|
-                    flag = true
+                uuidExistsAtFile = lambda {|db, uuid|
+                    flag = false
+                    db.busy_timeout = 117
+                    db.busy_handler { |count| true }
+                    db.results_as_hash = true
+                    db.execute("select uuid from objects where uuid=?", [uuid]) do |row|
+                        flag = true
+                    end
+                    flag
+                }
+
+                db1 = SQLite3::Database.new(filepath1)
+                db2 = SQLite3::Database.new(filepath2)
+
+                # We move all the objects from db1 to db2
+
+                db1.busy_timeout = 117
+                db1.busy_handler { |count| true }
+                db1.results_as_hash = true
+                db1.execute("select * from objects", []) do |row|
+                    next if uuidExistsAtFile.call(db2, row["uuid"]) # The assumption is that the one in file2 is newer
+                    db2.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
                 end
-                flag
-            }
 
-            db1 = SQLite3::Database.new(filepath1)
-            db2 = SQLite3::Database.new(filepath2)
+                db1.close
+                db2.close
 
-            # We move all the objects from db1 to db2
-
-            db1.busy_timeout = 117
-            db1.busy_handler { |count| true }
-            db1.results_as_hash = true
-            db1.execute("select * from objects", []) do |row|
-                next if uuidExistsAtFile.call(db2, row["uuid"]) # The assumption is that the one in file2 is newer
-                db2.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
+                # Let's now delete the two files
+                FileUtils.rm(filepath1)
+                N3Objects::renameFile(filepath2)
             end
-
-            db1.close
-            db2.close
-
-            # Let's now delete the two files
-            FileUtils.rm(filepath1)
-            N3Objects::renameFile(filepath2)
         end
     end
 

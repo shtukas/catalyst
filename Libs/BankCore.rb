@@ -55,7 +55,7 @@ class BankCore
 
     # BankCore::spawnNewDatabase()
     def self.spawnNewDatabase()
-        filepath = "#{Config::pathToDataCenter()}/Bank/#{CommonUtils::timeStringL22()}.sqlite3"
+        filepath = "#{Config::pathToDataCenter()}/Bank/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -138,8 +138,8 @@ class BankCore
                 FileUtils.rm(filepath1)
 
                 # And rename the second one
-                filepath3 = "#{Config::pathToDataCenter()}/Bank/#{CommonUtils::timeStringL22()}.sqlite3"
-                FileUtils.mv(filepath2, filepath3)
+                filepath2v2 = "#{Config::pathToDataCenter()}/Bank/#{File.basename(filepath2)[0, 22]}-#{CommonUtils::timeStringL22()}.sqlite3"
+                FileUtils.mv(filepath2, filepath2v2)
             end
         end
     end
