@@ -152,7 +152,7 @@ class N2KVStore
     def self.set(key, value)
         filepathszero = N2KVStore::existingFilepaths()
 
-        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite"
+        filepath = "#{N2KVStore::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
