@@ -23,7 +23,7 @@ class Listing
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | fire",
             "[makers] drop",
             "[makers] pick <n> | pick line | unpick <n>",
-            "[divings] anniversaries | ondates | waves | todos | desktop",
+            "[divings] anniversaries | ondates | waves | todos | desktop | boards",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -109,6 +109,11 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
+        if Interpreting::match("boards", input) then
+            NxBoards::boards()
             return
         end
 

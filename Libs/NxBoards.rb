@@ -239,6 +239,14 @@ class NxBoards
             Listing::listingCommandInterpreter(input, store, nil)
         }
     end
+
+    # NxBoards::boards()
+    def self.boards()
+        NxBoards::items().each{|item|
+            puts NxBoards::toString(item)
+        }
+        LucilleCore::pressEnterToContinue()
+    end
 end
 
 class BoardsAndItems
