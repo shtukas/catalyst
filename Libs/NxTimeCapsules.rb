@@ -44,4 +44,14 @@ class NxTimeCapsules
             N3Objects::commit(capsule)
         }
     end
+
+    # NxTimeCapsules::timeCapsules()
+    def self.timeCapsules()
+        N3Objects::getMikuType("NxTimeCapsule")
+            .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
+            .each{|capsule|
+                puts "#{Time.at(capsule["unixtime"]).to_s} : #{capsule["account"]} : #{capsule["value"]}"
+            }
+        LucilleCore::pressEnterToContinue()
+    end
 end
