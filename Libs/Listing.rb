@@ -23,7 +23,7 @@ class Listing
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | fire",
             "[makers] drop",
             "[makers] pick <n> | pick line | unpick <n>",
-            "[divings] anniversaries | ondates | waves | todos | desktop | boards",
+            "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -126,6 +126,10 @@ class Listing
             return
         end
 
+        if Interpreting::match("capsules", input) then
+            NxTimeCapsules::timeCapsules()
+            return
+        end
 
         if Interpreting::match("pick line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")

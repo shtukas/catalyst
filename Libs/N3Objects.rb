@@ -20,12 +20,12 @@ class N3Objects
     # N3Objects::getExistingFilepaths()
     def self.getExistingFilepaths()
         LucilleCore::locationsAtFolder("#{N3Objects::folderpath()}")
-            .select{|filepath| filepath[-7, 7] == ".sqlite" }
+            .select{|filepath| filepath[-8, 8] == ".sqlite3" }
     end
 
     # N3Objects::renameFile(filepath)
     def self.renameFile(filepath)
-        filepathv2 = "#{N3Objects::folderpath()}/#{File.basename(filepath)[0, 22]}-#{CommonUtils::timeStringL22()}.sqlite3"
+        filepathv2 = "#{N3Objects::folderpath()}/#{File.basename(filepath)[0, 22]}@#{CommonUtils::timeStringL22()}.sqlite3"
         FileUtils.mv(filepath, filepathv2)
     end
 
@@ -82,6 +82,7 @@ class N3Objects
 
     # N3Objects::fileManagement()
     def self.fileManagement()
+
         if N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl * 2 then
 
             puts "N3Objects file management".green
@@ -92,15 +93,15 @@ class N3Objects
 
                 filepath1, filepath2 = N3Objects::getExistingFilepaths().sort.take(2)
 
-                uuidExistsAtFile = lambda {|db, uuid|
-                    flag = false
+                uuidsAtDB = lambda {|db|
+                    uuids = []
                     db.busy_timeout = 117
                     db.busy_handler { |count| true }
                     db.results_as_hash = true
-                    db.execute("select uuid from objects where uuid=?", [uuid]) do |row|
-                        flag = true
+                    db.execute("select uuid from objects", []) do |row|
+                        uuids << row["uuid"]
                     end
-                    flag
+                    uuids
                 }
 
                 db1 = SQLite3::Database.new(filepath1)
@@ -108,11 +109,13 @@ class N3Objects
 
                 # We move all the objects from db1 to db2
 
+                uuids2 = uuidsAtDB.call(db2)
+
                 db1.busy_timeout = 117
                 db1.busy_handler { |count| true }
                 db1.results_as_hash = true
                 db1.execute("select * from objects", []) do |row|
-                    next if uuidExistsAtFile.call(db2, row["uuid"]) # The assumption is that the one in file2 is newer
+                    next if uuids2.include?(row["uuid"]) # The assumption is that the one in file2 is newer
                     db2.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
                 end
 
@@ -133,7 +136,7 @@ class N3Objects
         filepathszero = N3Objects::getExistingFilepaths()
 
         # Make a new file for the object
-        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}-#{CommonUtils::timeStringL22()}.sqlite"
+        filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
