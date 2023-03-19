@@ -187,6 +187,7 @@ class NxBoards
                 LucilleCore::pressEnterToContinue()
                 BankCore::put(item["capsule"], -item["hours"]*3600)
                 item["lastResetTime"] = Time.new.to_i
+                puts JSON.pretty_generate(item)
                 NxBoards::commit(item)
             end
         }
