@@ -38,8 +38,15 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxUltraPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            PolyFunctions::itemsToBankingAccounts(object).each{|account|
+                accounts << account
+            }
+        end
+
         # We now need to remove redundancies because we could have a board coming from
-        # both the NxCherryPick and coming from the pinked item
+        # both the NxCherryPick or UltraPick and coming from the pinked item
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
@@ -74,6 +81,13 @@ class PolyFunctions
                 return "(cherry picked) object not found"
             end
             return "(cherry picked @ #{item["position"]}) #{PolyFunctions::toString(object)}#{BoardsAndItems::toStringSuffix(object)}"
+        end
+        if item["mikuType"] == "NxUltraPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            if object.nil? then
+                return "(ultra picked) object not found"
+            end
+            return "(ultra picked @ #{item["position"]}) #{PolyFunctions::toString(object)}#{BoardsAndItems::toStringSuffix(object)}"
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)

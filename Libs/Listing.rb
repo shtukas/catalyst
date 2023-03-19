@@ -22,7 +22,8 @@ class Listing
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | task | fire",
             "[makers] drop",
-            "[makers] pick <n> | pick line | pick set position <n> <position> | unpick <n>",
+            "[makers] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
+            "[makers] cherry-pick <n> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -131,7 +132,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("pick line", input) then
+        if Interpreting::match("cherry-pick line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
             cherrypick = NxCherryPicks::interactivelyIssue(nxline)
@@ -140,7 +141,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("pick set position * *", input) then
+        if Interpreting::match("cherry-pick set position * *", input) then
             _, _, _, ordinal, position = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
@@ -151,8 +152,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("pick *", input) then
-            _, _, ordinal = Interpreting::tokenizer(input)
+        if Interpreting::match("cherry-pick *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
             return if item["mikuType"] == "NxCherryPick"
@@ -455,6 +456,37 @@ class Listing
             return
         end
 
+        if Interpreting::match("ultra-pick line", input) then
+            line = LucilleCore::askQuestionAnswerAsString("line: ")
+            nxline = NxLines::issue(line)
+            cherrypick = NxUltraPicks::interactivelyIssue(nxline)
+            puts JSON.pretty_generate(cherrypick)
+            BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
+        if Interpreting::match("ultra-pick set position * *", input) then
+            _, _, _, ordinal, position = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            position = position.to_f
+            item["position"] = position
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
+            return
+        end
+
+        if Interpreting::match("ultra-pick *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            return if item["mikuType"] == "NxUltraPick"
+            cherrypick = NxUltraPicks::interactivelyIssue(item)
+            puts JSON.pretty_generate(cherrypick)
+            BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
         if input == "wave" then
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
@@ -597,6 +629,7 @@ class Listing
         items = 
             if board.nil? then
                 [
+                    NxUltraPicks::listingItems(nil),
                     Anniversaries::listingItems(),
                     Desktop::listingItems(),
                     Waves::listingItemsPriority(nil),
@@ -613,6 +646,7 @@ class Listing
                 ]
             else
                 [
+                    NxUltraPicks::listingItems(board),
                     Waves::listingItemsPriority(board),
                     NxFires::listingItems(board),
                     NxCherryPicks::listingItems(board),

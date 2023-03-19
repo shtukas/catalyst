@@ -1,0 +1,8 @@
+
+NxUltraPick
+    "uuid"        => uuid
+    "mikuType"    => "NxUltraPick"
+    "unixtime"    => Float
+    "datetime"    => DateTime Iso 8601 UTC Zulu
+    "position"    => Float
+    "targetuuid"  => String
