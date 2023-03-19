@@ -655,8 +655,8 @@ class Listing
                     Waves::listingItemsPriority(nil),
                     DevicesBackups::listingItems(),
                     NxFires::listingItems(nil),
-                    NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
                     NxCherryPicks::listingItems(nil),
+                    NxLines::items(),
                     NxOrbitals::listingItems(nil),
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
