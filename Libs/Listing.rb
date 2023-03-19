@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | tail | fire",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | task | fire",
             "[makers] drop",
             "[makers] pick <n> | pick line | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
@@ -252,8 +252,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("tail", input) then
-            NxTails::interactivelyIssueNewOrNull()
+        if Interpreting::match("task", input) then
+            NxTasks::interactivelyIssueNewOrNull()
             return
         end
 
@@ -295,7 +295,7 @@ class Listing
 
         if Interpreting::match("netflix", input) then
             title = LucilleCore::askQuestionAnswerAsString("title: ")
-            NxTails::netflix(title)
+            NxTasks::netflix(title)
         end
 
         if Interpreting::match("note", input) then
@@ -373,7 +373,7 @@ class Listing
         end
 
         if Interpreting::match("priority", input) then
-            item = NxTails::priority()
+            item = NxTasks::priority()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
@@ -488,8 +488,8 @@ class Listing
                 "lambda" => lambda { Waves::listingItemsLeisure(nil) }
             },
             {
-                "name" => "NxTails::listingItems(nil)",
-                "lambda" => lambda { NxTails::listingItems(nil) }
+                "name" => "NxTasks::listingItems(nil)",
+                "lambda" => lambda { NxTasks::listingItems(nil) }
             },
             {
                 "name" => "The99Percent::getReference()",
@@ -586,9 +586,9 @@ class Listing
                 "generator" => lambda{ Waves::listingItemsLeisure(board) } 
             },
             {
-                "name"      => "boardless NxTail",
+                "name"      => "boardless NxTask",
                 "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
-                "generator" => lambda{ NxTails::listingItems(board) } 
+                "generator" => lambda{ NxTasks::listingItems(board) } 
             }
         ]
         .map{|packet|
@@ -615,7 +615,7 @@ class Listing
 
     # Listing::scheduler1runningItems()
     def self.scheduler1runningItems()
-        Waves::items().select{|item| !item["priority"] }.select{|item| NxBalls::itemIsActive(item["uuid"]) } + NxTails::items().select{|item| NxBalls::itemIsActive(item["uuid"]) }
+        Waves::items().select{|item| !item["priority"] }.select{|item| NxBalls::itemIsActive(item["uuid"]) } + NxTasks::items().select{|item| NxBalls::itemIsActive(item["uuid"]) }
     end
 
     # Listing::sheduler1Items(board)
@@ -727,11 +727,11 @@ class Listing
                 end
             end
 
-            LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTails-FrontElements-BufferIn")
+            LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
                 .each{|location|
                     next if File.basename(location).start_with?(".")
-                    item = NxTails::bufferInImport(location)
-                    puts "Picked up from NxTails-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
+                    item = NxTasks::bufferInImport(location)
+                    puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
                     LucilleCore::removeFileSystemLocation(location)
                 }
 

@@ -37,9 +37,9 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTail" and item["boarduuid"].nil? then
+        if item["mikuType"] == "NxTask" and item["boarduuid"].nil? then
             accounts << {
-                "description" => "scheduler1: boardless NxTail",
+                "description" => "scheduler1: boardless NxTask",
                 "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
             }
         end
@@ -93,8 +93,8 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxTail" then
-            return NxTails::toString(item)
+        if item["mikuType"] == "NxTask" then
+            return NxTasks::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]

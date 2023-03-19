@@ -1,23 +1,23 @@
 # encoding: UTF-8
 
-class NxTails
+class NxTasks
 
-    # NxTails::items()
+    # NxTasks::items()
     def self.items()
-        N3Objects::getMikuType("NxTail")
+        N3Objects::getMikuType("NxTask")
     end
 
-    # NxTails::commit(item)
+    # NxTasks::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # NxTails::getItemOfNull(uuid)
+    # NxTasks::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
         N3Objects::getOrNull(uuid)
     end
 
-    # NxTails::destroy(uuid)
+    # NxTasks::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
@@ -25,7 +25,7 @@ class NxTails
     # --------------------------------------------------
     # Makers
 
-    # NxTails::interactivelyIssueNewOrNull(useCoreData: true)
+    # NxTasks::interactivelyIssueNewOrNull(useCoreData: true)
     def self.interactivelyIssueNewOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -36,7 +36,7 @@ class NxTails
             position = NxBoards::interactivelyDecideNewBoardPosition(board)
             item = {
                 "uuid"        => uuid,
-                "mikuType"    => "NxTail",
+                "mikuType"    => "NxTask",
                 "unixtime"    => Time.new.to_i,
                 "datetime"    => Time.new.utc.iso8601,
                 "description" => description,
@@ -45,10 +45,10 @@ class NxTails
                 "boarduuid"   => board["uuid"],
             }
         else
-            position = NxTails::nextPosition()
+            position = NxTasks::nextPosition()
             item = {
                 "uuid"        => uuid,
-                "mikuType"    => "NxTail",
+                "mikuType"    => "NxTask",
                 "unixtime"    => Time.new.to_i,
                 "datetime"    => Time.new.utc.iso8601,
                 "description" => description,
@@ -57,17 +57,17 @@ class NxTails
                 "boarduuid"   => nil,
             }
         end
-        NxTails::commit(item)
+        NxTasks::commit(item)
         item
     end
 
-    # NxTails::netflix(title)
+    # NxTasks::netflix(title)
     def self.netflix(title)
         uuid  = SecureRandom.uuid
-        position = NxTails::nextPosition()
+        position = NxTasks::nextPosition()
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxTail",
+            "mikuType"    => "NxTask",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => "Watch '#{title}' on Netflix",
@@ -75,19 +75,19 @@ class NxTails
             "position"    => position,
             "boarduuid"   => nil,
         }
-        NxTails::commit(item)
+        NxTasks::commit(item)
         item
     end
 
-    # NxTails::viennaUrl(url)
+    # NxTasks::viennaUrl(url)
     def self.viennaUrl(url)
         description = "(vienna) #{url}"
         uuid  = SecureRandom.uuid
         coredataref = "url:#{N1Data::putBlob(url)}"
-        position = NxTails::nextPosition()
+        position = NxTasks::nextPosition()
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxTail",
+            "mikuType"    => "NxTask",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
@@ -98,16 +98,16 @@ class NxTails
         item
     end
 
-    # NxTails::bufferInImport(location)
+    # NxTasks::bufferInImport(location)
     def self.bufferInImport(location)
         description = File.basename(location)
         uuid = SecureRandom.uuid
         nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
         coredataref = "aion-point:#{nhash}"
-        position = NxTails::nextPosition()
+        position = NxTasks::nextPosition()
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxTail",
+            "mikuType"    => "NxTask",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
@@ -119,16 +119,16 @@ class NxTails
         item
     end
 
-    # NxTails::priority()
+    # NxTasks::priority()
     def self.priority()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        position = NxTails::startPosition() - 1
+        position = NxTasks::startPosition() - 1
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxTail",
+            "mikuType"    => "NxTask",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
@@ -136,50 +136,50 @@ class NxTails
             "position"    => position,
             "boarduuid"   => nil,
         }
-        NxTails::commit(item)
+        NxTasks::commit(item)
         item
     end
 
     # --------------------------------------------------
     # Data
 
-    # NxTails::bItemsOrdered(board)
+    # NxTasks::bItemsOrdered(board)
     def self.bItemsOrdered(board)
-        NxTails::items()
+        NxTasks::items()
             .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 
-    # NxTails::isBoarded(item)
+    # NxTasks::isBoarded(item)
     def self.isBoarded(item)
         !item["boarduuid"].nil?
     end
 
-    # NxTails::toString(item)
+    # NxTasks::toString(item)
     def self.toString(item)
-        if NxTails::isBoarded(item) then
-            "(tail) (pos: #{item["position"].round(3)}) #{item["description"]}"
+        if NxTasks::isBoarded(item) then
+            "(task) (pos: #{item["position"].round(3)}) #{item["description"]}"
         else
             rt = BankUtils::recoveredAverageHoursPerDay(item["uuid"])
-            "(tail) (#{"%5.2f" % rt}) #{item["description"]}#{DoNotShowUntil::suffixString(item)}"
+            "(task) (#{"%5.2f" % rt}) #{item["description"]}#{DoNotShowUntil::suffixString(item)}"
         end
     end
 
-    # NxTails::startPosition()
+    # NxTasks::startPosition()
     def self.startPosition()
-        positions = NxTails::items().map{|item| item["position"] }
+        positions = NxTasks::items().map{|item| item["position"] }
         return 1 if positions.empty?
         positions.min
     end
 
-    # NxTails::endPosition()
+    # NxTasks::endPosition()
     def self.endPosition()
-        positions = NxTails::items().map{|item| item["position"] }
+        positions = NxTasks::items().map{|item| item["position"] }
         return 1 if positions.empty?
         positions.max
     end
 
-    # NxTails::positionsToNewPosition(positions)
+    # NxTasks::positionsToNewPosition(positions)
     def self.positionsToNewPosition(positions)
         if positions.empty? then
             return 1
@@ -200,26 +200,26 @@ class NxTails
         position + rand*difference
     end
 
-    # NxTails::nextPosition()
+    # NxTasks::nextPosition()
     def self.nextPosition()
-        positions = NxTails::items().map{|item| item["position"] }.take(100)
-        NxTails::positionsToNewPosition(positions)
+        positions = NxTasks::items().map{|item| item["position"] }.take(100)
+        NxTasks::positionsToNewPosition(positions)
     end
 
-    # NxTails::listingItems(board)
+    # NxTasks::listingItems(board)
     def self.listingItems(board)
-        NxTails::bItemsOrdered(board).first(10)
+        NxTasks::bItemsOrdered(board).first(10)
     end
 
-    # NxTails::listingRunningItems()
+    # NxTasks::listingRunningItems()
     def self.listingRunningItems()
-        NxTails::items().select{|item| NxBalls::itemIsActive(item) }
+        NxTasks::items().select{|item| NxBalls::itemIsActive(item) }
     end
 
     # --------------------------------------------------
     # Operations
 
-    # NxTails::access(item)
+    # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["field11"])
     end
