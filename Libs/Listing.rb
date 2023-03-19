@@ -155,6 +155,7 @@ class Listing
             _, _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
+            return if item["mikuType"] == "NxCherryPick"
             cherrypick = NxCherryPicks::interactivelyIssue(item)
             puts JSON.pretty_generate(cherrypick)
             BoardsAndItems::interactivelyOffersToAttach(item)
