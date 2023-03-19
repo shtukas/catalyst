@@ -607,7 +607,7 @@ class Listing
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
                     NxBoards::listingItems(),
-                    Waves::listingItemsLeisure(nil)
+                    Waves::listingItemsLeisure(nil),
                     NxOrbitals::listingItems(nil),
                     NxTasks::listingItems(nil)
                 ]

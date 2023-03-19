@@ -138,6 +138,7 @@ class NxBoards
 
         board2s = board2s
             .select{|board| DoNotShowUntil::isVisible(board["uuid"]) }
+            .select{|board| BankCore::getValue(board["capsule"]) < 1.2*board["hours"]*3600 }
             .map {|board|
                 {
                     "board" => board,
