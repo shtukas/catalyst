@@ -16,10 +16,22 @@ class NxCherryPicks
         N3Objects::destroy(uuid)
     end
 
+    # NxCherryPicks::interactivelyDecidePosition()
+    def self.interactivelyDecidePosition()
+        position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
+        if position == "" then
+            items = NxCherryPicks::items()
+            return 1 if items.empty?
+            return 1 + items.map{|item| item["position"] }.max
+        else
+            return position.to_f
+        end
+    end
+
     # NxCherryPicks::interactivelyIssueNullOrNull(object)
     def self.interactivelyIssueNullOrNull(object)
         puts "> cherry picking '#{PolyFunctions::toString(object).green}'"
-        position = LucilleCore::askQuestionAnswerAsString("> position: ").to_f
+        position = NxCherryPicks::interactivelyDecidePosition()
         item = {
             "uuid"       => SecureRandom.uuid,
             "mikuType"   => "NxCherryPick",
