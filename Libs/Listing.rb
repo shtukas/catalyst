@@ -616,7 +616,7 @@ class Listing
     # Listing::scheduler1line()
     def self.scheduler1line()
         a1 = Listing::scheduler1data(nil).map{|packet| "(#{packet["name"]}: #{packet["rt"].round(2)})" }
-        "(scheduler1) #{a1.join(" ")}"
+        "(leisure waves || tasks) #{a1.join(" ")}"
     end
 
     # Listing::sheduler1Indicator()
@@ -651,24 +651,24 @@ class Listing
             if board.nil? then
                 [
                     Anniversaries::listingItems(),
-                    NxCherryPicks::listingItems(nil),
-                    NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
                     Desktop::listingItems(),
                     Waves::listingItemsPriority(nil),
                     DevicesBackups::listingItems(),
                     NxFires::listingItems(nil),
+                    NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
+                    NxCherryPicks::listingItems(nil),
                     NxOrbitals::listingItems(nil),
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
                     NxBoards::listingItems(),
-                    #[Listing::sheduler1Indicator()],
+                    [Listing::sheduler1Indicator()],
                     Listing::sheduler1Items(nil)
                 ]
             else
                 [
-                    NxCherryPicks::listingItems(board),
                     Waves::listingItemsPriority(board),
                     NxFires::listingItems(board),
+                    NxCherryPicks::listingItems(board),
                     NxOrbitals::listingItems(board),
                     Listing::sheduler1Items(board)
                 ]
