@@ -87,7 +87,7 @@ class PolyFunctions
             if object.nil? then
                 return "(cherry picked) object not found"
             end
-            return "(cherry picked @ #{item["position"]}) #{PolyFunctions::toString(object)}"
+            return "(cherry picked @ #{item["position"]})#{BoardsAndItems::toStringSuffix(item).green} #{PolyFunctions::toString(object)}"
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
