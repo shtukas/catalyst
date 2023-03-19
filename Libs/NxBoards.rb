@@ -153,7 +153,6 @@ class NxBoards
                 [
                     Waves::listingItemsPriority(board),
                     NxOrbitals::listingItems(board),
-                    Listing::sheduler1Items(board)
                 ].flatten
             }
             .flatten

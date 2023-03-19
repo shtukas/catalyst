@@ -592,59 +592,6 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::scheduler1data(board)
-    def self.scheduler1data(board)
-        [
-            {
-                "name"      => "low priority Wave",
-                "account"   => "d36d653e-80e0-4141-b9ff-f26197bbce2b",
-                "generator" => lambda{ Waves::listingItemsLeisure(board) } 
-            },
-            {
-                "name"      => "boardless NxTask",
-                "account"   => "cfad053c-bb83-4728-a3c5-4fb357845fd9",
-                "generator" => lambda{ NxTasks::listingItems(board) } 
-            }
-        ]
-        .map{|packet|
-            packet["rt"] = BankUtils::recoveredAverageHoursPerDay(packet["account"])
-            packet
-        }
-        .sort{|p1, p2| p1["rt"] <=> p2["rt"] }
-    end
-
-    # Listing::scheduler1line()
-    def self.scheduler1line()
-        a1 = Listing::scheduler1data(nil).map{|packet| "(#{packet["name"]}: #{packet["rt"].round(2)})" }
-        "(leisure waves || tasks) #{a1.join(" ")}"
-    end
-
-    # Listing::sheduler1Indicator()
-    def self.sheduler1Indicator()
-        {
-            "uuid"     => "bdaa4f5b-2a67-42c3-98fc-57d8c7a531bf",
-            "mikuType" => "Scheduler1Listing",
-            "announce" => Listing::scheduler1line()
-        }
-    end
-
-    # Listing::scheduler1runningItems()
-    def self.scheduler1runningItems()
-        Waves::items().select{|item| !item["priority"] }.select{|item| NxBalls::itemIsActive(item["uuid"]) } + NxTasks::items().select{|item| NxBalls::itemIsActive(item["uuid"]) }
-    end
-
-    # Listing::sheduler1Items(board)
-    def self.sheduler1Items(board)
-        items = Listing::scheduler1runningItems() + Listing::scheduler1data(board).map{|packet| packet["generator"].call() }.flatten
-        items.reduce([]){|selected, item|
-            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                selected
-            else
-                selected + [item]
-            end
-        }
-    end
-
     # Listing::items(board)
     def self.items(board)
         items = 
@@ -657,20 +604,21 @@ class Listing
                     NxFires::listingItems(nil),
                     NxCherryPicks::listingItems(nil),
                     NxLines::items(),
-                    NxOrbitals::listingItems(nil),
                     NxOndates::listingItems(),
                     TxManualCountDowns::listingItems(),
                     NxBoards::listingItems(),
-                    [Listing::sheduler1Indicator()],
-                    Listing::sheduler1Items(nil)
+                    Waves::listingItemsLeisure(nil)
+                    NxOrbitals::listingItems(nil),
+                    NxTasks::listingItems(nil)
                 ]
             else
                 [
                     Waves::listingItemsPriority(board),
                     NxFires::listingItems(board),
                     NxCherryPicks::listingItems(board),
+                    Waves::listingItemsLeisure(board),
                     NxOrbitals::listingItems(board),
-                    Listing::sheduler1Items(board)
+                    NxTasks::listingItems(board)
                 ]
             end
             items

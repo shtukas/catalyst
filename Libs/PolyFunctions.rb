@@ -17,20 +17,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" and item["boarduuid"].nil? then
-            accounts << {
-                "description" => "scheduler1: boardless NxTask",
-                "number"      => "cfad053c-bb83-4728-a3c5-4fb357845fd9"
-            }
-        end
-
-        if item["mikuType"] == "Wave" and !item["priority"] then
-            accounts << {
-                "description" => "scheduler1: low priority Wave",
-                "number"      => "d36d653e-80e0-4141-b9ff-f26197bbce2b"
-            }
-        end
-
         if item["boarduuid"] then
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
