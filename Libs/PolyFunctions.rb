@@ -3,14 +3,6 @@ class PolyFunctions
     # PolyFunctions::itemsToBankingAccounts(item)
     def self.itemsToBankingAccounts(item)
 
-        if item["mikuType"] == "NxCherryPick" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            if object.nil? then
-                return []
-            end
-            return PolyFunctions::itemsToBankingAccounts(object)
-        end
-
         accounts = []
 
         accounts << {
@@ -22,18 +14,6 @@ class PolyFunctions
             accounts << {
                 "description" => "capsule: #{item["capsule"]}",
                 "number"      => item["capsule"]
-            }
-        end
-
-        if item["boarduuid"] then
-            board = NxBoards::getItemOfNull(item["boarduuid"])
-            accounts << {
-                "description" => "board: #{board["description"]}",
-                "number"      => item["boarduuid"]
-            }
-            accounts << {
-                "description" => "capsule: #{board["capsule"]}",
-                "number"      => board["capsule"]
             }
         end
 
@@ -51,7 +31,38 @@ class PolyFunctions
             }
         end
 
-        accounts
+        if item["boarduuid"] then
+            board = NxBoards::getItemOfNull(item["boarduuid"])
+            if board then
+                accounts << {
+                    "description" => "board: #{board["description"]}",
+                    "number"      => item["boarduuid"]
+                }
+                accounts << {
+                    "description" => "capsule: #{board["capsule"]}",
+                    "number"      => board["capsule"]
+                }
+            end
+        end
+
+        if item["mikuType"] == "NxCherryPick" then
+            object = N3Objects::getOrNull(item["targetuuid"])
+            PolyFunctions::itemsToBankingAccounts(object).each{|account|
+                accounts << account
+            }
+        end
+
+        # We now need to remove redundancies because we could have a board coming from
+        # both the NxCherryPick and coming from the pinked item
+
+        accounts.reduce([]){|as, account|
+            if as.map{|a| a["number"] }.include?(account["number"]) then
+                as
+            else
+                as + [account]
+            end
+
+        }
     end
 
     # PolyFunctions::toString(item)
