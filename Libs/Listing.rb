@@ -309,7 +309,8 @@ class Listing
 
         if Interpreting::match("netflix", input) then
             title = LucilleCore::askQuestionAnswerAsString("title: ")
-            NxTasks::netflix(title)
+            item = NxTasks::netflix(title)
+            puts JSON.pretty_generate(item)
         end
 
         if Interpreting::match("note", input) then
