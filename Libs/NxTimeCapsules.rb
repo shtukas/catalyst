@@ -36,7 +36,11 @@ class NxTimeCapsules
 
     # NxTimeCapsules::smooth_commit(accountnumber, value, periodInDays)
     def self.smooth_commit(accountnumber, value, periodInDays)
-        NxTimeCapsules::smooth(accountnumber, value, periodInDays).each{|capsule|
+        capsules = NxTimeCapsules::smooth(accountnumber, value, periodInDays)
+        puts "NxTimeCapsules".green
+        puts JSON.pretty_generate(capsules)
+        LucilleCore::pressEnterToContinue()
+        capsules.each{|capsule|
             capsule["datetime"] = Time.at(capsule["unixtime"]).utc.iso8601
             puts "NxTimeCapsule: account: #{accountnumber}; date: #{capsule["datetime"]}; #{value}".green
             puts JSON.pretty_generate(capsule)
