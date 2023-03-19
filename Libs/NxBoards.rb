@@ -103,11 +103,11 @@ class NxBoards
 
     # NxBoards::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxTails::bItemsOrdered(board["uuid"])
+        boardItems = NxTasks::bItemsOrdered(board["uuid"])
         return 1 if boardItems.empty?
         boardItems
             .first(20)
-            .each{|item| puts NxTails::toString(item) }
+            .each{|item| puts NxTasks::toString(item) }
         loop {
             position = LucilleCore::askQuestionAnswerAsString("position: ")
             next if position == ""

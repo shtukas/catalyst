@@ -74,8 +74,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTail" then
-            NxTails::access(item)
+        if item["mikuType"] == "NxTask" then
+            NxTasks::access(item)
             return
         end
 
@@ -169,9 +169,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTail" then
+        if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxTails::destroy(item["uuid"])
+                NxTasks::destroy(item["uuid"])
             end
             return
         end
@@ -238,9 +238,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTail" then
+        if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
-            NxTails::access(item)
+            NxTasks::access(item)
             return
         end
 
@@ -326,7 +326,7 @@ class PolyActions
     # PolyActions::dropmaking(useCoreData: true)
     def self.dropmaking(useCoreData: true)
         item = nil
-        options = ["fire", "orbital", "today", "ondate", "wave", "countdown", "tail"]
+        options = ["fire", "orbital", "today", "ondate", "wave", "countdown", "task"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
         if option == "fire" then
@@ -347,8 +347,8 @@ class PolyActions
         if option == "countdown" then
             item = TxManualCountDowns::issueNewOrNull(useCoreData: useCoreData)
         end
-        if option == "tail" then
-            item = NxTails::interactivelyIssueNewOrNull(useCoreData: useCoreData)
+        if option == "task" then
+            item = NxTasks::interactivelyIssueNewOrNull(useCoreData: useCoreData)
         end
         if item then
             puts JSON.pretty_generate(item)
