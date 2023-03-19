@@ -175,6 +175,8 @@ class NxBoards
                 puts "I am about to smooth board: board: #{item["description"]}, overflow: #{overflow}"
                 LucilleCore::pressEnterToContinue()
                 NxTimeCapsules::smooth_commit(item["capsule"], -overflow, 20)
+                next
+                # We need to next because this section would have changed the item
             end
 
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimeCapsule)
