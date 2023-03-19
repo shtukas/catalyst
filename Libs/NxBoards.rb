@@ -172,7 +172,7 @@ class NxBoards
             # meaning we did more than 100% of time commitment then we issue NxTimeCapsules
             if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 overflow = 0.5*item["hours"]*3600
-                puts "I am about to smooth board: board: #{NxBoards::toString(item)}, overflow: #{overflow}"
+                puts "I am about to smooth board: board: #{NxBoards::toString(item)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
                 LucilleCore::pressEnterToContinue()
                 NxTimeCapsules::smooth_commit(item["capsule"], -overflow, 20)
                 next
