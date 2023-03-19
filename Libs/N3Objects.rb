@@ -17,10 +17,11 @@ class N3Objects
         "#{Config::pathToDataCenter()}/N3Objects"
     end
 
-    # N3Objects::getExistingFilepaths()
-    def self.getExistingFilepaths()
+    # N3Objects::getExistingFilepathsSorted()
+    def self.getExistingFilepathsSorted()
         LucilleCore::locationsAtFolder("#{N3Objects::folderpath()}")
             .select{|filepath| filepath[-8, 8] == ".sqlite3" }
+            .sort
     end
 
     # N3Objects::renameFile(filepath)
@@ -80,18 +81,46 @@ class N3Objects
         }
     end
 
+    # N3Objects::getSmallestFileAmongTheseFilepaths(filepaths)
+    def self.getSmallestFileAmongTheseFilepaths(filepaths)
+        raise "(error: e7b2035c-fba4-4212-91f8-b9e71c1eb3e2)" if filepaths.empty?
+        filepaths
+            .map{|filepath|
+                {
+                    "filepath" => filepath,
+                    "size"     => File.size(filepath)
+                }
+            }
+            .sort{|p1, p2| p1["size"] <=> p2["size"] }
+            .first["filepath"]
+    end
+
+    # N3Objects::selectSmallestFileAndTheNext()
+    def self.selectSmallestFileAndTheNext()
+        filepaths = N3Objects::getExistingFilepathsSorted()
+        (IndexFileCountBaseControl-2).times {
+            filepaths.pop
+        }
+        filepath1 = N3Objects::getSmallestFileAmongTheseFilepaths(filepaths)
+        filepaths = N3Objects::getExistingFilepathsSorted()
+        while filepaths.include?(filepath1) do
+            filepaths.shift
+        end
+        filepath2 = filepaths.first
+        [filepath1, filepath2]
+    end
+
     # N3Objects::fileManagement()
     def self.fileManagement()
 
-        if N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl * 2 then
+        if N3Objects::getExistingFilepathsSorted().size > IndexFileCountBaseControl * 2 then
 
             puts "N3Objects file management".green
 
-            while N3Objects::getExistingFilepaths().size > IndexFileCountBaseControl do
+            while N3Objects::getExistingFilepathsSorted().size > IndexFileCountBaseControl do
 
                 # We are taking the first two files (therefore the two oldest files and emptying the oldest)
-
-                filepath1, filepath2 = N3Objects::getExistingFilepaths().sort.take(2)
+                filepath1, filepath2 = N3Objects::selectSmallestFileAndTheNext()
 
                 uuidsAtDB = lambda {|db|
                     uuids = []
@@ -133,7 +162,7 @@ class N3Objects
     def self.update(uuid, mikuType, object)
 
         # Make a record of the existing files
-        filepathszero = N3Objects::getExistingFilepaths()
+        filepathszero = N3Objects::getExistingFilepathsSorted()
 
         # Make a new file for the object
         filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite3"
@@ -197,7 +226,7 @@ class N3Objects
     # N3Objects::getall()
     def self.getall()
         objects = []
-        N3Objects::getExistingFilepaths().each{|filepath|
+        N3Objects::getExistingFilepathsSorted().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -227,7 +256,7 @@ class N3Objects
     # N3Objects::getOrNull(uuid)
     def self.getOrNull(uuid)
         object = nil
-        N3Objects::getExistingFilepaths().each{|filepath|
+        N3Objects::getExistingFilepathsSorted().each{|filepath|
             object = N3Objects::getAtFilepathOrNull(uuid, filepath)
             break if object
         }
@@ -237,7 +266,7 @@ class N3Objects
     # N3Objects::getMikuType(mikuType)
     def self.getMikuType(mikuType)
         objects = []
-        N3Objects::getExistingFilepaths().each{|filepath|
+        N3Objects::getExistingFilepathsSorted().each{|filepath|
             N3Objects::getMikuTypeAtFile(mikuType, filepath).each{|object|
                 objects << object
             }
@@ -248,7 +277,7 @@ class N3Objects
     # N3Objects::getMikuTypeCount(mikuType)
     def self.getMikuTypeCount(mikuType)
         count = 0
-        N3Objects::getExistingFilepaths().each{|filepath|
+        N3Objects::getExistingFilepathsSorted().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -263,7 +292,7 @@ class N3Objects
 
     # N3Objects::destroy(uuid)
     def self.destroy(uuid)
-        filepaths = N3Objects::getExistingFilepaths()
+        filepaths = N3Objects::getExistingFilepathsSorted()
         N3Objects::deleteAtFiles(filepaths, uuid)
     end
 end
