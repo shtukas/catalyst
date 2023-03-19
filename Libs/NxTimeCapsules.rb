@@ -42,7 +42,7 @@ class NxTimeCapsules
         LucilleCore::pressEnterToContinue()
         capsules.each{|capsule|
             capsule["datetime"] = Time.at(capsule["unixtime"]).utc.iso8601
-            puts "NxTimeCapsule: account: #{accountnumber}; date: #{capsule["datetime"]}; #{value}".green
+            puts "NxTimeCapsule: account: #{accountnumber}; date: #{capsule["datetime"]}; #{capsule["value"]}".green
             puts JSON.pretty_generate(capsule)
             LucilleCore::pressEnterToContinue()
             N3Objects::commit(capsule)
