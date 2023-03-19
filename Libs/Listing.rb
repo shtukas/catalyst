@@ -22,7 +22,7 @@ class Listing
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | task | fire",
             "[makers] drop",
-            "[makers] pick <n> | pick line | unpick <n>",
+            "[makers] pick <n> | pick line | pick set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -137,6 +137,17 @@ class Listing
             cherrypick = NxCherryPicks::interactivelyIssue(nxline)
             puts JSON.pretty_generate(cherrypick)
             BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
+        if Interpreting::match("pick set position * *", input) then
+            _, _, _, ordinal, position = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            position = position.to_f
+            item["position"] = position
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
             return
         end
 
