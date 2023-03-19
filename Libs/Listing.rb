@@ -134,8 +134,9 @@ class Listing
         if Interpreting::match("pick line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
-            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(nxline)
+            cherrypick = NxCherryPicks::interactivelyIssue(nxline)
             puts JSON.pretty_generate(cherrypick)
+            BoardsAndItems::interactivelyOffersToAttach(item)
             return
         end
 
@@ -143,8 +144,9 @@ class Listing
             _, _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            cherrypick = NxCherryPicks::interactivelyIssueNullOrNull(item)
+            cherrypick = NxCherryPicks::interactivelyIssue(item)
             puts JSON.pretty_generate(cherrypick)
+            BoardsAndItems::interactivelyOffersToAttach(item)
             return
         end
 
@@ -636,7 +638,7 @@ class Listing
             if board.nil? then
                 [
                     Anniversaries::listingItems(),
-                    NxCherryPicks::listingItems(),
+                    NxCherryPicks::listingItems(nil),
                     NxLines::items(), # those will only show up if there are lines that are orphan from garbage collected cherry picking
                     Desktop::listingItems(),
                     Waves::listingItemsPriority(nil),
@@ -651,9 +653,10 @@ class Listing
                 ]
             else
                 [
+                    NxCherryPicks::listingItems(board),
                     Waves::listingItemsPriority(board),
-                    NxOrbitals::listingItems(board),
                     NxFires::listingItems(board),
+                    NxOrbitals::listingItems(board),
                     Listing::sheduler1Items(board)
                 ]
             end
@@ -739,7 +742,6 @@ class Listing
                 NxBoards::timeManagement()
                 NxTimeCapsules::operate()
                 NxOpenCycles::dataManagement()
-                NxCherryPicks::dataManagement()
                 N2KVStore::fileManagement()
                 N3Objects::fileManagement()
                 BankCore::fileManagement()

@@ -225,6 +225,8 @@ class NxBoards
             end
             spacecontrol.putsline line
 
+            spacecontrol.putsline ""
+
             Listing::items(board).each{|item|
                 store.register(item, Listing::canBeDefault(item)) 
                 spacecontrol.putsline(Listing::itemToListingLine(store, item))

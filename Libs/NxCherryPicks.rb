@@ -28,8 +28,8 @@ class NxCherryPicks
         end
     end
 
-    # NxCherryPicks::interactivelyIssueNullOrNull(object)
-    def self.interactivelyIssueNullOrNull(object)
+    # NxCherryPicks::interactivelyIssue(object)
+    def self.interactivelyIssue(object)
         puts "> cherry picking '#{PolyFunctions::toString(object).green}'"
         position = NxCherryPicks::interactivelyDecidePosition()
         item = {
@@ -45,20 +45,16 @@ class NxCherryPicks
         item
     end
 
-    # NxCherryPicks::listingItems()
-    def self.listingItems()
+    # NxCherryPicks::listingItems(board)
+    def self.listingItems(board)
         NxCherryPicks::items()
-            .select{|item| item["datetime"][0, 10] == CommonUtils::today() }
-            .sort{|i1, i2| i1["position"] <=> i2["position"] }
-    end
-
-    # NxCherryPicks::dataManagement()
-    def self.dataManagement()
-        N3Objects::getMikuType("NxCherryPick")
-            .each{|item|
-                if item["datetime"][0, 10] != CommonUtils::today() then
-                    N3Objects::destroy(item["uuid"])
+            .select{|item| 
+                if board then
+                    BoardsAndItems::belongsToThisBoard(item, board)
+                else
+                    true
                 end
             }
+            .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 end
