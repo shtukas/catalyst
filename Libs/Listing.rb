@@ -717,6 +717,19 @@ class Listing
 
         initialCodeTrace = CommonUtils::stargateTraceCode()
 
+        Thread.new {
+            loop {
+                sleep 60
+                NxBalls::all()
+                    .select{|ball| ball["type"] == "running" }
+                    .select{|ball| (Time.new.to_f - ball["startunixtime"]) > 3600 }
+                    .take(1)
+                    .each{
+                        CommonUtils::onScreenNotification("catalyst", "NxBall running for more than one hour")
+                    }
+            }
+        }
+
         loop {
 
             if CommonUtils::stargateTraceCode() != initialCodeTrace then

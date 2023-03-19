@@ -1,17 +1,24 @@
 
 class NxBalls
 
-    # NxBalls::pathToNyxBalls()
-    def self.pathToNyxBalls()
+    # NxBalls::repository()
+    def self.repository()
         "#{Config::pathToGalaxy()}/DataBank/catalyst/NxBalls"
     end
 
     # ---------------------------------
     # IO
 
+    # NxBalls::all()
+    def self.all()
+        LucilleCore::locationsAtFolder(NxBalls::repository())
+            .select{|filepath| filepath[-5, 5] == ".ball" }
+            .map{|filepath| JSON.parse(IO.read(filepath)) }
+    end
+
     # NxBalls::commitBall(item, nxball)
     def self.commitBall(item, nxball)
-        filepath = "#{NxBalls::pathToNyxBalls()}/#{item["uuid"]}.ball"
+        filepath = "#{NxBalls::repository()}/#{item["uuid"]}.ball"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(nxball)) }
     end
 
@@ -28,14 +35,14 @@ class NxBalls
 
     # NxBalls::getNxballOrNull(item)
     def self.getNxballOrNull(item)
-        filepath = "#{NxBalls::pathToNyxBalls()}/#{item["uuid"]}.ball"
+        filepath = "#{NxBalls::repository()}/#{item["uuid"]}.ball"
         return nil if !File.exist?(filepath)
         JSON.parse(IO.read(filepath))
     end
 
     # NxBalls::destroyNxBall(item)
     def self.destroyNxBall(item)
-        filepath = "#{NxBalls::pathToNyxBalls()}/#{item["uuid"]}.ball"
+        filepath = "#{NxBalls::repository()}/#{item["uuid"]}.ball"
         return nil if !File.exist?(filepath)
         FileUtils.rm(filepath)
     end

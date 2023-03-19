@@ -1,16 +1,10 @@
 NxBall
 {
-    "type"          : "running"
+    "type"          : "running" | "paused"
     "startunixtime" : Unixtime
     "accounts"      : Array[Account],
     "sequencestart" : null or Unixtime
 
-}
-{
-    "type"          : "paused"
-    "startunixtime" : Unixtime
-    "accounts"      : Array[Account],
-    "sequencestart" : null or Unixtime
 }
 
 Account {
