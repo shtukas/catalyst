@@ -98,9 +98,7 @@ class N3Objects
     # N3Objects::selectSmallestFileAndTheNext()
     def self.selectSmallestFileAndTheNext()
         filepaths = N3Objects::getExistingFilepathsSorted()
-        (IndexFileCountBaseControl-2).times {
-            filepaths.pop
-        }
+        filepaths.pop
         filepath1 = N3Objects::getSmallestFileAmongTheseFilepaths(filepaths)
         filepaths = N3Objects::getExistingFilepathsSorted()
         while filepaths.include?(filepath1) do
