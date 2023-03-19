@@ -293,7 +293,7 @@ class BoardsAndItems
     def self.toStringSuffix(item)
         return "" if item["boarduuid"].nil?
         board = NxBoards::getItemFailIfMissing(item["boarduuid"])
-        " (#{"board:".green} #{board["description"]})"
+        " (board: #{board["description"].green})"
     end
 
 end
