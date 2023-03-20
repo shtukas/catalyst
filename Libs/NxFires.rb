@@ -16,8 +16,8 @@ class NxFires
         N3Objects::destroy(uuid)
     end
 
-    # NxFires::interactivelyIssueNullOrNull(useCoreData: true)
-    def self.interactivelyIssueNullOrNull(useCoreData: true)
+    # NxFires::interactivelyIssueNewOrNull(useCoreData: true)
+    def self.interactivelyIssueNewOrNull(useCoreData: true)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid

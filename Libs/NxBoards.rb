@@ -138,7 +138,7 @@ class NxBoards
 
         board2s = board2s
             .select{|board| DoNotShowUntil::isVisible(board["uuid"]) }
-            .select{|board| BankCore::getValue(board["capsule"]) < 1.2*board["hours"]*3600 }
+            .select{|board| BankCore::getValue(board["capsule"]) < board["hours"]*3600 }
             .map {|board|
                 {
                     "board" => board,
@@ -152,8 +152,10 @@ class NxBoards
         (board1s + board2s)
             .map {|board|
                 [
+                    [board],
                     Waves::listingItemsPriority(board),
-                    NxOrbitals::listingItems(board),
+                    NxProjects::listingItems(board),
+                    NxTasks::listingItems(board),
                 ].flatten
             }
             .flatten
@@ -208,8 +210,8 @@ class NxBoards
         puts line
     end
 
-    # NxBoards::listingProgram(board)
-    def self.listingProgram(board)
+    # NxBoards::listing(board)
+    def self.listing(board)
 
         loop {
 
@@ -230,10 +232,20 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            Listing::items(board).each{|item|
-                store.register(item, Listing::canBeDefault(item)) 
-                spacecontrol.putsline(Listing::itemToListingLine(store, item))
-            }
+            [
+                NxUltraPicks::listingItems(),
+                NxFires::listingItems(board),
+                NxCherryPicks::listingItems(board),
+                Waves::listingItems(board),
+                NxProjects::listingItems(board),
+                NxOpenCycles::items(board),
+                NxTasks::listingItems(board)
+            ]
+                .flatten
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item)) 
+                    spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                }
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
