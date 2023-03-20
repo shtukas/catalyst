@@ -479,7 +479,6 @@ class Listing
             nxline = NxLines::issue(line)
             cherrypick = NxUltraPicks::interactivelyIssue(nxline)
             puts JSON.pretty_generate(cherrypick)
-            BoardsAndItems::interactivelyOffersToAttach(cherrypick)
             return
         end
 
@@ -699,7 +698,7 @@ class Listing
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxBoards::boardsOrdered().size - NxProjects::items().size - 4 )
 
         spacecontrol.putsline ""
-        spacecontrol.putsline "ultra picks | fires | ondates | waves | orbitals | tasks".yellow
+        spacecontrol.putsline "ultra picks | fires | cherry picks | ondates | manual countdowns | projects | tasks".yellow
         spacecontrol.putsline ""
 
         Listing::items()
