@@ -116,7 +116,7 @@ class N2KVStore
                     db.busy_timeout = 117
                     db.busy_handler { |count| true }
                     db.results_as_hash = true
-                    db.execute("select key from objects where key=?", [key]) do |row|
+                    db.execute("select key from records where key=?", [key]) do |row|
                         flag = true
                     end
                     flag
