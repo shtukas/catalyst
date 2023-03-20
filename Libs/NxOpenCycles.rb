@@ -13,4 +13,9 @@ class NxOpenCycles
                 }
             }
     end
+
+    # NxOpenCycles::dataManagement()
+    def self.dataManagement()
+
+    end
 end
