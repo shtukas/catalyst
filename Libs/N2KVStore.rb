@@ -131,7 +131,7 @@ class N2KVStore
                 db1.busy_handler { |count| true }
                 db1.results_as_hash = true
                 db1.execute("select * from records", []) do |row|
-                    next if keyExistsAtFile(db2, row["key"]) # The assumption is that the one in file2 is newer
+                    next if keyExistsAtFile.call(db2, row["key"]) # The assumption is that the one in file2 is newer
                     db2.execute "insert into records (key, value) values (?, ?)", [row["key"], row["value"]] # we copy the value as encoded string without decoding it
                 end
 
