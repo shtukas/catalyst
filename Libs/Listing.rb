@@ -461,7 +461,7 @@ class Listing
             nxline = NxLines::issue(line)
             cherrypick = NxUltraPicks::interactivelyIssue(nxline)
             puts JSON.pretty_generate(cherrypick)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::interactivelyOffersToAttach(cherrypick)
             return
         end
 
