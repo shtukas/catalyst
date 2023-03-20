@@ -241,6 +241,7 @@ class NxBoards
                 NxOpenCycles::items(board),
                 NxTasks::listingItems(board)
             ]
+                .flatten
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))
