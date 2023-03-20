@@ -22,8 +22,9 @@ class Listing
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | task | fire",
             "[makers] drop",
-            "[makers] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
-            "[makers] cherry-pick <n> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
+            "[transmutation] recast (<n>)",
+            "[positioning] cherry-pick <n> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
+            "[positioning] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -408,6 +409,21 @@ class Listing
             return
         end
 
+        if Interpreting::match("recast", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Transmutations::transmute(item)
+            return
+        end
+
+        if Interpreting::match("recast *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            Transmutations::transmute(item)
+            return
+        end
+
         if Interpreting::match("start", input) then
             item = store.getDefault()
             return if item.nil?
@@ -693,6 +709,8 @@ class Listing
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3 - 3)
 
+        spacecontrol.putsline ""
+        spacecontrol.putsline "ultra picks | fires | ondates | waves | orbitals | tasks".yellow
         spacecontrol.putsline ""
 
         Listing::items(nil)
