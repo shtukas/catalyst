@@ -1,7 +1,7 @@
 
-NxBoard:
+NxProject:
     "uuid"          : String
-    "mikuType"      : "NxBoard"
+    "mikuType"      : "NxProject"
     "unixtime"      : Float
     "datetime"      : DateTime Iso 8601 UTC Zulu
     "description"   : String

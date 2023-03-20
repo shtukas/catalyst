@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | orbital | task | fire",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | task | fire | project",
             "[makers] drop",
             "[makers] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
             "[makers] cherry-pick <n> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
@@ -28,7 +28,7 @@ class Listing
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
-            "[misc] search | speed | commands",
+            "[misc] search | speed | commands | mikuTypes",
         ].join("\n")
     end
 
@@ -242,10 +242,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("drop", input) then
-            PolyActions::dropmaking()
-        end
-
         if Interpreting::match("exit", input) then
             exit
         end
@@ -303,6 +299,12 @@ class Listing
             return
         end
 
+        if Interpreting::match("mikuTypes", input) then
+            puts N3Objects::getall().map{|item| item["mikuType"] }.uniq
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if Interpreting::match("manual countdown", input) then
             TxManualCountDowns::issueNewOrNull()
             return
@@ -330,7 +332,15 @@ class Listing
         end
 
         if Interpreting::match("ondate", input) then
-            item = NxOndates::interactivelyIssueNullOrNull()
+            item = NxOndates::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::interactivelyOffersToAttach(item)
+            return
+        end
+
+        if Interpreting::match("project", input) then
+            item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
@@ -342,16 +352,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("orbital", input) then
-            item = NxOrbitals::interactivelyIssueNullOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
-            return
-        end
-
         if Interpreting::match("fire", input) then
-            item = NxFires::interactivelyIssueNullOrNull()
+            item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
@@ -595,8 +597,8 @@ class Listing
                 "lambda" => lambda { The99Percent::line() }
             },
             {
-                "name" => "Listing::items(nil)",
-                "lambda" => lambda { Listing::items(nil) }
+                "name" => "Listing::items()",
+                "lambda" => lambda { Listing::items() }
             },
 
         ]
@@ -624,47 +626,34 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::items(board)
-    def self.items(board)
-        items = 
-            if board.nil? then
-                [
-                    NxUltraPicks::listingItems(nil),
-                    Anniversaries::listingItems(),
-                    Desktop::listingItems(),
-                    Waves::listingItemsPriority(nil),
-                    DevicesBackups::listingItems(),
-                    NxFires::listingItems(nil),
-                    NxCherryPicks::listingItems(nil),
-                    NxLines::items(),
-                    NxOndates::listingItems(),
-                    TxManualCountDowns::listingItems(),
-                    NxBoards::listingItems(),
-                    Waves::listingItemsLeisure(nil),
-                    NxOrbitals::listingItems(nil),
-                    NxTasks::listingItems(nil)
-                ]
-            else
-                [
-                    NxUltraPicks::listingItems(board),
-                    Waves::listingItemsPriority(board),
-                    NxFires::listingItems(board),
-                    NxCherryPicks::listingItems(board),
-                    Waves::listingItemsLeisure(board),
-                    NxOrbitals::listingItems(board),
-                    NxTasks::listingItems(board)
-                ]
-            end
-            items
-                .flatten
-                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item) }
-                .reduce([]){|selected, item|
-                    if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
+    # Listing::items()
+    def self.items()
+        [
+            NxUltraPicks::listingItems(),
+            Anniversaries::listingItems(),
+            Desktop::listingItems(),
+            Waves::listingItemsPriority(nil),
+            DevicesBackups::listingItems(),
+            NxFires::listingItems(nil),
+            NxCherryPicks::listingItems(nil),
+            NxLines::items(),
+            NxOndates::listingItems(),
+            TxManualCountDowns::listingItems(),
+            NxBoards::listingItems(),
+            NxProjects::listingItems(nil),
+            NxOpenCycles::items(nil),
+            Waves::listingItemsLeisure(nil),
+            NxTasks::listingItems(nil)
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
     end
 
     # Listing::itemToListingLine(store or nil, item)
@@ -683,7 +672,7 @@ class Listing
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
-        return false if item["mikuType"] == "Scheduler1Listing"
+        return false if item["mikuType"] == "NxBoard"
         true
     end
 
@@ -691,19 +680,24 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 3 - 3)
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxBoards::boardsOrdered().size - NxProjects::items().size - 3 )
 
         spacecontrol.putsline ""
 
-        Listing::items(nil)
+        Listing::items()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
 
         puts The99Percent::line()
+
         NxBoards::boardsOrdered().each{|item|
             NxBoards::informationDisplay(store, item["uuid"])
+        }
+        NxProjects::items().each{|item|
+            store.register(item, Listing::canBeDefault(item))
+            puts Listing::itemToListingLine(store, item)
         }
     end
 

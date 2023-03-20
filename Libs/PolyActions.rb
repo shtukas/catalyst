@@ -27,7 +27,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBoard" then
-            NxBoards::listingProgram(item)
+            NxBoards::listing(item)
             return
         end
 
@@ -51,11 +51,6 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOrbital" then
-            CoreData::access(item["field11"])
             return
         end
 
@@ -163,16 +158,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOrbital" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOrbitals::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxFire" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOrbitals::destroy(item["uuid"])
+                N3Objects::destroy(item["uuid"])
             end
             return
         end
@@ -240,12 +228,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxOndates::access(item)
             end
-            return
-        end
-
-        if item["mikuType"] == "NxOrbital" then
-            NxBalls::start(item)
-            PolyActions::access(item)
             return
         end
 
@@ -350,38 +332,5 @@ class PolyActions
         puts "edit description:"
         item["description"] = CommonUtils::editTextSynchronously(item["description"])
         N3Objects::commit(item)
-    end
-
-    # PolyActions::dropmaking(useCoreData: true)
-    def self.dropmaking(useCoreData: true)
-        item = nil
-        options = ["fire", "orbital", "today", "ondate", "wave", "countdown", "task"]
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        return nil if option.nil?
-        if option == "fire" then
-            item = NxFires::interactivelyIssueNullOrNull(useCoreData: useCoreData)
-        end
-        if option == "orbital" then
-            item = NxOrbitals::interactivelyIssueNullOrNull(useCoreData: useCoreData)
-        end
-        if option == "today" then
-            item = NxOndates::interactivelyIssueNewTodayOrNull(useCoreData: useCoreData)
-        end
-        if option == "ondate" then
-            item = NxOndates::interactivelyIssueNullOrNull(useCoreData: useCoreData)
-        end
-        if option == "wave" then
-            item = Waves::issueNewWaveInteractivelyOrNull(useCoreData: useCoreData)
-        end
-        if option == "countdown" then
-            item = TxManualCountDowns::issueNewOrNull(useCoreData: useCoreData)
-        end
-        if option == "task" then
-            item = NxTasks::interactivelyIssueNewOrNull(useCoreData: useCoreData)
-        end
-        if item then
-            puts JSON.pretty_generate(item)
-        end
-        return item
     end
 end

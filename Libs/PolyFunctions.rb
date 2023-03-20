@@ -66,6 +66,9 @@ class PolyFunctions
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
         end
+        if item["mikuType"] == "NxOpenCycle" then
+            return "(open cycle) #{item["name"]}"
+        end
         if item["mikuType"] == "LambdX1" then
             return "(lambda) #{item["announce"]}"
         end
@@ -95,9 +98,6 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return "(line) #{item["description"]}"
         end
-        if item["mikuType"] == "NxOrbital" then
-            return NxOrbitals::toString(item)
-        end
         if item["mikuType"] == "NxOpenCycles" then
             return item["description"]
         end
@@ -106,6 +106,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
+        end
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]

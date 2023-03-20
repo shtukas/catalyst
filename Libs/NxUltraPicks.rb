@@ -45,16 +45,9 @@ class NxUltraPicks
         item
     end
 
-    # NxUltraPicks::listingItems(board)
-    def self.listingItems(board)
+    # NxUltraPicks::listingItems()
+    def self.listingItems()
         NxUltraPicks::items()
-            .select{|item| 
-                if board then
-                    BoardsAndItems::belongsToThisBoard(item, board)
-                else
-                    true
-                end
-            }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 end

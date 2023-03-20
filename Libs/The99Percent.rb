@@ -9,7 +9,7 @@ class The99Percent
 
     # The99Percent::count()
     def self.count()
-        ["NxTask", "NxFire", "NxOndate", "NxOrbital"].map{|mikuType| N3Objects::getMikuTypeCount(mikuType) }.inject(0, :+)
+        ["NxTask", "NxFire", "NxOndate", "NxProject"].map{|mikuType| N3Objects::getMikuTypeCount(mikuType) }.inject(0, :+)
     end
 
     # The99Percent::getCurrentCount()

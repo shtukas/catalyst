@@ -162,6 +162,16 @@ class Waves
     # Data (2)
     # We do not display wave that are attached to a board (the board displays them)
 
+    # Waves::listingItems(board)
+    def self.listingItems(board)
+        Waves::items()
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+            .select{|item|
+                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+            }
+    end
+
     # Waves::listingItemsPriority(board)
     def self.listingItemsPriority(board)
         Waves::items()
