@@ -228,6 +228,14 @@ class Listing
             return
         end
 
+        if Interpreting::match("destroy *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            PolyActions::destroy(item)
+            return
+        end
+
         if Interpreting::match("do not show until *", input) then
             _, _, _, _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)

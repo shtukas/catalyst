@@ -172,6 +172,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            puts "We do not done a NxProject. You can stop it, if it's running, and otherwise can destroy it."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTasks::destroy(item["uuid"])
@@ -193,6 +199,22 @@ class PolyActions
 
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
+    end
+
+    # PolyActions::destroy(item)
+    def self.destroy(item)
+
+        NxBalls::stop(item)
+
+        if item["mikuType"] == "NxProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                N3Objects::destroy(item["uuid"])
+            end
+            return
+        end
+
+        puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
+        raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
 
     # PolyActions::doubleDot(item)
