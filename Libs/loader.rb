@@ -190,6 +190,7 @@ require_relative "Stargate.rb"
 
 require_relative "TxManualCountDowns.rb"
 require_relative "The99Percent.rb"
+require_relative "Transmutations.rb"
 
 require_relative "Waves.rb"
 
