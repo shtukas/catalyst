@@ -28,10 +28,10 @@ class NxCherryPicks
         end
     end
 
-    # NxCherryPicks::interactivelyIssue(object)
-    def self.interactivelyIssue(object)
+    # NxCherryPicks::interactivelyIssue(object, position = nil)
+    def self.interactivelyIssue(object, position = nil)
         puts "> cherry picking '#{PolyFunctions::toString(object).green}'"
-        position = NxCherryPicks::interactivelyDecidePosition()
+        position = position || NxCherryPicks::interactivelyDecidePosition()
         item = {
             "uuid"       => SecureRandom.uuid,
             "mikuType"   => "NxCherryPick",

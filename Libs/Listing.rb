@@ -23,13 +23,13 @@ class Listing
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | task | fire | project",
             "[makers] drop",
             "[transmutation] recast (<n>)",
-            "[positioning] cherry-pick <n> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
+            "[positioning] cherry-pick <n> <position> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
             "[positioning] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
-            "[misc] search | speed | commands | mikuTypes",
+            "[misc] search | speed | commands | mikuTypes | edit object <uuid>",
         ].join("\n")
     end
 
@@ -153,12 +153,12 @@ class Listing
             return
         end
 
-        if Interpreting::match("cherry-pick *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
+        if Interpreting::match("cherry-pick * *", input) then
+            _, ordinal, position = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
             return if item["mikuType"] == "NxCherryPick"
-            cherrypick = NxCherryPicks::interactivelyIssue(item)
+            cherrypick = NxCherryPicks::interactivelyIssue(item, position.to_f)
             puts JSON.pretty_generate(cherrypick)
             BoardsAndItems::interactivelyOffersToAttach(item)
             return
@@ -269,6 +269,14 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("edit object *", input) then
+            _, _, uuid = Interpreting::tokenizer(input)
+            object = N3Objects::getOrNull(uuid)
+            object = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(object)))
+            N3Objects::commit(object)
             return
         end
 
