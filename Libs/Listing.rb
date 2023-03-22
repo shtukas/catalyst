@@ -19,7 +19,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | >> (parking) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | task | fire | project",
             "[makers] drop",
             "[transmutation] recast (<n>)",
@@ -58,12 +58,21 @@ class Listing
             return
         end
 
-        if Interpreting::match(">>", input) then
+        if Interpreting::match("park", input) then
             item = store.getDefault()
             return if item.nil?
             item["parking"] = Time.new.to_i
             N3Objects::commit(item)
             return
+        end
+
+
+        if Interpreting::match("park *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item["parking"] = Time.new.to_i
+            N3Objects::commit(item)
         end
 
         if Interpreting::match("add time *", input) then
