@@ -102,7 +102,7 @@ class NxBoards
 
     # NxBoards::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxTasks::bItemsOrdered(board["uuid"])
+        boardItems = NxTasks::bItemsOrdered(board)
         return 1 if boardItems.empty?
         boardItems
             .first(20)
