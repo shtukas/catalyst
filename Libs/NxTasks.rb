@@ -25,12 +25,12 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
-    # NxTasks::interactivelyIssueNewOrNull(useCoreData: true)
-    def self.interactivelyIssueNewOrNull(useCoreData: true)
+    # NxTasks::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board = NxBoards::interactivelySelectOneOrNull()
         if board then
             position = NxBoards::interactivelyDecideNewBoardPosition(board)
@@ -193,7 +193,7 @@ class NxTasks
         differences = positions.zip(positions.drop(1)).select{|pair| pair[1] }.map{|x1, x2| x2 - x1}
 
         # We have at least two differences
-        average = differences.sum.to_f/(differences.size)
+        average = differences.sum.to_f/differences.size
         a1 = positions.zip(differences).select{|pair| pair[1] }
         position, difference = a1.select{|pair| pair[1] >= average }.first
 

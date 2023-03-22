@@ -54,6 +54,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            CoreData::access(item["field11"])
+            return
+        end
+
         if item["mikuType"] == "NxFire" then
             CoreData::access(item["field11"])
             return

@@ -27,13 +27,15 @@ class NxProjects
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+        hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         item = {
             "uuid"          => uuid,
             "mikuType"      => "NxProject",
             "unixtime"      => Time.new.to_i,
             "datetime"      => Time.new.utc.iso8601,
             "description"   => description,
+            "field11"       => coredataref,
             "hours"         => hours,
             "lastResetTime" => 0,
             "capsule"       => SecureRandom.hex

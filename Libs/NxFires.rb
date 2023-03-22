@@ -16,12 +16,12 @@ class NxFires
         N3Objects::destroy(uuid)
     end
 
-    # NxFires::interactivelyIssueNewOrNull(useCoreData: true)
-    def self.interactivelyIssueNewOrNull(useCoreData: true)
+    # NxFires::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        coredataref = useCoreData ? CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) : nil
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxFire",

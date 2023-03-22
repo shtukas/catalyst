@@ -6,4 +6,4 @@ NxFire:
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
     "field11"     : CoreData Reference
-    "boardId"     : null or String 
+    "boarduuid"   : null or String 
