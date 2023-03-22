@@ -236,6 +236,7 @@ class NxBoards
                 NxFires::listingItems(board),
                 NxCherryPicks::listingItems(board),
                 Waves::listingItems(board),
+                NxFloats::listingItems(board),
                 NxProjects::listingItems(board),
                 NxOpenCycles::items(board),
                 NxTasks::listingItems(board)

@@ -179,6 +179,7 @@ require_relative "NxUltraPicks.rb"
 require_relative "NxLines.rb"
 require_relative "NxFires.rb"
 require_relative "NxProjects.rb"
+require_relative "NxFloats.rb"
 
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"

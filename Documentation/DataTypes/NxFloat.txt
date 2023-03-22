@@ -1,0 +1,9 @@
+
+NxFloat:
+    "uuid"        : String
+    "mikuType"    : "NxFloat"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "field11"     : CoreData Reference
+    "boarduuid"   : null or String (was created to mostly exists on boards)

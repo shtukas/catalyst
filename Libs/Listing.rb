@@ -679,6 +679,7 @@ class Listing
             NxFires::listingItems(nil),
             NxCherryPicks::listingItems(nil),
             NxLines::items(),
+            NxFloats::listingItems(nil),
             NxOndates::listingItems(),
             TxManualCountDowns::listingItems(),
             NxBoards::listingItems(),
@@ -715,6 +716,7 @@ class Listing
     def self.canBeDefault(item)
         return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return false if item["mikuType"] == "NxBoard"
+        return false if item["mikuType"] == "NxFloat"
         true
     end
 
