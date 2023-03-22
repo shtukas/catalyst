@@ -290,7 +290,9 @@ class Listing
         end
 
         if Interpreting::match("task", input) then
-            NxTasks::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
