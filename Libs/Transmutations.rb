@@ -31,11 +31,10 @@ class Transmutations
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
             puts JSON.pretty_generate(item)
-            item["position"] = NxTasks::nextPosition()
             item["mikuType"] = "NxTask"
-            if item["boarduuid"].nil? then
-                item = BoardsAndItems::interactivelyOffersToAttach(item)
-            end
+            boarduuid, position = PolyFunctions::interactivelySelectBoardAndPositionForTask()
+            item["boarduuid"] = boarduuid
+            item["position"] = position
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
         end
