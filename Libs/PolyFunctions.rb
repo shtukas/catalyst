@@ -95,6 +95,9 @@ class PolyFunctions
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
         end
+        if item["mikuType"] == "NxFloat" then
+            return NxFloats::toString(item)
+        end
         if item["mikuType"] == "NxLine" then
             return "(line) #{item["description"]}"
         end
@@ -121,5 +124,15 @@ class PolyFunctions
         end
         puts "I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c)"
+    end
+
+    # PolyFunctions::interactivelySelectBoardAndPositionForTask()
+    def self.interactivelySelectBoardAndPositionForTask() # [boarduuid, position]
+        board = NxBoards::interactivelySelectOneOrNull()
+        if board then
+            [board["uuid"], NxBoards::interactivelyDecideNewBoardPosition(board)]
+        else
+            [nil, NxTasks::nextPosition()]
+        end
     end
 end

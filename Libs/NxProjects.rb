@@ -92,10 +92,10 @@ class NxProjects
         BankUtils::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxProjects::rtTarget(item)
     end
 
-    # NxProjects::listingItems(item)
-    def self.listingItems(item)
+    # NxProjects::listingItems(board)
+    def self.listingItems(board)
         NxProjects::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, item) }
+            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
             .select{|item| NxProjects::completionRatio(item) < 1 }
     end
