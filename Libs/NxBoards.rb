@@ -121,7 +121,7 @@ class NxBoards
 
     # NxBoards::completionRatio(item)
     def self.completionRatio(item)
-        BankUtils::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxBoards::rtTarget(item)
+        (BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600).to_f/NxBoards::rtTarget(item)
     end
 
     # NxBoards::boardsOrdered()
