@@ -71,7 +71,7 @@ class CoreData
             return " (aion point)"
         end
         if referenceString.start_with?("open-cycle") then
-            return " (#{referenceString})"
+            return " (open-cycle)"
         end
         if referenceString.start_with?("unique-string") then
             str = referenceString.split(":")[1]
@@ -81,6 +81,11 @@ class CoreData
             return " (Dx8Unit)"
         end
         raise "CoreData, I do not know how to string '#{referenceString}'"
+    end
+
+    # CoreData::itemToSuffixString(item)
+    def self.itemToSuffixString(item)
+        CoreData::referenceStringToSuffixString(item["field11"])
     end
 
     # CoreData::access(referenceString)
