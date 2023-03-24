@@ -125,12 +125,17 @@ class NxBalls
 
     # NxBalls::pursue(item)
     def self.pursue(item)
-        return item if !NxBalls::itemIsPaused(item)
-        nxball = NxBalls::getNxballOrNull(item)
-        nxball["type"]          = "running"
-        nxball["startunixtime"] = Time.new.to_i
-        nxball["sequencestart"] = nxball["sequencestart"] || nxball["startunixtime"]
-        NxBalls::commitBall(item, nxball)
+        if NxBalls::itemIsRunning(item) then
+            # We do this to commit the time to the bank
+            NxBalls::pause(item)
+        end
+        if NxBalls::itemIsPaused(item) then
+            nxball = NxBalls::getNxballOrNull(item)
+            nxball["type"]          = "running"
+            nxball["startunixtime"] = Time.new.to_i
+            nxball["sequencestart"] = nxball["sequencestart"] || nxball["startunixtime"]
+            NxBalls::commitBall(item, nxball)
+        end
     end
 
     # ---------------------------------
