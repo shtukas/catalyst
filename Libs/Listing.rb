@@ -24,7 +24,6 @@ class Listing
             "[makers] drop",
             "[transmutation] recast (<n>)",
             "[positioning] cherry-pick <n> <position> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
-            "[positioning] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
