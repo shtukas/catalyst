@@ -110,17 +110,17 @@ class NxProjects
 
             # If at time of reset the board's capsule is over flowing, meaning
             # its positive value is more than 50% of the time commitment for the board,
-            # meaning we did more than 100% of time commitment then we issue NxTimeCapsules
+            # meaning we did more than 100% of time commitment then we issue NxTimePromises
             if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 overflow = 0.5*item["hours"]*3600
                 puts "I am about to smooth board: board: #{NxProjects::toString(item)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
                 LucilleCore::pressEnterToContinue()
-                NxTimeCapsules::smooth_commit(item["capsule"], -overflow, 20)
+                NxTimePromises::smooth_commit(item["capsule"], -overflow, 20)
                 next
                 # We need to next because this section would have changed the item
             end
 
-            # We perform a reset, when we have filled the capsule (not to be confused with NxTimeCapsule)
+            # We perform a reset, when we have filled the capsule (not to be confused with NxTimePromise)
             # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
             if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 puts "I am about to reset board: #{item["description"]}"

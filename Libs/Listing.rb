@@ -25,7 +25,7 @@ class Listing
             "[transmutation] recast (<n>)",
             "[positioning] cherry-pick <n> <position> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
             "[positioning] ultra-pick <n> | ultra-pick line | ultra-pick set position <n> <position> | unpick <n>",
-            "[divings] anniversaries | ondates | waves | todos | desktop | boards | capsules",
+            "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
             "[NxBoard] holiday <n>",
@@ -137,8 +137,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("capsules", input) then
-            NxTimeCapsules::timeCapsules()
+        if Interpreting::match("time promises", input) then
+            NxTimePromises::show()
             return
         end
 
@@ -790,7 +790,7 @@ class Listing
 
             if Config::isPrimaryInstance() then
                 NxBoards::timeManagement()
-                NxTimeCapsules::operate()
+                NxTimePromises::operate()
                 NxOpenCycles::dataManagement()
                 N2KVStore::fileManagement()
                 N3Objects::fileManagement()
