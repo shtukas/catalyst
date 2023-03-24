@@ -232,7 +232,6 @@ class NxBoards
             spacecontrol.putsline ""
 
             [
-                NxUltraPicks::listingItems(),
                 NxFires::listingItems(board),
                 NxCherryPicks::listingItems(board),
                 Waves::listingItems(board),

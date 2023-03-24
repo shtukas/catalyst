@@ -503,36 +503,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("ultra-pick line", input) then
-            line = LucilleCore::askQuestionAnswerAsString("line: ")
-            nxline = NxLines::issue(line)
-            cherrypick = NxUltraPicks::interactivelyIssue(nxline)
-            puts JSON.pretty_generate(cherrypick)
-            return
-        end
-
-        if Interpreting::match("ultra-pick set position * *", input) then
-            _, _, _, ordinal, position = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            position = position.to_f
-            item["position"] = position
-            puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("ultra-pick *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            return if item["mikuType"] == "NxUltraPick"
-            cherrypick = NxUltraPicks::interactivelyIssue(item)
-            puts JSON.pretty_generate(cherrypick)
-            BoardsAndItems::interactivelyOffersToAttach(item)
-            return
-        end
-
         if input == "wave" then
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
@@ -673,7 +643,6 @@ class Listing
     # Listing::items()
     def self.items()
         [
-            NxUltraPicks::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxCherryPicks::listingItems(nil),
