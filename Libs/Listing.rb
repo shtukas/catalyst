@@ -146,8 +146,10 @@ class Listing
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
             item = NxCherryPicks::interactivelyIssue(nxline)
+            if item["boarduuid"].nil? then
+                item = BoardsAndItems::interactivelyOffersToAttach(item)
+            end
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
             return
         end
 

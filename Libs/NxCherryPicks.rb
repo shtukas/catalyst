@@ -38,7 +38,8 @@ class NxCherryPicks
             "unixtime"   => Time.new.to_i,
             "datetime"   => Time.new.utc.iso8601,
             "position"   => position,
-            "targetuuid" => object["uuid"]
+            "targetuuid" => object["uuid"],
+            "boarduuid"  => object["boarduuid"]
         }
         puts JSON.pretty_generate(item)
         NxCherryPicks::commit(item)
