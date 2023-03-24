@@ -31,7 +31,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCherryPick" then
+        if item["mikuType"] == "NxListingPriority" then
             object = N3Objects::getOrNull(item["targetuuid"])
             return if object.nil? 
             return PolyActions::access(object)
@@ -132,12 +132,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCherryPick" then
+        if item["mikuType"] == "NxListingPriority" then
             object = N3Objects::getOrNull(item["targetuuid"])
             if object then
                 PolyActions::done(object)
             end
-            NxCherryPicks::destroy(item["uuid"])
+            NxListingPriorities::destroy(item["uuid"])
             return
         end
 
@@ -220,7 +220,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCherryPick" then
+        if item["mikuType"] == "NxListingPriority" then
             object = N3Objects::getOrNull(item["targetuuid"])
             return if object.nil? 
             NxBalls::start(item)
@@ -285,7 +285,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCherryPick" then
+        if item["mikuType"] == "NxListingPriority" then
             object = N3Objects::getOrNull(item["targetuuid"])
             return if object.nil? 
             return PolyActions::landing(object)

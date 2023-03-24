@@ -233,7 +233,7 @@ class NxBoards
 
             [
                 NxFires::listingItems(board),
-                NxCherryPicks::listingItems(board),
+                NxListingPriorities::listingItems(board),
                 Waves::listingItems(board),
                 NxFloats::listingItems(board),
                 NxProjects::listingItems(board),

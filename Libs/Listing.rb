@@ -23,7 +23,7 @@ class Listing
             "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | task | fire | project",
             "[makers] drop",
             "[transmutation] recast (<n>)",
-            "[positioning] cherry-pick <n> <position> | cherry-pick line | cherry-pick set position <n> <position> | unpick <n>",
+            "[positioning] priority <n> <position> | priority line | priority set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -141,10 +141,10 @@ class Listing
             return
         end
 
-        if Interpreting::match("cherry-pick line", input) then
+        if Interpreting::match("priority line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
-            item = NxCherryPicks::interactivelyIssue(nxline)
+            item = NxListingPriorities::interactivelyIssue(nxline)
             if item["boarduuid"].nil? then
                 item = BoardsAndItems::interactivelyOffersToAttach(item)
             end
@@ -152,7 +152,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("cherry-pick set position * *", input) then
+        if Interpreting::match("priority set position * *", input) then
             _, _, _, ordinal, position = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
@@ -163,12 +163,12 @@ class Listing
             return
         end
 
-        if Interpreting::match("cherry-pick * *", input) then
+        if Interpreting::match("priority * *", input) then
             _, ordinal, position = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            return if item["mikuType"] == "NxCherryPick"
-            item = NxCherryPicks::interactivelyIssue(item, position.to_f)
+            return if item["mikuType"] == "NxListingPriority"
+            item = NxListingPriorities::interactivelyIssue(item, position.to_f)
             puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
             return
@@ -189,12 +189,12 @@ class Listing
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxCherryPick" then
-                puts "The unpick command is only for NxCherryPick items"
+            if item["mikuType"] != "NxListingPriority" then
+                puts "The unpick command is only for NxListingPriority items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            NxCherryPicks::destroy(item["uuid"])
+            NxListingPriorities::destroy(item["uuid"])
             return
         end
 
@@ -644,7 +644,7 @@ class Listing
         [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-            NxCherryPicks::listingItems(nil),
+            NxListingPriorities::listingItems(nil),
             Waves::listingItemsPriority(nil),
             DevicesBackups::listingItems(),
             NxFires::listingItems(nil),

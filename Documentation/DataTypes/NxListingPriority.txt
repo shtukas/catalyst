@@ -1,0 +1,9 @@
+NxListingPriorities are essentially pointers and set an execution order on objects of the listing. One reason they work well as defined is that we can now retrieve objects by their uuid considering our unified object repository.
+
+NxListingPriority
+    "uuid"        => uuid
+    "mikuType"    => "NxListingPriority"
+    "unixtime"    => Float
+    "datetime"    => DateTime Iso 8601 UTC Zulu
+    "position"    => Float
+    "targetuuid"  => String

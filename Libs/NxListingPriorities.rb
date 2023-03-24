@@ -1,26 +1,26 @@
 
-class NxCherryPicks
+class NxListingPriorities
 
-    # NxCherryPicks::items()
+    # NxListingPriorities::items()
     def self.items()
-        N3Objects::getMikuType("NxCherryPick")
+        N3Objects::getMikuType("NxListingPriority")
     end
 
-    # NxCherryPicks::commit(item)
+    # NxListingPriorities::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # NxCherryPicks::destroy(uuid)
+    # NxListingPriorities::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
 
-    # NxCherryPicks::interactivelyDecidePosition()
+    # NxListingPriorities::interactivelyDecidePosition()
     def self.interactivelyDecidePosition()
         position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
         if position == "" then
-            items = NxCherryPicks::items()
+            items = NxListingPriorities::items()
             return 1 if items.empty?
             return 1 + items.map{|item| item["position"] }.max
         else
@@ -28,13 +28,13 @@ class NxCherryPicks
         end
     end
 
-    # NxCherryPicks::interactivelyIssue(object, position = nil)
+    # NxListingPriorities::interactivelyIssue(object, position = nil)
     def self.interactivelyIssue(object, position = nil)
         puts "> cherry picking '#{PolyFunctions::toString(object).green}'"
-        position = position || NxCherryPicks::interactivelyDecidePosition()
+        position = position || NxListingPriorities::interactivelyDecidePosition()
         item = {
             "uuid"       => SecureRandom.uuid,
-            "mikuType"   => "NxCherryPick",
+            "mikuType"   => "NxListingPriority",
             "unixtime"   => Time.new.to_i,
             "datetime"   => Time.new.utc.iso8601,
             "position"   => position,
@@ -42,13 +42,13 @@ class NxCherryPicks
             "boarduuid"  => object["boarduuid"]
         }
         puts JSON.pretty_generate(item)
-        NxCherryPicks::commit(item)
+        NxListingPriorities::commit(item)
         item
     end
 
-    # NxCherryPicks::listingItems(board)
+    # NxListingPriorities::listingItems(board)
     def self.listingItems(board)
-        NxCherryPicks::items()
+        NxListingPriorities::items()
             .select{|item| 
                 if board then
                     BoardsAndItems::belongsToThisBoard(item, board)
