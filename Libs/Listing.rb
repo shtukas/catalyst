@@ -145,8 +145,8 @@ class Listing
         if Interpreting::match("cherry-pick line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
-            cherrypick = NxCherryPicks::interactivelyIssue(nxline)
-            puts JSON.pretty_generate(cherrypick)
+            item = NxCherryPicks::interactivelyIssue(nxline)
+            puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
             return
         end
@@ -167,8 +167,8 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             return if item["mikuType"] == "NxCherryPick"
-            cherrypick = NxCherryPicks::interactivelyIssue(item, position.to_f)
-            puts JSON.pretty_generate(cherrypick)
+            item = NxCherryPicks::interactivelyIssue(item, position.to_f)
+            puts JSON.pretty_generate(item)
             BoardsAndItems::interactivelyOffersToAttach(item)
             return
         end
@@ -674,10 +674,10 @@ class Listing
             NxUltraPicks::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
+            NxCherryPicks::listingItems(nil),
             Waves::listingItemsPriority(nil),
             DevicesBackups::listingItems(),
             NxFires::listingItems(nil),
-            NxCherryPicks::listingItems(nil),
             NxLines::items(),
             NxFloats::listingItems(nil),
             NxOndates::listingItems(),
