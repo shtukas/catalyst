@@ -208,7 +208,14 @@ class NxTasks
 
     # NxTasks::listingItems(board)
     def self.listingItems(board)
-        NxTasks::bItemsOrdered(board).first(10)
+        if board then
+            NxTasks::bItemsOrdered(board)
+        else
+            NxTasks::bItemsOrdered(nil)
+                .first(3)
+                .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
+                .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
+        end
     end
 
     # NxTasks::listingRunningItems()
