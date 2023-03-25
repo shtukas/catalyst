@@ -150,9 +150,13 @@ class NxBoards
             .map {|board|
                 [
                     [board],
-                    Waves::listingItemsPriority(board),
+                    NxFires::listingItems(board),
+                    NxListingPriorities::listingItems(board),
+                    Waves::listingItems(board),
+                    NxFloats::listingItems(board),
                     NxProjects::listingItems(board),
-                    NxTasks::listingItems(board),
+                    NxOpenCycles::items(board),
+                    NxTasks::listingItems(board)
                 ].flatten
             }
             .flatten
