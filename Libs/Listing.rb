@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | priority | task | fire | project",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | first task | task | fire | project",
             "[makers] drop",
             "[transmutation] recast (<n>)",
             "[positioning] priority <n> <position> | priority line | priority set position <n> <position> | unpick <n>",
@@ -419,7 +419,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("priority", input) then
+        if Interpreting::match("first task", input) then
             item = NxTasks::priority()
             return if item.nil?
             puts JSON.pretty_generate(item)

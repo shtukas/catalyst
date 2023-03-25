@@ -1,8 +1,8 @@
 
 TxManualCountDown
-    "uuid"        : String
-    "mikuType"    : "TxManualCountDown"
-    "description" : String 
+    "uuid"                : String
+    "mikuType"            : "TxManualCountDown"
+    "description"         : String 
 
     "dailyTarget"         : Int
     "date"                : Date
