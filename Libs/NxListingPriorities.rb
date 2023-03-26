@@ -30,7 +30,7 @@ class NxListingPriorities
 
     # NxListingPriorities::interactivelyIssue(object, position = nil)
     def self.interactivelyIssue(object, position = nil)
-        puts "> cherry picking '#{PolyFunctions::toString(object).green}'"
+        puts "> set listing priority '#{PolyFunctions::toString(object).green}'"
         position = position || NxListingPriorities::interactivelyDecidePosition()
         item = {
             "uuid"       => SecureRandom.uuid,

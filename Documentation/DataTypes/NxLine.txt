@@ -1,5 +1,4 @@
-At the moment they are automatically created by cherry picking
-
+At the moment they are automatically created by priority (formely cherry picking)
 
 NxLine:
     "uuid"        : String
