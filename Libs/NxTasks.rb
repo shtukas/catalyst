@@ -212,7 +212,6 @@ class NxTasks
             NxTasks::bItemsOrdered(board)
         else
             NxTasks::bItemsOrdered(nil)
-                .first(10)
                 .select{|item| DoNotShowUntil::isVisible(item) }
                 .first(3)
                 .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
