@@ -14,7 +14,7 @@ class NxTasksCache
             items = NxTasks::bItemsOrdered(nil)
                     .select{|item| DoNotShowUntil::isVisible(item) }
                     .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                    .first(9)
+                    .first(5)
 
             items.each{|item|
                 filepath = "#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56/#{item["uuid"]}.json"
