@@ -148,7 +148,7 @@ class NxBoards
         board1s, board2s = boards.partition{|board| NxBalls::itemIsActive(board) }
 
         board2s = board2s
-            .select{|board| DoNotShowUntil::isVisible(board["uuid"]) }
+            .select{|board| DoNotShowUntil::isVisible(board) }
             .select{|board| BankCore::getValue(board["capsule"]) < board["hours"]*3600 }
             .map {|board|
                 {

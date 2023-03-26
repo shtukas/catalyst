@@ -150,8 +150,8 @@ require_relative "CoreData.rb"
 require_relative "CommonUtils.rb"
 
 require_relative "DoNotShowUntil.rb"
-# DoNotShowUntil::setUnixtime(uid, unixtime)
-# DoNotShowUntil::isVisible(uid)
+# DoNotShowUntil::setUnixtime(item, unixtime)
+# DoNotShowUntil::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DevicesBackups.rb"
@@ -172,7 +172,6 @@ require_relative "NxNote.rb"
 require_relative "NxOpenCycles.rb"
 require_relative "N1Data.rb"
 require_relative "NxTimePromises.rb"
-require_relative "N2KVStore.rb"
 require_relative "N3Objects.rb"
 require_relative "NxListingPriorities.rb"
 require_relative "NxLines.rb"

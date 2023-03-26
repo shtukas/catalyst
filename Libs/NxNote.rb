@@ -3,7 +3,7 @@ class NxNotes
 
     # NxNotes::getTextOrNull(item)
     def self.getTextOrNull(item)
-        N2KVStore::getOrNull("NxNotes:#{item["uuid"]}")
+        item["note"]
     end
 
     # NxNotes::getText(item)
@@ -13,7 +13,8 @@ class NxNotes
 
     # NxNotes::commit(item, text)
     def self.commit(item, text)
-        N2KVStore::set("NxNotes:#{item["uuid"]}", text)
+        item["note"] = text
+        N3Objects::commit(item)
     end
 
     # NxNotes::toStringSuffix(item)

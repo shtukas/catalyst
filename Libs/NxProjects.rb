@@ -96,7 +96,7 @@ class NxProjects
     def self.listingItems(board)
         NxProjects::items()
             .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| NxProjects::completionRatio(item) < 1 }
     end
 

@@ -1,24 +1,23 @@
 
 class DoNotShowUntil
 
-    # DoNotShowUntil::setUnixtime(uuid, unixtime)
-    def self.setUnixtime(uuid, unixtime)
-        N2KVStore::set("DoNotShowUntil:#{uuid}", unixtime)
+    # DoNotShowUntil::setUnixtime(item, unixtime)
+    def self.setUnixtime(item, unixtime)
+        # We start by using XCache for the special purpose of backup items on alexandra
+        XCache::set(item["uuid"], unixtime)
+
+        item["doNotShowUntil"] = unixtime
+        N3Objects::commit(item)
     end
 
-    # DoNotShowUntil::getUnixtimeOrNull(uuid)
-    def self.getUnixtimeOrNull(uuid)
-        N2KVStore::getOrNull("DoNotShowUntil:#{uuid}")
-    end
-
-    # DoNotShowUntil::isVisible(uuid)
-    def self.isVisible(uuid)
-        Time.new.to_i >= (DoNotShowUntil::getUnixtimeOrNull(uuid) || 0)
+    # DoNotShowUntil::isVisible(item)
+    def self.isVisible(item)
+        Time.new.to_i >= (item["doNotShowUntil"] || 0)
     end
 
     # DoNotShowUntil::suffixString(item)
     def self.suffixString(item)
-        unixtime = DoNotShowUntil::getUnixtimeOrNull(item["uuid"])
+        unixtime = (item["doNotShowUntil"] || (XCache::getOrNull(item["uuid"]) || 0)).to_f
         return "" if unixtime.nil?
         return "" if Time.new.to_i > unixtime
         " (not shown until: #{Time.at(unixtime).to_s})"

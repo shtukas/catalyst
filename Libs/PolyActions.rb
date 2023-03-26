@@ -105,7 +105,7 @@ class PolyActions
 
         if item["mikuType"] == "DeviceBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing '#{item["announce"].green} ? '", true) then
-                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["instruction"]["period"] * 86400)
+                DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["period"] * 86400)
             end
             return
         end

@@ -37,7 +37,7 @@ class Listing
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                DoNotShowUntil::setUnixtime(item, unixtime)
                 return
             end
         end
@@ -257,7 +257,7 @@ class Listing
                 item["parking"] = nil
                 N3Objects::commit(item)
             end
-            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            DoNotShowUntil::setUnixtime(item, unixtime)
             return
         end
 
@@ -308,7 +308,7 @@ class Listing
             end
             unixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + 3600*3 # 3 am
             if LucilleCore::askQuestionAnswerAsBoolean("> confirm today holiday for '#{PolyFunctions::toString(item).green}': ") then
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                DoNotShowUntil::setUnixtime(item, unixtime)
             end
             return
         end
@@ -667,7 +667,7 @@ class Listing
             NxTasks::listingItems(nil)
         ]
             .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) or NxBalls::itemIsActive(item) }
+            .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
                     selected
@@ -774,7 +774,6 @@ class Listing
                 NxBoards::timeManagement()
                 NxTimePromises::operate()
                 NxOpenCycles::dataManagement()
-                N2KVStore::fileManagement()
                 N3Objects::fileManagement()
                 BankCore::fileManagement()
             end

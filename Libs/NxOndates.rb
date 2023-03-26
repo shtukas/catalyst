@@ -97,6 +97,6 @@ class NxOndates
         item["datetime"] = Time.at(unixtime).utc.iso8601
         item["parking"] = nil
         NxOndates::commit(item)
-        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+        DoNotShowUntil::setUnixtime(item, unixtime)
     end
 end
