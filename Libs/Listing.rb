@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | first task | task | fire | project",
+            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | first task | task | fire | project | float",
             "[makers] drop",
             "[transmutation] recast (<n>)",
             "[positioning] priority <n> <position> | priority line | priority set position <n> <position> | unpick <n>",
@@ -110,7 +110,7 @@ class Listing
         if Interpreting::match("board", input) then
             item = store.getDefault()
             return if item.nil?
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -118,7 +118,7 @@ class Listing
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -146,7 +146,7 @@ class Listing
             nxline = NxLines::issue(line)
             item = NxListingPriorities::interactivelyIssue(nxline)
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::interactivelyOffersToAttach(item)
+                item = BoardsAndItems::askAndAttach(item)
             end
             puts JSON.pretty_generate(item)
             return
@@ -170,7 +170,7 @@ class Listing
             return if item["mikuType"] == "NxListingPriority"
             item = NxListingPriorities::interactivelyIssue(item, position.to_f)
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -364,7 +364,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -372,7 +372,7 @@ class Listing
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -385,7 +385,15 @@ class Listing
             item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
+            return
+        end
+
+        if Interpreting::match("float", input) then
+            item = NxFloats::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -423,7 +431,7 @@ class Listing
             item = NxTasks::priority()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -498,7 +506,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -506,7 +514,7 @@ class Listing
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::interactivelyOffersToAttach(item)
+            BoardsAndItems::askAndAttach(item)
             return
         end
 
@@ -673,7 +681,7 @@ class Listing
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
-        if !Listing::canBeDefault(item) then
+        if Listing::shouldBeInYellow(item) then
             line = line.yellow
         end
         if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
@@ -688,6 +696,14 @@ class Listing
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "NxFloat"
         true
+    end
+
+    # Listing::shouldBeInYellow(item)
+    def self.shouldBeInYellow(item)
+        return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
+        return true if item["mikuType"] == "NxBoard"
+        return true if item["mikuType"] == "NxFloat"
+        false
     end
 
     # Listing::printListing(store)

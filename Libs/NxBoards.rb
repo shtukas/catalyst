@@ -127,6 +127,20 @@ class NxBoards
         NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
     end
 
+    # NxBoards::listingElements(board)
+    def self.listingElements(board)
+        # Used both to build the listing items and the board own presentation items
+        [
+            NxFires::listingItems(board),
+            NxListingPriorities::listingItems(board),
+            Waves::listingItems(board),
+            NxFloats::listingItems(board),
+            NxProjects::listingItems(board),
+            NxOpenCycles::items(board),
+            NxTasks::listingItems(board)
+        ].flatten
+    end
+
     # NxBoards::listingItems()
     def self.listingItems()
         boards = NxBoards::items()
@@ -150,13 +164,7 @@ class NxBoards
             .map {|board|
                 [
                     [board],
-                    NxFires::listingItems(board),
-                    NxListingPriorities::listingItems(board),
-                    Waves::listingItems(board),
-                    NxFloats::listingItems(board),
-                    NxProjects::listingItems(board),
-                    NxOpenCycles::items(board),
-                    NxTasks::listingItems(board)
+                    NxBoards::listingElements(board)
                 ].flatten
             }
             .flatten
@@ -233,15 +241,7 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            [
-                NxFires::listingItems(board),
-                NxListingPriorities::listingItems(board),
-                Waves::listingItems(board),
-                NxFloats::listingItems(board),
-                NxProjects::listingItems(board),
-                NxOpenCycles::items(board),
-                NxTasks::listingItems(board)
-            ]
+            NxBoards::listingElements(board)
                 .flatten
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
@@ -276,8 +276,8 @@ class BoardsAndItems
         N3Objects::commit(item)
     end
 
-    # BoardsAndItems::interactivelyOffersToAttach(item)
-    def self.interactivelyOffersToAttach(item)
+    # BoardsAndItems::askAndAttach(item)
+    def self.askAndAttach(item)
         return item if item["boarduuid"]
         return item if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneOrNull()

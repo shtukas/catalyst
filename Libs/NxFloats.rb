@@ -37,7 +37,7 @@ class NxFloats
 
     # NxFloats::toString(item)
     def self.toString(item)
-        "(fire) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(float) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # NxFloats::listingItems(board)

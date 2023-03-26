@@ -23,7 +23,7 @@ class Transmutations
             item["capsule"] = SecureRandom.hex
             item["mikuType"] = "NxProject"
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::interactivelyOffersToAttach(item)
+                item = BoardsAndItems::askAndAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
@@ -43,7 +43,7 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxFloat"
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::interactivelyOffersToAttach(item)
+                item = BoardsAndItems::askAndAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
