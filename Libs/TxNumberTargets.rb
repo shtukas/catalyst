@@ -1,14 +1,14 @@
 
 # encoding: UTF-8
 
-class TxManualCountDowns
+class TxNumberTargets
 
-    # TxManualCountDowns::items()
+    # TxNumberTargets::items()
     def self.items()
-        N3Objects::getMikuType("TxManualCountDown")
+        N3Objects::getMikuType("TxNumberTarget")
     end
 
-    # TxManualCountDowns::issueNewOrNull()
+    # TxNumberTargets::issueNewOrNull()
     def self.issueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -17,7 +17,7 @@ class TxManualCountDowns
         dailyTarget = dailyTarget.to_i
         item = {
             "uuid"        => SecureRandom.uuid,
-            "mikuType"    => "TxManualCountDown",
+            "mikuType"    => "TxNumberTarget",
             "description" => description,
             "dailyTarget" => dailyTarget,
             "date"        => CommonUtils::today(),
@@ -28,41 +28,41 @@ class TxManualCountDowns
         item
     end
 
-    # TxManualCountDowns::commit(item)
+    # TxNumberTargets::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
     # Data
 
-    # TxManualCountDowns::listingItems()
+    # TxNumberTargets::listingItems()
     def self.listingItems()
-        TxManualCountDowns::items().each{|item|
+        TxNumberTargets::items().each{|item|
             if item["date"] != CommonUtils::today() then
                 item["date"] = CommonUtils::today()
-                item["counter"] = item["dailyTarget"]
+                item["counter"] = 0
                 N3Objects::commit(item)
             end
         }
-        TxManualCountDowns::items()
-            .select{|item| item["counter"] > 0 }
+        TxNumberTargets::items()
+            .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
     end
 
     # Ops
 
-    # TxManualCountDowns::performUpdate(item)
+    # TxNumberTargets::performUpdate(item)
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        item["counter"] = item["counter"] - count
+        item["counter"] = item["counter"] + count
         item["lastUpdatedUnixtime"] = Time.new.to_i
         puts JSON.pretty_generate(item)
-        TxManualCountDowns::commit(item)
+        TxNumberTargets::commit(item)
     end
 
-    # TxManualCountDowns::access(item)
+    # TxNumberTargets::access(item)
     def self.access(item)
-        TxManualCountDowns::performUpdate(item)
+        TxNumberTargets::performUpdate(item)
     end
 end

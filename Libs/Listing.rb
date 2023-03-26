@@ -335,7 +335,7 @@ class Listing
         end
 
         if Interpreting::match("manual countdown", input) then
-            TxManualCountDowns::issueNewOrNull()
+            TxNumberTargets::issueNewOrNull()
             return
         end
 
@@ -542,8 +542,8 @@ class Listing
                 "lambda" => lambda { NxOndates::listingItems() }
             },
             {
-                "name" => "TxManualCountDowns::listingItems()",
-                "lambda" => lambda { TxManualCountDowns::listingItems() }
+                "name" => "TxNumberTargets::listingItems()",
+                "lambda" => lambda { TxNumberTargets::listingItems() }
             },
             {
                 "name" => "NxBoards::listingItems()",
@@ -659,7 +659,7 @@ class Listing
             NxLines::items(),
             NxFloats::listingItems(nil),
             NxOndates::listingItems(),
-            TxManualCountDowns::listingItems(),
+            TxNumberTargets::listingItems(),
             NxBoards::listingItems(),
             NxProjects::listingItems(nil),
             NxOpenCycles::items(nil),

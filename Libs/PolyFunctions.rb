@@ -102,7 +102,7 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "TxManualCountDown" then
+        if item["mikuType"] == "TxNumberTarget" then
             return "(countdown) #{item["description"]}: #{item["counter"]}"
         end
         if item["mikuType"] == "Wave" then

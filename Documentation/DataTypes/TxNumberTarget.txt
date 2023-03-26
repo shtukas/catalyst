@@ -1,7 +1,7 @@
 
-TxManualCountDown
+TxNumberTarget
     "uuid"                : String
-    "mikuType"            : "TxManualCountDown"
+    "mikuType"            : "TxNumberTarget"
     "description"         : String 
 
     "dailyTarget"         : Int

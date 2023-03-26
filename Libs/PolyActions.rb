@@ -79,8 +79,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxManualCountDown" then
-            TxManualCountDowns::access(item)
+        if item["mikuType"] == "TxNumberTarget" then
+            TxNumberTargets::access(item)
             return
         end
 
@@ -175,8 +175,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxManualCountDown" then
-            TxManualCountDowns::performUpdate(item)
+        if item["mikuType"] == "TxNumberTarget" then
+            TxNumberTargets::performUpdate(item)
             return
         end
 
@@ -253,8 +253,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxManualCountDown" then
-            TxManualCountDowns::access(item)
+        if item["mikuType"] == "TxNumberTarget" then
+            TxNumberTargets::access(item)
             return
         end
 
