@@ -6,4 +6,4 @@ require_relative "Libs/loader.rb"
 
 # ----------------------------------------------------------------------------
 
-Listing::mainProgram2Pure()
+Listing::program()

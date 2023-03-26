@@ -8,6 +8,7 @@ class NxTasksCache
                     .select{|filepath| filepath[-5, 5] == ".json" }
                     .map{|filepath| JSON.parse(IO.read(filepath)) }
                     .select{|item| DoNotShowUntil::isVisible(item) }
+                    .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
                     .sort{|i1, i2| i1["position"] <=> i2["position"] }
 
         if items.size < 3 then
@@ -251,8 +252,6 @@ class NxTasks
             NxTasks::bItemsOrdered(board)
         else
             NxTasksCache::items()
-                .first(3)
-                .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
                 .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
         end
     end

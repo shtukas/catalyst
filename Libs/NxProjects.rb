@@ -103,28 +103,29 @@ class NxProjects
     # ---------------------------------------------------------
     # Ops
 
+    # NxProjects::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        items = NxProjects::items()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| NxProjects::toString(item) })
+    end
+
     # NxProjects::timeManagement()
     def self.timeManagement()
         return if !Config::isPrimaryInstance()
         NxProjects::items().each{|item|
 
-            # If at time of reset the board's capsule is over flowing, meaning
-            # its positive value is more than 50% of the time commitment for the board,
-            # meaning we did more than 100% of time commitment then we issue NxTimePromises
             if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
                 overflow = 0.5*item["hours"]*3600
-                puts "I am about to smooth board: board: #{NxProjects::toString(item)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
+                puts "I am about to smooth project: project: #{NxProjects::toString(item)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
                 LucilleCore::pressEnterToContinue()
                 NxTimePromises::smooth_commit(item["capsule"], -overflow, 20)
                 next
                 # We need to next because this section would have changed the item
             end
 
-            # We perform a reset, when we have filled the capsule (not to be confused with NxTimePromise)
-            # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
             if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
-                puts "I am about to reset board: #{item["description"]}"
-                puts "resetting board's capsule time commitment: board: #{NxProjects::toString(item)}, decrease by #{item["hours"]} hours"
+                puts "I am about to reset project: #{item["description"]}"
+                puts "resetting project's capsule time commitment: project: #{NxProjects::toString(item)}, decrease by #{item["hours"]} hours"
                 LucilleCore::pressEnterToContinue()
                 BankCore::put(item["capsule"], -item["hours"]*3600)
                 item["lastResetTime"] = Time.new.to_i
@@ -134,18 +135,12 @@ class NxProjects
         }
     end
 
-    # NxProjects::informationDisplay(store, boarduuid) 
-    def self.informationDisplay(store, boarduuid)
-        board = NxProjects::getItemOfNull(boarduuid)
-        if board.nil? then
-            puts "NxProjects::informationDisplay(boarduuid), board not found"
-            exit
+    # NxProjects::program()
+    def self.program()
+        item = NxProjects::interactivelySelectOneOrNull()
+        return if item.nil?
+        if LucilleCore::askQuestionAnswerAsBoolean("start '#{PolyFunctions::toString(item).green}' ? ", true) then
+            PolyActions::start(item)
         end
-        store.register(board, false)
-        line = "(#{store.prefixString()}) #{NxProjects::toString(board)}#{DoNotShowUntil::suffixString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
-        if NxBalls::itemIsRunning(board) or NxBalls::itemIsPaused(board) then
-            line = line.green
-        end
-        puts line
     end
 end

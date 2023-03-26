@@ -376,6 +376,11 @@ class Listing
             return
         end
 
+        if Interpreting::match("projects", input) then
+            NxProjects::program()
+            return
+        end
+
         if Interpreting::match("ondates", input) then
             NxOndates::report()
             return
@@ -710,7 +715,7 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxBoards::boardsOrdered().size - NxProjects::items().size - 4 )
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
         spacecontrol.putsline ""
 
@@ -721,18 +726,10 @@ class Listing
             }
 
         puts The99Percent::line()
-
-        NxBoards::boardsOrdered().each{|item|
-            NxBoards::informationDisplay(store, item["uuid"])
-        }
-        NxProjects::items().each{|item|
-            store.register(item, Listing::canBeDefault(item))
-            puts Listing::itemToListingLine(store, item)
-        }
     end
 
-    # Listing::mainProgram2Pure()
-    def self.mainProgram2Pure()
+    # Listing::program()
+    def self.program()
 
         initialCodeTrace = CommonUtils::stargateTraceCode()
 

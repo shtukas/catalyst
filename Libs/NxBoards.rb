@@ -86,32 +86,6 @@ class NxBoards
         "#{"(board)".green} #{item["description"].ljust(8)} #{str0} #{str1} #{str2}"
     end
 
-    # NxBoards::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        items = NxBoards::items()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
-    end
-
-    # NxBoards::interactivelySelectOne()
-    def self.interactivelySelectOne()
-        loop {
-            item = NxBoards::interactivelySelectOneOrNull()
-            return item if item
-        }
-    end
-
-    # NxBoards::interactivelyDecideNewBoardPosition(board)
-    def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxTasks::bItemsOrdered(board)
-        return 1 if boardItems.empty?
-        boardItems.each{|item| puts NxTasks::toString(item) }
-        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
-        if position == "" then
-            return boardItems.map{|item| item["position"] }.max + 1
-        end
-        return position.to_f
-    end
-
     # NxBoards::rtTarget(item)
     def self.rtTarget(item)
         item["hours"].to_f/5 # Hopefully 5 days
@@ -173,6 +147,32 @@ class NxBoards
     # ---------------------------------------------------------
     # Ops
 
+    # NxBoards::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        items = NxBoards::items()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
+    end
+
+    # NxBoards::interactivelySelectOne()
+    def self.interactivelySelectOne()
+        loop {
+            item = NxBoards::interactivelySelectOneOrNull()
+            return item if item
+        }
+    end
+
+    # NxBoards::interactivelyDecideNewBoardPosition(board)
+    def self.interactivelyDecideNewBoardPosition(board)
+        boardItems = NxTasks::bItemsOrdered(board)
+        return 1 if boardItems.empty?
+        boardItems.each{|item| puts NxTasks::toString(item) }
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if position == "" then
+            return boardItems.map{|item| item["position"] }.max + 1
+        end
+        return position.to_f
+    end
+
     # NxBoards::timeManagement()
     def self.timeManagement()
         return if !Config::isPrimaryInstance()
@@ -219,8 +219,8 @@ class NxBoards
         puts line
     end
 
-    # NxBoards::listing(board)
-    def self.listing(board)
+    # NxBoards::program(board)
+    def self.program(board)
 
         loop {
 
@@ -260,10 +260,9 @@ class NxBoards
 
     # NxBoards::boards()
     def self.boards()
-        NxBoards::items().each{|item|
-            puts NxBoards::toString(item)
-        }
-        LucilleCore::pressEnterToContinue()
+        board = NxBoards::interactivelySelectOneOrNull()
+        return if board.nil?
+        NxBoards::program(board)
     end
 end
 
