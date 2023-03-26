@@ -713,8 +713,6 @@ class Listing
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxBoards::boardsOrdered().size - NxProjects::items().size - 4 )
 
         spacecontrol.putsline ""
-        spacecontrol.putsline "ultra picks | fires | cherry picks | ondates | manual countdowns | projects | tasks".yellow
-        spacecontrol.putsline ""
 
         Listing::items()
             .each{|item|
