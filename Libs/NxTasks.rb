@@ -251,6 +251,7 @@ class NxTasks
             NxTasks::bItemsOrdered(board)
         else
             NxTasksCache::items()
+                .first(3)
                 .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
                 .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
         end
