@@ -59,6 +59,6 @@ class TheLine
         reference = TheLine::getReference()
         current = TheLine::getCurrentCount()
         nxtasksRatio = BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc").to_f/3
-        "> (inventory: #{current}) (reference: #{reference["count"]} @ #{reference["datetime"]}) (NxTasks: #{(100 * nxtasksRatio)} %)"
+        "> (reference: #{reference["count"]} @ #{reference["datetime"]}) (inventory: #{current}) (NxTasks: #{(100 * nxtasksRatio)} %)"
     end
 end
