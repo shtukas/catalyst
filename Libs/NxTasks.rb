@@ -7,15 +7,15 @@ class NxTasksCache
         items = LucilleCore::locationsAtFolder("#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
                     .select{|filepath| filepath[-5, 5] == ".json" }
                     .map{|filepath| JSON.parse(IO.read(filepath)) }
-                    .select{|item| DoNotShowUntil::isVisible(item) }
-                    .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
                     .sort{|i1, i2| i1["position"] <=> i2["position"] }
+                    .select{|item| DoNotShowUntil::isVisible(item) }
+                    .first(3)
 
         if items.size < 3 then
             items = NxTasks::bItemsOrdered(nil)
-                    .select{|item| DoNotShowUntil::isVisible(item) }
                     .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                    .first(5)
+                    .select{|item| DoNotShowUntil::isVisible(item) }
+                    .first(3)
 
             items.each{|item|
                 filepath = "#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56/#{item["uuid"]}.json"
@@ -252,7 +252,7 @@ class NxTasks
             NxTasks::bItemsOrdered(board)
         else
             NxTasksCache::items()
-                .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
+                .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
         end
     end
 
