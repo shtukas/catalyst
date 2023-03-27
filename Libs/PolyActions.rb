@@ -236,29 +236,34 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFire" then
+            PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
             return
         end
 
         if item["mikuType"] == "NxLine" then
+            PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
             return
         end
 
         if item["mikuType"] == "NxTask" then
+            puts PolyFunctions::toString(item).green
             NxBalls::start(item)
             NxTasks::access(item)
             return
         end
 
         if item["mikuType"] == "TxNumberTarget" then
+            PolyFunctions::toString(item).green
             TxNumberTargets::access(item)
             return
         end
 
         if item["mikuType"] == "Wave" then
+            PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing '#{Waves::toString(item).green} ? '", true) then
