@@ -567,12 +567,12 @@ class Listing
                 "lambda" => lambda { NxTasks::listingItems(nil) }
             },
             {
-                "name" => "The99Percent::getReference()",
-                "lambda" => lambda { The99Percent::getReference() }
+                "name" => "TheLine::getReference()",
+                "lambda" => lambda { TheLine::getReference() }
             },
             {
-                "name" => "The99Percent::getCurrentCount()",
-                "lambda" => lambda { The99Percent::getCurrentCount() }
+                "name" => "TheLine::getCurrentCount()",
+                "lambda" => lambda { TheLine::getCurrentCount() }
             },
             {
                 "name" => "NxBoards::boardsOrdered()",
@@ -619,8 +619,8 @@ class Listing
                 "lambda" => lambda { Listing::printListing(ItemStore.new()) }
             },
             {
-                "name" => "The99Percent::line()",
-                "lambda" => lambda { The99Percent::line() }
+                "name" => "TheLine::line()",
+                "lambda" => lambda { TheLine::line() }
             },
             {
                 "name" => "Listing::items()",
@@ -725,7 +725,7 @@ class Listing
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
 
-        puts The99Percent::line()
+        puts TheLine::line()
     end
 
     # Listing::program()

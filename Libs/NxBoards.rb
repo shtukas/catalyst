@@ -28,6 +28,7 @@ class NxBoards
     # --------------------------------------------
     # Makers
 
+    # This can only be called from nslog
     # NxBoards::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")

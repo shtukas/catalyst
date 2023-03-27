@@ -1,25 +1,25 @@
 # encoding: UTF-8
 
-class The99Percent
+class TheLine
 
     # reference = {
     #     "count"    =>
     #     "datetime" =>
     # }
 
-    # The99Percent::count()
+    # TheLine::count()
     def self.count()
         ["NxTask", "NxFire", "NxOndate", "NxProject"].map{|mikuType| N3Objects::getMikuTypeCount(mikuType) }.inject(0, :+)
     end
 
-    # The99Percent::getCurrentCount()
+    # TheLine::getCurrentCount()
     def self.getCurrentCount()
-        [The99Percent::count(), 1].max # It should not be 0, because we divide by it.
+        [TheLine::count(), 1].max # It should not be 0, because we divide by it.
     end
 
-    # The99Percent::issueNewReference()
+    # TheLine::issueNewReference()
     def self.issueNewReference()
-        count = The99Percent::getCurrentCount()
+        count = TheLine::getCurrentCount()
         reference = {
             "count"    => count,
             "datetime" => Time.new.utc.iso8601
@@ -28,36 +28,37 @@ class The99Percent
         reference
     end
 
-    # The99Percent::getReference()
+    # TheLine::getReference()
     def self.getReference()
         reference = XCache::getOrNull("002c358b-e6ee-41bd-9bee-105396a6349a")
         if reference then
             return JSON.parse(reference)
         end
-        The99Percent::issueNewReference()
+        TheLine::issueNewReference()
     end
 
-    # The99Percent::ratio()
+    # TheLine::ratio()
     def self.ratio()
-        reference = The99Percent::getReference()
-        current   = The99Percent::getCurrentCount()
+        reference = TheLine::getReference()
+        current   = TheLine::getCurrentCount()
         ratio = current.to_f/reference["count"]
         if ratio < 0.99 then
-            reference = The99Percent::issueNewReference()
+            reference = TheLine::issueNewReference()
             ratio = current.to_f/reference["count"]
         end
         if ratio > 1.01 then
-            reference = The99Percent::issueNewReference()
+            reference = TheLine::issueNewReference()
             ratio = current.to_f/reference["count"]
         end
         ratio
     end
 
-    # The99Percent::line()
+    # TheLine::line()
     def self.line()
-        reference = The99Percent::getReference()
-        current = The99Percent::getCurrentCount()
-        ratio   = The99Percent::ratio()
-        "> (inventory: #{current}) (differential: #{ratio}) (reference: #{reference["count"]} @ #{reference["datetime"]})"
+        reference = TheLine::getReference()
+        current = TheLine::getCurrentCount()
+        ratio   = TheLine::ratio()
+        nxtasksRatio = BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc").to_f/3
+        "> (inventory: #{current}) (differential: #{ratio}) (reference: #{reference["count"]} @ #{reference["datetime"]}) (NxTasks: #{(100 * nxtasksRatio)} %)"
     end
 end
