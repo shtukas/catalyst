@@ -7,12 +7,14 @@ class NxTasksCache
         items = LucilleCore::locationsAtFolder("#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
                     .select{|filepath| filepath[-5, 5] == ".json" }
                     .map{|filepath| JSON.parse(IO.read(filepath)) }
+                    .select{|item| item["boarduuid"].nil? }
                     .sort{|i1, i2| i1["position"] <=> i2["position"] }
                     .select{|item| DoNotShowUntil::isVisible(item) }
                     .first(3)
 
         if items.size < 3 then
             items = NxTasks::bItemsOrdered(nil)
+                    .select{|item| item["boarduuid"].nil? }
                     .sort{|i1, i2| i1["position"] <=> i2["position"] }
                     .select{|item| DoNotShowUntil::isVisible(item) }
                     .first(3)
