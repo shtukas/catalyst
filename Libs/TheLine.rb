@@ -37,8 +37,8 @@ class TheLine
         TheLine::issueNewReference()
     end
 
-    # TheLine::ratio()
-    def self.ratio()
+    # TheLine::referenceMonitor()
+    def self.referenceMonitor()
         reference = TheLine::getReference()
         current   = TheLine::getCurrentCount()
         ratio = current.to_f/reference["count"]
@@ -55,10 +55,10 @@ class TheLine
 
     # TheLine::line()
     def self.line()
+        TheLine::referenceMonitor()
         reference = TheLine::getReference()
         current = TheLine::getCurrentCount()
-        ratio   = TheLine::ratio()
         nxtasksRatio = BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc").to_f/3
-        "> (inventory: #{current}) (differential: #{ratio}) (reference: #{reference["count"]} @ #{reference["datetime"]}) (NxTasks: #{(100 * nxtasksRatio)} %)"
+        "> (inventory: #{current}) (reference: #{reference["count"]} @ #{reference["datetime"]}) (NxTasks: #{(100 * nxtasksRatio)} %)"
     end
 end
