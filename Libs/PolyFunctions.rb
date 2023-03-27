@@ -38,6 +38,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxTask" then
+            accounts << {
+                "description" => nil,
+                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask General
+            }
+        end
+
         # We now need to remove redundancies because we could have a board coming from
         # both the NxListingPriority or UltraPick and coming from the pinked item
 

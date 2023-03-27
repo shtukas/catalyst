@@ -24,6 +24,9 @@ class NxTasksCache
                 File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
             }
         end
+
+        return [] if (BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc") > 3 and items.none?{|item| NxBalls::itemIsRunning(item) })
+
         items
     end
 
