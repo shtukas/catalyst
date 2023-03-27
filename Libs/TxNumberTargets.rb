@@ -33,7 +33,13 @@ class TxNumberTargets
         N3Objects::commit(item)
     end
 
+    # --------------------------------------------------------
     # Data
+
+    # TxNumberTargets::toString(item)
+    def self.toString(item)
+        "(number target) #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
+    end
 
     # TxNumberTargets::listingItems()
     def self.listingItems()
@@ -49,6 +55,7 @@ class TxNumberTargets
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
     end
 
+    # --------------------------------------------------------
     # Ops
 
     # TxNumberTargets::performUpdate(item)

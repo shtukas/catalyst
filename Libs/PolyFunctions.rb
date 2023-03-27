@@ -103,7 +103,7 @@ class PolyFunctions
             return item["announce"]
         end
         if item["mikuType"] == "TxNumberTarget" then
-            return "(countdown) #{item["description"]}: #{item["counter"]}"
+            return TxNumberTargets::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
