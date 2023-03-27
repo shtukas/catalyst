@@ -1,50 +1,5 @@
 # encoding: UTF-8
 
-class NxTasksCache
-
-    # NxTasksCache::items()
-    def self.items()
-        items = LucilleCore::locationsAtFolder("#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
-                    .select{|filepath| filepath[-5, 5] == ".json" }
-                    .map{|filepath| JSON.parse(IO.read(filepath)) }
-                    .select{|item| item["boarduuid"].nil? }
-                    .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                    .select{|item| DoNotShowUntil::isVisible(item) }
-                    .first(3)
-
-        if items.size < 3 then
-            items = NxTasks::bItemsOrdered(nil)
-                    .select{|item| item["boarduuid"].nil? }
-                    .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                    .select{|item| DoNotShowUntil::isVisible(item) }
-                    .first(3)
-
-            items.each{|item|
-                filepath = "#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56/#{item["uuid"]}.json"
-                File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
-            }
-        end
-
-        return [] if (BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc") > 3 and items.none?{|item| NxBalls::itemIsRunning(item) })
-
-        items
-    end
-
-    # NxTasksCache::update(item)
-    def self.update(item)
-        filepath = "#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56/#{item["uuid"]}.json"
-        return if !File.exist?(filepath)
-        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
-    end
-
-    # NxTasksCache::destroy(uuid)
-    def self.destroy(uuid)
-        filepath = "#{Config::pathToDataCenter()}/NxTasks/b338aac9-4765-4d7c-afd6-e34ff6bfcd56/#{uuid}.json"
-        return if !File.exist?(filepath)
-        FileUtils.rm(filepath)
-    end
-end
-
 class NxTasks
 
     # NxTasks::items()
@@ -256,8 +211,44 @@ class NxTasks
         if board then
             NxTasks::bItemsOrdered(board)
         else
-            NxTasksCache::items()
-                .select{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
+            getItemOrNull = lambda {
+                item = nil
+                uuid = XCache::getOrNull("b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
+                if uuid then
+                    item = N3Objects::getOrNull(uuid)
+                    if item then
+                        if BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
+                            return item
+                        end
+                    end
+                end
+                item = NxTasks::bItemsOrdered(nil)
+                        .select{|item| item["boarduuid"].nil? }
+                        .sort{|i1, i2| i1["position"] <=> i2["position"] }
+                        .reduce(nil){|selected, i|
+                            if selected then
+                                selected
+                            else
+                                if DoNotShowUntil::isVisible(i) then
+                                    if BankUtils::recoveredAverageHoursPerDay(i["uuid"]) < 1 then
+                                        i
+                                    else
+                                        nil
+                                    end
+                                else
+                                    nil
+                                end
+                            end
+                        }
+                XCache::set("b338aac9-4765-4d7c-afd6-e34ff6bfcd56", item["uuid"])
+                item
+            }
+
+            item = getItemOrNull.call()
+
+            return [] if (BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc") > 3 and !NxBalls::itemIsRunning(item))
+
+            [item]
         end
     end
 

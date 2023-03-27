@@ -249,8 +249,6 @@ class N3Objects
             raise "object is missing mikuType: #{JSON.pretty_generate(object)}"
         end
         N3Objects::update(object["uuid"], object["mikuType"], object)
-
-        NxTasksCache::update(object)
     end
 
     # N3Objects::getOrNull(uuid)
@@ -294,7 +292,5 @@ class N3Objects
     def self.destroy(uuid)
         filepaths = N3Objects::getExistingFilepathsSorted()
         N3Objects::deleteAtFiles(filepaths, uuid)
-
-        NxTasksCache::destroy(uuid)
     end
 end
