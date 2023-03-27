@@ -27,6 +27,7 @@ class Transmutations
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
+            return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
@@ -37,6 +38,7 @@ class Transmutations
             item["position"] = position
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
+            return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxFloat" then
@@ -47,6 +49,10 @@ class Transmutations
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
+            return
         end
+
+        puts "I do not know how to transmute #{item["mikuType"]} to #{targetMikuType}"
+        LucilleCore::pressEnterToContinue()
     end
 end
