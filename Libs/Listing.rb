@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | ondate | today | desktop | first task | task | fire | project | float",
+            "[makers] anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
             "[makers] drop",
             "[transmutation] recast (<n>)",
             "[positioning] priority <n> <position> | priority line | priority set position <n> <position> | unpick <n>",
@@ -515,6 +515,16 @@ class Listing
             return
         end
 
+        if Interpreting::match("tomorrow", input) then
+            item = NxOndates::interactivelyIssueNewTodayOrNull()
+            return if item.nil?
+            item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
+            N3Objects::commit(item)
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::askAndAttach(item)
+            return
+        end
+
         if input == "wave" then
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
@@ -734,7 +744,6 @@ class Listing
             store.register(item, Listing::canBeDefault(item))
             puts Listing::itemToListingLine(store, item)
         }
-
     end
 
     # Listing::program()
