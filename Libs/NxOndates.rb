@@ -41,7 +41,7 @@ class NxOndates
 
     # NxOndates::interactivelyIssueNewTodayOrNull()
     def self.interactivelyIssueNewTodayOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("today (empty to abort): ")
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
