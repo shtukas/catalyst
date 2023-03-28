@@ -715,7 +715,7 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxBoards::boardsOrdered().size - NxProjects::items().size - 4 )
 
         spacecontrol.putsline ""
 
@@ -726,6 +726,15 @@ class Listing
             }
 
         puts TheLine::line()
+
+        NxBoards::boardsOrdered().each{|item|
+            NxBoards::informationDisplay(store, item["uuid"])
+        }
+        NxProjects::items().each{|item|
+            store.register(item, Listing::canBeDefault(item))
+            puts Listing::itemToListingLine(store, item)
+        }
+
     end
 
     # Listing::program()
