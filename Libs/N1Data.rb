@@ -2,9 +2,6 @@
 # create table elements (uuid string primary key, mikuType string, nhash string)
 # File naming convention: <l22>,<l22>.sqlite
 
-$N1Data_Cache_MikuTypesAtFile = {}
-$N1Data_Cache_ObjectAtFile = {}
-
 class N1Data
 
     # N1Data::folderpath()
