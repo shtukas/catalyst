@@ -168,6 +168,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOpenCycle" then
+            puts "We do not done an NxOpenCycle. You can remove the directory."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTasks::destroy(item["uuid"])
