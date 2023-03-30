@@ -94,6 +94,7 @@ class NxOndates
     # NxOndates::redate(item)
     def self.redate(item)
         unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+        return if unixtime.nil?
         item["datetime"] = Time.at(unixtime).utc.iso8601
         item["parking"] = nil
         NxOndates::commit(item)
