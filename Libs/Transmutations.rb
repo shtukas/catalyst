@@ -3,7 +3,7 @@ class Transmutations
 
     # Transmutations::targetMikuTypes()
     def self.targetMikuTypes()
-        ["NxFloat", "NxProject", "NxTask"]
+        ["NxFire", "NxFloat", "NxProject", "NxTask"]
     end
 
     # Transmutations::interactivelySelectMikuTypeOrNull()
@@ -23,7 +23,7 @@ class Transmutations
             item["capsule"] = SecureRandom.hex
             item["mikuType"] = "NxProject"
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::askAndAttach(item)
+                item = BoardsAndItems::askAndMaybeAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
@@ -45,7 +45,18 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxFloat"
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::askAndAttach(item)
+                item = BoardsAndItems::askAndMaybeAttach(item)
+            end
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
+            puts JSON.pretty_generate(item)
+            item["mikuType"] = "NxFire"
+            if item["boarduuid"].nil? then
+                item = BoardsAndItems::askAndMaybeAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)

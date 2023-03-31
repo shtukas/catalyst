@@ -276,8 +276,8 @@ class BoardsAndItems
         N3Objects::commit(item)
     end
 
-    # BoardsAndItems::askAndAttach(item)
-    def self.askAndAttach(item)
+    # BoardsAndItems::askAndMaybeAttach(item)
+    def self.askAndMaybeAttach(item)
         return item if item["boarduuid"]
         return item if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneOrNull()

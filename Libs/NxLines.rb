@@ -28,7 +28,7 @@ class NxLines
         }
         puts JSON.pretty_generate(item)
         NxLines::commit(item)
-        item = BoardsAndItems::askAndAttach(item)
+        item = BoardsAndItems::askAndMaybeAttach(item)
         item
     end
 end
