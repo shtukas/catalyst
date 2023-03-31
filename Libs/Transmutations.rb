@@ -63,6 +63,17 @@ class Transmutations
             return
         end
 
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
+            puts JSON.pretty_generate(item)
+            item["mikuType"] = "NxTask"
+            boarduuid, position = PolyFunctions::interactivelySelectBoardAndPositionForTask()
+            item["boarduuid"] = boarduuid
+            item["position"] = position
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
+            return
+        end
+
         puts "I do not know how to transmute #{item["mikuType"]} to #{targetMikuType}"
         LucilleCore::pressEnterToContinue()
     end
