@@ -248,14 +248,28 @@ class BoardsAndItems
         NxBoards::getItemFailIfMissing(item["boarduuid"])
     end
 
-    # BoardsAndItems::belongsToThisBoard(item, board or nil)
-    def self.belongsToThisBoard(item, board)
-        return true if board == "all"
+    # BoardsAndItems::belongsToThisBoard1(item, board or nil)
+    def self.belongsToThisBoard1(item, board)
         if board.nil? then
             item["boarduuid"].nil?
         else
             item["boarduuid"] == board["uuid"]
         end
+    end
+
+    # BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board or nil or "all" or "managed")
+    def self.belongsToThisBoard2ForListingManagement(item, board)
+        if board == "all" then
+            return true
+        end
+        if board == "managed" then
+            if NxBoards::completionRatio(board) < 1 then
+                return true
+            else
+                return false
+            end
+        end
+        BoardsAndItems::belongsToThisBoard1(item, board)
     end
 
     # BoardsAndItems::toStringSuffix(item)
@@ -264,5 +278,4 @@ class BoardsAndItems
         board = NxBoards::getItemFailIfMissing(item["boarduuid"])
         " (board: #{board["description"].green})"
     end
-
 end

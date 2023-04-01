@@ -49,13 +49,7 @@ class NxListingPriorities
     # NxListingPriorities::listingItems(board)
     def self.listingItems(board)
         NxListingPriorities::items()
-            .select{|item| 
-                if board then
-                    BoardsAndItems::belongsToThisBoard(item, board)
-                else
-                    true
-                end
-            }
+            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 end

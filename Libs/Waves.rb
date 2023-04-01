@@ -165,7 +165,7 @@ class Waves
     # Waves::listingItemsBoard(board)
     def self.listingItemsBoard(board)
         Waves::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
@@ -176,7 +176,7 @@ class Waves
     def self.listingItemsPriority(board)
         Waves::items()
             .select{|item| item["priority"] }
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
@@ -187,7 +187,7 @@ class Waves
     def self.listingItemsLeisure(board)
         Waves::items()
             .select{|item| !item["priority"] }
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())

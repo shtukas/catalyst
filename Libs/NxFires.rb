@@ -43,6 +43,6 @@ class NxFires
     # NxFires::listingItems(board)
     def self.listingItems(board)
         NxFires::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard1(item, board) }
     end
 end

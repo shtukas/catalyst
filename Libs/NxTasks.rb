@@ -146,7 +146,7 @@ class NxTasks
     # NxTasks::bItemsOrdered(board)
     def self.bItemsOrdered(board)
         NxTasks::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 
