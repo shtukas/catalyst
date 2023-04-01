@@ -84,7 +84,7 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid  = SecureRandom.uuid
         coredataref = "url:#{N1Data::putBlob(url)}"
-        position = NxTasks::nextPosition()
+        position = NxTasks::newMinus1Position()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTask",
@@ -198,6 +198,13 @@ class NxTasks
         position, difference = a1.select{|pair| pair[1] >= average }.first
 
         position + rand*difference
+    end
+
+    # NxTasks::newMinus1Position()
+    def self.newMinus1Position()
+        positions = NxTasks::items().map{|item| item["position"] }
+        return 1 if positions.empty?
+        positions.min - 1
     end
 
     # NxTasks::nextPosition()
