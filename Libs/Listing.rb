@@ -123,7 +123,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxBoards::boards()
+            NxBoards::boardsdive()
             return
         end
 
@@ -561,10 +561,6 @@ class Listing
                 "lambda" => lambda { TxNumberTargets::listingItems() }
             },
             {
-                "name" => "NxBoards::listingItems()",
-                "lambda" => lambda { NxBoards::listingItems() }
-            },
-            {
                 "name" => "Waves::listingItemsPriority(nil)",
                 "lambda" => lambda { Waves::listingItemsPriority(nil) }
             },
@@ -662,24 +658,23 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::items()
-    def self.items()
+    # Listing::items(code)
+    def self.items(code)
         [
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-            NxListingPriorities::listingItems(nil),
-            Waves::listingItemsPriority(nil),
+            NxListingPriorities::listingItems(code),
+            Waves::listingItemsPriority(code),
             DevicesBackups::listingItems(),
-            NxFires::listingItems(nil),
+            NxFires::listingItems(code),
             NxLines::items(),
-            NxFloats::listingItems(nil),
             NxOndates::listingItems(),
             TxNumberTargets::listingItems(),
-            NxBoards::listingItems(),
-            NxProjects::listingItems(nil),
-            NxOpenCycles::items(nil),
-            Waves::listingItemsLeisure(nil),
-            NxTasks::listingItems(nil)
+            NxFloats::listingItems(code),
+            NxProjects::listingItems(code),           # :metric
+            NxOpenCycles::items(code),
+            Waves::listingItemsLeisure(code),
+            NxTasks::listingItems(code)               # :metric
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -717,7 +712,6 @@ class Listing
     def self.shouldBeInYellow(item)
         return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return true if item["mikuType"] == "NxBoard"
-        return true if item["mikuType"] == "NxFloat"
         false
     end
 
@@ -725,11 +719,13 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxBoards::boardsOrdered().size - NxProjects::items().size - 4 )
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxProjects::items().size - NxBoards::boardsOrdered().size - 4 )
 
         spacecontrol.putsline ""
 
-        Listing::items()
+        Listing::items("all")
+            .sort_by{|item| Metric::metric(item) }
+            .reverse
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
@@ -737,12 +733,15 @@ class Listing
 
         puts TheLine::line()
 
+        NxProjects::items()
+            .sort_by{|item| NxProjects::completionRatio(item) }
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                puts Listing::itemToListingLine(store, item)
+            }
+
         NxBoards::boardsOrdered().each{|item|
             NxBoards::informationDisplay(store, item["uuid"])
-        }
-        NxProjects::items().each{|item|
-            store.register(item, Listing::canBeDefault(item))
-            puts Listing::itemToListingLine(store, item)
         }
     end
 

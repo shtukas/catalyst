@@ -161,6 +161,8 @@ class N3Objects
     # N3Objects::update(uuid, mikuType, object)
     def self.update(uuid, mikuType, object)
 
+        object[:metric] = nil
+
         object["n3timestamp"] = Time.new.to_f
 
         # Make a record of the existing files

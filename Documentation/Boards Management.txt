@@ -1,0 +1,17 @@
+
+A lot of functions have a signature similar to this one
+
+```
+Waves::listingItemsPriority(board)
+```
+
+with a selector like this
+
+```
+.select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+```
+
+and the expectation is that if the argument is nil then we return all items that are not attached to a board, and if the argument is a board then we return elements attached to this board.
+
+By convention we also support the argument "all", which then returns all the items, indiscriminate to
+their board attribution or not.

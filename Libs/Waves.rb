@@ -162,8 +162,8 @@ class Waves
     # Data (2)
     # We do not display wave that are attached to a board (the board displays them)
 
-    # Waves::listingItems(board)
-    def self.listingItems(board)
+    # Waves::listingItemsBoard(board)
+    def self.listingItemsBoard(board)
         Waves::items()
             .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }

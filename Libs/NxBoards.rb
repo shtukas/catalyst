@@ -102,49 +102,6 @@ class NxBoards
         NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
     end
 
-    # NxBoards::listingElements(board)
-    def self.listingElements(board)
-        # Used both to build the listing items and the board own presentation items
-        [
-            NxFires::listingItems(board),
-            NxListingPriorities::listingItems(board),
-            Waves::listingItems(board),
-            NxFloats::listingItems(board),
-            NxProjects::listingItems(board),
-            NxOpenCycles::items(board),
-            NxTasks::listingItems(board)
-        ].flatten
-    end
-
-    # NxBoards::listingItems()
-    def self.listingItems()
-        boards = NxBoards::items()
-
-        board1s, board2s = boards.partition{|board| NxBalls::itemIsActive(board) }
-
-        board2s = board2s
-            .select{|board| DoNotShowUntil::isVisible(board) }
-            .select{|board| BankCore::getValue(board["capsule"]) < board["hours"]*3600 }
-            .map {|board|
-                {
-                    "board" => board,
-                    "cr"    => NxBoards::completionRatio(board)
-                }
-            }
-            .select{|packet| packet["cr"] < 1 }
-            .sort{|p1, p2| p1["cr"] <=> p2["cr"] }
-            .map {|packet| packet["board"] }
-
-        (board1s + board2s)
-            .map {|board|
-                [
-                    [board],
-                    NxBoards::listingElements(board)
-                ].flatten
-            }
-            .flatten
-    end
-
     # ---------------------------------------------------------
     # Ops
 
@@ -220,8 +177,8 @@ class NxBoards
         puts line
     end
 
-    # NxBoards::program(board)
-    def self.program(board)
+    # NxBoards::listing(board)
+    def self.listing(board)
 
         loop {
 
@@ -242,7 +199,7 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            NxBoards::listingElements(board)
+            Listing::items(board)
                 .flatten
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
@@ -251,19 +208,17 @@ class NxBoards
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            next if input == ""
-
-            return if input == "exit"
+            break if input == ""
 
             Listing::listingCommandInterpreter(input, store, nil)
         }
     end
 
-    # NxBoards::boards()
-    def self.boards()
+    # NxBoards::boardsdive()
+    def self.boardsdive()
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
-        NxBoards::program(board)
+        NxBoards::listing(board)
     end
 end
 
@@ -295,6 +250,7 @@ class BoardsAndItems
 
     # BoardsAndItems::belongsToThisBoard(item, board or nil)
     def self.belongsToThisBoard(item, board)
+        return true if board == "all"
         if board.nil? then
             item["boarduuid"].nil?
         else

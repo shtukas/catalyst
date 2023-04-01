@@ -12,4 +12,6 @@ Cross types conventions:
 
 (1) Not for NxBoards.
 
-(2) carried by all objects, help with resolution
+(2) Carried by all objects, help with resolution
+
+We are using a position metric, at key: :metric, that key shuld be removed when the object is sent to disk. 

@@ -215,6 +215,19 @@ class NxTasks
 
     # NxTasks::listingItems(board)
     def self.listingItems(board)
+
+        if board == "all" then
+            items1 = NxBoards::boardsOrdered().map{|board| NxTasks::listingItems(board).first(6) }.flatten
+            items2 = NxTasks::listingItems(nil)
+            cursor = 1.1
+            return (items1 + items2)
+                        .map{|item|
+                            cursor = cursor - 0.001
+                            item[:metric] = cursor
+                            item
+                        }
+        end
+
         if board then
             NxTasks::bItemsOrdered(board)
         else
