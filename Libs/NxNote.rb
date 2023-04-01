@@ -20,7 +20,7 @@ class NxNotes
     # NxNotes::toStringSuffix(item)
     def self.toStringSuffix(item)
         text = NxNotes::getTextOrNull(item)
-        text ? " (note)".green : ""
+        ( text and text.strip.size > 0 ) ? " (note)".green : ""
     end
 
     # NxNotes::edit(item)
