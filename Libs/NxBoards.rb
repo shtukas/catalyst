@@ -263,10 +263,15 @@ class BoardsAndItems
             return true
         end
         if board == "managed" then
-            if NxBoards::completionRatio(board) < 1 then
-                return true
+            if item["boarduuid"] then
+                board = NxBoards::getItemOfNull(item["boarduuid"])
+                if board then
+                    return NxBoards::completionRatio(board) < 1
+                else
+                    return true
+                end
             else
-                return false
+                return true
             end
         end
         BoardsAndItems::belongsToThisBoard1(item, board)
