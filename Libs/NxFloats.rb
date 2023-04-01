@@ -43,6 +43,6 @@ class NxFloats
     # NxFloats::listingItems(board)
     def self.listingItems(board)
         NxFloats::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard(item, board) }
+            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
     end
 end

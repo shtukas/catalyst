@@ -723,7 +723,7 @@ class Listing
 
         spacecontrol.putsline ""
 
-        Listing::items("all")
+        Listing::items("managed")
             .sort_by{|item| Metric::metric(item) }
             .reverse
             .each{|item|
