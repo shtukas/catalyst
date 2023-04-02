@@ -796,8 +796,8 @@ class Listing
                     break if count > 100
                     puts "item: #{JSON.pretty_generate(item)}"
                     puts "could not find the board".green
-                    puts "repairing ? ".green
                     if !generalpermission then
+                        puts "repairing ? ".green
                         LucilleCore::pressEnterToContinue()
                         generalpermission = true
                     end
