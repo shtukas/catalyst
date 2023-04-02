@@ -629,10 +629,13 @@ class Listing
                 "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "Listing::items()",
-                "lambda" => lambda { Listing::items() }
+                "name" => "Listing::items(all)",
+                "lambda" => lambda { Listing::items("all") }
             },
-
+            {
+                "name" => "Listing::items(managed)",
+                "lambda" => lambda { Listing::items("managed") }
+            },
         ]
                     .map{|test|
                         puts "running: #{test["name"]}"
