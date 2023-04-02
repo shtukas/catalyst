@@ -787,6 +787,21 @@ class Listing
                     LucilleCore::removeFileSystemLocation(location)
                 }
 
+            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f57449", 86400) then
+                N3Objects::getall().each{|item|
+                    if item["boarduuid"] then
+                        if NxBoards::getItemOfNull(item["boarduuid"]).nil? then
+                            puts "item: #{JSON.pretty_generate(item)}"
+                            puts "could not find the board".green
+                            puts "repairing ? ".green
+                            LucilleCore::pressEnterToContinue()
+                            item["boarduuid"] = nil
+                            N3Objects::commit(item)
+                        end
+                    end
+                }
+            end
+
             if Config::isPrimaryInstance() then
                 NxBoards::timeManagement()
                 NxTimePromises::operate()
