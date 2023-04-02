@@ -787,7 +787,7 @@ class Listing
                     LucilleCore::removeFileSystemLocation(location)
                 }
 
-            if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 3600) then
+            if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
                 generalpermission = false
                 count = 0
                 N3Objects::getall().each{|item|
