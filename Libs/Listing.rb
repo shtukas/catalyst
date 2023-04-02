@@ -569,8 +569,8 @@ class Listing
                 "lambda" => lambda { Waves::listingItemsLeisure(nil) }
             },
             {
-                "name" => "NxTasks::listingItems(nil)",
-                "lambda" => lambda { NxTasks::listingItems(nil) }
+                "name" => "NxTasks::listingItemsNil()",
+                "lambda" => lambda { NxTasks::listingItemsNil() }
             },
             {
                 "name" => "TheLine::getReference()",
@@ -674,10 +674,11 @@ class Listing
             NxOndates::listingItems(),
             TxNumberTargets::listingItems(),
             NxFloats::listingItems(code),
-            NxProjects::listingItems(code),           # :metric
+            NxProjects::listingItems(code),
+            NxTasks::listingItemsBoards(code),
             NxOpenCycles::items(code),
             Waves::listingItemsLeisure(code),
-            NxTasks::listingItems(code)               # :metric
+            NxTasks::listingItemsNil()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -727,8 +728,6 @@ class Listing
         spacecontrol.putsline ""
 
         Listing::items("managed")
-            .sort_by{|item| Metric::metric(item) }
-            .reverse
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)

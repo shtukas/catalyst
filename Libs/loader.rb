@@ -164,8 +164,6 @@ require_relative "ItemStore.rb"
 require_relative "LambdX1s.rb"
 require_relative "Listing.rb"
 
-require_relative "Metric.rb"
-
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBoards.rb"

@@ -98,10 +98,6 @@ class NxProjects
             .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| NxProjects::completionRatio(item) < 1 }
-            .map{|item|
-                item[:metric] = 4.1 - NxProjects::completionRatio(item)
-                item
-            }
     end
 
     # ---------------------------------------------------------

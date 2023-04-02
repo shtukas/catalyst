@@ -255,56 +255,23 @@ class NxTasks
         [item]
     end
 
-    # NxTasks::listingItems(board)
-    def self.listingItems(board)
-
-        cursor = 1.1
+    # NxTasks::listingItemsBoards(board: "all", "managed", NxBoard)
+    def self.listingItemsBoards(board)
 
         if board == "all" then
-            items1 = NxBoards::boardsOrdered().map{|board| NxTasks::listingItems(board).first(6) }.flatten
-            items2 = NxTasks::listingItems(nil)
-            return (items1 + items2)
-                        .map{|item|
-                            cursor = cursor - 0.001
-                            item[:metric] = cursor
-                            item
-                        }
+            return NxBoards::boardsOrdered()
+                        .map{|board| NxTasks::bItemsOrdered(board).first(6) }
+                        .flatten
         end
 
         if board == "managed" then
-            items1 = NxBoards::boardsOrdered()
-                        .select{|board| NxBoards::completionRatio(board) }
-                        .map{|board| NxTasks::listingItems(board).first(6) }
+            return  NxBoards::boardsOrdered()
+                        .select{|board| NxBoards::completionRatio(board) < 1 }
+                        .map{|board| NxTasks::bItemsOrdered(board).first(6) }
                         .flatten
-            items2 = NxTasks::listingItems(nil)
-            return (items1 + items2)
-                        .map{|item|
-                            cursor = cursor - 0.001
-                            item[:metric] = cursor
-                            item
-                        }
         end
 
-        if board then
-            NxTasks::bItemsOrdered(board)
-                .map{|item|
-                    cursor = cursor - 0.001
-                    item[:metric] = cursor
-                    item
-                }
-        else
-            NxTasks::listingItemsNil()
-                .map{|item|
-                    cursor = cursor - 0.001
-                    item[:metric] = cursor
-                    item
-                }
-        end
-    end
-
-    # NxTasks::listingRunningItems()
-    def self.listingRunningItems()
-        NxTasks::items().select{|item| NxBalls::itemIsActive(item) }
+        NxTasks::bItemsOrdered(board)
     end
 
     # --------------------------------------------------
