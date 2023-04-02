@@ -716,6 +716,7 @@ class Listing
     def self.shouldBeInYellow(item)
         return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return true if item["mikuType"] == "NxBoard"
+        return true if item["mikuType"] == "NxFloat"
         false
     end
 
