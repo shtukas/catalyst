@@ -148,6 +148,11 @@ class NxBoards
                 # We need to next because this section would have changed the item
             end
 
+            # We do not reset guardian during the week end
+            if item["uuid"] == "27d3d6ab-2f0c-436e-a372-e952140db7c6" and [0, 6].include?(Time.new.wday) then
+                next
+            end
+
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimePromise)
             # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
             if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
