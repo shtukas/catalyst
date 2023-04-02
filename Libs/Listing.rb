@@ -787,23 +787,25 @@ class Listing
                     LucilleCore::removeFileSystemLocation(location)
                 }
 
-            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744a", 86400) then
+            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 3600) then
                 generalpermission = false
+                count = 0
                 N3Objects::getall().each{|item|
-                    if item["boarduuid"] then
-                        if NxBoards::getItemOfNull(item["boarduuid"]).nil? then
-                            puts "item: #{JSON.pretty_generate(item)}"
-                            puts "could not find the board".green
-                            puts "repairing ? ".green
-                            if !generalpermission then
-                                LucilleCore::pressEnterToContinue()
-                                generalpermission = true
-                            end
-                            item["boarduuid"] = nil
-                            N3Objects::commit(item)
-                        end
+                    next if item["boarduuid"].nil?
+                    next if NxBoards::getItemOfNull(item["boarduuid"])
+                    break if count > 100
+                    puts "item: #{JSON.pretty_generate(item)}"
+                    puts "could not find the board".green
+                    puts "repairing ? ".green
+                    if !generalpermission then
+                        LucilleCore::pressEnterToContinue()
+                        generalpermission = true
                     end
+                    item["boarduuid"] = nil
+                    N3Objects::commit(item)
+                    count = count + 1
                 }
+
             end
 
             if Config::isPrimaryInstance() then
