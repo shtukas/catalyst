@@ -260,6 +260,9 @@ class BoardsAndItems
             if item["boarduuid"] then
                 board = NxBoards::getItemOfNull(item["boarduuid"])
                 if board then
+                    if !DoNotShowUntil::isVisible(board) then
+                        return false # we return false if the board is not visible
+                    end
                     return NxBoards::completionRatio(board) < 1
                 else
                     return true

@@ -266,6 +266,7 @@ class NxTasks
 
         if board == "managed" then
             return  NxBoards::boardsOrdered()
+                        .select{|board| DoNotShowUntil::isVisible(board) }
                         .select{|board| NxBoards::completionRatio(board) < 1 }
                         .map{|board| NxTasks::bItemsOrdered(board).first(6) }
                         .flatten
