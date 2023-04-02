@@ -134,35 +134,36 @@ class NxBoards
     # NxBoards::timeManagement()
     def self.timeManagement()
         return if !Config::isPrimaryInstance()
-        NxBoards::items().each{|item|
+        NxBoards::items().each{|board|
 
             # If at time of reset the board's capsule is over flowing, meaning
             # its positive value is more than 50% of the time commitment for the board,
             # meaning we did more than 100% of time commitment then we issue NxTimePromises
-            if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
-                overflow = 0.5*item["hours"]*3600
-                puts "I am about to smooth board: board: #{NxBoards::toString(item)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
+            if BankCore::getValue(board["capsule"]) > 1.5*board["hours"]*3600 and (Time.new.to_i - board["lastResetTime"]) >= 86400*7 then
+                overflow = 0.5*board["hours"]*3600
+                puts "I am about to smooth board: board: #{NxBoards::toString(board)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
                 LucilleCore::pressEnterToContinue()
-                NxTimePromises::smooth_commit(item["capsule"], -overflow, 20)
+                NxTimePromises::smooth_commit(board["capsule"], -overflow, 20)
+                NxTimePromises::smooth_commit(board["uuid"], -overflow, 20)
                 next
-                # We need to next because this section would have changed the item
+                # We need to next because this section would have changed the board
             end
 
             # We do not reset guardian during the week end
-            if item["uuid"] == "27d3d6ab-2f0c-436e-a372-e952140db7c6" and [0, 6].include?(Time.new.wday) then
+            if board["uuid"] == "27d3d6ab-2f0c-436e-a372-e952140db7c6" and [0, 6].include?(Time.new.wday) then
                 next
             end
 
             # We perform a reset, when we have filled the capsule (not to be confused with NxTimePromise)
             # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
-            if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
-                puts "I am about to reset board: #{item["description"]}"
-                puts "resetting board's capsule time commitment: board: #{NxBoards::toString(item)}, decrease by #{item["hours"]} hours"
+            if BankCore::getValue(board["capsule"]) >= board["hours"]*3600 and (Time.new.to_i - board["lastResetTime"]) >= 86400*7 then
+                puts "I am about to reset board: #{board["description"]}"
+                puts "resetting board's capsule time commitment: board: #{NxBoards::toString(board)}, decrease by #{board["hours"]} hours"
                 LucilleCore::pressEnterToContinue()
-                BankCore::put(item["capsule"], -item["hours"]*3600)
-                item["lastResetTime"] = Time.new.to_i
-                puts JSON.pretty_generate(item)
-                NxBoards::commit(item)
+                BankCore::put(board["capsule"], -board["hours"]*3600)
+                board["lastResetTime"] = Time.new.to_i
+                puts JSON.pretty_generate(board)
+                NxBoards::commit(board)
             end
         }
     end

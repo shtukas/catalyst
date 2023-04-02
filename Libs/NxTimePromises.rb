@@ -12,8 +12,8 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::makeCapsule(unixtime, account, value)
-    def self.makeCapsule(unixtime, account, value)
+    # NxTimePromises::makePromise(unixtime, account, value)
+    def self.makePromise(unixtime, account, value)
         {
             "uuid"     => SecureRandom.uuid,
             "mikuType" => "NxTimePromise",
@@ -26,10 +26,10 @@ class NxTimePromises
     # NxTimePromises::smooth(accountnumber, value, periodInDays)
     def self.smooth(accountnumber, value, periodInDays)
         items = []
-        items << NxTimePromises::makeCapsule(Time.new.to_i, accountnumber, value)
+        items << NxTimePromises::makePromise(Time.new.to_i, accountnumber, value)
         unitpayment = -value.to_f/periodInDays
         (1..periodInDays).each{|i|
-            items << NxTimePromises::makeCapsule(Time.new.to_i + 86400*i, accountnumber, unitpayment)
+            items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, accountnumber, unitpayment)
         }
         items
     end
@@ -52,7 +52,8 @@ class NxTimePromises
         N3Objects::getMikuType("NxTimePromise")
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|capsule|
-                puts "#{Time.at(capsule["unixtime"]).to_s} : #{capsule["account"]} : #{capsule["value"]}"
+                board = NxBoards::getItemOfNull(capsule["account"])
+                puts "#{Time.at(capsule["unixtime"]).to_s} : #{capsule["account"]} : #{capsule["value"]}#{board ? " (#{board["description"]})" : ""}"
             }
         LucilleCore::pressEnterToContinue()
     end
