@@ -213,6 +213,48 @@ class NxTasks
         NxTasks::positionsToNewPosition(positions)
     end
 
+    # NxTasks::listingItemsNil()
+    def self.listingItemsNil()
+        getItemOrNull = lambda {
+            item = nil
+            uuid = XCache::getOrNull("b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
+            if uuid then
+                item = N3Objects::getOrNull(uuid)
+                if item then
+                    if BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
+                        return item
+                    end
+                end
+            end
+            item = NxTasks::bItemsOrdered(nil)
+                    .select{|item| item["boarduuid"].nil? }
+                    .sort{|i1, i2| i1["position"] <=> i2["position"] }
+                    .reduce(nil){|selected, i|
+                        if selected then
+                            selected
+                        else
+                            if DoNotShowUntil::isVisible(i) then
+                                if BankUtils::recoveredAverageHoursPerDay(i["uuid"]) < 1 then
+                                    i
+                                else
+                                    nil
+                                end
+                            else
+                                nil
+                            end
+                        end
+                    }
+            XCache::set("b338aac9-4765-4d7c-afd6-e34ff6bfcd56", item["uuid"])
+            item
+        }
+
+        item = getItemOrNull.call()
+
+        return [] if (BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc") > 3 and !NxBalls::itemIsRunning(item))
+
+        [item]
+    end
+
     # NxTasks::listingItems(board)
     def self.listingItems(board)
 
@@ -228,47 +270,25 @@ class NxTasks
                         }
         end
 
+        if board == "managed" then
+            items1 = NxBoards::boardsOrdered()
+                        .select{|board| NxBoards::completionRatio(board) }
+                        .map{|board| NxTasks::listingItems(board).first(6) }
+                        .flatten
+            items2 = NxTasks::listingItems(nil)
+            cursor = 1.1
+            return (items1 + items2)
+                        .map{|item|
+                            cursor = cursor - 0.001
+                            item[:metric] = cursor
+                            item
+                        }
+        end
+
         if board then
             NxTasks::bItemsOrdered(board)
         else
-            getItemOrNull = lambda {
-                item = nil
-                uuid = XCache::getOrNull("b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
-                if uuid then
-                    item = N3Objects::getOrNull(uuid)
-                    if item then
-                        if BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
-                            return item
-                        end
-                    end
-                end
-                item = NxTasks::bItemsOrdered(nil)
-                        .select{|item| item["boarduuid"].nil? }
-                        .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                        .reduce(nil){|selected, i|
-                            if selected then
-                                selected
-                            else
-                                if DoNotShowUntil::isVisible(i) then
-                                    if BankUtils::recoveredAverageHoursPerDay(i["uuid"]) < 1 then
-                                        i
-                                    else
-                                        nil
-                                    end
-                                else
-                                    nil
-                                end
-                            end
-                        }
-                XCache::set("b338aac9-4765-4d7c-afd6-e34ff6bfcd56", item["uuid"])
-                item
-            }
-
-            item = getItemOrNull.call()
-
-            return [] if (BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc") > 3 and !NxBalls::itemIsRunning(item))
-
-            [item]
+            NxTasks::listingItemsNil()
         end
     end
 
