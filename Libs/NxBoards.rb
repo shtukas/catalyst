@@ -242,12 +242,6 @@ class BoardsAndItems
         item
     end
 
-    # BoardsAndItems::getBoardOrNull(item)
-    def self.getBoardOrNull(item)
-        return nil if item["boarduuid"].nil?
-        NxBoards::getItemFailIfMissing(item["boarduuid"])
-    end
-
     # BoardsAndItems::belongsToThisBoard1(item, board or nil)
     def self.belongsToThisBoard1(item, board)
         if board.nil? then
@@ -280,7 +274,11 @@ class BoardsAndItems
     # BoardsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
         return "" if item["boarduuid"].nil?
-        board = NxBoards::getItemFailIfMissing(item["boarduuid"])
-        " (board: #{board["description"].green})"
+        board = NxBoards::getItemOfNull(item["boarduuid"])
+        if board then
+            " (board: #{board["description"].green})"
+        else
+            " (board: not found, boarduuid: #{item["boarduuid"]})"
+        end
     end
 end
