@@ -143,8 +143,7 @@ class NxBoards
                 overflow = 0.5*board["hours"]*3600
                 puts "I am about to smooth board: board: #{NxBoards::toString(board)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
                 LucilleCore::pressEnterToContinue()
-                NxTimePromises::smooth_commit(board["capsule"], -overflow, 20)
-                NxTimePromises::smooth_commit(board["uuid"], -overflow, 20)
+                NxTimePromises::smooth_commit(board["capsule"], [board["uuid"], board["capsule"]], -overflow, 20)
                 next
                 # We need to next because this section would have changed the board
             end

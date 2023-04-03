@@ -18,32 +18,32 @@ class NxTimePromises
             "uuid"     => SecureRandom.uuid,
             "mikuType" => "NxTimePromise",
             "unixtime" => unixtime,
+            "datetime" => Time.at(unixtime).utc.iso8601,
             "account"  => account,
             "value"    => value
         }
     end
 
-    # NxTimePromises::smooth(accountnumber, value, periodInDays)
-    def self.smooth(accountnumber, value, periodInDays)
+    # NxTimePromises::smooth_compute(spotaccount, promisesaccounts, value, periodInDays)
+    def self.smooth_compute(spotaccount, promisesaccounts, value, periodInDays)
         items = []
-        items << NxTimePromises::makePromise(Time.new.to_i, accountnumber, value)
+        items << NxTimePromises::makePromise(Time.new.to_i, spotaccount, value)
         unitpayment = -value.to_f/periodInDays
         (1..periodInDays).each{|i|
-            items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, accountnumber, unitpayment)
+            promisesaccounts.each{|account|
+                items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, account, unitpayment)
+            }
         }
         items
     end
 
-    # NxTimePromises::smooth_commit(accountnumber, value, periodInDays)
-    def self.smooth_commit(accountnumber, value, periodInDays)
-        items = NxTimePromises::smooth(accountnumber, value, periodInDays)
-        puts "NxTimePromises".green
-        puts JSON.pretty_generate(items)
-        items.each{|capsule|
-            capsule["datetime"] = Time.at(capsule["unixtime"]).utc.iso8601
-            puts "NxTimePromise: account: #{accountnumber}; date: #{capsule["datetime"]}; #{capsule["value"]}".green
-            puts JSON.pretty_generate(capsule)
-            N3Objects::commit(capsule)
+    # NxTimePromises::smooth_commit(spotaccount, promisesaccounts, value, periodInDays)
+    def self.smooth_commit(spotaccount, promisesaccounts, value, periodInDays)
+        items = NxTimePromises::smooth_compute(spotaccount, promisesaccounts, value, periodInDays)
+        items.each{|promise|
+            puts "NxTimePromise: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
+            puts JSON.pretty_generate(promise)
+            N3Objects::commit(promise)
         }
     end
 

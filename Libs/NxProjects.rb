@@ -112,25 +112,25 @@ class NxProjects
     # NxProjects::timeManagement()
     def self.timeManagement()
         return if !Config::isPrimaryInstance()
-        NxProjects::items().each{|item|
+        NxProjects::items().each{|project|
 
-            if BankCore::getValue(item["capsule"]) > 1.5*item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
-                overflow = 0.5*item["hours"]*3600
-                puts "I am about to smooth project: project: #{NxProjects::toString(item)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
+            if BankCore::getValue(project["capsule"]) > 1.5*project["hours"]*3600 and (Time.new.to_i - project["lastResetTime"]) >= 86400*7 then
+                overflow = 0.5*project["hours"]*3600
+                puts "I am about to smooth project: project: #{NxProjects::toString(project)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
                 LucilleCore::pressEnterToContinue()
-                NxTimePromises::smooth_commit(item["capsule"], -overflow, 20)
+                NxTimePromises::smooth_commit(project["capsule"], [project["uuid"], project["capsule"]], -overflow, 20)
                 next
-                # We need to next because this section would have changed the item
+                # We need to next because this section would have changed the project
             end
 
-            if BankCore::getValue(item["capsule"]) >= item["hours"]*3600 and (Time.new.to_i - item["lastResetTime"]) >= 86400*7 then
-                puts "I am about to reset project: #{item["description"]}"
-                puts "resetting project's capsule time commitment: project: #{NxProjects::toString(item)}, decrease by #{item["hours"]} hours"
+            if BankCore::getValue(project["capsule"]) >= project["hours"]*3600 and (Time.new.to_i - project["lastResetTime"]) >= 86400*7 then
+                puts "I am about to reset project: #{project["description"]}"
+                puts "resetting project's capsule time commitment: project: #{NxProjects::toString(project)}, decrease by #{project["hours"]} hours"
                 LucilleCore::pressEnterToContinue()
-                BankCore::put(item["capsule"], -item["hours"]*3600)
-                item["lastResetTime"] = Time.new.to_i
-                puts JSON.pretty_generate(item)
-                NxProjects::commit(item)
+                BankCore::put(project["capsule"], -project["hours"]*3600)
+                project["lastResetTime"] = Time.new.to_i
+                puts JSON.pretty_generate(project)
+                NxProjects::commit(project)
             end
         }
     end
