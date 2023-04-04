@@ -1,0 +1,9 @@
+At the moment they are automatically created by priority (formely cherry picking)
+
+NxTimeTarget:
+    "uuid"        : String
+    "mikuType"    : "NxTimeTarget"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "timeInHours" : Float

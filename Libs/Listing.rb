@@ -23,7 +23,7 @@ class Listing
             "[makers] anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
             "[makers] drop",
             "[transmutation] recast (<n>)",
-            "[positioning] priority <n> <position> | priority line | priority set position <n> <position> | unpick <n>",
+            "[positioning] priority <n> <position> | priority line | priority time target | priority set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -144,7 +144,21 @@ class Listing
         if Interpreting::match("priority line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line: ")
             nxline = NxLines::issue(line)
+            puts JSON.pretty_generate(nxline)
             item = NxListingPriorities::interactivelyIssue(nxline)
+            if item["boarduuid"].nil? then
+                item = BoardsAndItems::askAndMaybeAttach(item)
+            end
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("priority time target", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            timeInHours = LucilleCore::askQuestionAnswerAsString("timeInHours: ").to_f
+            tt = NxTimeTargets::issue(description, timeInHours)
+            puts JSON.pretty_generate(tt)
+            item = NxListingPriorities::interactivelyIssue(tt)
             if item["boarduuid"].nil? then
                 item = BoardsAndItems::askAndMaybeAttach(item)
             end
@@ -671,7 +685,8 @@ class Listing
             Waves::listingItemsPriority(code),
             DevicesBackups::listingItems(),
             NxFires::listingItems(code),
-            NxLines::items(),
+            NxLines::items(), # To capture the orphans
+            NxTimeTargets::listingItems(), # To capture the orphans, unlike NxLine we call listingItems() for object management
             NxOndates::listingItems(),
             NxFloats::listingItems(code),
             NxProjects::listingItems(code),

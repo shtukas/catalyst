@@ -33,8 +33,8 @@ class NxBalls
         NxBalls::commitBall(item, nxball)
     end
 
-    # NxBalls::getNxballOrNull(item)
-    def self.getNxballOrNull(item)
+    # NxBalls::getNxBallOrNull(item)
+    def self.getNxBallOrNull(item)
         filepath = "#{NxBalls::repository()}/#{item["uuid"]}.ball"
         return nil if !File.exist?(filepath)
         JSON.parse(IO.read(filepath))
@@ -51,16 +51,16 @@ class NxBalls
     # Statuses
 
     # NxBalls::itemIsRunning(item)
-    # returns false if the item doesn't have a nxball of is paused
+    # returns false if the item doesn't have a nxball or is paused
     def self.itemIsRunning(item)
-        nxball = NxBalls::getNxballOrNull(item)
+        nxball = NxBalls::getNxBallOrNull(item)
         return false if nxball.nil?
         nxball["type"] == "running"
     end
 
     # NxBalls::itemIsPaused(item)
     def self.itemIsPaused(item)
-        nxball = NxBalls::getNxballOrNull(item)
+        nxball = NxBalls::getNxBallOrNull(item)
         return false if nxball.nil?
         nxball["type"] == "paused"
     end
@@ -72,7 +72,7 @@ class NxBalls
 
     # NxBalls::itemIsBallFree(item)
     def self.itemIsBallFree(item)
-        NxBalls::getNxballOrNull(item).nil?
+        NxBalls::getNxBallOrNull(item).nil?
     end
 
     # ---------------------------------
@@ -100,7 +100,7 @@ class NxBalls
             return
         end
         # Item is running
-        nxball = NxBalls::getNxballOrNull(item)
+        nxball = NxBalls::getNxBallOrNull(item)
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
@@ -112,7 +112,7 @@ class NxBalls
     # NxBalls::pause(item)
     def self.pause(item)
         return if !NxBalls::itemIsRunning(item)
-        nxball = NxBalls::getNxballOrNull(item)
+        nxball = NxBalls::getNxBallOrNull(item)
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
@@ -130,7 +130,7 @@ class NxBalls
             NxBalls::pause(item)
         end
         if NxBalls::itemIsPaused(item) then
-            nxball = NxBalls::getNxballOrNull(item)
+            nxball = NxBalls::getNxBallOrNull(item)
             nxball["type"]          = "running"
             nxball["startunixtime"] = Time.new.to_i
             nxball["sequencestart"] = nxball["sequencestart"] || nxball["startunixtime"]
@@ -140,6 +140,14 @@ class NxBalls
 
     # ---------------------------------
     # Data
+
+    # NxBalls::runningTime(item)
+    def self.runningTime(item)
+        return 0 if !NxBalls::itemIsRunning(item)
+        nxball = NxBalls::getNxBallOrNull(item)
+        return 0 if nxball.nil?
+        Time.new.to_i - nxball["startunixtime"]
+    end
 
     # NxBalls::nxBallToString(nxball)
     def self.nxBallToString(nxball)
@@ -158,7 +166,7 @@ class NxBalls
 
     # NxBalls::nxballSuffixStatusIfRelevant(item)
     def self.nxballSuffixStatusIfRelevant(item)
-        nxball = NxBalls::getNxballOrNull(item)
+        nxball = NxBalls::getNxBallOrNull(item)
         return "" if nxball.nil?
         " #{NxBalls::nxBallToString(nxball)}"
     end

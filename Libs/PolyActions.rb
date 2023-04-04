@@ -79,6 +79,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTimeTarget" then
+            puts NxTimeTargets::toString(item).green
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             return
@@ -181,6 +187,15 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTimeTarget" then
+            puts NxTimeTargets::toString(item).green
+            puts "You cannot done a NxTimeTarget but we can destroy it if you insist"
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxTimeTargets::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
             return
@@ -259,6 +274,11 @@ class PolyActions
             puts PolyFunctions::toString(item).green
             NxBalls::start(item)
             NxTasks::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxTimeTarget" then
+            NxBalls::start(item)
             return
         end
 

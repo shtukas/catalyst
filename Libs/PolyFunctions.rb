@@ -106,6 +106,9 @@ class PolyFunctions
         if item["mikuType"] == "NxProject" then
             return NxProjects::toString(item)
         end
+        if item["mikuType"] == "NxTimeTarget" then
+            return NxTimeTargets::toString(item)
+        end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
