@@ -794,13 +794,15 @@ class Listing
                 end
             end
 
-            LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
-                .each{|location|
-                    next if File.basename(location).start_with?(".")
-                    item = NxTasks::bufferInImport(location)
-                    puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
-                    LucilleCore::removeFileSystemLocation(location)
-                }
+            if Config::isPrimaryInstance() then
+                LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
+                    .each{|location|
+                        next if File.basename(location).start_with?(".")
+                        item = NxTasks::bufferInImport(location)
+                        puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
+                        LucilleCore::removeFileSystemLocation(location)
+                    }
+            end
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
                 generalpermission = false
