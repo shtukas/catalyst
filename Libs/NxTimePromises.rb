@@ -30,8 +30,8 @@ class NxTimePromises
         items << NxTimePromises::makePromise(Time.new.to_i, spotaccount, value)
         unitpayment = -value.to_f/periodInDays
         (1..periodInDays).each{|i|
-            promisesaccounts.each{|account|
-                items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, account, unitpayment)
+            promisesaccounts.each{|promiseaccount|
+                items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, promiseaccount, unitpayment)
             }
         }
         items

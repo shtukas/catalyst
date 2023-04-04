@@ -79,8 +79,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxNumberTarget" then
-            TxNumberTargets::access(item)
+        if item["mikuType"] == "PhysicalTarget" then
+            PhysicalTargets::access(item)
             return
         end
 
@@ -181,8 +181,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxNumberTarget" then
-            TxNumberTargets::performUpdate(item)
+        if item["mikuType"] == "PhysicalTarget" then
+            PhysicalTargets::performUpdate(item)
             return
         end
 
@@ -262,9 +262,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxNumberTarget" then
+        if item["mikuType"] == "PhysicalTarget" then
             PolyFunctions::toString(item).green
-            TxNumberTargets::access(item)
+            PhysicalTargets::access(item)
             return
         end
 

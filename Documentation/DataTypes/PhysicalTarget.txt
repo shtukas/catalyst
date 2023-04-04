@@ -1,7 +1,7 @@
 
-TxNumberTarget
+PhysicalTarget
     "uuid"                : String
-    "mikuType"            : "TxNumberTarget"
+    "mikuType"            : "PhysicalTarget"
     "description"         : String 
 
     "dailyTarget"         : Int

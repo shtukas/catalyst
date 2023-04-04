@@ -335,7 +335,7 @@ class Listing
         end
 
         if Interpreting::match("manual countdown", input) then
-            TxNumberTargets::issueNewOrNull()
+            PhysicalTargets::issueNewOrNull()
             return
         end
 
@@ -557,8 +557,8 @@ class Listing
                 "lambda" => lambda { NxOndates::listingItems() }
             },
             {
-                "name" => "TxNumberTargets::listingItems()",
-                "lambda" => lambda { TxNumberTargets::listingItems() }
+                "name" => "PhysicalTargets::listingItems()",
+                "lambda" => lambda { PhysicalTargets::listingItems() }
             },
             {
                 "name" => "Waves::listingItemsPriority(nil)",
@@ -664,6 +664,7 @@ class Listing
     # Listing::items(code)
     def self.items(code)
         [
+            PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxListingPriorities::listingItems(code),
@@ -672,7 +673,6 @@ class Listing
             NxFires::listingItems(code),
             NxLines::items(),
             NxOndates::listingItems(),
-            TxNumberTargets::listingItems(),
             NxFloats::listingItems(code),
             NxProjects::listingItems(code),
             NxTasks::listingItemsBoards(code),

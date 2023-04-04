@@ -1,14 +1,14 @@
 
 # encoding: UTF-8
 
-class TxNumberTargets
+class PhysicalTargets
 
-    # TxNumberTargets::items()
+    # PhysicalTargets::items()
     def self.items()
-        N3Objects::getMikuType("TxNumberTarget")
+        N3Objects::getMikuType("PhysicalTarget")
     end
 
-    # TxNumberTargets::issueNewOrNull()
+    # PhysicalTargets::issueNewOrNull()
     def self.issueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -17,7 +17,7 @@ class TxNumberTargets
         dailyTarget = dailyTarget.to_i
         item = {
             "uuid"        => SecureRandom.uuid,
-            "mikuType"    => "TxNumberTarget",
+            "mikuType"    => "PhysicalTarget",
             "description" => description,
             "dailyTarget" => dailyTarget,
             "date"        => CommonUtils::today(),
@@ -28,7 +28,7 @@ class TxNumberTargets
         item
     end
 
-    # TxNumberTargets::commit(item)
+    # PhysicalTargets::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
@@ -36,21 +36,21 @@ class TxNumberTargets
     # --------------------------------------------------------
     # Data
 
-    # TxNumberTargets::toString(item)
+    # PhysicalTargets::toString(item)
     def self.toString(item)
-        "(number target) #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
+        "#{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
     end
 
-    # TxNumberTargets::listingItems()
+    # PhysicalTargets::listingItems()
     def self.listingItems()
-        TxNumberTargets::items().each{|item|
+        PhysicalTargets::items().each{|item|
             if item["date"] != CommonUtils::today() then
                 item["date"] = CommonUtils::today()
                 item["counter"] = 0
                 N3Objects::commit(item)
             end
         }
-        TxNumberTargets::items()
+        PhysicalTargets::items()
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
     end
@@ -58,18 +58,18 @@ class TxNumberTargets
     # --------------------------------------------------------
     # Ops
 
-    # TxNumberTargets::performUpdate(item)
+    # PhysicalTargets::performUpdate(item)
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
         item["counter"] = item["counter"] + count
         item["lastUpdatedUnixtime"] = Time.new.to_i
         puts JSON.pretty_generate(item)
-        TxNumberTargets::commit(item)
+        PhysicalTargets::commit(item)
     end
 
-    # TxNumberTargets::access(item)
+    # PhysicalTargets::access(item)
     def self.access(item)
-        TxNumberTargets::performUpdate(item)
+        PhysicalTargets::performUpdate(item)
     end
 end
