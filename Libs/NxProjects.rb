@@ -95,7 +95,6 @@ class NxProjects
     # NxProjects::listingItems(board)
     def self.listingItems(board)
         NxProjects::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| NxProjects::completionRatio(item) < 1 }
     end
