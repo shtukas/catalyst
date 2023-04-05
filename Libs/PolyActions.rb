@@ -31,18 +31,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxListingPriority" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            return if object.nil? 
-            return PolyActions::access(object)
-        end
-
-        if item["mikuType"] == "NxLine" then
-            puts "nxline: #{item["description"]}".green
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -138,22 +126,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxListingPriority" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            if object then
-                PolyActions::done(object)
-            end
-            NxListingPriorities::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxLine" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxFire" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 N3Objects::destroy(item["uuid"])
@@ -241,14 +213,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxListingPriority" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            return if object.nil? 
-            NxBalls::start(item)
-            PolyActions::start(object)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxOndates::access(item)
@@ -257,13 +221,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFire" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxLine" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
@@ -314,12 +271,6 @@ class PolyActions
         if item["mikuType"] == "NxBoard" then
             PolyActions::access(item)
             return
-        end
-
-        if item["mikuType"] == "NxListingPriority" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            return if object.nil? 
-            return PolyActions::landing(object)
         end
 
         if item["mikuType"] == "Wave" then

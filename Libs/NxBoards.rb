@@ -204,8 +204,8 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            Listing::items(board)
-                .flatten
+            Listing::items()
+                .select{|item| item["boarduuid"] == board["uuid"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))

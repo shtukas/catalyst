@@ -2,7 +2,7 @@
 A lot of functions have a signature similar to this one
 
 ```
-Waves::listingItemsPriority(board)
+Waves::listingItems(board)
 ```
 
 with a selector like this

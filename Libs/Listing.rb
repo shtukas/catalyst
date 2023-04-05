@@ -23,7 +23,6 @@ class Listing
             "[makers] anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
             "[makers] drop",
             "[transmutation] recast (<n>)",
-            "[positioning] priority <n> <position> | priority line | priority time target | priority set position <n> <position> | unpick <n>",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
             "[NxOndate] redate",
@@ -141,53 +140,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("priority line", input) then
-            line = LucilleCore::askQuestionAnswerAsString("line: ")
-            nxline = NxLines::issue(line)
-            puts JSON.pretty_generate(nxline)
-            item = NxListingPriorities::interactivelyIssue(nxline)
-            if item["boarduuid"].nil? then
-                item = BoardsAndItems::askAndMaybeAttach(item)
-            end
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("priority time target", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            timeInHours = LucilleCore::askQuestionAnswerAsString("timeInHours: ").to_f
-            tt = NxTimeTargets::issue(description, timeInHours)
-            puts JSON.pretty_generate(tt)
-            item = NxListingPriorities::interactivelyIssue(tt)
-            if item["boarduuid"].nil? then
-                item = BoardsAndItems::askAndMaybeAttach(item)
-            end
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("priority set position * *", input) then
-            _, _, _, ordinal, position = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            position = position.to_f
-            item["position"] = position
-            puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("priority * *", input) then
-            _, ordinal, position = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            return if item["mikuType"] == "NxListingPriority"
-            item = NxListingPriorities::interactivelyIssue(item, position.to_f)
-            puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
-            return
-        end
-
         if Interpreting::match("coredata *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
@@ -196,19 +148,6 @@ class Listing
             return if reference.nil?
             item["field11"] = reference
             N3Objects::commit(item)
-            return
-        end
-
-        if Interpreting::match("unpick *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxListingPriority" then
-                puts "The unpick command is only for NxListingPriority items"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            NxListingPriorities::destroy(item["uuid"])
             return
         end
 
@@ -575,12 +514,12 @@ class Listing
                 "lambda" => lambda { PhysicalTargets::listingItems() }
             },
             {
-                "name" => "Waves::listingItemsPriority(nil)",
-                "lambda" => lambda { Waves::listingItemsPriority(nil) }
+                "name" => "Waves::listingItems(nil)",
+                "lambda" => lambda { Waves::listingItems() }
             },
             {
-                "name" => "Waves::listingItemsLeisure(nil)",
-                "lambda" => lambda { Waves::listingItemsLeisure(nil) }
+                "name" => "Waves::listingItems(nil)",
+                "lambda" => lambda { Waves::listingItems() }
             },
             {
                 "name" => "NxTasks::listingItemsNil()",
@@ -643,12 +582,8 @@ class Listing
                 "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "Listing::items(all)",
-                "lambda" => lambda { Listing::items("all") }
-            },
-            {
-                "name" => "Listing::items(managed)",
-                "lambda" => lambda { Listing::items("managed") }
+                "name" => "Listing::items()",
+                "lambda" => lambda { Listing::items() }
             },
         ]
                     .map{|test|
@@ -675,24 +610,22 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::items(code)
-    def self.items(code)
+    # Listing::items()
+    def self.items()
         [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-            NxListingPriorities::listingItems(code),
-            Waves::listingItemsPriority(code),
+            Waves::listingItems(),
             DevicesBackups::listingItems(),
-            NxFires::listingItems(code),
-            NxLines::items(), # To capture the orphans
-            NxTimeTargets::listingItems(), # To capture the orphans, unlike NxLine we call listingItems() for object management
+            NxFires::items(),
             NxOndates::listingItems(),
-            NxFloats::listingItems(code),
-            NxProjects::listingItems(code),
-            NxTasks::listingItemsBoards(code),
-            NxOpenCycles::items(code),
-            Waves::listingItemsLeisure(code),
+            NxTimeTargets::listingItems(),
+            NxFloats::items(),
+            NxProjects::listingItems(),
+            NxTasks::listingItems(),
+            NxOpenCycles::items(),
+            Waves::listingItems(),
             NxTasks::listingItemsNil()
         ]
             .flatten
@@ -743,7 +676,7 @@ class Listing
 
         spacecontrol.putsline ""
 
-        Listing::items("managed")
+        Listing::items()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)

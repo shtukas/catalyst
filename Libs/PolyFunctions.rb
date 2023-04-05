@@ -31,22 +31,12 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxListingPriority" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            PolyFunctions::itemsToBankingAccounts(object).each{|account|
-                accounts << account
-            }
-        end
-
         if item["mikuType"] == "NxTask" then
             accounts << {
                 "description" => nil,
                 "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask General
             }
         end
-
-        # We now need to remove redundancies because we could have a board coming from
-        # both the NxListingPriority or UltraPick and coming from the pinked item
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
@@ -78,21 +68,11 @@ class PolyFunctions
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
         end
-        if item["mikuType"] == "NxListingPriority" then
-            object = N3Objects::getOrNull(item["targetuuid"])
-            if object.nil? then
-                return "(priority) object not found"
-            end
-            return "(priority @ #{item["position"]}) #{PolyFunctions::toString(object)}#{BoardsAndItems::toStringSuffix(object)}"
-        end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
-        end
-        if item["mikuType"] == "NxLine" then
-            return "(line) #{item["description"]}"
         end
         if item["mikuType"] == "NxOpenCycles" then
             return item["description"]
@@ -128,7 +108,7 @@ class PolyFunctions
         if board then
             [board["uuid"], NxBoards::interactivelyDecideNewBoardPosition(board)]
         else
-            [nil, NxTasks::nextPosition()]
+            [nil, NxTasks::thatPosition()]
         end
     end
 end

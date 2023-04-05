@@ -39,10 +39,4 @@ class NxFires
     def self.toString(item)
         "(fire) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
-
-    # NxFires::listingItems(board)
-    def self.listingItems(board)
-        NxFires::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard1(item, board) }
-    end
 end

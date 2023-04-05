@@ -45,7 +45,7 @@ class NxTasks
                 "boarduuid"   => board["uuid"],
             }
         else
-            position = NxTasks::nextPosition()
+            position = NxTasks::thatPosition()
             item = {
                 "uuid"        => uuid,
                 "mikuType"    => "NxTask",
@@ -64,7 +64,7 @@ class NxTasks
     # NxTasks::netflix(title)
     def self.netflix(title)
         uuid  = SecureRandom.uuid
-        position = NxTasks::nextPosition()
+        position = NxTasks::thatPosition()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTask",
@@ -104,7 +104,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
         coredataref = "aion-point:#{nhash}"
-        position = NxTasks::nextPosition()
+        position = NxTasks::thatPosition()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTask",
@@ -207,8 +207,8 @@ class NxTasks
         positions.min - 1
     end
 
-    # NxTasks::nextPosition()
-    def self.nextPosition()
+    # NxTasks::thatPosition()
+    def self.thatPosition()
         positions = NxTasks::items().map{|item| item["position"] }.take(100)
         NxTasks::positionsToNewPosition(positions)
     end
@@ -255,24 +255,15 @@ class NxTasks
         [item]
     end
 
-    # NxTasks::listingItemsBoards(board: "all", "managed", NxBoard)
-    def self.listingItemsBoards(board)
-
-        if board == "all" then
-            return NxBoards::boardsOrdered()
-                        .map{|board| NxTasks::bItemsOrdered(board).first(6) }
-                        .flatten
-        end
-
-        if board == "managed" then
-            return  NxBoards::boardsOrdered()
-                        .select{|board| DoNotShowUntil::isVisible(board) }
-                        .select{|board| NxBoards::completionRatio(board) < 1 }
-                        .map{|board| NxTasks::bItemsOrdered(board).first(6) }
-                        .flatten
-        end
-
-        NxTasks::bItemsOrdered(board)
+    # NxTasks::listingItems()
+    def self.listingItems()
+        items1 = NxBoards::boardsOrdered()
+                    .select{|board| DoNotShowUntil::isVisible(board) }
+                    .select{|board| NxBoards::completionRatio(board) < 1 }
+                    .map{|board| NxTasks::bItemsOrdered(board).first(6) }
+                    .flatten
+        items2 = NxTasks::listingItemsNil()
+        items1+items2
     end
 
     # --------------------------------------------------

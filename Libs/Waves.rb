@@ -133,7 +133,6 @@ class Waves
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        priority = LucilleCore::askQuestionAnswerAsBoolean("should display as priority ? ")
         item = {
             "uuid"             => uuid,
             "mikuType"         => "Wave",
@@ -142,8 +141,7 @@ class Waves
             "description"      => description,
             "nx46"             => nx46,
             "lastDoneDateTime" => "#{Time.new.strftime("%Y")}-01-01T00:00:00Z",
-            "field11"          => coredataref,
-            "priority"         => priority
+            "field11"          => coredataref
         }
         N3Objects::commit(item)
         item
@@ -155,39 +153,15 @@ class Waves
     # Waves::toString(item)
     def self.toString(item)
         ago = "#{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
-        "(wave) #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::referenceStringToSuffixString(item["field11"])} (#{ago})#{item["priority"] ? " (priority)" : ""} 🌊"
+        "(wave) #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::referenceStringToSuffixString(item["field11"])} (#{ago}) 🌊"
     end
 
     # -------------------------------------------------------------------------
     # Data (2)
-    # We do not display wave that are attached to a board (the board displays them)
 
-    # Waves::listingItemsBoard(board)
-    def self.listingItemsBoard(board)
+    # Waves::listingItems()
+    def self.listingItems()
         Waves::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
-            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-            .select{|item|
-                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-            }
-    end
-
-    # Waves::listingItemsPriority(board)
-    def self.listingItemsPriority(board)
-        Waves::items()
-            .select{|item| item["priority"] }
-            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
-            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-            .select{|item|
-                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-            }
-    end
-
-    # Waves::listingItemsLeisure(board)
-    def self.listingItemsLeisure(board)
-        Waves::items()
-            .select{|item| !item["priority"] }
-            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())

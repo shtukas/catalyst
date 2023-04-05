@@ -1,8 +1,8 @@
 
 class NxOpenCycles
 
-    # NxOpenCycles::items(board)
-    def self.items(board)
+    # NxOpenCycles::items()
+    def self.items()
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles")
             .select{|folderpath| File.basename(folderpath).start_with?("20") }
             .select{|folderpath| 
@@ -66,7 +66,7 @@ class NxOpenCycles
                             "boarduuid"   => board["uuid"],
                         }
                     else
-                        position = NxTasks::nextPosition()
+                        position = NxTasks::thatPosition()
                         item = {
                             "uuid"        => uuid,
                             "mikuType"    => "NxTask",

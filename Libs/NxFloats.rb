@@ -39,10 +39,4 @@ class NxFloats
     def self.toString(item)
         "(float) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
-
-    # NxFloats::listingItems(board)
-    def self.listingItems(board)
-        NxFloats::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
-    end
 end
