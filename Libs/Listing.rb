@@ -620,7 +620,6 @@ class Listing
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            NxTimeTargets::listingItems(),
             NxFloats::items(),
             NxProjects::listingItems(),
             NxTasks::listingItems(),

@@ -188,7 +188,6 @@ require_relative "Stargate.rb"
 require_relative "PhysicalTargets.rb"
 require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
-require_relative "NxTimeTarget.rb"
 
 require_relative "Waves.rb"
 

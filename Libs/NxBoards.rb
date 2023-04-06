@@ -58,7 +58,7 @@ class NxBoards
         dayTheoreticalInHours = item["hours"].to_f/5
         todayDoneInHours = BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600
         completionRatio = NxBoards::completionRatio(item)
-        str0 = "(day: #{("%5.2f" % todayDoneInHours).to_s} of #{"%5.2f" % dayTheoreticalInHours}, cr: #{("%4.2f" % completionRatio).to_s})"
+        str0 = "(day: #{("%4.2f" % todayDoneInHours).to_s}, cr: #{("%4.2f" % completionRatio).to_s}, of: #{"%4.2f" % dayTheoreticalInHours})"
 
         # but we use the capsule value for the target computations
         capsuleValueInHours = BankCore::getValue(item["capsule"]).to_f/3600
@@ -94,7 +94,7 @@ class NxBoards
 
     # NxBoards::completionRatio(item)
     def self.completionRatio(item)
-        (BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600).to_f/NxBoards::rtTarget(item)
+        BankUtils::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxBoards::rtTarget(item)
     end
 
     # NxBoards::boardsOrdered()
