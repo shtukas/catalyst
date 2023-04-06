@@ -615,11 +615,11 @@ class Listing
         [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
-            Desktop::listingItems(),
-            Waves::listingItems(),
             DevicesBackups::listingItems(),
             NxFires::items(),
+            Desktop::listingItems(),
             NxOndates::listingItems(),
+            Waves::listingItems(),
             NxTimeTargets::listingItems(),
             NxFloats::items(),
             NxProjects::listingItems(),
