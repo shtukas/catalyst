@@ -656,6 +656,7 @@ class Listing
         return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "NxFloat"
+        return false if item["mikuType"] == "DesktopTx1"
         true
     end
 
