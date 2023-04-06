@@ -9,7 +9,14 @@ Cross types conventions:
                          In parking, the item is skipped and is displayed in yellow.
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
+    - "tmpskip1"       : TmpSkip1
+
 
 (1) Not for NxBoards.
 
 (2) Carried by all objects, help with resolution
+
+TmpSkip1 : {
+    "unixtime": Float,
+    "durationInHours": Float
+} // Skipped until unixtime + durationInHours*3600

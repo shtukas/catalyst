@@ -56,6 +56,31 @@ class Listing
             return
         end
 
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            item["tmpskip1"] = {
+                "unixtime"        => Time.new.to_f,
+                "durationInHours" => 1 # default duration
+            }
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
+            return
+        end
+
+        if Interpreting::match(">> *", input) then
+            _, durationInHours = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item["tmpskip1"] = {
+                "unixtime"        => Time.new.to_f,
+                "durationInHours" => durationInHours.to_f
+            }
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
+            return
+        end
+
         if Interpreting::match("park", input) then
             item = store.getDefault()
             return if item.nil?
@@ -640,8 +665,21 @@ class Listing
 
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
+        skipSuffix =
+            if item["tmpskip1"] then
+                targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
+                if Time.new.to_f < targetTime then
+                    " (tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours)"
+                else
+                    ""
+                end
+            else
+                ""
+            end
+
+
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{skipSuffix}"
         if Listing::shouldBeInYellow(item) then
             line = line.yellow
         end
@@ -657,6 +695,10 @@ class Listing
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "NxFloat"
         return false if item["mikuType"] == "DesktopTx1"
+        if item["tmpskip1"] then
+            targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
+            return false if Time.new.to_f < targetTime
+        end
         true
     end
 
@@ -665,6 +707,10 @@ class Listing
         return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return true if item["mikuType"] == "NxBoard"
         return true if item["mikuType"] == "NxFloat"
+        if item["tmpskip1"] then
+            targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
+            return true if Time.new.to_f < targetTime
+        end
         false
     end
 
