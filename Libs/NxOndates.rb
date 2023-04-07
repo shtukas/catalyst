@@ -69,6 +69,7 @@ class NxOndates
     def self.listingItems()
         NxOndates::items()
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # ------------------

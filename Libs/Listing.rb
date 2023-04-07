@@ -669,7 +669,7 @@ class Listing
             if item["tmpskip1"] then
                 targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
                 if Time.new.to_f < targetTime then
-                    " (tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours)"
+                    " (tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours)".yellow
                 else
                     ""
                 end
@@ -707,10 +707,6 @@ class Listing
         return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return true if item["mikuType"] == "NxBoard"
         return true if item["mikuType"] == "NxFloat"
-        if item["tmpskip1"] then
-            targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
-            return true if Time.new.to_f < targetTime
-        end
         false
     end
 
