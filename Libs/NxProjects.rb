@@ -135,11 +135,12 @@ class NxProjects
 
     # NxProjects::program()
     def self.program()
-        item = NxProjects::interactivelySelectOneOrNull()
-        return if item.nil?
-        if LucilleCore::askQuestionAnswerAsBoolean("start '#{PolyFunctions::toString(item).green}' ? ", true) then
-            PolyActions::start(item)
-        end
+        loop {
+            items = NxProjects::items().sort{|w1, w2| w1["description"] <=> w2["description"] }
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| item["description"] })
+            return if item.nil?
+            NxProjects::landing(item)
+        }
     end
 
     # NxProjects::landing(item)
