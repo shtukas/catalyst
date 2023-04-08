@@ -95,7 +95,7 @@ class NxProjects
     # NxProjects::listingItems()
     def self.listingItems()
         NxProjects::items()
-            .select{|item| NxProjects::completionRatio(item) < 1 }
+            .select{|item| NxProjects::completionRatio(item) < 1 or NxBalls::itemIsRunning(item) }
     end
 
     # ---------------------------------------------------------
@@ -140,5 +140,31 @@ class NxProjects
         if LucilleCore::askQuestionAnswerAsBoolean("start '#{PolyFunctions::toString(item).green}' ? ", true) then
             PolyActions::start(item)
         end
+    end
+
+    # NxProjects::landing(item)
+    def self.landing(item)
+        loop {
+            item = NxProjects::getItemOfNull(item["uuid"])
+            return if item.nil?
+            puts NxProjects::toString(item)
+            actions = ["update description", "add time", "destroy"]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
+            break if action.nil?
+            if action == "update description" then
+                item["description"] = CommonUtils::editTextSynchronously(item["description"])
+                N3Objects::commit(item)
+            end
+            if action == "add time" then
+                timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
+                PolyActions::addTimeToItem(item, timeInHours*3600)
+            end
+            if action == "destroy" then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then
+                    N3Objects::destroy(item["uuid"])
+                    return
+                end
+            end
+        }
     end
 end

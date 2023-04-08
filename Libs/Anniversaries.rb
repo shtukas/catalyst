@@ -170,8 +170,8 @@ class Anniversaries
         end
     end
 
-    # Anniversaries::dive()
-    def self.dive()
+    # Anniversaries::program()
+    def self.program()
         loop {
             anniversaries = Anniversaries::items()
                         .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }

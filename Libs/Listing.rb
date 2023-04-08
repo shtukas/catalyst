@@ -127,7 +127,7 @@ class Listing
         end
 
         if Interpreting::match("anniversaries", input) then
-            Anniversaries::dive()
+            Anniversaries::program()
             return
         end
 
@@ -147,7 +147,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxBoards::boardsdive()
+            NxBoards::program()
             return
         end
 
@@ -373,7 +373,7 @@ class Listing
         end
 
         if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNewOrNull()
+            item = TxContexts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::askAndMaybeAttach(item)
@@ -512,7 +512,7 @@ class Listing
         end
 
         if input == "waves" then
-            Waves::dive()
+            Waves::program()
             return
         end
 
@@ -645,12 +645,10 @@ class Listing
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            NxFloats::items(),
             NxProjects::listingItems(),
-            NxTasks::listingItems(),
+            NxTasks::listingItems().first(5),
             NxOpenCycles::items(),
-            Waves::listingItems(),
-            NxTasks::listingItemsNil()
+            TxContexts::items()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -693,7 +691,7 @@ class Listing
     def self.canBeDefault(item)
         return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return false if item["mikuType"] == "NxBoard"
-        return false if item["mikuType"] == "NxFloat"
+        return false if item["mikuType"] == "TxContext"
         return false if item["mikuType"] == "DesktopTx1"
         if item["tmpskip1"] then
             targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
@@ -706,7 +704,7 @@ class Listing
     def self.shouldBeInYellow(item)
         return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return true if item["mikuType"] == "NxBoard"
-        return true if item["mikuType"] == "NxFloat"
+        return true if item["mikuType"] == "TxContext"
         false
     end
 
@@ -714,7 +712,7 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - NxProjects::items().size - NxBoards::boardsOrdered().size - 4 )
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 )
 
         spacecontrol.putsline ""
 
@@ -725,17 +723,6 @@ class Listing
             }
 
         puts TheLine::line()
-
-        NxProjects::items()
-            .sort_by{|item| NxProjects::completionRatio(item) }
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                puts Listing::itemToListingLine(store, item)
-            }
-
-        NxBoards::boardsOrdered().each{|item|
-            NxBoards::informationDisplay(store, item["uuid"])
-        }
     end
 
     # Listing::program()

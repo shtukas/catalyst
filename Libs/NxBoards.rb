@@ -219,8 +219,8 @@ class NxBoards
         }
     end
 
-    # NxBoards::boardsdive()
-    def self.boardsdive()
+    # NxBoards::program()
+    def self.program()
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
         NxBoards::listing(board)

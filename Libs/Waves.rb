@@ -186,8 +186,8 @@ class Waves
         DoNotShowUntil::setUnixtime(item, unixtime)
     end
 
-    # Waves::dive()
-    def self.dive()
+    # Waves::program()
+    def self.program()
         loop {
             items = Waves::items().sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })

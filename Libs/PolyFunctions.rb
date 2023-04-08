@@ -71,8 +71,8 @@ class PolyFunctions
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
+        if item["mikuType"] == "TxContext" then
+            return TxContexts::toString(item)
         end
         if item["mikuType"] == "NxOpenCycles" then
             return item["description"]

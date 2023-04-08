@@ -3,7 +3,7 @@ class Transmutations
 
     # Transmutations::targetMikuTypes()
     def self.targetMikuTypes()
-        ["NxFire", "NxFloat", "NxProject", "NxTask"]
+        ["NxFire", "TxContext", "NxProject", "NxTask"]
     end
 
     # Transmutations::interactivelySelectMikuTypeOrNull()
@@ -41,9 +41,9 @@ class Transmutations
             return
         end
 
-        if item["mikuType"] == "NxFire" and targetMikuType == "NxFloat" then
+        if item["mikuType"] == "NxFire" and targetMikuType == "TxContext" then
             puts JSON.pretty_generate(item)
-            item["mikuType"] = "NxFloat"
+            item["mikuType"] = "TxContext"
             if item["boarduuid"].nil? then
                 item = BoardsAndItems::askAndMaybeAttach(item)
             end

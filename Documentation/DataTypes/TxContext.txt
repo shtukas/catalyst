@@ -1,9 +1,9 @@
 
-NxFloat:
+TxContext:
     "uuid"        : String
-    "mikuType"    : "NxFloat"
+    "mikuType"    : "TxContext"
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
     "field11"     : CoreData Reference
-    "boarduuid"   : null or String (was created to mostly exists on boards)
+    "boarduuid"   : String (not optional)

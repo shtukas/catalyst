@@ -1,22 +1,22 @@
 
-class NxFloats
+class TxContexts
 
-    # NxFloats::items()
+    # TxContexts::items()
     def self.items()
-        N3Objects::getMikuType("NxFloat")
+        N3Objects::getMikuType("TxContext")
     end
 
-    # NxFloats::commit(item)
+    # TxContexts::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # NxFloats::destroy(uuid)
+    # TxContexts::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
 
-    # NxFloats::interactivelyIssueNewOrNull()
+    # TxContexts::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -24,19 +24,20 @@ class NxFloats
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxFloat",
+            "mikuType"    => "TxContext",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
-            "field11"     => coredataref
+            "field11"     => coredataref,
+            "boarduuid"   => NxBoards::interactivelySelectOne()["uuid"]
         }
         puts JSON.pretty_generate(item)
-        NxFloats::commit(item)
+        TxContexts::commit(item)
         item
     end
 
-    # NxFloats::toString(item)
+    # TxContexts::toString(item)
     def self.toString(item)
-        "(float) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(context) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 end
