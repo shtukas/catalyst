@@ -149,9 +149,12 @@ class NxProjects
             item = NxProjects::getItemOfNull(item["uuid"])
             return if item.nil?
             puts NxProjects::toString(item)
-            actions = ["update description", "add time", "destroy"]
+            actions = ["start", "update description", "add time", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
+            if action == "start" then
+                PolyActions::start(item)
+            end
             if action == "update description" then
                 item["description"] = CommonUtils::editTextSynchronously(item["description"])
                 N3Objects::commit(item)
