@@ -137,7 +137,7 @@ class NxProjects
     def self.program()
         loop {
             items = NxProjects::items().sort{|w1, w2| w1["description"] <=> w2["description"] }
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| item["description"] })
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| NxProjects::toString(item) })
             return if item.nil?
             NxProjects::landing(item)
         }
