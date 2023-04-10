@@ -147,7 +147,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxBoards::program()
+            NxBoards::program2()
             return
         end
 
@@ -648,7 +648,8 @@ class Listing
             NxProjects::listingItems(),
             NxTasks::listingItems().first(5),
             NxOpenCycles::items(),
-            TxContexts::items()
+            TxContexts::items(),
+            NxBoards::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }

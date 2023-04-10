@@ -1,7 +1,8 @@
 class NxBoards
 
-    # --------------------------------------------
+    # ---------------------------------------------------------
     # IO
+    # ---------------------------------------------------------
 
     # NxBoards::items()
     def self.items()
@@ -25,8 +26,9 @@ class NxBoards
         N3Objects::commit(item)
     end
 
-    # --------------------------------------------
+    # ---------------------------------------------------------
     # Makers
+    # ---------------------------------------------------------
 
     # This can only be called from nslog
     # NxBoards::interactivelyIssueNewOrNull()
@@ -49,8 +51,9 @@ class NxBoards
         item
     end
 
-    # ----------------------------------------------------------------
+    # ---------------------------------------------------------
     # Data
+    # ---------------------------------------------------------
 
     # NxBoards::toString(item)
     def self.toString(item)
@@ -102,8 +105,14 @@ class NxBoards
         NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
     end
 
+    # NxBoards::listingItems()
+    def self.listingItems()
+        NxBoards::items().select{|item| NxBoards::completionRatio(item) < 1 or NxBalls::itemIsRunning(item) }
+    end
+
     # ---------------------------------------------------------
     # Ops
+    # ---------------------------------------------------------
 
     # NxBoards::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
@@ -167,23 +176,12 @@ class NxBoards
         }
     end
 
-    # NxBoards::informationDisplay(store, boarduuid) 
-    def self.informationDisplay(store, boarduuid)
-        board = NxBoards::getItemOfNull(boarduuid)
-        if board.nil? then
-            puts "NxBoards::informationDisplay(boarduuid), board not found"
-            exit
-        end
-        store.register(board, false)
-        line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{DoNotShowUntil::suffixString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
-        if NxBalls::itemIsRunning(board) or NxBalls::itemIsPaused(board) then
-            line = line.green
-        end
-        puts line
-    end
+    # ---------------------------------------------------------
+    # Programs
+    # ---------------------------------------------------------
 
-    # NxBoards::listing(board)
-    def self.listing(board)
+    # NxBoards::program3(board)
+    def self.program3(board)
 
         loop {
 
@@ -219,11 +217,32 @@ class NxBoards
         }
     end
 
-    # NxBoards::program()
-    def self.program()
+    # NxBoards::program1(board)
+    def self.program1(board)
+        loop {
+            board = NxBoards::getItemOfNull(board["uuid"])
+            return if board.nil?
+            puts NxBoards::toString(board)
+            actions = ["start", "program(board)"]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
+            break if action.nil?
+            if action == "start" then
+                PolyActions::start(board)
+            end
+            if action == "program(board)" then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(board).green}' ? ", true) then
+                    NxBoards::program3(board)
+                    return
+                end
+            end
+        }
+    end
+
+    # NxBoards::program2()
+    def self.program2()
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
-        NxBoards::listing(board)
+        NxBoards::program1(board)
     end
 end
 
