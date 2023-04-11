@@ -214,8 +214,15 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             puts PolyFunctions::toString(item).green
+            first_time = (BankCore::getValue(item["uuid"]) == 0)
             NxBalls::start(item)
             NxTasks::access(item)
+            if first_time then
+                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green} ? '", true) then
+                    NxBalls::stop(item)
+                    NxTasks::destroy(item["uuid"])
+                end
+            end
             return
         end
 
