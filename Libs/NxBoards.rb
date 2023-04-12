@@ -180,8 +180,8 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::program3(board)
-    def self.program3(board)
+    # NxBoards::program3Landing(board)
+    def self.program3Landing(board)
 
         loop {
 
@@ -217,21 +217,25 @@ class NxBoards
         }
     end
 
-    # NxBoards::program1(board)
-    def self.program1(board)
+    # NxBoards::program1Actions(board)
+    def self.program1Actions(board)
         loop {
             board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
             puts NxBoards::toString(board)
-            actions = ["start", "program(board)"]
+            actions = ["start", "add time", "program/landing"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "start" then
                 PolyActions::start(board)
             end
-            if action == "program(board)" then
+            if action == "add time" then
+                timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
+                PolyActions::addTimeToItem(board, timeInHours*3600)
+            end
+            if action == "program/landing" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(board).green}' ? ", true) then
-                    NxBoards::program3(board)
+                    NxBoards::program3Landing(board)
                     return
                 end
             end
@@ -242,7 +246,7 @@ class NxBoards
     def self.program2()
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
-        NxBoards::program1(board)
+        NxBoards::program1Actions(board)
     end
 end
 
