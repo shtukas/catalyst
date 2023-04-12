@@ -7,7 +7,7 @@ class NxOpenCycles
             .select{|folderpath| File.basename(folderpath).start_with?("20") }
             .select{|folderpath| 
                 itemfilepath = "#{folderpath}/.catalyst-item-2dff0987"
-                !File.exists?(itemfilepath)
+                !File.exist?(itemfilepath)
             }
             .map{|folderpath|
                 {
@@ -24,7 +24,7 @@ class NxOpenCycles
             .select{|folderpath| File.basename(folderpath).start_with?("20") }
             .each{|folderpath|
                 itemfilepath = "#{folderpath}/.catalyst-item-2dff0987"
-                next if File.exists?(itemfilepath)
+                next if File.exist?(itemfilepath)
                 puts File.basename(folderpath).green
                 option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["ignore-permanently", "fire", "task", "project"])
                 next if option.nil?
