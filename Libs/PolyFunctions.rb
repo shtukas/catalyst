@@ -17,6 +17,20 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxProject" then
+            accounts << {
+                "description" => "capsule: #{item["capsule"]}",
+                "number"      => item["capsule"]
+            }
+        end
+
+        if item["mikuType"] == "NxTask" then
+            accounts << {
+                "description" => nil,
+                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask General
+            }
+        end
+
         if item["boarduuid"] then
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
@@ -29,13 +43,6 @@ class PolyFunctions
                     "number"      => board["capsule"]
                 }
             end
-        end
-
-        if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => nil,
-                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask General
-            }
         end
 
         accounts.reduce([]){|as, account|
