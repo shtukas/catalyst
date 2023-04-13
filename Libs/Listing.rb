@@ -59,12 +59,17 @@ class Listing
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
-            item["tmpskip1"] = {
+
+            directive = {
                 "unixtime"        => Time.new.to_f,
                 "durationInHours" => 1 # default duration
             }
+            item["tmpskip1"] = directive
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
+            # The backup items are dynamically generated and do not correspond to item
+            # in the database. We also put the skip directive to the cache
+            XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
             return
         end
 
@@ -664,18 +669,33 @@ class Listing
 
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
-        skipSuffix =
+
+        skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
-                targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
-                if Time.new.to_f < targetTime then
-                    " (tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours)".yellow
-                else
-                    ""
-                end
+                return item["tmpskip1"]
+            end
+            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
+            if cachedDirective then
+                return JSON.parse(cachedDirective)
+            end
+        }
+
+        skipTargetTimeOrNull = lambda {|item|
+            directive = skipDirectiveOrNull.call(item)
+            return nil if directive.nil?
+            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
+            (Time.new.to_f < targetTime) ? targetTime : nil
+        }
+
+
+        skipSuffix = (lambda { |item|
+            targetTime = skipTargetTimeOrNull.call(item)
+            if targetTime then
+                " (tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours)".yellow
             else
                 ""
             end
-
+        }).call(item)
 
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{skipSuffix}"
@@ -694,10 +714,25 @@ class Listing
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "TxContext"
         return false if item["mikuType"] == "DesktopTx1"
-        if item["tmpskip1"] then
-            targetTime = item["tmpskip1"]["unixtime"] + item["tmpskip1"]["durationInHours"]*3600
-            return false if Time.new.to_f < targetTime
-        end
+
+        skipDirectiveOrNull = lambda {|item|
+            if item["tmpskip1"] then
+                return item["tmpskip1"]
+            end
+            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
+            if cachedDirective then
+                return JSON.parse(cachedDirective)
+            end
+        }
+
+        skipTargetTimeOrNull = lambda {|item|
+            directive = skipDirectiveOrNull.call(item)
+            return nil if directive.nil?
+            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
+            (Time.new.to_f < targetTime) ? targetTime : nil
+        }
+
+        return false if skipTargetTimeOrNull.call(item)
         true
     end
 
