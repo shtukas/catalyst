@@ -780,12 +780,6 @@ class Listing
                 break
             end
 
-            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("8fba6ab0-ce92-46af-9e6b-ce86371d643d", 3600*12) then
-                if Config::isPrimaryInstance() then 
-                    system("#{File.dirname(__FILE__)}/../vienna-import")
-                end
-            end
-
             if Config::isPrimaryInstance() then
                 LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
                     .each{|location|
