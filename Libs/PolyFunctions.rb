@@ -12,9 +12,24 @@ class PolyFunctions
 
         if item["mikuType"] == "NxBoard" then
             accounts << {
-                "description" => "capsule: #{item["capsule"]}",
-                "number"      => item["capsule"]
+                "description" => "engine",
+                "number"      => item["engine"]["uuid"]
             }
+        end
+
+        if item["mikuType"] == "NxTask" then
+            if item["engine"] then
+                accounts << {
+                    "description" => "engine",
+                    "number"      => item["engine"]["uuid"]
+                }
+            else
+                engine = TxEngines::itemToEngine(item)
+                accounts << {
+                    "description" => "engine",
+                    "number"      => engine["uuid"]
+                }
+            end
         end
 
         if item["mikuType"] == "NxTask" then
@@ -28,12 +43,12 @@ class PolyFunctions
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
                 accounts << {
-                    "description" => "board: #{board["description"]}",
+                    "description" => board["description"],
                     "number"      => item["boarduuid"]
                 }
                 accounts << {
-                    "description" => "capsule: #{board["capsule"]}",
-                    "number"      => board["capsule"]
+                    "description" => "board's engine",
+                    "number"      => board["engine"]["uuid"]
                 }
             end
         end

@@ -741,10 +741,17 @@ class Listing
     def self.printListing(store)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 )
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
         spacecontrol.putsline ""
         puts TheLine::line()
+        priorityTasks = NxTasks::listingItemsPriority()
+        if !priorityTasks.empty? then
+            spacecontrol.putsline "> (priority #{priorityTasks.first["priority"]})"
+            priorityTasks.each{|item|
+                spacecontrol.putsline "    - #{PolyFunctions::toString(item)}"
+            }
+        end
         spacecontrol.putsline ""
 
         Listing::items()
