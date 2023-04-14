@@ -66,7 +66,8 @@ class NxBoards
     def self.listingItems()
         NxBoards::items()
             .map{|item| TxEngines::updateItemOrNothing(item) }
-            .select{|item| TxEngines::completionRatio(item["engine"]) < 1 or NxBalls::itemIsRunning(item) }
+            .select{|board| NxBoards::boardContents(board).empty? or NxBalls::itemIsRunning(board) }
+            .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsRunning(board) }
     end
 
     # ---------------------------------------------------------
@@ -103,6 +104,20 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
+    # NxBoards::boardContents(board)
+    def self.boardContents(board)
+        [
+            NxFires::items(),
+            NxOndates::listingItems(),
+            Waves::listingItems(),
+            NxTasks::listingItemsPriority(),
+            NxTasks::bItemsOrdered(board),
+            TxContexts::items(),
+        ]
+            .flatten
+            .select{|item| item["boarduuid"] == board["uuid"] }
+    end
+
     # NxBoards::programBoardListing(board)
     def self.programBoardListing(board)
 
@@ -125,8 +140,7 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            (Listing::items() + NxTasks::bItemsOrdered(board))
-                .select{|item| item["boarduuid"] == board["uuid"] }
+            NxBoards::boardContents(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))

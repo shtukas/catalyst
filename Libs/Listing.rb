@@ -19,7 +19,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
             "[TxEngine] engine",
             "[transmutation] recast (<n>)",
@@ -84,23 +84,6 @@ class Listing
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
             return
-        end
-
-        if Interpreting::match("park", input) then
-            item = store.getDefault()
-            return if item.nil?
-            item["parking"] = Time.new.to_i
-            N3Objects::commit(item)
-            return
-        end
-
-
-        if Interpreting::match("park *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            item["parking"] = Time.new.to_i
-            N3Objects::commit(item)
         end
 
         if Interpreting::match("add time *", input) then
@@ -236,10 +219,6 @@ class Listing
             return if item.nil?
             unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
-            if item["parking"] then
-                item["parking"] = nil
-                N3Objects::commit(item)
-            end
             DoNotShowUntil::setUnixtime(item, unixtime)
             return
         end
@@ -727,7 +706,6 @@ class Listing
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
-        return false if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "TxContext"
         return false if item["mikuType"] == "DesktopTx1"
@@ -755,8 +733,6 @@ class Listing
 
     # Listing::shouldBeInYellow(item)
     def self.shouldBeInYellow(item)
-        return true if (item["parking"] and (Time.new.to_i - item["parking"]) < 3600*6)
-        return true if item["mikuType"] == "NxBoard"
         return true if item["mikuType"] == "TxContext"
         false
     end
@@ -768,6 +744,8 @@ class Listing
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 )
 
         spacecontrol.putsline ""
+        puts TheLine::line()
+        spacecontrol.putsline ""
 
         Listing::items()
             .each{|item|
@@ -775,7 +753,6 @@ class Listing
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
 
-        puts TheLine::line()
     end
 
     # Listing::program()

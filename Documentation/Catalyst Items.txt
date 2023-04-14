@@ -5,8 +5,6 @@ Cross types conventions:
     - "n3timestamp"    : Unixtime, Float (2)
     - "field11"        : coredata reference string
     - "boarduuid"      : board uuid (1)
-    - "parking"        : null or unixtime at which the item will no longer be parked
-                         In parking, the item is skipped and is displayed in yellow.
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1

@@ -56,9 +56,6 @@ class PolyFunctions
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxOpenCycle" then
-            return "(open cycle) #{item["name"]}"
-        end
         if item["mikuType"] == "LambdX1" then
             return "(lambda) #{item["announce"]}"
         end
@@ -73,9 +70,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "TxContext" then
             return TxContexts::toString(item)
-        end
-        if item["mikuType"] == "NxOpenCycles" then
-            return item["description"]
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
