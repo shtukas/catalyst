@@ -121,7 +121,7 @@ class TxEngines
     def self.itemToEngine(item)
         return item["engine"] if item["engine"]
         {
-            "uuid"          => Digest::SHA1.hexdigest("15032586-7aaa-4424-9f5e-f188ebf25338:#{item["engine"]}"),
+            "uuid"          => Digest::SHA1.hexdigest("15032586-7aaa-4424-9f5e-f188ebf25338:#{item["uuid"]}"),
             "type"          => "daily-recovery-time",
             "hours"         => 1,
             "lastResetTime" => Time.new.to_i

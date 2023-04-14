@@ -32,6 +32,12 @@ class NxTasks
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board = NxBoards::interactivelySelectOneOrNull()
+        priority = LucilleCore::askQuestionAnswerAsString("priority (empty for default): ")
+        if priority == "" then
+            priority = nil
+        else
+            priority = priority.to_i
+        end
         if board then
             position = NxBoards::interactivelyDecideNewBoardPosition(board)
             item = {
@@ -43,6 +49,7 @@ class NxTasks
                 "field11"     => coredataref,
                 "position"    => position,
                 "boarduuid"   => board["uuid"],
+                "priority"    => priority
             }
         else
             position = NxTasks::thatPosition()
@@ -55,6 +62,7 @@ class NxTasks
                 "field11"     => coredataref,
                 "position"    => position,
                 "boarduuid"   => nil,
+                "priority"    => priority
             }
         end
         NxTasks::commit(item)
