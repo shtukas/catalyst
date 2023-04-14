@@ -6,13 +6,14 @@ class TxEngines
         LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["daily-time", "daily-recovery-time", "weekly-time"])
     end
 
-    # TxEngines::interactivelyMakeEngineOrNull()
-    def self.interactivelyMakeEngineOrNull()
+    # TxEngines::interactivelyMakeEngineOrNull(uuid = nil)
+    def self.interactivelyMakeEngineOrNull(uuid = nil)
+        uuid = uuid || SecureRandom.hex
         type = TxEngines::interactivelySelectEngineTypeOrNull()
         return nil if type.nil?
         hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
         {
-            "uuid"          => SecureRandom.hex,
+            "uuid"          => uuid,
             "type"          => type,
             "hours"         => hours,
             "lastResetTime" => Time.new.to_i
@@ -26,8 +27,7 @@ class TxEngines
             return doneTodayInHours.to_f/engine["hours"]
         end
         if engine["type"] == "daily-recovery-time" then
-            h = BankUtils::recoveredAverageHoursPerDay(engine["uuid"]).to_f/3600
-            return h.to_f/engine["hours"]
+            return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]
         end
         if engine["type"] == "weekly-time" then
             return 1 if BankCore::getValue(engine["uuid"]) >= engine["hours"]
@@ -115,21 +115,5 @@ class TxEngines
             return strings.join()
         end
         raise "could not TxEngines::toString(engine) for engine: #{engine}"
-    end
-
-    # TxEngines::itemToEngine(item)
-    def self.itemToEngine(item)
-        return item["engine"] if item["engine"]
-        {
-            "uuid"          => Digest::SHA1.hexdigest("15032586-7aaa-4424-9f5e-f188ebf25338:#{item["uuid"]}"),
-            "type"          => "daily-recovery-time",
-            "hours"         => 1,
-            "lastResetTime" => Time.new.to_i
-        }
-    end
-
-    # TxEngines::itemCompletionRatio(item)
-    def self.itemCompletionRatio(item)
-        TxEngines::completionRatio(TxEngines::itemToEngine(item))
     end
 end

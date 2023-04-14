@@ -165,7 +165,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(TxEngines::itemToEngine(item))}#{(item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"]})" : "" }"
+        "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(item["engine"])}#{(item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"]})" : "" }"
     end
 
     # NxTasks::startPosition()
@@ -231,36 +231,25 @@ class NxTasks
         return [] if topPriority == 1
         NxTasks::items()
             .select{|item| (item["priority"] || 1) == topPriority }
-            .sort{|i1, i2| TxEngines::itemCompletionRatio(i1) <=> TxEngines::itemCompletionRatio(i2) }
+            .sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
     # NxTasks::listingItemsNil(count)
     def self.listingItemsNil(count)
-        items = []
-        uuids = XCache::getOrNull("b338aac9-4765-5d7c-afd6-e34ff6bfcd56")
-        if uuids then
-            items = JSON.parse(uuids)
-                        .map{|uuid| N3Objects::getOrNull(uuid) }
-                        .compact
-                        .select{|item| TxEngines::itemCompletionRatio(item) < 1 }
-            return items if items.size > 0
-        end
-        items = NxTasks::bItemsOrdered(nil)
-                .select{|item| item["boarduuid"].nil? }
-                .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                .reduce([]){|selected, i|
-                    if selected.size >= count then
-                        selected
+        NxTasks::bItemsOrdered(nil)
+            .select{|item| item["boarduuid"].nil? }
+            .sort{|i1, i2| i1["position"] <=> i2["position"] }
+            .reduce([]){|selected, i|
+                if selected.size >= count then
+                    selected
+                else
+                    if DoNotShowUntil::isVisible(i) then
+                        selected + [i]
                     else
-                        if DoNotShowUntil::isVisible(i) then
-                            selected + [i]
-                        else
-                            selected
-                        end
+                        selected
                     end
-                }
-        XCache::set("b338aac9-4765-5d7c-afd6-e34ff6bfcd56", JSON.generate(items.map{|item| item["uuid"] }))
-        items
+                end
+            }
     end
 
     # NxTasks::listingItems(count)
@@ -290,13 +279,16 @@ class NxTasks
     def self.program(item)
         loop {
             puts NxTasks::toString(item)
-            actions = ["set priority"]
+            actions = ["set priority", "re-engine"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "set priority" then
                 item["priority"] = LucilleCore::askQuestionAnswerAsString("priority: ").to_f
                 N3Objects::commit(item)
-                XCache::destroy("aa9155f4-74f3-49e8-a0cd-b0cb54fa5917")
+            end
+            if action == "re-engine" then
+                item["engine"] = TxEngines::interactivelyMakeEngineOrNull(item["engine"]["uuid"])
+                N3Objects::commit(item)
             end
         }
     end

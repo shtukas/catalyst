@@ -24,7 +24,7 @@ class PolyFunctions
                     "number"      => item["engine"]["uuid"]
                 }
             else
-                engine = TxEngines::itemToEngine(item)
+                engine = item["engine"]
                 accounts << {
                     "description" => "engine",
                     "number"      => engine["uuid"]
