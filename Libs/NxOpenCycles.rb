@@ -1,32 +1,15 @@
 
 class NxOpenCycles
 
-    # NxOpenCycles::items()
-    def self.items()
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles")
-            .select{|folderpath| File.basename(folderpath).start_with?("20") }
-            .select{|folderpath| 
-                itemfilepath = "#{folderpath}/.catalyst-item-2dff0987"
-                !File.exist?(itemfilepath)
-            }
-            .map{|folderpath|
-                {
-                    "uuid"     => Digest::SHA1.hexdigest("0B9D1889-D6B2-4FA5-AAC3-8D049A102AB7:#{folderpath}"),
-                    "mikuType" => "NxOpenCycle",
-                    "name"     => File.basename(folderpath)
-                }
-            }
-    end
-
-    # NxOpenCycles::dataManagement()
-    def self.dataManagement()
+    # NxOpenCycles::makeNxTasks()
+    def self.makeNxTasks()
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles")
             .select{|folderpath| File.basename(folderpath).start_with?("20") }
             .each{|folderpath|
                 itemfilepath = "#{folderpath}/.catalyst-item-2dff0987"
                 next if File.exist?(itemfilepath)
                 puts File.basename(folderpath).green
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["ignore-permanently", "fire", "task", "project"])
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["ignore-permanently", "fire", "task"])
                 next if option.nil?
                 if option == "ignore-permanently" then
                     File.open(itemfilepath, "w"){|f| f.write("ignore-permanently") }
@@ -78,26 +61,6 @@ class NxOpenCycles
                             "boarduuid"   => nil,
                         }
                     end
-                    item = BoardsAndItems::askAndMaybeAttach(item)
-                    N3Objects::commit(item)
-                    File.open(itemfilepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
-                end
-                if option == "project" then
-                    description = "open cycle: #{File.basename(folderpath)}"
-                    uuid = SecureRandom.uuid
-                    hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-                    coredataref = "open-cycle:#{File.basename(folderpath)}"
-                    item = {
-                        "uuid"          => uuid,
-                        "mikuType"      => "NxProject",
-                        "unixtime"      => Time.new.to_i,
-                        "datetime"      => Time.new.utc.iso8601,
-                        "description"   => description,
-                        "field11"       => coredataref,
-                        "hours"         => hours,
-                        "lastResetTime" => 0,
-                        "capsule"       => SecureRandom.hex
-                    }
                     item = BoardsAndItems::askAndMaybeAttach(item)
                     N3Objects::commit(item)
                     File.open(itemfilepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }

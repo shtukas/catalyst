@@ -36,16 +36,13 @@ class NxBoards
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
         item = {
             "uuid"          => uuid,
             "mikuType"      => "NxBoard",
             "unixtime"      => Time.new.to_i,
             "datetime"      => Time.new.utc.iso8601,
             "description"   => description,
-            "hours"         => hours,
-            "lastResetTime" => 0,
-            "capsule"       => SecureRandom.hex
+            "engine"        => TxEngines::interactivelyMakeEngineOrNull()
         }
         NxBoards::commit(item)
         item
@@ -57,57 +54,19 @@ class NxBoards
 
     # NxBoards::toString(item)
     def self.toString(item)
-        # we use the Board's ow bank account to compute the day completion ratio
-        dayTheoreticalInHours = item["hours"].to_f/5
-        todayDoneInHours = BankCore::getValueAtDate(item["uuid"], CommonUtils::today()).to_f/3600
-        completionRatio = NxBoards::completionRatio(item)
-        str0 = "(day: #{("%4.2f" % todayDoneInHours).to_s}, cr: #{("%4.2f" % completionRatio).to_s}, of: #{"%4.2f" % dayTheoreticalInHours})"
-
-        # but we use the capsule value for the target computations
-        capsuleValueInHours = BankCore::getValue(item["capsule"]).to_f/3600
-        str1 = "(done #{("%5.2f" % capsuleValueInHours).to_s} out of #{item["hours"]})"
-
-        hasReachedObjective = capsuleValueInHours >= item["hours"]
-        timeSinceResetInDays = (Time.new.to_i - item["lastResetTime"]).to_f/86400
-        itHassBeenAWeek = timeSinceResetInDays >= 7
-
-        if hasReachedObjective and itHassBeenAWeek then
-            str2 = "(awaiting data management)"
-        end
-
-        if hasReachedObjective and !itHassBeenAWeek then
-            str2 = "(objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
-        end
-
-        if !hasReachedObjective and !itHassBeenAWeek then
-            str2 = "(#{(7 - timeSinceResetInDays).round(2)} days left in period)"
-        end
-
-        if !hasReachedObjective and itHassBeenAWeek then
-            str2 = "(late by #{(timeSinceResetInDays-7).round(2)} days)"
-        end
-
-        "#{"(board)".green} #{item["description"].ljust(8)} #{str0} #{str1} #{str2}"
-    end
-
-    # NxBoards::rtTarget(item)
-    def self.rtTarget(item)
-        item["hours"].to_f/5 # Hopefully 5 days
-    end
-
-    # NxBoards::completionRatio(item)
-    def self.completionRatio(item)
-        BankUtils::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxBoards::rtTarget(item)
+        "#{"(board)".green} #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxBoards::boardsOrdered()
     def self.boardsOrdered()
-        NxBoards::items().sort{|i1, i2| NxBoards::completionRatio(i1) <=> NxBoards::completionRatio(i2) }
+        NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i2["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
     # NxBoards::listingItems()
     def self.listingItems()
-        NxBoards::items().select{|item| NxBoards::completionRatio(item) < 1 or NxBalls::itemIsRunning(item) }
+        NxBoards::items()
+            .map{|item| TxEngines::updateItemOrNothing(item) }
+            .select{|item| TxEngines::completionRatio(item["engine"]) < 1 or NxBalls::itemIsRunning(item) }
     end
 
     # ---------------------------------------------------------
@@ -140,48 +99,12 @@ class NxBoards
         return position.to_f
     end
 
-    # NxBoards::timeManagement()
-    def self.timeManagement()
-        return if !Config::isPrimaryInstance()
-        NxBoards::items().each{|board|
-
-            # If at time of reset the board's capsule is over flowing, meaning
-            # its positive value is more than 50% of the time commitment for the board,
-            # meaning we did more than 100% of time commitment then we issue NxTimePromises
-            if BankCore::getValue(board["capsule"]) > 1.5*board["hours"]*3600 and (Time.new.to_i - board["lastResetTime"]) >= 86400*7 then
-                overflow = 0.5*board["hours"]*3600
-                puts "I am about to smooth board: board: #{NxBoards::toString(board)}, overflow: #{(overflow.to_f/3600).round(2)} hours"
-                LucilleCore::pressEnterToContinue()
-                NxTimePromises::smooth_commit(board["capsule"], [board["uuid"], board["capsule"]], -overflow, 20)
-                next
-                # We need to next because this section would have changed the board
-            end
-
-            # We do not reset guardian during the week end
-            if board["uuid"] == "27d3d6ab-2f0c-436e-a372-e952140db7c6" and [0, 6].include?(Time.new.wday) then
-                next
-            end
-
-            # We perform a reset, when we have filled the capsule (not to be confused with NxTimePromise)
-            # and it's been more than a week. This last condition allows enjoying free time if the capsule was filled quickly.
-            if BankCore::getValue(board["capsule"]) >= board["hours"]*3600 and (Time.new.to_i - board["lastResetTime"]) >= 86400*7 then
-                puts "I am about to reset board: #{board["description"]}"
-                puts "resetting board's capsule time commitment: board: #{NxBoards::toString(board)}, decrease by #{board["hours"]} hours"
-                LucilleCore::pressEnterToContinue()
-                BankCore::put(board["capsule"], -board["hours"]*3600)
-                board["lastResetTime"] = Time.new.to_i
-                puts JSON.pretty_generate(board)
-                NxBoards::commit(board)
-            end
-        }
-    end
-
     # ---------------------------------------------------------
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::program3Landing(board)
-    def self.program3Landing(board)
+    # NxBoards::programBoardListing(board)
+    def self.programBoardListing(board)
 
         loop {
 
@@ -202,7 +125,7 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            Listing::items()
+            (Listing::items() + NxTasks::bItemsOrdered(board))
                 .select{|item| item["boarduuid"] == board["uuid"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
@@ -217,13 +140,13 @@ class NxBoards
         }
     end
 
-    # NxBoards::program1Actions(board)
-    def self.program1Actions(board)
+    # NxBoards::programBoardActions(board)
+    def self.programBoardActions(board)
         loop {
             board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
             puts NxBoards::toString(board)
-            actions = ["start", "add time", "program/landing"]
+            actions = ["start", "add time", "program(board)"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "start" then
@@ -233,20 +156,19 @@ class NxBoards
                 timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
                 PolyActions::addTimeToItem(board, timeInHours*3600)
             end
-            if action == "program/landing" then
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(board).green}' ? ", true) then
-                    NxBoards::program3Landing(board)
-                    return
-                end
+            if action == "program(board)" then
+                NxBoards::programBoardListing(board)
             end
         }
     end
 
-    # NxBoards::program2()
-    def self.program2()
-        board = NxBoards::interactivelySelectOneOrNull()
-        return if board.nil?
-        NxBoards::program1Actions(board)
+    # NxBoards::program()
+    def self.program()
+        loop {
+            board = NxBoards::interactivelySelectOneOrNull()
+            return if board.nil?
+            NxBoards::programBoardActions(board)
+        }
     end
 end
 
@@ -291,7 +213,7 @@ class BoardsAndItems
                     if !DoNotShowUntil::isVisible(board) then
                         return false # we return false if the board is not visible
                     end
-                    return NxBoards::completionRatio(board) < 1
+                    return TxEngines::completionRatio(board["engine"]) < 1
                 else
                     return true
                 end

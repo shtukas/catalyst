@@ -119,8 +119,8 @@ class NxTasks
         item
     end
 
-    # NxTasks::priority()
-    def self.priority()
+    # NxTasks::makeFirstTask()
+    def self.makeFirstTask()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
@@ -157,12 +157,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        if NxTasks::isBoarded(item) then
-            "(task) (pos: #{item["position"].round(3)}) #{item["description"]}"
-        else
-            rt = BankUtils::recoveredAverageHoursPerDay(item["uuid"])
-            "(task) (#{"%5.2f" % rt}) #{item["description"]}#{DoNotShowUntil::suffixString(item)}"
-        end
+        "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(TxEngines::itemToEngine(item))}#{(item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"]})" : "" }"
     end
 
     # NxTasks::startPosition()
@@ -213,57 +208,66 @@ class NxTasks
         NxTasks::positionsToNewPosition(positions)
     end
 
-    # NxTasks::listingItemsNil()
-    def self.listingItemsNil()
-        getItemOrNull = lambda {
-            item = nil
-            uuid = XCache::getOrNull("b338aac9-4765-4d7c-afd6-e34ff6bfcd56")
-            if uuid then
-                item = N3Objects::getOrNull(uuid)
-                if item then
-                    if BankUtils::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
-                        return item
-                    end
-                end
-            end
-            item = NxTasks::bItemsOrdered(nil)
-                    .select{|item| item["boarduuid"].nil? }
-                    .sort{|i1, i2| i1["position"] <=> i2["position"] }
-                    .reduce(nil){|selected, i|
-                        if selected then
-                            selected
-                        else
-                            if DoNotShowUntil::isVisible(i) then
-                                if BankUtils::recoveredAverageHoursPerDay(i["uuid"]) < 1 then
-                                    i
-                                else
-                                    nil
-                                end
-                            else
-                                nil
-                            end
-                        end
-                    }
-            XCache::set("b338aac9-4765-4d7c-afd6-e34ff6bfcd56", item["uuid"])
-            item
-        }
+    # --------------------------------------------------
+    # Listing Items
 
-        item = getItemOrNull.call()
-
-        return [] if (BankUtils::recoveredAverageHoursPerDay("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc") > 3 and !NxBalls::itemIsRunning(item))
-
-        [item]
+    # NxTasks::listingItemsPriority()
+    def self.listingItemsPriority()
+        items = NxTasks::items()
+        topPriority = items.map{|item| item["priority"] || 1 }.max
+        if topPriority > 1 then
+            XCache::set("adc9c640-93b5-415e-a9e5-f59b3ea793d5", "true")
+        else
+            XCache::set("adc9c640-93b5-415e-a9e5-f59b3ea793d5", "false")
+        end
+        return [] if topPriority == 1
+        NxTasks::items()
+            .select{|item| (item["priority"] || 1) == topPriority }
+            .sort{|i1, i2| TxEngines::itemCompletionRatio(i1) <=> TxEngines::itemCompletionRatio(i2) }
     end
 
-    # NxTasks::listingItems()
-    def self.listingItems()
+    # NxTasks::listingItemsNil(count)
+    def self.listingItemsNil(count)
+        items = []
+        uuids = XCache::getOrNull("b338aac9-4765-5d7c-afd6-e34ff6bfcd56")
+        if uuids then
+            items = JSON.parse(uuids)
+                        .map{|uuid| N3Objects::getOrNull(uuid) }
+                        .compact
+                        .select{|item| TxEngines::itemCompletionRatio(item) < 1 }
+            return items if items.size > 0
+        end
+        items = NxTasks::bItemsOrdered(nil)
+                .select{|item| item["boarduuid"].nil? }
+                .sort{|i1, i2| i1["position"] <=> i2["position"] }
+                .reduce([]){|selected, i|
+                    if selected.size >= count then
+                        selected
+                    else
+                        if DoNotShowUntil::isVisible(i) then
+                            selected + [i]
+                        else
+                            selected
+                        end
+                    end
+                }
+        XCache::set("b338aac9-4765-5d7c-afd6-e34ff6bfcd56", JSON.generate(items.map{|item| item["uuid"] }))
+        items
+    end
+
+    # NxTasks::listingItems(count)
+    def self.listingItems(count)
+        return [] if XCache::getOrNull("adc9c640-93b5-415e-a9e5-f59b3ea793d5") == "true"
+
         items1 = NxBoards::boardsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
-                    .select{|board| NxBoards::completionRatio(board) < 1 }
-                    .map{|board| NxTasks::bItemsOrdered(board).first(6) }
+                    .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
+                    .map{|board| NxTasks::bItemsOrdered(board)}
                     .flatten
-        items2 = NxTasks::listingItemsNil()
-        items1+items2
+        items2 = NxTasks::listingItemsNil(count)
+        (items1+items2).map{|item|
+            TxEngines::updateItemOrNothing(item)
+        }
     end
 
     # --------------------------------------------------
@@ -273,4 +277,20 @@ class NxTasks
     def self.access(item)
         CoreData::access(item["field11"])
     end
+
+    # NxTasks::program(item)
+    def self.program(item)
+        loop {
+            puts NxTasks::toString(item)
+            actions = ["set priority"]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
+            break if action.nil?
+            if action == "set priority" then
+                item["priority"] = LucilleCore::askQuestionAnswerAsString("priority: ").to_f
+                N3Objects::commit(item)
+                XCache::destroy("aa9155f4-74f3-49e8-a0cd-b0cb54fa5917")
+            end
+        }
+    end
+
 end

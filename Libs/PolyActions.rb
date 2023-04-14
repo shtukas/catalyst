@@ -27,17 +27,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBoard" then
-            NxBoards::program3Landing(item)
+            NxBoards::programBoardListing(item)
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            CoreData::access(item["field11"])
             return
         end
 
@@ -134,18 +129,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            puts "We do not done a NxProject. You can stop it, if it's running, and otherwise can destroy it."
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if item["mikuType"] == "NxOpenCycle" then
-            puts "We do not done an NxOpenCycle. You can remove the directory."
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTasks::destroy(item["uuid"])
@@ -173,13 +156,6 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
-
-        if item["mikuType"] == "NxProject" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
-            end
-            return
-        end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -254,11 +230,11 @@ class PolyActions
         LucilleCore::pressEnterToContinue()
     end
 
-    # PolyActions::landing(item)
-    def self.landing(item)
+    # PolyActions::program(item)
+    def self.program(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::landing(item)
+            Anniversaries::program1(item)
             return
         end
 
@@ -268,11 +244,16 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            Waves::landing(item)
+            Waves::program(item)
             return
         end
 
-        puts "PolyActions::landing has not yet been implemented for miku type #{item["mikuType"]}"
+        if item["mikuType"] == "NxTask" then
+            NxTasks::program(item)
+            return
+        end
+
+        puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"
         LucilleCore::pressEnterToContinue()
     end
 

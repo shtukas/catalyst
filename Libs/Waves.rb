@@ -192,7 +192,7 @@ class Waves
             items = Waves::items().sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
             return if wave.nil?
-            PolyActions::landing(wave)
+            Waves::program(wave)
         }
     end
 
@@ -202,8 +202,8 @@ class Waves
         CoreData::access(item["field11"])
     end
 
-    # Waves::landing(item)
-    def self.landing(item)
+    # Waves::program(item)
+    def self.program(item)
         loop {
             puts Waves::toString(item)
             actions = ["update description", "update wave pattern", "perform done", "set days of the week", "destroy"]

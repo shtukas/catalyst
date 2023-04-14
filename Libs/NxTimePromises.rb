@@ -24,22 +24,20 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::smooth_compute(spotaccount, promisesaccounts, value, periodInDays)
-    def self.smooth_compute(spotaccount, promisesaccounts, value, periodInDays)
+    # NxTimePromises::smooth_compute(account, value, periodInDays)
+    def self.smooth_compute(account, value, periodInDays)
         items = []
-        items << NxTimePromises::makePromise(Time.new.to_i, spotaccount, value)
+        items << NxTimePromises::makePromise(Time.new.to_i, account, value)
         unitpayment = -value.to_f/periodInDays
         (1..periodInDays).each{|i|
-            promisesaccounts.each{|promiseaccount|
-                items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, promiseaccount, unitpayment)
-            }
+            items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, account, unitpayment)
         }
         items
     end
 
-    # NxTimePromises::smooth_commit(spotaccount, promisesaccounts, value, periodInDays)
-    def self.smooth_commit(spotaccount, promisesaccounts, value, periodInDays)
-        items = NxTimePromises::smooth_compute(spotaccount, promisesaccounts, value, periodInDays)
+    # NxTimePromises::smooth_effect(account, value, periodInDays)
+    def self.smooth_effect(account, value, periodInDays)
+        items = NxTimePromises::smooth_compute(account, value, periodInDays)
         items.each{|promise|
             puts "NxTimePromise: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
             puts JSON.pretty_generate(promise)

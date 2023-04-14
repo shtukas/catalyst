@@ -1,4 +1,0 @@
-NxOpenCycle
-    "uuid"     : String
-    "mikuType" : String
-    "name"     : String

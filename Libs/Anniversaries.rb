@@ -170,19 +170,8 @@ class Anniversaries
         end
     end
 
-    # Anniversaries::program()
-    def self.program()
-        loop {
-            anniversaries = Anniversaries::items()
-                        .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
-            anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
-            return if anniversary.nil?
-            PolyActions::landing(anniversary)
-        }
-    end
-
-    # Anniversaries::landing(item)
-    def self.landing(item)
+    # Anniversaries::program1(item)
+    def self.program1(item)
         loop {
             actions = ["update description", "update start date"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
@@ -201,4 +190,17 @@ class Anniversaries
             end
         }
     end
+
+    # Anniversaries::program2()
+    def self.program2()
+        loop {
+            anniversaries = Anniversaries::items()
+                        .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
+            anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
+            return if anniversary.nil?
+            Anniversaries::program1(anniversary)
+        }
+    end
+
+
 end

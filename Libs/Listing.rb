@@ -19,9 +19,9 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | landing (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | park (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "[makers] anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
-            "[makers] drop",
+            "[TxEngine] engine",
             "[transmutation] recast (<n>)",
             "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
             "[NxBalls] start | start * | stop | stop * | pause | pursue",
@@ -132,7 +132,7 @@ class Listing
         end
 
         if Interpreting::match("anniversaries", input) then
-            Anniversaries::program()
+            Anniversaries::program2()
             return
         end
 
@@ -152,7 +152,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxBoards::program2()
+            NxBoards::program()
             return
         end
 
@@ -248,6 +248,37 @@ class Listing
             exit
         end
 
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
+                puts "Only NxBoard and NxTask are carrying engine"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            engine = TxEngines::interactivelyMakeEngineOrNull()
+            return if engine.nil?
+            item["engine"] = engine
+            N3Objects::commit(item)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
+                puts "Only NxBoard and NxTask are carrying engine"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            engine = TxEngines::interactivelyMakeEngineOrNull()
+            return if engine.nil?
+            item["engine"] = engine
+            N3Objects::commit(item)
+            return
+        end
+
         if Interpreting::match("expose", input) then
             item = store.getDefault()
             return if item.nil?
@@ -296,18 +327,18 @@ class Listing
             return
         end
 
-        if Interpreting::match("landing", input) then
+        if Interpreting::match("program", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::landing(item)
+            PolyActions::program(item)
             return
         end
 
-        if Interpreting::match("landing *", input) then
+        if Interpreting::match("program *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            PolyActions::landing(item)
+            PolyActions::program(item)
             return
         end
 
@@ -348,19 +379,6 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            NxProjects::program()
             return
         end
 
@@ -416,7 +434,7 @@ class Listing
         end
 
         if Interpreting::match("first task", input) then
-            item = NxTasks::priority()
+            item = NxTasks::makeFirstTask()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::askAndMaybeAttach(item)
@@ -650,9 +668,8 @@ class Listing
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            NxProjects::listingItems(),
-            NxTasks::listingItems().first(5),
-            NxOpenCycles::items(),
+            NxTasks::listingItemsPriority(),
+            NxTasks::listingItems(6),
             TxContexts::items(),
             NxBoards::listingItems()
         ]
@@ -824,11 +841,10 @@ class Listing
             end
 
             if Config::isPrimaryInstance() then
-                NxBoards::timeManagement()
                 NxTimePromises::operate()
-                NxOpenCycles::dataManagement()
                 N3Objects::fileManagement()
                 BankCore::fileManagement()
+                NxOpenCycles::makeNxTasks()
             end
 
             store = ItemStore.new()

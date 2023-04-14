@@ -17,13 +17,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxProject" then
-            accounts << {
-                "description" => "capsule: #{item["capsule"]}",
-                "number"      => item["capsule"]
-            }
-        end
-
         if item["mikuType"] == "NxTask" then
             accounts << {
                 "description" => nil,
@@ -89,9 +82,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
-        end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]

@@ -1,10 +1,8 @@
 
 NxTask:
-    "uuid"        : String
     "mikuType"    : "NxTask"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : String
     "field11"     : null or CoreData reference string
     "position"    : Float
-    "boarduuid"   : nil or uuid
+    "boarduuid"   : null or uuid
+    "engine"      : null or TxEngine
+    "priority"    : null or Int # 0 is standard, above 0 we have exceptional conditions
