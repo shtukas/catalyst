@@ -110,7 +110,6 @@ class NxBoards
             NxFires::items(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            NxTasks::priorityStratification(),
             NxTasks::boardItemsOrdered(board),
             TxContexts::items(),
         ]
@@ -148,7 +147,7 @@ class NxBoards
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
+            return if input == ""
 
             Listing::listingCommandInterpreter(input, store, nil)
         }
@@ -204,38 +203,6 @@ class BoardsAndItems
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
         item
-    end
-
-    # BoardsAndItems::belongsToThisBoard1(item, board or nil)
-    def self.belongsToThisBoard1(item, board)
-        if board.nil? then
-            item["boarduuid"].nil?
-        else
-            item["boarduuid"] == board["uuid"]
-        end
-    end
-
-    # BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board or nil or "all" or "managed")
-    def self.belongsToThisBoard2ForListingManagement(item, board)
-        if board == "all" then
-            return true
-        end
-        if board == "managed" then
-            if item["boarduuid"] then
-                board = NxBoards::getItemOfNull(item["boarduuid"])
-                if board then
-                    if !DoNotShowUntil::isVisible(board) then
-                        return false # we return false if the board is not visible
-                    end
-                    return TxEngines::completionRatio(board["engine"]) < 1
-                else
-                    return true
-                end
-            else
-                return true
-            end
-        end
-        BoardsAndItems::belongsToThisBoard1(item, board)
     end
 
     # BoardsAndItems::toStringSuffix(item)

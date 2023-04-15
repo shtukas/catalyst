@@ -5,4 +5,3 @@ NxTask:
     "position"    : Float
     "boarduuid"   : null or uuid
     "engine"      : null or TxEngine
-    "priority"    : null or Int # 0 is standard, above 0 we have exceptional conditions

@@ -25,16 +25,6 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
-    # NxTasks::interactivelyDecidePriority()
-    def self.interactivelyDecidePriority()
-        priority = LucilleCore::askQuestionAnswerAsString("priority (empty for default): ")
-        if priority == "" then
-            nil
-        else
-            priority.to_i
-        end
-    end
-
     # NxTasks::interactivelyDecideTopPosition()
     def self.interactivelyDecideTopPosition()
         items = NxTasks::items()
@@ -50,8 +40,8 @@ class NxTasks
         return position.to_f
     end
 
-    # NxTasks::interactivelyDecidePosition1()
-    def self.interactivelyDecidePosition1()
+    # NxTasks::interactivelyDecideBoardlessPosition()
+    def self.interactivelyDecideBoardlessPosition()
         actions = ["within top", "that position"]
         action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
         if action == "within top" then
@@ -60,7 +50,7 @@ class NxTasks
         if action == "that position" then
             return NxTasks::thatPosition()
         end
-        NxTasks::interactivelyDecidePosition1()
+        NxTasks::interactivelyDecideBoardlessPosition()
     end
 
     # NxTasks::interactivelyDecidePosition2(board)
@@ -68,7 +58,7 @@ class NxTasks
         if board then
             NxBoards::interactivelyDecideNewBoardPosition(board)
         else
-            NxTasks::interactivelyDecidePosition1()
+            NxTasks::interactivelyDecideBoardlessPosition()
         end
     end
 
@@ -78,12 +68,10 @@ class NxTasks
         boarduuid = board ? board["uuid"] : nil
         position  = NxTasks::interactivelyDecidePosition2(board)
         engine    = TxEngines::interactivelyMakeEngine()
-        priority  = NxTasks::interactivelyDecidePriority()
 
         item["boarduuid"] = boarduuid
         item["position"]  = position
         item["engine"]    = engine
-        item["priority"]  = priority
 
         item
     end
@@ -93,13 +81,18 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
+        uuid = SecureRandom.uuid
+
         item = {}
-        item["uuid"] = SecureRandom.uuid,
-        item["mikuType"] = "NxTask",
-        item["unixtime"] = Time.new.to_i,
-        item["datetime"] = Time.new.utc.iso8601,
-        item["description"] = description,
+        item["uuid"] = uuid
+        item["mikuType"] = "NxTask"
+        item["unixtime"] = Time.new.to_i
+        item["datetime"] = Time.new.utc.iso8601
+        item["description"] = description
         item["field11"] = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+
+        puts "1"
+        puts JSON.pretty_generate(item)
 
         item = NxTasks::setHyperspatialCoordinates(item)
 
@@ -120,6 +113,7 @@ class NxTasks
             "field11"     => nil,
             "position"    => position,
             "boarduuid"   => nil,
+            "engine"      => TxEngines::defaultEngine(nil)
         }
         NxTasks::commit(item)
         item
@@ -139,6 +133,7 @@ class NxTasks
             "description" => description,
             "field11"     => coredataref,
             "position"    => position,
+            "engine"      => TxEngines::defaultEngine(nil)
         }
         N3Objects::commit(item)
         item
@@ -160,6 +155,7 @@ class NxTasks
             "field11"     => coredataref,
             "position"    => position,
             "boarduuid"   => nil,
+            "engine"      => TxEngines::defaultEngine(nil)
         }
         N3Objects::commit(item)
         item
@@ -181,6 +177,7 @@ class NxTasks
             "field11"     => coredataref,
             "position"    => position,
             "boarduuid"   => nil,
+            "engine"      => TxEngines::defaultEngine(nil)
         }
         NxTasks::commit(item)
         item
@@ -192,7 +189,7 @@ class NxTasks
     # NxTasks::boardItemsOrdered(board)
     def self.boardItemsOrdered(board)
         NxTasks::items()
-            .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
+            .select{|item| item["boarduuid"] == board["uuid"] }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 
@@ -205,28 +202,11 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        isPriority = item["priority"] and item["priority"] > 1
-        position1 = 
-            if isPriority then
-                ""
-            else
-                " (@ #{item["position"].round(3)})"
-            end
-        performance1 = 
-            if isPriority then
-                # Here we are only interested in the RT
-                " (performance: #{"%4.2f" % BankUtils::recoveredAverageHoursPerDay(item["uuid"]).round(2)})"
-            else
-                ""
-            end
-        performance2 = 
-            if isPriority then
-                ""
-            else
-                " #{TxEngines::toString(item["engine"])}"
-            end
-        priority1 = (item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"].to_s.green})" : "" 
-        "(task)#{position1}#{performance1} #{item["description"]}#{performance2}#{priority1}"
+        if item["engine"]["type"] == "priority" then
+            return "(#{"priority".green}, performance: #{BankUtils::recoveredAverageHoursPerDay(item["uuid"]).round(2)}) #{item["description"]}"
+        end
+
+        "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxTasks::startPosition()
@@ -293,28 +273,8 @@ class NxTasks
     # --------------------------------------------------
     # Listing Items
 
-    # NxTasks::listingItemsAtPriority(priority)
-    def self.listingItemsAtPriority(priority)
-        NxTasks::items()
-            .select{|item| item["priority"] == priority }
-            .sort{|i1, i2| BankUtils::recoveredAverageHoursPerDay(i1["uuid"]) <=> BankUtils::recoveredAverageHoursPerDay(i2["uuid"]) }
-    end
-
-    # NxTasks::priorityStratification()
-    def self.priorityStratification()
-        topPriority = items.map{|item| item["priority"] || 1 }.max
-        return [] if topPriority == 1
-        (2..topPriority)
-            .to_a
-            .reverse
-            .map{|priority|
-                NxTasks::listingItemsAtPriority(priority)
-            }
-            .flatten
-    end
-
-    # NxTasks::listingItemsHead(count)
-    def self.listingItemsHead(count)
+    # NxTasks::listingItemsBoardlessHead(count)
+    def self.listingItemsBoardlessHead(count)
         NxTasks::boardlessItemsOrdered()
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
             .reduce([]){|selected, i|
@@ -330,12 +290,12 @@ class NxTasks
             }
     end
 
-    # NxTasks::listingItemsTail()
-    def self.listingItemsTail()
-        NxTasks::boardlessItemsOrdered()
-            .reverse
+    # NxTasks::listingItemsHeadForBoard(board, count)
+    def self.listingItemsHeadForBoard(board, count)
+        NxTasks::boardItemsOrdered(board)
+            .sort{|i1, i2| i1["position"] <=> i2["position"] }
             .reduce([]){|selected, i|
-                if selected.size >= 12 then
+                if selected.size >= count then
                     selected
                 else
                     if DoNotShowUntil::isVisible(i) then
@@ -347,31 +307,45 @@ class NxTasks
             }
     end
 
-    # NxTasks::listingItems()
-    def self.listingItems()
-        topPriority = items.map{|item| item["priority"] || 1 }.max
+    # NxTasks::listingItemsTail(count)
+    def self.listingItemsTail(count)
+        NxTasks::boardlessItemsOrdered()
+            .reverse
+            .reduce([]){|selected, i|
+                if selected.size >= count then
+                    selected
+                else
+                    if DoNotShowUntil::isVisible(i) then
+                        selected + [i]
+                    else
+                        selected
+                    end
+                end
+            }
+    end
 
-        items0 = NxTasks::priorityStratification()
-
-        items1 = NxTasks::listingItemsHead(3)
-                    .select{|item| NxTasks::completionRatio(item) < 1 }
-
-        items2 = NxBoards::boardsOrdered()
+    # NxTasks::club()
+    def self.club()
+        items1 = NxBoards::boardsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
-                    .map{|board| NxTasks::boardItemsOrdered(board)}
+                    .sort_by{|board| TxEngines::completionRatio(board["engine"]) }
+                    .map{|board| NxTasks::listingItemsHeadForBoard(board, 6) }
                     .flatten
-
-        items3 = 
-            if NxTasks::performance() < 20 then
-                NxTasks::listingItemsHead(6)
-            else
-                NxTasks::listingItemsTail()
-            end
-
-        (items0+items1+items2+items3).map{|item|
+        items2 = NxTasks::listingItemsBoardlessHead(3)
+        items3 = NxTasks::listingItemsTail(3)
+        (items1+items2+items3).map{|item|
             TxEngines::engineMaintenanceOrNothing(item)
         }
+    end
+
+    # NxTasks::listingItems()
+    def self.listingItems()
+        priorityItems = NxTasks::items()
+                            .select{|item| item["engine"]["type"] == "priority" }
+                            .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
+
+        priorityItems + NxTasks::club()
     end
 
     # --------------------------------------------------
@@ -414,7 +388,7 @@ class NxTasks
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
+            return if input == ""
 
             Listing::listingCommandInterpreter(input, store, nil)
         }

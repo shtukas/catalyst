@@ -1,5 +1,19 @@
 TxEngine:
-    "uuid"          : String
-    "type"          : "daily-time" | "daily-recovery-time" | "weekly-time"
-    "hours"         : Float
-    "lastResetTime" : Unixtime # only useful for "weekly-time"
+
+    {
+        "uuid"          : String
+        "type"          : "priority"
+    }
+
+    {
+        "uuid"          : String
+        "type"          : "daily-recovery-time"
+        "hours"         : Float
+    }
+
+    {
+        "uuid"          : String
+        "type"          : "weekly-time"
+        "hours"         : Float
+        "lastResetTime" : Unixtime # only useful for "weekly-time"
+    }

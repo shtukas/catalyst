@@ -21,11 +21,10 @@ class Listing
         [
             "on items         : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "makers           : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
-            "on specific types: engine (<n>) # boards and tasks | redefine <n> # tasks | holiday <n> # boards | redate # ondate",
-            "    - boards and tasks: engine (<n>)",
-            "    - boards          : holiday <n>",
-            "    - tasks           : priority <n> | redefine <n>",
-            "    - ondate          : redate",
+            "specific types commands:",
+            "    - boards : holiday <n> | engine (<n>)",
+            "    - tasks  : position <n> | engine (<n>)",
+            "    - ondate : redate",
             "transmutation    : recast (<n>)",
             "divings          : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls          : start | start * | stop | stop * | pause | pursue",
@@ -285,31 +284,20 @@ class Listing
             return
         end
 
-        if Interpreting::match("redefine *", input) then
+        if Interpreting::match("position *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
-                puts "Only NxTask can be redefined"
+                puts "Only NxTask can be positioned"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            item = NxTasks::setHyperspatialCoordinates(item)
+            board     = NxBoards::interactivelySelectOneOrNull()
+            boarduuid = board ? board["uuid"] : nil
+            position  = NxTasks::interactivelyDecidePosition2(board)
+            item["position"] =  position
             puts JSON.pretty_generate(item)
-            NxTasks::commit(item)
-            return
-        end
-
-        if Interpreting::match("priority *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "Only NxTask can be priority'ed (prioritised)"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            item["priority"] = NxTasks::interactivelyDecidePriority()
             NxTasks::commit(item)
             return
         end
@@ -729,7 +717,7 @@ class Listing
         }).call(item)
 
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{skip}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
+        line = "#{storePrefix} #{skip}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::shouldBeInYellow(item) then
             line = line.yellow
         end
@@ -744,6 +732,7 @@ class Listing
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "TxContext"
         return false if item["mikuType"] == "DesktopTx1"
+        return false if !DoNotShowUntil::isVisible(item)
 
         skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
@@ -763,12 +752,21 @@ class Listing
         }
 
         return false if skipTargetTimeOrNull.call(item)
+
+        if item["mikuType"] == "NxTask" then
+            return false if NxTasks::completionRatio(item) >= 1
+        end
+
         true
     end
 
     # Listing::shouldBeInYellow(item)
     def self.shouldBeInYellow(item)
         return true if item["mikuType"] == "TxContext"
+        if item["mikuType"] == "NxTask" then
+            return true if NxTasks::completionRatio(item) >= 1
+        end
+        return true if !DoNotShowUntil::isVisible(item)
         false
     end
 
