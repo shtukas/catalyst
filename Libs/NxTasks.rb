@@ -333,7 +333,7 @@ class NxTasks
     # NxTasks::listingItemsTail()
     def self.listingItemsTail()
         NxTasks::boardlessItemsOrdered()
-            .reversed
+            .reverse
             .reduce([]){|selected, i|
                 if selected.size >= 12 then
                     selected
