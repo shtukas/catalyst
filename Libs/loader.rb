@@ -72,14 +72,6 @@ require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Librarie
     XCache::filepath(key)
 =end
 
-require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/XCacheSets.rb"
-=begin
-    XCacheSets::values(setuuid: String): Array[Value]
-    XCacheSets::set(setuuid: String, valueuuid: String, value)
-    XCacheSets::getOrNull(setuuid: String, valueuuid: String): nil | Value
-    XCacheSets::destroy(setuuid: String, valueuuid: String)
-=end
-
 require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/AionCore.rb"
 =begin
 
@@ -128,14 +120,6 @@ AionCore::exportHashAtFolder(operator, nhash, targetReconstructionFolderpath)
 
 AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
-=end
-
-require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/Mercury2.rb"
-=begin
-    Mercury2::put(channel, value)
-    Mercury2::readFirstOrNull(channel)
-    Mercury2::dequeue(channel)
-    Mercury2::empty?(channel)
 =end
 
 # ------------------------------------------------------------
