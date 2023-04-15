@@ -252,7 +252,7 @@ class NxTasks
         return [] if topPriority == 1
         NxTasks::items()
             .select{|item| (item["priority"] || 1) == topPriority }
-            .sort{|i1, i2| BankCore::getValueAtDate(i1["uuid"], CommonUtils::today()) <=> BankCore::getValueAtDate(i2["uuid"], CommonUtils::today()) }
+            .sort{|i1, i2| BankUtils::recoveredAverageHoursPerDay(i1["uuid"]) <=> BankUtils::recoveredAverageHoursPerDay(i2["uuid"]) }
     end
 
     # NxTasks::listingItemsNil(count)
