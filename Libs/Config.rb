@@ -28,8 +28,8 @@ class Config
         "#{Config::userHomeDirectory()}/Galaxy/DataBank/Stargate-Config.json"
     end
 
-    # Config::pathToDataCenter()
-    def self.pathToDataCenter()
+    # Config::pathToCatalystData()
+    def self.pathToCatalystData()
         "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst"
     end
 

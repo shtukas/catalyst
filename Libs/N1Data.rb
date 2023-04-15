@@ -6,7 +6,7 @@ class N1Data
 
     # N1Data::folderpath()
     def self.folderpath()
-        "#{Config::pathToDataCenter()}/N1Data"
+        "#{Config::pathToCatalystData()}/N1Data"
     end
 
     # --------------------------------------

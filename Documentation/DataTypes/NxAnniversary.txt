@@ -1,14 +1,14 @@
 
-NxAnniversary
+NxAnniversary (Blade)
 
-    "uuid"                : String
-    "mikuType"            : "NxAnniversary"
-    "unixtime"            : Float
-    "datetime"            : DateTime Iso 8601 UTC Zulu
-    "description"         : String
-    "payload"             : 
-    "doNotShowUntil"      : Unixtime
+    - "uuid"                : String
+    - "mikuType"            : "NxAnniversary"
+    - "unixtime"            : Float
+    - "datetime"            : DateTime Iso 8601 UTC Zulu
+    - "description"         : String
 
-    "startdate"           : Date # YYYY-MM-DD
-    "repeatType"          : "weekly" | "monthly" | "yearly"
-    "lastCelebrationDate" : Date
+    - "startdate"           : Date # YYYY-MM-DD
+    - "repeatType"          : "weekly" | "monthly" | "yearly"
+    - "lastCelebrationDate" : Date
+
+    - "doNotShowUntil"      : Unixtime

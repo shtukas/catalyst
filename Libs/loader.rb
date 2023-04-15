@@ -50,16 +50,16 @@ checkLocation.call("#{ENV['HOME']}/Galaxy/DataBank/Stargate-Config.json")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataBank/catalyst/NxBalls")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/catalyst")
-checkLocation.call("#{ENV['HOME']}/Galaxy/LucilleOS/Libraries/Ruby-Libraries")
+checkLocation.call("#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries")
 checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
 require_relative "Config.rb"
 
-require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/LucilleCore.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/LucilleCore.rb"
 
-require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/XCache.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/XCache.rb"
 =begin
     XCache::set(key, value)
     XCache::getOrNull(key)
@@ -72,7 +72,7 @@ require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Librarie
     XCache::filepath(key)
 =end
 
-require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/AionCore.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/AionCore.rb"
 =begin
 
 The operator is an object that has meet the following signatures
@@ -122,7 +122,35 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
-require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/Blades.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/Blades.rb"
+
+=begin
+Blades
+
+    Blades::decideInitLocation(uuid)
+    Blades::locateBladeUsingUUID(uuid)
+
+    Blades::init(uuid)
+    Blades::setAttribute(token, attribute_name, value)
+    Blades::getAttributeOrNull(token, attribute_name)
+    Blades::addToSet(token, set_id, element_id, value)
+    Blades::removeFromSet(token, set_id, element_id)
+    Blades::putDatablob(token, key, datablob)
+    Blades::getDatablobOrNull(token, key)
+=end
+
+class Blades
+
+    # Blades::decideInitLocation(uuid)
+    def self.decideInitLocation(uuid)
+        "#{Config::pathToCatalystData()}/Blades/#{uuid}.blade"
+    end
+
+    # Blades::locateBladeUsingUUID(uuid)
+    def self.locateBladeUsingUUID(uuid)
+        "#{Config::pathToCatalystData()}/Blades/#{uuid}.blade"
+    end
+end
 
 # ------------------------------------------------------------
 

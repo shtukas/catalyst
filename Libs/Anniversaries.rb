@@ -1,9 +1,46 @@
 
 class Anniversaries
 
+    def self.transform()
+        Anniversaries::items().each{|item|
+            puts JSON.pretty_generate(item)
+            uuid = item["uuid"]
+            filepath = Blades::locate_blade(uuid)
+            if File.exist?(filepath) then
+                Blades::init(uuid)
+            end
+            Blades::setAttribute(uuid, "uuid", uuid)
+            Blades::setAttribute(uuid, "mikuType", "NxAnniversary")
+            Blades::setAttribute(uuid, "unixtime", item["unixtime"])
+            Blades::setAttribute(uuid, "datetime", item["datetime"])
+            Blades::setAttribute(uuid, "description", item["description"])
+            Blades::setAttribute(uuid, "doNotShowUntil", item["doNotShowUntil"])
+            Blades::setAttribute(uuid, "startdate", item["startdate"])
+            Blades::setAttribute(uuid, "repeatType", item["repeatType"])
+            Blades::setAttribute(uuid, "lastCelebrationDate", item["lastCelebrationDate"])
+        }
+    end
+
+    # Anniversaries::bladeFilepathToItem(filepath)
+    def self.bladeFilepathToItem(filepath)
+        item = {}
+        item["uuid"] = Blades::getAttributeOrNull(filepath, "uuid")
+        item["mikuType"] = Blades::getAttributeOrNull(filepath, "NxAnniversary")
+        item["unixtime"] = Blades::getAttributeOrNull(filepath, "unixtime")
+        item["datetime"] = Blades::getAttributeOrNull(filepath, "datetime")
+        item["description"] = Blades::getAttributeOrNull(filepath, "description")
+        item["doNotShowUntil"] = Blades::getAttributeOrNull(filepath, "doNotShowUntil")
+        item["startdate"] = Blades::getAttributeOrNull(filepath, "startdate")
+        item["repeatType"] = Blades::getAttributeOrNull(filepath, "repeatType")
+        item["lastCelebrationDate"] = Blades::getAttributeOrNull(filepath, "lastCelebrationDate")
+        item
+    end
+
     # Anniversaries::items()
     def self.items()
-        N3Objects::getMikuType("NxAnniversary")
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystData()}/Blades/")
+            .select{|filepath| filepath[-6, 6] == ".blade" }
+            .map{|filepath| Anniversaries::bladeFilepathToItem(filepath) }
     end
 
     # ----------------------------------------------------------------
@@ -92,8 +129,6 @@ class Anniversaries
     # Anniversaries::issueNewAnniversaryOrNullInteractively()
     def self.issueNewAnniversaryOrNullInteractively()
 
-        unixtime = Time.new.to_i
-
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         if description == "" then
             return nil
@@ -113,19 +148,21 @@ class Anniversaries
         if lastCelebrationDate == "" then
             lastCelebrationDate = CommonUtils::today()
         end
+
         uuid = SecureRandom.uuid
-        item = {
-            "uuid"                => uuid,
-            "mikuType"            => "NxAnniversary",
-            "unixtime"            => Time.new.to_i,
-            "datetime"            => Time.new.utc.iso8601,
-            "description"         => description,
-            "startdate"           => startdate,
-            "repeatType"          => repeatType,
-            "lastCelebrationDate" => lastCelebrationDate
-        }
-        N3Objects::commit(item)
-        item
+
+        Blades::init(uuid)
+        Blades::setAttribute(uuid, "uuid", uuid)
+        Blades::setAttribute(uuid, "mikuType", "NxAnniversary")
+        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute(uuid, "description", description)
+        Blades::setAttribute(uuid, "startdate", startdate)
+        Blades::setAttribute(uuid, "repeatType", repeatType)
+        Blades::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
+
+        filepath = Blades::locateBladeUsingUUID(uuid)
+        Anniversaries::bladeFilepathToItem(filepath)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]
@@ -155,18 +192,17 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        item = N3Objects::getOrNull(uuid)
-        return if item.nil?
-        item["lastCelebrationDate"] = Time.new.to_s[0, 10]
-        N3Objects::commit(item)
+        begin 
+            Blades::setAttribute(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
+        rescue
+        end
     end
 
     # Anniversaries::accessAndDone(anniversary)
     def self.accessAndDone(anniversary)
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            anniversary["lastCelebrationDate"] = Time.new.to_s[0, 10]
-            N3Objects::commit(anniversary)
+            Blades::setAttribute(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
         end
     end
 
@@ -179,14 +215,12 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(anniversary["description"]).strip
                 return if description == ""
-                anniversary["description"] = description
-                N3Objects::commit(anniversary)
+                Blades::setAttribute(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(anniversary["startdate"])
                 return if startdate == ""
-                anniversary["startdate"] = startdate
-                N3Objects::commit(anniversary)
+                Blades::setAttribute(item["uuid"], "startdate", startdate)
             end
         }
     end
@@ -201,6 +235,4 @@ class Anniversaries
             Anniversaries::program1(anniversary)
         }
     end
-
-
 end

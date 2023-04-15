@@ -16,7 +16,7 @@ class N3Objects
 
     # N3Objects::folderpath()
     def self.folderpath()
-        "#{Config::pathToDataCenter()}/N3Objects"
+        "#{Config::pathToCatalystData()}/N3Objects"
     end
 
     # N3Objects::getExistingFilepathsSorted()
