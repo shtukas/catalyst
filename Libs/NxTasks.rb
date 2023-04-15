@@ -231,7 +231,7 @@ class NxTasks
         return [] if topPriority == 1
         NxTasks::items()
             .select{|item| (item["priority"] || 1) == topPriority }
-            .sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
+            .sort{|i1, i2| BankCore::getValueAtDate(i1["uuid"], CommonUtils::today()) <=> BankCore::getValueAtDate(i2["uuid"], CommonUtils::today()) }
     end
 
     # NxTasks::listingItemsNil(count)

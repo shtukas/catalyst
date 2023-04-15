@@ -30,7 +30,6 @@ class TxEngines
             return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]
         end
         if engine["type"] == "weekly-time" then
-            return 1 if BankCore::getValue(engine["uuid"]) >= engine["hours"]
             dailyDone = BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
             dailyIdeal = engine["hours"].to_f/5
             return dailyDone.to_f/dailyIdeal
