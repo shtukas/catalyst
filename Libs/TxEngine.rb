@@ -82,8 +82,8 @@ class TxEngines
         raise "could not TxEngines::updateEngineOrNull(description, engine) for engine: #{engine}"
     end
 
-    # TxEngines::updateItemOrNothing(item)
-    def self.updateItemOrNothing(item)
+    # TxEngines::engineMaintenanceOrNothing(item)
+    def self.engineMaintenanceOrNothing(item)
         return item if item["engine"].nil?
         engine = TxEngines::updateEngineOrNull(item["description"], item["engine"])
         if engine then

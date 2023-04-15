@@ -189,8 +189,8 @@ class NxTasks
     # --------------------------------------------------
     # Data
 
-    # NxTasks::bItemsOrdered(board)
-    def self.bItemsOrdered(board)
+    # NxTasks::boardItemsOrdered(board)
+    def self.boardItemsOrdered(board)
         NxTasks::items()
             .select{|item| BoardsAndItems::belongsToThisBoard2ForListingManagement(item, board) }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
@@ -225,7 +225,7 @@ class NxTasks
             else
                 " #{TxEngines::toString(item["engine"])}"
             end
-        priority1 = (item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"]})" : "" 
+        priority1 = (item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"].to_s.green})" : "" 
         "(task)#{position1}#{performance1} #{item["description"]}#{performance2}#{priority1}"
     end
 
@@ -293,14 +293,24 @@ class NxTasks
     # --------------------------------------------------
     # Listing Items
 
-    # NxTasks::listingItemsPriority()
-    def self.listingItemsPriority()
-        items = NxTasks::items()
+    # NxTasks::listingItemsAtPriority(priority)
+    def self.listingItemsAtPriority(priority)
+        NxTasks::items()
+            .select{|item| item["priority"] == priority }
+            .sort{|i1, i2| BankUtils::recoveredAverageHoursPerDay(i1["uuid"]) <=> BankUtils::recoveredAverageHoursPerDay(i2["uuid"]) }
+    end
+
+    # NxTasks::priorityStratification()
+    def self.priorityStratification()
         topPriority = items.map{|item| item["priority"] || 1 }.max
         return [] if topPriority == 1
-        NxTasks::items()
-            .select{|item| (item["priority"] || 1) == topPriority }
-            .sort{|i1, i2| BankUtils::recoveredAverageHoursPerDay(i1["uuid"]) <=> BankUtils::recoveredAverageHoursPerDay(i2["uuid"]) }
+        (2..topPriority)
+            .to_a
+            .reverse
+            .map{|priority|
+                NxTasks::listingItemsAtPriority(priority)
+            }
+            .flatten
     end
 
     # NxTasks::listingItemsHead(count)
@@ -339,24 +349,28 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
-        items0 = NxTasks::listingItemsHead(3)
+        topPriority = items.map{|item| item["priority"] || 1 }.max
+
+        items0 = NxTasks::priorityStratification()
+
+        items1 = NxTasks::listingItemsHead(3)
                     .select{|item| NxTasks::completionRatio(item) < 1 }
 
-        items1 = NxBoards::boardsOrdered()
+        items2 = NxBoards::boardsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
-                    .map{|board| NxTasks::bItemsOrdered(board)}
+                    .map{|board| NxTasks::boardItemsOrdered(board)}
                     .flatten
 
-        items2 = 
+        items3 = 
             if NxTasks::performance() < 20 then
                 NxTasks::listingItemsHead(6)
             else
                 NxTasks::listingItemsTail()
             end
 
-        (items0+items1+items2).map{|item|
-            TxEngines::updateItemOrNothing(item)
+        (items0+items1+items2+items3).map{|item|
+            TxEngines::engineMaintenanceOrNothing(item)
         }
     end
 
