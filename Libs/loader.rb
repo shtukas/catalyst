@@ -122,6 +122,8 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
+require "#{Config::userHomeDirectory()}/Galaxy/LucilleOS/Libraries/Ruby-Libraries/Blades.rb"
+
 # ------------------------------------------------------------
 
 require_relative "Anniversaries.rb"
