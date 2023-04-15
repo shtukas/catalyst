@@ -165,7 +165,28 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(item["engine"])}#{(item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"]})" : "" }"
+        isPriority = item["priority"] and item["priority"] > 1
+        position1 = 
+            if isPriority then
+                ""
+            else
+                " (@ #{item["position"].round(3)})"
+            end
+        performance1 = 
+            if isPriority then
+                # Here we are only interested in the RT
+                " (performance: #{"%4.2f" % BankUtils::recoveredAverageHoursPerDay(item["uuid"]).round(2)})"
+            else
+                ""
+            end
+        performance2 = 
+            if isPriority then
+                ""
+            else
+                " #{TxEngines::toString(item["engine"])}"
+            end
+        priority1 = (item["priority"] and item["priority"] > 1) ? " (priority: #{item["priority"]})" : "" 
+        "(task)#{position1}#{performance1} #{item["description"]}#{performance2}#{priority1}"
     end
 
     # NxTasks::startPosition()
