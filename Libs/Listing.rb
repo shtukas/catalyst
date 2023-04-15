@@ -684,17 +684,17 @@ class Listing
         }
 
 
-        skipSuffix = (lambda { |item|
+        skip = (lambda { |item|
             targetTime = skipTargetTimeOrNull.call(item)
             if targetTime then
-                " (tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours)".yellow
+                "(tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours) ".yellow
             else
                 ""
             end
         }).call(item)
 
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{skipSuffix}"
+        line = "#{storePrefix} #{skip}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}"
         if Listing::shouldBeInYellow(item) then
             line = line.yellow
         end
