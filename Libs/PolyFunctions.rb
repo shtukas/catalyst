@@ -32,10 +32,10 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxTask" and item["boarduuid"].nil? then
             accounts << {
                 "description" => nil,
-                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask General
+                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask General (non board)
             }
         end
 
