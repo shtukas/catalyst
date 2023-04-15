@@ -549,8 +549,8 @@ class Listing
                 "lambda" => lambda { Waves::listingItems() }
             },
             {
-                "name" => "NxTasks::listingItemsNil()",
-                "lambda" => lambda { NxTasks::listingItemsNil() }
+                "name" => "NxTasks::listingItemsNil(6)",
+                "lambda" => lambda { NxTasks::listingItemsNil(6) }
             },
             {
                 "name" => "TheLine::getReference()",
