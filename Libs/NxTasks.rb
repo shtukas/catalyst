@@ -267,6 +267,11 @@ class NxTasks
         NxTasks::positionsToNewPosition(positions)
     end
 
+    # NxTasks::completionRatio(item)
+    def self.completionRatio(item)
+        TxEngines::completionRatio(item["engine"]) 
+    end
+
     # --------------------------------------------------
     # Listing Items
 
@@ -300,13 +305,14 @@ class NxTasks
 
     # NxTasks::listingItems(count)
     def self.listingItems(count)
+        items0 = NxTasks::listingItemsNil(3).select{|item| NxTasks::completionRatio(item) < 1 }
         items1 = NxBoards::boardsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
                     .map{|board| NxTasks::bItemsOrdered(board)}
                     .flatten
         items2 = NxTasks::listingItemsNil(count)
-        (items1+items2).map{|item|
+        (items0+items1+items2).map{|item|
             TxEngines::updateItemOrNothing(item)
         }
     end
