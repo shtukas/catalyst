@@ -19,9 +19,7 @@ class Transmutations
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxTask"
-            boarduuid, position = PolyFunctions::interactivelySelectBoardAndPositionForTask()
-            item["boarduuid"] = boarduuid
-            item["position"] = position
+            item = NxTasks::setHyperspatialCoordinates(item)
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
             return
@@ -52,9 +50,7 @@ class Transmutations
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxTask"
-            boarduuid, position = PolyFunctions::interactivelySelectBoardAndPositionForTask()
-            item["boarduuid"] = boarduuid
-            item["position"] = position
+            item = NxTasks::setHyperspatialCoordinates(item)
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
             return
