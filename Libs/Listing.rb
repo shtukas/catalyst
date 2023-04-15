@@ -22,6 +22,10 @@ class Listing
             "on items         : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "makers           : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
             "on specific types: engine (<n>) # boards and tasks | redefine <n> # tasks | holiday <n> # boards | redate # ondate",
+            "    - boards and tasks: engine (<n>)",
+            "    - boards          : holiday <n>",
+            "    - tasks           : priority <n> | redefine <n>",
+            "    - ondate          : redate",
             "transmutation    : recast (<n>)",
             "divings          : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls          : start | start * | stop | stop * | pause | pursue",
@@ -282,7 +286,8 @@ class Listing
         end
 
         if Interpreting::match("redefine *", input) then
-            item = store.getDefault()
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
                 puts "Only NxTask can be redefined"
@@ -291,6 +296,20 @@ class Listing
             end
             item = NxTasks::setHyperspatialCoordinates(item)
             puts JSON.pretty_generate(item)
+            NxTasks::commit(item)
+            return
+        end
+
+        if Interpreting::match("priority *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "Only NxTask can be priority'ed (prioritised)"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            item["priority"] = NxTasks::interactivelyDecidePriority()
             NxTasks::commit(item)
             return
         end
@@ -664,7 +683,6 @@ class Listing
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            NxTasks::listingItemsPriority(),
             NxTasks::listingItems(),
             TxContexts::items(),
             NxBoards::listingItems()

@@ -65,7 +65,7 @@ class NxBoards
     # NxBoards::listingItems()
     def self.listingItems()
         NxBoards::items()
-            .map{|item| TxEngines::updateItemOrNothing(item) }
+            .map{|item| TxEngines::engineMaintenanceOrNothing(item) }
             .select{|board| NxBoards::boardContents(board).empty? or NxBalls::itemIsRunning(board) }
             .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsRunning(board) }
     end
@@ -90,7 +90,7 @@ class NxBoards
 
     # NxBoards::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxTasks::bItemsOrdered(board)
+        boardItems = NxTasks::boardItemsOrdered(board)
         return 1 if boardItems.empty?
         boardItems.each{|item| puts NxTasks::toString(item) }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
@@ -110,8 +110,8 @@ class NxBoards
             NxFires::items(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            NxTasks::listingItemsPriority(),
-            NxTasks::bItemsOrdered(board),
+            NxTasks::priorityStratification(),
+            NxTasks::boardItemsOrdered(board),
             TxContexts::items(),
         ]
             .flatten
