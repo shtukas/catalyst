@@ -25,46 +25,73 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
+    # NxTasks::interactivelyDecidePriority()
+    def self.interactivelyDecidePriority()
+        priority = LucilleCore::askQuestionAnswerAsString("priority (empty for default): ")
+        if priority == "" then
+            nil
+        else
+            priority.to_i
+        end
+    end
+
+    # NxTasks::interactivelyDecideTopPosition()
+    def self.interactivelyDecideTopPosition()
+        items = NxTasks::items().sort_by{|item| item["position"] }.first(30)
+        return 1 if items.empty?
+        items.each{|item| puts NxTasks::toString(item) }
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if position == "" then
+            return items.map{|item| item["position"] }.max + 1
+        end
+        return position.to_f
+    end
+
+    # NxTasks::interactivelyDecidePosition1()
+    def self.interactivelyDecidePosition1()
+        actions = ["within top", "that position"]
+        action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
+        if action == "within top" then
+            return NxTasks::interactivelyDecideTopPosition()
+        end
+        if action == "that position" then
+            return NxTasks::thatPosition()
+        end
+        NxTasks::interactivelyDecidePosition1()
+    end
+
+    # NxTasks::interactivelyDecidePosition2(board)
+    def self.interactivelyDecidePosition2(board)
+        if board then
+            NxBoards::interactivelyDecideNewBoardPosition(board)
+        else
+            NxTasks::interactivelyDecidePosition1()
+        end
+    end
+
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        uuid  = SecureRandom.uuid
+        uuid        = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board = NxBoards::interactivelySelectOneOrNull()
-        priority = LucilleCore::askQuestionAnswerAsString("priority (empty for default): ")
-        if priority == "" then
-            priority = nil
-        else
-            priority = priority.to_i
-        end
-        if board then
-            position = NxBoards::interactivelyDecideNewBoardPosition(board)
-            item = {
-                "uuid"        => uuid,
-                "mikuType"    => "NxTask",
-                "unixtime"    => Time.new.to_i,
-                "datetime"    => Time.new.utc.iso8601,
-                "description" => description,
-                "field11"     => coredataref,
-                "position"    => position,
-                "boarduuid"   => board["uuid"],
-                "priority"    => priority
-            }
-        else
-            position = NxTasks::thatPosition()
-            item = {
-                "uuid"        => uuid,
-                "mikuType"    => "NxTask",
-                "unixtime"    => Time.new.to_i,
-                "datetime"    => Time.new.utc.iso8601,
-                "description" => description,
-                "field11"     => coredataref,
-                "position"    => position,
-                "boarduuid"   => nil,
-                "priority"    => priority
-            }
-        end
+        board       = NxBoards::interactivelySelectOneOrNull()
+        boarduuid   = board ? board["uuid"] : nil
+        position    = NxTasks::interactivelyDecidePosition2(board)
+        engine      = TxEngines::interactivelyMakeEngine()
+        priority    = NxTasks::interactivelyDecidePriority()
+        item = {
+            "uuid"        => uuid,
+            "mikuType"    => "NxTask",
+            "unixtime"    => Time.new.to_i,
+            "datetime"    => Time.new.utc.iso8601,
+            "description" => description,
+            "field11"     => coredataref,
+            "position"    => position,
+            "boarduuid"   => boarduuid,
+            "priority"    => priority,
+            "engine"      => engine
+        }
         NxTasks::commit(item)
         item
     end
@@ -244,11 +271,6 @@ class NxTasks
     def self.listingItemsPriority()
         items = NxTasks::items()
         topPriority = items.map{|item| item["priority"] || 1 }.max
-        if topPriority > 1 then
-            XCache::set("adc9c640-93b5-415e-a9e5-f59b3ea793d5", "true")
-        else
-            XCache::set("adc9c640-93b5-415e-a9e5-f59b3ea793d5", "false")
-        end
         return [] if topPriority == 1
         NxTasks::items()
             .select{|item| (item["priority"] || 1) == topPriority }
@@ -275,8 +297,6 @@ class NxTasks
 
     # NxTasks::listingItems(count)
     def self.listingItems(count)
-        return [] if XCache::getOrNull("adc9c640-93b5-415e-a9e5-f59b3ea793d5") == "true"
-
         items1 = NxBoards::boardsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }

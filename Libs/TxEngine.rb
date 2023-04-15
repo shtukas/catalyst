@@ -20,6 +20,25 @@ class TxEngines
         }
     end
 
+    # TxEngines::defaultEngine(uuid = nil)
+    def self.defaultEngine(uuid = nil)
+        uuid = uuid || SecureRandom.hex
+        {
+            "uuid"          => uuid,
+            "type"          => "daily-recovery-time",
+            "hours"         => 1,
+            "lastResetTime" => Time.new.to_i
+        }
+    end
+
+    # TxEngines::interactivelyMakeEngine(uuid = nil)
+    def self.interactivelyMakeEngine(uuid = nil)
+        engine = TxEngines::interactivelyMakeEngineOrNull(uuid = nil)
+        return engine if engine
+        puts "using default engine"
+        TxEngines::defaultEngine(uuid)
+    end
+
     # TxEngines::completionRatio(engine)
     def self.completionRatio(engine)
         if engine["type"] == "daily-time" then
