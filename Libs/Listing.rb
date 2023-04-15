@@ -566,8 +566,8 @@ class Listing
                 "lambda" => lambda { Waves::listingItems() }
             },
             {
-                "name" => "NxTasks::listingItemsNil(6)",
-                "lambda" => lambda { NxTasks::listingItemsNil(6) }
+                "name" => "NxTasks::listingItems()",
+                "lambda" => lambda { NxTasks::listingItems() }
             },
             {
                 "name" => "TheLine::getReference()",
@@ -665,7 +665,7 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems(),
             NxTasks::listingItemsPriority(),
-            NxTasks::listingItems(6),
+            NxTasks::listingItems(),
             TxContexts::items(),
             NxBoards::listingItems()
         ]

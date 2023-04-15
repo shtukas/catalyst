@@ -132,6 +132,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTasks::destroy(item["uuid"])
+                BankCore::put("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", 3600)
             end
             return
         end

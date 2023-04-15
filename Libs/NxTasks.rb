@@ -196,9 +196,11 @@ class NxTasks
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 
-    # NxTasks::isBoarded(item)
-    def self.isBoarded(item)
-        !item["boarduuid"].nil?
+    # NxTasks::boardlessItemsOrdered()
+    def self.boardlessItemsOrdered()
+        NxTasks::items()
+            .select{|item| item["boarduuid"].nil? }
+            .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
 
     # NxTasks::toString(item)
@@ -280,6 +282,14 @@ class NxTasks
         TxEngines::completionRatio(item["engine"]) 
     end
 
+    # NxTasks::performance()
+    def self.performance()
+        (-6..0)
+            .map{|i| BankCore::getValueAtDate("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", CommonUtils::nDaysInTheFuture(i))}
+            .inject(0, :+)
+            .to_f/3600
+    end
+
     # --------------------------------------------------
     # Listing Items
 
@@ -293,10 +303,9 @@ class NxTasks
             .sort{|i1, i2| BankUtils::recoveredAverageHoursPerDay(i1["uuid"]) <=> BankUtils::recoveredAverageHoursPerDay(i2["uuid"]) }
     end
 
-    # NxTasks::listingItemsNil(count)
-    def self.listingItemsNil(count)
-        NxTasks::bItemsOrdered(nil)
-            .select{|item| item["boarduuid"].nil? }
+    # NxTasks::listingItemsHead(count)
+    def self.listingItemsHead(count)
+        NxTasks::boardlessItemsOrdered()
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
             .reduce([]){|selected, i|
                 if selected.size >= count then
@@ -311,15 +320,41 @@ class NxTasks
             }
     end
 
-    # NxTasks::listingItems(count)
-    def self.listingItems(count)
-        items0 = NxTasks::listingItemsNil(3).select{|item| NxTasks::completionRatio(item) < 1 }
+    # NxTasks::listingItemsTail()
+    def self.listingItemsTail()
+        NxTasks::boardlessItemsOrdered()
+            .reversed
+            .reduce([]){|selected, i|
+                if selected.size >= 12 then
+                    selected
+                else
+                    if DoNotShowUntil::isVisible(i) then
+                        selected + [i]
+                    else
+                        selected
+                    end
+                end
+            }
+    end
+
+    # NxTasks::listingItems()
+    def self.listingItems()
+        items0 = NxTasks::listingItemsHead(3)
+                    .select{|item| NxTasks::completionRatio(item) < 1 }
+
         items1 = NxBoards::boardsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
                     .map{|board| NxTasks::bItemsOrdered(board)}
                     .flatten
-        items2 = NxTasks::listingItemsNil(count)
+
+        items2 = 
+            if NxTasks::performance() < 20 then
+                NxTasks::listingItemsHead(6)
+            else
+                NxTasks::listingItemsTail()
+            end
+
         (items0+items1+items2).map{|item|
             TxEngines::updateItemOrNothing(item)
         }
