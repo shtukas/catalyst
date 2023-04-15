@@ -21,7 +21,7 @@ class Listing
         [
             "on items         : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "makers           : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
-            "on specific types: engine (<n>) | holiday <n> | redate",
+            "on specific types: engine (<n>) # boards and tasks | redefine <n> # tasks | holiday <n> # boards | redate # ondate",
             "transmutation    : recast (<n>)",
             "divings          : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls          : start | start * | stop | stop * | pause | pursue",
@@ -278,6 +278,20 @@ class Listing
             object = N3Objects::getOrNull(uuid)
             object = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(object)))
             N3Objects::commit(object)
+            return
+        end
+
+        if Interpreting::match("redefine *", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "Only NxTask can be redefined"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            item = NxTasks::setHyperspatialCoordinates(item)
+            puts JSON.pretty_generate(item)
+            NxTasks::commit(item)
             return
         end
 

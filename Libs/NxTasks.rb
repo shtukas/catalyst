@@ -72,29 +72,37 @@ class NxTasks
         end
     end
 
+    # NxTasks::setHyperspatialCoordinates(item)
+    def self.setHyperspatialCoordinates(item)
+        board     = NxBoards::interactivelySelectOneOrNull()
+        boarduuid = board ? board["uuid"] : nil
+        position  = NxTasks::interactivelyDecidePosition2(board)
+        engine    = TxEngines::interactivelyMakeEngine()
+        priority  = NxTasks::interactivelyDecidePriority()
+
+        item["boarduuid"] = boarduuid
+        item["position"]  = position
+        item["engine"]    = engine
+        item["priority"]  = priority
+
+        item
+    end
+
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        uuid        = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board       = NxBoards::interactivelySelectOneOrNull()
-        boarduuid   = board ? board["uuid"] : nil
-        position    = NxTasks::interactivelyDecidePosition2(board)
-        engine      = TxEngines::interactivelyMakeEngine()
-        priority    = NxTasks::interactivelyDecidePriority()
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxTask",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-            "field11"     => coredataref,
-            "position"    => position,
-            "boarduuid"   => boarduuid,
-            "priority"    => priority,
-            "engine"      => engine
-        }
+
+        item = {}
+        item["uuid"] = SecureRandom.uuid,
+        item["mikuType"] = "NxTask",
+        item["unixtime"] = Time.new.to_i,
+        item["datetime"] = Time.new.utc.iso8601,
+        item["description"] = description,
+        item["field11"] = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+
+        item = NxTasks::setHyperspatialCoordinates(item)
+
         NxTasks::commit(item)
         item
     end
