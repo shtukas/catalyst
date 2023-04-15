@@ -249,7 +249,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            NxTasks::program(item)
+            NxTasks::program1(item)
             return
         end
 

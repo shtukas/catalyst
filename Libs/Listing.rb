@@ -19,15 +19,13 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "[all] .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "[makers] anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
-            "[TxEngine] engine",
-            "[transmutation] recast (<n>)",
-            "[divings] anniversaries | ondates | waves | todos | desktop | boards | time promises",
-            "[NxBalls] start | start * | stop | stop * | pause | pursue",
-            "[NxOndate] redate",
-            "[NxBoard] holiday <n>",
-            "[misc] search | speed | commands | mikuTypes | edit object <uuid>",
+            "on items         : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "makers           : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
+            "on specific types: engine (<n>) | holiday <n> | redate",
+            "transmutation    : recast (<n>)",
+            "divings          : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
+            "NxBalls          : start | start * | stop | stop * | pause | pursue",
+            "misc             : search | speed | commands | mikuTypes | edit object <uuid>",
         ].join("\n")
     end
 
@@ -495,6 +493,11 @@ class Listing
             return
         end
 
+        if Interpreting::match("tasks", input) then
+            NxTasks::program2()
+            return
+        end
+
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
@@ -601,8 +604,8 @@ class Listing
 
         results2 = [
             {
-                "name" => "Listing::printListing()",
-                "lambda" => lambda { Listing::printListing(ItemStore.new()) }
+                "name" => "Listing::program1()",
+                "lambda" => lambda { Listing::program1(ItemStore.new()) }
             },
             {
                 "name" => "TheLine::line()",
@@ -737,8 +740,8 @@ class Listing
         false
     end
 
-    # Listing::printListing(store)
-    def self.printListing(store)
+    # Listing::program1(store, items)
+    def self.program1(store, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -747,16 +750,15 @@ class Listing
         puts TheLine::line()
         spacecontrol.putsline ""
 
-        Listing::items()
+        items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store, item)
             }
-
     end
 
-    # Listing::program()
-    def self.program()
+    # Listing::program2()
+    def self.program2()
 
         initialCodeTrace = CommonUtils::stargateTraceCode()
 
@@ -820,7 +822,7 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printListing(store)
+            Listing::program1(store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

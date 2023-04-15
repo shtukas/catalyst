@@ -148,7 +148,7 @@ class NxBoards
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            break if input == ""
+            return if input == "exit"
 
             Listing::listingCommandInterpreter(input, store, nil)
         }

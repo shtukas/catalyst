@@ -37,7 +37,10 @@ class NxTasks
 
     # NxTasks::interactivelyDecideTopPosition()
     def self.interactivelyDecideTopPosition()
-        items = NxTasks::items().sort_by{|item| item["position"] }.first(30)
+        items = NxTasks::items()
+                    .select{|item| item["boarduuid"].nil? }
+                    .sort_by{|item| item["position"] }
+                    .first(30)
         return 1 if items.empty?
         items.each{|item| puts NxTasks::toString(item) }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
@@ -316,8 +319,8 @@ class NxTasks
         CoreData::access(item["field11"])
     end
 
-    # NxTasks::program(item)
-    def self.program(item)
+    # NxTasks::program1(item)
+    def self.program1(item)
         loop {
             puts NxTasks::toString(item)
             actions = ["set priority", "re-engine"]
@@ -331,6 +334,26 @@ class NxTasks
                 item["engine"] = TxEngines::interactivelyMakeEngineOrNull(item["engine"]["uuid"])
                 N3Objects::commit(item)
             end
+        }
+    end
+
+    # NxTasks::program2()
+    def self.program2()
+        loop {
+            store = ItemStore.new()
+
+            items = NxTasks::items()
+                    .select{|item| item["boarduuid"].nil? }
+                    .sort_by{|item| item["position"] }
+                    .first(50)
+
+            Listing::program1(store, items)
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+
+            Listing::listingCommandInterpreter(input, store, nil)
         }
     end
 
