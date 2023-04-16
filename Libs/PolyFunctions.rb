@@ -15,6 +15,10 @@ class PolyFunctions
                 "description" => "self's engine",
                 "number"      => item["engine"]["uuid"]
             }
+            accounts << {
+                "description" => "self's engine capsule",
+                "number"      => item["engine"]["capsule"]
+            }
         end
 
         if item["mikuType"] == "NxTask" then
@@ -41,6 +45,10 @@ class PolyFunctions
                 accounts << {
                     "description" => "#{board["description"]}'s engine",
                     "number"      => board["engine"]["uuid"]
+                }
+                accounts << {
+                    "description" => "#{board["description"]}'s engine capsule",
+                    "number"      => board["engine"]["capsule"]
                 }
             end
         end

@@ -15,5 +15,6 @@ TxEngine:
         "uuid"          : String
         "type"          : "weekly-time"
         "hours"         : Float
-        "lastResetTime" : Unixtime # only useful for "weekly-time"
+        "lastResetTime" : Unixtime # only useful for "weekly-time",
+        "capsule"       : String
     }

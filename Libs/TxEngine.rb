@@ -3,7 +3,7 @@ class TxEngines
 
     # TxEngines::interactivelySelectEngineTypeOrNull()
     def self.interactivelySelectEngineTypeOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["priority", "daily-recovery-time", "weekly-time"])
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["one sitting", "priority", "daily-recovery-time", "weekly-time"])
     end
 
     # TxEngines::interactivelyMakeEngineOrNull(uuid = nil)
@@ -17,6 +17,12 @@ class TxEngines
                 "type" => "priority",
             }
         end
+        if type == "one sitting" then
+            return {
+                "uuid" => uuid,
+                "type" => "one sitting",
+            }
+        end
         if type == "daily-recovery-time" then
             return {
                 "uuid"  => uuid,
@@ -26,9 +32,10 @@ class TxEngines
         end
         if type == "weekly-time" then
             return {
-                "uuid"  => uuid,
-                "type"  => "weekly-time",
-                "hours" => LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+                "uuid"    => uuid, # used for the completion ratio computation
+                "type"    => "weekly-time",
+                "hours"   => LucilleCore::askQuestionAnswerAsString("hours: ").to_f,
+                "capsule" => SecureRandom.hex # used for the time management
             }
         end
         raise "Houston (39), we have a problem."
@@ -58,6 +65,9 @@ class TxEngines
         if engine["type"] == "priority" then
             return 0
         end
+        if engine["type"] == "one sitting" then
+            return 0
+        end
         if engine["type"] == "daily-recovery-time" then
             return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]
         end
@@ -74,21 +84,25 @@ class TxEngines
         if engine["type"] == "priority" then
             return nil
         end
+        if engine["type"] == "one sitting" then
+            return nil
+        end
         if engine["type"] == "daily-recovery-time" then
             return nil
         end
         if engine["type"] == "weekly-time" then
-            return nil if BankCore::getValue(engine["uuid"]).to_f/3600 < engine["hours"]
+            return nil if BankCore::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
             return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
-            if BankCore::getValue(engine["uuid"]).to_f/3600 > 1.5*engine["hours"] then
+            if BankCore::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
                 overflow = 0.5*engine["hours"]*3600
                 puts "I am about to smooth engine: #{engine}, overflow: #{(overflow.to_f/3600).round(2)} hours (for description: #{description})"
                 LucilleCore::pressEnterToContinue()
-                NxTimePromises::smooth_effect(engine["uuid"], -overflow, 20)
+                NxTimePromises::smooth_effect(engine["capsule"], -overflow, 20)
+                return nil
             end
             puts "I am about to reset engine: #{engine} (for description: #{description})"
             LucilleCore::pressEnterToContinue()
-            BankCore::put(engine["uuid"], -engine["hours"]*3600)
+            BankCore::put(engine["capsule"], -engine["hours"]*3600)
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
@@ -97,7 +111,6 @@ class TxEngines
 
     # TxEngines::engineMaintenanceOrNothing(item)
     def self.engineMaintenanceOrNothing(item)
-        return item if item["engine"].nil?
         engine = TxEngines::updateEngineOrNull(item["description"], item["engine"])
         if engine then
             item["engine"] = engine
@@ -113,16 +126,19 @@ class TxEngines
         if engine["type"] == "priority" then
             return "(priority)"
         end
+        if engine["type"] == "one sitting" then
+            return "(one sitting)"
+        end
         if engine["type"] == "daily-recovery-time" then
             return "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)} %)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
-            strings << "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)} %"
+            strings << "(engine: today: #{(TxEngines::completionRatio(engine)*100).round(2)} %"
 
-            strings << ", #{(BankCore::getValue(engine["uuid"]).to_f/3600).round(2)} hours of #{engine["hours"]}"
+            strings << ", #{(BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours of #{engine["hours"]}"
 
-            hasReachedObjective = BankCore::getValue(engine["uuid"]) >= engine["hours"]*3600
+            hasReachedObjective = BankCore::getValue(engine["capsule"]) >= engine["hours"]*3600
             timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
             itHassBeenAWeek = timeSinceResetInDays >= 7
 
@@ -135,7 +151,7 @@ class TxEngines
             end
 
             if !hasReachedObjective and !itHassBeenAWeek then
-                strings << ", #{(engine["hours"] - BankCore::getValue(engine["uuid"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
+                strings << ", #{(engine["hours"] - BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
             end
 
             if !hasReachedObjective and itHassBeenAWeek then
