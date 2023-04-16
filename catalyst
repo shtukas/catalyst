@@ -1,3 +1,5 @@
-# encoding: UTF-8
-require_relative "Libs/loader.rb"
-Listing::program2()
+#!/bin/zsh
+
+cd ~/Galaxy/Software/github.com/shtukas/catalyst
+export RBENV_VERSION=3.2.0
+ruby catalyst-core
