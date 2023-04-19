@@ -192,10 +192,7 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        begin 
-            Blades::setAttribute(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
-        rescue
-        end
+        Blades::setAttribute(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::accessAndDone(anniversary)
