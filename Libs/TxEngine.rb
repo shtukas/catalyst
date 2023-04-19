@@ -32,10 +32,11 @@ class TxEngines
         end
         if type == "weekly-time" then
             return {
-                "uuid"    => uuid, # used for the completion ratio computation
-                "type"    => "weekly-time",
-                "hours"   => LucilleCore::askQuestionAnswerAsString("hours: ").to_f,
-                "capsule" => SecureRandom.hex # used for the time management
+                "uuid"          => uuid, # used for the completion ratio computation
+                "type"          => "weekly-time",
+                "hours"         => LucilleCore::askQuestionAnswerAsString("hours: ").to_f,
+                "lastResetTime" => 0,
+                "capsule"       => SecureRandom.hex # used for the time management
             }
         end
         raise "Houston (39), we have a problem."
