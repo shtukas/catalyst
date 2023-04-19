@@ -25,7 +25,7 @@ class Anniversaries
     def self.bladeFilepathToItem(filepath)
         item = {}
         item["uuid"] = Blades::getAttributeOrNull(filepath, "uuid")
-        item["mikuType"] = Blades::getAttributeOrNull(filepath, "NxAnniversary")
+        item["mikuType"] = Blades::getAttributeOrNull(filepath, "mikuType")
         item["unixtime"] = Blades::getAttributeOrNull(filepath, "unixtime")
         item["datetime"] = Blades::getAttributeOrNull(filepath, "datetime")
         item["description"] = Blades::getAttributeOrNull(filepath, "description")
