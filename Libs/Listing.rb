@@ -19,16 +19,18 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items         : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers           : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | float",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | context",
+            "",
             "specific types commands:",
             "    - boards : holiday <n> | engine (<n>)",
             "    - tasks  : position <n> | engine (<n>)",
             "    - ondate : redate",
-            "transmutation    : recast (<n>)",
-            "divings          : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
-            "NxBalls          : start | start * | stop | stop * | pause | pursue",
-            "misc             : search | speed | commands | mikuTypes | edit object <uuid>",
+            "",
+            "transmutation : recast (<n>)",
+            "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
+            "NxBalls       : start | start * | stop | stop * | pause | pursue",
+            "misc          : search | speed | commands | mikuTypes | edit object <uuid>",
         ].join("\n")
     end
 
@@ -393,7 +395,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("float", input) then
+        if Interpreting::match("context", input) then
             item = TxContexts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
