@@ -152,6 +152,8 @@ class Blades
     end
 end
 
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/MikuTypes.rb"
+
 # ------------------------------------------------------------
 
 require_relative "Anniversaries.rb"
