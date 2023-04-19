@@ -40,6 +40,13 @@ class CoreData
         end
         if referencetype == "open cycle" then
             fname = LucilleCore::askQuestionAnswerAsString("OpenCycle directory name: ")
+            if !fname.start_with?("20") then
+                fname = "#{CommonUtils::today()} #{fname}"
+            end
+            folderpath = "#{Config::pathToGalaxy()}/OpenCycles/#{fname}"
+            if !File.exist?(folderpath) then
+                FileUtils.mkdir(folderpath)
+            end
             return "open-cycle:#{fname}"
         end
         if referencetype == "unique string" then
