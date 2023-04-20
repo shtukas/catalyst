@@ -132,6 +132,10 @@ class TxProjects
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == ""
+            if input == "drop" then
+                TxDrops::interactivelyIssueNewOrNull(project["uuid"])
+                next
+            end
 
             Listing::listingCommandInterpreter(input, store, nil)
         }

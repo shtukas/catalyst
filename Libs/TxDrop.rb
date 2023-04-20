@@ -16,13 +16,13 @@ class TxDrops
         N3Objects::destroy(uuid)
     end
 
-    # TxDrops::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # TxDrops::interactivelyIssueNewOrNull(projectuuid = nil)
+    def self.interactivelyIssueNewOrNull(projectuuid = nil)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        project = TxProjects::interactivelySelectOne()
+        projectuuid = projectuuid || TxProjects::interactivelySelectOne()["uuid"]
         item = {
             "uuid"        => uuid,
             "mikuType"    => "TxDrop",
@@ -30,7 +30,7 @@ class TxDrops
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "projectuuid" => project ? project["uuid"] : nil
+            "projectuuid" => projectuuid
         }
         puts JSON.pretty_generate(item)
         TxDrops::commit(item)
