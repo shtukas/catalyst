@@ -66,8 +66,30 @@ class NxBoards
     def self.listingItems()
         NxBoards::items()
             .map{|item| TxEngines::engineMaintenanceOrNothing(item) }
-            .select{|board| NxBoards::boardContents(board).empty? or NxBalls::itemIsRunning(board) }
+            .select{|board| NxBoards::boardItems(board).empty? or NxBalls::itemIsRunning(board) }
             .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsRunning(board) }
+    end
+
+    # NxBoards::boardItems(board)
+    def self.boardItems(board)
+        [
+            NxFires::items(),
+            NxOndates::listingItems(),
+            Waves::listingItems(),
+            NxFloats::listingItems(),
+            NxTasks::listingItemsPriority(),
+            TxProjects::listingItems(),
+            NxTasks::boardItemsOrdered(board),
+        ]
+            .flatten
+            .select{|item| item["boarduuid"] == board["uuid"] }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
     end
 
     # ---------------------------------------------------------
@@ -104,21 +126,8 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::boardContents(board)
-    def self.boardContents(board)
-        [
-            NxFires::items(),
-            NxOndates::listingItems(),
-            Waves::listingItems(),
-            TxProjects::listingItems(),
-            NxTasks::boardItemsOrdered(board),
-        ]
-            .flatten
-            .select{|item| item["boarduuid"] == board["uuid"] }
-    end
-
-    # NxBoards::programBoardListing(board)
-    def self.programBoardListing(board)
+    # NxBoards::program1(board)
+    def self.program1(board)
 
         loop {
 
@@ -139,7 +148,7 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            NxBoards::boardContents(board)
+            NxBoards::boardItems(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))
@@ -153,13 +162,13 @@ class NxBoards
         }
     end
 
-    # NxBoards::programBoardActions(board)
-    def self.programBoardActions(board)
+    # NxBoards::program2(board)
+    def self.program2(board)
         loop {
             board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
             puts NxBoards::toString(board)
-            actions = ["start", "add time", "program(board)"]
+            actions = ["program(board)", "start", "add time"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "start" then
@@ -170,17 +179,17 @@ class NxBoards
                 PolyActions::addTimeToItem(board, timeInHours*3600)
             end
             if action == "program(board)" then
-                NxBoards::programBoardListing(board)
+                NxBoards::program1(board)
             end
         }
     end
 
-    # NxBoards::program()
-    def self.program()
+    # NxBoards::program3()
+    def self.program3()
         loop {
             board = NxBoards::interactivelySelectOneOrNull()
             return if board.nil?
-            NxBoards::programBoardActions(board)
+            NxBoards::program2(board)
         }
     end
 end

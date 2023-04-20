@@ -339,13 +339,16 @@ class NxTasks
         }
     end
 
+    # NxTasks::listingItemsPriority()
+    def self.listingItemsPriority()
+        NxTasks::items()
+            .select{|item| item["engine"]["type"] == "priority" }
+            .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
+    end
+
     # NxTasks::listingItems()
     def self.listingItems()
-        priorityItems = NxTasks::items()
-                            .select{|item| item["engine"]["type"] == "priority" }
-                            .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
-
-        priorityItems + NxTasks::club()
+        NxTasks::club()
     end
 
     # --------------------------------------------------

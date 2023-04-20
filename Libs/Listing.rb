@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float",
             "",
             "specific types commands:",
             "    - boards : holiday <n> | engine (<n>)",
@@ -138,7 +138,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxBoards::program()
+            NxBoards::program3()
             return
         end
 
@@ -412,6 +412,15 @@ class Listing
             item = TxDrops::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            BoardsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if Interpreting::match("float", input) then
+            item = NxFloats::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -685,6 +694,8 @@ class Listing
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
+            NxFloats::listingItems(),
+            NxTasks::listingItemsPriority(),
             TxProjects::listingItems(),
             NxTasks::listingItems(),
             NxBoards::listingItems()
@@ -692,7 +703,7 @@ class Listing
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
             .reduce([]){|selected, item|
-                if selected.map{|i| [i["uuid"], i["targetuuid"]].compact }.flatten.include?(item["uuid"]) then
+                if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
                     selected
                 else
                     selected + [item]
