@@ -110,7 +110,7 @@ class NxBoards
             NxFires::items(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            TxProjects::items(),
+            TxProjects::listingItems(),
             NxTasks::boardItemsOrdered(board),
         ]
             .flatten

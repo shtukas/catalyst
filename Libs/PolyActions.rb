@@ -27,7 +27,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxProject" then
-            TxProjects::program1(item)
+            TxProjects::access(item)
             return
         end
 

@@ -25,6 +25,7 @@ class TxProjects
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board = NxBoards::interactivelySelectOneOrNull()
         item = {
             "uuid"        => uuid,
@@ -32,6 +33,7 @@ class TxProjects
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
+            "field11"     => coredataref,
             "boarduuid"   => board ? board["uuid"] : nil
         }
         puts JSON.pretty_generate(item)
@@ -61,9 +63,42 @@ class TxProjects
         TxProjects::interactivelySelectOne()
     end
 
+    # TxProjects::listingItems()
+    def self.listingItems()
+        TxProjects::items().sort_by{|item| item["unixtime"] }
+    end
+
     # -----------------------------------------
     # Ops
     # -----------------------------------------
+
+    # TxProjects::access(project)
+    def self.access(project)
+        puts TxProjects::toString(project).green
+        if project["field11"] and TxDrops::projectDrops(project).size > 0 then
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["access CoreData payload", "access drops"])
+            return if action.nil?
+            if action == "access CoreData payload" then
+                CoreData::access(item["field11"])
+            end
+            if action == "access drops" then
+                TxProjects::program1(project)
+            end
+            return
+        end
+        if project["field11"].nil? and TxDrops::projectDrops(project).size > 0 then
+            TxProjects::program1(project)
+            return
+        end
+        if project["field11"] and TxDrops::projectDrops(project).size == 0 then
+            CoreData::access(item["field11"])
+            return
+        end
+        if project["field11"].nil? and TxDrops::projectDrops(project).size == 0 then
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+    end
 
     # TxProjects::program1(project)
     def self.program1(project)

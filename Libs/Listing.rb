@@ -685,7 +685,7 @@ class Listing
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
-            TxProjects::items(),
+            TxProjects::listingItems(),
             NxTasks::listingItems(),
             NxBoards::listingItems()
         ]
