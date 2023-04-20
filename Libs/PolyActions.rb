@@ -26,6 +26,16 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxProject" then
+            TxProjects::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "TxDrop" then
+            CoreData::access(item["field11"])
+            return
+        end
+
         if item["mikuType"] == "NxBoard" then
             NxBoards::programBoardListing(item)
             return
@@ -94,6 +104,33 @@ class PolyActions
         end
 
         if item["mikuType"] == "LambdX1" then
+            return
+        end
+
+        if item["mikuType"] == "TxProject" then
+            # We cannot done a project that still has drops
+            if TxDrops::projectDrops(item).size > 0 then
+                puts "Project '#{PolyFunctions::toString(item).green}' still has #{TxDrops::projectDrops(item).size} items. You cannot destroy it."
+                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["program(project)", "exit"])
+                return if action.nil?
+                if action == "exit" then
+                    return
+                end
+                if action == "program(project)" then
+                    TxProjects::program1(item)
+                    return
+                end
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                N3Objects::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "TxDrop" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                N3Objects::destroy(item["uuid"])
+            end
             return
         end
 
@@ -177,6 +214,20 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxDrop" then
+            puts PolyFunctions::toString(item).green
+            first_time = (BankCore::getValue(item["uuid"]) == 0)
+            NxBalls::start(item)
+            NxTasks::access(item)
+            if first_time then
+                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green} ? '", true) then
+                    NxBalls::stop(item)
+                    N3Objects::destroy(item["uuid"])
+                end
+            end
+            return
+        end
+
         if item["mikuType"] == "NxBoard" then
             PolyActions::access(item)
             return
@@ -213,6 +264,11 @@ class PolyActions
         if item["mikuType"] == "PhysicalTarget" then
             PolyFunctions::toString(item).green
             PhysicalTargets::access(item)
+            return
+        end
+
+        if item["mikuType"] == "TxProject" then
+            PolyActions::access(item)
             return
         end
 

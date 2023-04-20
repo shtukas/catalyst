@@ -110,8 +110,8 @@ class NxBoards
             NxFires::items(),
             NxOndates::listingItems(),
             Waves::listingItems(),
+            TxProjects::items(),
             NxTasks::boardItemsOrdered(board),
-            TxContexts::items(),
         ]
             .flatten
             .select{|item| item["boarduuid"] == board["uuid"] }

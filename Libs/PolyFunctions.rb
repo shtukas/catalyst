@@ -35,6 +35,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "TxDrop" then
+            project = N3Objects::getOrNull(item["projectuuid"])
+            if project then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(project)
+            end
+        end
+
         if item["boarduuid"] then
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
@@ -83,8 +90,11 @@ class PolyFunctions
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
         end
-        if item["mikuType"] == "TxContext" then
-            return TxContexts::toString(item)
+        if item["mikuType"] == "TxDrop" then
+            return TxDrops::toString(item)
+        end
+        if item["mikuType"] == "TxProject" then
+            return TxProjects::toString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
