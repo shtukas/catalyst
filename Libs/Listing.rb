@@ -686,7 +686,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        [
+        items = [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             DevicesBackups::listingItems(),
@@ -709,6 +709,8 @@ class Listing
                     selected + [item]
                 end
             }
+        i1, i2 = items.partition{|item| NxBalls::itemIsActive(item) }
+        i1 + i2
     end
 
     # Listing::itemToListingLine(store or nil, item)
