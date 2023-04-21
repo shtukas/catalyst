@@ -114,8 +114,8 @@ class PolyActions
 
         if item["mikuType"] == "NxClique" then
             # We cannot done a project that still has drops
-            if TxDrops::projectDrops(item).size > 0 then
-                puts "Project '#{PolyFunctions::toString(item).green}' still has #{TxDrops::projectDrops(item).size} items. You cannot destroy it."
+            if NxCliques::cliqueMembers(item).size > 0 then
+                puts "Project '#{PolyFunctions::toString(item).green}' still has #{NxCliques::cliqueMembers(item).size} items. You cannot destroy it."
                 action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["program(project)", "exit"])
                 return if action.nil?
                 if action == "exit" then

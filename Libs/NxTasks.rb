@@ -189,6 +189,7 @@ class NxTasks
     # NxTasks::boardItemsOrdered(board)
     def self.boardItemsOrdered(board)
         NxTasks::items()
+            .select{|item| item["cliqueuuid"].nil? }
             .select{|item| item["boarduuid"] == board["uuid"] }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end
@@ -196,6 +197,7 @@ class NxTasks
     # NxTasks::boardlessItemsOrdered()
     def self.boardlessItemsOrdered()
         NxTasks::items()
+            .select{|item| item["cliqueuuid"].nil? }
             .select{|item| item["boarduuid"].nil? }
             .sort{|i1, i2| i1["position"] <=> i2["position"] }
     end

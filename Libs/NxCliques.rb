@@ -68,6 +68,13 @@ class NxCliques
         NxCliques::items().sort_by{|item| item["unixtime"] }
     end
 
+    # NxCliques::cliqueMembers(clique)
+    def self.cliqueMembers(clique)
+        NxTasks::items().select{|item|
+            item["cliqueuuid"] == clique["uuid"]
+        }
+    end
+
     # -----------------------------------------
     # Ops
     # -----------------------------------------
@@ -76,7 +83,7 @@ class NxCliques
     def self.access(project)
         loop {
             puts NxCliques::toString(project).green
-            if project["field11"] and TxDrops::projectDrops(project).size > 0 then
+            if project["field11"] and NxCliques::cliqueMembers(project).size > 0 then
                 action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["access CoreData payload", "access drops"])
                 return if action.nil?
                 if action == "access CoreData payload" then
@@ -87,15 +94,15 @@ class NxCliques
                 end
                 return
             end
-            if project["field11"].nil? and TxDrops::projectDrops(project).size > 0 then
+            if project["field11"].nil? and NxCliques::cliqueMembers(project).size > 0 then
                 NxCliques::program1(project)
                 return
             end
-            if project["field11"] and TxDrops::projectDrops(project).size == 0 then
+            if project["field11"] and NxCliques::cliqueMembers(project).size == 0 then
                 CoreData::access(item["field11"])
                 return
             end
-            if project["field11"].nil? and TxDrops::projectDrops(project).size == 0 then
+            if project["field11"].nil? and NxCliques::cliqueMembers(project).size == 0 then
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -105,7 +112,7 @@ class NxCliques
     # NxCliques::program1(project)
     def self.program1(project)
         # We are running a listing program with the project's drops
-        TxDrops::projectDrops(project)
+        NxCliques::cliqueMembers(project)
         loop {
 
             system("clear")
@@ -125,7 +132,7 @@ class NxCliques
 
             spacecontrol.putsline ""
 
-            TxDrops::projectDrops(project)
+            NxCliques::cliqueMembers(project)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))
@@ -150,5 +157,27 @@ class NxCliques
             return if project.nil?
             NxCliques::program1(project)
         }
+    end
+end
+
+class CliquesAndItems
+
+    # CliquesAndItems::attachToItem(item, clique or nil)
+    def self.attachToItem(item, clique)
+        return if clique.nil?
+        item["cliqueuuid"] = clique["uuid"]
+        N3Objects::commit(item)
+    end
+
+    # CliquesAndItems::askAndMaybeAttach(item)
+    def self.askAndMaybeAttach(item)
+        return item if item["cliqueuuid"]
+        return item if item["mikuType"] == "NxClique"
+        return item if item["mikuType"] == "NxBoard"
+        clique = NxCliques::interactivelySelectOneOrNull()
+        return item if clique.nil?
+        item["cliqueuuid"] = clique["uuid"]
+        N3Objects::commit(item)
+        item
     end
 end

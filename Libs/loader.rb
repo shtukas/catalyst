@@ -205,7 +205,6 @@ require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
 require_relative "NxCliques.rb"
 require_relative "TxEngine.rb"
-require_relative "TxDrop.rb"
 
 require_relative "Waves.rb"
 

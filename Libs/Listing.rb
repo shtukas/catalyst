@@ -19,7 +19,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | set board (<n>) | set clique (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float",
             "",
             "specific types commands:",
@@ -122,18 +122,33 @@ class Listing
             return
         end
 
-        if Interpreting::match("board", input) then
+        if Interpreting::match("set board", input) then
             item = store.getDefault()
             return if item.nil?
             BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
-        if Interpreting::match("board *", input) then
+        if Interpreting::match("set board *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
             BoardsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if Interpreting::match("set clique", input) then
+            item = store.getDefault()
+            return if item.nil?
+            CliquesAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if Interpreting::match("set clique *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            CliquesAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -409,10 +424,10 @@ class Listing
         end
 
         if Interpreting::match("drop", input) then
-            item = TxDrops::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
+            CliquesAndItems::askAndMaybeAttach(item)
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
