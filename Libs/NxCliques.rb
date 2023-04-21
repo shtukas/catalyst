@@ -47,7 +47,7 @@ class NxCliques
 
     # NxCliques::toString(item)
     def self.toString(item)
-        "#{"(project)".red} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(clique) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # NxCliques::interactivelySelectOneOrNull()
