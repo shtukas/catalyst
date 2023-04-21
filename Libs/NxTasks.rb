@@ -204,11 +204,11 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        if item["engine"]["type"] == "priority" then
-            return "(#{"priority".green}, performance: #{BankUtils::recoveredAverageHoursPerDay(item["uuid"]).round(2)}) #{item["description"]}"
+        if item["priority"] then
+            "(task) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        else
+            "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
         end
-
-        "(task) (@ #{item["position"].round(3)}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxTasks::startPosition()
@@ -341,13 +341,6 @@ class NxTasks
         }
     end
 
-    # NxTasks::listingItemsPriority()
-    def self.listingItemsPriority()
-        NxTasks::items()
-            .select{|item| item["engine"]["type"] == "priority" }
-            .sort_by{|item| BankUtils::recoveredAverageHoursPerDay(item["uuid"]) }
-    end
-
     # NxTasks::listingItems()
     def self.listingItems()
         NxTasks::club()
@@ -359,24 +352,6 @@ class NxTasks
     # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["field11"])
-    end
-
-    # NxTasks::program1(item)
-    def self.program1(item)
-        loop {
-            puts NxTasks::toString(item)
-            actions = ["set priority", "re-engine"]
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
-            break if action.nil?
-            if action == "set priority" then
-                item["priority"] = LucilleCore::askQuestionAnswerAsString("priority: ").to_f
-                N3Objects::commit(item)
-            end
-            if action == "re-engine" then
-                item["engine"] = TxEngines::interactivelyMakeEngineOrNull(item["engine"]["uuid"])
-                N3Objects::commit(item)
-            end
-        }
     end
 
     # NxTasks::program2()

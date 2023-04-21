@@ -1,11 +1,6 @@
 TxEngine:
 
     {
-        "uuid" : String
-        "type" : "priority"
-    }
-
-    {
         "uuid"  : String
         "type"  : "daily-recovery-time"
         "hours" : Float

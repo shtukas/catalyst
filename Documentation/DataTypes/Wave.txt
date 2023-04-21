@@ -12,6 +12,8 @@ Wave:
                          Indicates on which days the wave can show up
     "field11"          : CoreData reference string
 
+    "interruption"     : boolean, indicates if the item is interruption (priority)
+
 Nx46 {
     "type"  : Nx46Type
     "value" : Nx46Value

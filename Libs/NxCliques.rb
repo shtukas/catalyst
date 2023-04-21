@@ -34,7 +34,8 @@ class NxCliques
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "boarduuid"   => board ? board["uuid"] : nil
+            "boarduuid"   => board ? board["uuid"] : nil,
+            "engine"      => TxEngines::interactivelyMakeEngineOrNull()
         }
         puts JSON.pretty_generate(item)
         NxCliques::commit(item)
@@ -47,7 +48,7 @@ class NxCliques
 
     # NxCliques::toString(item)
     def self.toString(item)
-        "(clique) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(clique) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{TxEngines::toString(item["engine"])} (#{NxCliques::cliqueMembers(item).count} items)"
     end
 
     # NxCliques::interactivelySelectOneOrNull()

@@ -3,26 +3,14 @@ class TxEngines
 
     # TxEngines::interactivelySelectEngineTypeOrNull()
     def self.interactivelySelectEngineTypeOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["one sitting", "priority", "daily-recovery-time", "weekly-time"])
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["null (default)", "daily-recovery-time", "weekly-time"])
     end
 
     # TxEngines::interactivelyMakeEngineOrNull(uuid = nil)
     def self.interactivelyMakeEngineOrNull(uuid = nil)
         uuid = uuid || SecureRandom.hex
         type = TxEngines::interactivelySelectEngineTypeOrNull()
-        return nil if type.nil?
-        if type == "priority" then
-            return {
-                "uuid" => uuid,
-                "type" => "priority",
-            }
-        end
-        if type == "one sitting" then
-            return {
-                "uuid" => uuid,
-                "type" => "one sitting",
-            }
-        end
+        return nil if (type.nil? or type == "null (default)")
         if type == "daily-recovery-time" then
             return {
                 "uuid"  => uuid,
@@ -63,11 +51,8 @@ class TxEngines
 
     # TxEngines::completionRatio(engine)
     def self.completionRatio(engine)
-        if engine["type"] == "priority" then
-            return 0
-        end
         if engine["type"] == "one sitting" then
-            return 0
+            engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
             return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]
@@ -82,11 +67,8 @@ class TxEngines
 
     # TxEngines::updateEngineOrNull(description, engine)
     def self.updateEngineOrNull(description, engine)
-        if engine["type"] == "priority" then
-            return nil
-        end
         if engine["type"] == "one sitting" then
-            return nil
+            engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
             return nil
@@ -124,11 +106,8 @@ class TxEngines
 
     # TxEngines::toString(engine)
     def self.toString(engine)
-        if engine["type"] == "priority" then
-            return "(priority)"
-        end
         if engine["type"] == "one sitting" then
-            return "(one sitting)"
+            engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
             return "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)} %)"

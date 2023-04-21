@@ -36,9 +36,9 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "TxDrop" then
-            project = N3Objects::getOrNull(item["projectuuid"])
-            if project then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(project)
+            clique = N3Objects::getOrNull(item["cliqueuuid"])
+            if clique then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(clique)
             end
         end
 

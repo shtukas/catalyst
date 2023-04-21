@@ -73,11 +73,13 @@ class NxBoards
     # NxBoards::boardItems(board)
     def self.boardItems(board)
         [
-            NxFires::items(),
             NxOndates::listingItems(),
             Waves::listingItems(),
+
             NxFloats::listingItems(),
-            NxTasks::listingItemsPriority(),
+
+            NxFires::items(),
+            PriorityItems::listingItems(),
             NxCliques::listingItems(),
             NxTasks::boardItemsOrdered(board),
         ]

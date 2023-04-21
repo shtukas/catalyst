@@ -133,6 +133,7 @@ class Waves
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption (priority) ? ")
         item = {
             "uuid"             => uuid,
             "mikuType"         => "Wave",
@@ -141,7 +142,8 @@ class Waves
             "description"      => description,
             "nx46"             => nx46,
             "lastDoneDateTime" => "#{Time.new.strftime("%Y")}-01-01T00:00:00Z",
-            "field11"          => coredataref
+            "field11"          => coredataref,
+            "interruption"     => interruption
         }
         N3Objects::commit(item)
         item
@@ -168,6 +170,22 @@ class Waves
             }
     end
 
+    # Waves::listingNonInterruptionItemsWithCircuitBreaker()
+    def self.listingNonInterruptionItemsWithCircuitBreaker()
+        return [] if Waves::countDoneOverThePast2Hours() > 4
+        Waves::listingItems().select{|item| !item["interruption"] }
+    end
+
+    # Waves::listingInterruptionItems()
+    def self.listingInterruptionItems()
+        Waves::listingItems().select{|item| item["interruption"] }
+    end
+
+    # Waves::countDoneOverThePast2Hours()
+    def self.countDoneOverThePast2Hours()
+        Waves::items().select{|item| (Time.new.to_i - (item["lastDoneUnixtime"] || 0)) < 3600*2}.size
+    end
+
     # -------------------------------------------------------------------------
     # Operations
 
@@ -177,6 +195,7 @@ class Waves
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
         item["lastDoneDateTime"] = Time.now.utc.iso8601
+        item["lastDoneUnixtime"] = Time.new.to_i
         item["parking"] = nil
         N3Objects::commit(item)
 
@@ -184,6 +203,7 @@ class Waves
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
         puts "not shown until: #{Time.at(unixtime).to_s}"
         DoNotShowUntil::setUnixtime(item, unixtime)
+
     end
 
     # Waves::program()

@@ -7,3 +7,4 @@ NxClique:
     "description" : String
     "field11"     : CoreData reference string
     "boarduuid"   : String or null
+    "engine"      : TxEngine

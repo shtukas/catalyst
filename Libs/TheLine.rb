@@ -60,6 +60,7 @@ class TheLine
         TheLine::referenceMonitor()
         reference = TheLine::getReference()
         current = TheLine::getCurrentCount()
-        "> (inventory: #{current}, #{(current.to_f/reference["count"]).round(5)}, reference: #{reference["count"]} @ #{reference["datetime"]}) (perf: #{NxTasks::performance().round(2)})"
+        performance = "(perf: #{NxTasks::performance().round(2)})".green
+        "> #{performance} (inventory: #{current}, #{(current.to_f/reference["count"]).round(5)}, reference: #{reference["count"]} @ #{reference["datetime"]})"
     end
 end

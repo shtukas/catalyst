@@ -19,12 +19,13 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | set board (<n>) | set clique (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | set board (<n>) | set clique (<n>) | unboard <n> | priority <n> | note (<n>) | coredata <n> | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float",
             "",
             "specific types commands:",
-            "    - boards : holiday <n> | engine (<n>)",
-            "    - tasks  : position <n> | engine (<n>)",
+            "    - boards  : holiday <n> | engine (<n>)",
+            "    - tasks   : position <n> | engine (<n>)",
+            "    - cliques : engine (<n>)",
             "    - ondate : redate",
             "",
             "transmutation : recast (<n>)",
@@ -152,6 +153,15 @@ class Listing
             return
         end
 
+        if Interpreting::match("priority *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item["priority"] = true
+            N3Objects::commit(item)
+            return
+        end
+
         if Interpreting::match("boards", input) then
             NxBoards::program3()
             return
@@ -248,8 +258,8 @@ class Listing
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
-                puts "Only NxBoard and NxTask are carrying engine"
+            if !["NxBoard", "NxTask", "NxCliques"].include?(item["mikuType"]) then
+                puts "Only NxBoard, NxTask and NxCliques are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -706,12 +716,15 @@ class Listing
             Anniversaries::listingItems(),
             DevicesBackups::listingItems(),
             Desktop::listingItems(),
+
             NxOndates::listingItems(),
-            Waves::listingItems(),
+            Waves::listingInterruptionItems(),
+            Waves::listingNonInterruptionItemsWithCircuitBreaker(),
 
             NxFloats::listingItems(),
+
             NxFires::items(),
-            NxTasks::listingItemsPriority(),
+            PriorityItems::listingItems(),
             NxCliques::listingItems(),
             NxTasks::listingItems(),
 
@@ -761,7 +774,17 @@ class Listing
         }).call(item)
 
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{skip}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px01Px02#{skip}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        if item["priority"] then
+            line = line.gsub("Px01", "(priority) ".red)
+        else
+            line = line.gsub("Px01", "")
+        end
+        if item["interruption"] then
+            line = line.gsub("Px02", "(priority) ".red)
+        else
+            line = line.gsub("Px02", "")
+        end
         if Listing::shouldBeInYellow(item) then
             line = line.yellow
         end
@@ -776,6 +799,7 @@ class Listing
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "NxClique"
         return false if item["mikuType"] == "DesktopTx1"
+        return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
 
         skipDirectiveOrNull = lambda {|item|
