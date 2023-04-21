@@ -31,7 +31,7 @@ class Listing
             "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit object <uuid>",
+            "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
     end
 
@@ -303,11 +303,12 @@ class Listing
             return
         end
 
-        if Interpreting::match("edit object *", input) then
-            _, _, uuid = Interpreting::tokenizer(input)
-            object = N3Objects::getOrNull(uuid)
-            object = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(object)))
-            N3Objects::commit(object)
+        if Interpreting::match("edit *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
+            N3Objects::commit(item)
             return
         end
 
