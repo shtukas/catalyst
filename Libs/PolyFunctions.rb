@@ -96,8 +96,8 @@ class PolyFunctions
         if item["mikuType"] == "TxDrop" then
             return TxDrops::toString(item)
         end
-        if item["mikuType"] == "TxProject" then
-            return TxProjects::toString(item)
+        if item["mikuType"] == "NxClique" then
+            return NxCliques::toString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)

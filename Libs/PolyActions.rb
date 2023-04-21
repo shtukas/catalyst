@@ -31,8 +31,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxProject" then
-            TxProjects::access(item)
+        if item["mikuType"] == "NxClique" then
+            NxCliques::access(item)
             return
         end
 
@@ -112,7 +112,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxProject" then
+        if item["mikuType"] == "NxClique" then
             # We cannot done a project that still has drops
             if TxDrops::projectDrops(item).size > 0 then
                 puts "Project '#{PolyFunctions::toString(item).green}' still has #{TxDrops::projectDrops(item).size} items. You cannot destroy it."
@@ -122,7 +122,7 @@ class PolyActions
                     return
                 end
                 if action == "program(project)" then
-                    TxProjects::program1(item)
+                    NxCliques::program1(item)
                     return
                 end
             end
@@ -286,7 +286,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxProject" then
+        if item["mikuType"] == "NxClique" then
             PolyActions::access(item)
             return
         end

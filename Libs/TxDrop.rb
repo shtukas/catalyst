@@ -22,7 +22,7 @@ class TxDrops
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        projectuuid = projectuuid || TxProjects::interactivelySelectOne()["uuid"]
+        projectuuid = projectuuid || NxCliques::interactivelySelectOne()["uuid"]
         item = {
             "uuid"        => uuid,
             "mikuType"    => "TxDrop",

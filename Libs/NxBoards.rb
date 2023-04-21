@@ -78,7 +78,7 @@ class NxBoards
             Waves::listingItems(),
             NxFloats::listingItems(),
             NxTasks::listingItemsPriority(),
-            TxProjects::listingItems(),
+            NxCliques::listingItems(),
             NxTasks::boardItemsOrdered(board),
         ]
             .flatten

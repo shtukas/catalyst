@@ -396,7 +396,7 @@ class Listing
         end
 
         if Interpreting::match("project", input) then
-            item = TxProjects::interactivelyIssueNewOrNull()
+            item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::askAndMaybeAttach(item)
@@ -404,7 +404,7 @@ class Listing
         end
 
         if Interpreting::match("projects", input) then
-            TxProjects::program2()
+            NxCliques::program2()
             return
         end
 
@@ -690,14 +690,16 @@ class Listing
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             DevicesBackups::listingItems(),
-            NxFires::items(),
             Desktop::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
+
             NxFloats::listingItems(),
+            NxFires::items(),
             NxTasks::listingItemsPriority(),
-            TxProjects::listingItems(),
+            NxCliques::listingItems(),
             NxTasks::listingItems(),
+
             NxBoards::listingItems()
         ]
             .flatten
@@ -757,7 +759,7 @@ class Listing
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if item["mikuType"] == "NxBoard"
-        return false if item["mikuType"] == "TxProject"
+        return false if item["mikuType"] == "NxClique"
         return false if item["mikuType"] == "DesktopTx1"
         return false if !DoNotShowUntil::isVisible(item)
 

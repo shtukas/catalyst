@@ -1,26 +1,26 @@
 
-class TxProjects
+class NxCliques
 
     # -----------------------------------------
     # IO
     # -----------------------------------------
 
-    # TxProjects::items()
+    # NxCliques::items()
     def self.items()
-        N3Objects::getMikuType("TxProject")
+        N3Objects::getMikuType("NxClique")
     end
 
-    # TxProjects::commit(item)
+    # NxCliques::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # TxProjects::destroy(uuid)
+    # NxCliques::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
 
-    # TxProjects::interactivelyIssueNewOrNull()
+    # NxCliques::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -29,7 +29,7 @@ class TxProjects
         board = NxBoards::interactivelySelectOneOrNull()
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "TxProject",
+            "mikuType"    => "NxClique",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
@@ -37,7 +37,7 @@ class TxProjects
             "boarduuid"   => board ? board["uuid"] : nil
         }
         puts JSON.pretty_generate(item)
-        TxProjects::commit(item)
+        NxCliques::commit(item)
         item
     end
 
@@ -45,62 +45,64 @@ class TxProjects
     # Data
     # -----------------------------------------
 
-    # TxProjects::toString(item)
+    # NxCliques::toString(item)
     def self.toString(item)
         "#{"(project)".red} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
-    # TxProjects::interactivelySelectOneOrNull()
+    # NxCliques::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = TxProjects::items()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| TxProjects::toString(item) })
+        items = NxCliques::items()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| NxCliques::toString(item) })
     end
 
-    # TxProjects::interactivelySelectOne()
+    # NxCliques::interactivelySelectOne()
     def self.interactivelySelectOne()
-        project = TxProjects::interactivelySelectOneOrNull()
+        project = NxCliques::interactivelySelectOneOrNull()
         return project if project
-        TxProjects::interactivelySelectOne()
+        NxCliques::interactivelySelectOne()
     end
 
-    # TxProjects::listingItems()
+    # NxCliques::listingItems()
     def self.listingItems()
-        TxProjects::items().sort_by{|item| item["unixtime"] }
+        NxCliques::items().sort_by{|item| item["unixtime"] }
     end
 
     # -----------------------------------------
     # Ops
     # -----------------------------------------
 
-    # TxProjects::access(project)
+    # NxCliques::access(project)
     def self.access(project)
-        puts TxProjects::toString(project).green
-        if project["field11"] and TxDrops::projectDrops(project).size > 0 then
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["access CoreData payload", "access drops"])
-            return if action.nil?
-            if action == "access CoreData payload" then
+        loop {
+            puts NxCliques::toString(project).green
+            if project["field11"] and TxDrops::projectDrops(project).size > 0 then
+                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["access CoreData payload", "access drops"])
+                return if action.nil?
+                if action == "access CoreData payload" then
+                    CoreData::access(item["field11"])
+                end
+                if action == "access drops" then
+                    NxCliques::program1(project)
+                end
+                return
+            end
+            if project["field11"].nil? and TxDrops::projectDrops(project).size > 0 then
+                NxCliques::program1(project)
+                return
+            end
+            if project["field11"] and TxDrops::projectDrops(project).size == 0 then
                 CoreData::access(item["field11"])
+                return
             end
-            if action == "access drops" then
-                TxProjects::program1(project)
+            if project["field11"].nil? and TxDrops::projectDrops(project).size == 0 then
+                LucilleCore::pressEnterToContinue()
+                return
             end
-            return
-        end
-        if project["field11"].nil? and TxDrops::projectDrops(project).size > 0 then
-            TxProjects::program1(project)
-            return
-        end
-        if project["field11"] and TxDrops::projectDrops(project).size == 0 then
-            CoreData::access(item["field11"])
-            return
-        end
-        if project["field11"].nil? and TxDrops::projectDrops(project).size == 0 then
-            LucilleCore::pressEnterToContinue()
-            return
-        end
+        }
     end
 
-    # TxProjects::program1(project)
+    # NxCliques::program1(project)
     def self.program1(project)
         # We are running a listing program with the project's drops
         TxDrops::projectDrops(project)
@@ -115,7 +117,7 @@ class TxProjects
             store = ItemStore.new()
 
             store.register(project, false)
-            line = "(#{store.prefixString()}) #{TxProjects::toString(project)}#{NxBalls::nxballSuffixStatusIfRelevant(project)}"
+            line = "(#{store.prefixString()}) #{NxCliques::toString(project)}#{NxBalls::nxballSuffixStatusIfRelevant(project)}"
             if NxBalls::itemIsActive(project) then
                 line = line.green
             end
@@ -141,12 +143,12 @@ class TxProjects
         }
     end
 
-    # TxProjects::program2()
+    # NxCliques::program2()
     def self.program2()
         loop {
-            project = TxProjects::interactivelySelectOneOrNull()
+            project = NxCliques::interactivelySelectOneOrNull()
             return if project.nil?
-            TxProjects::program1(project)
+            NxCliques::program1(project)
         }
     end
 end
