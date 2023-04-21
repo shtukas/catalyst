@@ -714,7 +714,6 @@ class Listing
         items = [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
-            DevicesBackups::listingItems(),
             Desktop::listingItems(),
 
             NxOndates::listingItems(),
@@ -725,6 +724,7 @@ class Listing
 
             NxFires::items(),
             PriorityItems::listingItems(),
+            DevicesBackups::listingItems(),
             NxCliques::listingItems(),
             NxTasks::listingItems(),
 
