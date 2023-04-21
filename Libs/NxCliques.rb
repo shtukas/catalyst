@@ -79,30 +79,30 @@ class NxCliques
     # Ops
     # -----------------------------------------
 
-    # NxCliques::access(project)
-    def self.access(project)
+    # NxCliques::access(item)
+    def self.access(item)
         loop {
-            puts NxCliques::toString(project).green
-            if project["field11"] and NxCliques::cliqueMembers(project).size > 0 then
+            puts NxCliques::toString(item).green
+            if item["field11"] and NxCliques::cliqueMembers(item).size > 0 then
                 action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["access CoreData payload", "access drops"])
                 return if action.nil?
                 if action == "access CoreData payload" then
                     CoreData::access(item["field11"])
                 end
                 if action == "access drops" then
-                    NxCliques::program1(project)
+                    NxCliques::program1(item)
                 end
                 return
             end
-            if project["field11"].nil? and NxCliques::cliqueMembers(project).size > 0 then
-                NxCliques::program1(project)
+            if item["field11"].nil? and NxCliques::cliqueMembers(item).size > 0 then
+                NxCliques::program1(item)
                 return
             end
-            if project["field11"] and NxCliques::cliqueMembers(project).size == 0 then
+            if item["field11"] and NxCliques::cliqueMembers(item).size == 0 then
                 CoreData::access(item["field11"])
                 return
             end
-            if project["field11"].nil? and NxCliques::cliqueMembers(project).size == 0 then
+            if item["field11"].nil? and NxCliques::cliqueMembers(item).size == 0 then
                 LucilleCore::pressEnterToContinue()
                 return
             end
