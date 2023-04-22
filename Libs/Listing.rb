@@ -35,6 +35,20 @@ class Listing
         ].join("\n")
     end
 
+    # Listing::tmpskip1(item, hours = 1)
+    def self.tmpskip1(item, hours = 1)
+        directive = {
+            "unixtime"        => Time.new.to_f,
+            "durationInHours" => hours
+        }
+        item["tmpskip1"] = directive
+        puts JSON.pretty_generate(item)
+        N3Objects::commit(item)
+        # The backup items are dynamically generated and do not correspond to item
+        # in the database. We also put the skip directive to the cache
+        XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
+    end
+
     # Listing::listingCommandInterpreter(input, store, board or nil)
     def self.listingCommandInterpreter(input, store, board)
 
@@ -63,17 +77,7 @@ class Listing
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
-
-            directive = {
-                "unixtime"        => Time.new.to_f,
-                "durationInHours" => 1 # default duration
-            }
-            item["tmpskip1"] = directive
-            puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
-            # The backup items are dynamically generated and do not correspond to item
-            # in the database. We also put the skip directive to the cache
-            XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
+            Listing::tmpskip1(item)
             return
         end
 
@@ -749,9 +753,8 @@ class Listing
         i1 + i2
     end
 
-    # Listing::itemToListingLine(store or nil, item)
-    def self.itemToListingLine(store, item)
-
+    # Listing::skip(item)
+    def self.skip(item)
         skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
                 return item["tmpskip1"]
@@ -769,18 +772,18 @@ class Listing
             (Time.new.to_f < targetTime) ? targetTime : nil
         }
 
+        targetTime = skipTargetTimeOrNull.call(item)
+        if targetTime then
+            "(tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours) ".yellow
+        else
+            ""
+        end
+    end
 
-        skip = (lambda { |item|
-            targetTime = skipTargetTimeOrNull.call(item)
-            if targetTime then
-                "(tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours) ".yellow
-            else
-                ""
-            end
-        }).call(item)
-
+    # Listing::itemToListingLine(store or nil, item)
+    def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px01Px02#{skip}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px01Px02#{Listing::skip(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["priority"] then
             line = line.gsub("Px01", "(priority) ".red)
         else
@@ -950,7 +953,15 @@ class Listing
             end
             Listing::dataMaintenance()
             system('clear')
-            item = Listing::items().first
+            item = Listing::items().drop_while{|item| Listing::skip(item).size > 0 }.first
+
+            if item["mikuType"] == "NxFloat" then
+                puts "[Ack] #{PolyFunctions::toString(item).green}"
+                LucilleCore::pressEnterToContinue()
+                Listing::tmpskip1(item, 8)
+                next
+            end
+
             store = ItemStore.new()
             store.register(item, Listing::canBeDefault(item))
             puts Listing::itemToListingLine(store, item)
