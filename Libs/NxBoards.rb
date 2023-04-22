@@ -100,7 +100,7 @@ class NxBoards
 
     # NxBoards::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxBoards::items()
+        items = NxBoards::boardsOrdered()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
     end
 
