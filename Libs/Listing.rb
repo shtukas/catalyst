@@ -805,6 +805,8 @@ class Listing
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
+        return true if NxBalls::itemIsRunning(item)
+
         return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "NxClique"
         return false if item["mikuType"] == "DesktopTx1"
