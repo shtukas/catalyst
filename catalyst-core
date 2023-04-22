@@ -1,3 +1,13 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
-Listing::program2()
+
+
+loop {
+    action = LucilleCore::selectEntityFromListOfEntitiesOrNull("style", ["classic", "minigame"])
+    if action == "classic" then
+        Listing::program2()
+    end
+    if action == "minigame" then
+        Listing::program4()
+    end
+}

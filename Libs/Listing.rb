@@ -290,10 +290,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("exit", input) then
-            exit
-        end
-
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
@@ -974,6 +970,7 @@ class Listing
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
             next if input == ""
 
             Listing::listingCommandInterpreter(input, store, nil)
@@ -1002,9 +999,9 @@ class Listing
 
             loop {
                 PolyActions::start(item)
-                print "#{PolyFunctions::toString(item).green} $ (running...) (access, done, pause, commands) : "
+                print "#{PolyFunctions::toString(item).green} $ (running) (access/.., pause, done, commands, exit) : "
                 input = STDIN.gets.strip
-                if input == "access" then
+                if input == "access" or input == ".." then
                     PolyActions::access(item)
                     next
                 end
@@ -1014,7 +1011,7 @@ class Listing
                 end
                 if input == "pause" then
                     PolyActions::stop(item)
-                    print "#{PolyFunctions::toString(item).green} $ (paused...) (continue, stop) : "
+                    print "#{PolyFunctions::toString(item).green} $ (paused) (continue, stop) : "
                     input = STDIN.gets.strip
                     if input == "continue" then
                         next
@@ -1029,6 +1026,9 @@ class Listing
                         break if input == ""
                         Listing::listingCommandInterpreter(input, store, nil)
                     }
+                    break
+                end
+                if input == "exit" then
                     break
                 end
             }
