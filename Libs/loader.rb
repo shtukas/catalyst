@@ -154,6 +154,18 @@ end
 
 require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/MikuTypes.rb"
 
+=begin
+MikuTypes
+    MikuTypesCore::bladesEnumerator(roots)
+    MikuTypesCore::mikuTypedBladesEnumerator(roots)
+    MikuTypesCore::mikuTypeBladesEnumerator(roots, mikuType)
+    MikuTypesCore::scan(roots)
+    MikuTypesCore::scanMonitor(roots, periodInSeconds)
+    MikuTypesCore::mikuTypeFilepaths(mikuType)
+=end
+
+MikuTypesCore::scanMonitor(["#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Blades"], 3600)
+
 # ------------------------------------------------------------
 
 require_relative "Anniversaries.rb"

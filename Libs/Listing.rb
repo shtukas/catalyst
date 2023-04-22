@@ -904,11 +904,8 @@ class Listing
         end
     end
 
-    # Listing::program2()
-    def self.program2()
-
-        initialCodeTrace = CommonUtils::stargateTraceCode()
-
+    # Listing::launchNxBallMonitor()
+    def self.launchNxBallMonitor()
         Thread.new {
             loop {
                 sleep 60
@@ -921,6 +918,14 @@ class Listing
                     }
             }
         }
+    end
+
+    # Listing::program2()
+    def self.program2()
+
+        initialCodeTrace = CommonUtils::stargateTraceCode()
+
+        Listing::launchNxBallMonitor()
 
         loop {
 
@@ -946,6 +951,7 @@ class Listing
     # Listing::program4()
     def self.program4()
         initialCodeTrace = CommonUtils::stargateTraceCode()
+        Listing::launchNxBallMonitor()
         loop {
             if CommonUtils::stargateTraceCode() != initialCodeTrace then
                 puts "Code change detected"

@@ -38,8 +38,7 @@ class Anniversaries
 
     # Anniversaries::items()
     def self.items()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystData()}/Blades/")
-            .select{|filepath| filepath[-6, 6] == ".blade" }
+        MikuTypesCore::mikuTypeFilepaths("NxAnniversary")
             .map{|filepath| Anniversaries::bladeFilepathToItem(filepath) }
     end
 
