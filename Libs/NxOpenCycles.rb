@@ -26,7 +26,7 @@ class NxOpenCycles
                         "description" => description,
                         "field11"     => coredataref
                     }
-                    item = BoardsAndItems::askAndMaybeAttach(item)
+                    item = BoardsAndItems::maybeAskAndMaybeAttach(item)
                     puts JSON.pretty_generate(item)
                     N3Objects::commit(item)
                     File.open(itemfilepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
@@ -61,7 +61,7 @@ class NxOpenCycles
                             "boarduuid"   => nil,
                         }
                     end
-                    item = BoardsAndItems::askAndMaybeAttach(item)
+                    item = BoardsAndItems::maybeAskAndMaybeAttach(item)
                     N3Objects::commit(item)
                     File.open(itemfilepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
                 end

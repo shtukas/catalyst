@@ -205,9 +205,19 @@ class BoardsAndItems
         N3Objects::commit(item)
     end
 
-    # BoardsAndItems::askAndMaybeAttach(item)
+    # BoardsAndItems::maybeAskAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
+        return item if item["mikuType"] == "NxBoard"
         return item if item["boarduuid"]
+        board = NxBoards::interactivelySelectOneOrNull()
+        return item if board.nil?
+        item["boarduuid"] = board["uuid"]
+        N3Objects::commit(item)
+        item
+    end
+
+    # BoardsAndItems::askAndMaybeAttach(item)
+    def self.andMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?

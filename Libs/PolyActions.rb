@@ -214,6 +214,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBoard" then
+            puts "You cannot destroy a board by issuing a command. Do it in nslog."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end

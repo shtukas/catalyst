@@ -409,7 +409,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -422,7 +422,7 @@ class Listing
             item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -430,7 +430,7 @@ class Listing
             item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -451,7 +451,7 @@ class Listing
             item = NxFloats::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -489,7 +489,7 @@ class Listing
             item = NxTasks::makeFirstTask()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -564,7 +564,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -579,7 +579,7 @@ class Listing
             item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
             N3Objects::commit(item)
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -587,7 +587,7 @@ class Listing
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 

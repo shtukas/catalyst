@@ -29,7 +29,7 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxClique"
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::askAndMaybeAttach(item)
+                item = BoardsAndItems::maybeAskAndMaybeAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
@@ -40,7 +40,7 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxFire"
             if item["boarduuid"].nil? then
-                item = BoardsAndItems::askAndMaybeAttach(item)
+                item = BoardsAndItems::maybeAskAndMaybeAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
