@@ -59,7 +59,7 @@ class NxBoards
 
     # NxBoards::boardsOrdered()
     def self.boardsOrdered()
-        NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i2["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
+        NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
     # NxBoards::listingItems()
