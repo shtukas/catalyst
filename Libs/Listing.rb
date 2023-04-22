@@ -844,7 +844,7 @@ class Listing
         if item["mikuType"] == "NxTask" then
             return true if NxTasks::completionRatio(item) >= 1
         end
-        return true if item["mikuType"] == "Float"
+        return true if item["mikuType"] == "NxFloat"
         return true if !DoNotShowUntil::isVisible(item)
         false
     end
