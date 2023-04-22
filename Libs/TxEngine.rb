@@ -110,7 +110,7 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            return "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)} %)"
+            return "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)}% of daily: #{engine["hours"]} hours)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
