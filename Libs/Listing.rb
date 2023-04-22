@@ -1024,16 +1024,16 @@ class Listing
                     end
                 end
                 if input == "commands" then
+                    loop {
+                        input = LucilleCore::askQuestionAnswerAsString("> ")
+                        break if input == ""
+                        Listing::listingCommandInterpreter(input, store, nil)
+                    }
                     break
                 end
             }
 
             NxBalls::stop(item)
-
-
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            next if input == ""
-            Listing::listingCommandInterpreter(input, store, nil)
         }
     end
 end
