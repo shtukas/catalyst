@@ -31,7 +31,7 @@ class Listing
             "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n>",
+            "misc          : search | speed | commands | mikuTypes | edit <n> | mini game",
         ].join("\n")
     end
 
@@ -120,6 +120,11 @@ class Listing
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
+            return
+        end
+
+        if Interpreting::match("mini game", input) then
+            Listing::program4()
             return
         end
 
@@ -855,6 +860,47 @@ class Listing
             }
     end
 
+    # Listing::dataMaintenance()
+    def self.dataMaintenance()
+        if Config::isPrimaryInstance() then
+            LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
+                .each{|location|
+                    next if File.basename(location).start_with?(".")
+                    item = NxTasks::bufferInImport(location)
+                    puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
+                    LucilleCore::removeFileSystemLocation(location)
+                }
+        end
+
+        if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
+            generalpermission = false
+            count = 0
+            N3Objects::getall().each{|item|
+                next if item["boarduuid"].nil?
+                next if NxBoards::getItemOfNull(item["boarduuid"])
+                break if count > 100
+                puts "item: #{JSON.pretty_generate(item)}"
+                puts "could not find the board".green
+                if !generalpermission then
+                    puts "repairing ? ".green
+                    LucilleCore::pressEnterToContinue()
+                    generalpermission = true
+                end
+                item["boarduuid"] = nil
+                N3Objects::commit(item)
+                count = count + 1
+            }
+
+        end
+
+        if Config::isPrimaryInstance() then
+            NxTimePromises::operate()
+            N3Objects::fileManagement()
+            BankCore::fileManagement()
+            NxOpenCycles::makeNxTasks()
+        end
+    end
+
     # Listing::program2()
     def self.program2()
 
@@ -880,43 +926,7 @@ class Listing
                 break
             end
 
-            if Config::isPrimaryInstance() then
-                LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
-                    .each{|location|
-                        next if File.basename(location).start_with?(".")
-                        item = NxTasks::bufferInImport(location)
-                        puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
-                        LucilleCore::removeFileSystemLocation(location)
-                    }
-            end
-
-            if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
-                generalpermission = false
-                count = 0
-                N3Objects::getall().each{|item|
-                    next if item["boarduuid"].nil?
-                    next if NxBoards::getItemOfNull(item["boarduuid"])
-                    break if count > 100
-                    puts "item: #{JSON.pretty_generate(item)}"
-                    puts "could not find the board".green
-                    if !generalpermission then
-                        puts "repairing ? ".green
-                        LucilleCore::pressEnterToContinue()
-                        generalpermission = true
-                    end
-                    item["boarduuid"] = nil
-                    N3Objects::commit(item)
-                    count = count + 1
-                }
-
-            end
-
-            if Config::isPrimaryInstance() then
-                NxTimePromises::operate()
-                N3Objects::fileManagement()
-                BankCore::fileManagement()
-                NxOpenCycles::makeNxTasks()
-            end
+            Listing::dataMaintenance()
 
             store = ItemStore.new()
 
@@ -926,6 +936,26 @@ class Listing
             input = LucilleCore::askQuestionAnswerAsString("> ")
             next if input == ""
 
+            Listing::listingCommandInterpreter(input, store, nil)
+        }
+    end
+
+    # Listing::program4()
+    def self.program4()
+        initialCodeTrace = CommonUtils::stargateTraceCode()
+        loop {
+            if CommonUtils::stargateTraceCode() != initialCodeTrace then
+                puts "Code change detected"
+                break
+            end
+            Listing::dataMaintenance()
+            system('clear')
+            item = Listing::items().first
+            store = ItemStore.new()
+            store.register(item, Listing::canBeDefault(item))
+            puts Listing::itemToListingLine(store, item)
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            next if input == ""
             Listing::listingCommandInterpreter(input, store, nil)
         }
     end
