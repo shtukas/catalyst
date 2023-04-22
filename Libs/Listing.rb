@@ -994,15 +994,43 @@ class Listing
             item = Listing::items().drop_while{|item| Listing::skipfragment(item).size > 0 }.first
 
             if item["mikuType"] == "NxFloat" then
-                puts "[Ack] #{PolyFunctions::toString(item).green}"
-                LucilleCore::pressEnterToContinue()
+                print "#{PolyFunctions::toString(item).green} $ (enter for ack) : "
+                STDIN.gets
                 Listing::tmpskip1(item, 8)
                 next
             end
 
-            store = ItemStore.new()
-            store.register(item, Listing::canBeDefault(item))
-            puts Listing::itemToListingLine(store, item)
+            loop {
+                PolyActions::start(item)
+                print "#{PolyFunctions::toString(item).green} $ (running...) (access, done, pause, commands) : "
+                input = STDIN.gets.strip
+                if input == "access" then
+                    PolyActions::access(item)
+                    next
+                end
+                if input == "done" then
+                    PolyActions::done(item)
+                    break
+                end
+                if input == "pause" then
+                    PolyActions::stop(item)
+                    print "#{PolyFunctions::toString(item).green} $ (paused...) (continue, stop) : "
+                    input = STDIN.gets.strip
+                    if input == "continue" then
+                        next
+                    end
+                    if input == "stop" then
+                        break
+                    end
+                end
+                if input == "commands" then
+                    break
+                end
+            }
+
+            NxBalls::stop(item)
+
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             next if input == ""
             Listing::listingCommandInterpreter(input, store, nil)
