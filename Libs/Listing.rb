@@ -19,14 +19,14 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | set board (<n>) | set clique (<n>) | unboard <n> | priority <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | clique (<n>) | unboard <n> | priority <n> | note (<n>) | coredata <n> | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float | clique|new",
             "",
             "specific types commands:",
             "    - boards  : holiday <n> | engine (<n>)",
-            "    - tasks   : position <n> | engine (<n>)",
+            "    - tasks   : position <n> | engine (<n>) | clique (<n>)",
             "    - cliques : engine (<n>)",
-            "    - ondate : redate",
+            "    - ondate  : redate",
             "",
             "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
@@ -132,14 +132,14 @@ class Listing
             return
         end
 
-        if Interpreting::match("set board", input) then
+        if Interpreting::match("board", input) then
             item = store.getDefault()
             return if item.nil?
             BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
-        if Interpreting::match("set board *", input) then
+        if Interpreting::match("board *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
@@ -147,18 +147,37 @@ class Listing
             return
         end
 
-        if Interpreting::match("set clique", input) then
+        if Interpreting::match("clique", input) then
             item = store.getDefault()
             return if item.nil?
             CliquesAndItems::askAndMaybeAttach(item)
             return
         end
 
-        if Interpreting::match("set clique *", input) then
+        if Interpreting::match("clique *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
             CliquesAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if Interpreting::match("priority", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if !item["priority"] then
+                item["priority"] = true
+                N3Objects::commit(item)
+                return
+            end
+            if item["priority"] then
+                puts "this item already has a priority"
+                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["remove priority", "nothing (default)"])
+                if action == "remove priority" then
+                item["priority"] = false
+                N3Objects::commit(item)
+                end
+            end
             return
         end
 
@@ -166,8 +185,19 @@ class Listing
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            item["priority"] = true
-            N3Objects::commit(item)
+            if !item["priority"] then
+                item["priority"] = true
+                N3Objects::commit(item)
+                return
+            end
+            if item["priority"] then
+                puts "this item already has a priority"
+                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["remove priority", "nothing (default)"])
+                if action == "remove priority" then
+                item["priority"] = false
+                N3Objects::commit(item)
+                end
+            end
             return
         end
 
@@ -430,7 +460,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("project", input) then
+        if Interpreting::match("clique|new", input) then
             item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -753,8 +783,8 @@ class Listing
         i1 + i2
     end
 
-    # Listing::skip(item)
-    def self.skip(item)
+    # Listing::skipfragment(item)
+    def self.skipfragment(item)
         skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
                 return item["tmpskip1"]
@@ -783,7 +813,7 @@ class Listing
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px01Px02#{Listing::skip(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px01Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["priority"] then
             line = line.gsub("Px01", "(priority) ".red)
         else
@@ -806,7 +836,6 @@ class Listing
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if item["mikuType"] == "NxBoard"
-        return false if item["mikuType"] == "NxClique"
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
@@ -830,7 +859,7 @@ class Listing
 
         return false if skipTargetTimeOrNull.call(item)
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxTask" and !item["priority"] then
             return false if NxTasks::completionRatio(item) >= 1
         end
 
@@ -839,9 +868,10 @@ class Listing
 
     # Listing::shouldBeInYellow(item)
     def self.shouldBeInYellow(item)
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxTask" and !item["priority"] then
             return true if NxTasks::completionRatio(item) >= 1
         end
+        return true if item["mikuType"] == "NxFloat"
         return true if !DoNotShowUntil::isVisible(item)
         false
     end
@@ -959,7 +989,7 @@ class Listing
             end
             Listing::dataMaintenance()
             system('clear')
-            item = Listing::items().drop_while{|item| Listing::skip(item).size > 0 }.first
+            item = Listing::items().drop_while{|item| Listing::skipfragment(item).size > 0 }.first
 
             if item["mikuType"] == "NxFloat" then
                 puts "[Ack] #{PolyFunctions::toString(item).green}"
