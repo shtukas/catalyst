@@ -217,7 +217,7 @@ class BoardsAndItems
     end
 
     # BoardsAndItems::askAndMaybeAttach(item)
-    def self.andMaybeAttach(item)
+    def self.askAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
