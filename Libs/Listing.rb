@@ -944,6 +944,9 @@ class Listing
 
             Listing::dataMaintenance()
 
+            mode = Listing::getListingMode()
+            return if mode["type"] == "streaming"
+
             store = ItemStore.new()
 
             Listing::program1(store, Listing::items())
@@ -1116,6 +1119,8 @@ class Listing
                 break
             end
             Listing::dataMaintenance()
+            mode = Listing::getListingMode()
+            return if mode["type"] == "classic"
             item = Listing::items().drop_while{|item| Listing::skipfragment(item).size > 0 }.first
             Listing::program4Item(item)
         }
