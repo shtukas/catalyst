@@ -53,8 +53,6 @@ class TheLine
         ratio
     end
 
-
-
     # TheLine::line()
     def self.line()
         TheLine::referenceMonitor()

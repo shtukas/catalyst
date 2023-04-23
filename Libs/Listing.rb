@@ -1002,6 +1002,8 @@ class Listing
             }
         }
     end
+
+    # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::stargateTraceCode()
         Listing::launchNxBallMonitor()
