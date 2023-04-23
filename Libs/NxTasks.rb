@@ -240,7 +240,7 @@ class NxTasks
 
         # We have at least two differences
         average = differences.sum.to_f/differences.size
-        a1 = positions.zip(differences).select{|pair| pair[1] }
+        a1 = positions.zip(differences).select{|pair| !pair[1].nil? }
         position, difference = a1.select{|pair| pair[1] >= average }.first
 
         position + rand*difference

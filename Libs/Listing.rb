@@ -23,7 +23,7 @@ class Listing
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float | clique|new",
             "",
             "specific types commands:",
-            "    - boards  : holiday <n> | engine (<n>)",
+            "    - boards  : engine (<n>)",
             "    - tasks   : position <n> | engine (<n>) | clique (<n>)",
             "    - cliques : engine (<n>)",
             "    - ondate  : redate",
@@ -369,22 +369,6 @@ class Listing
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("holiday *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxBoard" then
-                puts "holiday only apply to NxBoards"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            unixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + 3600*3 # 3 am
-            if LucilleCore::askQuestionAnswerAsBoolean("> confirm today holiday for '#{PolyFunctions::toString(item).green}': ") then
-                DoNotShowUntil::setUnixtime(item, unixtime)
-            end
             return
         end
 
@@ -950,11 +934,7 @@ class Listing
 
     # Listing::program2()
     def self.program2()
-
         initialCodeTrace = CommonUtils::stargateTraceCode()
-
-        Listing::launchNxBallMonitor()
-
         loop {
 
             if CommonUtils::stargateTraceCode() != initialCodeTrace then
@@ -980,7 +960,6 @@ class Listing
     # Listing::program4()
     def self.program4()
         initialCodeTrace = CommonUtils::stargateTraceCode()
-        Listing::launchNxBallMonitor()
         loop {
             if CommonUtils::stargateTraceCode() != initialCodeTrace then
                 puts "Code change detected"
@@ -1021,6 +1000,23 @@ class Listing
                     return
                 end
             }
+        }
+    end
+    def self.main()
+        initialCodeTrace = CommonUtils::stargateTraceCode()
+        Listing::launchNxBallMonitor()
+        loop {
+            if CommonUtils::stargateTraceCode() != initialCodeTrace then
+                puts "Code change detected"
+                break
+            end
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("style", ["classic", "minigame"])
+            if action == "classic" then
+                Listing::program2()
+            end
+            if action == "minigame" then
+                Listing::program4()
+            end
         }
     end
 end

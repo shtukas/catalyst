@@ -170,7 +170,7 @@ class NxBoards
             board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
             puts NxBoards::toString(board)
-            actions = ["program(board)", "start", "add time"]
+            actions = ["program(board)", "start", "add time", "holiday"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "start" then
@@ -182,6 +182,12 @@ class NxBoards
             end
             if action == "program(board)" then
                 NxBoards::program1(board)
+            end
+            if action == "holiday" then
+                unixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + 3600*3 # 3 am
+                if LucilleCore::askQuestionAnswerAsBoolean("> confirm today holiday for '#{PolyFunctions::toString(board).green}': ") then
+                    DoNotShowUntil::setUnixtime(board, unixtime)
+                end
             end
         }
     end
