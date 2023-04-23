@@ -976,7 +976,17 @@ class Listing
                 next
             end
 
+            if item["mikuType"] == "PhysicalTarget" then
+                if LucilleCore::askQuestionAnswerAsBoolean("perform '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    PhysicalTargets::performUpdate(item)
+                end
+                next
+            end
+
             loop {
+
+                puts PolyFunctions::toString(item).green
+
                 PolyActions::start(item)
                 PolyActions::access(item)
 
