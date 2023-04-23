@@ -990,7 +990,7 @@ class Listing
                 PolyActions::start(item)
                 PolyActions::access(item)
 
-                print "#{PolyFunctions::toString(item).green} $ running $ (.. # natural next, pause, exit) : "
+                print "#{PolyFunctions::toString(item).green} $ running $ (.. # natural next, pause, classic) : "
                 input = STDIN.gets.strip
 
                 if input == ".." then 
@@ -1005,7 +1005,7 @@ class Listing
                     LucilleCore::pressEnterToContinue()
                     break
                 end
-                if input == "exit" then 
+                if input == "classic" then 
                     NxBalls::stop(item)
                     Listing::setListingMode({
                         "type" => "classic",
