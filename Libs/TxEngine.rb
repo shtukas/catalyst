@@ -63,9 +63,9 @@ class TxEngines
             day_completion_ratio = BankUtils::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/5)
             period_completion_ratio = BankCore::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
             if BankCore::getValue(engine["capsule"]) >= engine["hours"]*3600 then
-                [day_completion_ratio, period_completion_ratio].max
+                return [day_completion_ratio, period_completion_ratio].max
             else
-                [day_completion_ratio, period_completion_ratio].min
+                return [day_completion_ratio, period_completion_ratio].min
             end
         end
         raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
