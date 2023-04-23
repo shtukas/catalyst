@@ -957,6 +957,156 @@ class Listing
         }
     end
 
+    # Listing::program4Item(item)
+    def self.program4Item(item)
+        if item["mikuType"] == "NxFloat" then
+            print "#{PolyFunctions::toString(item).green} $ (enter for ack): "
+            STDIN.gets
+            NxBalls::stop(item)
+            Listing::tmpskip1(item, 8)
+            return
+        end
+        if item["mikuType"] == "PhysicalTarget" then
+            print "#{PolyFunctions::toString(item).green} (done, +code): "
+            input = STDIN.gets.strip
+            if input == "done" then
+                NxBalls::stop(item)
+                PhysicalTargets::performUpdate(item)
+                return
+            end
+            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item, unixtime)
+                return
+            end
+            NxBalls::stop(item)
+            return
+        end
+        if item["mikuType"] == "Wave" then
+            NxBalls::start(item)
+            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, classic): "
+            input = STDIN.gets.strip
+            if input == ".." then
+                PolyActions::access(item)
+                LucilleCore::pressEnterToContinue()
+                NxBalls::stop(item)
+                Waves::performWaveNx46WaveDone(item)
+                return
+            end
+            if input == "done" then
+                NxBalls::stop(item)
+                Waves::performWaveNx46WaveDone(item)
+                return
+            end
+            if input == "pause" then
+                NxBalls::stop(item)
+                system("clear")
+                puts "streaming paused"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if input == "done" then
+                NxBalls::stop(item)
+                Waves::performWaveNx46WaveDone(item)
+                return
+            end
+            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item, unixtime)
+                return
+            end
+            if input == "classic" then 
+                NxBalls::stop(item)
+                Listing::setListingMode({
+                    "type" => "classic",
+                    "hour" => Time.new.hour
+                })
+                return
+            end
+            NxBalls::stop(item)
+            return
+        end
+        if item["mikuType"] == "NxOndate" then
+            NxBalls::start(item)
+            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, classic): "
+            input = STDIN.gets.strip
+            if input == ".." then
+                PolyActions::access(item)
+                LucilleCore::pressEnterToContinue()
+                NxBalls::stop(item)
+                N3Objects::destroy(item["uuid"])
+                return
+            end
+            if input == "done" then
+                NxBalls::stop(item)
+                N3Objects::destroy(item["uuid"])
+                return
+            end
+            if input == "pause" then
+                NxBalls::stop(item)
+                system("clear")
+                puts "streaming paused"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item, unixtime)
+                return
+            end
+            if input == "classic" then 
+                NxBalls::stop(item)
+                Listing::setListingMode({
+                    "type" => "classic",
+                    "hour" => Time.new.hour
+                })
+                return
+            end
+            NxBalls::stop(item)
+            return
+        end
+        if item["mikuType"] == "NxTask" then
+            NxBalls::start(item)
+            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, classic): "
+            input = STDIN.gets.strip
+            if input == ".." then
+                PolyActions::access(item)
+                LucilleCore::pressEnterToContinue()
+                NxBalls::stop(item)
+                N3Objects::destroy(item["uuid"])
+                return
+            end
+            if input == "done" then
+                NxBalls::stop(item)
+                N3Objects::destroy(item["uuid"])
+                return
+            end
+            if input == "pause" then
+                NxBalls::stop(item)
+                system("clear")
+                puts "streaming paused"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item, unixtime)
+                return
+            end
+            if input == "classic" then 
+                NxBalls::stop(item)
+                Listing::setListingMode({
+                    "type" => "classic",
+                    "hour" => Time.new.hour
+                })
+                return
+            end
+            NxBalls::stop(item)
+            return
+        end
+        raise "I do not know how to program4 item : #{item}"
+    end
+
     # Listing::program4()
     def self.program4()
         initialCodeTrace = CommonUtils::stargateTraceCode()
@@ -966,60 +1116,9 @@ class Listing
                 break
             end
             Listing::dataMaintenance()
-
             item = Listing::items().drop_while{|item| Listing::skipfragment(item).size > 0 }.first
-
-            if item["mikuType"] == "NxFloat" then
-                print "#{PolyFunctions::toString(item).green} $ (enter for ack): "
-                STDIN.gets
-                Listing::tmpskip1(item, 8)
-                next
-            end
-
-            if item["mikuType"] == "PhysicalTarget" then
-                if LucilleCore::askQuestionAnswerAsBoolean("perform '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    PhysicalTargets::performUpdate(item)
-                end
-                next
-            end
-
-            loop {
-
-                puts PolyFunctions::toString(item).green
-
-                PolyActions::start(item)
-                PolyActions::access(item)
-
-                print "#{PolyFunctions::toString(item).green} $ running $ (.. # natural next, pause, classic) : "
-                input = STDIN.gets.strip
-
-                if input == ".." then 
-                    NxBalls::stop(item)
-                    PolyActions::done(item)
-                    break
-                end
-                if input == "pause" then
-                    NxBalls::stop(item)
-                    system("clear")
-                    puts "minigame paused"
-                    LucilleCore::pressEnterToContinue()
-                    break
-                end
-                if input == "classic" then 
-                    NxBalls::stop(item)
-                    Listing::setListingMode({
-                        "type" => "classic",
-                        "hour" => Time.new.hour
-                    })
-                    return
-                end
-            }
+            Listing::program4Item(item)
         }
-    end
-
-    # Listing::setListingMode(mode)
-    def self.setListingMode(mode)
-        XCache::set("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e", JSON.generate(mode))
     end
 
     #{
@@ -1031,6 +1130,11 @@ class Listing
     #    "type"  => "streaming",
     #    "hour" => integer
     #}
+
+    # Listing::setListingMode(mode)
+    def self.setListingMode(mode)
+        XCache::set("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e", JSON.generate(mode))
+    end
 
     # Listing::getListingMode()
     def self.getListingMode()
