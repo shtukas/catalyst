@@ -980,10 +980,10 @@ class Listing
                 PolyActions::start(item)
                 PolyActions::access(item)
 
-                print "#{PolyFunctions::toString(item).green} $ running $ (done # default, pause, exit) : "
+                print "#{PolyFunctions::toString(item).green} $ running $ (.. # natural next, pause, exit) : "
                 input = STDIN.gets.strip
 
-                if input == "done" or input == "" then 
+                if input == ".." then 
                     NxBalls::stop(item)
                     PolyActions::done(item)
                     break
@@ -997,10 +997,50 @@ class Listing
                 end
                 if input == "exit" then 
                     NxBalls::stop(item)
+                    Listing::setListingMode({
+                        "type" => "classic",
+                        "hour" => Time.new.hour
+                    })
                     return
                 end
             }
         }
+    end
+
+    # Listing::setListingMode(mode)
+    def self.setListingMode(mode)
+        XCache::set("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e", JSON.generate(mode))
+    end
+
+    #{
+    #    "type"  => "classic",
+    #    "hour" => integer
+    #}
+
+    #{
+    #    "type"  => "streaming",
+    #    "hour" => integer
+    #}
+
+    # Listing::getListingMode()
+    def self.getListingMode()
+        mode = XCache::getOrNull("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e")
+        if mode.nil? then
+            mode  = {
+                "type" => "streaming",
+                "hour" => Time.new.hour
+            }
+        else
+            mode = JSON.parse(mode)
+        end
+        if mode["hour"] != Time.new.hour then
+            mode  = {
+                "type" => "streaming",
+                "hour" => Time.new.hour
+            }
+            Listing::setListingMode(mode)
+        end
+        mode
     end
 
     # Listing::main()
@@ -1012,11 +1052,14 @@ class Listing
                 puts "Code change detected"
                 break
             end
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("style", ["classic", "minigame"])
-            if action == "classic" then
+
+            mode = Listing::getListingMode()
+
+            if mode["type"] == "classic" then
                 Listing::program2()
             end
-            if action == "minigame" then
+
+            if mode["type"] == "streaming" then
                 Listing::program4()
             end
         }
