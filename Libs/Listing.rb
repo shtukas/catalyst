@@ -967,30 +967,36 @@ class Listing
             STDIN.gets
             NxBalls::stop(item)
             Listing::tmpskip1(item, 8)
-            return
+            return nil
         end
         if item["mikuType"] == "PhysicalTarget" then
-            print "#{PolyFunctions::toString(item).green} (done, +code): "
+            print "#{PolyFunctions::toString(item).green} (.., +code, exit): "
             input = STDIN.gets.strip
-            if input == "done" then
+            if input == ".." then
                 NxBalls::stop(item)
                 PhysicalTargets::performUpdate(item)
-                return
+                return nil
             end
             if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item, unixtime)
-                return
+                return nil
             end
-            NxBalls::stop(item)
+            if input == "exit" then 
+                NxBalls::stop(item)
+                return :exit
+            end
+            Listing::program4Item(item)
             return
         end
         if item["mikuType"] == "Wave" then
             NxBalls::start(item)
-            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, classic): "
+            print "#{PolyFunctions::toString(item).green} (.., done, pause, +code, exit): "
             input = STDIN.gets.strip
             if input == ".." then
-                PolyActions::access(item)
+                if item["field11"] then
+                    CoreData::access(item["field11"])
+                end
                 LucilleCore::pressEnterToContinue()
                 NxBalls::stop(item)
                 Waves::performWaveNx46WaveDone(item)
@@ -1018,20 +1024,16 @@ class Listing
                 DoNotShowUntil::setUnixtime(item, unixtime)
                 return
             end
-            if input == "classic" then 
+            if input == "exit" then 
                 NxBalls::stop(item)
-                Listing::setListingMode({
-                    "type" => "classic",
-                    "hour" => Time.new.hour
-                })
-                return
+                return :exit
             end
-            NxBalls::stop(item)
+            Listing::program4Item(item)
             return
         end
         if item["mikuType"] == "NxOndate" then
             NxBalls::start(item)
-            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, classic): "
+            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, exit): "
             input = STDIN.gets.strip
             if input == ".." then
                 PolyActions::access(item)
@@ -1057,20 +1059,16 @@ class Listing
                 DoNotShowUntil::setUnixtime(item, unixtime)
                 return
             end
-            if input == "classic" then 
+            if input == "exit" then 
                 NxBalls::stop(item)
-                Listing::setListingMode({
-                    "type" => "classic",
-                    "hour" => Time.new.hour
-                })
-                return
+                return :exit
             end
-            NxBalls::stop(item)
+            Listing::program4Item(item)
             return
         end
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
-            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, classic): "
+            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, exit): "
             input = STDIN.gets.strip
             if input == ".." then
                 PolyActions::access(item)
@@ -1096,15 +1094,11 @@ class Listing
                 DoNotShowUntil::setUnixtime(item, unixtime)
                 return
             end
-            if input == "classic" then 
+            if input == "exit" then 
                 NxBalls::stop(item)
-                Listing::setListingMode({
-                    "type" => "classic",
-                    "hour" => Time.new.hour
-                })
-                return
+                return :exit
             end
-            NxBalls::stop(item)
+            Listing::program4Item(item)
             return
         end
         raise "I do not know how to program4 item : #{item}"
@@ -1112,18 +1106,18 @@ class Listing
 
     # Listing::program4()
     def self.program4()
-        initialCodeTrace = CommonUtils::stargateTraceCode()
-        loop {
-            if CommonUtils::stargateTraceCode() != initialCodeTrace then
-                puts "Code change detected"
-                break
-            end
-            Listing::dataMaintenance()
-            mode = Listing::getListingMode()
-            return if mode["type"] == "classic"
-            item = Listing::items().drop_while{|item| Listing::skipfragment(item).size > 0 }.first
-            Listing::program4Item(item)
-        }
+        Listing::items()
+            .drop_while{|item| Listing::skipfragment(item).size > 0 }
+            .each{|item|
+                status = Listing::program4Item(item)
+                if status == :exit then
+                    Listing::setListingMode({
+                        "type" => "classic",
+                        "hour" => Time.new.hour
+                    })
+                    return
+                end
+            }
     end
 
     #{
