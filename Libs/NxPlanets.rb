@@ -1,27 +1,27 @@
-class NxBoards
+class NxPlanets
 
     # ---------------------------------------------------------
     # IO
     # ---------------------------------------------------------
 
-    # NxBoards::items()
+    # NxPlanets::items()
     def self.items()
-        N3Objects::getMikuType("NxBoard")
+        N3Objects::getMikuType("NxPlanet")
     end
 
-    # NxBoards::getItemOfNull(uuid)
+    # NxPlanets::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
         N3Objects::getOrNull(uuid)
     end
 
-    # NxBoards::getItemFailIfMissing(uuid)
+    # NxPlanets::getItemFailIfMissing(uuid)
     def self.getItemFailIfMissing(uuid)
-        board = NxBoards::getItemOfNull(uuid)
+        board = NxPlanets::getItemOfNull(uuid)
         return board if board
         raise "looking for a board that should exists. item: #{JSON.pretty_generate(item)}"
     end
 
-    # NxBoards::commit(item)
+    # NxPlanets::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
@@ -31,20 +31,20 @@ class NxBoards
     # ---------------------------------------------------------
 
     # This can only be called from nslog
-    # NxBoards::interactivelyIssueNewOrNull()
+    # NxPlanets::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
         item = {
             "uuid"          => uuid,
-            "mikuType"      => "NxBoard",
+            "mikuType"      => "NxPlanet",
             "unixtime"      => Time.new.to_i,
             "datetime"      => Time.new.utc.iso8601,
             "description"   => description,
             "engine"        => TxEngines::interactivelyMakeEngineOrNull()
         }
-        NxBoards::commit(item)
+        NxPlanets::commit(item)
         item
     end
 
@@ -52,25 +52,25 @@ class NxBoards
     # Data
     # ---------------------------------------------------------
 
-    # NxBoards::toString(item)
+    # NxPlanets::toString(item)
     def self.toString(item)
         "#{"(board)".green} #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxBoards::boardsOrdered()
+    # NxPlanets::boardsOrdered()
     def self.boardsOrdered()
-        NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
+        NxPlanets::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
-    # NxBoards::listingItems()
+    # NxPlanets::listingItems()
     def self.listingItems()
-        NxBoards::items()
+        NxPlanets::items()
             .map{|item| TxEngines::engineMaintenanceOrNothing(item) }
-            .select{|board| NxBoards::boardItems(board).empty? or NxBalls::itemIsRunning(board) }
+            .select{|board| NxPlanets::boardItems(board).empty? or NxBalls::itemIsRunning(board) }
             .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsRunning(board) }
     end
 
-    # NxBoards::boardItems(board)
+    # NxPlanets::boardItems(board)
     def self.boardItems(board)
         [
             NxOndates::listingItems(),
@@ -98,21 +98,21 @@ class NxBoards
     # Ops
     # ---------------------------------------------------------
 
-    # NxBoards::interactivelySelectOneOrNull()
+    # NxPlanets::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxBoards::boardsOrdered()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
+        items = NxPlanets::boardsOrdered()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxPlanets::toString(item) })
     end
 
-    # NxBoards::interactivelySelectOne()
+    # NxPlanets::interactivelySelectOne()
     def self.interactivelySelectOne()
         loop {
-            item = NxBoards::interactivelySelectOneOrNull()
+            item = NxPlanets::interactivelySelectOneOrNull()
             return item if item
         }
     end
 
-    # NxBoards::interactivelyDecideNewBoardPosition(board)
+    # NxPlanets::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
         boardItems = NxTasks::boardItemsOrdered(board)
         return 1 if boardItems.empty?
@@ -128,7 +128,7 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::program1(board)
+    # NxPlanets::program1(board)
     def self.program1(board)
 
         loop {
@@ -142,7 +142,7 @@ class NxBoards
             store = ItemStore.new()
 
             store.register(board, false)
-            line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
+            line = "(#{store.prefixString()}) #{NxPlanets::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
             if NxBalls::itemIsActive(board) then
                 line = line.green
             end
@@ -150,7 +150,7 @@ class NxBoards
 
             spacecontrol.putsline ""
 
-            NxBoards::boardItems(board)
+            NxPlanets::boardItems(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))
@@ -164,12 +164,12 @@ class NxBoards
         }
     end
 
-    # NxBoards::program2(board)
+    # NxPlanets::program2(board)
     def self.program2(board)
         loop {
-            board = NxBoards::getItemOfNull(board["uuid"])
+            board = NxPlanets::getItemOfNull(board["uuid"])
             return if board.nil?
-            puts NxBoards::toString(board)
+            puts NxPlanets::toString(board)
             actions = ["program(board)", "start", "add time", "holiday"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
@@ -181,7 +181,7 @@ class NxBoards
                 PolyActions::addTimeToItem(board, timeInHours*3600)
             end
             if action == "program(board)" then
-                NxBoards::program1(board)
+                NxPlanets::program1(board)
             end
             if action == "holiday" then
                 unixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + 3600*3 # 3 am
@@ -192,12 +192,12 @@ class NxBoards
         }
     end
 
-    # NxBoards::program3()
+    # NxPlanets::program3()
     def self.program3()
         loop {
-            board = NxBoards::interactivelySelectOneOrNull()
+            board = NxPlanets::interactivelySelectOneOrNull()
             return if board.nil?
-            NxBoards::program2(board)
+            NxPlanets::program2(board)
         }
     end
 end
@@ -213,9 +213,9 @@ class BoardsAndItems
 
     # BoardsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
-        return item if item["mikuType"] == "NxBoard"
+        return item if item["mikuType"] == "NxPlanet"
         return item if item["boarduuid"]
-        board = NxBoards::interactivelySelectOneOrNull()
+        board = NxPlanets::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
@@ -224,8 +224,8 @@ class BoardsAndItems
 
     # BoardsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
-        return item if item["mikuType"] == "NxBoard"
-        board = NxBoards::interactivelySelectOneOrNull()
+        return item if item["mikuType"] == "NxPlanet"
+        board = NxPlanets::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
@@ -235,7 +235,7 @@ class BoardsAndItems
     # BoardsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
         return "" if item["boarduuid"].nil?
-        board = NxBoards::getItemOfNull(item["boarduuid"])
+        board = NxPlanets::getItemOfNull(item["boarduuid"])
         if board then
             " (board: #{board["description"].green})"
         else

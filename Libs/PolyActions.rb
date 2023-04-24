@@ -41,8 +41,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoard" then
-            NxBoards::program1(item)
+        if item["mikuType"] == "NxPlanet" then
+            NxPlanets::program1(item)
             return
         end
 
@@ -56,8 +56,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoard" then
-            puts NxBoards::toString(item)
+        if item["mikuType"] == "NxPlanet" then
+            puts NxPlanets::toString(item)
             actions = ["set hours", "access items"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             return if action.nil?
@@ -151,8 +151,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoard" then
-            puts "There is no done action on NxBoards. If it was running, I have stopped it."
+        if item["mikuType"] == "NxPlanet" then
+            puts "There is no done action on NxPlanets. If it was running, I have stopped it."
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -214,7 +214,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoard" then
+        if item["mikuType"] == "NxPlanet" then
             puts "You cannot destroy a board by issuing a command. Do it in nslog."
             LucilleCore::pressEnterToContinue()
             return
@@ -246,7 +246,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoard" then
+        if item["mikuType"] == "NxPlanet" then
             PolyActions::access(item)
             return
         end
@@ -320,7 +320,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoard" then
+        if item["mikuType"] == "NxPlanet" then
             PolyActions::access(item)
             return
         end
