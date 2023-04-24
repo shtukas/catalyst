@@ -7,4 +7,3 @@ NxClique:
     "description" : String
     "boarduuid"   : String
     "engine"      : TxEngine
-    "active"      : boolean

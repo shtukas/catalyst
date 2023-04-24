@@ -90,7 +90,7 @@ class NxBoards
 
         cliques = boards
                     .map{|board|
-                        cliques1, cliques2 = NxCliques::boardToCliques(board).partition{|clique| clique["active"] }
+                        cliques1, cliques2 = NxCliques::boardToCliques(board).partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
                         cliques1 = cliques1.sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
                         cliques2 = cliques2.sort_by{|clique| clique["unixtime"] }
                         cliques1 + cliques2

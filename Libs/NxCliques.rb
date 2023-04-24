@@ -46,7 +46,7 @@ class NxCliques
 
     # NxCliques::toString(item)
     def self.toString(item)
-        "(clique) #{item["active"] ? "[*]" : "[ ]"} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{TxEngines::toString(item["engine"])} (#{NxCliques::cliqueToItems(item).count} items)"
+        "(clique) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{TxEngines::toString(item["engine"])} (#{NxCliques::cliqueToItems(item).count} items)"
     end
 
     # NxCliques::boardToCliques(board)
