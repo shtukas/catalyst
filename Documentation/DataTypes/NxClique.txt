@@ -5,6 +5,5 @@ NxClique:
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
-    "field11"     : CoreData reference string
-    "boarduuid"   : String or null
+    "boarduuid"   : String
     "engine"      : TxEngine

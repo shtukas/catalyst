@@ -194,7 +194,7 @@ require_relative "Listing.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
-require_relative "NxCapitalShips.rb"
+require_relative "NxBoards.rb"
 require_relative "NxTasks.rb"
 require_relative "NxNote.rb"
 require_relative "NxOpenCycles.rb"

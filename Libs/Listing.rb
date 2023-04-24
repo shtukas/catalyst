@@ -20,7 +20,7 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | clique (<n>) | unboard <n> | priority <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float | clique|new",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float | new clique",
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
@@ -199,7 +199,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxCapitalShips::program3()
+            NxBoards::program3()
             return
         end
 
@@ -290,12 +290,12 @@ class Listing
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxCapitalShip", "NxTask", "NxCliques"].include?(item["mikuType"]) then
-                puts "Only NxCapitalShip, NxTask and NxCliques are carrying engine"
+            if !["NxBoard", "NxTask", "NxCliques"].include?(item["mikuType"]) then
+                puts "Only NxBoard, NxTask and NxCliques are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            engine = TxEngines::interactivelyMakeEngineOrNull()
+            engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
             item["engine"] = engine
             N3Objects::commit(item)
@@ -306,12 +306,12 @@ class Listing
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            if !["NxCapitalShip", "NxTask"].include?(item["mikuType"]) then
-                puts "Only NxCapitalShip and NxTask are carrying engine"
+            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
+                puts "Only NxBoard and NxTask are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            engine = TxEngines::interactivelyMakeEngineOrNull()
+            engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
             item["engine"] = engine
             N3Objects::commit(item)
@@ -353,7 +353,7 @@ class Listing
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            board     = NxCapitalShips::interactivelySelectOneOrNull()
+            board     = NxBoards::interactivelySelectOneOrNull()
             boarduuid = board ? board["uuid"] : nil
             position  = NxTasks::interactivelyDecidePosition(board)
             item["position"] =  position
@@ -437,7 +437,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("clique|new", input) then
+        if Interpreting::match("new clique", input) then
             item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -650,8 +650,8 @@ class Listing
                 "lambda" => lambda { TheLine::getCurrentCount() }
             },
             {
-                "name" => "NxCapitalShips::itemsOrdered()",
-                "lambda" => lambda { NxCapitalShips::itemsOrdered() }
+                "name" => "NxBoards::itemsOrdered()",
+                "lambda" => lambda { NxBoards::itemsOrdered() }
             },
         ]
 
@@ -745,7 +745,7 @@ class Listing
             NxCliques::listingItems(),
             NxTasks::listingItems(),
 
-            NxCapitalShips::listingItems()
+            NxBoards::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -814,7 +814,7 @@ class Listing
     def self.canBeDefault(item)
         return true if NxBalls::itemIsRunning(item)
 
-        return false if item["mikuType"] == "NxCapitalShip"
+        return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
@@ -889,7 +889,7 @@ class Listing
             count = 0
             N3Objects::getall().each{|item|
                 next if item["boarduuid"].nil?
-                next if NxCapitalShips::getItemOfNull(item["boarduuid"])
+                next if NxBoards::getItemOfNull(item["boarduuid"])
                 break if count > 100
                 puts "item: #{JSON.pretty_generate(item)}"
                 puts "could not find the board".green

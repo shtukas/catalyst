@@ -11,7 +11,7 @@ Cross types conventions:
     - "cliqueuuid"     : clique uuid (3)
 
 
-(1) (3) Not for NxCapitalShips.
+(1) (3) Not for NxBoards.
 
 (3) Not for NxClique
 

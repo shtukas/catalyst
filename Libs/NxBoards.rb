@@ -1,27 +1,27 @@
-class NxCapitalShips
+class NxBoards
 
     # ---------------------------------------------------------
     # IO
     # ---------------------------------------------------------
 
-    # NxCapitalShips::items()
+    # NxBoards::items()
     def self.items()
-        N3Objects::getMikuType("NxCapitalShip")
+        N3Objects::getMikuType("NxBoard")
     end
 
-    # NxCapitalShips::getItemOfNull(uuid)
+    # NxBoards::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
         N3Objects::getOrNull(uuid)
     end
 
-    # NxCapitalShips::getItemFailIfMissing(uuid)
+    # NxBoards::getItemFailIfMissing(uuid)
     def self.getItemFailIfMissing(uuid)
-        board = NxCapitalShips::getItemOfNull(uuid)
+        board = NxBoards::getItemOfNull(uuid)
         return board if board
         raise "looking for a board that should exists. item: #{JSON.pretty_generate(item)}"
     end
 
-    # NxCapitalShips::commit(item)
+    # NxBoards::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
@@ -31,20 +31,20 @@ class NxCapitalShips
     # ---------------------------------------------------------
 
     # This can only be called from nslog
-    # NxCapitalShips::interactivelyIssueNewOrNull()
+    # NxBoards::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
         item = {
             "uuid"          => uuid,
-            "mikuType"      => "NxCapitalShip",
+            "mikuType"      => "NxBoard",
             "unixtime"      => Time.new.to_i,
             "datetime"      => Time.new.utc.iso8601,
             "description"   => description,
-            "engine"        => TxEngines::interactivelyMakeEngineOrNull()
+            "engine"        => TxEngines::interactivelyMakeEngineOrDefault()
         }
-        NxCapitalShips::commit(item)
+        NxBoards::commit(item)
         item
     end
 
@@ -52,25 +52,25 @@ class NxCapitalShips
     # Data
     # ---------------------------------------------------------
 
-    # NxCapitalShips::toString(item)
+    # NxBoards::toString(item)
     def self.toString(item)
         "#{"(board)".green} #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxCapitalShips::itemsOrdered()
+    # NxBoards::itemsOrdered()
     def self.itemsOrdered()
-        NxCapitalShips::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
+        NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
-    # NxCapitalShips::listingItems()
+    # NxBoards::listingItems()
     def self.listingItems()
-        NxCapitalShips::items()
+        NxBoards::items()
             .map{|item| TxEngines::engineMaintenanceOrNothing(item) }
-            .select{|board| NxCapitalShips::boardItems(board).empty? or NxBalls::itemIsRunning(board) }
+            .select{|board| NxBoards::boardItems(board).empty? or NxBalls::itemIsRunning(board) }
             .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsRunning(board) }
     end
 
-    # NxCapitalShips::boardItems(board)
+    # NxBoards::boardItems(board)
     def self.boardItems(board)
         [
             NxOndates::listingItems(),
@@ -98,21 +98,21 @@ class NxCapitalShips
     # Ops
     # ---------------------------------------------------------
 
-    # NxCapitalShips::interactivelySelectOneOrNull()
+    # NxBoards::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxCapitalShips::itemsOrdered()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxCapitalShips::toString(item) })
+        items = NxBoards::itemsOrdered()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
     end
 
-    # NxCapitalShips::interactivelySelectOne()
+    # NxBoards::interactivelySelectOne()
     def self.interactivelySelectOne()
         loop {
-            item = NxCapitalShips::interactivelySelectOneOrNull()
+            item = NxBoards::interactivelySelectOneOrNull()
             return item if item
         }
     end
 
-    # NxCapitalShips::interactivelyDecideNewBoardPosition(board)
+    # NxBoards::interactivelyDecideNewBoardPosition(board)
     def self.interactivelyDecideNewBoardPosition(board)
         boardItems = NxTasks::boardItemsOrdered(board)
         return 1 if boardItems.empty?
@@ -128,7 +128,7 @@ class NxCapitalShips
     # Programs
     # ---------------------------------------------------------
 
-    # NxCapitalShips::program1(board)
+    # NxBoards::program1(board)
     def self.program1(board)
 
         loop {
@@ -142,7 +142,7 @@ class NxCapitalShips
             store = ItemStore.new()
 
             store.register(board, false)
-            line = "(#{store.prefixString()}) #{NxCapitalShips::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
+            line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
             if NxBalls::itemIsActive(board) then
                 line = line.green
             end
@@ -150,7 +150,7 @@ class NxCapitalShips
 
             spacecontrol.putsline ""
 
-            NxCapitalShips::boardItems(board)
+            NxBoards::boardItems(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     spacecontrol.putsline(Listing::itemToListingLine(store, item))
@@ -164,12 +164,12 @@ class NxCapitalShips
         }
     end
 
-    # NxCapitalShips::program2(board)
+    # NxBoards::program2(board)
     def self.program2(board)
         loop {
-            board = NxCapitalShips::getItemOfNull(board["uuid"])
+            board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
-            puts NxCapitalShips::toString(board)
+            puts NxBoards::toString(board)
             actions = ["program(board)", "start", "add time", "holiday"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
@@ -181,7 +181,7 @@ class NxCapitalShips
                 PolyActions::addTimeToItem(board, timeInHours*3600)
             end
             if action == "program(board)" then
-                NxCapitalShips::program1(board)
+                NxBoards::program1(board)
             end
             if action == "holiday" then
                 unixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + 3600*3 # 3 am
@@ -192,12 +192,12 @@ class NxCapitalShips
         }
     end
 
-    # NxCapitalShips::program3()
+    # NxBoards::program3()
     def self.program3()
         loop {
-            board = NxCapitalShips::interactivelySelectOneOrNull()
+            board = NxBoards::interactivelySelectOneOrNull()
             return if board.nil?
-            NxCapitalShips::program2(board)
+            NxBoards::program2(board)
         }
     end
 end
@@ -213,9 +213,9 @@ class PlanetsAndItems
 
     # PlanetsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
-        return item if item["mikuType"] == "NxCapitalShip"
+        return item if item["mikuType"] == "NxBoard"
         return item if item["boarduuid"]
-        board = NxCapitalShips::interactivelySelectOneOrNull()
+        board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
@@ -224,8 +224,8 @@ class PlanetsAndItems
 
     # PlanetsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
-        return item if item["mikuType"] == "NxCapitalShip"
-        board = NxCapitalShips::interactivelySelectOneOrNull()
+        return item if item["mikuType"] == "NxBoard"
+        board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
@@ -235,7 +235,7 @@ class PlanetsAndItems
     # PlanetsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
         return "" if item["boarduuid"].nil?
-        board = NxCapitalShips::getItemOfNull(item["boarduuid"])
+        board = NxBoards::getItemOfNull(item["boarduuid"])
         if board then
             " (board: #{board["description"].green})"
         else

@@ -6,11 +6,13 @@ class TxEngines
         LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["null (default)", "daily-recovery-time", "weekly-time"])
     end
 
-    # TxEngines::interactivelyMakeEngineOrNull(uuid = nil)
-    def self.interactivelyMakeEngineOrNull(uuid = nil)
+    # TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
+    def self.interactivelyMakeEngineOrDefault(uuid = nil)
         uuid = uuid || SecureRandom.hex
         type = TxEngines::interactivelySelectEngineTypeOrNull()
-        return nil if (type.nil? or type == "null (default)")
+        if (type.nil? or type == "null (default)") then
+            return TxEngines::defaultEngine(uuid)
+        end
         if type == "daily-recovery-time" then
             return {
                 "uuid"  => uuid,
@@ -43,7 +45,7 @@ class TxEngines
 
     # TxEngines::interactivelyMakeEngine(uuid = nil)
     def self.interactivelyMakeEngine(uuid = nil)
-        engine = TxEngines::interactivelyMakeEngineOrNull(uuid = nil)
+        engine = TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
         return engine if engine
         puts "using default engine"
         TxEngines::defaultEngine(uuid)

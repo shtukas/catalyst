@@ -7,3 +7,4 @@ NxTask:
     "field11"     : null or CoreData reference string
     "position"    : Float
     "engine"      : null or TxEngine
+    "cliqueuuid"  : String

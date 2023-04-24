@@ -6,6 +6,6 @@ NxTimePromise:
     "account"       : String
     "value"         : Float
 
-A NxTimePromise is a promise of a bank update operation. When the time reaches `unixtime`, the value (algebraic value) is added to the bank account. They were introduced to smooth NxCapitalShip time management after bursts of activity.
+A NxTimePromise is a promise of a bank update operation. When the time reaches `unixtime`, the value (algebraic value) is added to the bank account. They were introduced to smooth NxBoard time management after bursts of activity.
 
 

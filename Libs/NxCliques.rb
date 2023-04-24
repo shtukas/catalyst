@@ -26,7 +26,7 @@ class NxCliques
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board = NxCapitalShips::interactivelySelectOneOrNull()
+        board = NxBoards::interactivelySelectOne()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxClique",
@@ -34,8 +34,8 @@ class NxCliques
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
             "field11"     => coredataref,
-            "boarduuid"   => board ? board["uuid"] : nil,
-            "engine"      => TxEngines::interactivelyMakeEngineOrNull()
+            "boarduuid"   => board["uuid"],
+            "engine"      => TxEngines::interactivelyMakeEngineOrDefault()
         }
         puts JSON.pretty_generate(item)
         NxCliques::commit(item)
@@ -174,7 +174,7 @@ class CliquesAndItems
     def self.askAndMaybeAttach(item)
         return item if item["cliqueuuid"]
         return item if item["mikuType"] == "NxClique"
-        return item if item["mikuType"] == "NxCapitalShip"
+        return item if item["mikuType"] == "NxBoard"
         clique = NxCliques::interactivelySelectOneOrNull()
         return item if clique.nil?
         item["cliqueuuid"] = clique["uuid"]

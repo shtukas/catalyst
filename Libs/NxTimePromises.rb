@@ -50,7 +50,7 @@ class NxTimePromises
         N3Objects::getMikuType("NxTimePromise")
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|capsule|
-                board = NxCapitalShips::getItemOfNull(capsule["account"])
+                board = NxBoards::getItemOfNull(capsule["account"])
                 puts "#{Time.at(capsule["unixtime"]).to_s} : #{capsule["account"]} : #{capsule["value"]}#{board ? " (#{board["description"]})" : ""}"
             }
         LucilleCore::pressEnterToContinue()
