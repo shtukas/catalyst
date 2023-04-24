@@ -25,15 +25,13 @@ class NxCliques
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board = NxBoards::interactivelySelectOne()
+        board = NxBoards::interactivelySelectOneBoard()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxClique",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
-            "field11"     => coredataref,
             "boarduuid"   => board["uuid"],
             "engine"      => TxEngines::interactivelyMakeEngineOrDefault()
         }
@@ -48,32 +46,17 @@ class NxCliques
 
     # NxCliques::toString(item)
     def self.toString(item)
-        "(clique) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{TxEngines::toString(item["engine"])} (#{NxCliques::cliqueMembers(item).count} items)"
+        "(clique) #{item["active"] ? "[*]" : "[ ]"} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{TxEngines::toString(item["engine"])} (#{NxCliques::cliqueToItems(item).count} items)"
     end
 
-    # NxCliques::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        items = NxCliques::items()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", items, lambda{|item| NxCliques::toString(item) })
+    # NxCliques::boardToCliques(board)
+    def self.boardToCliques(board)
+        NxCliques::items().select{|clique| clique["boarduuid"] == board["uuid"] }
     end
 
-    # NxCliques::interactivelySelectOne()
-    def self.interactivelySelectOne()
-        project = NxCliques::interactivelySelectOneOrNull()
-        return project if project
-        NxCliques::interactivelySelectOne()
-    end
-
-    # NxCliques::listingItems()
-    def self.listingItems()
-        NxCliques::items().sort_by{|item| item["unixtime"] }
-    end
-
-    # NxCliques::cliqueMembers(clique)
-    def self.cliqueMembers(clique)
-        NxTasks::items().select{|item|
-            item["cliqueuuid"] == clique["uuid"]
-        }
+    # NxCliques::cliqueToItems(clique)
+    def self.cliqueToItems(clique)
+        NxTasks::items().select{|task| task["cliqueuuid"] == clique["uuid"] }
     end
 
     # -----------------------------------------
@@ -84,7 +67,7 @@ class NxCliques
     def self.access(item)
         loop {
             puts NxCliques::toString(item).green
-            if item["field11"] and NxCliques::cliqueMembers(item).size > 0 then
+            if item["field11"] and NxCliques::cliqueToItems(item).size > 0 then
                 action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["access CoreData payload", "access drops"])
                 return if action.nil?
                 if action == "access CoreData payload" then
@@ -95,25 +78,25 @@ class NxCliques
                 end
                 return
             end
-            if item["field11"].nil? and NxCliques::cliqueMembers(item).size > 0 then
+            if item["field11"].nil? and NxCliques::cliqueToItems(item).size > 0 then
                 NxCliques::program1(item)
                 return
             end
-            if item["field11"] and NxCliques::cliqueMembers(item).size == 0 then
+            if item["field11"] and NxCliques::cliqueToItems(item).size == 0 then
                 CoreData::access(item["field11"])
                 return
             end
-            if item["field11"].nil? and NxCliques::cliqueMembers(item).size == 0 then
+            if item["field11"].nil? and NxCliques::cliqueToItems(item).size == 0 then
                 LucilleCore::pressEnterToContinue()
                 return
             end
         }
     end
 
-    # NxCliques::program1(project)
-    def self.program1(project)
-        # We are running a listing program with the project's drops
-        NxCliques::cliqueMembers(project)
+    # NxCliques::program1(clique)
+    def self.program1(clique)
+        # We are running a listing program with the clique's drops
+        NxCliques::cliqueToItems(clique)
         loop {
 
             system("clear")
@@ -124,26 +107,27 @@ class NxCliques
 
             store = ItemStore.new()
 
-            store.register(project, false)
-            line = "(#{store.prefixString()}) #{NxCliques::toString(project)}#{NxBalls::nxballSuffixStatusIfRelevant(project)}"
-            if NxBalls::itemIsActive(project) then
+            store.register(clique, false)
+            line = "(#{store.prefixString()}) #{NxCliques::toString(clique)}#{NxBalls::nxballSuffixStatusIfRelevant(clique)}"
+            if NxBalls::itemIsActive(clique) then
                 line = line.green
             end
             spacecontrol.putsline line
 
             spacecontrol.putsline ""
 
-            NxCliques::cliqueMembers(project)
+            NxCliques::cliqueToItems(clique)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
-                    spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    break if !status
                 }
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == ""
             if input == "drop" then
-                TxDrops::interactivelyIssueNewOrNull(project["uuid"])
+                TxDrops::interactivelyIssueNewOrNull(clique["uuid"])
                 next
             end
 
@@ -154,10 +138,21 @@ class NxCliques
     # NxCliques::program2()
     def self.program2()
         loop {
-            project = NxCliques::interactivelySelectOneOrNull()
-            return if project.nil?
-            NxCliques::program1(project)
+            clique = NxBoards::interactivelySelectOneCliqueOrNull()
+            return if clique.nil?
+            NxCliques::program1(clique)
         }
+    end
+
+    # NxCliques::dataManagement()
+    def self.dataManagement()
+        NxCliques::items()
+            .select{|clique| (Time.new.to_i - clique["unixtime"]) > 3600 }
+            .select{|clique| NxCliques::cliqueToItems(clique).size == 0 }
+            .each{|clique|
+                puts "destroying empty clique: #{clique["description"]}"
+                NxCliques::destroy(clique["uuid"])
+            }
     end
 end
 
@@ -175,7 +170,7 @@ class CliquesAndItems
         return item if item["cliqueuuid"]
         return item if item["mikuType"] == "NxClique"
         return item if item["mikuType"] == "NxBoard"
-        clique = NxCliques::interactivelySelectOneOrNull()
+        clique = NxBoards::interactivelySelectOneCliqueOrNull()
         return item if clique.nil?
         item["cliqueuuid"] = clique["uuid"]
         N3Objects::commit(item)

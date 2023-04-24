@@ -40,7 +40,7 @@ loop {
     link = viennaLinkFeeder.next()
     break if link.nil?
     puts "vienna: #{link}"
-    item = NxTasks::viennaUrl(link)
+    item = NxDrops::viennaUrl(link)
     puts JSON.pretty_generate(item)
     viennaLinkFeeder.done(link)
     sleep 0.1

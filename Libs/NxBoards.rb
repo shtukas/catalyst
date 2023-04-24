@@ -62,14 +62,6 @@ class NxBoards
         NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
-    # NxBoards::listingItems()
-    def self.listingItems()
-        NxBoards::items()
-            .map{|item| TxEngines::engineMaintenanceOrNothing(item) }
-            .select{|board| NxBoards::boardItems(board).empty? or NxBalls::itemIsRunning(board) }
-            .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsRunning(board) }
-    end
-
     # NxBoards::boardItems(board)
     def self.boardItems(board)
         [
@@ -79,9 +71,7 @@ class NxBoards
             NxFloats::listingItems(),
 
             NxFires::items(),
-            PriorityItems::listingItems(),
-            NxCliques::listingItems(),
-            NxTasks::boardItemsOrdered(board),
+            NxCliques::items(),
         ]
             .flatten
             .select{|item| item["boarduuid"] == board["uuid"] }
@@ -94,34 +84,51 @@ class NxBoards
             }
     end
 
+    # NxBoards::listingItems()
+    def self.listingItems()
+        boards = NxBoards::itemsOrdered()
+
+        cliques = boards
+                    .map{|board|
+                        cliques1, cliques2 = NxCliques::boardToCliques(board).partition{|clique| clique["active"] }
+                        cliques1 = cliques1.sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
+                        cliques2 = cliques2.sort_by{|clique| clique["unixtime"] }
+                        cliques1 + cliques2
+                    }
+                    .flatten
+
+        NxCliques::cliqueToItems(cliques.first) + cliques.drop(1)
+    end
+
     # ---------------------------------------------------------
     # Ops
     # ---------------------------------------------------------
 
-    # NxBoards::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
+    # NxBoards::interactivelySelectOneBoardOrNull()
+    def self.interactivelySelectOneBoardOrNull()
         items = NxBoards::itemsOrdered()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
     end
 
-    # NxBoards::interactivelySelectOne()
-    def self.interactivelySelectOne()
+    # NxBoards::interactivelySelectOneBoard()
+    def self.interactivelySelectOneBoard()
         loop {
-            item = NxBoards::interactivelySelectOneOrNull()
+            item = NxBoards::interactivelySelectOneBoardOrNull()
             return item if item
         }
     end
 
-    # NxBoards::interactivelyDecideNewBoardPosition(board)
-    def self.interactivelyDecideNewBoardPosition(board)
-        boardItems = NxTasks::boardItemsOrdered(board)
-        return 1 if boardItems.empty?
-        boardItems.take(CommonUtils::screenHeight()-3).each{|item| puts NxTasks::toString(item) }
-        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
-        if position == "" then
-            return boardItems.map{|item| item["position"] }.max + 1
-        end
-        return position.to_f
+    # NxBoards::interactivelySelectOneCliqueOrNull(board)
+    def self.interactivelySelectOneCliqueOrNull(board)
+        cliques = NxCliques::boardToCliques(board).sort_by{|clique| clique["unixtime"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", cliques, lambda{|item| NxCliques::toString(item) })
+    end
+
+    # NxBoards::interactivelySelectOneClique(board)
+    def self.interactivelySelectOneClique(board)
+        project = NxBoards::interactivelySelectOneCliqueOrNull(board)
+        return project if project
+        NxBoards::interactivelySelectOneClique(board)
     end
 
     # ---------------------------------------------------------
@@ -153,7 +160,8 @@ class NxBoards
             NxBoards::boardItems(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
-                    spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    break if !status
                 }
 
             puts ""
@@ -191,15 +199,6 @@ class NxBoards
             end
         }
     end
-
-    # NxBoards::program3()
-    def self.program3()
-        loop {
-            board = NxBoards::interactivelySelectOneOrNull()
-            return if board.nil?
-            NxBoards::program2(board)
-        }
-    end
 end
 
 class PlanetsAndItems
@@ -215,7 +214,7 @@ class PlanetsAndItems
     def self.maybeAskAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
         return item if item["boarduuid"]
-        board = NxBoards::interactivelySelectOneOrNull()
+        board = NxBoards::interactivelySelectOneBoardOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
@@ -225,7 +224,7 @@ class PlanetsAndItems
     # PlanetsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
-        board = NxBoards::interactivelySelectOneOrNull()
+        board = NxBoards::interactivelySelectOneBoardOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)

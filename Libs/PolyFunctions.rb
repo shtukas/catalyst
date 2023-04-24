@@ -6,11 +6,11 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => "self",
+            "description" => "self: #{item["mikuType"]}",
             "number"      => item["uuid"]
         }
 
-        if item["mikuType"] == "NxBoard" then
+        if item["engine"] then
             accounts << {
                 "description" => "self's engine",
                 "number"      => item["engine"]["uuid"]
@@ -21,21 +21,7 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => "self's engine",
-                "number"      => item["engine"]["uuid"]
-            }
-        end
-
-        if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => nil,
-                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask Performance
-            }
-        end
-
-        if item["mikuType"] == "TxDrop" then
+        if item["cliqueuuid"] then
             clique = N3Objects::getOrNull(item["cliqueuuid"])
             if clique then
                 accounts = accounts + PolyFunctions::itemsToBankingAccounts(clique)
@@ -45,19 +31,15 @@ class PolyFunctions
         if item["boarduuid"] then
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
-                accounts << {
-                    "description" => board["description"],
-                    "number"      => item["boarduuid"]
-                }
-                accounts << {
-                    "description" => "#{board["description"]}'s engine",
-                    "number"      => board["engine"]["uuid"]
-                }
-                accounts << {
-                    "description" => "#{board["description"]}'s engine capsule",
-                    "number"      => board["engine"]["capsule"]
-                }
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(board)
             end
+        end
+
+        if item["mikuType"] == "NxTask" then
+            accounts << {
+                "description" => nil,
+                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask Performance
+            }
         end
 
         accounts.reduce([]){|as, account|
@@ -116,15 +98,5 @@ class PolyFunctions
         end
         puts "I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c)"
-    end
-
-    # PolyFunctions::interactivelySelectBoardAndPositionForTask()
-    def self.interactivelySelectBoardAndPositionForTask() # [boarduuid, position]
-        board = NxBoards::interactivelySelectOneOrNull()
-        if board then
-            [board["uuid"], NxBoards::interactivelyDecideNewBoardPosition(board)]
-        else
-            [nil, NxTasks::thatPosition()]
-        end
     end
 end

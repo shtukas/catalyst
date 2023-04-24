@@ -133,7 +133,7 @@ class Waves
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption (priority) ? ")
+        interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         item = {
             "uuid"             => uuid,
             "mikuType"         => "Wave",

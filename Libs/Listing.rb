@@ -6,11 +6,12 @@ class SpaceControl
         @remaining_vertical_space = remaining_vertical_space
     end
 
-    def putsline(line)
+    def putsline(line) # boolean
         vspace = CommonUtils::verticalSize(line)
-        return if vspace > @remaining_vertical_space
+        return false if vspace > @remaining_vertical_space
         puts line
         @remaining_vertical_space = @remaining_vertical_space - vspace
+        true
     end
 end
 
@@ -19,17 +20,17 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | clique (<n>) | unboard <n> | priority <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | first task | task | fire | project | drop | float | new clique",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | clique (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | new clique",
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
-            "    - tasks   : position <n> | engine (<n>) | clique (<n>)",
+            "    - tasks   : clique (<n>) | engine (<n>)",
             "    - cliques : engine (<n>)",
             "    - ondate  : redate",
             "",
             "transmutation : recast (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -156,50 +157,6 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             CliquesAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("priority", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if !item["priority"] then
-                item["priority"] = true
-                N3Objects::commit(item)
-                return
-            end
-            if item["priority"] then
-                puts "this item already has a priority"
-                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["remove priority", "nothing (default)"])
-                if action == "remove priority" then
-                item["priority"] = false
-                N3Objects::commit(item)
-                end
-            end
-            return
-        end
-
-        if Interpreting::match("priority *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            if !item["priority"] then
-                item["priority"] = true
-                N3Objects::commit(item)
-                return
-            end
-            if item["priority"] then
-                puts "this item already has a priority"
-                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["remove priority", "nothing (default)"])
-                if action == "remove priority" then
-                item["priority"] = false
-                N3Objects::commit(item)
-                end
-            end
-            return
-        end
-
-        if Interpreting::match("boards", input) then
-            NxBoards::program3()
             return
         end
 
@@ -344,24 +301,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("position *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "Only NxTask can be positioned"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            board     = NxBoards::interactivelySelectOneOrNull()
-            boarduuid = board ? board["uuid"] : nil
-            position  = NxTasks::interactivelyDecidePosition(board)
-            item["position"] =  position
-            puts JSON.pretty_generate(item)
-            NxTasks::commit(item)
-            return
-        end
-
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -496,14 +435,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("first task", input) then
-            item = NxTasks::makeFirstTask()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
-            return
-        end
-
         if Interpreting::match("redate", input) then
             item = store.getDefault()
             return if item.nil?
@@ -579,11 +510,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("tasks", input) then
-            NxTasks::program2()
-            return
-        end
-
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
@@ -636,10 +562,6 @@ class Listing
             {
                 "name" => "Waves::listingItems(nil)",
                 "lambda" => lambda { Waves::listingItems() }
-            },
-            {
-                "name" => "NxTasks::listingItems()",
-                "lambda" => lambda { NxTasks::listingItems() }
             },
             {
                 "name" => "TheLine::getReference()",
@@ -732,19 +654,12 @@ class Listing
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-
             NxOndates::listingItems(),
             Waves::listingInterruptionItems(),
             Waves::listingNonInterruptionItemsWithCircuitBreaker(),
-
             NxFloats::listingItems(),
-
             NxFires::items(),
-            PriorityItems::listingItems(),
             DevicesBackups::listingItems(),
-            NxCliques::listingItems(),
-            NxTasks::listingItems(),
-
             NxBoards::listingItems()
         ]
             .flatten
@@ -790,19 +705,11 @@ class Listing
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px01Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
-        if item["priority"] then
-            line = line.gsub("Px01", "(priority) ".red)
-        else
-            line = line.gsub("Px01", "")
-        end
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["interruption"] then
-            line = line.gsub("Px02", "(priority) ".red)
+            line = line.gsub("Px02", "(interruption) ".red)
         else
             line = line.gsub("Px02", "")
-        end
-        if Listing::shouldBeInYellow(item) then
-            line = line.yellow
         end
         if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
             line = line.green
@@ -838,28 +745,16 @@ class Listing
 
         return false if skipTargetTimeOrNull.call(item)
 
-        if item["mikuType"] == "NxTask" and !item["priority"] then
-            return false if NxTasks::completionRatio(item) >= 1
-        end
-
         true
-    end
-
-    # Listing::shouldBeInYellow(item)
-    def self.shouldBeInYellow(item)
-        if item["mikuType"] == "NxTask" and !item["priority"] then
-            return true if NxTasks::completionRatio(item) >= 1
-        end
-        return true if item["mikuType"] == "NxFloat"
-        return true if !DoNotShowUntil::isVisible(item)
-        false
     end
 
     # Listing::program1(store, items)
     def self.program1(store, items)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+        boards = NxBoards::itemsOrdered()
+
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - boards.size)
 
         spacecontrol.putsline ""
         puts TheLine::line()
@@ -868,8 +763,14 @@ class Listing
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
             }
+
+        boards.each{|board|
+            store.register(board, Listing::canBeDefault(board))
+            puts Listing::itemToListingLine(store, board)
+        }
     end
 
     # Listing::dataMaintenance()
@@ -878,7 +779,7 @@ class Listing
             LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
                 .each{|location|
                     next if File.basename(location).start_with?(".")
-                    item = NxTasks::bufferInImport(location)
+                    item = NxDrops::bufferInImport(location)
                     puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
                     LucilleCore::removeFileSystemLocation(location)
                 }
@@ -909,7 +810,7 @@ class Listing
             NxTimePromises::operate()
             N3Objects::fileManagement()
             BankCore::fileManagement()
-            NxOpenCycles::makeNxTasks()
+            NxCliques::dataManagement()
         end
     end
 
