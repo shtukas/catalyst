@@ -31,7 +31,7 @@ class Listing
             "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n> | streaming",
+            "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
     end
 
@@ -124,11 +124,6 @@ class Listing
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
-            return
-        end
-
-        if Interpreting::match("streaming", input) then
-            Listing::program4()
             return
         end
 
@@ -946,9 +941,6 @@ class Listing
 
             Listing::dataMaintenance()
 
-            mode = Listing::getListingMode()
-            return if mode["type"] == "streaming"
-
             store = ItemStore.new()
 
             Listing::program1(store, Listing::items())
@@ -959,243 +951,6 @@ class Listing
             next if input == ""
 
             Listing::listingCommandInterpreter(input, store, nil)
-        }
-    end
-
-    # Listing::program4Item(item)
-    def self.program4Item(item)
-
-        if item["mikuType"] == "NxPlanet" then
-            return :exit
-        end
-
-        if item["mikuType"] == "NxFloat" then
-            print "#{PolyFunctions::toString(item).green} $ (enter for ack): "
-            STDIN.gets
-            NxBalls::stop(item)
-            Listing::tmpskip1(item, 8)
-            return nil
-        end
-        if item["mikuType"] == "PhysicalTarget" then
-            print "#{PolyFunctions::toString(item).green} (.., +code, exit): "
-            input = STDIN.gets.strip
-            if input == ".." then
-                NxBalls::stop(item)
-                PhysicalTargets::performUpdate(item)
-                return nil
-            end
-            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
-                NxBalls::stop(item)
-                DoNotShowUntil::setUnixtime(item, unixtime)
-                return nil
-            end
-            if input == "exit" then 
-                NxBalls::stop(item)
-                return :exit
-            end
-            Listing::program4Item(item)
-            return
-        end
-        if item["mikuType"] == "Wave" then
-            NxBalls::start(item)
-            print "#{PolyFunctions::toString(item).green} (.., done, pause, +code, exit): "
-            input = STDIN.gets.strip
-            if input == ".." then
-                if item["field11"] then
-                    CoreData::access(item["field11"])
-                end
-                LucilleCore::pressEnterToContinue()
-                NxBalls::stop(item)
-                Waves::performWaveNx46WaveDone(item)
-                return
-            end
-            if input == "done" then
-                NxBalls::stop(item)
-                Waves::performWaveNx46WaveDone(item)
-                return
-            end
-            if input == "pause" then
-                NxBalls::stop(item)
-                system("clear")
-                puts "streaming paused"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if input == "done" then
-                NxBalls::stop(item)
-                Waves::performWaveNx46WaveDone(item)
-                return
-            end
-            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
-                NxBalls::stop(item)
-                DoNotShowUntil::setUnixtime(item, unixtime)
-                return
-            end
-            if input == "exit" then 
-                NxBalls::stop(item)
-                return :exit
-            end
-            Listing::program4Item(item)
-            return
-        end
-        if item["mikuType"] == "NxOndate" then
-            NxBalls::start(item)
-            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, exit): "
-            input = STDIN.gets.strip
-            if input == ".." then
-                PolyActions::access(item)
-                LucilleCore::pressEnterToContinue()
-                NxBalls::stop(item)
-                N3Objects::destroy(item["uuid"])
-                return
-            end
-            if input == "done" then
-                NxBalls::stop(item)
-                N3Objects::destroy(item["uuid"])
-                return
-            end
-            if input == "pause" then
-                NxBalls::stop(item)
-                system("clear")
-                puts "streaming paused"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
-                NxBalls::stop(item)
-                DoNotShowUntil::setUnixtime(item, unixtime)
-                return
-            end
-            if input == "exit" then 
-                NxBalls::stop(item)
-                return :exit
-            end
-            Listing::program4Item(item)
-            return
-        end
-        if item["mikuType"] == "NxTask" then
-            NxBalls::start(item)
-            print "#{PolyFunctions::toString(item).green} (..: access & done, done, pause, +code, exit): "
-            input = STDIN.gets.strip
-            if input == ".." then
-                PolyActions::access(item)
-                LucilleCore::pressEnterToContinue()
-                NxBalls::stop(item)
-                N3Objects::destroy(item["uuid"])
-                return
-            end
-            if input == "done" then
-                NxBalls::stop(item)
-                N3Objects::destroy(item["uuid"])
-                return
-            end
-            if input == "pause" then
-                NxBalls::stop(item)
-                system("clear")
-                puts "streaming paused"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
-                NxBalls::stop(item)
-                DoNotShowUntil::setUnixtime(item, unixtime)
-                return
-            end
-            if input == "exit" then 
-                NxBalls::stop(item)
-                return :exit
-            end
-            Listing::program4Item(item)
-            return
-        end
-        raise "I do not know how to program4 item : #{item}"
-    end
-
-    # Listing::program4()
-    def self.program4()
-        Listing::items()
-            .drop_while{|item| Listing::skipfragment(item).size > 0 }
-            .each{|item|
-                status = Listing::program4Item(item)
-                if status == :exit then
-                    Listing::setListingMode({
-                        "type" => "classic",
-                        "hour" => Time.new.hour
-                    })
-                    return
-                end
-            }
-    end
-
-    #{
-    #    "type"  => "classic",
-    #    "hour" => integer
-    #}
-
-    #{
-    #    "type"  => "streaming",
-    #    "hour" => integer
-    #}
-
-    # Listing::setListingMode(mode)
-    def self.setListingMode(mode)
-        XCache::set("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e", JSON.generate(mode))
-    end
-
-    # Listing::getListingMode()
-    def self.getListingMode()
-        mode = XCache::getOrNull("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e")
-        if mode.nil? then
-            if LucilleCore::askQuestionAnswerAsBoolean("streaming ? ") then
-                mode  = {
-                    "type" => "streaming",
-                    "hour" => Time.new.hour
-                }
-            else
-                mode  = {
-                    "type" => "classic",
-                    "hour" => Time.new.hour
-                }
-            end
-        else
-            mode = JSON.parse(mode)
-        end
-        if mode["hour"] != Time.new.hour then
-            if LucilleCore::askQuestionAnswerAsBoolean("streaming ? ") then
-                mode  = {
-                    "type" => "streaming",
-                    "hour" => Time.new.hour
-                }
-            else
-                mode  = {
-                    "type" => "classic",
-                    "hour" => Time.new.hour
-                }
-            end
-            Listing::setListingMode(mode)
-        end
-        mode
-    end
-
-    # Listing::main()
-    def self.main()
-        initialCodeTrace = CommonUtils::stargateTraceCode()
-        Listing::launchNxBallMonitor()
-        loop {
-            if CommonUtils::stargateTraceCode() != initialCodeTrace then
-                puts "Code change detected"
-                break
-            end
-
-            mode = Listing::getListingMode()
-
-            if mode["type"] == "classic" then
-                Listing::program2()
-            end
-
-            if mode["type"] == "streaming" then
-                Listing::program4()
-            end
         }
     end
 end
