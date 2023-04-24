@@ -53,8 +53,8 @@ class NxTasks
         NxTasks::interactivelyDecideBoardlessPosition()
     end
 
-    # NxTasks::interactivelyDecidePosition2(board)
-    def self.interactivelyDecidePosition2(board)
+    # NxTasks::interactivelyDecidePosition(board)
+    def self.interactivelyDecidePosition(board)
         if board then
             NxBoards::interactivelyDecideNewBoardPosition(board)
         else
@@ -66,7 +66,7 @@ class NxTasks
     def self.setHyperspatialCoordinates(item)
         board     = NxBoards::interactivelySelectOneOrNull()
         boarduuid = board ? board["uuid"] : nil
-        position  = NxTasks::interactivelyDecidePosition2(board)
+        position  = NxTasks::interactivelyDecidePosition(board)
         engine    = TxEngines::interactivelyMakeEngine()
 
         item["boarduuid"] = boarduuid

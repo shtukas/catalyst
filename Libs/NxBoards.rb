@@ -116,7 +116,7 @@ class NxBoards
     def self.interactivelyDecideNewBoardPosition(board)
         boardItems = NxTasks::boardItemsOrdered(board)
         return 1 if boardItems.empty?
-        boardItems.each{|item| puts NxTasks::toString(item) }
+        boardItems.take(CommonUtils::screenHeight()-3).each{|item| puts NxTasks::toString(item) }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
         if position == "" then
             return boardItems.map{|item| item["position"] }.max + 1

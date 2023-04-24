@@ -358,7 +358,7 @@ class Listing
             end
             board     = NxBoards::interactivelySelectOneOrNull()
             boarduuid = board ? board["uuid"] : nil
-            position  = NxTasks::interactivelyDecidePosition2(board)
+            position  = NxTasks::interactivelyDecidePosition(board)
             item["position"] =  position
             puts JSON.pretty_generate(item)
             NxTasks::commit(item)
