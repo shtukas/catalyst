@@ -135,6 +135,7 @@ class Listing
         if Interpreting::match("board", input) then
             item = store.getDefault()
             return if item.nil?
+            puts "boarding: #{PolyFunctions::toString(item).green}"
             BoardsAndItems::askAndMaybeAttach(item)
             return
         end
@@ -150,6 +151,7 @@ class Listing
         if Interpreting::match("clique", input) then
             item = store.getDefault()
             return if item.nil?
+            puts "cliquing: #{PolyFunctions::toString(item).green}"
             CliquesAndItems::askAndMaybeAttach(item)
             return
         end
@@ -962,6 +964,11 @@ class Listing
 
     # Listing::program4Item(item)
     def self.program4Item(item)
+
+        if item["mikuType"] == "NxBoard" then
+            return :exit
+        end
+
         if item["mikuType"] == "NxFloat" then
             print "#{PolyFunctions::toString(item).green} $ (enter for ack): "
             STDIN.gets
