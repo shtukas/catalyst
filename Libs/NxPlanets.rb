@@ -57,8 +57,8 @@ class NxPlanets
         "#{"(board)".green} #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxPlanets::boardsOrdered()
-    def self.boardsOrdered()
+    # NxPlanets::itemsOrdered()
+    def self.itemsOrdered()
         NxPlanets::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
@@ -100,7 +100,7 @@ class NxPlanets
 
     # NxPlanets::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxPlanets::boardsOrdered()
+        items = NxPlanets::itemsOrdered()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxPlanets::toString(item) })
     end
 
@@ -202,16 +202,16 @@ class NxPlanets
     end
 end
 
-class BoardsAndItems
+class PlanetsAndItems
 
-    # BoardsAndItems::attachToItem(item, board or nil)
+    # PlanetsAndItems::attachToItem(item, board or nil)
     def self.attachToItem(item, board)
         return if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
     end
 
-    # BoardsAndItems::maybeAskAndMaybeAttach(item)
+    # PlanetsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
         return item if item["mikuType"] == "NxPlanet"
         return item if item["boarduuid"]
@@ -222,7 +222,7 @@ class BoardsAndItems
         item
     end
 
-    # BoardsAndItems::askAndMaybeAttach(item)
+    # PlanetsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
         return item if item["mikuType"] == "NxPlanet"
         board = NxPlanets::interactivelySelectOneOrNull()
@@ -232,7 +232,7 @@ class BoardsAndItems
         item
     end
 
-    # BoardsAndItems::toStringSuffix(item)
+    # PlanetsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
         return "" if item["boarduuid"].nil?
         board = NxPlanets::getItemOfNull(item["boarduuid"])

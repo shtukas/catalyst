@@ -328,7 +328,7 @@ class NxTasks
 
     # NxTasks::club()
     def self.club()
-        items1 = NxPlanets::boardsOrdered()
+        items1 = NxPlanets::itemsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
                     .sort_by{|board| TxEngines::completionRatio(board["engine"]) }

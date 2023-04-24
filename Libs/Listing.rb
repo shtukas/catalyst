@@ -131,7 +131,7 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             puts "boarding: #{PolyFunctions::toString(item).green}"
-            BoardsAndItems::askAndMaybeAttach(item)
+            PlanetsAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -139,7 +139,7 @@ class Listing
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            BoardsAndItems::askAndMaybeAttach(item)
+            PlanetsAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -420,7 +420,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -433,7 +433,7 @@ class Listing
             item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -441,7 +441,7 @@ class Listing
             item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -462,7 +462,7 @@ class Listing
             item = NxFloats::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -500,7 +500,7 @@ class Listing
             item = NxTasks::makeFirstTask()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -575,7 +575,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -590,7 +590,7 @@ class Listing
             item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
             N3Objects::commit(item)
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -598,7 +598,7 @@ class Listing
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            PlanetsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -650,8 +650,8 @@ class Listing
                 "lambda" => lambda { TheLine::getCurrentCount() }
             },
             {
-                "name" => "NxPlanets::boardsOrdered()",
-                "lambda" => lambda { NxPlanets::boardsOrdered() }
+                "name" => "NxPlanets::itemsOrdered()",
+                "lambda" => lambda { NxPlanets::itemsOrdered() }
             },
         ]
 
@@ -790,7 +790,7 @@ class Listing
     # Listing::itemToListingLine(store or nil, item)
     def self.itemToListingLine(store, item)
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px01Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px01Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["priority"] then
             line = line.gsub("Px01", "(priority) ".red)
         else
