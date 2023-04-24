@@ -31,7 +31,7 @@ class Listing
             "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | boards | time promises | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n> | mini game",
+            "misc          : search | speed | commands | mikuTypes | edit <n> | streaming",
         ].join("\n")
     end
 
@@ -127,7 +127,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("mini game", input) then
+        if Interpreting::match("streaming", input) then
             Listing::program4()
             return
         end
@@ -1139,18 +1139,32 @@ class Listing
     def self.getListingMode()
         mode = XCache::getOrNull("6041c371-5c9a-4dd1-b3d2-882c7aa01e1e")
         if mode.nil? then
-            mode  = {
-                "type" => "streaming",
-                "hour" => Time.new.hour
-            }
+            if LucilleCore::askQuestionAnswerAsBoolean("streaming ? ") then
+                mode  = {
+                    "type" => "streaming",
+                    "hour" => Time.new.hour
+                }
+            else
+                mode  = {
+                    "type" => "classic",
+                    "hour" => Time.new.hour
+                }
+            end
         else
             mode = JSON.parse(mode)
         end
         if mode["hour"] != Time.new.hour then
-            mode  = {
-                "type" => "streaming",
-                "hour" => Time.new.hour
-            }
+            if LucilleCore::askQuestionAnswerAsBoolean("streaming ? ") then
+                mode  = {
+                    "type" => "streaming",
+                    "hour" => Time.new.hour
+                }
+            else
+                mode  = {
+                    "type" => "classic",
+                    "hour" => Time.new.hour
+                }
+            end
             Listing::setListingMode(mode)
         end
         mode
