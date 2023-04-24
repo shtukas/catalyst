@@ -62,11 +62,7 @@ class TxEngines
             # if not completed, we return the lowest
             day_completion_ratio = BankUtils::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/5)
             period_completion_ratio = BankCore::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
-            if BankCore::getValue(engine["capsule"]) >= engine["hours"]*3600 then
-                return [day_completion_ratio, period_completion_ratio].max
-            else
-                return [day_completion_ratio, period_completion_ratio].min
-            end
+            return [day_completion_ratio, period_completion_ratio].max
         end
         raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
     end
@@ -116,11 +112,11 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            return "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)}% of daily #{engine["hours"]} hours)"
+            return "(engine: #{BankUtils::recoveredAverageHoursPerDay(engine["uuid"]).round(2)} of daily #{engine["hours"]} hours)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
-            strings << "(engine: #{(TxEngines::completionRatio(engine)*100).round(2)}% of today #{engine["hours"].to_f/5} hours"
+            strings << "(engine: #{BankUtils::recoveredAverageHoursPerDay(engine["uuid"]).round(2)} of today #{engine["hours"].to_f/5} hours"
 
             strings << ", #{(BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours of weekly #{engine["hours"]}"
 
