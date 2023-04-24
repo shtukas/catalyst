@@ -35,9 +35,9 @@ class NxOpenCycles
                     description = "open cycle: #{File.basename(folderpath)}"
                     uuid  = SecureRandom.uuid
                     coredataref = "open-cycle:#{File.basename(folderpath)}"
-                    board = NxPlanets::interactivelySelectOneOrNull()
+                    board = NxCapitalShips::interactivelySelectOneOrNull()
                     if board then
-                        position = NxPlanets::interactivelyDecideNewBoardPosition(board)
+                        position = NxCapitalShips::interactivelyDecideNewBoardPosition(board)
                         item = {
                             "uuid"        => uuid,
                             "mikuType"    => "NxTask",

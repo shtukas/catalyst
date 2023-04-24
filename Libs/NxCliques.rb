@@ -26,7 +26,7 @@ class NxCliques
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board = NxPlanets::interactivelySelectOneOrNull()
+        board = NxCapitalShips::interactivelySelectOneOrNull()
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxClique",
@@ -174,7 +174,7 @@ class CliquesAndItems
     def self.askAndMaybeAttach(item)
         return item if item["cliqueuuid"]
         return item if item["mikuType"] == "NxClique"
-        return item if item["mikuType"] == "NxPlanet"
+        return item if item["mikuType"] == "NxCapitalShip"
         clique = NxCliques::interactivelySelectOneOrNull()
         return item if clique.nil?
         item["cliqueuuid"] = clique["uuid"]

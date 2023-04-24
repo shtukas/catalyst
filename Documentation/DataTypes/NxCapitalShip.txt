@@ -1,7 +1,7 @@
 
-NxPlanet:
+NxCapitalShip:
     "uuid"          : String
-    "mikuType"      : "NxPlanet"
+    "mikuType"      : "NxCapitalShip"
     "unixtime"      : Float
     "datetime"      : DateTime Iso 8601 UTC Zulu
     "description"   : String

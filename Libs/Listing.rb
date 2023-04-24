@@ -199,7 +199,7 @@ class Listing
         end
 
         if Interpreting::match("boards", input) then
-            NxPlanets::program3()
+            NxCapitalShips::program3()
             return
         end
 
@@ -290,8 +290,8 @@ class Listing
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxPlanet", "NxTask", "NxCliques"].include?(item["mikuType"]) then
-                puts "Only NxPlanet, NxTask and NxCliques are carrying engine"
+            if !["NxCapitalShip", "NxTask", "NxCliques"].include?(item["mikuType"]) then
+                puts "Only NxCapitalShip, NxTask and NxCliques are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -306,8 +306,8 @@ class Listing
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
             return if item.nil?
-            if !["NxPlanet", "NxTask"].include?(item["mikuType"]) then
-                puts "Only NxPlanet and NxTask are carrying engine"
+            if !["NxCapitalShip", "NxTask"].include?(item["mikuType"]) then
+                puts "Only NxCapitalShip and NxTask are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -353,7 +353,7 @@ class Listing
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            board     = NxPlanets::interactivelySelectOneOrNull()
+            board     = NxCapitalShips::interactivelySelectOneOrNull()
             boarduuid = board ? board["uuid"] : nil
             position  = NxTasks::interactivelyDecidePosition(board)
             item["position"] =  position
@@ -650,8 +650,8 @@ class Listing
                 "lambda" => lambda { TheLine::getCurrentCount() }
             },
             {
-                "name" => "NxPlanets::itemsOrdered()",
-                "lambda" => lambda { NxPlanets::itemsOrdered() }
+                "name" => "NxCapitalShips::itemsOrdered()",
+                "lambda" => lambda { NxCapitalShips::itemsOrdered() }
             },
         ]
 
@@ -745,7 +745,7 @@ class Listing
             NxCliques::listingItems(),
             NxTasks::listingItems(),
 
-            NxPlanets::listingItems()
+            NxCapitalShips::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -814,7 +814,7 @@ class Listing
     def self.canBeDefault(item)
         return true if NxBalls::itemIsRunning(item)
 
-        return false if item["mikuType"] == "NxPlanet"
+        return false if item["mikuType"] == "NxCapitalShip"
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
@@ -889,7 +889,7 @@ class Listing
             count = 0
             N3Objects::getall().each{|item|
                 next if item["boarduuid"].nil?
-                next if NxPlanets::getItemOfNull(item["boarduuid"])
+                next if NxCapitalShips::getItemOfNull(item["boarduuid"])
                 break if count > 100
                 puts "item: #{JSON.pretty_generate(item)}"
                 puts "could not find the board".green

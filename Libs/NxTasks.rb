@@ -56,7 +56,7 @@ class NxTasks
     # NxTasks::interactivelyDecidePosition(board)
     def self.interactivelyDecidePosition(board)
         if board then
-            NxPlanets::interactivelyDecideNewBoardPosition(board)
+            NxCapitalShips::interactivelyDecideNewBoardPosition(board)
         else
             NxTasks::interactivelyDecideBoardlessPosition()
         end
@@ -64,7 +64,7 @@ class NxTasks
 
     # NxTasks::setHyperspatialCoordinates(item)
     def self.setHyperspatialCoordinates(item)
-        board     = NxPlanets::interactivelySelectOneOrNull()
+        board     = NxCapitalShips::interactivelySelectOneOrNull()
         boarduuid = board ? board["uuid"] : nil
         position  = NxTasks::interactivelyDecidePosition(board)
         engine    = TxEngines::interactivelyMakeEngine()
@@ -328,7 +328,7 @@ class NxTasks
 
     # NxTasks::club()
     def self.club()
-        items1 = NxPlanets::itemsOrdered()
+        items1 = NxCapitalShips::itemsOrdered()
                     .select{|board| DoNotShowUntil::isVisible(board) }
                     .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
                     .sort_by{|board| TxEngines::completionRatio(board["engine"]) }

@@ -10,7 +10,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["mikuType"] == "NxPlanet" then
+        if item["mikuType"] == "NxCapitalShip" then
             accounts << {
                 "description" => "self's engine",
                 "number"      => item["engine"]["uuid"]
@@ -43,7 +43,7 @@ class PolyFunctions
         end
 
         if item["boarduuid"] then
-            board = NxPlanets::getItemOfNull(item["boarduuid"])
+            board = NxCapitalShips::getItemOfNull(item["boarduuid"])
             if board then
                 accounts << {
                     "description" => board["description"],
@@ -84,8 +84,8 @@ class PolyFunctions
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
-        if item["mikuType"] == "NxPlanet" then
-            return NxPlanets::toString(item)
+        if item["mikuType"] == "NxCapitalShip" then
+            return NxCapitalShips::toString(item)
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
@@ -120,9 +120,9 @@ class PolyFunctions
 
     # PolyFunctions::interactivelySelectBoardAndPositionForTask()
     def self.interactivelySelectBoardAndPositionForTask() # [boarduuid, position]
-        board = NxPlanets::interactivelySelectOneOrNull()
+        board = NxCapitalShips::interactivelySelectOneOrNull()
         if board then
-            [board["uuid"], NxPlanets::interactivelyDecideNewBoardPosition(board)]
+            [board["uuid"], NxCapitalShips::interactivelyDecideNewBoardPosition(board)]
         else
             [nil, NxTasks::thatPosition()]
         end
