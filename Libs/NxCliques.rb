@@ -91,10 +91,11 @@ class NxCliques
     # NxCliques::dataManagement()
     def self.dataManagement()
         NxCliques::items()
-            .select{|clique| (Time.new.to_i - clique["unixtime"]) > 3600 }
+            .select{|clique| (Time.new.to_i - clique["unixtime"]) > 86400 }
             .select{|clique| NxCliques::cliqueToItems(clique).size == 0 }
             .each{|clique|
-                puts "destroying empty clique: #{clique["description"]}"
+                puts "> destroying empty clique: #{clique["description"]}"
+                LucilleCore::pressEnterToContinue()
                 NxCliques::destroy(clique["uuid"])
             }
     end
