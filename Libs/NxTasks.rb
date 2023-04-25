@@ -119,6 +119,11 @@ class NxTasks
         "(task) (#{item["position"].round(2)}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
+    # NxTasks::toStringNoEngine(item)
+    def self.toStringNoEngine(item)
+        "(task) (#{item["position"].round(2)}) #{item["description"]}"
+    end
+
     # NxTasks::completionRatio(item)
     def self.completionRatio(item)
         TxEngines::completionRatio(item["engine"]) 
@@ -136,23 +141,6 @@ class NxTasks
     def self.boardlessItems()
         NxTasks::items()
             .select{|item| item["boarduuid"].nil? }
-    end
-
-    # --------------------------------------------------
-    # Data (Position)
-
-    # NxTasks::firstPosition()
-    def self.firstPosition()
-        items = NxTasks::items()
-        return 1 if items.empty?
-        items.map{|item| item["position"]}.min
-    end
-
-    # NxTasks::lastPosition()
-    def self.lastPosition()
-        items = NxTasks::items()
-        return 1 if items.empty?
-        items.map{|item| item["position"]}.max
     end
 
     # --------------------------------------------------

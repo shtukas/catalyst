@@ -29,7 +29,7 @@ class Listing
             "    - ondate  : redate",
             "",
             "transmutation : recast (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | boards",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")

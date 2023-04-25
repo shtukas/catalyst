@@ -2,16 +2,20 @@
 
 class NxTasksPositions
 
-    # NxTasksPositions::interactivelyDecidePositionAtBoardAtTop(board)
-    def self.interactivelyDecidePositionAtBoardAtTop(board)
-        NxBoards::boardToItemsOrdered(board)
-            .take(CommonUtils::screenHeight()-5)
-            .each{|item| puts NxTasks::toString(item) }
-        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
-        if position == "" then
-            return NxTasks::lastPosition() + 1
-        end
-        position.to_f
+    # -------------------------------------------
+
+    # NxTasksPositions::firstPosition()
+    def self.firstPosition()
+        items = NxTasks::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"]}.min
+    end
+
+    # NxTasksPositions::lastPosition()
+    def self.lastPosition()
+        items = NxTasks::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"]}.max
     end
 
     # NxTasksPositions::thatPosition(positions)
@@ -32,6 +36,23 @@ class NxTasksPositions
         raise "NxTasksPositions::thatPosition failed: positions: #{positions.join(", ")}"
     end
 
+    # -------------------------------------------
+
+    # NxTasksPositions::interactivelyDecidePositionAtBoardAtTop(board)
+    def self.interactivelyDecidePositionAtBoardAtTop(board)
+        puts "-- begin-------------".green
+        NxBoards::boardToItemsOrdered(board)
+            .take(CommonUtils::screenHeight()-5)
+            .each{|item| puts NxTasks::toStringNoEngine(item) }
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if position == "" then
+            position = NxTasksPositions::lastPosition() + 1
+            puts "> position: #{position}"
+            return position
+        end
+        position.to_f
+    end
+
     # NxTasksPositions::computeThatPositionAtBoard(board)
     def self.computeThatPositionAtBoard(board)
         NxTasksPositions::thatPosition(NxBoards::boardToItemsOrdered(board).map{|item| item["position"]})
@@ -39,25 +60,30 @@ class NxTasksPositions
 
     # NxTasksPositions::decideNewPositionAtBoard(board)
     def self.decideNewPositionAtBoard(board)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["among top positions", "that position"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["among top positions", "that position", "next (default)"])
         if option == "among top positions" then
             return NxTasksPositions::interactivelyDecidePositionAtBoardAtTop(board)
         end
         if option == "that position" then
             return NxTasksPositions::computeThatPositionAtBoard(board)
         end
-        raise "(error: 1296193b-555c-466c-89c9-5958bb4f2cab)"
+        NxTasksPositions::lastPosition() + 0.5 + rand
     end
+
+    # -------------------------------------------
 
     # NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
     def self.interactivelyDecidePositionAtNoBoardAtTop()
+        puts "-- begin-------------".green
         NxTasks::boardlessItems()
             .sort_by{|item| item["position"] }
             .take(CommonUtils::screenHeight()-5)
-            .each{|item| puts NxTasks::toString(item) }
+            .each{|item| puts NxTasks::toStringNoEngine(item) }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
         if position == "" then
-            return NxTasks::lastPosition() + 1
+            position = NxTasksPositions::lastPosition() + 1
+            puts "> position: #{position}"
+            return position
         end
         position.to_f
     end
@@ -69,15 +95,17 @@ class NxTasksPositions
 
     # NxTasksPositions::decideNewPositionAtNoBoard()
     def self.decideNewPositionAtNoBoard()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["among top positions", "that position"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["among top positions", "that position", "next (default)"])
         if option == "among top positions" then
             return NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
         end
         if option == "that position" then
             return NxTasksPositions::computeThatPositionAtNoBoard()
         end
-        raise "(error: 38d52e7c-0db1-4f39-8e53-eb3bb6f536d9)"
+        NxTasksPositions::lastPosition() + 0.5 + rand
     end
+
+    # -------------------------------------------
 
     # NxTasksPositions::decidePositionAtOptionalBoard(mboard)
     def self.decidePositionAtOptionalBoard(mboard)
@@ -87,5 +115,4 @@ class NxTasksPositions
             NxTasksPositions::decideNewPositionAtNoBoard()
         end
     end
-
 end
