@@ -64,11 +64,11 @@ class NxBoards
 
     # NxBoards::listingItems(boards)
     def self.listingItems(boards)
-        CommonUtils::putFirst(boards, lambda{|board| NxBoards::isEssentiallyRunning(board) })
+        CommonUtils::putFirst(boards, lambda{|board| NxBoards::isEssentiallyActive(board) })
             .map
             .with_index{|board|
                 cliques = NxBoards::boardToCliques(board)
-                cliques1_running, cliques = cliques.partition{|clique| NxCliques::isEssentiallyRunning(clique)}
+                cliques1_running, cliques = cliques.partition{|clique| NxCliques::isEssentiallyActive(clique)}
                 cliques2_active, cliques = cliques.partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
                 data1 = cliques1_running.map{|clique| NxCliques::listingItems(clique) + [clique] }
                 data2 = cliques2_active
@@ -83,21 +83,21 @@ class NxBoards
 
     # NxBoards::listingItemsPending()
     def self.listingItemsPending()
-        NxBoards::listingItems(
-            NxBoards::itemsOrdered().select{|board| (TxEngines::completionRatio(board["engine"]) < 1) or NxBoards::isEssentiallyRunning(board) }
-        )
+        boards = NxBoards::itemsOrdered()
+            .select{|board| ((TxEngines::completionRatio(board["engine"]) < 1) and DoNotShowUntil::isVisible(board)) or NxBoards::isEssentiallyActive(board) }
+        NxBoards::listingItems(boards)
     end
 
     # NxBoards::listingItemsBonus()
     def self.listingItemsBonus()
-        NxBoards::listingItems(
-            NxBoards::itemsOrdered().select{|board| TxEngines::completionRatio(board["engine"]) >= 1 }
-        )
+        boards = NxBoards::itemsOrdered()
+                    .select{|board| ((TxEngines::completionRatio(board["engine"]) >= 1) and DoNotShowUntil::isVisible(board)) or NxBoards::isEssentiallyActive(board) }
+        NxBoards::listingItems(boards)
     end
 
-    # NxBoards::isEssentiallyRunning(board)
-    def self.isEssentiallyRunning(board)
-        NxBalls::itemIsRunning(board) or NxBoards::boardToCliques(board).any?{|clique| NxCliques::isEssentiallyRunning(clique) }
+    # NxBoards::isEssentiallyActive(board)
+    def self.isEssentiallyActive(board)
+        NxBalls::itemIsActive(board) or NxBoards::boardToCliques(board).any?{|clique| NxCliques::isEssentiallyActive(clique) }
     end
 
     # NxBoards::boardToCliques(board)

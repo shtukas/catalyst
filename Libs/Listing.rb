@@ -713,7 +713,7 @@ class Listing
         else
             line = line.gsub("Px02", "")
         end
-        if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) or (item["mikuType"] == "NxBoard" and NxBoards::isEssentiallyRunning(item)) or (item["mikuType"] == "NxClique" and NxCliques::isEssentiallyRunning(item)) then
+        if PolyFunctions::isEssentiallyActive(item) then
             line = line.green
         end
         line
@@ -811,7 +811,7 @@ class Listing
     def self.primaryListingProgram(store, items)
         system("clear")
 
-        boards = NxBoards::itemsOrdered()
+        boards = CommonUtils::putFirst(NxBoards::itemsOrdered(), lambda{|board| DoNotShowUntil::isVisible(board) })
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - boards.size)
 
@@ -828,7 +828,11 @@ class Listing
 
         boards.each{|board|
             store.register(board, Listing::canBeDefault(board))
-            puts Listing::itemToListingLine(store, board)
+            if DoNotShowUntil::isVisible(board) then
+                puts Listing::itemToListingLine(store, board)
+            else
+                puts Listing::itemToListingLine(store, board).yellow
+            end
         }
     end
 

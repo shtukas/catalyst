@@ -55,9 +55,9 @@ class NxCliques
         NxTasks::items().select{|task| task["cliqueuuid"] == clique["uuid"] }
     end
 
-    # NxCliques::isEssentiallyRunning(clique)
-    def self.isEssentiallyRunning(clique)
-        NxBalls::itemIsRunning(clique) or NxCliques::cliqueToItems(clique).any?{|item| NxBalls::itemIsRunning(item) }
+    # NxCliques::isEssentiallyActive(clique)
+    def self.isEssentiallyActive(clique)
+        NxBalls::itemIsActive(clique) or NxCliques::cliqueToItems(clique).any?{|item| NxBalls::itemIsActive(item) }
     end
 
     # NxCliques::listingItems(clique)
