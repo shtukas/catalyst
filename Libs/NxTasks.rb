@@ -143,6 +143,24 @@ class NxTasks
             .select{|item| item["boarduuid"].nil? }
     end
 
+    # NxTasks::listingItems()
+    def self.listingItems()
+        items1 = NxBoards::boardsOrdered()
+                    .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
+                    .map{|board| NxBoards::boardToItemsOrdered(board).first(6) }
+                    .flatten
+        items2 = NxTasks::boardlessItems()
+                    .sort_by{|item| item["position"] }
+                    .first(6)
+        (items1 + items2)
+            .map{|item|
+                if TxEngines::completionRatio(item["engine"]) > 1 then
+                    item[:taskTimeOverflow] = true
+                end
+                item
+            }
+    end
+
     # --------------------------------------------------
     # Operations
 

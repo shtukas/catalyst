@@ -72,13 +72,6 @@ class NxBoards
         NxBoards::boardToItems(board).sort_by{|item| item["position"] }
     end
 
-    # NxBoards::listingItems()
-    def self.listingItems()
-        NxBoards::boardsOrdered()
-            .map{|board| NxBoards::boardToItemsOrdered(board).first(3) }
-            .flatten
-    end
-
     # ---------------------------------------------------------
     # Ops
     # ---------------------------------------------------------

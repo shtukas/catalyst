@@ -114,7 +114,9 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            return "(engine: #{BankUtils::recoveredAverageHoursPerDay(engine["uuid"]).round(2)} of daily #{engine["hours"]} hours)"
+            todayDoneInHours = BankUtils::recoveredAverageHoursPerDay(engine["uuid"])
+            percentage = 100*todayDoneInHours.to_f/engine["hours"]
+            return "(engine: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green}) of daily #{engine["hours"]} hours)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
@@ -122,7 +124,7 @@ class TxEngines
             todayIdealInHours = engine["hours"].to_f/5
             percentage = 100*todayDoneInHours.to_f/todayIdealInHours
 
-            strings << "(engine: #{todayDoneInHours.round(2)} (#{ "#{percentage.round(2)}%".green }) of today #{todayIdealInHours} hours"
+            strings << "(engine: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green }) of today #{todayIdealInHours} hours"
             strings << ", #{(BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours of weekly #{engine["hours"]}"
 
             hasReachedObjective = BankCore::getValue(engine["capsule"]) >= engine["hours"]*3600

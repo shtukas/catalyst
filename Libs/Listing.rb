@@ -622,7 +622,7 @@ class Listing
             NxFloats::listingItems(),
             NxFires::items(),
             DevicesBackups::listingItems(),
-            NxBoards::listingItems(),
+            NxTasks::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -679,6 +679,9 @@ class Listing
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
+        if item[:taskTimeOverflow] and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
         line
     end
 
@@ -690,6 +693,7 @@ class Listing
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
+        return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
         skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
