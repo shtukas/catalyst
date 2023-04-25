@@ -118,8 +118,11 @@ class TxEngines
         end
         if engine["type"] == "weekly-time" then
             strings = []
-            strings << "(engine: #{(BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).round(2)} of today #{engine["hours"].to_f/5} hours"
+            todayDoneInHours = BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
+            todayIdealInHours = engine["hours"].to_f/5
+            percentage = 100*todayDoneInHours.to_f/todayIdealInHours
 
+            strings << "(engine: #{todayDoneInHours.round(2)} (#{ "#{percentage.round(2)}%".green }) of today #{todayIdealInHours} hours"
             strings << ", #{(BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours of weekly #{engine["hours"]}"
 
             hasReachedObjective = BankCore::getValue(engine["capsule"]) >= engine["hours"]*3600
