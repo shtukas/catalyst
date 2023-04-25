@@ -662,7 +662,7 @@ class Listing
             DevicesBackups::listingItems(),
             NxBoards::listingItemsPending(),
             #NxDrops::listingItems(),
-            NxBoards::listingItemsBonus(),
+            #NxBoards::listingItemsBonus(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -713,7 +713,7 @@ class Listing
         else
             line = line.gsub("Px02", "")
         end
-        if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) then
+        if NxBalls::itemIsRunning(item) or NxBalls::itemIsPaused(item) or (item["mikuType"] == "NxBoard" and NxBoards::isEssentiallyRunning(item)) or (item["mikuType"] == "NxClique" and NxCliques::isEssentiallyRunning(item)) then
             line = line.green
         end
         line

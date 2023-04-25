@@ -50,14 +50,24 @@ class NxCliques
         "(clique) #{activestr} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{TxEngines::toString(item["engine"])} (#{NxCliques::cliqueToItems(item).count} items)"
     end
 
-    # NxCliques::boardToCliques(board)
-    def self.boardToCliques(board)
-        NxCliques::items().select{|clique| clique["boarduuid"] == board["uuid"] }
-    end
-
     # NxCliques::cliqueToItems(clique)
     def self.cliqueToItems(clique)
         NxTasks::items().select{|task| task["cliqueuuid"] == clique["uuid"] }
+    end
+
+    # NxCliques::isEssentiallyRunning(clique)
+    def self.isEssentiallyRunning(clique)
+        NxBalls::itemIsRunning(clique) or NxCliques::cliqueToItems(clique).any?{|item| NxBalls::itemIsRunning(item) }
+    end
+
+    # NxCliques::listingItems(clique)
+    def self.listingItems(clique)
+        CommonUtils::putFirst(NxCliques::cliqueToItems(clique), lambda{|item| NxBalls::itemIsRunning(item) })
+    end
+
+    # NxCliques::runningItems(clique)
+    def self.runningItems(clique)
+        NxCliques::cliqueToItems(clique).select{|item| NxBalls::itemIsRunning(item) }
     end
 
     # -----------------------------------------

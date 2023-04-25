@@ -64,14 +64,23 @@ class NxBoards
 
     # NxBoards::listingItems(boards)
     def self.listingItems(boards)
-        boards
+        CommonUtils::putFirst(boards, lambda{|board| NxBoards::isEssentiallyRunning(board) })
             .map
-            .with_index{|board, i|
-                cliques1, cliques2 = NxCliques::boardToCliques(board).partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
-                cliques1 = cliques1.sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
-                cliques2 = cliques2.sort_by{|clique| clique["unixtime"] }
-                tasks = (i == 0 and !cliques1.empty?) ? NxCliques::cliqueToItems(cliques1.first) : []
-                tasks + cliques1 + cliques2
+            .with_index{|board|
+                puts JSON.pretty_generate(board)
+                puts NxBoards::isEssentiallyRunning(board)
+                LucilleCore::pressEnterToContinue()
+
+                cliques = NxBoards::boardToCliques(board)
+                cliques1_running, cliques = cliques.partition{|clique| NxCliques::isEssentiallyRunning(clique)}
+                cliques2_active, cliques = cliques.partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
+                data1 = cliques1_running.map{|clique| NxCliques::listingItems(clique) + [clique] }
+                data2 = cliques2_active
+                        .sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
+                        .map{|clique| NxCliques::listingItems(clique) + [clique] }
+                data3 = cliques
+                        .sort_by{|clique| clique["unixtime"] }
+                data1 + data2 + data3
             }
             .flatten
     end
@@ -79,13 +88,25 @@ class NxBoards
     # NxBoards::listingItemsPending()
     def self.listingItemsPending()
         NxBoards::listingItems(
-            NxBoards::itemsOrdered().select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
+            NxBoards::itemsOrdered().select{|board| (TxEngines::completionRatio(board["engine"]) < 1) or NxBoards::isEssentiallyRunning(board) }
         )
     end
 
     # NxBoards::listingItemsBonus()
     def self.listingItemsBonus()
-        NxBoards::listingItems(NxBoards::itemsOrdered())
+        NxBoards::listingItems(
+            NxBoards::itemsOrdered().select{|board| TxEngines::completionRatio(board["engine"]) >= 1 }
+        )
+    end
+
+    # NxBoards::isEssentiallyRunning(board)
+    def self.isEssentiallyRunning(board)
+        NxBalls::itemIsRunning(board) or NxBoards::boardToCliques(board).any?{|clique| NxCliques::isEssentiallyRunning(clique) }
+    end
+
+    # NxBoards::boardToCliques(board)
+    def self.boardToCliques(board)
+        NxCliques::items().select{|clique| clique["boarduuid"] == board["uuid"] }
     end
 
     # ---------------------------------------------------------
@@ -108,7 +129,7 @@ class NxBoards
 
     # NxBoards::interactivelySelectOneCliqueOrNull(board)
     def self.interactivelySelectOneCliqueOrNull(board)
-        cliques = NxCliques::boardToCliques(board).sort_by{|clique| clique["unixtime"] }
+        cliques = NxBoards::boardToCliques(board).sort_by{|clique| clique["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("project", cliques, lambda{|item| NxCliques::toString(item) })
     end
 

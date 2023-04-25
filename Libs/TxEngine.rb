@@ -57,7 +57,7 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]
+            return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]*3600
         end
         if engine["type"] == "weekly-time" then
             # if completed, we return the highest of both completion ratios
@@ -118,7 +118,7 @@ class TxEngines
         end
         if engine["type"] == "weekly-time" then
             strings = []
-            strings << "(engine: #{BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).round(2)} of today #{engine["hours"].to_f/5} hours"
+            strings << "(engine: #{(BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).round(2)} of today #{engine["hours"].to_f/5} hours"
 
             strings << ", #{(BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours of weekly #{engine["hours"]}"
 
