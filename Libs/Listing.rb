@@ -716,6 +716,9 @@ class Listing
         if PolyFunctions::isEssentiallyActive(item) then
             line = line.green
         end
+        if !DoNotShowUntil::isVisible(item) and !PolyFunctions::isEssentiallyActive(item) then
+            line = line.yellow
+        end
         line
     end
 
@@ -828,11 +831,7 @@ class Listing
 
         boards.each{|board|
             store.register(board, Listing::canBeDefault(board))
-            if DoNotShowUntil::isVisible(board) then
-                puts Listing::itemToListingLine(store, board)
-            else
-                puts Listing::itemToListingLine(store, board).yellow
-            end
+            puts Listing::itemToListingLine(store, board)
         }
     end
 
