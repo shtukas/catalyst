@@ -115,4 +115,15 @@ class NxTasksPositions
             NxTasksPositions::decideNewPositionAtNoBoard()
         end
     end
+
+    # NxTasksPositions::decidePositionAtOptionalBoarduuid(boarduuid)
+    def self.decidePositionAtOptionalBoarduuid(boarduuid)
+        mboard =
+            if boarduuid then
+                N3Objects::getOrNull(boarduuid)
+            else
+                nil
+            end
+        NxTasksPositions::decidePositionAtOptionalBoard(mboard)
+    end
 end

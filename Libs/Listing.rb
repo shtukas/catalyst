@@ -25,7 +25,7 @@ class Listing
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
-            "    - tasks   : engine (<n>)",
+            "    - tasks   : engine (<n>) | position <n> | coordinates <n>",
             "    - ondate  : redate",
             "",
             "transmutation : recast (<n>)",
@@ -224,6 +224,35 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             PolyActions::destroy(item)
+            return
+        end
+
+        if Interpreting::match("position *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "position is only available to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            item["position"] = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
+            puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
+            return
+        end
+
+        if Interpreting::match("coordinates *", input) then
+            _, ordinal = Interpreting::tokenizer(input)
+            item = store.get(ordinal.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "coordinates is only available to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            item = NxTasks::recoordinates(item)
+            puts JSON.pretty_generate(item)
             return
         end
 

@@ -176,4 +176,17 @@ class NxTasks
                     .take(CommonUtils::screenHeight()-5)
         Listing::genericListingProgram(nil, items)
     end
+
+    # NxTasks::recoordinates(item)
+    def self.recoordinates(item)
+        board    = NxBoards::interactivelySelectOneBoardOrNull()
+        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
+        engine   = TxEngines::interactivelyMakeEngineOrDefault()
+        item["boarduuid"] = board ? board["uuid"] : nil
+        item["position"]  = position
+        item["engine"]    = engine
+        NxTasks::commit(item)
+        item
+    end
+
 end
