@@ -117,26 +117,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxClique" then
-            # We cannot done a project that still has drops
-            if NxCliques::cliqueToItems(item).size > 0 then
-                puts "Clique '#{PolyFunctions::toString(item).green}' still has #{NxCliques::cliqueToItems(item).size} items. You cannot destroy it."
-                action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["program(clique)", "exit"])
-                return if action.nil?
-                if action == "exit" then
-                    return
-                end
-                if action == "program(clique)" then
-                    NxCliques::access(item)
-                    return
-                end
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxDrop" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 N3Objects::destroy(item["uuid"])

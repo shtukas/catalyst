@@ -20,13 +20,12 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | clique (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | new clique",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
-            "    - tasks   : clique (<n>) | engine (<n>)",
-            "    - cliques : engine (<n>)",
+            "    - tasks   : engine (<n>)",
             "    - ondate  : redate",
             "",
             "transmutation : recast (<n>)",
@@ -144,22 +143,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("clique", input) then
-            item = store.getDefault()
-            return if item.nil?
-            puts "cliquing: #{PolyFunctions::toString(item).green}"
-            CliquesAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("clique *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
-            return if item.nil?
-            CliquesAndItems::askAndMaybeAttach(item)
-            return
-        end
-
         if Interpreting::match("unboard *", input) then
             _, ordinal = Interpreting::tokenizer(input)
             item = store.get(ordinal.to_i)
@@ -247,8 +230,8 @@ class Listing
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxBoard", "NxTask", "NxCliques"].include?(item["mikuType"]) then
-                puts "Only NxBoard, NxTask and NxCliques are carrying engine"
+            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
+                puts "Only NxBoard and NxTask are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -373,27 +356,6 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             PlanetsAndItems::maybeAskAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("new clique", input) then
-            item = NxCliques::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            NxCliques::program2()
-            return
-        end
-
-        if Interpreting::match("drop", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
-            CliquesAndItems::askAndMaybeAttach(item)
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -576,8 +538,8 @@ class Listing
                 "lambda" => lambda { NxFires::items() }
             },
             {
-                "name" => "NxBoards::listingItemsPending()",
-                "lambda" => lambda { NxBoards::listingItemsPending() }
+                "name" => "NxBoards::listingItems()",
+                "lambda" => lambda { NxBoards::listingItems() }
             },
         ]
 
@@ -660,9 +622,7 @@ class Listing
             NxFloats::listingItems(),
             NxFires::items(),
             DevicesBackups::listingItems(),
-            NxBoards::listingItemsPending(),
-            #NxDrops::listingItems(),
-            #NxBoards::listingItemsBonus(),
+            NxBoards::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -713,10 +673,10 @@ class Listing
         else
             line = line.gsub("Px02", "")
         end
-        if PolyFunctions::isEssentiallyActive(item) then
+        if NxBalls::itemIsActive(item) then
             line = line.green
         end
-        if !DoNotShowUntil::isVisible(item) and !PolyFunctions::isEssentiallyActive(item) then
+        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
         line
@@ -759,7 +719,7 @@ class Listing
             LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
                 .each{|location|
                     next if File.basename(location).start_with?(".")
-                    item = NxDrops::bufferInImport(location)
+                    item = NxTasks::bufferInImport(location)
                     puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
                     LucilleCore::removeFileSystemLocation(location)
                 }
@@ -790,7 +750,6 @@ class Listing
             NxTimePromises::operate()
             N3Objects::fileManagement()
             BankCore::fileManagement()
-            NxCliques::dataManagement()
         end
     end
 
@@ -814,7 +773,7 @@ class Listing
     def self.primaryListingProgram(store, items)
         system("clear")
 
-        boards = CommonUtils::putFirst(NxBoards::itemsOrdered(), lambda{|board| DoNotShowUntil::isVisible(board) })
+        boards = CommonUtils::putFirst(NxBoards::boardsOrdered(), lambda{|board| DoNotShowUntil::isVisible(board) })
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - boards.size)
 
@@ -848,7 +807,7 @@ class Listing
             store = ItemStore.new()
 
             store.register(mainItem, false)
-            line = "(#{store.prefixString()}) #{NxCliques::toString(mainItem)}#{NxBalls::nxballSuffixStatusIfRelevant(mainItem)}"
+            line = "(#{store.prefixString()}) #{PolyFunctions::toString(mainItem)}#{NxBalls::nxballSuffixStatusIfRelevant(mainItem)}"
             if NxBalls::itemIsActive(mainItem) then
                 line = line.green
             end

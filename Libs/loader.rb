@@ -202,7 +202,7 @@ require_relative "NxTimePromises.rb"
 require_relative "N3Objects.rb"
 require_relative "NxFires.rb"
 require_relative "NxFloats.rb"
-require_relative "NxDrops.rb"
+require_relative "NxTasksPositions.rb"
 
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"
@@ -215,7 +215,6 @@ require_relative "Stargate.rb"
 
 require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
-require_relative "NxCliques.rb"
 require_relative "TxEngine.rb"
 
 require_relative "Waves.rb"

@@ -3,7 +3,7 @@ class Transmutations
 
     # Transmutations::targetMikuTypes()
     def self.targetMikuTypes()
-        ["NxFire", "NxClique", "NxTask"]
+        ["NxFire", "NxTask"]
     end
 
     # Transmutations::interactivelySelectMikuTypeOrNull()
@@ -20,21 +20,9 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxTask"
             board = NxBoards::interactivelySelectOneBoard()
-            clique   = NxBoards::interactivelySelectOneClique(board)
-            engine   = TxEngines::interactivelyMakeEngineOrDefault()
-            item["cliqueuuid"] = cliqueuuid
+            engine = TxEngines::interactivelyMakeEngineOrDefault()
+            item["bloarduuid"] = bloarduuid
             item["engine"]     = engine
-            puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
-            return
-        end
-
-        if item["mikuType"] == "NxFire" and targetMikuType == "NxClique" then
-            puts JSON.pretty_generate(item)
-            item["mikuType"] = "NxClique"
-            if item["boarduuid"].nil? then
-                item = PlanetsAndItems::maybeAskAndMaybeAttach(item)
-            end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
             return
@@ -55,9 +43,8 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxTask"
             board = NxBoards::interactivelySelectOneBoard()
-            clique   = NxBoards::interactivelySelectOneClique(board)
-            engine   = TxEngines::interactivelyMakeEngineOrDefault()
-            item["cliqueuuid"] = cliqueuuid
+            engine = TxEngines::interactivelyMakeEngineOrDefault()
+            item["boarduuid"] = boarduuid
             item["engine"]     = engine
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)

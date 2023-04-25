@@ -21,13 +21,6 @@ class PolyFunctions
             }
         end
 
-        if item["cliqueuuid"] then
-            clique = N3Objects::getOrNull(item["cliqueuuid"])
-            if clique then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(clique)
-            end
-        end
-
         if item["boarduuid"] then
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
@@ -98,16 +91,5 @@ class PolyFunctions
         end
         puts "I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c)"
-    end
-
-    # PolyFunctions::isEssentiallyActive(item)
-    def self.isEssentiallyActive(item)
-        if item["mikuType"] == "NxBoard" then
-            return NxBoards::isEssentiallyActive(item)
-        end
-        if item["mikuType"] == "NxClique" then
-            return NxCliques::isEssentiallyActive(item)
-        end
-        NxBalls::itemIsRunning(item)
     end
 end

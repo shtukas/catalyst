@@ -40,11 +40,13 @@ class NxTasks
         item["description"] = description
         item["field11"] = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        board = NxBoards::interactivelySelectOneBoard()
-        clique   = NxBoards::interactivelySelectOneClique(board)
+        board    = NxBoards::interactivelySelectOneBoardOrNull()
+        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
-        item["cliqueuuid"] = cliqueuuid
-        item["engine"]     = engine
+
+        item["boarduuid"] = board ? board["uuid"] : nil
+        item["position"]  = position
+        item["engine"]    = engine
 
         NxTasks::commit(item)
         item
@@ -60,9 +62,52 @@ class NxTasks
             "datetime"    => Time.new.utc.iso8601,
             "description" => "Watch '#{title}' on Netflix",
             "field11"     => nil,
-            "engine"      => TxEngines::defaultEngine(nil)
+            "boarduuid"   => nil,
+            "position"    => NxTasksPositions::computeThatPositionAtNoBoard(),
+            "engine"      => TxEngines::defaultEngine(nil),
         }
         NxTasks::commit(item)
+        item
+    end
+
+    # NxTasks::viennaUrl(url)
+    def self.viennaUrl(url)
+        uuid  = SecureRandom.uuid
+        description = "(vienna) #{url}"
+        coredataref = "url:#{N1Data::putBlob(url)}"
+        item = {
+            "uuid"        => uuid,
+            "mikuType"    => "NxTask",
+            "unixtime"    => Time.new.to_i,
+            "datetime"    => Time.new.utc.iso8601,
+            "description" => description,
+            "field11"     => coredataref,
+            "boarduuid"   => nil,
+            "position"    => NxTasksPositions::computeThatPositionAtNoBoard(),
+            "engine"      => TxEngines::defaultEngine(nil),
+        }
+        N3Objects::commit(item)
+        item
+    end
+
+    # NxTasks::bufferInImport(location)
+    def self.bufferInImport(location)
+        description = File.basename(location)
+        uuid = SecureRandom.uuid
+        nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
+        coredataref = "aion-point:#{nhash}"
+        item = {
+            "uuid"        => uuid,
+            "mikuType"    => "NxTask",
+            "unixtime"    => Time.new.to_i,
+            "datetime"    => Time.new.utc.iso8601,
+            "description" => description,
+            "field11"     => coredataref,
+            "boarduuid"   => nil,
+            "position"    => NxTasksPositions::computeThatPositionAtNoBoard(),
+            "engine"      => TxEngines::defaultEngine(nil),
+        }
+        N3Objects::commit(item)
         item
     end
 
@@ -71,7 +116,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(task) (#{item["position"].round(2)}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxTasks::completionRatio(item)
@@ -85,6 +130,29 @@ class NxTasks
             .map{|i| BankCore::getValueAtDate("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", CommonUtils::nDaysInTheFuture(i))}
             .inject(0, :+)
             .to_f/3600
+    end
+
+    # NxTasks::boardlessItems()
+    def self.boardlessItems()
+        NxTasks::items()
+            .select{|item| item["boarduuid"].nil? }
+    end
+
+    # --------------------------------------------------
+    # Data (Position)
+
+    # NxTasks::firstPosition()
+    def self.firstPosition()
+        items = NxTasks::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"]}.min
+    end
+
+    # NxTasks::lastPosition()
+    def self.lastPosition()
+        items = NxTasks::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"]}.max
     end
 
     # --------------------------------------------------

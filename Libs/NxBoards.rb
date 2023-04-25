@@ -57,52 +57,26 @@ class NxBoards
         "#{"(board)".green} #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxBoards::itemsOrdered()
-    def self.itemsOrdered()
+    # NxBoards::boardsOrdered()
+    def self.boardsOrdered()
         NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
-    # NxBoards::listingItems(boards)
-    def self.listingItems(boards)
-        CommonUtils::putFirst(boards, lambda{|board| NxBoards::isEssentiallyActive(board) })
-            .map
-            .with_index{|board|
-                cliques = NxBoards::boardToCliques(board)
-                cliques1_running, cliques = cliques.partition{|clique| NxCliques::isEssentiallyActive(clique)}
-                cliques2_active, cliques = cliques.partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
-                data1 = cliques1_running.map{|clique| NxCliques::listingItems(clique) + [clique] }
-                data2 = cliques2_active
-                        .sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
-                        .map{|clique| NxCliques::listingItems(clique) + [clique] }
-                data3 = cliques
-                        .sort_by{|clique| clique["unixtime"] }
-                data1 + data2 + data3
-            }
+    # NxBoards::boardToItems(board)
+    def self.boardToItems(board)
+        NxTasks::items().select{|item| item["boarduuid"] == board["uuid"] }
+    end
+
+    # NxBoards::boardToItemsOrdered(board)
+    def self.boardToItemsOrdered(board)
+        NxBoards::boardToItems(board).sort_by{|item| item["position"] }
+    end
+
+    # NxBoards::listingItems()
+    def self.listingItems()
+        NxBoards::boardsOrdered()
+            .map{|board| NxBoards::boardToItemsOrdered(board).first(3) }
             .flatten
-    end
-
-    # NxBoards::listingItemsPending()
-    def self.listingItemsPending()
-        boards = NxBoards::itemsOrdered()
-            .select{|board| ((TxEngines::completionRatio(board["engine"]) < 1) and DoNotShowUntil::isVisible(board)) or NxBoards::isEssentiallyActive(board) }
-        NxBoards::listingItems(boards)
-    end
-
-    # NxBoards::listingItemsBonus()
-    def self.listingItemsBonus()
-        boards = NxBoards::itemsOrdered()
-                    .select{|board| ((TxEngines::completionRatio(board["engine"]) >= 1) and DoNotShowUntil::isVisible(board)) or NxBoards::isEssentiallyActive(board) }
-        NxBoards::listingItems(boards)
-    end
-
-    # NxBoards::isEssentiallyActive(board)
-    def self.isEssentiallyActive(board)
-        NxBalls::itemIsActive(board) or NxBoards::boardToCliques(board).any?{|clique| NxCliques::isEssentiallyActive(clique) }
-    end
-
-    # NxBoards::boardToCliques(board)
-    def self.boardToCliques(board)
-        NxCliques::items().select{|clique| clique["boarduuid"] == board["uuid"] }
     end
 
     # ---------------------------------------------------------
@@ -111,7 +85,7 @@ class NxBoards
 
     # NxBoards::interactivelySelectOneBoardOrNull()
     def self.interactivelySelectOneBoardOrNull()
-        items = NxBoards::itemsOrdered()
+        items = NxBoards::boardsOrdered()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
     end
 
@@ -121,19 +95,6 @@ class NxBoards
             item = NxBoards::interactivelySelectOneBoardOrNull()
             return item if item
         }
-    end
-
-    # NxBoards::interactivelySelectOneCliqueOrNull(board)
-    def self.interactivelySelectOneCliqueOrNull(board)
-        cliques = NxBoards::boardToCliques(board).sort_by{|clique| clique["unixtime"] }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", cliques, lambda{|item| NxCliques::toString(item) })
-    end
-
-    # NxBoards::interactivelySelectOneClique(board)
-    def self.interactivelySelectOneClique(board)
-        project = NxBoards::interactivelySelectOneCliqueOrNull(board)
-        return project if project
-        NxBoards::interactivelySelectOneClique(board)
     end
 
     # ---------------------------------------------------------
@@ -147,7 +108,7 @@ class NxBoards
                 Waves::listingItems(),
                 NxFloats::listingItems(),
                 NxFires::items(),
-                NxCliques::items(),
+                NxBoards::boardToItemsOrdered(board)
             ]
                 .flatten
                 .select{|item| item["boarduuid"] == board["uuid"] }

@@ -4,7 +4,7 @@ Cross types conventions:
 
     - "n3timestamp"    : Unixtime, Float (2)
     - "field11"        : coredata reference string
-    - "boarduuid"      : board uuid (1)
+    - "boarduuid"      : null or board uuid
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
