@@ -67,10 +67,6 @@ class NxBoards
         CommonUtils::putFirst(boards, lambda{|board| NxBoards::isEssentiallyRunning(board) })
             .map
             .with_index{|board|
-                puts JSON.pretty_generate(board)
-                puts NxBoards::isEssentiallyRunning(board)
-                LucilleCore::pressEnterToContinue()
-
                 cliques = NxBoards::boardToCliques(board)
                 cliques1_running, cliques = cliques.partition{|clique| NxCliques::isEssentiallyRunning(clique)}
                 cliques2_active, cliques = cliques.partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
