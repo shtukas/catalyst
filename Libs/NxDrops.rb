@@ -36,4 +36,14 @@ class NxDrops
         N3Objects::commit(item)
         item
     end
+
+    # NxDrops::toString(item)
+    def self.toString(item)
+        "(drop) #{item["description"]}"
+    end
+
+    # NxDrops::listingItems()
+    def self.listingItems()
+        N3Objects::getMikuType("NxDrop").sort_by{|item| item["unixtime"] }
+    end
 end

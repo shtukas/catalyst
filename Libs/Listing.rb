@@ -556,24 +556,28 @@ class Listing
                 "lambda" => lambda { PhysicalTargets::listingItems() }
             },
             {
-                "name" => "Waves::listingItems(nil)",
-                "lambda" => lambda { Waves::listingItems() }
+                "name" => "Waves::listingInterruptionItems()",
+                "lambda" => lambda { Waves::listingInterruptionItems() }
             },
             {
-                "name" => "Waves::listingItems(nil)",
-                "lambda" => lambda { Waves::listingItems() }
+                "name" => "Waves::listingNonInterruptionItemsWithCircuitBreaker()",
+                "lambda" => lambda { Waves::listingNonInterruptionItemsWithCircuitBreaker() }
             },
             {
-                "name" => "TheLine::getReference()",
-                "lambda" => lambda { TheLine::getReference() }
+                "name" => "TheLine::line()",
+                "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "TheLine::getCurrentCount()",
-                "lambda" => lambda { TheLine::getCurrentCount() }
+                "name" => "NxFloats::listingItems()",
+                "lambda" => lambda { NxFloats::listingItems() }
             },
             {
-                "name" => "NxBoards::itemsOrdered()",
-                "lambda" => lambda { NxBoards::itemsOrdered() }
+                "name" => "NxFires::items()",
+                "lambda" => lambda { NxFires::items() }
+            },
+            {
+                "name" => "NxBoards::listingItemsPending()",
+                "lambda" => lambda { NxBoards::listingItemsPending() }
             },
         ]
 
@@ -612,16 +616,12 @@ class Listing
 
         results2 = [
             {
-                "name" => "Listing::program1()",
-                "lambda" => lambda { Listing::program1(ItemStore.new()) }
-            },
-            {
-                "name" => "TheLine::line()",
-                "lambda" => lambda { TheLine::line() }
-            },
-            {
                 "name" => "Listing::items()",
                 "lambda" => lambda { Listing::items() }
+            },
+            {
+                "name" => "Listing::primaryListingProgram()",
+                "lambda" => lambda { Listing::primaryListingProgram(ItemStore.new(), Listing::items()) }
             },
         ]
                     .map{|test|
@@ -660,7 +660,9 @@ class Listing
             NxFloats::listingItems(),
             NxFires::items(),
             DevicesBackups::listingItems(),
-            NxBoards::listingItems()
+            NxBoards::listingItemsPending(),
+            #NxDrops::listingItems(),
+            NxBoards::listingItemsBonus(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
@@ -748,31 +750,6 @@ class Listing
         true
     end
 
-    # Listing::program1(store, items)
-    def self.program1(store, items)
-        system("clear")
-
-        boards = NxBoards::itemsOrdered()
-
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - boards.size)
-
-        spacecontrol.putsline ""
-        puts TheLine::line()
-        spacecontrol.putsline ""
-
-        items
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-                break if !status
-            }
-
-        boards.each{|board|
-            store.register(board, Listing::canBeDefault(board))
-            puts Listing::itemToListingLine(store, board)
-        }
-    end
-
     # Listing::dataMaintenance()
     def self.dataMaintenance()
         if Config::isPrimaryInstance() then
@@ -830,8 +807,69 @@ class Listing
         }
     end
 
-    # Listing::program2()
-    def self.program2()
+    # Listing::primaryListingProgram(store, items)
+    def self.primaryListingProgram(store, items)
+        system("clear")
+
+        boards = NxBoards::itemsOrdered()
+
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - boards.size)
+
+        spacecontrol.putsline ""
+        puts TheLine::line()
+        spacecontrol.putsline ""
+
+        items
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+
+        boards.each{|board|
+            store.register(board, Listing::canBeDefault(board))
+            puts Listing::itemToListingLine(store, board)
+        }
+    end
+
+    # Listing::genericListingProgram(mainItem, items)
+    def self.genericListingProgram(mainItem, items)
+        loop {
+
+            system("clear")
+
+            puts ""
+
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            store = ItemStore.new()
+
+            store.register(mainItem, false)
+            line = "(#{store.prefixString()}) #{NxCliques::toString(mainItem)}#{NxBalls::nxballSuffixStatusIfRelevant(mainItem)}"
+            if NxBalls::itemIsActive(mainItem) then
+                line = line.green
+            end
+            spacecontrol.putsline line
+
+            spacecontrol.putsline ""
+
+            items
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item)) 
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    break if !status
+                }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == ""
+
+            Listing::listingCommandInterpreter(input, store, nil)
+        }
+    end
+
+    # Listing::main()
+    def self.main()
         initialCodeTrace = CommonUtils::stargateTraceCode()
         loop {
 
@@ -844,7 +882,7 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::program1(store, Listing::items())
+            Listing::primaryListingProgram(store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

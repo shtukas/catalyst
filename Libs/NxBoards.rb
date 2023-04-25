@@ -62,42 +62,30 @@ class NxBoards
         NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
-    # NxBoards::boardItems(board)
-    def self.boardItems(board)
-        [
-            NxOndates::listingItems(),
-            Waves::listingItems(),
-
-            NxFloats::listingItems(),
-
-            NxFires::items(),
-            NxCliques::items(),
-        ]
-            .flatten
-            .select{|item| item["boarduuid"] == board["uuid"] }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
+    # NxBoards::listingItems(boards)
+    def self.listingItems(boards)
+        boards
+            .map
+            .with_index{|board, i|
+                cliques1, cliques2 = NxCliques::boardToCliques(board).partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
+                cliques1 = cliques1.sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
+                cliques2 = cliques2.sort_by{|clique| clique["unixtime"] }
+                tasks = (i == 0 and !cliques1.empty?) ? NxCliques::cliqueToItems(cliques1.first) : []
+                tasks + cliques1 + cliques2
             }
+            .flatten
     end
 
-    # NxBoards::listingItems()
-    def self.listingItems()
-        boards = NxBoards::itemsOrdered()
+    # NxBoards::listingItemsPending()
+    def self.listingItemsPending()
+        NxBoards::listingItems(
+            NxBoards::itemsOrdered().select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
+        )
+    end
 
-        cliques = boards
-                    .map{|board|
-                        cliques1, cliques2 = NxCliques::boardToCliques(board).partition{|clique| BankCore::getValue(clique["uuid"]) > 0 }
-                        cliques1 = cliques1.sort_by{|clique| TxEngines::completionRatio(clique["engine"]) }
-                        cliques2 = cliques2.sort_by{|clique| clique["unixtime"] }
-                        cliques1 + cliques2
-                    }
-                    .flatten
-
-        NxCliques::cliqueToItems(cliques.first) + cliques.drop(1)
+    # NxBoards::listingItemsBonus()
+    def self.listingItemsBonus()
+        NxBoards::listingItems(NxBoards::itemsOrdered())
     end
 
     # ---------------------------------------------------------
@@ -137,39 +125,23 @@ class NxBoards
 
     # NxBoards::program1(board)
     def self.program1(board)
-
-        loop {
-
-            system("clear")
-
-            puts ""
-
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-            store = ItemStore.new()
-
-            store.register(board, false)
-            line = "(#{store.prefixString()}) #{NxBoards::toString(board)}#{NxBalls::nxballSuffixStatusIfRelevant(board)}"
-            if NxBalls::itemIsActive(board) then
-                line = line.green
-            end
-            spacecontrol.putsline line
-
-            spacecontrol.putsline ""
-
-            NxBoards::boardItems(board)
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
-                    break if !status
+        items = [
+                NxOndates::listingItems(),
+                Waves::listingItems(),
+                NxFloats::listingItems(),
+                NxFires::items(),
+                NxCliques::items(),
+            ]
+                .flatten
+                .select{|item| item["boarduuid"] == board["uuid"] }
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
                 }
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == ""
-
-            Listing::listingCommandInterpreter(input, store, nil)
-        }
+        Listing::genericListingProgram(board, items)
     end
 
     # NxBoards::program2(board)
@@ -178,7 +150,7 @@ class NxBoards
             board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
             puts NxBoards::toString(board)
-            actions = ["program(board)", "start", "add time", "holiday"]
+            actions = ["program(board)", "start", "add time", "do not show until"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "start" then
@@ -191,9 +163,9 @@ class NxBoards
             if action == "program(board)" then
                 NxBoards::program1(board)
             end
-            if action == "holiday" then
-                unixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + 3600*3 # 3 am
-                if LucilleCore::askQuestionAnswerAsBoolean("> confirm today holiday for '#{PolyFunctions::toString(board).green}': ") then
+            if action == "do not show until" then
+                unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+                if unixtime then
                     DoNotShowUntil::setUnixtime(board, unixtime)
                 end
             end
