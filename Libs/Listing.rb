@@ -29,7 +29,7 @@ class Listing
             "    - ondate  : redate",
             "",
             "transmutation : recast (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | boards",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | boards | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -140,6 +140,16 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             PlanetsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if Interpreting::match("boards", input) then
+            NxBoards::program3()
+            return
+        end
+
+        if Interpreting::match("tasks", input) then
+            NxTasks::program1()
             return
         end
 
@@ -538,8 +548,8 @@ class Listing
                 "lambda" => lambda { NxFires::items() }
             },
             {
-                "name" => "NxBoards::listingItems()",
-                "lambda" => lambda { NxBoards::listingItems() }
+                "name" => "NxTasks::listingItems()",
+                "lambda" => lambda { NxTasks::listingItems() }
             },
         ]
 
@@ -810,14 +820,15 @@ class Listing
 
             store = ItemStore.new()
 
-            store.register(mainItem, false)
-            line = "(#{store.prefixString()}) #{PolyFunctions::toString(mainItem)}#{NxBalls::nxballSuffixStatusIfRelevant(mainItem)}"
-            if NxBalls::itemIsActive(mainItem) then
-                line = line.green
+            if mainItem then
+                store.register(mainItem, false)
+                line = "(#{store.prefixString()}) #{PolyFunctions::toString(mainItem)}#{NxBalls::nxballSuffixStatusIfRelevant(mainItem)}"
+                if NxBalls::itemIsActive(mainItem) then
+                    line = line.green
+                end
+                spacecontrol.putsline line
+                spacecontrol.putsline ""
             end
-            spacecontrol.putsline line
-
-            spacecontrol.putsline ""
 
             items
                 .each{|item|

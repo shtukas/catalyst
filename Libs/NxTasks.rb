@@ -168,4 +168,12 @@ class NxTasks
     def self.access(item)
         CoreData::access(item["field11"])
     end
+
+    # NxTasks::program1()
+    def self.program1()
+        items = NxTasks::boardlessItems()
+                    .sort_by{|item| item["position"] }
+                    .take(CommonUtils::screenHeight()-5)
+        Listing::genericListingProgram(nil, items)
+    end
 end

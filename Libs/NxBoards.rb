@@ -142,6 +142,15 @@ class NxBoards
             end
         }
     end
+
+    # NxBoards::program3()
+    def self.program3()
+        loop {
+            board = NxBoards::interactivelySelectOneBoardOrNull()
+            return if board.nil?
+            NxBoards::program2(board)
+        }
+    end
 end
 
 class PlanetsAndItems
