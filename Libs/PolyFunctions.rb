@@ -28,10 +28,10 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTask" then
+        if  ["NxTask", "NxBoard"].include?(item["mikuType"]) then
             accounts << {
                 "description" => nil,
-                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # NxTask Performance
+                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # Combined NxBoard and NxTask Performance
             }
         end
 
@@ -61,9 +61,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
-        end
-        if item["mikuType"] == "NxDrop" then
-            return NxDrops::toString(item)
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)

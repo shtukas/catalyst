@@ -26,11 +26,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDrop" then
-            CoreData::access(item["field11"])
-            return
-        end
-
         if item["mikuType"] == "NxFloat" then
             CoreData::access(item["field11"])
             return
@@ -38,11 +33,6 @@ class PolyActions
 
         if item["mikuType"] == "NxClique" then
             NxCliques::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" then
-            CoreData::access(item["field11"])
             return
         end
 
@@ -114,13 +104,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "LambdX1" then
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
-            end
             return
         end
 
@@ -214,15 +197,6 @@ class PolyActions
 
         if item["mikuType"] == "DeviceBackup" then
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" then
-            puts PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue()
-            PolyActions::done(item)
             return
         end
 
