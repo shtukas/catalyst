@@ -851,11 +851,7 @@ class Listing
 
             if mainItem then
                 store.register(mainItem, false)
-                line = "(#{store.prefixString()}) #{PolyFunctions::toString(mainItem)}#{NxBalls::nxballSuffixStatusIfRelevant(mainItem)}"
-                if NxBalls::itemIsActive(mainItem) then
-                    line = line.green
-                end
-                spacecontrol.putsline line
+                spacecontrol.putsline(Listing::itemToListingLine(store, mainItem))
                 spacecontrol.putsline ""
             end
 
