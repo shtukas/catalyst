@@ -72,6 +72,11 @@ class NxBoards
         NxBoards::boardToItems(board).sort_by{|item| item["position"] }
     end
 
+    # NxBoards::completionRatio(board)
+    def self.completionRatio(board)
+        TxEngines::completionRatio(board["engine"])
+    end
+
     # ---------------------------------------------------------
     # Ops
     # ---------------------------------------------------------
