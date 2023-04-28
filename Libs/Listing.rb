@@ -823,14 +823,16 @@ class Listing
         spacecontrol.putsline ""
         puts TheLine::line()
 
-        spacecontrol.putsline ""
-        NxFloats::items()
-            .select{|item| item["boarduuid"].nil? }
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-                break if !status
-            }
+        floats = NxFloats::items().select{|item| item["boarduuid"].nil? }
+        if !floats.empty? then
+            spacecontrol.putsline ""
+            floats
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    break if !status
+                }
+        end
 
         spacecontrol.putsline ""
         items
