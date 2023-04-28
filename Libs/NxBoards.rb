@@ -110,7 +110,7 @@ class NxBoards
             spacecontrol.putsline(Listing::itemToListingLine(store, board))
             spacecontrol.putsline ""
 
-            [
+            items = [
                 NxOndates::listingItems(),
                 Waves::listingItems(),
                 NxFloats::items().sort_by{|item| item["unixtime"] },
@@ -126,6 +126,11 @@ class NxBoards
                         selected + [item]
                     end
                 }
+
+            items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
+            items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
+
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
