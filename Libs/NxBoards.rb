@@ -99,7 +99,7 @@ class NxBoards
         items = [
                 NxOndates::listingItems(),
                 Waves::listingItems(),
-                NxFloats::listingItems(),
+                NxFloats::items().sort_by{|item| item["unixtime"] },
                 NxFires::items(),
                 NxBoards::boardToItemsOrdered(board)
             ]

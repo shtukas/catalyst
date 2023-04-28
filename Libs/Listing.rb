@@ -557,12 +557,8 @@ class Listing
                 "lambda" => lambda { PhysicalTargets::listingItems() }
             },
             {
-                "name" => "Waves::listingInterruptionItems()",
-                "lambda" => lambda { Waves::listingInterruptionItems() }
-            },
-            {
-                "name" => "Waves::listingNonInterruptionItemsWithCircuitBreaker()",
-                "lambda" => lambda { Waves::listingNonInterruptionItemsWithCircuitBreaker() }
+                "name" => "Waves::listingItems()",
+                "lambda" => lambda { Waves::listingItems() }
             },
             {
                 "name" => "TheLine::line()",
@@ -656,8 +652,6 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             NxOndates::listingItems(),
-            Waves::listingInterruptionItems(),
-            Waves::listingNonInterruptionItemsWithCircuitBreaker(),
             NxFloats::listingItems(),
             NxFires::items(),
             DevicesBackups::listingItems(),
@@ -672,8 +666,9 @@ class Listing
                     selected + [item]
                 end
             }
-        i1, i2 = items.partition{|item| NxBalls::itemIsActive(item) }
-        i1 + i2
+        items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
+        items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
+        items
     end
 
     # Listing::skipfragment(item)
@@ -754,6 +749,11 @@ class Listing
         return false if skipTargetTimeOrNull.call(item)
 
         true
+    end
+
+    # Listing::isInterruption(item)
+    def self.isInterruption(item)
+        item["interruption"] # this is only carried by some waves at the moment
     end
 
     # Listing::dataMaintenance()

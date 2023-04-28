@@ -50,7 +50,12 @@ class NxFloats
 
     # NxFloats::listingItems()
     def self.listingItems()
+        boarduuids = NxBoards::boardsOrdered()
+                    .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
+                    .map{|board| board["uuid"] }
+
         NxFloats::items()
+            .select{|item| item["boarduuid"].nil? or boarduuids.include?(item["boarduuid"]) }
             .sort_by{|item| item["unixtime"] }
     end
 
