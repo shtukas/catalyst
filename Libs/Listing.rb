@@ -565,8 +565,8 @@ class Listing
                 "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "NxFloats::listingItems()",
-                "lambda" => lambda { NxFloats::listingItems() }
+                "name" => "NxFloats::items()",
+                "lambda" => lambda { NxFloats::items() }
             },
             {
                 "name" => "NxFires::items()",
@@ -651,8 +651,8 @@ class Listing
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
+            Waves::listingItems(),
             NxOndates::listingItems(),
-            NxFloats::listingItems(),
             NxFires::items(),
             DevicesBackups::listingItems(),
             NxTasks::listingItems(),
@@ -822,8 +822,17 @@ class Listing
 
         spacecontrol.putsline ""
         puts TheLine::line()
-        spacecontrol.putsline ""
 
+        spacecontrol.putsline ""
+        NxFloats::items()
+            .select{|item| item["boarduuid"].nil? }
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+
+        spacecontrol.putsline ""
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))

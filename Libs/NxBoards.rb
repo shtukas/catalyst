@@ -110,6 +110,16 @@ class NxBoards
             spacecontrol.putsline(Listing::itemToListingLine(store, board))
             spacecontrol.putsline ""
 
+            NxFloats::items()
+                .select{|item| item["boarduuid"] == board["uuid"] }
+                .sort_by{|item| item["unixtime"] }
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item)) 
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
             items = [
                 NxOndates::listingItems(),
                 Waves::listingItems(),
