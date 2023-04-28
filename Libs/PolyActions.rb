@@ -316,7 +316,7 @@ class PolyActions
         end
 
         puts "edit description:"
-        item["description"] = CommonUtils::editTextSynchronously(item["description"])
+        item["description"] = CommonUtils::editTextSynchronously(item["description"]).strip
         N3Objects::commit(item)
     end
 end
