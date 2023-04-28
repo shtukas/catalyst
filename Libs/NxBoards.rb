@@ -96,7 +96,21 @@ class NxBoards
 
     # NxBoards::program1(board)
     def self.program1(board)
-        items = [
+        loop {
+
+            system("clear")
+
+            puts ""
+
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            store = ItemStore.new()
+
+            store.register(board, false)
+            spacecontrol.putsline(Listing::itemToListingLine(store, board))
+            spacecontrol.putsline ""
+
+            [
                 NxOndates::listingItems(),
                 Waves::listingItems(),
                 NxFloats::items().sort_by{|item| item["unixtime"] },
@@ -112,7 +126,18 @@ class NxBoards
                         selected + [item]
                     end
                 }
-        Listing::genericListingProgram(board, items)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item)) 
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    break if !status
+                }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == ""
+
+            Listing::listingCommandInterpreter(input, store, nil)
+        }
     end
 
     # NxBoards::program2(board)
