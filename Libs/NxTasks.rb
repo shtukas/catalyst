@@ -171,10 +171,31 @@ class NxTasks
 
     # NxTasks::program1()
     def self.program1()
-        items = NxTasks::boardlessItems()
-                    .sort_by{|item| item["position"] }
-                    .take(CommonUtils::screenHeight()-5)
-        Listing::genericListingProgram(nil, items)
+        loop {
+
+            system("clear")
+
+            puts ""
+
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            store = ItemStore.new()
+
+            NxTasks::boardlessItems()
+                .sort_by{|item| item["position"] }
+                .take(CommonUtils::screenHeight()-5)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item)) 
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    break if !status
+                }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == ""
+
+            Listing::listingCommandInterpreter(input, store, nil)
+        }
     end
 
     # NxTasks::recoordinates(item)

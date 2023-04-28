@@ -837,39 +837,6 @@ class Listing
         }
     end
 
-    # Listing::genericListingProgram(mainItem, items)
-    def self.genericListingProgram(mainItem, items)
-        loop {
-
-            system("clear")
-
-            puts ""
-
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-            store = ItemStore.new()
-
-            if mainItem then
-                store.register(mainItem, false)
-                spacecontrol.putsline(Listing::itemToListingLine(store, mainItem))
-                spacecontrol.putsline ""
-            end
-
-            items
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
-                    break if !status
-                }
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == ""
-
-            Listing::listingCommandInterpreter(input, store, nil)
-        }
-    end
-
     # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::stargateTraceCode()
