@@ -34,6 +34,13 @@ class NxBackups
             .first
     end
 
+    # NxBackups::getInstructionByOperationOrNull(operation)
+    def self.getInstructionByOperationOrNull(operation)
+        NxBackups::instructions()
+            .select{|instruction| instruction["operation"] == operation }
+            .first
+    end
+
     # NxBackups::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
@@ -72,6 +79,11 @@ class NxBackups
                     N3Objects::commit(item)
                 end
             }
+
+        # In the second stage we are checking that each item has a corresponsing instruction
+        NxBackups::items()
+            .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
+            .each{|item| N3Objects::destroy(item["uuid"]) }
     end
 
     # NxBackups::interactivelyIssueNewOrNull()
