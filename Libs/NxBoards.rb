@@ -112,7 +112,7 @@ class NxBoards
             store = ItemStore.new()
 
             store.register(board, false)
-            spacecontrol.putsline(Listing::itemToListingLine(store, board))
+            spacecontrol.putsline(Listing::itemToListingLine(store: store, item: board))
             spacecontrol.putsline ""
 
             NxFloats::items()
@@ -120,7 +120,7 @@ class NxBoards
                 .sort_by{|item| item["unixtime"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
                     break if !status
                 }
             spacecontrol.putsline ""
@@ -148,7 +148,7 @@ class NxBoards
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
                     break if !status
                 }
 

@@ -20,7 +20,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | ordinal <n> <ordinal> | coredata <n> | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
             "",
             "specific types commands:",
@@ -140,6 +140,15 @@ class Listing
             item = store.get(ordinal.to_i)
             return if item.nil?
             PlanetsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if Interpreting::match("ordinal * *", input) then
+            _, itemordinal, frontordinal = Interpreting::tokenizer(input)
+            item = store.get(itemordinal.to_i)
+            return if item.nil?
+            item = NxFrontOrdinals::issue(item["uuid"], frontordinal.to_f)
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -658,7 +667,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        items = [
+        [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
@@ -677,9 +686,6 @@ class Listing
                     selected + [item]
                 end
             }
-        items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
-        items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
-        items
     end
 
     # Listing::skipfragment(item)
@@ -709,14 +715,25 @@ class Listing
         end
     end
 
-    # Listing::itemToListingLine(store or nil, item)
-    def self.itemToListingLine(store, item)
+    # Listing::itemToListingLine(store: nil, item: nil, isFront: false)
+    def self.itemToListingLine(store: nil, item: nil, isFront: false)
+        return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02Px03#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["interruption"] then
             line = line.gsub("Px02", "(interruption) ".red)
         else
             line = line.gsub("Px02", "")
+        end
+        if isFront then
+            entry = Listing::getNxFrontOrdinalForUuidOrNull(item["uuid"])
+            if entry then
+                line = line.gsub("Px03", "(ordinal: #{"%5.2f" % entry["targetordinal"]}) ".green)
+            else
+                line = line.gsub("Px03", "(could not determine coordinates 🤔) ")
+            end
+        else
+            line = line.gsub("Px03", "")
         end
         if NxBalls::itemIsActive(item) then
             line = line.green
@@ -824,6 +841,11 @@ class Listing
         }
     end
 
+    # Listing::getNxFrontOrdinalForUuidOrNull(uuid)
+    def self.getNxFrontOrdinalForUuidOrNull(uuid)
+        NxFrontOrdinals::items().select{|item| item["targetuuid"] == uuid }.first
+    end
+
     # Listing::primaryListingProgram(store, items)
     def self.primaryListingProgram(store, items)
         system("clear")
@@ -841,22 +863,55 @@ class Listing
             floats
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
                 }
         end
 
         spacecontrol.putsline ""
+
+        active, items = items.partition{|item| NxBalls::itemIsActive(item) }
+        active
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+            }
+
+        interruption, items = items.partition{|item| Listing::isInterruption(item) }
+        interruption
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+            }
+
+        frontdata = NxFrontOrdinals::items().sort_by{|item| item["targetordinal"] }
+        front, items = items.partition{|item| frontdata.map{|d| d["targetuuid"] }.include?(item["uuid"]) }
+        front
+            .sort_by{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item, isFront: true)
+            }
+
+        NxFrontOrdinals::garbageCollection(front)
+
+        if front.size < 10 then
+            ordinal = ([1] + front.map{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }).max
+            items.take(10 - front.size).each_with_index{|item, i|
+                NxFrontOrdinals::issue(item["uuid"], ordinal + i + 1)
+            }
+        end
+
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 break if !status
             }
 
         boards.each{|board|
             store.register(board, Listing::canBeDefault(board))
-            puts Listing::itemToListingLine(store, board)
+            puts Listing::itemToListingLine(store: store, item: board)
         }
     end
 

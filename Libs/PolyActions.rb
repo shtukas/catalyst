@@ -89,6 +89,7 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
+        NxFrontOrdinals::destroyByTargetUUID(item["uuid"])
        
         # Removing park, if any.
         item["parking"] = nil
