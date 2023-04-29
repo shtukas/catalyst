@@ -172,6 +172,7 @@ require_relative "Anniversaries.rb"
 
 require_relative "BankCore.rb"
 require_relative "BankUtils.rb"
+require_relative "NxBackups.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CoreData.rb"
@@ -182,7 +183,6 @@ require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
-require_relative "DevicesBackups.rb"
 
 require_relative "Galaxy.rb"
 
@@ -191,6 +191,7 @@ require_relative "ItemStore.rb"
 
 require_relative "LambdX1s.rb"
 require_relative "Listing.rb"
+require_relative "NxLines.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
@@ -203,6 +204,7 @@ require_relative "N3Objects.rb"
 require_relative "NxFires.rb"
 require_relative "NxFloats.rb"
 require_relative "NxTasksPositions.rb"
+require_relative "NxFrontOrdinals.rb"
 
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"

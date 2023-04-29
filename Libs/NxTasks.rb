@@ -186,7 +186,7 @@ class NxTasks
                 .take(CommonUtils::screenHeight()-5)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store, item))
+                    status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
                     break if !status
                 }
 

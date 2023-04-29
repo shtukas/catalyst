@@ -1,0 +1,13 @@
+
+NxBackup:
+    "uuid"          : String
+    "mikuType"      : "NxBackup"
+    "unixtime"      : Float
+    "datetime"      : DateTime Iso 8601 UTC Zulu
+    "description"   : String
+    "periodInDays"     : Float
+    "lastDoneUnixtime" : Float
+
+instruction
+    "operation"    => string
+    "periodInDays" => float

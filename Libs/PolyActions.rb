@@ -89,6 +89,7 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
+        NxFrontOrdinals::destroyByTargetUUID(item["uuid"])
        
         # Removing park, if any.
         item["parking"] = nil
@@ -116,6 +117,19 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 N3Objects::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxLine" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+                N3Objects::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            puts "done-ing item: #{item["description"]}"
+            NxBackups::performDone(item)
             return
         end
 

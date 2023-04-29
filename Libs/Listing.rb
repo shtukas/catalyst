@@ -20,8 +20,8 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | ordinal <n> <ordinal> | rotate <n> | coredata <n> | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | ordinal line <ordinal> <line>",
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
@@ -67,8 +67,8 @@ class Listing
         end
 
         if Interpreting::match(".. *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
             return
@@ -83,7 +83,7 @@ class Listing
 
         if Interpreting::match(">> *", input) then
             _, durationInHours = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            item = store.get(listord.to_i)
             return if item.nil?
             item["tmpskip1"] = {
                 "unixtime"        => Time.new.to_f,
@@ -95,8 +95,8 @@ class Listing
         end
 
         if Interpreting::match("add time *", input) then
-            _, _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
@@ -110,8 +110,8 @@ class Listing
         end
 
         if Interpreting::match("access *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::access(item)
             return
@@ -131,15 +131,36 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             puts "boarding: #{PolyFunctions::toString(item).green}"
-            PlanetsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
         if Interpreting::match("board *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
-            PlanetsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if input.start_with?("ordinal line") then
+            input = input[12, 999].strip
+            targetordinal = input.to_f
+            line = input[targetordinal.to_f, 999].strip
+            item = NxLines::issue(line)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            fronti = NxFrontOrdinals::issue(item["uuid"], targetordinal)
+            puts JSON.pretty_generate(fronti)
+            return
+        end
+
+        if Interpreting::match("ordinal * *", input) then
+            _, itemordinal, frontordinal = Interpreting::tokenizer(input)
+            item = store.get(itemordinal.to_i)
+            return if item.nil?
+            NxFrontOrdinals::destroyByTargetUUID(item["uuid"])
+            item = NxFrontOrdinals::issue(item["uuid"], frontordinal.to_f)
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -154,8 +175,8 @@ class Listing
         end
 
         if Interpreting::match("unboard *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             item["boarduuid"] = nil
             N3Objects::commit(item)
@@ -168,8 +189,8 @@ class Listing
         end
 
         if Interpreting::match("coredata *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
@@ -192,8 +213,8 @@ class Listing
         end
 
         if Interpreting::match("description *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
             return
@@ -212,24 +233,33 @@ class Listing
         end
 
         if Interpreting::match("done *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item)
             return
         end
 
+        if Interpreting::match("rotate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxBalls::stop(item)
+            NxFrontOrdinals::rotateCatalystItem(item)
+            return
+        end
+
         if Interpreting::match("destroy *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
             return
         end
 
         if Interpreting::match("position *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
                 puts "position is only available to NxTasks"
@@ -243,8 +273,8 @@ class Listing
         end
 
         if Interpreting::match("coordinates *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
                 puts "coordinates is only available to NxTasks"
@@ -257,8 +287,8 @@ class Listing
         end
 
         if Interpreting::match("do not show until *", input) then
-            _, _, _, _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, _, _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
@@ -282,8 +312,8 @@ class Listing
         end
 
         if Interpreting::match("engine *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
                 puts "Only NxBoard and NxTask are carrying engine"
@@ -306,8 +336,8 @@ class Listing
         end
 
         if Interpreting::match("expose *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             puts JSON.pretty_generate(item)
             LucilleCore::pressEnterToContinue()
@@ -315,8 +345,8 @@ class Listing
         end
 
         if Interpreting::match("edit *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
             N3Objects::commit(item)
@@ -338,8 +368,8 @@ class Listing
         end
 
         if Interpreting::match("program *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::program(item)
             return
@@ -370,8 +400,8 @@ class Listing
         end
 
         if Interpreting::match("note *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             NxNotes::edit(item)
             return
@@ -381,7 +411,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -394,7 +424,7 @@ class Listing
             item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -402,7 +432,7 @@ class Listing
             item = NxFloats::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -414,8 +444,8 @@ class Listing
         end
 
         if Interpreting::match("pause *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
             return
@@ -429,8 +459,8 @@ class Listing
         end
 
         if Interpreting::match("pursue *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
             return
@@ -456,8 +486,8 @@ class Listing
         end
 
         if Interpreting::match("recast *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute(item)
             return
@@ -471,8 +501,8 @@ class Listing
         end
 
         if Interpreting::match("start *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::start(item)
             return
@@ -486,8 +516,8 @@ class Listing
         end
 
         if Interpreting::match("stop *", input) then
-            _, ordinal = Interpreting::tokenizer(input)
-            item = store.get(ordinal.to_i)
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::stop(item)
             return
@@ -507,7 +537,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -517,7 +547,7 @@ class Listing
             item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
             N3Objects::commit(item)
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -525,7 +555,7 @@ class Listing
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -658,14 +688,15 @@ class Listing
 
     # Listing::items()
     def self.items()
-        items = [
+        [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems(),
             NxOndates::listingItems(),
             NxFires::items(),
-            DevicesBackups::listingItems(),
+            NxBackups::listingItems(),
+            NxLines::items(),
             NxTasks::listingItems(),
         ]
             .flatten
@@ -677,9 +708,6 @@ class Listing
                     selected + [item]
                 end
             }
-        items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
-        items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
-        items
     end
 
     # Listing::skipfragment(item)
@@ -709,14 +737,25 @@ class Listing
         end
     end
 
-    # Listing::itemToListingLine(store or nil, item)
-    def self.itemToListingLine(store, item)
+    # Listing::itemToListingLine(store: nil, item: nil, isFront: false)
+    def self.itemToListingLine(store: nil, item: nil, isFront: false)
+        return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02Px03#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["interruption"] then
             line = line.gsub("Px02", "(interruption) ".red)
         else
             line = line.gsub("Px02", "")
+        end
+        if isFront then
+            entry = Listing::getNxFrontOrdinalForUuidOrNull(item["uuid"])
+            if entry then
+                line = line.gsub("Px03", "(ordinal: #{"%5.2f" % entry["targetordinal"]}) ".green)
+            else
+                line = line.gsub("Px03", "(could not determine coordinates 🤔) ")
+            end
+        else
+            line = line.gsub("Px03", "")
         end
         if NxBalls::itemIsActive(item) then
             line = line.green
@@ -804,6 +843,8 @@ class Listing
             NxTimePromises::operate()
             N3Objects::fileManagement()
             BankCore::fileManagement()
+            NxBackups::dataManagement()
+            NxFrontOrdinals::dataManagement()
         end
     end
 
@@ -823,6 +864,11 @@ class Listing
         }
     end
 
+    # Listing::getNxFrontOrdinalForUuidOrNull(uuid)
+    def self.getNxFrontOrdinalForUuidOrNull(uuid)
+        NxFrontOrdinals::items().select{|item| item["targetuuid"] == uuid }.first
+    end
+
     # Listing::primaryListingProgram(store, items)
     def self.primaryListingProgram(store, items)
         system("clear")
@@ -840,22 +886,54 @@ class Listing
             floats
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
                 }
         end
 
         spacecontrol.putsline ""
+
+        active, items = items.partition{|item| NxBalls::itemIsActive(item) }
+        active
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+            }
+
+        interruption, items = items.partition{|item| Listing::isInterruption(item) }
+        interruption
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+            }
+
+        frontdata = NxFrontOrdinals::items().sort_by{|item| item["targetordinal"] }
+        front, items = items.partition{|item| frontdata.map{|d| d["targetuuid"] }.include?(item["uuid"]) }
+        front
+            .sort_by{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item, isFront: true)
+            }
+
+        if front.size < 10 then
+            ordinal = ([1] + front.map{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }).max
+            items.take(10 - front.size).each_with_index{|item, i|
+                ordinal = ordinal + 1
+                NxFrontOrdinals::issue(item["uuid"], ordinal.floor)
+            }
+        end
+
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 break if !status
             }
 
         boards.each{|board|
             store.register(board, Listing::canBeDefault(board))
-            puts Listing::itemToListingLine(store, board)
+            puts Listing::itemToListingLine(store: store, item: board)
         }
     end
 
