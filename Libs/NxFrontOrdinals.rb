@@ -34,12 +34,14 @@ class NxFrontOrdinals
         raise "(error: c419fc28-873b-47e3-a6b2-f1b28848918e)"
     end
 
-    # NxFrontOrdinals::garbageCollection(front)
-    def self.garbageCollection(front)
-        NxFrontOrdinals::items().each{|item|
-            if !front.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                N3Objects::destroy(item["uuid"])
-            end
+    # NxFrontOrdinals::dataManagement()
+    def self.dataManagement()
+        return if NxFrontOrdinals::items().empty?
+        maxordinal = NxFrontOrdinals::items().map{|item| item["targetordinal"] }.max
+        return if maxordinal < 100
+        NxFrontOrdinals::items().map{|item|
+            item["targetordinal"] = item["targetordinal"] * 0.5
+            N3Objects::commit(item)
         }
     end
 end
