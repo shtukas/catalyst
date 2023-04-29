@@ -21,7 +21,7 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | ordinal <n> <ordinal> | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | ordinal line <ordinal> <line>",
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
@@ -140,6 +140,16 @@ class Listing
             item = store.get(listord.to_i)
             return if item.nil?
             PlanetsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
+        if input.start_with?("ordinal line") then
+            input = input[12, 999].strip
+            targetordinal = input.to_f
+            line = input[targetordinal.to_f, 999].strip
+            item = NxLines::issue(line)
+            fronti = NxFrontOrdinals::issue(item["uuid"], targetordinal)
+            puts JSON.pretty_generate(fronti)
             return
         end
 
@@ -676,6 +686,7 @@ class Listing
             NxOndates::listingItems(),
             NxFires::items(),
             NxBackups::listingItems(),
+            NxLines::items(),
             NxTasks::listingItems(),
         ]
             .flatten
