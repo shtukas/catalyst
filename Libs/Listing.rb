@@ -244,6 +244,7 @@ class Listing
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            NxBalls::stop(item)
             NxFrontOrdinals::rotateCatalystItem(item)
             return
         end
