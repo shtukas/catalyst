@@ -131,7 +131,7 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             puts "boarding: #{PolyFunctions::toString(item).green}"
-            PlanetsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -139,7 +139,7 @@ class Listing
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PlanetsAndItems::askAndMaybeAttach(item)
+            BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -148,6 +148,7 @@ class Listing
             targetordinal = input.to_f
             line = input[targetordinal.to_f, 999].strip
             item = NxLines::issue(line)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             fronti = NxFrontOrdinals::issue(item["uuid"], targetordinal)
             puts JSON.pretty_generate(fronti)
             return
@@ -401,7 +402,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -414,7 +415,7 @@ class Listing
             item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -422,7 +423,7 @@ class Listing
             item = NxFloats::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -527,7 +528,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -537,7 +538,7 @@ class Listing
             item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
             N3Objects::commit(item)
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -545,7 +546,7 @@ class Listing
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            PlanetsAndItems::maybeAskAndMaybeAttach(item)
+            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -731,7 +732,7 @@ class Listing
     def self.itemToListingLine(store: nil, item: nil, isFront: false)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02Px03#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PlanetsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02Px03#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if item["interruption"] then
             line = line.gsub("Px02", "(interruption) ".red)
         else

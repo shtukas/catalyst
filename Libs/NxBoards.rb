@@ -198,16 +198,16 @@ class NxBoards
     end
 end
 
-class PlanetsAndItems
+class BoardsAndItems
 
-    # PlanetsAndItems::attachToItem(item, board or nil)
+    # BoardsAndItems::attachToItem(item, board or nil)
     def self.attachToItem(item, board)
         return if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
     end
 
-    # PlanetsAndItems::maybeAskAndMaybeAttach(item)
+    # BoardsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
         return item if item["boarduuid"]
@@ -218,7 +218,7 @@ class PlanetsAndItems
         item
     end
 
-    # PlanetsAndItems::askAndMaybeAttach(item)
+    # BoardsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneBoardOrNull()
@@ -228,7 +228,7 @@ class PlanetsAndItems
         item
     end
 
-    # PlanetsAndItems::toStringSuffix(item)
+    # BoardsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
         return "" if item["boarduuid"].nil?
         board = NxBoards::getItemOfNull(item["boarduuid"])

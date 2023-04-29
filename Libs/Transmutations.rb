@@ -32,7 +32,7 @@ class Transmutations
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxFire"
             if item["boarduuid"].nil? then
-                item = PlanetsAndItems::maybeAskAndMaybeAttach(item)
+                item = BoardsAndItems::maybeAskAndMaybeAttach(item)
             end
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
