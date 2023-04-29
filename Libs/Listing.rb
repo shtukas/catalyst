@@ -645,6 +645,17 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
+    # Listing::listable(item)
+    def self.listable(item)
+        return true if NxBalls::itemIsActive(item)
+        return false if !DoNotShowUntil::isVisible(item)
+        if item["boarduuid"] then
+            board = N3Objects::getOrNull(item["boarduuid"])
+            return false if !DoNotShowUntil::isVisible(board)
+        end
+        true
+    end
+
     # Listing::items()
     def self.items()
         items = [
@@ -658,7 +669,7 @@ class Listing
             NxTasks::listingItems(),
         ]
             .flatten
-            .select{|item| DoNotShowUntil::isVisible(item) or NxBalls::itemIsActive(item) }
+            .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
                     selected
