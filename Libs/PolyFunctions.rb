@@ -30,7 +30,7 @@ class PolyFunctions
 
         if  ["NxTask", "NxBoard"].include?(item["mikuType"]) then
             accounts << {
-                "description" => nil,
+                "description" => "performance",
                 "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # Combined NxBoard and NxTask Performance
             }
         end
