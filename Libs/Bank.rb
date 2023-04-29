@@ -2,37 +2,37 @@
 
 $BankVault = {}
 
-class BankCore
+class Bank
 
     # ----------------------------------
     # Interface
 
-    # BankCore::getValueAtDate(uuid, date)
+    # Bank::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
-        BankCore::filepaths()
-            .map{|filepath| BankCore::getValueAtDateInFile(filepath, uuid, date) }
+        Bank::filepaths()
+            .map{|filepath| Bank::getValueAtDateInFile(filepath, uuid, date) }
             .inject(0, :+)
     end
 
-    # BankCore::getValue(uuid)
+    # Bank::getValue(uuid)
     def self.getValue(uuid)
-        BankCore::filepaths()
-            .map{|filepath| BankCore::getValueInFile(filepath, uuid) }
+        Bank::filepaths()
+            .map{|filepath| Bank::getValueInFile(filepath, uuid) }
             .inject(0, :+)
     end
 
-    # BankCore::put(uuid, value)
+    # Bank::put(uuid, value)
     def self.put(uuid, value)
-        BankCore::commit(uuid, Time.new.to_i, Time.new.to_s[0, 10], value)
+        Bank::commit(uuid, Time.new.to_i, Time.new.to_s[0, 10], value)
     end
 
-    # BankCore::commit(uuid, unixtime, date, value)
+    # Bank::commit(uuid, unixtime, date, value)
     def self.commit(uuid, unixtime, date, value)
-        puts "BankCore::commit(#{uuid}, #{date}, #{value})"
+        puts "Bank::commit(#{uuid}, #{date}, #{value})"
 
-        filepaths = BankCore::filepaths()
+        filepaths = Bank::filepaths()
 
-        filepath0 = BankCore::spawnNewDatabase()
+        filepath0 = Bank::spawnNewDatabase()
 
         db = SQLite3::Database.new(filepath0)
         db.busy_timeout = 117
@@ -45,7 +45,7 @@ class BankCore
     # ----------------------------------
     # Private (0)
 
-    # BankCore::capacitybase()
+    # Bank::capacitybase()
     def self.capacitybase()
         50
     end
@@ -53,7 +53,7 @@ class BankCore
     # ----------------------------------
     # Private (1)
 
-    # BankCore::spawnNewDatabase()
+    # Bank::spawnNewDatabase()
     def self.spawnNewDatabase()
         filepath = "#{Config::pathToCatalystData()}/Bank/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite3"
         db = SQLite3::Database.new(filepath)
@@ -65,16 +65,17 @@ class BankCore
         filepath
     end
 
-    # BankCore::filepaths()
+    # Bank::filepaths()
     def self.filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystData()}/Bank")
             .select{|filepath| filepath[-8, 8] == ".sqlite3" }
+            .sort
     end
 
     # ----------------------------------
     # Private (2)
 
-    # BankCore::getValueAtDateInFile(filepath, uuid, date)
+    # Bank::getValueAtDateInFile(filepath, uuid, date)
     def self.getValueAtDateInFile(filepath, uuid, date)
         # This function can be memoised because the database files are content addressed 🎉
 
@@ -98,7 +99,7 @@ class BankCore
         value
     end
 
-    # BankCore::getValueInFile(filepath, uuid)
+    # Bank::getValueInFile(filepath, uuid)
     def self.getValueInFile(filepath, uuid)
         value = 0
         db = SQLite3::Database.new(filepath)
@@ -112,12 +113,18 @@ class BankCore
         value
     end
 
-    # BankCore::fileManagement()
+    # Bank::getTwoSmallestFiles()
+    def self.getTwoSmallestFiles()
+        Bank::filepaths().sort_by{|filepath| File.size(filepath) }.take(2).sort
+    end
+
+    # Bank::fileManagement()
     def self.fileManagement()
-        if BankCore::filepaths().size > BankCore::capacitybase()*2 then
+
+        if Bank::filepaths().size > Bank::capacitybase()*2 then
             puts "BankCore file management".green
-            while BankCore::filepaths().size > BankCore::capacitybase() do
-                filepath1, filepath2 = BankCore::filepaths()
+            while Bank::filepaths().size > Bank::capacitybase() do
+                filepath1, filepath2 = Bank::getTwoSmallestFiles()
 
                 db1 = SQLite3::Database.new(filepath1)
                 db2 = SQLite3::Database.new(filepath2)
@@ -143,5 +150,20 @@ class BankCore
                 FileUtils.mv(filepath2, filepath2v2)
             end
         end
+    end
+
+    # Bank::averageHoursPerDayOverThePastNDays(uuid, n)
+    # n = 0 corresponds to today
+    def self.averageHoursPerDayOverThePastNDays(uuid, n)
+        range = (0..n)
+        totalInSeconds = range.map{|indx| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
+        totalInHours = totalInSeconds.to_f/3600
+        average = totalInHours.to_f/(n+1)
+        average
+    end
+
+    # Bank::recoveredAverageHoursPerDay(uuid)
+    def self.recoveredAverageHoursPerDay(uuid)
+        (0..6).map{|n| Bank::averageHoursPerDayOverThePastNDays(uuid, n) }.max
     end
 end

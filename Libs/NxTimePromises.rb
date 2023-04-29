@@ -6,7 +6,7 @@ class NxTimePromises
         return if !Config::isPrimaryInstance()
         N3Objects::getMikuType("NxTimePromise").each{|item|
             if Time.new.to_i > item["unixtime"] then
-                BankCore::put(item["account"], item["value"])
+                Bank::put(item["account"], item["value"])
                 N3Objects::destroy(item["uuid"])
             end
         }

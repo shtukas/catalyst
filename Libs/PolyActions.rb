@@ -163,7 +163,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxTasks::destroy(item["uuid"])
-                BankCore::put("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", 3600)
+                Bank::put("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", 3600)
             end
             return
         end
@@ -242,7 +242,7 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             puts PolyFunctions::toString(item).green
-            first_time = (BankCore::getValue(item["uuid"]) == 0)
+            first_time = (Bank::getValue(item["uuid"]) == 0)
             NxBalls::start(item)
             NxTasks::access(item)
             if first_time then
@@ -316,7 +316,7 @@ class PolyActions
     def self.addTimeToItem(item, timeInSeconds)
         PolyFunctions::itemsToBankingAccounts(item).each{|account|
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
-            BankCore::put(account["number"], timeInSeconds)
+            Bank::put(account["number"], timeInSeconds)
         }
     end
 

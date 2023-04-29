@@ -104,7 +104,7 @@ class NxBalls
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
-            BankCore::put(account["number"], timespanInSeconds)
+            Bank::put(account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
         NxFrontOrdinals::destroyByTargetUUID(item["uuid"])
@@ -117,7 +117,7 @@ class NxBalls
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
-            BankCore::put(account["number"], timespanInSeconds)
+            Bank::put(account["number"], timespanInSeconds)
         }
         nxball["type"] = "paused"
         nxball["sequencestart"] = nxball["sequencestart"] || Time.new.to_i

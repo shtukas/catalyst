@@ -57,13 +57,13 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            return (BankUtils::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]*3600
+            return (Bank::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]*3600
         end
         if engine["type"] == "weekly-time" then
             # if completed, we return the highest of both completion ratios
             # if not completed, we return the lowest
-            day_completion_ratio = BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
-            period_completion_ratio = BankCore::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
+            day_completion_ratio = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
+            period_completion_ratio = Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
             return [day_completion_ratio, period_completion_ratio].max
         end
         raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
@@ -78,9 +78,9 @@ class TxEngines
             return nil
         end
         if engine["type"] == "weekly-time" then
-            return nil if BankCore::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
+            return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
             return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
-            if BankCore::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
+            if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
                 overflow = 0.5*engine["hours"]*3600
                 puts "I am about to smooth engine: #{engine}, overflow: #{(overflow.to_f/3600).round(2)} hours (for description: #{description})"
                 LucilleCore::pressEnterToContinue()
@@ -89,7 +89,7 @@ class TxEngines
             end
             puts "I am about to reset engine: #{engine} (for description: #{description})"
             LucilleCore::pressEnterToContinue()
-            BankCore::put(engine["capsule"], -engine["hours"]*3600)
+            Bank::put(engine["capsule"], -engine["hours"]*3600)
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
@@ -114,20 +114,20 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            todayDoneInHours = BankUtils::recoveredAverageHoursPerDay(engine["uuid"])
+            todayDoneInHours = Bank::recoveredAverageHoursPerDay(engine["uuid"])
             percentage = 100*todayDoneInHours.to_f/engine["hours"]
             return "(engine: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green}) of daily #{engine["hours"]} hours)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
-            todayDoneInHours = BankCore::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
+            todayDoneInHours = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
             todayIdealInHours = engine["hours"].to_f/5
             percentage = 100*todayDoneInHours.to_f/todayIdealInHours
 
             strings << "(engine: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green }) of today #{todayIdealInHours} hours"
-            strings << ", #{(BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} (#{"#{(100*TxEngines::completionRatio(engine)).round(2)}%".green}) of weekly #{engine["hours"]} hours"
+            strings << ", #{(Bank::getValue(engine["capsule"]).to_f/3600).round(2)} (#{"#{(100*TxEngines::completionRatio(engine)).round(2)}%".green}) of weekly #{engine["hours"]} hours"
 
-            hasReachedObjective = BankCore::getValue(engine["capsule"]) >= engine["hours"]*3600
+            hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
             timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
             itHassBeenAWeek = timeSinceResetInDays >= 7
 
@@ -140,7 +140,7 @@ class TxEngines
             end
 
             if !hasReachedObjective and !itHassBeenAWeek then
-                strings << ", #{(engine["hours"] - BankCore::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
+                strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
             end
 
             if !hasReachedObjective and itHassBeenAWeek then

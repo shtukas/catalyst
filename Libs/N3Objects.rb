@@ -19,8 +19,8 @@ class N3Objects
         "#{Config::pathToCatalystData()}/N3Objects"
     end
 
-    # N3Objects::getExistingFilepathsSorted()
-    def self.getExistingFilepathsSorted()
+    # N3Objects::getFilepathsSorted()
+    def self.getFilepathsSorted()
         LucilleCore::locationsAtFolder("#{N3Objects::folderpath()}")
             .select{|filepath| filepath[-8, 8] == ".sqlite3" }
             .sort
@@ -97,30 +97,19 @@ class N3Objects
             .first["filepath"]
     end
 
-    # N3Objects::selectSmallestFileAndTheNext()
-    def self.selectSmallestFileAndTheNext()
-        filepaths = N3Objects::getExistingFilepathsSorted()
-        filepaths.pop
-        filepath1 = N3Objects::getSmallestFileAmongTheseFilepaths(filepaths)
-        filepaths = N3Objects::getExistingFilepathsSorted()
-        while filepaths.include?(filepath1) do
-            filepaths.shift
-        end
-        filepath2 = filepaths.first
-        [filepath1, filepath2]
-    end
-
     # N3Objects::fileManagement()
     def self.fileManagement()
 
-        if N3Objects::getExistingFilepathsSorted().size > IndexFileCountBaseControl * 2 then
+        if N3Objects::getFilepathsSorted().size > IndexFileCountBaseControl * 2 then
 
             puts "N3Objects file management".green
 
-            while N3Objects::getExistingFilepathsSorted().size > IndexFileCountBaseControl do
+            while N3Objects::getFilepathsSorted().size > IndexFileCountBaseControl do
 
-                # We are taking the first two files (therefore the two oldest files and emptying the oldest)
-                filepath1, filepath2 = N3Objects::selectSmallestFileAndTheNext()
+                filepath1, filepath2 = N3Objects::getFilepathsSorted().sort_by{|filepath| File.size(filepath) }.take(2).sort
+
+                puts "filepath1: #{filepath1}"
+                puts "filepath2: #{filepath2}"
 
                 uuidsAtDB = lambda {|db|
                     uuids = []
@@ -137,6 +126,7 @@ class N3Objects
                 db2 = SQLite3::Database.new(filepath2)
 
                 # We move all the objects from db1 to db2
+                # And we implement the assumption is that the one in file2/db2 is newer
 
                 uuids2 = uuidsAtDB.call(db2)
 
@@ -144,7 +134,7 @@ class N3Objects
                 db1.busy_handler { |count| true }
                 db1.results_as_hash = true
                 db1.execute("select * from objects", []) do |row|
-                    next if uuids2.include?(row["uuid"]) # The assumption is that the one in file2 is newer
+                    next if uuids2.include?(row["uuid"]) # The assumption is that the one in file2/db2 is newer
                     db2.execute "insert into objects (uuid, mikuType, object) values (?, ?, ?)", [row["uuid"], row["mikuType"], row["object"]] # we copy as encoded json
                 end
 
@@ -164,7 +154,7 @@ class N3Objects
         object["n3timestamp"] = Time.new.to_f
 
         # Make a record of the existing files
-        filepathszero = N3Objects::getExistingFilepathsSorted()
+        filepathszero = N3Objects::getFilepathsSorted()
 
         # Make a new file for the object
         filepath = "#{N3Objects::folderpath()}/#{CommonUtils::timeStringL22()}@#{CommonUtils::timeStringL22()}.sqlite3"
@@ -243,7 +233,7 @@ class N3Objects
     # N3Objects::getOrNull(uuid)
     def self.getOrNull(uuid)
         objects = []
-        N3Objects::getExistingFilepathsSorted().each{|filepath|
+        N3Objects::getFilepathsSorted().each{|filepath|
             objects << N3Objects::getAtFilepathOrNull(uuid, filepath)
         }
         objects
@@ -256,7 +246,7 @@ class N3Objects
     # N3Objects::getMikuType(mikuType)
     def self.getMikuType(mikuType)
         objects = []
-        N3Objects::getExistingFilepathsSorted().each{|filepath|
+        N3Objects::getFilepathsSorted().each{|filepath|
             N3Objects::getMikuTypeAtFile(mikuType, filepath).each{|object|
                 objects << object
             }
@@ -273,7 +263,7 @@ class N3Objects
     # N3Objects::getall()
     def self.getall()
         objects = []
-        N3Objects::getExistingFilepathsSorted().each{|filepath|
+        N3Objects::getFilepathsSorted().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -295,7 +285,7 @@ class N3Objects
     # N3Objects::getMikuTypeCount(mikuType)
     def self.getMikuTypeCount(mikuType)
         count = 0
-        N3Objects::getExistingFilepathsSorted().each{|filepath|
+        N3Objects::getFilepathsSorted().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -310,7 +300,7 @@ class N3Objects
 
     # N3Objects::destroy(uuid)
     def self.destroy(uuid)
-        filepaths = N3Objects::getExistingFilepathsSorted()
+        filepaths = N3Objects::getFilepathsSorted()
         N3Objects::deleteAtFiles(filepaths, uuid)
     end
 end

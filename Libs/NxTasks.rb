@@ -132,7 +132,7 @@ class NxTasks
     # NxTasks::performance()
     def self.performance()
         (-6..0)
-            .map{|i| BankCore::getValueAtDate("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", CommonUtils::nDaysInTheFuture(i))}
+            .map{|i| Bank::getValueAtDate("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", CommonUtils::nDaysInTheFuture(i))}
             .inject(0, :+)
             .to_f/3600
     end

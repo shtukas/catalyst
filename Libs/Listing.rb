@@ -842,7 +842,7 @@ class Listing
         if Config::isPrimaryInstance() then
             NxTimePromises::operate()
             N3Objects::fileManagement()
-            BankCore::fileManagement()
+            Bank::fileManagement()
             NxBackups::dataManagement()
             NxFrontOrdinals::dataManagement()
         end
