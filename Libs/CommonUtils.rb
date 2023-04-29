@@ -365,14 +365,14 @@ class CommonUtils
         CommonUtils::locationTraceCode("#{File.dirname(__FILE__)}/..")
     end
 
-    # CommonUtils::latestInstancesTrace()
-    def self.latestInstancesTrace()
-        last = LucilleCore::locationsAtFolder("#{Config::pathToCatalystData()}/code-versions")
-            .select{|filepath| filepath[-6, 6] == ".trace" }
-            .sort
-            .last
-        return "" if last.nil?
-        IO.read(last).strip
+    # CommonUtils::remoteLastCommitId()
+    def self.remoteLastCommitId()
+        `cd '#{File.dirname(__FILE__)}/..' && git rev-parse origin/main`.strip
+    end
+
+    # CommonUtils::localLastCommitId()
+    def self.localLastCommitId()
+        `cd '#{File.dirname(__FILE__)}/..' && git rev-parse HEAD`.strip
     end
 
     # ----------------------------------------------------

@@ -942,15 +942,19 @@ class Listing
     # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::stargateTraceCode()
-        loop {
 
-            if CommonUtils::stargateTraceCode() != CommonUtils::latestInstancesTrace() then
-                puts "Code change detected from shared data"
-                puts "Attempting to download new code"
-                system("#{File.dirname(__FILE__)}/pull-from-origin")
-                File.open("#{Config::pathToCatalystData()}/code-versions/#{Time.new.to_i}-#{Config::thisInstanceId()}.trace", "w"){|f| f.puts(CommonUtils::stargateTraceCode()) }
-                next
-            end
+        Thread.new {
+            loop {
+                if CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId() then
+                    puts "Code change detected from shared data"
+                    puts "Attempting to download new code"
+                    system("#{File.dirname(__FILE__)}/pull-from-origin")
+                end
+                sleep 300
+            }
+        }
+
+        loop {
 
             if CommonUtils::stargateTraceCode() != initialCodeTrace then
                 puts "Code change detected"
