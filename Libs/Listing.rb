@@ -924,6 +924,8 @@ class Listing
             }
         end
 
+        spacecontrol.putsline ""
+
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
