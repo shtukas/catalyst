@@ -20,7 +20,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | ordinal <n> <ordinal> | coredata <n> | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | ordinal <n> <ordinal> | rotate <n> | coredata <n> | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | ordinal line <ordinal> <line>",
             "",
             "specific types commands:",
@@ -237,6 +237,14 @@ class Listing
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item)
+            return
+        end
+
+        if Interpreting::match("rotate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxFrontOrdinals::rotateCatalystItem(item)
             return
         end
 

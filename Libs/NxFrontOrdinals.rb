@@ -44,4 +44,13 @@ class NxFrontOrdinals
             N3Objects::commit(item)
         }
     end
+
+    # NxFrontOrdinals::rotateCatalystItem(catalystItem)
+    def self.rotateCatalystItem(catalystItem)
+        nextOrdinal = (([1] + NxFrontOrdinals::items().map{|i| i["targetordinal"] }).max + 1).floor
+        NxFrontOrdinals::items()
+            .select{|item| item["targetuuid"] == catalystItem["uuid"] }
+            .each{|item| N3Objects::destroy(item["uuid"]) }
+        NxFrontOrdinals::issue(catalystItem["uuid"], nextOrdinal)
+    end
 end
