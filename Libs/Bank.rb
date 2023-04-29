@@ -126,6 +126,9 @@ class Bank
             while Bank::filepaths().size > Bank::capacitybase() do
                 filepath1, filepath2 = Bank::getTwoSmallestFiles()
 
+                puts "filepath1: #{filepath1}"
+                puts "filepath2: #{filepath2}"
+
                 db1 = SQLite3::Database.new(filepath1)
                 db2 = SQLite3::Database.new(filepath2)
 
