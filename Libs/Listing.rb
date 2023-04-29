@@ -665,7 +665,7 @@ class Listing
             Waves::listingItems(),
             NxOndates::listingItems(),
             NxFires::items(),
-            DevicesBackups::listingItems(),
+            NxBackups::listingItems(),
             NxTasks::listingItems(),
         ]
             .flatten
@@ -804,6 +804,7 @@ class Listing
             NxTimePromises::operate()
             N3Objects::fileManagement()
             BankCore::fileManagement()
+            NxBackups::dataManagement()
         end
     end
 

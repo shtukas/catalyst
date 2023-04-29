@@ -172,6 +172,7 @@ require_relative "Anniversaries.rb"
 
 require_relative "BankCore.rb"
 require_relative "BankUtils.rb"
+require_relative "NxBackups.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CoreData.rb"
@@ -182,7 +183,6 @@ require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
-require_relative "DevicesBackups.rb"
 
 require_relative "Galaxy.rb"
 

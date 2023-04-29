@@ -59,6 +59,9 @@ class PolyFunctions
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
+        if item["mikuType"] == "NxBackup" then
+            return NxBackups::toString(item)
+        end
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
         end

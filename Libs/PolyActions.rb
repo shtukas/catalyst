@@ -119,6 +119,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBackup" then
+            puts "done-ing item: #{item["description"]}"
+            NxBackups::performDone(item)
+            return
+        end
+
         if item["mikuType"] == "NxBoard" then
             puts "There is no done action on NxBoards. If it was running, I have stopped it."
             LucilleCore::pressEnterToContinue()
