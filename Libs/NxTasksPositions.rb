@@ -53,19 +53,19 @@ class NxTasksPositions
         position.to_f
     end
 
-    # NxTasksPositions::computeThatPositionAtBoard(board)
-    def self.computeThatPositionAtBoard(board)
+    # NxTasksPositions::automaticPositioningAtBoard(board)
+    def self.automaticPositioningAtBoard(board)
         NxTasksPositions::thatPosition(NxBoards::boardToItemsOrdered(board).map{|item| item["position"]})
     end
 
     # NxTasksPositions::decideNewPositionAtBoard(board)
     def self.decideNewPositionAtBoard(board)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["among top positions", "that position", "next (default)"])
-        if option == "among top positions" then
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "automatic positioning", "next (default)"])
+        if option == "manual positioning" then
             return NxTasksPositions::interactivelyDecidePositionAtBoardAtTop(board)
         end
-        if option == "that position" then
-            return NxTasksPositions::computeThatPositionAtBoard(board)
+        if option == "automatic positioning" then
+            return NxTasksPositions::automaticPositioningAtBoard(board)
         end
         NxTasksPositions::lastPosition() + 0.5 + rand
     end
@@ -88,19 +88,19 @@ class NxTasksPositions
         position.to_f
     end
 
-    # NxTasksPositions::computeThatPositionAtNoBoard()
-    def self.computeThatPositionAtNoBoard()
+    # NxTasksPositions::automaticPositioningAtNoBoard()
+    def self.automaticPositioningAtNoBoard()
         NxTasksPositions::thatPosition(NxTasks::boardlessItems().map{|item| item["position"]})
     end
 
     # NxTasksPositions::decideNewPositionAtNoBoard()
     def self.decideNewPositionAtNoBoard()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["among top positions", "that position", "next (default)"])
-        if option == "among top positions" then
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "automatic positioning", "next (default)"])
+        if option == "manual positioning" then
             return NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
         end
-        if option == "that position" then
-            return NxTasksPositions::computeThatPositionAtNoBoard()
+        if option == "automatic positioning" then
+            return NxTasksPositions::automaticPositioningAtNoBoard()
         end
         NxTasksPositions::lastPosition() + 0.5 + rand
     end
