@@ -367,7 +367,7 @@ class CommonUtils
 
     # CommonUtils::isOnline()
     def self.isOnline()
-        !`cd '#{File.dirname(__FILE__)}/..' && git fetch`.strip.include?("unable to access")
+        !(`cd '#{File.dirname(__FILE__)}/..' && git fetch`.strip.include?("unable to access"))
     end
 
     # CommonUtils::remoteLastCommitId()
