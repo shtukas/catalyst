@@ -365,6 +365,11 @@ class CommonUtils
         CommonUtils::locationTraceCode("#{File.dirname(__FILE__)}/..")
     end
 
+    # CommonUtils::isOnline()
+    def self.isOnline()
+        !`cd '#{File.dirname(__FILE__)}/..' && git fetch`.strip.include?("unable to access")
+    end
+
     # CommonUtils::remoteLastCommitId()
     def self.remoteLastCommitId()
         `cd '#{File.dirname(__FILE__)}/..' && git rev-parse origin/main`.strip
