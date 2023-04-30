@@ -53,19 +53,11 @@ class NxTasksPositions
         position.to_f
     end
 
-    # NxTasksPositions::automaticPositioningAtBoard(board)
-    def self.automaticPositioningAtBoard(board)
-        NxTasksPositions::thatPosition(NxBoards::boardToItemsOrdered(board).map{|item| item["position"]})
-    end
-
     # NxTasksPositions::decideNewPositionAtBoard(board)
     def self.decideNewPositionAtBoard(board)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "automatic positioning", "next (default)"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "next (default)"])
         if option == "manual positioning" then
             return NxTasksPositions::interactivelyDecidePositionAtBoardAtTop(board)
-        end
-        if option == "automatic positioning" then
-            return NxTasksPositions::automaticPositioningAtBoard(board)
         end
         NxTasksPositions::lastPosition() + 0.5 + rand
     end
@@ -88,21 +80,31 @@ class NxTasksPositions
         position.to_f
     end
 
-    # NxTasksPositions::automaticPositioningAtNoBoard()
-    def self.automaticPositioningAtNoBoard()
-        NxTasksPositions::thatPosition(NxTasks::boardlessItems().map{|item| item["position"]})
+    # NxTasksPositions::automaticPositioningAtNoBoard(depth)
+    def self.automaticPositioningAtNoBoard(depth)
+        items = NxTasks::boardlessItems()
+                    .sort_by{|item| item["position"] }
+                    .take(depth)
+        positions = items.map{|item| item["position"]}
+        NxTasksPositions::thatPosition(positions)
     end
 
     # NxTasksPositions::decideNewPositionAtNoBoard()
     def self.decideNewPositionAtNoBoard()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "automatic positioning", "next (default)"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "automatic positioning (depth 10)", "automatic positioning (depth 100)", "next"])
         if option == "manual positioning" then
             return NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
         end
-        if option == "automatic positioning" then
-            return NxTasksPositions::automaticPositioningAtNoBoard()
+        if option == "automatic positioning (depth 10)" then
+            return NxTasksPositions::automaticPositioningAtNoBoard(10)
         end
-        NxTasksPositions::lastPosition() + 0.5 + rand
+        if option == "automatic positioning (depth 100)" then
+            return NxTasksPositions::automaticPositioningAtNoBoard(100)
+        end
+        if option == "next" then
+            return NxTasksPositions::lastPosition() + 0.5 + rand
+        end
+        NxTasksPositions::decideNewPositionAtNoBoard()
     end
 
     # -------------------------------------------
