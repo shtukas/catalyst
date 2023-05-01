@@ -715,8 +715,9 @@ class Listing
 
     # Listing::items()
     def self.items()
-        queue1 = NxFrontOrdinals::targetItemsOrdered()
+        queue1 = NxFrontOrdinals::queue1()
         queue2 = Listing::priorityQueue(queue1)
+        NxFrontOrdinals::dataManagement(queue2)
         queue1 + queue2
     end
 

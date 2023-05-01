@@ -33,19 +33,24 @@ class NxFrontOrdinals
         raise "(error: c419fc28-873b-47e3-a6b2-f1b28848918e) targetuuid: #{targetuuid}"
     end
 
-    # NxFrontOrdinals::targetItemsOrdered()
-    def self.targetItemsOrdered()
-        NxFrontOrdinals::items()
+    # NxFrontOrdinals::queue1()
+    def self.queue1()
+        items = NxFrontOrdinals::items()
             .sort_by{|fo| fo["targetordinal"] }
             .map{|fo| 
-                item = N3Objects::getOrNull(fo["targetuuid"]) 
-                if item.nil? then
-                    nil
-                else
+                (lambda{|fo|
+                    item = N3Objects::getOrNull(fo["targetuuid"]) 
+                    return nil if item.nil?
+
+                    if !DoNotShowUntil::isVisible(item) then
+                        N3Objects::destroy(fo["uuid"])
+                        return nil
+                    end
+
                     item[:isFifo] = true
                     item[:fifoOrdinal] = fo["targetordinal"]
                     item
-                end
+                }).call(fo)
             }
             .compact
     end
