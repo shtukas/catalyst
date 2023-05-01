@@ -3,7 +3,7 @@ class NxBalls
 
     # NxBalls::repository()
     def self.repository()
-        "#{Config::pathToGalaxy()}/DataBank/catalyst/NxBalls"
+        "#{Config::pathToGalaxy()}/DataHub/catalyst/NxBalls"
     end
 
     # ---------------------------------
@@ -25,6 +25,7 @@ class NxBalls
     # NxBalls::issueNxBall(item, accounts)
     def self.issueNxBall(item, accounts)
         nxball = {
+            "instance"       => Config::thisInstanceId(),
             "type"           => "running",
             "startunixtime"  => Time.new.to_i,
             "accounts"       => accounts,
@@ -101,6 +102,10 @@ class NxBalls
         end
         # Item is running
         nxball = NxBalls::getNxBallOrNull(item)
+        if nxball["instance"] != Config::thisInstanceId() then
+            puts "This ball wasn't created here, was created at #{nxball["instance"]}."
+            return if !LucilleCore::askQuestionAnswerAsBoolean("Confirm stop operation: ")
+        end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
@@ -114,6 +119,11 @@ class NxBalls
     def self.pause(item)
         return if !NxBalls::itemIsRunning(item)
         nxball = NxBalls::getNxBallOrNull(item)
+        if nxball["instance"] != Config::thisInstanceId() then
+            puts "This ball wasn't created here, was created at #{nxball["instance"]}. You cannot pause it, but you can stop it."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"

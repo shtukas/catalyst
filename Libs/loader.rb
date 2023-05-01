@@ -47,7 +47,6 @@ checkLocation = lambda{|location|
 } 
 
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataBank/Stargate-Config.json")
-checkLocation.call("#{ENV['HOME']}/Galaxy/DataBank/catalyst/NxBalls")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/catalyst")
 checkLocation.call("#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries")
