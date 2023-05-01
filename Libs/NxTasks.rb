@@ -63,7 +63,7 @@ class NxTasks
             "description" => "Watch '#{title}' on Netflix",
             "field11"     => nil,
             "boarduuid"   => nil,
-            "position"    => NxTasksPositions::computeThatPositionAtNoBoard(),
+            "position"    => NxTasksPositions::automaticPositioningAtNoBoard(),
             "engine"      => TxEngines::defaultEngine(nil),
         }
         NxTasks::commit(item)
@@ -83,7 +83,7 @@ class NxTasks
             "description" => description,
             "field11"     => coredataref,
             "boarduuid"   => nil,
-            "position"    => NxTasksPositions::computeThatPositionAtNoBoard(),
+            "position"    => NxTasksPositions::automaticPositioningAtNoBoard(),
             "engine"      => TxEngines::defaultEngine(nil),
         }
         N3Objects::commit(item)
@@ -104,7 +104,7 @@ class NxTasks
             "description" => description,
             "field11"     => coredataref,
             "boarduuid"   => nil,
-            "position"    => NxTasksPositions::computeThatPositionAtNoBoard(),
+            "position"    => NxTasksPositions::automaticPositioningAtNoBoard(),
             "engine"      => TxEngines::defaultEngine(nil),
         }
         N3Objects::commit(item)

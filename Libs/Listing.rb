@@ -874,9 +874,7 @@ class Listing
     def self.primaryListingProgram(store, items)
         system("clear")
 
-        boards = CommonUtils::putFirst(NxBoards::boardsOrdered().select{|board| NxBoards::completionRatio(board) < 1 }, lambda{|board| DoNotShowUntil::isVisible(board) })
-
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - boards.size)
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
         spacecontrol.putsline ""
         puts TheLine::line()
@@ -887,9 +885,17 @@ class Listing
             floats
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
+                    spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 }
+        end
+
+        boards = CommonUtils::putFirst(NxBoards::boardsOrdered().select{|board| NxBoards::completionRatio(board) < 1 }, lambda{|board| DoNotShowUntil::isVisible(board) })
+        if !boards.empty? then
+            spacecontrol.putsline ""
+            boards.each{|board|
+                store.register(board, Listing::canBeDefault(board))
+                spacecontrol.putsline Listing::itemToListingLine(store: store, item: board)
+            }
         end
 
         spacecontrol.putsline ""
@@ -898,14 +904,14 @@ class Listing
         active
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
             }
 
         interruption, items = items.partition{|item| Listing::isInterruption(item) }
         interruption
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
             }
 
         frontdata = NxFrontOrdinals::items().sort_by{|item| item["targetordinal"] }
@@ -914,7 +920,7 @@ class Listing
             .sort_by{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item, isFront: true)
+                spacecontrol.putsline Listing::itemToListingLine(store: store, item: item, isFront: true)
             }
 
         if front.size < 10 then
@@ -933,11 +939,6 @@ class Listing
                 status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 break if !status
             }
-
-        boards.each{|board|
-            store.register(board, Listing::canBeDefault(board))
-            puts Listing::itemToListingLine(store: store, item: board)
-        }
     end
 
     # Listing::main()
@@ -946,8 +947,7 @@ class Listing
 
         Thread.new {
             loop {
-                if CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId() then
-                    puts "Code change detected from shared data"
+                if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
                     puts "Attempting to download new code"
                     system("#{File.dirname(__FILE__)}/pull-from-origin")
                 end
