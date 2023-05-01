@@ -949,7 +949,7 @@ class Listing
             loop {
                 if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
                     puts "Attempting to download new code"
-                    system("#{File.dirname(__FILE__)}/pull-from-origin")
+                    system("#{File.dirname(__FILE__)}/../pull-from-origin")
                 end
                 sleep 300
             }
