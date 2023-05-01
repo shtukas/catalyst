@@ -77,6 +77,11 @@ class NxBoards
         TxEngines::completionRatio(board["engine"])
     end
 
+    # NxBoards::listingItems()
+    def self.listingItems()
+        NxBoards::items().select{|board| NxBalls::itemIsActive(board) }
+    end
+
     # ---------------------------------------------------------
     # Ops
     # ---------------------------------------------------------

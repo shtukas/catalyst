@@ -697,6 +697,7 @@ class Listing
             NxFires::items(),
             NxBackups::listingItems(),
             NxLines::items(),
+            NxBoards::listingItems(),
             NxTasks::listingItems(),
         ]
             .flatten
