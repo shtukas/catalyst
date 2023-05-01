@@ -60,6 +60,6 @@ class TheLine
         current = TheLine::getCurrentCount()
         performance = "(perf: #{NxTasks::performance().round(2)})".green
         version = CommonUtils::localLastCommitId()
-        "> #{performance} (inventory: #{current}, #{(current.to_f/reference["count"]).round(5)}, reference: #{reference["count"]} @ #{reference["datetime"]}) (version: #{version})"
+        "#{performance} (inventory: #{current}, #{(current.to_f/reference["count"]).round(5)}, reference: #{reference["count"]} @ #{reference["datetime"]}) (version: #{version})"
     end
 end

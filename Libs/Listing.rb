@@ -647,8 +647,8 @@ class Listing
                 "lambda" => lambda { Listing::items() }
             },
             {
-                "name" => "Listing::primaryListingProgram()",
-                "lambda" => lambda { Listing::primaryListingProgram(ItemStore.new(), Listing::items()) }
+                "name" => "Listing::printItems()",
+                "lambda" => lambda { Listing::printItems(ItemStore.new(), Listing::items()) }
             },
         ]
                     .map{|test|
@@ -686,8 +686,9 @@ class Listing
         true
     end
 
-    # Listing::items()
-    def self.items()
+    # Listing::priorityQueue(queue1)
+    def self.priorityQueue(queue1)
+        queue1uuids = queue1.map{|i| i["uuid"] }
         [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
@@ -701,6 +702,7 @@ class Listing
             NxTasks::listingItems(),
         ]
             .flatten
+            .select{|item| !queue1uuids.include?(item["uuid"]) }
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
@@ -709,6 +711,13 @@ class Listing
                     selected + [item]
                 end
             }
+    end
+
+    # Listing::items()
+    def self.items()
+        queue1 = NxFrontOrdinals::targetItemsOrdered()
+        queue2 = Listing::priorityQueue(queue1)
+        queue1 + queue2
     end
 
     # Listing::skipfragment(item)
@@ -738,8 +747,8 @@ class Listing
         end
     end
 
-    # Listing::itemToListingLine(store: nil, item: nil, isFront: false)
-    def self.itemToListingLine(store: nil, item: nil, isFront: false)
+    # Listing::itemToListingLine(store: nil, item: nil)
+    def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} Px02Px03#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
@@ -748,13 +757,8 @@ class Listing
         else
             line = line.gsub("Px02", "")
         end
-        if isFront then
-            entry = Listing::getNxFrontOrdinalForUuidOrNull(item["uuid"])
-            if entry then
-                line = line.gsub("Px03", "(ordinal: #{"%5.2f" % entry["targetordinal"]}) ".green)
-            else
-                line = line.gsub("Px03", "(could not determine coordinates 🤔) ")
-            end
+        if item[:isFifo] then
+            line = line.gsub("Px03", "(ordinal: #{"%5.2f" % item[:fifoOrdinal]}) ".green)
         else
             line = line.gsub("Px03", "")
         end
@@ -845,7 +849,6 @@ class Listing
             N3Objects::fileManagement()
             Bank::fileManagement()
             NxBackups::dataManagement()
-            NxFrontOrdinals::dataManagement()
         end
     end
 
@@ -870,8 +873,8 @@ class Listing
         NxFrontOrdinals::items().select{|item| item["targetuuid"] == uuid }.first
     end
 
-    # Listing::primaryListingProgram(store, items)
-    def self.primaryListingProgram(store, items)
+    # Listing::printItems(store, items)
+    def self.printItems(store, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -891,7 +894,6 @@ class Listing
 
         boards = CommonUtils::putFirst(NxBoards::boardsOrdered().select{|board| NxBoards::completionRatio(board) < 1 }, lambda{|board| DoNotShowUntil::isVisible(board) })
         if !boards.empty? then
-            spacecontrol.putsline ""
             boards.each{|board|
                 store.register(board, Listing::canBeDefault(board))
                 spacecontrol.putsline Listing::itemToListingLine(store: store, item: board)
@@ -913,25 +915,6 @@ class Listing
                 store.register(item, Listing::canBeDefault(item))
                 spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
             }
-
-        frontdata = NxFrontOrdinals::items().sort_by{|item| item["targetordinal"] }
-        front, items = items.partition{|item| frontdata.map{|d| d["targetuuid"] }.include?(item["uuid"]) }
-        front
-            .sort_by{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                spacecontrol.putsline Listing::itemToListingLine(store: store, item: item, isFront: true)
-            }
-
-        if front.size < 10 then
-            ordinal = ([1] + front.map{|item| NxFrontOrdinals::getOrdinalByTargetuuid(item["uuid"]) }).max
-            items.take(10 - front.size).each_with_index{|item, i|
-                ordinal = ordinal + 1
-                NxFrontOrdinals::issue(item["uuid"], ordinal.floor)
-            }
-        end
-
-        spacecontrol.putsline ""
 
         items
             .each{|item|
@@ -966,7 +949,7 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::primaryListingProgram(store, Listing::items())
+            Listing::printItems(store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

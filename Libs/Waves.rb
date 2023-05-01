@@ -163,24 +163,11 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        items = Waves::items()
-                    .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-                    .select{|item|
-                        item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-                    }
-        is1 = items.select{|item| item["interruption"] }
-        is2 = 
-            if Waves::countDoneOverThePast2Hours() < 4 then
-                items.select{|item| !item["interruption"] }
-            else
-                []
-            end
-        is1 + is2
-    end
-
-    # Waves::countDoneOverThePast2Hours()
-    def self.countDoneOverThePast2Hours()
-        Waves::items().select{|item| (Time.new.to_i - (item["lastDoneUnixtime"] || 0)) < 3600*2}.size
+        Waves::items()
+            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+            .select{|item|
+                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+            }
     end
 
     # -------------------------------------------------------------------------
