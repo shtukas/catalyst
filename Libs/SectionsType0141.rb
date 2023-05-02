@@ -1,6 +1,9 @@
 
-# SectionsType0141::contentToSections(text)
-# SectionsType0141::applyNextTransformationToText(content)
+# require "/Users/pascal/Galaxy/Software/Lucille-Ruby-Libraries/SectionsType0141.rb"
+=begin
+    # SectionsType0141::contentToSections(text)
+    # SectionsType0141::applyNextTransformationToText(content)
+=end
 
 class SectionsType0141
 
@@ -55,13 +58,6 @@ class SectionsType0141
             .reject{|line| line == sline }
             .join()
             .strip
-    end
-
-    # SectionsType0141::applyNextTransformationToFile(filepath)
-    def self.applyNextTransformationToFile(filepath)
-        text = IO.read(filepath).strip
-        text = SectionsType0141::applyNextTransformationToText(text)
-        File.open(filepath, "w"){|f| f.puts(text) }
     end
 end
 

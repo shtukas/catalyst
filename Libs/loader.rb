@@ -56,9 +56,9 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 require_relative "Config.rb"
 
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/LucilleCore.rb"
+require_relative "LucilleCore.rb"
 
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/XCache.rb"
+require_relative "XCache.rb"
 =begin
     XCache::set(key, value)
     XCache::getOrNull(key)
@@ -71,7 +71,7 @@ require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/X
     XCache::filepath(key)
 =end
 
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/AionCore.rb"
+require_relative "AionCore.rb"
 =begin
 
 The operator is an object that has meet the following signatures
@@ -121,7 +121,7 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/Blades.rb"
+require_relative "Blades.rb"
 
 =begin
 Blades
@@ -151,7 +151,7 @@ class Blades
     end
 end
 
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/MikuTypes.rb"
+require_relative "MikuTypes.rb"
 
 =begin
 MikuTypes
