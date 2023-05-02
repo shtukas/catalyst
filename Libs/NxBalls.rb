@@ -112,7 +112,6 @@ class NxBalls
             Bank::put(account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
-        NxFrontOrdinals::destroyByTargetUUID(item["uuid"])
     end
 
     # NxBalls::pause(item)

@@ -20,8 +20,8 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | ordinal <n> <ordinal> | rotate <n> | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | ordinal line <ordinal> <line>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
             "",
             "specific types commands:",
             "    - boards  : engine (<n>)",
@@ -148,27 +148,6 @@ class Listing
             return
         end
 
-        if input.start_with?("ordinal line") then
-            input = input[12, 999].strip
-            targetordinal = input.to_f
-            line = input[targetordinal.to_f, 999].strip
-            item = NxLines::issue(line)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
-            fronti = NxFrontOrdinals::issue(item["uuid"], targetordinal)
-            puts JSON.pretty_generate(fronti)
-            return
-        end
-
-        if Interpreting::match("ordinal * *", input) then
-            _, itemordinal, frontordinal = Interpreting::tokenizer(input)
-            item = store.get(itemordinal.to_i)
-            return if item.nil?
-            NxFrontOrdinals::destroyByTargetUUID(item["uuid"])
-            item = NxFrontOrdinals::issue(item["uuid"], frontordinal.to_f)
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("boards", input) then
             NxBoards::program3()
             return
@@ -242,15 +221,6 @@ class Listing
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item)
-            return
-        end
-
-        if Interpreting::match("rotate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxBalls::stop(item)
-            NxFrontOrdinals::rotateCatalystItem(item)
             return
         end
 
@@ -867,13 +837,13 @@ class Listing
 
     # Listing::split(items)
     def self.split(items)
-        uuids = XCache::getOrNull("153c9b61-862c-4346-87b4-175b29939f4b:#{CommonUtils::today()}")
+        uuids = XCache::getOrNull("153c9b61-862c-4346-87b4-175b29939f4c:#{CommonUtils::today()}")
         uuids =
             if uuids then
                 JSON.parse(uuids)
             else
-                uuids = items.map{|item| item["uuid"] }
-                XCache::set("153c9b61-862c-4346-87b4-175b29939f4b:#{CommonUtils::today()}", JSON.generate(uuids))
+                uuids = items.map{|item| item["uuid"] }.shuffle
+                XCache::set("153c9b61-862c-4346-87b4-175b29939f4c:#{CommonUtils::today()}", JSON.generate(uuids))
                 uuids
             end
         i1s = uuids.map{|uuid| items.select{|item| item["uuid"] == uuid}.first }.compact
