@@ -691,9 +691,8 @@ class Listing
         true
     end
 
-    # Listing::priorityQueue(queue1)
-    def self.priorityQueue(queue1)
-        queue1uuids = queue1.map{|i| i["uuid"] }
+    # Listing::items()
+    def self.items()
         [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
@@ -707,7 +706,6 @@ class Listing
             NxTasks::listingItems(),
         ]
             .flatten
-            .select{|item| !queue1uuids.include?(item["uuid"]) }
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
@@ -716,14 +714,6 @@ class Listing
                     selected + [item]
                 end
             }
-    end
-
-    # Listing::items()
-    def self.items()
-        queue1 = NxFrontOrdinals::queue1()
-        queue2 = Listing::priorityQueue(queue1)
-        NxFrontOrdinals::dataManagement(queue2)
-        queue1 + queue2
     end
 
     # Listing::skipfragment(item)
@@ -753,20 +743,21 @@ class Listing
         end
     end
 
+    # Listing::isOverflowingTask(item)
+    def self.isOverflowingTask(item)
+        return false if item["mikuType"] != "NxTask"
+        TxEngines::completionRatio(item["engine"]) > 1
+    end
+
     # Listing::itemToListingLine(store: nil, item: nil)
     def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02Px03#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
-        if item["interruption"] then
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(interruption) ".red)
         else
             line = line.gsub("Px02", "")
-        end
-        if item[:isFifo] then
-            line = line.gsub("Px03", "(ordinal: #{"%5.2f" % item[:fifoOrdinal]}) ".green)
-        else
-            line = line.gsub("Px03", "")
         end
         if NxBalls::itemIsActive(item) then
             line = line.green
@@ -774,7 +765,7 @@ class Listing
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
-        if item[:taskTimeOverflow] and !NxBalls::itemIsActive(item) then
+        if Listing::isOverflowingTask(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
         line
@@ -874,13 +865,24 @@ class Listing
         }
     end
 
-    # Listing::getNxFrontOrdinalForUuidOrNull(uuid)
-    def self.getNxFrontOrdinalForUuidOrNull(uuid)
-        NxFrontOrdinals::items().select{|item| item["targetuuid"] == uuid }.first
+    # Listing::split(items)
+    def self.split(items)
+        uuids = XCache::getOrNull("153c9b61-862c-4346-87b4-175b29939f4b:#{CommonUtils::today()}")
+        uuids =
+            if uuids then
+                JSON.parse(uuids)
+            else
+                uuids = items.map{|item| item["uuid"] }
+                XCache::set("153c9b61-862c-4346-87b4-175b29939f4b:#{CommonUtils::today()}", JSON.generate(uuids))
+                uuids
+            end
+        i1s = uuids.map{|uuid| items.select{|item| item["uuid"] == uuid}.first }.compact
+        i2s = items.select{|item| !i1s.map{|i|i["uuid"]}.include?(item["uuid"]) }
+        [i1s, i2s]
     end
 
-    # Listing::printItems(store, items)
-    def self.printItems(store, items)
+    # Listing::printItems(store, today, extra)
+    def self.printItems(store, today, extra)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -907,6 +909,11 @@ class Listing
         end
 
         spacecontrol.putsline ""
+
+        items = today + extra.map{|item|
+            item["interruption"] = true
+            item
+        }
 
         active, items = items.partition{|item| NxBalls::itemIsActive(item) }
         active
@@ -963,7 +970,9 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printItems(store, Listing::items())
+            today, extra = Listing::split(Listing::items())
+
+            Listing::printItems(store, today, extra)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

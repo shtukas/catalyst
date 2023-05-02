@@ -152,13 +152,7 @@ class NxTasks
         items2 = NxTasks::boardlessItems()
                     .sort_by{|item| item["position"] }
                     .first(6)
-        (items1 + items2)
-            .map{|item|
-                if TxEngines::completionRatio(item["engine"]) > 1 then
-                    item[:taskTimeOverflow] = true
-                end
-                item
-            }
+        items1 + items2
     end
 
     # --------------------------------------------------

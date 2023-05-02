@@ -182,7 +182,6 @@ require_relative "N3Objects.rb"
 require_relative "NxFires.rb"
 require_relative "NxFloats.rb"
 require_relative "NxTasksPositions.rb"
-require_relative "NxFrontOrdinals.rb"
 
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"
