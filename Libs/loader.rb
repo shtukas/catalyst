@@ -138,32 +138,16 @@ Blades
     Blades::getDatablobOrNull(token, key)
 =end
 
-class Blades
-
-    # Blades::decideInitLocation(uuid)
-    def self.decideInitLocation(uuid)
-        "#{Config::pathToCatalystData()}/Blades/#{uuid}.blade"
-    end
-
-    # Blades::locateBladeUsingUUID(uuid)
-    def self.locateBladeUsingUUID(uuid)
-        "#{Config::pathToCatalystData()}/Blades/#{uuid}.blade"
-    end
-end
-
 require_relative "MikuTypes.rb"
 
 =begin
 MikuTypes
-    MikuTypesCore::bladesEnumerator(roots)
-    MikuTypesCore::mikuTypedBladesEnumerator(roots)
-    MikuTypesCore::mikuTypeBladesEnumerator(roots, mikuType)
-    MikuTypesCore::scan(roots)
-    MikuTypesCore::scanMonitor(roots, periodInSeconds)
-    MikuTypesCore::mikuTypeFilepaths(mikuType)
+    MikuTypes::bladesEnumerator(roots)
+    MikuTypes::mikuTypedBladesEnumerator(roots)
+    MikuTypes::mikuTypeBladesEnumerator(roots, mikuType)
+    MikuTypes::scan(roots)
+    MikuTypes::mikuTypeFilepaths(mikuType)
 =end
-
-MikuTypesCore::scanMonitor(["#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Blades"], 3600)
 
 # ------------------------------------------------------------
 

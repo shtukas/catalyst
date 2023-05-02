@@ -31,7 +31,7 @@ class Listing
             "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | boards | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n>",
+            "misc          : search | speed | commands | mikuTypes | edit <n> | scan",
         ].join("\n")
     end
 
@@ -106,6 +106,11 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             PolyActions::access(item)
+            return
+        end
+
+        if Interpreting::match("scan", input) then
+            MikuTypes::scan()
             return
         end
 
@@ -936,6 +941,14 @@ class Listing
                     system("#{File.dirname(__FILE__)}/../pull-from-origin")
                 end
                 sleep 300
+            }
+        }
+
+        Thread.new {
+            sleep 10
+            loop {
+                MikuTypes::scan()
+                sleep 3600
             }
         }
 

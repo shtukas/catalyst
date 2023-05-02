@@ -38,7 +38,7 @@ class Anniversaries
 
     # Anniversaries::items()
     def self.items()
-        MikuTypesCore::mikuTypeFilepaths("NxAnniversary")
+        MikuTypes::mikuTypeFilepaths("NxAnniversary")
             .map{|filepath| Anniversaries::bladeFilepathToItem(filepath) }
     end
 
@@ -209,12 +209,12 @@ class Anniversaries
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
-                description = CommonUtils::editTextSynchronously(anniversary["description"]).strip
+                description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
                 Blades::setAttribute(item["uuid"], "description", description)
             end
             if action == "update start date" then
-                startdate = CommonUtils::editTextSynchronously(anniversary["startdate"])
+                startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
                 Blades::setAttribute(item["uuid"], "startdate", startdate)
             end
