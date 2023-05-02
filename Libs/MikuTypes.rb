@@ -55,7 +55,7 @@ Blades
     Blades::decideInitLocation(uuid)
     Blades::locateBlade(token)
 
-    Blades::init(uuid)
+    Blades::init(mikuType, uuid)
     Blades::setAttribute(uuid, attribute_name, value)
     Blades::getAttributeOrNull(uuid, attribute_name)
     Blades::addToSet(uuid, set_id, element_id, value)

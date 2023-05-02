@@ -5,7 +5,7 @@ Blades
     Blades::decideInitLocation(uuid)
     Blades::locateBlade(token)
 
-    Blades::init(uuid)
+    Blades::init(mikuType, uuid)
     Blades::setAttribute(uuid, attribute_name, value)
     Blades::getAttributeOrNull(uuid, attribute_name)
     Blades::addToSet(uuid, set_id, element_id, value)
@@ -64,21 +64,18 @@ reserved attributes:
 
 class Blades
 
-    # Blades::decideInitLocation(uuid)
-    def self.decideInitLocation(uuid)
-        "#{ENV["HOME"]}/Galaxy/DataHub/Blades/#{uuid}.blade"
-    end
-
-    # Blades::init(uuid) # String : filepath
-    def self.init(uuid)
+    # Blades::init(mikuType, uuid) # String : filepath
+    def self.init(mikuType, uuid)
         filepath = Blades::decideInitLocation(uuid)
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("create table records (record_uuid string primary key, operation_unixtime float, operation_type string, _name_ string, _data_ blob)", [])
+        db.execute "insert into records (record_uuid, operation_unixtime, operation_type, _name_, _data_) values (?, ?, ?, ?, ?)", [SecureRandom.uuid, Time.new.to_f, "attribute", "uuid", JSON.generate(uuid)]
+        db.execute "insert into records (record_uuid, operation_unixtime, operation_type, _name_, _data_) values (?, ?, ?, ?, ?)", [SecureRandom.uuid, Time.new.to_f, "attribute", "mikuType", JSON.generate(mikuType)]
         db.close
-        Blades::setAttribute(uuid, "uuid", uuid)
+        filepath = Blades::rename(filepath)
         filepath
     end
 
@@ -136,15 +133,16 @@ class Blades
 
     # Blades::rename(filepath1)
     def self.rename(filepath1)
-        return if !File.exist?(filepath1)
+        return filepath1 if !File.exist?(filepath1)
         hash1 = Digest::SHA1.hexdigest(filepath1)
         dirname = File.dirname(filepath1)
         uuid = File.basename(filepath1).split("@").first
         filepath2 = "#{dirname}/#{uuid}@#{hash1}.blade"
-        return if filepath1 == filepath2
+        return filepath1 if filepath1 == filepath2
         FileUtils.mv(filepath1, filepath2)
         XCache::set("blades:uuid->filepath:mapping:7239cf3f7b6d:#{uuid}", filepath2)
         MikuTypes::registerFilepath(filepath2)
+        filepath2
     end
 
     # Blades::setAttribute(token, attribute_name, value)

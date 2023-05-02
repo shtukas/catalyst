@@ -7,7 +7,7 @@ class Anniversaries
             uuid = item["uuid"]
             filepath = Blades::locate_blade(uuid)
             if File.exist?(filepath) then
-                Blades::init(uuid)
+                Blades::init("NxAnniversary", uuid)
             end
             Blades::setAttribute(uuid, "uuid", uuid)
             Blades::setAttribute(uuid, "mikuType", "NxAnniversary")
@@ -150,7 +150,7 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Blades::init(uuid)
+        Blades::init("NxAnniversary", uuid)
         Blades::setAttribute(uuid, "uuid", uuid)
         Blades::setAttribute(uuid, "mikuType", "NxAnniversary")
         Blades::setAttribute(uuid, "unixtime", Time.new.to_i)

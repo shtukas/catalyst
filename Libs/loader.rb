@@ -129,7 +129,7 @@ Blades
     Blades::decideInitLocation(uuid)
     Blades::locateBladeUsingUUID(uuid)
 
-    Blades::init(uuid)
+    Blades::init(mikuType, uuid)
     Blades::setAttribute(token, attribute_name, value)
     Blades::getAttributeOrNull(token, attribute_name)
     Blades::addToSet(token, set_id, element_id, value)
