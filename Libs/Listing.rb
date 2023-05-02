@@ -893,7 +893,7 @@ class Listing
                 }
         end
 
-        boards = CommonUtils::putFirst(NxBoards::boardsOrdered().select{|board| NxBoards::completionRatio(board) < 1 }, lambda{|board| DoNotShowUntil::isVisible(board) })
+        boards = CommonUtils::putFirst(NxBoards::boardsOrdered().select{|board| NxBoards::completionRatio(board) < 1 and Listing::listable(board) }, lambda{|board| DoNotShowUntil::isVisible(board) })
         if !boards.empty? then
             boards.each{|board|
                 store.register(board, Listing::canBeDefault(board))
