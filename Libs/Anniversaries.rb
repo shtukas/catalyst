@@ -1,45 +1,10 @@
 
 class Anniversaries
 
-    def self.transform()
-        Anniversaries::items().each{|item|
-            puts JSON.pretty_generate(item)
-            uuid = item["uuid"]
-            filepath = Blades::locate_blade(uuid)
-            if File.exist?(filepath) then
-                Blades::init("NxAnniversary", uuid)
-            end
-            Blades::setAttribute(uuid, "uuid", uuid)
-            Blades::setAttribute(uuid, "mikuType", "NxAnniversary")
-            Blades::setAttribute(uuid, "unixtime", item["unixtime"])
-            Blades::setAttribute(uuid, "datetime", item["datetime"])
-            Blades::setAttribute(uuid, "description", item["description"])
-            Blades::setAttribute(uuid, "doNotShowUntil", item["doNotShowUntil"])
-            Blades::setAttribute(uuid, "startdate", item["startdate"])
-            Blades::setAttribute(uuid, "repeatType", item["repeatType"])
-            Blades::setAttribute(uuid, "lastCelebrationDate", item["lastCelebrationDate"])
-        }
-    end
-
-    # Anniversaries::bladeFilepathToItem(filepath)
-    def self.bladeFilepathToItem(filepath)
-        item = {}
-        item["uuid"] = Blades::getAttributeOrNull(filepath, "uuid")
-        item["mikuType"] = Blades::getAttributeOrNull(filepath, "mikuType")
-        item["unixtime"] = Blades::getAttributeOrNull(filepath, "unixtime")
-        item["datetime"] = Blades::getAttributeOrNull(filepath, "datetime")
-        item["description"] = Blades::getAttributeOrNull(filepath, "description")
-        item["doNotShowUntil"] = Blades::getAttributeOrNull(filepath, "doNotShowUntil")
-        item["startdate"] = Blades::getAttributeOrNull(filepath, "startdate")
-        item["repeatType"] = Blades::getAttributeOrNull(filepath, "repeatType")
-        item["lastCelebrationDate"] = Blades::getAttributeOrNull(filepath, "lastCelebrationDate")
-        item
-    end
-
     # Anniversaries::items()
     def self.items()
-        MikuTypes::mikuTypeFilepaths("NxAnniversary")
-            .map{|filepath| Anniversaries::bladeFilepathToItem(filepath) }
+        MikuTypes::mikuTypeUUIDsCached("NxAnniversary")
+            .map{|uuid| BladeAdaptation::uuidToItemOrNull(uuid) }
     end
 
     # ----------------------------------------------------------------
@@ -160,8 +125,8 @@ class Anniversaries
         Blades::setAttribute(uuid, "repeatType", repeatType)
         Blades::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
 
-        filepath = Blades::locateBladeUsingUUID(uuid)
-        Anniversaries::bladeFilepathToItem(filepath)
+        filepath = Blades::tokenToFilepath(uuid)
+        BladeAdaptation::readFileAsItemOrError(filepath)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]

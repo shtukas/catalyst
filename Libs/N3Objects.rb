@@ -232,11 +232,10 @@ class N3Objects
 
     # N3Objects::getOrNull(uuid)
     def self.getOrNull(uuid)
-        objects = []
-        N3Objects::getFilepathsSorted().each{|filepath|
-            objects << N3Objects::getAtFilepathOrNull(uuid, filepath)
-        }
-        objects
+        item = BladeAdaptation::uuidToItemOrNull(uuid)
+        return item if item
+        N3Objects::getFilepathsSorted()
+            .map{|filepath| N3Objects::getAtFilepathOrNull(uuid, filepath) }
             .compact
             .sort_by{|object| object["n3timestamp"] || 0 }
             .reverse # oldest one is now first

@@ -56,9 +56,9 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 require_relative "Config.rb"
 
-require_relative "LucilleCore.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/LucilleCore.rb"
 
-require_relative "XCache.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/XCache.rb"
 =begin
     XCache::set(key, value)
     XCache::getOrNull(key)
@@ -71,7 +71,7 @@ require_relative "XCache.rb"
     XCache::filepath(key)
 =end
 
-require_relative "AionCore.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/AionCore.rb"
 =begin
 
 The operator is an object that has meet the following signatures
@@ -121,32 +121,27 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
-require_relative "Blades.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/Blades.rb"
 
 =begin
 Blades
-
-    Blades::decideInitLocation(uuid)
-    Blades::locateBladeUsingUUID(uuid)
-
     Blades::init(mikuType, uuid)
+    Blades::tokenToFilepath(token)
     Blades::setAttribute(token, attribute_name, value)
     Blades::getAttributeOrNull(token, attribute_name)
+    Blades::getMandatoryAttribute(token, attribute_name)
     Blades::addToSet(token, set_id, element_id, value)
     Blades::removeFromSet(token, set_id, element_id)
     Blades::putDatablob(token, key, datablob)
     Blades::getDatablobOrNull(token, key)
 =end
 
-require_relative "MikuTypes.rb"
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/MikuTypes.rb"
 
 =begin
 MikuTypes
-    MikuTypes::bladesEnumerator(roots)
-    MikuTypes::mikuTypedBladesEnumerator(roots)
-    MikuTypes::mikuTypeBladesEnumerator(roots, mikuType)
-    MikuTypes::scan(roots)
-    MikuTypes::mikuTypeFilepaths(mikuType)
+    MikuTypes::mikuTypeUUIDsCached(mikuType) # Cached
+    MikuTypes::uuidEnumeratorForMikuTypeFromDisk(mikuType)
 =end
 
 # ------------------------------------------------------------
@@ -155,6 +150,7 @@ require_relative "Anniversaries.rb"
 
 require_relative "Bank.rb"
 require_relative "NxBackups.rb"
+require_relative "BladeAdaptation.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CoreData.rb"
