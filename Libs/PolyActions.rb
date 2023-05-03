@@ -42,7 +42,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBoard" then
-            NxBoards::program1(item)
+            NxBoards::program2(item)
             return
         end
 
