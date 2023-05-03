@@ -147,9 +147,8 @@ class NxBoards
 
             items = [
                 NxOndates::listingItems(),
-                Waves::listingItems(board),
-                NxFloats::items().sort_by{|item| item["unixtime"] },
                 NxFires::items(),
+                Waves::listingItems(board),
                 NxBoards::boardToItemsOrdered(board)
             ]
                 .flatten
