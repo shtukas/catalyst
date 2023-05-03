@@ -33,7 +33,7 @@ class TxEngines
         raise "Houston (39), we have a problem."
     end
 
-    # s(uuid = nil)
+    # TxEngines::defaultEngine(uuid = nil)
     def self.defaultEngine(uuid = nil)
         uuid = uuid || SecureRandom.hex
         {

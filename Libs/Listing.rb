@@ -818,6 +818,7 @@ class Listing
             N3Objects::fileManagement()
             Bank::fileManagement()
             NxBackups::dataManagement()
+            NxBoards::dataManagement()
         end
     end
 

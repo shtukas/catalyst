@@ -79,11 +79,11 @@ class NxBoards
 
     # NxBoards::listingItems()
     def self.listingItems()
-        NxBoards::items().select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
+        NxBoards::items().select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsActive(board) }
     end
 
     # ---------------------------------------------------------
-    # Ops
+    # Selectors
     # ---------------------------------------------------------
 
     # NxBoards::interactivelySelectOneBoardOrNull()
@@ -97,6 +97,21 @@ class NxBoards
         loop {
             item = NxBoards::interactivelySelectOneBoardOrNull()
             return item if item
+        }
+    end
+
+    # ---------------------------------------------------------
+    # Ops
+    # ---------------------------------------------------------
+
+    # NxBoards::dataManagement()
+    def self.dataManagement()
+        NxBoards::items().each{|board|
+            engine2 = TxEngines::engineMaintenance(board["description"], board["engine"])
+            if engine2 then
+                board["engine"] = engine2
+                NxBoards::commit(board)
+            end
         }
     end
 
