@@ -161,13 +161,22 @@ class Waves
     # -------------------------------------------------------------------------
     # Data (2)
 
-    # Waves::listingItems()
-    def self.listingItems()
-        Waves::items()
-            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-            .select{|item|
-                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-            }
+    # Waves::listingItems(indicator)
+    def self.listingItems(indicator)
+        # Indicator is either nil or a board
+        # if nil them we return boardless items or and all interruptions ones
+        # if board we return all the board items
+        waves = Waves::items()
+                    .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+                    .select{|item|
+                        item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+                    }
+        if indicator.nil? then
+            waves.select{|wave| wave["boarduuid"].nil? or wave["interruption"]}
+        else
+            board = indicator
+            waves.select{|wave| wave["boarduuid"] == board["uuid"] }
+        end
     end
 
     # -------------------------------------------------------------------------

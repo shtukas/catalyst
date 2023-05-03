@@ -79,7 +79,7 @@ class NxBoards
 
     # NxBoards::listingItems()
     def self.listingItems()
-        NxBoards::items().select{|board| NxBalls::itemIsActive(board) }
+        NxBoards::items().select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
     end
 
     # ---------------------------------------------------------
@@ -132,7 +132,7 @@ class NxBoards
 
             items = [
                 NxOndates::listingItems(),
-                Waves::listingItems(),
+                Waves::listingItems(board),
                 NxFloats::items().sort_by{|item| item["unixtime"] },
                 NxFires::items(),
                 NxBoards::boardToItemsOrdered(board)

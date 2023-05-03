@@ -77,6 +77,12 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
+        if item["mikuType"] == "NxMonitor1" then
+            return NxTasks::monitor1ToString(item)
+        end
+        if item["mikuType"] == "NxLambda" then
+            return item["description"]
+        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end

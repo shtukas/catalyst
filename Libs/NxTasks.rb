@@ -143,16 +143,55 @@ class NxTasks
             .select{|item| item["boarduuid"].nil? }
     end
 
-    # NxTasks::listingItems()
-    def self.listingItems()
-        items1 = NxBoards::boardsOrdered()
-                    .select{|board| TxEngines::completionRatio(board["engine"]) < 1 }
-                    .map{|board| NxBoards::boardToItemsOrdered(board).first(6) }
-                    .flatten
-        items2 = NxTasks::boardlessItems()
-                    .sort_by{|item| item["position"] }
-                    .first(6)
-        items1 + items2
+    # NxTasks::boardItems(board)
+    def self.boardItems(board)
+        NxTasks::items()
+            .select{|item| item["boarduuid"] == board["uuid"] }
+            .sort_by{|item| item["position"] }
+    end
+
+    # NxTasks::monitor1()
+    def self.monitor1()
+        getEngine = lambda {
+            engine = XCache::getOrNull("7f0e6638-e60b-49fe-b707-14a3a2d12ea8")
+            if engine.nil? then
+                engine = {
+                    "uuid"          => "b35be246-2237-4bf4-ae0d-0c6794350f8e",
+                    "type"          => "weekly-time",
+                    "hours"         => 10,
+                    "lastResetTime" => 0,
+                    "capsule"       => "1cbf5a45-bc37-47af-a165-290e3f45d675"
+                }
+                XCache::set("7f0e6638-e60b-49fe-b707-14a3a2d12ea8", JSON.generate(engine))
+                engine
+            else
+                JSON.parse(engine)
+            end
+        }
+
+        engine = getEngine.call()
+        engine2 = TxEngines::updateEngineOrNull("NxTasks (boardless)", engine)
+        if engine2 then
+            engine = engine2
+            XCache::set("7f0e6638-e60b-49fe-b707-14a3a2d12ea8", JSON.generate(engine))
+        end
+
+        [
+            {
+                "uuid" => "bea0e9c7-f609-47e7-beea-70e433e0c82e",
+                "mikuType" => "NxMonitor1",
+                "description" => "NxTasks (boardless)",
+                "lambda" => lambda {
+                    NxTasks::program1()
+                },
+                "engine" => engine
+            }
+        ]
+    end
+
+    # NxTasks::monitor1ToString(item)
+    def self.monitor1ToString(item)
+        "NxTasks (boardless) #{TxEngines::toString(item["engine"])}"
     end
 
     # --------------------------------------------------

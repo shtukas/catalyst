@@ -31,6 +31,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxMonitor1" then
+            NxTasks::program1()
+            return
+        end
+
         if item["mikuType"] == "NxClique" then
             NxCliques::access(item)
             return
@@ -222,6 +227,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxOndates::access(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "NxMonitor1" then
+            PolyActions::access(item)
             return
         end
 

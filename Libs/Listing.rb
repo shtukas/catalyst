@@ -562,8 +562,8 @@ class Listing
                 "lambda" => lambda { PhysicalTargets::listingItems() }
             },
             {
-                "name" => "Waves::listingItems()",
-                "lambda" => lambda { Waves::listingItems() }
+                "name" => "Waves::listingItems(nil)",
+                "lambda" => lambda { Waves::listingItems(nil) }
             },
             {
                 "name" => "TheLine::line()",
@@ -667,13 +667,13 @@ class Listing
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-            Waves::listingItems(),
+            Waves::listingItems(nil),
             NxOndates::listingItems(),
             NxFires::items(),
             NxBackups::listingItems(),
             NxLines::items(),
             NxBoards::listingItems(),
-            NxTasks::listingItems(),
+            NxTasks::monitor1()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -852,14 +852,6 @@ class Listing
                     store.register(item, Listing::canBeDefault(item))
                     spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 }
-        end
-
-        boards = CommonUtils::putFirst(NxBoards::boardsOrdered().select{|board| NxBoards::completionRatio(board) < 1 and Listing::listable(board) }, lambda{|board| DoNotShowUntil::isVisible(board) })
-        if !boards.empty? then
-            boards.each{|board|
-                store.register(board, Listing::canBeDefault(board))
-                spacecontrol.putsline Listing::itemToListingLine(store: store, item: board)
-            }
         end
 
         spacecontrol.putsline ""
