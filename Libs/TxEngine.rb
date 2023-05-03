@@ -69,8 +69,8 @@ class TxEngines
         raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
     end
 
-    # TxEngines::updateEngineOrNull(description, engine)
-    def self.updateEngineOrNull(description, engine)
+    # TxEngines::engineMaintenance(description, engine)
+    def self.engineMaintenance(description, engine)
         if engine["type"] == "one sitting" then
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
@@ -93,19 +93,7 @@ class TxEngines
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
-        raise "could not TxEngines::updateEngineOrNull(description, engine) for engine: #{engine}"
-    end
-
-    # TxEngines::engineMaintenanceOrNothing(item)
-    def self.engineMaintenanceOrNothing(item)
-        engine = TxEngines::updateEngineOrNull(item["description"], item["engine"])
-        if engine then
-            item["engine"] = engine
-            puts "New item after engine update:"
-            puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
-        end
-        item
+        raise "could not TxEngines::engineMaintenance(description, engine) for engine: #{engine}"
     end
 
     # TxEngines::toString(engine)
