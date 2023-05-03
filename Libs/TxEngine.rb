@@ -3,21 +3,22 @@ class TxEngines
 
     # TxEngines::interactivelySelectEngineTypeOrNull()
     def self.interactivelySelectEngineTypeOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["null (default)", "daily-recovery-time", "weekly-time"])
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["daily-recovery-time (default, with to 1 hour)", "weekly-time"])
     end
 
     # TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
     def self.interactivelyMakeEngineOrDefault(uuid = nil)
         uuid = uuid || SecureRandom.hex
         type = TxEngines::interactivelySelectEngineTypeOrNull()
-        if (type.nil? or type == "null (default)") then
+        if type.nil? then
             return TxEngines::defaultEngine(uuid)
         end
-        if type == "daily-recovery-time" then
+        if type == "daily-recovery-time (default, with to 1 hour)" then
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
             return {
                 "uuid"  => uuid,
                 "type"  => "daily-recovery-time",
-                "hours" => LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+                "hours" => hours
             }
         end
         if type == "weekly-time" then
@@ -32,7 +33,7 @@ class TxEngines
         raise "Houston (39), we have a problem."
     end
 
-    # TxEngines::defaultEngine(uuid = nil)
+    # s(uuid = nil)
     def self.defaultEngine(uuid = nil)
         uuid = uuid || SecureRandom.hex
         {
