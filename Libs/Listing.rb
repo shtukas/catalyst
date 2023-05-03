@@ -835,24 +835,8 @@ class Listing
         }
     end
 
-    # Listing::split(items)
-    def self.split(items)
-        uuids = XCache::getOrNull("153c9b61-862c-4346-87b4-175b29939f4c:#{CommonUtils::today()}")
-        uuids =
-            if uuids then
-                JSON.parse(uuids)
-            else
-                uuids = items.map{|item| item["uuid"] }.shuffle
-                XCache::set("153c9b61-862c-4346-87b4-175b29939f4c:#{CommonUtils::today()}", JSON.generate(uuids))
-                uuids
-            end
-        i1s = uuids.map{|uuid| items.select{|item| item["uuid"] == uuid}.first }.compact
-        i2s = items.select{|item| !i1s.map{|i|i["uuid"]}.include?(item["uuid"]) }
-        [i1s, i2s]
-    end
-
-    # Listing::printItems(store, today, extra)
-    def self.printItems(store, today, extra)
+    # Listing::printItems(store, items)
+    def self.printItems(store, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -879,11 +863,6 @@ class Listing
         end
 
         spacecontrol.putsline ""
-
-        items = today + extra.map{|item|
-            item["interruption"] = true
-            item
-        }
 
         active, items = items.partition{|item| NxBalls::itemIsActive(item) }
         active
@@ -940,9 +919,7 @@ class Listing
 
             store = ItemStore.new()
 
-            today, extra = Listing::split(Listing::items())
-
-            Listing::printItems(store, today, extra)
+            Listing::printItems(store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
