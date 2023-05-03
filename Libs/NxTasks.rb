@@ -242,7 +242,6 @@ class NxTasks
         item["boarduuid"] = board ? board["uuid"] : nil
         item["position"]  = position
         item["engine"]    = engine
-        NxTasks::commit(item)
         item
     end
 end

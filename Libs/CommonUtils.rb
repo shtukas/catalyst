@@ -1,6 +1,8 @@
 
 # encoding: UTF-8
 
+require 'open3'
+
 class CommonUtils
 
     # ----------------------------------------------------
@@ -367,7 +369,9 @@ class CommonUtils
 
     # CommonUtils::isOnline()
     def self.isOnline()
-        !(`cd '#{File.dirname(__FILE__)}/..' && git fetch`.strip.include?("unable to access"))
+        command = "cd '#{File.dirname(__FILE__)}/..' && git fetch"
+        stdout, stderr, status = Open3.capture3(command)
+        !stderr.strip.include?("unable to access")
     end
 
     # CommonUtils::remoteLastCommitId()

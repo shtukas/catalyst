@@ -42,10 +42,7 @@ class Transmutations
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
             puts JSON.pretty_generate(item)
             item["mikuType"] = "NxTask"
-            board = NxBoards::interactivelySelectOneBoard()
-            engine = TxEngines::interactivelyMakeEngineOrDefault()
-            item["boarduuid"] = boarduuid
-            item["engine"]     = engine
+            item = NxTasks::recoordinates(item)
             puts JSON.pretty_generate(item)
             N3Objects::commit(item)
             return

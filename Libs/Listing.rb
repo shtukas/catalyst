@@ -28,7 +28,7 @@ class Listing
             "    - tasks   : engine (<n>) | position <n> | coordinates <n>",
             "    - ondate  : redate",
             "",
-            "transmutation : recast (<n>)",
+            "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | boards | tasks",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | scan",
@@ -258,6 +258,7 @@ class Listing
             end
             item = NxTasks::recoordinates(item)
             puts JSON.pretty_generate(item)
+            N3Objects::commit(item)
             return
         end
 
@@ -453,14 +454,14 @@ class Listing
             return
         end
 
-        if Interpreting::match("recast", input) then
+        if Interpreting::match("transmute", input) then
             item = store.getDefault()
             return if item.nil?
             Transmutations::transmute(item)
             return
         end
 
-        if Interpreting::match("recast *", input) then
+        if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
