@@ -747,7 +747,6 @@ class Listing
     def self.canBeDefault(item)
         return true if NxBalls::itemIsRunning(item)
 
-        return false if item["mikuType"] == "NxBoard"
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
