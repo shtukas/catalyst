@@ -667,13 +667,14 @@ class Listing
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-            Waves::listingItems(nil),
+            Waves::listingItems(nil).select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxFires::items(),
             NxBackups::listingItems(),
             NxLines::items(),
             NxBoards::listingItems(),
-            NxTasks::monitor1()
+            NxTasks::monitor1(),
+            Waves::listingItems(nil).select{|item| !item["interruption"] },
         ]
             .flatten
             .select{|item| Listing::listable(item) }
