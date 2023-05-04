@@ -137,12 +137,6 @@ class NxTasks
             .to_f/3600
     end
 
-    # NxTasks::boardlessItems()
-    def self.boardlessItems()
-        NxTasks::items()
-            .select{|item| item["boarduuid"].nil? }
-    end
-
     # NxTasks::boardItems(board)
     def self.boardItems(board)
         NxTasks::items()
@@ -156,35 +150,6 @@ class NxTasks
     # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["field11"])
-    end
-
-    # NxTasks::program1()
-    def self.program1()
-        loop {
-
-            system("clear")
-
-            puts ""
-
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-            store = ItemStore.new()
-
-            NxTasks::boardlessItems()
-                .sort_by{|item| item["position"] }
-                .take(CommonUtils::screenHeight()-5)
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
-                    break if !status
-                }
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == ""
-
-            Listing::listingCommandInterpreter(input, store, nil)
-        }
     end
 
     # NxTasks::recoordinates(item)

@@ -42,7 +42,7 @@ class NxMonitor1s
         end
 
         if item["uuid"] == "bea0e9c7-f609-47e7-beea-70e433e0c82e" then
-            NxTasks::program1()
+            NxTasksBoardless::program1()
             return
         end
 

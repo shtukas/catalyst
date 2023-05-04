@@ -28,11 +28,20 @@ class PolyFunctions
             end
         end
 
-        if  ["NxTask", "NxBoard"].include?(item["mikuType"]) then
-            accounts << {
-                "description" => "performance",
-                "number"      => "34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc" # Combined NxBoard and NxTask Performance
-            }
+        if item["mikuType"] == "NxLong" then
+            monitor = N3Objects::getOrNull("347fe760-3c19-4618-8bf3-9854129b5009") # Long Running Projects
+            if monitor.nil? then
+                raise "(error: 0be6394d-dde3-4025-867e-757ef534c695) could not find monitor for NxLong"
+            end
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
+        end
+
+        if NxTasksBoardless::itemIsBoardlessTask(item) then
+            monitor = N3Objects::getOrNull("bea0e9c7-f609-47e7-beea-70e433e0c82e") # NxTasks (boardless)
+            if monitor.nil? then
+                raise "(error: 87d87e8b-123a-49de-9aca-30d49d38aa12) could not find monitor for NxTask Boardless"
+            end
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
         accounts.reduce([]){|as, account|

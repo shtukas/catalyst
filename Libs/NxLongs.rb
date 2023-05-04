@@ -90,7 +90,7 @@ class NxLongs
     # NxLongs::dataMaintenance()
     def self.dataMaintenance()
         # We scan the tasks and any boardless task with more than 2 hours in the bank is automatically turned into a long running project
-        NxTasks::boardlessItems()
+        NxTasksBoardless::items()
             .sort_by{|item| item["position"] }
             .first(100)
             .each{|item|

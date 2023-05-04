@@ -67,7 +67,7 @@ class NxTasksPositions
     # NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
     def self.interactivelyDecidePositionAtNoBoardAtTop()
         puts "-- begin-------------".green
-        NxTasks::boardlessItems()
+        NxTasksBoardless::items()
             .sort_by{|item| item["position"] }
             .take(CommonUtils::screenHeight()-5)
             .each{|item| puts NxTasks::toStringNoEngine(item) }
@@ -82,7 +82,7 @@ class NxTasksPositions
 
     # NxTasksPositions::automaticPositioningAtNoBoard(depth)
     def self.automaticPositioningAtNoBoard(depth)
-        items = NxTasks::boardlessItems()
+        items = NxTasksBoardless::items()
                     .sort_by{|item| item["position"] }
                     .take(depth)
         positions = items.map{|item| item["position"]}
