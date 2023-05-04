@@ -119,6 +119,25 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
+    # NxBoards::itemsForProgram1()
+    def self.itemsForProgram1()
+        [
+            NxOndates::listingItems(),
+            NxFires::items(),
+            Waves::listingItems(board),
+            NxBoards::boardToItemsOrdered(board)
+        ]
+            .flatten
+            .select{|item| item["boarduuid"] == board["uuid"] }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+    end
+
     # NxBoards::program1(board)
     def self.program1(board)
         loop {
@@ -145,25 +164,9 @@ class NxBoards
                 }
             spacecontrol.putsline ""
 
-            items = [
-                NxOndates::listingItems(),
-                NxFires::items(),
-                Waves::listingItems(board),
-                NxBoards::boardToItemsOrdered(board)
-            ]
-                .flatten
-                .select{|item| item["boarduuid"] == board["uuid"] }
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
-
+            items = NxBoards::itemsForProgram1()
             items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
-
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 

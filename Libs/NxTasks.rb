@@ -126,22 +126,7 @@ class NxTasks
 
     # NxTasks::completionRatio(item)
     def self.completionRatio(item)
-        TxEngines::completionRatio(item["engine"]) 
-    end
-
-    # NxTasks::performance()
-    def self.performance()
-        (-6..0)
-            .map{|i| Bank::getValueAtDate("34c37c3e-d9b8-41c7-a122-ddd1cb85ddbc", CommonUtils::nDaysInTheFuture(i))}
-            .inject(0, :+)
-            .to_f/3600
-    end
-
-    # NxTasks::boardItems(board)
-    def self.boardItems(board)
-        NxTasks::items()
-            .select{|item| item["boarduuid"] == board["uuid"] }
-            .sort_by{|item| item["position"] }
+        TxEngines::completionRatio(item["engine"])
     end
 
     # --------------------------------------------------
