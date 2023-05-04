@@ -824,6 +824,9 @@ class Listing
             NxBackups::dataMaintenance()
             NxBoards::dataMaintenance()
             NxMonitor1s::dataMaintenance()
+            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
+                NxLongRunningProjects::dataMaintenance()
+            end
         end
     end
 

@@ -7,4 +7,4 @@ NxLongRunningProject:
     "description" : String
     "field11"     : CoreData Reference
     "boarduuid"   : String or null
-    "isActive"    : Boolean
+    "active"      : Boolean
