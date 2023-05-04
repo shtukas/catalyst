@@ -62,23 +62,26 @@ class PolyFunctions
         if item["mikuType"] == "NxBoard" then
             return NxBoards::toString(item)
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
+        if item["mikuType"] == "NxClique" then
+            return NxCliques::toString(item)
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
         end
-        if item["mikuType"] == "NxClique" then
-            return NxCliques::toString(item)
+        if item["mikuType"] == "NxFloat" then
+            return NxFloats::toString(item)
+        end
+        if item["mikuType"] == "NxLambda" then
+            return item["description"]
         end
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
+        if item["mikuType"] == "NxLong" then
+            return NxLongs::toString(item)
+        end
         if item["mikuType"] == "NxMonitor1" then
             return NxMonitor1s::toString(item)
-        end
-        if item["mikuType"] == "NxLambda" then
-            return item["description"]
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
@@ -86,11 +89,11 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "Scheduler1Listing" then
-            return item["announce"]
-        end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
+        end
+        if item["mikuType"] == "Scheduler1Listing" then
+            return item["announce"]
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
