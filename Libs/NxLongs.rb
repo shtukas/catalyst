@@ -1,22 +1,22 @@
 
-class NxLongRunningProjects
+class NxLongs
 
-    # NxLongRunningProjects::items()
+    # NxLongs::items()
     def self.items()
-        N3Objects::getMikuType("NxLongRunningProject")
+        N3Objects::getMikuType("NxLong")
     end
 
-    # NxLongRunningProjects::commit(item)
+    # NxLongs::commit(item)
     def self.commit(item)
         N3Objects::commit(item)
     end
 
-    # NxLongRunningProjects::destroy(uuid)
+    # NxLongs::destroy(uuid)
     def self.destroy(uuid)
         N3Objects::destroy(uuid)
     end
 
-    # NxLongRunningProjects::interactivelyIssueNewOrNull()
+    # NxLongs::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -24,7 +24,7 @@ class NxLongRunningProjects
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         item = {
             "uuid"        => uuid,
-            "mikuType"    => "NxLongRunningProject",
+            "mikuType"    => "NxLong",
             "unixtime"    => Time.new.to_i,
             "datetime"    => Time.new.utc.iso8601,
             "description" => description,
@@ -32,16 +32,16 @@ class NxLongRunningProjects
             "active"    => LucilleCore::askQuestionAnswerAsBoolean("is active ? : ")
         }
         puts JSON.pretty_generate(item)
-        NxLongRunningProjects::commit(item)
+        NxLongs::commit(item)
         item
     end
 
-    # NxLongRunningProjects::toString(item)
+    # NxLongs::toString(item)
     def self.toString(item)
         "(⛵️) #{item["active"] ? "(active)" : "(sleeping)"} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
-    # NxLongRunningProjects::program1()
+    # NxLongs::program1()
     def self.program1()
         loop {
 
@@ -54,7 +54,7 @@ class NxLongRunningProjects
             store = ItemStore.new()
 
             puts "active projects:"
-            NxLongRunningProjects::items().select{|item| item["active"] }
+            NxLongs::items().select{|item| item["active"] }
                 .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
@@ -65,7 +65,7 @@ class NxLongRunningProjects
             puts ""
 
             puts "sleeping projects:"
-            NxLongRunningProjects::items().select{|item| !item["active"] }
+            NxLongs::items().select{|item| !item["active"] }
                 .sort_by{|item| item["unixtime"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
@@ -81,13 +81,13 @@ class NxLongRunningProjects
         }
     end
 
-    # NxLongRunningProjects::interactivelySelectOneOrNull()
+    # NxLongs::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxLongRunningProjects::items().select{|item| !item["active"] }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxLongRunningProjects::toString(item) })
+        items = NxLongs::items().select{|item| !item["active"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxLongs::toString(item) })
     end
 
-    # NxLongRunningProjects::dataMaintenance()
+    # NxLongs::dataMaintenance()
     def self.dataMaintenance()
         # We scan the tasks and any boardless task with more than 2 hours in the bank is automatically turned into a long running project
         NxTasks::boardlessItems()
@@ -97,16 +97,16 @@ class NxLongRunningProjects
                 next if Bank::getValue(item["uuid"]) < 3600*2
                 puts "transmuting task: #{item["description"]} into a long running project"
                 active = LucilleCore::askQuestionAnswerAsBoolean("active ? : ")
-                item["mikuType"] = "NxLongRunningProject"
+                item["mikuType"] = "NxLong"
                 item["active"] = active
                 N3Objects::commit(item)
             }
 
-        if NxLongRunningProjects::items().size > 0 and NxLongRunningProjects::items().none?{|item| item["active"] } then
+        if NxLongs::items().size > 0 and NxLongs::items().none?{|item| item["active"] } then
             puts "We do not currently have active long running projects"
             puts "Please select one or more:"
             loop {
-                item = NxLongRunningProjects::interactivelySelectOneOrNull()
+                item = NxLongs::interactivelySelectOneOrNull()
                 break if item.nil?
                 item["active"] = true
                 N3Objects::commit(item)

@@ -37,7 +37,7 @@ class NxMonitor1s
     def self.access(item)
 
         if item["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then
-            NxLongRunningProjects::program1()
+            NxLongs::program1()
             return
         end
 
