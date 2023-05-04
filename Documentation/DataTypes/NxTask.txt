@@ -7,4 +7,4 @@ NxTask:
     "field11"     : null or CoreData reference string
     "boarduuid"   : null of String
     "position"    : Float
-    "engine"      : null or TxEngine
+    "engine"      : TxEngine

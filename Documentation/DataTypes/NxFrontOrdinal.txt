@@ -1,6 +1,0 @@
-
-NxFrontOrdinal:
-    "uuid"          : String
-    "mikuType"      : "NxFrontOrdinal"
-    "targetuuid"    : String
-    "targetordinal" : TxEngine

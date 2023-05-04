@@ -40,7 +40,7 @@ class NxTasks
         item["description"] = description
         item["field11"] = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        board    = NxBoards::interactivelySelectOneBoardOrNull()
+        board    = NxBoards::interactivelySelectOneOrNull()
         position = NxTasksPositions::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
 
@@ -151,53 +151,6 @@ class NxTasks
     end
 
     # --------------------------------------------------
-    # Data: NxMonitor1
-
-    # NxTasks::monitor1()
-    def self.monitor1()
-        getEngine = lambda {
-            engine = XCache::getOrNull("7f0e6638-e60b-49fe-b707-14a3a2d12ea8")
-            if engine.nil? then
-                engine = {
-                    "uuid"          => "b35be246-2237-4bf4-ae0d-0c6794350f8e",
-                    "type"          => "weekly-time",
-                    "hours"         => 10,
-                    "lastResetTime" => 0,
-                    "capsule"       => "1cbf5a45-bc37-47af-a165-290e3f45d675"
-                }
-                XCache::set("7f0e6638-e60b-49fe-b707-14a3a2d12ea8", JSON.generate(engine))
-                engine
-            else
-                JSON.parse(engine)
-            end
-        }
-
-        engine = getEngine.call()
-        engine2 = TxEngines::engineMaintenance("NxTasks (boardless)", engine)
-        if engine2 then
-            engine = engine2
-            XCache::set("7f0e6638-e60b-49fe-b707-14a3a2d12ea8", JSON.generate(engine))
-        end
-
-        [
-            {
-                "uuid" => "bea0e9c7-f609-47e7-beea-70e433e0c82e",
-                "mikuType" => "NxMonitor1",
-                "description" => "NxTasks (boardless)",
-                "lambda" => lambda {
-                    NxTasks::program1()
-                },
-                "engine" => engine
-            }
-        ]
-    end
-
-    # NxTasks::monitor1ToString(item)
-    def self.monitor1ToString(item)
-        "NxTasks (boardless) #{TxEngines::toString(item["engine"])}"
-    end
-
-    # --------------------------------------------------
     # Operations
 
     # NxTasks::access(item)
@@ -236,7 +189,7 @@ class NxTasks
 
     # NxTasks::recoordinates(item)
     def self.recoordinates(item)
-        board    = NxBoards::interactivelySelectOneBoardOrNull()
+        board    = NxBoards::interactivelySelectOneOrNull()
         position = NxTasksPositions::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
         item["boarduuid"] = board ? board["uuid"] : nil

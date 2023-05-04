@@ -1,0 +1,10 @@
+
+NxLongRunningProject:
+    "uuid"        : String
+    "mikuType"    : "NxLongRunningProject"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "field11"     : CoreData Reference
+    "boarduuid"   : String or null
+    "isActive"    : Boolean

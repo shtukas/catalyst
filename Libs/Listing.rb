@@ -24,12 +24,13 @@ class Listing
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
             "",
             "specific types commands:",
-            "    - boards  : engine (<n>)",
-            "    - tasks   : engine (<n>) | position <n> | coordinates <n>",
-            "    - ondate  : redate",
+            "    - boards   : engine (<n>)",
+            "    - monitors : engine (<n>)",
+            "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
+            "    - ondate   : redate",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | boards | tasks",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | monitors",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | scan",
         ].join("\n")
@@ -150,6 +151,11 @@ class Listing
 
         if Interpreting::match("boards", input) then
             NxBoards::program3()
+            return
+        end
+
+        if Interpreting::match("monitors", input) then
+            NxMonitor1s::program3()
             return
         end
 
@@ -275,8 +281,8 @@ class Listing
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
-                puts "Only NxBoard and NxTask are carrying engine"
+            if !["NxBoard", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
+                puts "Only NxTask, NxBoard and NxMonitors are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -291,8 +297,8 @@ class Listing
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxBoard", "NxTask"].include?(item["mikuType"]) then
-                puts "Only NxBoard and NxTask are carrying engine"
+            if !["NxBoard", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
+                puts "Only NxTask, NxBoard and NxMonitors are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -669,12 +675,11 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems(nil).select{|item| item["interruption"] },
-            NxOndates::listingItems(),
             NxFires::items(),
+            NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxLines::items(),
-            NxBoards::listingItems(),
-            NxTasks::monitor1(),
+            TimeCommitments::listingitems(),
             Waves::listingItems(nil).select{|item| !item["interruption"] },
         ]
             .flatten
@@ -816,8 +821,9 @@ class Listing
             NxTimePromises::operate()
             N3Objects::fileManagement()
             Bank::fileManagement()
-            NxBackups::dataManagement()
-            NxBoards::dataManagement()
+            NxBackups::dataMaintenance()
+            NxBoards::dataMaintenance()
+            NxMonitor1s::dataMaintenance()
         end
     end
 

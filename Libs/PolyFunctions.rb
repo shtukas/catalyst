@@ -53,9 +53,6 @@ class PolyFunctions
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
         end
-        if item["mikuType"] == "LambdX1" then
-            return "(lambda) #{item["announce"]}"
-        end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
@@ -78,7 +75,7 @@ class PolyFunctions
             return NxLines::toString(item)
         end
         if item["mikuType"] == "NxMonitor1" then
-            return NxTasks::monitor1ToString(item)
+            return NxMonitor1s::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

@@ -54,7 +54,7 @@ class NxBoards
 
     # NxBoards::toString(item)
     def self.toString(item)
-        "#{"(board)".green} #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(#{"board".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxBoards::boardsOrdered()
@@ -86,8 +86,8 @@ class NxBoards
     # Selectors
     # ---------------------------------------------------------
 
-    # NxBoards::interactivelySelectOneBoardOrNull()
-    def self.interactivelySelectOneBoardOrNull()
+    # NxBoards::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
         items = NxBoards::boardsOrdered()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
     end
@@ -95,7 +95,7 @@ class NxBoards
     # NxBoards::interactivelySelectOneBoard()
     def self.interactivelySelectOneBoard()
         loop {
-            item = NxBoards::interactivelySelectOneBoardOrNull()
+            item = NxBoards::interactivelySelectOneOrNull()
             return item if item
         }
     end
@@ -104,8 +104,8 @@ class NxBoards
     # Ops
     # ---------------------------------------------------------
 
-    # NxBoards::dataManagement()
-    def self.dataManagement()
+    # NxBoards::dataMaintenance()
+    def self.dataMaintenance()
         NxBoards::items().each{|board|
             engine2 = TxEngines::engineMaintenance(board["description"], board["engine"])
             if engine2 then
@@ -185,7 +185,7 @@ class NxBoards
             board = NxBoards::getItemOfNull(board["uuid"])
             return if board.nil?
             puts NxBoards::toString(board)
-            actions = ["program(board)", "start", "add time", "do not show until"]
+            actions = ["program(board)", "start", "add time"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "start" then
@@ -198,19 +198,13 @@ class NxBoards
             if action == "program(board)" then
                 NxBoards::program1(board)
             end
-            if action == "do not show until" then
-                unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
-                if unixtime then
-                    DoNotShowUntil::setUnixtime(board, unixtime)
-                end
-            end
         }
     end
 
     # NxBoards::program3()
     def self.program3()
         loop {
-            board = NxBoards::interactivelySelectOneBoardOrNull()
+            board = NxBoards::interactivelySelectOneOrNull()
             return if board.nil?
             NxBoards::program2(board)
         }
@@ -230,7 +224,7 @@ class BoardsAndItems
     def self.maybeAskAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
         return item if item["boarduuid"]
-        board = NxBoards::interactivelySelectOneBoardOrNull()
+        board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)
@@ -240,7 +234,7 @@ class BoardsAndItems
     # BoardsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
         return item if item["mikuType"] == "NxBoard"
-        board = NxBoards::interactivelySelectOneBoardOrNull()
+        board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
         N3Objects::commit(item)

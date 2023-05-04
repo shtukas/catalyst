@@ -51,8 +51,8 @@ class NxBackups
         N3Objects::destroy(uuid)
     end
 
-    # NxBackups::dataManagement()
-    def self.dataManagement()
+    # NxBackups::dataMaintenance()
+    def self.dataMaintenance()
 
         # -----------------------------------------------
         # In the first stage we just check that every instruction has a corresponding NxBackup with 

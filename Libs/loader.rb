@@ -167,10 +167,11 @@ require_relative "Galaxy.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 
-require_relative "LambdX1s.rb"
 require_relative "Listing.rb"
-require_relative "NxLines.rb"
 
+require_relative "NxMonitor1.rb"
+
+require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBoards.rb"
@@ -182,6 +183,7 @@ require_relative "N3Objects.rb"
 require_relative "NxFires.rb"
 require_relative "NxFloats.rb"
 require_relative "NxTasksPositions.rb"
+require_relative "NxLongRunningProjects.rb"
 
 require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"
@@ -195,6 +197,7 @@ require_relative "Stargate.rb"
 require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
 require_relative "TxEngine.rb"
+require_relative "TimeCommitments.rb"
 
 require_relative "Waves.rb"
 

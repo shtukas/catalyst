@@ -37,6 +37,6 @@ class NxFires
 
     # NxFires::toString(item)
     def self.toString(item)
-        "(fire) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(🔥) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 end

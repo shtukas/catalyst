@@ -16,7 +16,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "LambdX1" then
+        if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
         end
@@ -32,7 +32,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxMonitor1" then
-            NxTasks::program1()
+            NxMonitor1s::access(item)
             return
         end
 
@@ -108,7 +108,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "LambdX1" then
+        if item["mikuType"] == "NxLambda" then
             return
         end
 
