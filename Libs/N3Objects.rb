@@ -226,6 +226,17 @@ class N3Objects
         if object["mikuType"].nil? then
             raise "object is missing mikuType: #{JSON.pretty_generate(object)}"
         end
+
+        wasBlade = false
+
+        begin
+            BladeAdaptation::commitItemToExistingBlade(object)
+            wasBlade = true
+        rescue
+        end
+
+        return if wasBlade
+
         object["n3timestamp"] = Time.new.to_f
         N3Objects::update(object["uuid"], object["mikuType"], object)
     end
@@ -234,6 +245,7 @@ class N3Objects
     def self.getOrNull(uuid)
         item = BladeAdaptation::uuidToItemOrNull(uuid)
         return item if item
+
         N3Objects::getFilepathsSorted()
             .map{|filepath| N3Objects::getAtFilepathOrNull(uuid, filepath) }
             .compact
@@ -244,6 +256,14 @@ class N3Objects
 
     # N3Objects::getMikuType(mikuType)
     def self.getMikuType(mikuType)
+        if mikuType == "NxAnniversary" then
+            return BladeAdaptation::items("NxAnniversary")
+        end
+
+        if mikuType == "NxBoard" then
+            return BladeAdaptation::items("NxBoard")
+        end
+
         objects = []
         N3Objects::getFilepathsSorted().each{|filepath|
             N3Objects::getMikuTypeAtFile(mikuType, filepath).each{|object|
@@ -272,13 +292,18 @@ class N3Objects
             end
             db.close
         }
-        objects
-            .sort_by{|object| object["n3timestamp"] || 0 } # oldest first
-            .reduce({}){|data, ob|
-                data[ob["uuid"]] = ob # given the order in which they are presented, newer ones will override older ones
-                data
-            }
-            .values
+        o1 = objects
+                .sort_by{|object| object["n3timestamp"] || 0 } # oldest first
+                .reduce({}){|data, ob|
+                    data[ob["uuid"]] = ob # given the order in which they are presented, newer ones will override older ones
+                    data
+                }
+                .values
+        o2 = [
+            BladeAdaptation::items("NxAnniversary"),
+            BladeAdaptation::items("NxBoard")
+        ].flatten
+        o1 + o2
     end
 
     # N3Objects::getMikuTypeCount(mikuType)

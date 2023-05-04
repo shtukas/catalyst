@@ -115,18 +115,21 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Blades::init("NxAnniversary", uuid)
-        Blades::setAttribute(uuid, "uuid", uuid)
-        Blades::setAttribute(uuid, "mikuType", "NxAnniversary")
-        Blades::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute(uuid, "description", description)
-        Blades::setAttribute(uuid, "startdate", startdate)
-        Blades::setAttribute(uuid, "repeatType", repeatType)
-        Blades::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
+        item = {
+            "uuid"                => uuid,
+            "mikuType"            => "NxAnniversary",
+            "unixtime"            => Time.new.to_i,
+            "datetime"            => Time.new.utc.iso8601,
+            "description"         => description,
+            "startdate"           => startdate,
+            "repeatType"          => repeatType,
+            "lastCelebrationDate" => lastCelebrationDate,
+        }
 
-        filepath = Blades::tokenToFilepath(uuid)
-        BladeAdaptation::readFileAsItemOrError(filepath)
+        Blades::init("NxAnniversary", uuid)
+        BladeAdaptation::commitItemToExistingBlade(item)
+
+        BladeAdaptation::uuidToItemOrNull(uuid)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]

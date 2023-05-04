@@ -20,8 +20,8 @@ class TimeCommitments
                 .sort_by{|item| item["position"] }
                 .first(100)
                 .select{|item| NxBalls::itemIsActive(item) }
-        ].flatten
-        
+        ]
+            .flatten
     end
 
     # TimeCommitments::firstItem()
