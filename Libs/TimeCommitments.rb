@@ -48,7 +48,7 @@ class TimeCommitments
                             return [item]
                         }
                 end
-                if domain["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then # NxTasks (boardless)
+                if domain["uuid"] == "bea0e9c7-f609-47e7-beea-70e433e0c82e" then # NxTasks (boardless)
                     NxTasksBoardless::items()
                         .sort_by{|item| item["position"] }
                         .each{|item|
