@@ -31,7 +31,8 @@ class TimeCommitments
 
         TimeCommitments::listingitems().each{|domain|
             if domain["mikuType"] == "NxBoard" then
-                NxBoards::itemsForProgram1().each{|item|
+                board = domain
+                NxBoards::itemsForProgram1(board).each{|item|
                     return [item]
                 }
             end

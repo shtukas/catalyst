@@ -119,8 +119,8 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::itemsForProgram1()
-    def self.itemsForProgram1()
+    # NxBoards::itemsForProgram1(board)
+    def self.itemsForProgram1(board)
         [
             NxOndates::listingItems(),
             NxFires::items(),
@@ -164,7 +164,7 @@ class NxBoards
                 }
             spacecontrol.putsline ""
 
-            items = NxBoards::itemsForProgram1()
+            items = NxBoards::itemsForProgram1(board)
             items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
             items
