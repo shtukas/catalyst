@@ -32,9 +32,11 @@ class TimeCommitments
         TimeCommitments::listingitems().each{|domain|
             if domain["mikuType"] == "NxBoard" then
                 board = domain
-                NxBoards::itemsForProgram1(board).each{|item|
-                    return [item]
-                }
+                NxBoards::itemsForProgram1(board)
+                    .each{|item|
+                        next if !DoNotShowUntil::isVisible(item)
+                        return [item]
+                    }
             end
             if domain["mikuType"] == "NxMonitor1" then
                 if domain["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then # Long Running Projects
@@ -42,6 +44,7 @@ class TimeCommitments
                         .select{|item| item["active"] }
                         .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
                         .each{|item|
+                            next if !DoNotShowUntil::isVisible(item)
                             return [item]
                         }
                 end
@@ -49,6 +52,7 @@ class TimeCommitments
                     NxTasksBoardless::items()
                         .sort_by{|item| item["position"] }
                         .each{|item|
+                            next if !DoNotShowUntil::isVisible(item)
                             next if NxTasks::completionRatio(item) >= 1
                             return [item]
                         }
