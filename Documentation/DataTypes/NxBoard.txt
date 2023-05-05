@@ -1,5 +1,5 @@
 
-NxBoard:
+NxBoard (Blade)
     "uuid"          : String
     "mikuType"      : "NxBoard"
     "unixtime"      : Float

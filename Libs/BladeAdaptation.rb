@@ -46,6 +46,15 @@ class BladeAdaptation
             item["engine"] = Blades::getMandatoryAttribute(filepath, "engine")
         end
 
+        if mikuType == "NxOndate" then
+            item = {}
+            item["uuid"] = Blades::getMandatoryAttribute(filepath, "uuid")
+            item["mikuType"] = mikuType
+            item["unixtime"] = Blades::getMandatoryAttribute(filepath, "unixtime")
+            item["datetime"] = Blades::getMandatoryAttribute(filepath, "datetime")
+            item["description"] = Blades::getMandatoryAttribute(filepath, "description")
+        end
+
         if item then
             item["field11"] = Blades::getAttributeOrNull(filepath, "field11")
             item["boarduuid"] = Blades::getAttributeOrNull(filepath, "boarduuid")
@@ -55,7 +64,7 @@ class BladeAdaptation
             return item
         end
 
-        raise "(error: 17844ff9-8aa1-4cc7-a477-a4479a8a74ac)"
+        raise "(error: 17844ff9-8aa1-4cc7-a477-a4479a8a74ac) BladeAdaptation::readFileAsItemOrError is currently not supporting mikuType: #{mikuType}."
     end
 
     # BladeAdaptation::uuidToItemOrNull(uuid)
@@ -63,7 +72,9 @@ class BladeAdaptation
         filepath = Blades::tokenToFilepathOrNull(uuid)
         return nil if filepath.nil?
         begin
-            return BladeAdaptation::readFileAsItemOrError(filepath)
+            item = BladeAdaptation::readFileAsItemOrError(filepath)
+            item[:blade] = filepath
+            return item
         rescue
         end
         nil
@@ -105,7 +116,18 @@ class BladeAdaptation
             Blades::setAttribute(filepath, "engine", item["engine"])
             return
         end
-        raise "(error: b90c4fc6-0096-469c-8a04-3b224283f80d) unsopported mikuType"
+
+        if item["mikuType"] == "NxOndate" then
+            # We do not need to (re)set the uuid
+            Blades::setAttribute(filepath, "mikuType", item["mikuType"])
+            Blades::setAttribute(filepath, "unixtime", item["unixtime"])
+            Blades::setAttribute(filepath, "datetime", item["datetime"])
+            Blades::setAttribute(filepath, "description", item["description"])
+            Blades::setAttribute(filepath, "engine", item["engine"])
+            return
+        end
+
+        raise "(error: b90c4fc6-0096-469c-8a04-3b224283f80d) un-supported mikuType: #{item["mikuType"]}"
     end
 
     # BladeAdaptation::items(mikuType) # Array[Items]

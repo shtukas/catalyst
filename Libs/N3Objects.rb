@@ -264,6 +264,10 @@ class N3Objects
             return BladeAdaptation::items("NxBoard")
         end
 
+        if mikuType == "NxOndate" then
+            return BladeAdaptation::items("NxOndate")
+        end
+
         objects = []
         N3Objects::getFilepathsSorted().each{|filepath|
             N3Objects::getMikuTypeAtFile(mikuType, filepath).each{|object|
@@ -301,7 +305,8 @@ class N3Objects
                 .values
         o2 = [
             BladeAdaptation::items("NxAnniversary"),
-            BladeAdaptation::items("NxBoard")
+            BladeAdaptation::items("NxBoard"),
+            BladeAdaptation::items("NxOndate"),
         ].flatten
         o1 + o2
     end
