@@ -231,7 +231,7 @@ class N3Objects
             "NxLine",
             "NxFloat",
             "NxFire",
-            "NxMonitor1"
+            "NxMonitor1",
             "PhysicalTarget",
             "Wave",
         ]
@@ -246,24 +246,15 @@ class N3Objects
             raise "object is missing mikuType: #{JSON.pretty_generate(object)}"
         end
 
-        wasBlade = false
-
-        begin
-            BladeAdaptation::commitItemToExistingBlade(object)
-            wasBlade = true
-        rescue
-        end
-
-        return if wasBlade
-
-        object["n3timestamp"] = Time.new.to_f
-        N3Objects::update(object["uuid"], object["mikuType"], object)
+        BladeAdaptation::commitItemToExistingBlade(object)
     end
 
     # N3Objects::getOrNull(uuid)
     def self.getOrNull(uuid)
         item = BladeAdaptation::uuidToItemOrNull(uuid)
         return item if item
+
+        raise "(everything should have been migrated: 3)"
 
         N3Objects::getFilepathsSorted()
             .map{|filepath| N3Objects::getAtFilepathOrNull(uuid, filepath) }
@@ -278,6 +269,8 @@ class N3Objects
         if N3Objects::bladedMikuTypes().include?(mikuType) then
             return BladeAdaptation::items(mikuType)
         end
+
+        raise "(everything should have been migrated: 1)"
 
         objects = []
         N3Objects::getFilepathsSorted().each{|filepath|
@@ -296,6 +289,9 @@ class N3Objects
 
     # N3Objects::getall()
     def self.getall()
+
+        raise "(not ready yet: 4)"
+
         objects = []
         N3Objects::getFilepathsSorted().each{|filepath|
             db = SQLite3::Database.new(filepath)
@@ -320,24 +316,11 @@ class N3Objects
 
     # N3Objects::getMikuTypeCount(mikuType)
     def self.getMikuTypeCount(mikuType)
-        count = 0
-        N3Objects::getFilepathsSorted().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select count(*) as _count_ from objects where mikuType=?", [mikuType]) do |row|
-                count = count + row["_count_"]
-            end
-            db.close
-        }
-        count
+        MikuTypes::mikuTypeUUIDsCached(mikuType).size
     end
 
     # N3Objects::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
-        filepaths = N3Objects::getFilepathsSorted()
-        N3Objects::deleteAtFiles(filepaths, uuid)
     end
 end
