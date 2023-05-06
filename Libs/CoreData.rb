@@ -95,8 +95,8 @@ class CoreData
         CoreData::referenceStringToSuffixString(item["field11"])
     end
 
-    # CoreData::access(referenceString)
-    def self.access(referenceString)
+    # CoreData::access(uuid, referenceString)
+    def self.access(uuid, referenceString)
         if referenceString.nil? then
             puts "Accessing null reference string. Nothing to do."
             LucilleCore::pressEnterToContinue()
@@ -109,7 +109,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = N1Data::getBlobOrNull(nhash)
+            text = Blades::getDatablobOrNull2(uuid, nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
@@ -118,7 +118,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = N1Data::getBlobOrNull(nhash)
+            url = Blades::getDatablobOrNull2(uuid, nhash)
             puts "url: #{url}"
             CommonUtils::openUrlUsingSafari(url)
             LucilleCore::pressEnterToContinue()
@@ -131,7 +131,7 @@ class CoreData
             exportFoldername = "aion-point-#{exportId}"
             exportFolder = "#{Config::pathToDesktop()}/#{exportFoldername}"
             FileUtils.mkdir(exportFolder)
-            AionCore::exportHashAtFolder(N1DataElizabeth.new(), nhash, exportFolder)
+            AionCore::exportHashAtFolder(BladeElizabeth.new(uuid), nhash, exportFolder)
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -157,79 +157,6 @@ class CoreData
             return
         end
         raise "CoreData, I do not know how to access '#{referenceString}'"
-    end
-
-    # CoreData::edit(referenceString) # new reference string
-    def self.edit(referenceString)
-        if referenceString.nil? then
-            return CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        end
-        if referenceString == "null" then
-            return CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        end
-        if referenceString.start_with?("text") then
-            nhash = referenceString.split(":")[1]
-            puts "CoreData, editing text: #{nhash}"
-            puts "not implemented yet"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        if referenceString.start_with?("url") then
-            nhash = referenceString.split(":")[1]
-            puts "CoreData, editing url: #{nhash}"
-            puts "not implemented yet"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        if referenceString.start_with?("aion-point") then
-            rootnhash = referenceString.split(":")[1]
-
-            exportLocation = "#{ENV['HOME']}/Desktop/aion-point-#{SecureRandom.hex(4)}"
-            FileUtils.mkdir(exportLocation)
-            AionCore::exportHashAtFolder(rootnhash, exportLocation)
-            puts "Item exported at #{exportLocation} for edition"
-            LucilleCore::pressEnterToContinue()
-
-            acquireLocationInsideExportFolder = lambda {|exportLocation|
-                locations = LucilleCore::locationsAtFolder(exportLocation).select{|loc| File.basename(loc)[0, 1] != "."}
-                if locations.size == 0 then
-                    puts "I am in the middle of a CoreData aion-point edit. I cannot see anything inside the export folder"
-                    puts "Exit"
-                    exit
-                end
-                if locations.size == 1 then
-                    return locations[0]
-                end
-                if locations.size > 1 then
-                    puts "I am in the middle of a CoreData aion-point edit. I found more than one location in the export folder."
-                    puts "Exit"
-                    exit
-                end
-            }
-
-            location = acquireLocationInsideExportFolder.call(exportLocation)
-            puts "reading: #{location}"
-            rootnhash = AionCore::commitLocationReturnHash(location)
-
-            return "aion-point:#{rootnhash}"
-        end
-        if referenceString.start_with?("open-cycle") then
-            CoreData::access(referenceString)
-            return
-        end
-        if referenceString.start_with?("unique-string") then
-            uniquestring = referenceString.split(":")[1]
-            puts "CoreData, editing unique string: #{uniquestring}"
-            puts "not implemented yet"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        if referenceString.start_with?("Dx8UnitId") then
-            unitId = referenceString.split(":")[1]
-            Dx8Units::access(unitId)
-            return
-        end
-        raise "CoreData, I do not know how to edit '#{referenceString}'"
     end
 
     # CoreData::fsck(uuid, referenceString)

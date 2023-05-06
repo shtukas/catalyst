@@ -61,7 +61,7 @@ class NxTasks
             "position"    => NxTasksPositions::automaticPositioningAtNoBoard(50),
             "engine"      => TxEngines::defaultEngine(nil),
         }
-        NxTasks::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 
@@ -129,7 +129,7 @@ class NxTasks
 
     # NxTasks::access(item)
     def self.access(item)
-        CoreData::access(item["field11"])
+        CoreData::access(item["uuid"], item["field11"])
     end
 
     # NxTasks::recoordinates(item)

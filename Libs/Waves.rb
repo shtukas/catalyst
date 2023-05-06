@@ -211,7 +211,7 @@ class Waves
     # Waves::access(item)
     def self.access(item)
         puts Waves::toString(item).green
-        CoreData::access(item["field11"])
+        CoreData::access(item["uuid"], item["field11"])
     end
 
     # Waves::program(item)

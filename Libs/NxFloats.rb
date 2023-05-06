@@ -54,6 +54,6 @@ class NxFloats
 
     # NxFloats::access(item)
     def self.access(item)
-        CoreData::access(item["field11"])
+        CoreData::access(item["uuid"], item["field11"])
     end
 end

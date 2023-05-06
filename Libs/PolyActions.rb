@@ -27,7 +27,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFloat" then
-            CoreData::access(item["field11"])
+            CoreData::access(item["uuid"], item["field11"])
             return
         end
 
@@ -52,7 +52,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFire" then
-            CoreData::access(item["field11"])
+            CoreData::access(item["uuid"], item["field11"])
             return
         end
 
