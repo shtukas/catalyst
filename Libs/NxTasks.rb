@@ -27,6 +27,8 @@ class NxTasks
 
         uuid = SecureRandom.uuid
 
+        Blades::init("NxTask", uuid)
+
         item = {}
         item["uuid"] = uuid
         item["mikuType"] = "NxTask"
@@ -50,6 +52,7 @@ class NxTasks
     # NxTasks::netflix(title)
     def self.netflix(title)
         uuid  = SecureRandom.uuid
+        Blades::init("NxTask", uuid)
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTask",
@@ -67,9 +70,11 @@ class NxTasks
 
     # NxTasks::viennaUrl(url)
     def self.viennaUrl(url)
-        uuid  = SecureRandom.uuid
         description = "(vienna) #{url}"
-        coredataref = "url:#{N1Data::putBlob(url)}"
+        uuid  = SecureRandom.uuid
+        Blades::init("NxTask", uuid)
+        nhash = Blades::putDatablob2(uuid, url)
+        coredataref = "url:#{nhash}"
         item = {
             "uuid"        => uuid,
             "mikuType"    => "NxTask",
@@ -89,7 +94,8 @@ class NxTasks
     def self.bufferInImport(location)
         description = File.basename(location)
         uuid = SecureRandom.uuid
-        nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
+        Blades::init("NxTask", uuid)
+        nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
         item = {
             "uuid"        => uuid,
