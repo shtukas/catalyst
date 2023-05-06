@@ -5,7 +5,7 @@ class PhysicalTargets
 
     # PhysicalTargets::items()
     def self.items()
-        N3Objects::getMikuType("PhysicalTarget")
+        BladeAdaptation::mikuTypeItems("PhysicalTarget")
     end
 
     # PhysicalTargets::issueNewOrNull()

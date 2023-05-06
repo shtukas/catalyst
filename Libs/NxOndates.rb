@@ -6,7 +6,7 @@ class NxOndates
 
     # NxOndates::items()
     def self.items()
-        N3Objects::getMikuType("NxOndate")
+        BladeAdaptation::mikuTypeItems("NxOndate")
     end
 
     # NxOndates::commit(item)

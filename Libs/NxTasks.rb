@@ -4,7 +4,7 @@ class NxTasks
 
     # NxTasks::items()
     def self.items()
-        N3Objects::getMikuType("NxTask")
+        BladeAdaptation::mikuTypeItems("NxTask")
     end
 
     # NxTasks::commit(item)

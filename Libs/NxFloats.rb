@@ -7,7 +7,7 @@ class NxFloats
 
     # NxFloats::items()
     def self.items()
-        N3Objects::getMikuType("NxFloat")
+        BladeAdaptation::mikuTypeItems("NxFloat")
     end
 
     # NxFloats::commit(item)

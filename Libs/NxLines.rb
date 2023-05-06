@@ -3,7 +3,7 @@ class NxLines
 
     # NxLines::items()
     def self.items()
-        N3Objects::getMikuType("NxLine")
+        BladeAdaptation::mikuTypeItems("NxLine")
     end
 
     # NxLines::commit(item)

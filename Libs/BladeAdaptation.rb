@@ -15,7 +15,7 @@ Blades
 =begin
 MikuTypes
     MikuTypes::mikuTypeUUIDsCached(mikuType) # Cached
-    MikuTypes::uuidEnumeratorForMikuTypeFromDisk(mikuType)
+    MikuTypes::mikuTypeUUIDsEnumeratorFromDiskScan(mikuType)
 =end
 
 class BladeAdaptation
@@ -330,10 +330,27 @@ class BladeAdaptation
         raise "(error: b90c4fc6-0096-469c-8a04-3b224283f80d) un-supported mikuType: #{item["mikuType"]}"
     end
 
-    # BladeAdaptation::items(mikuType) # Array[Items]
-    def self.items(mikuType)
+    # BladeAdaptation::mikuTypeItems(mikuType) # Array[Items]
+    def self.mikuTypeItems(mikuType)
         MikuTypes::mikuTypeUUIDsCached(mikuType)
             .map{|uuid| BladeAdaptation::getItemOrNull(uuid) }
             .compact
+    end
+
+    # BladeAdaptation::getMikuTypeCount(mikuType)
+    def self.getMikuTypeCount(mikuType)
+        MikuTypes::mikuTypeUUIDsCached(mikuType).size
+    end
+
+    # BladeAdaptation::getAllCatalystItemsEnumerator()
+    def self.getAllCatalystItemsEnumerator()
+        Enumerator.new do |items|
+            N3Objects::bladedMikuTypes().each{|mikuType|
+                MikuTypes::mikuTypeToBladesFilepathsEnumerator(mikuType).each{|filepath|
+                    items << Blades::getMandatoryAttribute1(filepath, "uuid")
+                }
+            }
+
+        end
     end
 end

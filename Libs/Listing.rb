@@ -357,12 +357,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("mikuTypes", input) then
-            puts N3Objects::getall().map{|item| item["mikuType"] }.uniq
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if Interpreting::match("manual countdown", input) then
             PhysicalTargets::issueNewOrNull()
             return
@@ -804,7 +798,7 @@ class Listing
         if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
             generalpermission = false
             count = 0
-            N3Objects::getall().each{|item|
+            BladeAdaptation::getAllCatalystItemsEnumerator().each{|item|
                 next if item["boarduuid"].nil?
                 next if NxBoards::getItemOfNull(item["boarduuid"])
                 break if count > 100

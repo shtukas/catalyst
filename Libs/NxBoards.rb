@@ -6,7 +6,7 @@ class NxBoards
 
     # NxBoards::items()
     def self.items()
-        N3Objects::getMikuType("NxBoard")
+        BladeAdaptation::mikuTypeItems("NxBoard")
     end
 
     # NxBoards::getItemOfNull(uuid)

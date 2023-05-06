@@ -3,7 +3,7 @@ class NxFires
 
     # NxFires::items()
     def self.items()
-        N3Objects::getMikuType("NxFire")
+        BladeAdaptation::mikuTypeItems("NxFire")
     end
 
     # NxFires::commit(item)

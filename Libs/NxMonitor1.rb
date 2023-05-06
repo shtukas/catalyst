@@ -3,7 +3,7 @@ class NxMonitor1s
 
     # NxMonitor1s::items()
     def self.items()
-        N3Objects::getMikuType("NxMonitor1")
+        BladeAdaptation::mikuTypeItems("NxMonitor1")
     end
 
     # NxMonitor1s::toString(item)

@@ -141,7 +141,7 @@ require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/M
 =begin
 MikuTypes
     MikuTypes::mikuTypeUUIDsCached(mikuType) # Cached
-    MikuTypes::uuidEnumeratorForMikuTypeFromDisk(mikuType)
+    MikuTypes::mikuTypeUUIDsEnumeratorFromDiskScan(mikuType)
 =end
 
 # ------------------------------------------------------------

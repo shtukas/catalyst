@@ -3,7 +3,7 @@ class NxLongs
 
     # NxLongs::items()
     def self.items()
-        N3Objects::getMikuType("NxLong")
+        BladeAdaptation::mikuTypeItems("NxLong")
     end
 
     # NxLongs::commit(item)

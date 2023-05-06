@@ -4,7 +4,7 @@ class NxTimePromises
     # NxTimePromises::operate()
     def self.operate()
         return if !Config::isPrimaryInstance()
-        N3Objects::getMikuType("NxTimePromise").each{|item|
+        BladeAdaptation::mikuTypeItems("NxTimePromise").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 Bank::put(item["account"], item["value"])
                 Blades::destroy(item["uuid"])
@@ -47,7 +47,7 @@ class NxTimePromises
 
     # NxTimePromises::show()
     def self.show()
-        N3Objects::getMikuType("NxTimePromise")
+        BladeAdaptation::mikuTypeItems("NxTimePromise")
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|capsule|
                 board = NxBoards::getItemOfNull(capsule["account"])

@@ -6,7 +6,7 @@ class Waves
 
     # Waves::items()
     def self.items()
-        N3Objects::getMikuType("Wave")
+        BladeAdaptation::mikuTypeItems("Wave")
     end
 
     # Waves::commit(item)

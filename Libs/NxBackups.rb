@@ -22,7 +22,7 @@ class NxBackups
 
     # NxBackups::items()
     def self.items()
-        N3Objects::getMikuType("NxBackup")
+        BladeAdaptation::mikuTypeItems("NxBackup")
     end
 
     # NxBackups::getItemByOperationOrNull(operation)

@@ -9,7 +9,7 @@ class TheLine
 
     # TheLine::count()
     def self.count()
-        ["NxTask", "NxFire", "NxOndate"].map{|mikuType| N3Objects::getMikuTypeCount(mikuType) }.inject(0, :+)
+        ["NxTask", "NxFire", "NxOndate"].map{|mikuType| BladeAdaptation::getMikuTypeCount(mikuType) }.inject(0, :+)
     end
 
     # TheLine::getCurrentCount()
