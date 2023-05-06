@@ -119,14 +119,14 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
+                Blades::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
+                Blades::destroy(item["uuid"])
             end
             return
         end
@@ -152,7 +152,7 @@ class PolyActions
 
         if item["mikuType"] == "NxFire" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
+                Blades::destroy(item["uuid"])
             end
             return
         end
@@ -194,7 +194,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                N3Objects::destroy(item["uuid"])
+                Blades::destroy(item["uuid"])
             end
             return
         end

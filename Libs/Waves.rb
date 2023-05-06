@@ -16,7 +16,7 @@ class Waves
 
     # Waves::destroy(itemuuid)
     def self.destroy(itemuuid)
-        N3Objects::destroy(itemuuid)
+        Blades::destroy(itemuuid)
     end
 
     # --------------------------------------------------

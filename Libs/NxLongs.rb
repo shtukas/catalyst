@@ -13,7 +13,7 @@ class NxLongs
 
     # NxLongs::destroy(uuid)
     def self.destroy(uuid)
-        N3Objects::destroy(uuid)
+        Blades::destroy(uuid)
     end
 
     # NxLongs::interactivelyIssueNewOrNull()

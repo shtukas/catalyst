@@ -584,10 +584,14 @@ class Listing
                 "name" => "NxFires::items()",
                 "lambda" => lambda { NxFires::items() }
             },
-            {
-                "name" => "NxTasks::listingItems()",
-                "lambda" => lambda { NxTasks::listingItems() }
-            },
+            #{
+            #    "name" => "TimeCommitments::firstItem()",
+            #    "lambda" => lambda { TimeCommitments::firstItem() }
+            #},
+            #{
+            #    "name" => "TimeCommitments::listingitems()",
+            #    "lambda" => lambda { TimeCommitments::listingitems() }
+            #},
         ]
 
         runTest = lambda {|test|
@@ -679,8 +683,8 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxLines::items(),
-            TimeCommitments::firstItem(),
-            TimeCommitments::listingitems(),
+            #TimeCommitments::firstItem(),
+            #TimeCommitments::listingitems(),
             Waves::listingItems(nil).select{|item| !item["interruption"] },
         ]
             .flatten

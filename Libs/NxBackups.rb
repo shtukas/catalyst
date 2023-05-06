@@ -48,7 +48,7 @@ class NxBackups
 
     # NxBackups::destroy(uuid)
     def self.destroy(uuid)
-        N3Objects::destroy(uuid)
+        Blades::destroy(uuid)
     end
 
     # NxBackups::dataMaintenance()
@@ -83,7 +83,7 @@ class NxBackups
         # In the second stage we are checking that each item has a corresponsing instruction
         NxBackups::items()
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
-            .each{|item| N3Objects::destroy(item["uuid"]) }
+            .each{|item| Blades::destroy(item["uuid"]) }
     end
 
     # NxBackups::interactivelyIssueNewOrNull()

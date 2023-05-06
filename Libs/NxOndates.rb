@@ -16,7 +16,7 @@ class NxOndates
 
     # NxOndates::destroy(uuid)
     def self.destroy(uuid)
-        N3Objects::destroy(uuid)
+        Blades::destroy(uuid)
     end
 
     # NxOndates::interactivelyIssueNewOrNull()

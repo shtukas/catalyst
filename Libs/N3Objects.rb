@@ -246,12 +246,12 @@ class N3Objects
             raise "object is missing mikuType: #{JSON.pretty_generate(object)}"
         end
 
-        BladeAdaptation::commitItemToExistingBlade(object)
+        BladeAdaptation::commitItem(object)
     end
 
     # N3Objects::getOrNull(uuid)
     def self.getOrNull(uuid)
-        item = BladeAdaptation::uuidToItemOrNull(uuid)
+        item = BladeAdaptation::getItemOrNull(uuid)
         return item if item
 
         raise "(everything should have been migrated: 3)"
@@ -317,10 +317,5 @@ class N3Objects
     # N3Objects::getMikuTypeCount(mikuType)
     def self.getMikuTypeCount(mikuType)
         MikuTypes::mikuTypeUUIDsCached(mikuType).size
-    end
-
-    # N3Objects::destroy(uuid)
-    def self.destroy(uuid)
-        Blades::destroy(uuid)
     end
 end

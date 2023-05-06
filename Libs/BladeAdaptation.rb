@@ -168,8 +168,8 @@ class BladeAdaptation
         raise "(error: 17844ff9-8aa1-4cc7-a477-a4479a8a74ac) BladeAdaptation::readFileAsItemOrError is currently not supporting mikuType: #{mikuType}."
     end
 
-    # BladeAdaptation::uuidToItemOrNull(uuid)
-    def self.uuidToItemOrNull(uuid)
+    # BladeAdaptation::getItemOrNull(uuid)
+    def self.getItemOrNull(uuid)
         filepath = Blades::uuidToFilepathOrNull(uuid)
         return nil if filepath.nil?
         item = XCache::getOrNull("c5895d3a-0667-472d-a9ff-5997a199077a:#{filepath}")
@@ -180,8 +180,8 @@ class BladeAdaptation
         return item
     end
 
-    # BladeAdaptation::commitItemToExistingBlade(item)
-    def self.commitItemToExistingBlade(item)
+    # BladeAdaptation::commitItem(item)
+    def self.commitItem(item)
         filepath = Blades::uuidToFilepathOrNull(item["uuid"])
         if filepath.nil? then
             raise "(error: 22a3cfc8-7325-4a3e-b9e2-7f12cf22d192) Could not determine filepath of assumed blade for item: #{item}"
@@ -333,7 +333,7 @@ class BladeAdaptation
     # BladeAdaptation::items(mikuType) # Array[Items]
     def self.items(mikuType)
         MikuTypes::mikuTypeUUIDsCached(mikuType)
-            .map{|uuid| BladeAdaptation::uuidToItemOrNull(uuid) }
+            .map{|uuid| BladeAdaptation::getItemOrNull(uuid) }
             .compact
     end
 end

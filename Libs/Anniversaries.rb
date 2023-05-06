@@ -4,7 +4,7 @@ class Anniversaries
     # Anniversaries::items()
     def self.items()
         MikuTypes::mikuTypeUUIDsCached("NxAnniversary")
-            .map{|uuid| BladeAdaptation::uuidToItemOrNull(uuid) }
+            .map{|uuid| BladeAdaptation::getItemOrNull(uuid) }
     end
 
     # ----------------------------------------------------------------
@@ -127,9 +127,9 @@ class Anniversaries
         }
 
         Blades::init("NxAnniversary", uuid)
-        BladeAdaptation::commitItemToExistingBlade(item)
+        BladeAdaptation::commitItem(item)
 
-        BladeAdaptation::uuidToItemOrNull(uuid)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]

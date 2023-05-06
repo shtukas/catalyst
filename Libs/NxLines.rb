@@ -13,7 +13,7 @@ class NxLines
 
     # NxLines::destroy(uuid)
     def self.destroy(uuid)
-        N3Objects::destroy(uuid)
+        Blades::destroy(uuid)
     end
 
     # NxLines::issue(line)

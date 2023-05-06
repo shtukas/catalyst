@@ -7,7 +7,7 @@ class NxTimePromises
         N3Objects::getMikuType("NxTimePromise").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 Bank::put(item["account"], item["value"])
-                N3Objects::destroy(item["uuid"])
+                Blades::destroy(item["uuid"])
             end
         }
     end
