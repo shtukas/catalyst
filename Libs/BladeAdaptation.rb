@@ -172,8 +172,11 @@ class BladeAdaptation
     def self.uuidToItemOrNull(uuid)
         filepath = Blades::uuidToFilepathOrNull(uuid)
         return nil if filepath.nil?
+        item = XCache::getOrNull("c5895d3a-0667-472d-a9ff-5997a199077a:#{filepath}")
+        return JSON.parse(item) if item
         item = BladeAdaptation::readFileAsItemOrError(filepath)
         item[:blade] = filepath
+        XCache::set("c5895d3a-0667-472d-a9ff-5997a199077a:#{filepath}", JSON.generate(item))
         return item
     end
 
