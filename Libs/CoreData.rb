@@ -24,18 +24,18 @@ class CoreData
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")
-            nhash = N1Data::putBlob(text)
+            nhash = Blades::putDatablob2(uuid, text)
             return "text:#{nhash}"
         end
         if referencetype == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url: ")
-            nhash = N1Data::putBlob(url)
-            return "url:#{nhash}"        end
-
+            nhash = Blades::putDatablob2(uuid, url)
+            return "url:#{nhash}"
+        end
         if referencetype == "aion point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(N1DataElizabeth.new(), location)
+            nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
             return "aion-point:#{nhash}" 
         end
         if referencetype == "open cycle" then
