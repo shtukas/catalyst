@@ -1,5 +1,5 @@
 
-NxBackup:
+NxBackup: (Blade)
     "uuid"          : String
     "mikuType"      : "NxBackup"
     "unixtime"      : Float

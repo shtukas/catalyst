@@ -364,7 +364,11 @@ class CommonUtils
 
     # CommonUtils::stargateTraceCode()
     def self.stargateTraceCode()
-        CommonUtils::locationTraceCode("#{File.dirname(__FILE__)}/..")
+        roots = [
+            "#{File.dirname(__FILE__)}/..",
+            "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries"
+        ]
+        CommonUtils::locationTraceCodeWithMultipleRoots(roots)
     end
 
     # CommonUtils::isOnline()

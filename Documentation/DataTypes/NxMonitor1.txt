@@ -1,0 +1,6 @@
+
+NxMonitor1 (Blade)
+    "uuid"        : "347fe760-3c19-4618-8bf3-9854129b5009"
+    "mikuType"    : "NxMonitor1"
+    "description" : "Long Running Projects"
+    "engine"      : TxEngine

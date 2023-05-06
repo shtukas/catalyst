@@ -1,5 +1,5 @@
 
-Wave:
+Wave (Blade):
     "uuid"             : uuid
     "mikuType"         : "Wave"
     "unixtime"         : unixtime
@@ -8,11 +8,12 @@ Wave:
 
     "nx46"             : Nx46 # Wave pattern
     "lastDoneDateTime" : DateTime Iso 8601 UTC Zulu
-    "onlyOnDays"       : null or Array[week days names lowercase english] 
-                         Indicates on which days the wave can show up
     "field11"          : CoreData reference string
 
-    "interruption"     : boolean, indicates if the item is interruption (priority)
+    "interruption"     : null or boolean, indicates if the item is interruption (priority)
+
+    "onlyOnDays"       : null or Array[week days names lowercase english] 
+                         Indicates on which days the wave can show up
 
 Nx46 {
     "type"  : Nx46Type

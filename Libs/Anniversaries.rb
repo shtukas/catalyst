@@ -159,14 +159,14 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        Blades::setAttribute(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
+        Blades::setAttribute2(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::accessAndDone(anniversary)
     def self.accessAndDone(anniversary)
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            Blades::setAttribute(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
+            Blades::setAttribute2(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
         end
     end
 
@@ -179,12 +179,12 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                Blades::setAttribute(item["uuid"], "description", description)
+                Blades::setAttribute2(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                Blades::setAttribute(item["uuid"], "startdate", startdate)
+                Blades::setAttribute2(item["uuid"], "startdate", startdate)
             end
         }
     end

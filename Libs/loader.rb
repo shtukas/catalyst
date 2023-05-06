@@ -127,13 +127,13 @@ require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/B
 Blades
     Blades::init(mikuType, uuid)
     Blades::tokenToFilepath(token)
-    Blades::setAttribute(token, attribute_name, value)
-    Blades::getAttributeOrNull(token, attribute_name)
-    Blades::getMandatoryAttribute(token, attribute_name)
-    Blades::addToSet(token, set_id, element_id, value)
-    Blades::removeFromSet(token, set_id, element_id)
-    Blades::putDatablob(token, key, datablob)
-    Blades::getDatablobOrNull(token, key)
+    Blades::setAttribute2(uuid, attribute_name, value)
+    Blades::getAttributeOrNull1(filepath, attribute_name)
+    Blades::getMandatoryAttribute1(filepath, attribute_name)
+    Blades::addToSet1(filepath, set_id, element_id, value)
+    Blades::removeFromSet1(filpath, set_id, element_id)
+    Blades::putDatablob1(filepath, key, datablob)
+    Blades::getDatablobOrNull1(filepath, key)
 =end
 
 require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/MikuTypes.rb"

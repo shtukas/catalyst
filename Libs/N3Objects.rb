@@ -218,6 +218,25 @@ class N3Objects
     # --------------------------------------
     # Interface
 
+    # N3Objects::bladedMikuTypes()
+    def self.bladedMikuTypes()
+        [
+            "NxAnniversary",
+            "NxBackup",
+            "NxBoard",
+            "NxOndate",
+            "NxTask",
+            "NxTimePromise",
+            "NxLong",
+            "NxLine",
+            "NxFloat",
+            "NxFire",
+            "NxMonitor1"
+            "PhysicalTarget",
+            "Wave",
+        ]
+    end
+
     # N3Objects::commit(object)
     def self.commit(object)
         if object["uuid"].nil? then
@@ -256,16 +275,8 @@ class N3Objects
 
     # N3Objects::getMikuType(mikuType)
     def self.getMikuType(mikuType)
-        if mikuType == "NxAnniversary" then
-            return BladeAdaptation::items("NxAnniversary")
-        end
-
-        if mikuType == "NxBoard" then
-            return BladeAdaptation::items("NxBoard")
-        end
-
-        if mikuType == "NxOndate" then
-            return BladeAdaptation::items("NxOndate")
+        if N3Objects::bladedMikuTypes().include?(mikuType) then
+            return BladeAdaptation::items(mikuType)
         end
 
         objects = []
@@ -303,11 +314,7 @@ class N3Objects
                     data
                 }
                 .values
-        o2 = [
-            BladeAdaptation::items("NxAnniversary"),
-            BladeAdaptation::items("NxBoard"),
-            BladeAdaptation::items("NxOndate"),
-        ].flatten
+        o2 = N3Objects::bladedMikuTypes().map{|mikuType| BladeAdaptation::items(mikuType) }.flatten
         o1 + o2
     end
 
@@ -329,6 +336,7 @@ class N3Objects
 
     # N3Objects::destroy(uuid)
     def self.destroy(uuid)
+        Blades::destroy(uuid)
         filepaths = N3Objects::getFilepathsSorted()
         N3Objects::deleteAtFiles(filepaths, uuid)
     end
