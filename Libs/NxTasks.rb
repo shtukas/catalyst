@@ -7,11 +7,6 @@ class NxTasks
         BladeAdaptation::mikuTypeItems("NxTask")
     end
 
-    # NxTasks::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxTasks::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
         BladeAdaptation::getItemOrNull(uuid)
@@ -48,7 +43,7 @@ class NxTasks
         item["position"]  = position
         item["engine"]    = engine
 
-        NxTasks::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 
