@@ -186,7 +186,6 @@ require_relative "NxLongs.rb"
 require_relative "NxTasksBoardless.rb"
 require_relative "NxTasksBoarded.rb"
 
-require_relative "PrimitiveFiles.rb"
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
