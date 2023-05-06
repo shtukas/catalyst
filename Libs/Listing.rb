@@ -677,8 +677,8 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxLines::items(),
-            #TimeCommitments::firstItem(),
-            #TimeCommitments::listingitems(),
+            TimeCommitments::firstItem(),
+            TimeCommitments::listingitems(),
             Waves::listingItems(nil).select{|item| !item["interruption"] },
         ]
             .flatten

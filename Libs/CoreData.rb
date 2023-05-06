@@ -231,4 +231,41 @@ class CoreData
         end
         raise "CoreData, I do not know how to edit '#{referenceString}'"
     end
+
+    # CoreData::fsck(uuid, referenceString)
+    def self.fsck(uuid, referenceString)
+        puts "CoreData::fsck(uuid: #{uuid}, referenceString: #{referenceString})"
+        if referenceString.nil? then
+            return
+        end
+        if referenceString == "null" then
+            return
+        end
+        if referenceString.start_with?("text") then
+            nhash = referenceString.split(":")[1]
+            text = Blades::getDatablobOrNull2(uuid, nhash)
+            if text.nil? then
+                raise "CoreData::fsck: could not extract text for uuid: #{uuid}, referenceString: #{referenceString}"
+            end
+            return
+        end
+        if referenceString.start_with?("url") then
+            return
+        end
+        if referenceString.start_with?("aion-point") then
+            nhash = referenceString.split(":")[1]
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(BladeElizabeth.new(uuid), nhash)
+            return
+        end
+        if referenceString.start_with?("open-cycle") then
+            return
+        end
+        if referenceString.start_with?("unique-string") then
+            return
+        end
+        if referenceString.start_with?("Dx8UnitId") then
+            return
+        end
+        raise "CoreData, I do not know how to access '#{referenceString}'"
+    end
 end

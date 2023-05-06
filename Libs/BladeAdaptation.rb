@@ -21,7 +21,7 @@ MikuTypes
 class BladeAdaptation
 
     # BladeAdaptation::mikuTypes()
-    def self.bladedMikuTypes()
+    def self.mikuTypes()
         [
             "NxAnniversary",
             "NxBackup",
@@ -366,10 +366,24 @@ class BladeAdaptation
         Enumerator.new do |items|
             BladeAdaptation::mikuTypes().each{|mikuType|
                 MikuTypes::mikuTypeToBladesFilepathsEnumerator(mikuType).each{|filepath|
-                    items << Blades::getMandatoryAttribute1(filepath, "uuid")
+                    uuid = Blades::getMandatoryAttribute1(filepath, "uuid")
+                    items << BladeAdaptation::getItemOrNull(uuid)
                 }
             }
 
         end
+    end
+
+    # BladeAdaptation::fsckItem(item)
+    def self.fsckItem(item)
+        CoreData::fsck(item["uuid"], item["field11"])
+    end
+
+    # BladeAdaptation::fsck()
+    def self.fsck()
+        # We use a .to_a here because otherwise the error is not propagated up (Ruby weirdness)
+        BladeAdaptation::getAllCatalystItemsEnumerator().to_a.each{|item|
+            BladeAdaptation::fsckItem(item)
+        }
     end
 end
