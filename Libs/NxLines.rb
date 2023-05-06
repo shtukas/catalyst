@@ -8,7 +8,7 @@ class NxLines
 
     # NxLines::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxLines::destroy(uuid)

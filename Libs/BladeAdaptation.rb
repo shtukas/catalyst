@@ -20,6 +20,25 @@ MikuTypes
 
 class BladeAdaptation
 
+    # BladeAdaptation::mikuTypes()
+    def self.bladedMikuTypes()
+        [
+            "NxAnniversary",
+            "NxBackup",
+            "NxBoard",
+            "NxOndate",
+            "NxTask",
+            "NxTimePromise",
+            "NxLong",
+            "NxLine",
+            "NxFloat",
+            "NxFire",
+            "NxMonitor1",
+            "PhysicalTarget",
+            "Wave",
+        ]
+    end
+
     # BladeAdaptation::readFileAsItemOrError(filepath)
     def self.readFileAsItemOrError(filepath)
         raise "(error: 5d519cf9-680a-4dab-adda-6fa160ef9f47)" if !File.exist?(filepath)
@@ -345,7 +364,7 @@ class BladeAdaptation
     # BladeAdaptation::getAllCatalystItemsEnumerator()
     def self.getAllCatalystItemsEnumerator()
         Enumerator.new do |items|
-            N3Objects::bladedMikuTypes().each{|mikuType|
+            BladeAdaptation::mikuTypes().each{|mikuType|
                 MikuTypes::mikuTypeToBladesFilepathsEnumerator(mikuType).each{|filepath|
                     items << Blades::getMandatoryAttribute1(filepath, "uuid")
                 }

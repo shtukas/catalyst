@@ -8,7 +8,7 @@ class NxFires
 
     # NxFires::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxFires::destroy(uuid)

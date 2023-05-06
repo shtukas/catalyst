@@ -1,6 +1,6 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 uuid = ARGV[0]
-object = N3Objects::getOrNull(uuid)
+object = BladeAdaptation::getItemOrNull(uuid)
 object = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(object)))
-N3Objects::commit(object)
+BladeAdaptation::commitItem(object)

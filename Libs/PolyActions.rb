@@ -339,6 +339,6 @@ class PolyActions
 
         puts "edit description:"
         item["description"] = CommonUtils::editTextSynchronously(item["description"]).strip
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 end

@@ -11,7 +11,7 @@ class Waves
 
     # Waves::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # Waves::destroy(itemuuid)
@@ -145,7 +145,7 @@ class Waves
             "field11"          => coredataref,
             "interruption"     => interruption
         }
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 
@@ -190,7 +190,7 @@ class Waves
         item["lastDoneDateTime"] = Time.now.utc.iso8601
         item["lastDoneUnixtime"] = Time.new.to_i
         item["parking"] = nil
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -223,11 +223,11 @@ class Waves
             break if action.nil?
             if action == "update description" then
                 item["description"] = CommonUtils::editTextSynchronously(item["description"])
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
             end
             if action == "update wave pattern" then
                 item["nx46"] = Waves::makeNx46InteractivelyOrNull()
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
             end
             if action == "perform done" then
                 Waves::performWaveNx46WaveDone(item)
@@ -236,7 +236,7 @@ class Waves
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
                 item["onlyOnDays"] = days
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then

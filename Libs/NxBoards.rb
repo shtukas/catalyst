@@ -11,7 +11,7 @@ class NxBoards
 
     # NxBoards::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        N3Objects::getOrNull(uuid)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxBoards::getItemFailIfMissing(uuid)
@@ -23,7 +23,7 @@ class NxBoards
 
     # NxBoards::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # ---------------------------------------------------------
@@ -220,7 +220,7 @@ class BoardsAndItems
     def self.attachToItem(item, board)
         return if board.nil?
         item["boarduuid"] = board["uuid"]
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # BoardsAndItems::maybeAskAndMaybeAttach(item)
@@ -230,7 +230,7 @@ class BoardsAndItems
         board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 
@@ -240,7 +240,7 @@ class BoardsAndItems
         board = NxBoards::interactivelySelectOneOrNull()
         return item if board.nil?
         item["boarduuid"] = board["uuid"]
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 

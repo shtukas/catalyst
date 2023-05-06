@@ -11,7 +11,7 @@ class NxOndates
 
     # NxOndates::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxOndates::destroy(uuid)

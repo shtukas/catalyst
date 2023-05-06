@@ -14,7 +14,7 @@ class NxNotes
     # NxNotes::commit(item, text)
     def self.commit(item, text)
         item["note"] = text
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxNotes::toStringSuffix(item)

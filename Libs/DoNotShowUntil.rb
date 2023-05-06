@@ -7,7 +7,7 @@ class DoNotShowUntil
         XCache::set("DoNotShowUntil:#{item["uuid"]}", unixtime)
 
         item["doNotShowUntil"] = unixtime
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)

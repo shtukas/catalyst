@@ -24,13 +24,13 @@ class PhysicalTargets
             "counter"     => dailyTarget,
             "lastUpdatedUnixtime" => nil
         }
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 
     # PhysicalTargets::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # --------------------------------------------------------
@@ -47,7 +47,7 @@ class PhysicalTargets
             if item["date"] != CommonUtils::today() then
                 item["date"] = CommonUtils::today()
                 item["counter"] = 0
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
             end
         }
         PhysicalTargets::items()

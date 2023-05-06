@@ -43,7 +43,7 @@ class NxBackups
 
     # NxBackups::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxBackups::destroy(uuid)
@@ -64,7 +64,7 @@ class NxBackups
                 if item then
                     if item["periodInDays"] != instruction["periodInDays"] then
                         item["periodInDays"] = instruction["periodInDays"]
-                        N3Objects::commit(item)
+                        BladeAdaptation::commitItem(item)
                     end
                 else
                     item = {
@@ -76,7 +76,7 @@ class NxBackups
                         "periodInDays"     => instruction["periodInDays"],
                         "lastDoneUnixtime" => 0
                     }
-                    N3Objects::commit(item)
+                    BladeAdaptation::commitItem(item)
                 end
             }
 
@@ -117,6 +117,6 @@ class NxBackups
     # NxBackups::performDone(item)
     def self.performDone(item)
         item["lastDoneUnixtime"] = Time.new.to_i
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 end

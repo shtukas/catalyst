@@ -24,7 +24,7 @@ class Transmutations
             item["bloarduuid"] = bloarduuid
             item["engine"]     = engine
             puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -35,7 +35,7 @@ class Transmutations
                 item = BoardsAndItems::maybeAskAndMaybeAttach(item)
             end
             puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -44,7 +44,7 @@ class Transmutations
             item["mikuType"] = "NxTask"
             item = NxTasks::recoordinates(item)
             puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 

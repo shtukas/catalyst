@@ -44,7 +44,7 @@ class Listing
         }
         item["tmpskip1"] = directive
         puts JSON.pretty_generate(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
         XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
@@ -91,7 +91,7 @@ class Listing
                 "durationInHours" => durationInHours.to_f
             }
             puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -169,7 +169,7 @@ class Listing
             item = store.get(listord.to_i)
             return if item.nil?
             item["boarduuid"] = nil
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -185,7 +185,7 @@ class Listing
             reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
             item["field11"] = reference
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -249,7 +249,7 @@ class Listing
             end
             item["position"] = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
             puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -264,7 +264,7 @@ class Listing
             end
             item = NxTasks::recoordinates(item)
             puts JSON.pretty_generate(item)
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -289,7 +289,7 @@ class Listing
             engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
             item["engine"] = engine
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -305,7 +305,7 @@ class Listing
             engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
             item["engine"] = engine
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -331,7 +331,7 @@ class Listing
             item = store.get(listord.to_i)
             return if item.nil?
             item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -521,7 +521,7 @@ class Listing
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
-            N3Objects::commit(item)
+            BladeAdaptation::commitItem(item)
             puts JSON.pretty_generate(item)
             BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
@@ -660,7 +660,7 @@ class Listing
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil::isVisible(item)
         if item["boarduuid"] then
-            board = N3Objects::getOrNull(item["boarduuid"])
+            board = BladeAdaptation::getItemOrNull(item["boarduuid"])
             return false if !DoNotShowUntil::isVisible(board)
         end
         true
@@ -810,7 +810,7 @@ class Listing
                     generalpermission = true
                 end
                 item["boarduuid"] = nil
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
                 count = count + 1
             }
 
@@ -818,7 +818,6 @@ class Listing
 
         if Config::isPrimaryInstance() then
             NxTimePromises::operate()
-            N3Objects::fileManagement()
             Bank::fileManagement()
             NxBackups::dataMaintenance()
             NxBoards::dataMaintenance()

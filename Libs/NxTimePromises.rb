@@ -41,7 +41,7 @@ class NxTimePromises
         items.each{|promise|
             puts "NxTimePromise: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
             puts JSON.pretty_generate(promise)
-            N3Objects::commit(promise)
+            BladeAdaptation::commitItem(promise)
         }
     end
 

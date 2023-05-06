@@ -8,7 +8,7 @@ class NxLongs
 
     # NxLongs::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxLongs::destroy(uuid)
@@ -99,7 +99,7 @@ class NxLongs
                 active = LucilleCore::askQuestionAnswerAsBoolean("active ? : ")
                 item["mikuType"] = "NxLong"
                 item["active"] = active
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
             }
 
         if NxLongs::items().size > 0 and NxLongs::items().none?{|item| item["active"] } then
@@ -109,7 +109,7 @@ class NxLongs
                 item = NxLongs::interactivelySelectOneOrNull()
                 break if item.nil?
                 item["active"] = true
-                N3Objects::commit(item)
+                BladeAdaptation::commitItem(item)
                 break if !LucilleCore::askQuestionAnswerAsBoolean("more ? ")
             }
         end

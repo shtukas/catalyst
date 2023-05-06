@@ -9,12 +9,12 @@ class NxTasks
 
     # NxTasks::commit(item)
     def self.commit(item)
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
     end
 
     # NxTasks::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        N3Objects::getOrNull(uuid)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxTasks::destroy(uuid)
@@ -86,7 +86,7 @@ class NxTasks
             "position"    => NxTasksPositions::automaticPositioningAtNoBoard(50),
             "engine"      => TxEngines::defaultEngine(nil),
         }
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 
@@ -107,7 +107,7 @@ class NxTasks
             "position"    => NxTasksPositions::automaticPositioningAtNoBoard(50),
             "engine"      => TxEngines::defaultEngine(nil),
         }
-        N3Objects::commit(item)
+        BladeAdaptation::commitItem(item)
         item
     end
 

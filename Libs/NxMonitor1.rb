@@ -17,7 +17,7 @@ class NxMonitor1s
             engine2 = TxEngines::engineMaintenance(monitor["description"], monitor["engine"])
             if engine2 then
                 monitor["engine"] = engine2
-                N3Objects::commit(monitor)
+                BladeAdaptation::commitItem(monitor)
             end
         }
     end
@@ -52,7 +52,7 @@ class NxMonitor1s
     # NxMonitor1s::program2(monitor)
     def self.program2(monitor)
         loop {
-            monitor = N3Objects::getOrNull(monitor["uuid"])
+            monitor = BladeAdaptation::getItemOrNull(monitor["uuid"])
             return if monitor.nil?
             puts NxMonitor1s::toString(monitor)
             actions = ["program(monitor)", "start", "add time"]

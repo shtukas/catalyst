@@ -122,7 +122,7 @@ class NxTasksPositions
     def self.decidePositionAtOptionalBoarduuid(boarduuid)
         mboard =
             if boarduuid then
-                N3Objects::getOrNull(boarduuid)
+                BladeAdaptation::getItemOrNull(boarduuid)
             else
                 nil
             end
