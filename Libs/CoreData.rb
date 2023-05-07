@@ -24,12 +24,12 @@ class CoreData
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")
-            nhash = Blades::putDatablob2(uuid, text)
+            nhash = Solingen::putDatablob2(uuid, text)
             return "text:#{nhash}"
         end
         if referencetype == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url: ")
-            nhash = Blades::putDatablob2(uuid, url)
+            nhash = Solingen::putDatablob2(uuid, url)
             return "url:#{nhash}"
         end
         if referencetype == "aion point" then
@@ -109,7 +109,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Blades::getDatablobOrNull2(uuid, nhash)
+            text = Solingen::getDatablobOrNull2(uuid, nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
@@ -118,7 +118,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = Blades::getDatablobOrNull2(uuid, nhash)
+            url = Solingen::getDatablobOrNull2(uuid, nhash)
             puts "url: #{url}"
             CommonUtils::openUrlUsingSafari(url)
             LucilleCore::pressEnterToContinue()
@@ -170,7 +170,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Blades::getDatablobOrNull2(uuid, nhash)
+            text = Solingen::getDatablobOrNull2(uuid, nhash)
             if text.nil? then
                 raise "CoreData::fsck: could not extract text for uuid: #{uuid}, referenceString: #{referenceString}"
             end

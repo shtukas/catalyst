@@ -7,14 +7,14 @@ class NxTasksPositions
 
     # NxTasksPositions::firstPosition()
     def self.firstPosition()
-        items = NxTasks::items()
+        items = Solingen::mikuTypeItems("NxTask")
         return 1 if items.empty?
         items.map{|item| item["position"]}.min
     end
 
     # NxTasksPositions::lastPosition()
     def self.lastPosition()
-        items = NxTasks::items()
+        items = Solingen::mikuTypeItems("NxTask")
         return 1 if items.empty?
         items.map{|item| item["position"]}.max
     end
@@ -127,7 +127,7 @@ class NxTasksPositions
     def self.decidePositionAtOptionalBoarduuid(boarduuid)
         mboard =
             if boarduuid then
-                BladeAdaptation::getItemOrNull(boarduuid)
+                Solingen::getItemOrNull(boarduuid)
             else
                 nil
             end

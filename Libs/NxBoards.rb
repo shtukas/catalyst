@@ -4,14 +4,9 @@ class NxBoards
     # IO
     # ---------------------------------------------------------
 
-    # NxBoards::items()
-    def self.items()
-        BladeAdaptation::mikuTypeItems("NxBoard")
-    end
-
     # NxBoards::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # NxBoards::getItemFailIfMissing(uuid)
@@ -32,12 +27,12 @@ class NxBoards
         return nil if description == ""
         uuid = SecureRandom.uuid
         engine = TxEngines::interactivelyMakeEngineOrDefault()
-        Blades::init("NxBoard", uuid)
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "engine", engine)
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::init("NxBoard", uuid)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "engine", engine)
+        Solingen::getItemOrNull(uuid)
     end
 
     # ---------------------------------------------------------
@@ -51,12 +46,12 @@ class NxBoards
 
     # NxBoards::boardsOrdered()
     def self.boardsOrdered()
-        NxBoards::items().sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
+        Solingen::mikuTypeItems("NxBoard").sort{|i1, i2| TxEngines::completionRatio(i1["engine"]) <=> TxEngines::completionRatio(i2["engine"]) }
     end
 
     # NxBoards::boardToItems(board)
     def self.boardToItems(board)
-        NxTasks::items().select{|item| item["boarduuid"] == board["uuid"] }
+        Solingen::mikuTypeItems("NxTask").select{|item| item["boarduuid"] == board["uuid"] }
     end
 
     # NxBoards::boardToItemsOrdered(board)
@@ -71,7 +66,7 @@ class NxBoards
 
     # NxBoards::listingItems()
     def self.listingItems()
-        NxBoards::items().select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsActive(board) }
+        Solingen::mikuTypeItems("NxBoard").select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsActive(board) }
     end
 
     # ---------------------------------------------------------
@@ -106,10 +101,10 @@ class NxBoards
 
     # NxBoards::dataMaintenance()
     def self.dataMaintenance()
-        NxBoards::items().each{|board|
+        Solingen::mikuTypeItems("NxBoard").each{|board|
             engine2 = TxEngines::engineMaintenance(board["description"], board["engine"])
             if engine2 then
-                Blades::setAttribute2(board["uuid"], "engine", engine2)
+                Solingen::setAttribute2(board["uuid"], "engine", engine2)
             end
         }
     end
@@ -122,7 +117,7 @@ class NxBoards
     def self.itemsForProgram1(board)
         [
             NxOndates::listingItems(),
-            NxFires::items(),
+            Solingen::mikuTypeItems("NxFire"),
             Waves::listingItems(board),
             NxBoards::boardToItemsOrdered(board)
         ]
@@ -153,7 +148,7 @@ class NxBoards
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: board))
             spacecontrol.putsline ""
 
-            NxFloats::items()
+            Solingen::mikuTypeItems("NxFloat")
                 .select{|item| item["boarduuid"] == board["uuid"] }
                 .sort_by{|item| item["unixtime"] }
                 .each{|item|
@@ -218,7 +213,7 @@ class BoardsAndItems
     # BoardsAndItems::attachToItem(item, board or nil)
     def self.attachToItem(item, board)
         return if board.nil?
-        Blades::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
+        Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
     end
 
     # BoardsAndItems::maybeAskAndMaybeAttach(item)
@@ -227,7 +222,7 @@ class BoardsAndItems
         return if item["boarduuid"]
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
-        Blades::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
+        Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
     end
 
     # BoardsAndItems::askAndMaybeAttach(item)
@@ -235,7 +230,7 @@ class BoardsAndItems
         return if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
-        Blades::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
+        Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
     end
 
     # BoardsAndItems::toStringSuffix(item)

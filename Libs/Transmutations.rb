@@ -13,22 +13,22 @@ class Transmutations
 
     # Transmutations::transmute(uuid)
     def self.transmute(uuid)
-        sourceType = Blades::getMandatoryAttribute2(uuid, "mikuType")
+        sourceType = Solingen::getMandatoryAttribute2(uuid, "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            Blades::setAttribute2(uuid, "engine", TxEngines::interactivelyMakeEngineOrDefault())
-            Blades::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
-            Blades::setAttribute2(uuid, "mikuType", "NxFire")
+            Solingen::setAttribute2(uuid, "engine", TxEngines::interactivelyMakeEngineOrDefault())
+            Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
+            Solingen::setAttribute2(uuid, "mikuType", "NxFire")
 
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
-            Blades::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
-            Blades::setAttribute2(uuid, "mikuType", "NxFire")
+            Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
+            Solingen::setAttribute2(uuid, "mikuType", "NxFire")
             return
         end
 
@@ -36,10 +36,10 @@ class Transmutations
             board    = NxBoards::interactivelySelectOneOrNull()
             position = NxTasksPositions::decidePositionAtOptionalBoard(board)
             engine   = TxEngines::interactivelyMakeEngineOrDefault()
-            Blades::setAttribute2(uuid, "boarduuid", board ? board["uuid"] : nil)
-            Blades::setAttribute2(uuid, "position", position)
-            Blades::setAttribute2(uuid, "engine", engine)
-            Blades::setAttribute2(uuid, "mikuType", "NxTask")
+            Solingen::setAttribute2(uuid, "boarduuid", board ? board["uuid"] : nil)
+            Solingen::setAttribute2(uuid, "position", position)
+            Solingen::setAttribute2(uuid, "engine", engine)
+            Solingen::setAttribute2(uuid, "mikuType", "NxTask")
             return
         end
 

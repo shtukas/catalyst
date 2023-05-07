@@ -1,14 +1,6 @@
 
 class Anniversaries
 
-    # Anniversaries::items()
-    def self.items()
-        MikuTypes::mikuTypeUUIDsCached("NxAnniversary")
-            .map{|uuid| BladeAdaptation::getItemOrNull(uuid) }
-    end
-
-    # ----------------------------------------------------------------
-
     # Anniversaries::dateIsCorrect(date)
     def self.dateIsCorrect(date)
         begin
@@ -115,15 +107,15 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Blades::init("NxAnniversary", uuid)
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "startdate", startdate)
-        Blades::setAttribute2(uuid, "repeatType", repeatType)
-        Blades::setAttribute2(uuid, "lastCelebrationDate", lastCelebrationDate)
+        Solingen::init("NxAnniversary", uuid)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "startdate", startdate)
+        Solingen::setAttribute2(uuid, "repeatType", repeatType)
+        Solingen::setAttribute2(uuid, "lastCelebrationDate", lastCelebrationDate)
 
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]
@@ -144,7 +136,7 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        Anniversaries::items()
+        Solingen::mikuTypeItems("NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end
 
@@ -153,14 +145,14 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        Blades::setAttribute2(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
+        Solingen::setAttribute2(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::accessAndDone(anniversary)
     def self.accessAndDone(anniversary)
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            Blades::setAttribute2(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
+            Solingen::setAttribute2(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
         end
     end
 
@@ -173,12 +165,12 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                Blades::setAttribute2(item["uuid"], "description", description)
+                Solingen::setAttribute2(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                Blades::setAttribute2(item["uuid"], "startdate", startdate)
+                Solingen::setAttribute2(item["uuid"], "startdate", startdate)
             end
         }
     end
@@ -186,8 +178,8 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Anniversaries::items()
-                        .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
+            anniversaries = Solingen::mikuTypeItems("NxAnniversary")
+                              .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?
             Anniversaries::program1(anniversary)

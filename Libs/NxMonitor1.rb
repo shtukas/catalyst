@@ -1,11 +1,6 @@
 
 class NxMonitor1s
 
-    # NxMonitor1s::items()
-    def self.items()
-        BladeAdaptation::mikuTypeItems("NxMonitor1")
-    end
-
     # NxMonitor1s::toString(item)
     def self.toString(item)
         "(#{"monitor".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
@@ -13,22 +8,22 @@ class NxMonitor1s
 
     # NxMonitor1s::dataMaintenance()
     def self.dataMaintenance()
-        NxMonitor1s::items().each{|monitor|
+        Solingen::mikuTypeItems("NxMonitor1").each{|monitor|
             engine2 = TxEngines::engineMaintenance(monitor["description"], monitor["engine"])
             if engine2 then
-                Blades::setAttribute2(monitor["uuid"], "engine", engine2)
+                Solingen::setAttribute2(monitor["uuid"], "engine", engine2)
             end
         }
     end
 
     # NxMonitor1s::listingItems()
     def self.listingItems()
-        NxMonitor1s::items()
+        Solingen::mikuTypeItems("NxMonitor1")
     end
 
     # NxMonitor1s::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxMonitor1s::items()
+        items = Solingen::mikuTypeItems("NxMonitor1")
         LucilleCore::selectEntityFromListOfEntitiesOrNull("monitor", items, lambda{|item| NxMonitor1s::toString(item) })
     end
 
@@ -51,7 +46,7 @@ class NxMonitor1s
     # NxMonitor1s::program2(monitor)
     def self.program2(monitor)
         loop {
-            monitor = BladeAdaptation::getItemOrNull(monitor["uuid"])
+            monitor = Solingen::getItemOrNull(monitor["uuid"])
             return if monitor.nil?
             puts NxMonitor1s::toString(monitor)
             actions = ["program(monitor)", "start", "add time"]

@@ -1,50 +1,22 @@
-# encoding: UTF-8
+
 
 class Catalyst
 
     # Catalyst::catalystItems()
     def self.catalystItems()
-        Waves::items()
-    end
-end
-
-class CatalystSearch
-
-    # CatalystSearch::nx20s() # Array[Nx20]
-    def self.nx20s()
-        Catalyst::catalystItems()
-            .map{|item|
-                {
-                    "announce" => "(#{item["mikuType"]}) #{PolyFunctions::toString(item)}",
-                    "unixtime" => item["unixtime"],
-                    "item"     => item
-                }
-            }
+        Solingen::mikuTypeItems("Wave")
     end
 
-    # CatalystSearch::run()
-    def self.run()
-        loop {
-            system('clear')
-            fragment = LucilleCore::askQuestionAnswerAsString("search fragment (empty to abort) : ")
-            break if fragment == ""
-            selected = CatalystSearch::nx20s()
-                            .select{|nx20| nx20["announce"].downcase.include?(fragment.downcase) }
-            if selected.empty? then
-                puts "Could not find a matching element for '#{fragment}'"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-            loop {
-                system('clear')
-                selected = CatalystSearch::nx20s()
-                                .select{|nx20| nx20["announce"].downcase.include?(fragment.downcase) }
-                                .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] }
-                nx20 = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", selected, lambda{|i| i["announce"] })
-                break if nx20.nil?
-                puts PolyActions::program(nx20["item"])
-            }
+    # Catalyst::fsckItem(item)
+    def self.fsckItem(item)
+        CoreData::fsck(item["uuid"], item["field11"])
+    end
+
+    # Catalyst::fsck()
+    def self.fsck()
+        # We use a .to_a here because otherwise the error is not propagated up (Ruby weirdness)
+        BladeAdaptation::getAllCatalystItemsEnumerator().to_a.each{|item|
+            Catalyst::fsckItem(item)
         }
-        nil
     end
 end

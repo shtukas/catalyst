@@ -11,10 +11,10 @@ class TimeCommitments
     # TimeCommitments::activeItems()
     def self.activeItems()
         [
-            NxBoards::items()
+            Solingen::mikuTypeItems("NxBoard")
                 .map{|board| NxTasksBoarded::items(board).select{|item| NxBalls::itemIsActive(item)}}
                 .flatten,
-            NxLongs::items().select{|item| NxBalls::itemIsActive(item) },
+            Solingen::mikuTypeItems("NxLong").select{|item| NxBalls::itemIsActive(item) },
             NxTasksBoardless::items()
                 .sort_by{|item| item["position"] }
                 .first(100)
@@ -39,7 +39,7 @@ class TimeCommitments
             end
             if domain["mikuType"] == "NxMonitor1" then
                 if domain["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then # Long Running Projects
-                    NxLongs::items()
+                    Solingen::mikuTypeItems("NxLong")
                         .select{|item| item["active"] }
                         .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
                         .each{|item|

@@ -1,19 +1,6 @@
 
 class NxOndates
 
-    # ------------------
-    # IO
-
-    # NxOndates::items()
-    def self.items()
-        BladeAdaptation::mikuTypeItems("NxOndate")
-    end
-
-    # NxOndates::destroy(uuid)
-    def self.destroy(uuid)
-        Blades::destroy(uuid)
-    end
-
     # NxOndates::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         datetime = CommonUtils::interactivelySelectDateTimeIso8601UsingDateCode()
@@ -21,12 +8,12 @@ class NxOndates
         return nil if description == ""
         uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Blades::init("NxOndate", uuid)
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", datetime)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::init("NxOndate", uuid)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", datetime)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::getItemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueNewTodayOrNull()
@@ -35,12 +22,12 @@ class NxOndates
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Blades::init("NxOndate", uuid)
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::init("NxOndate", uuid)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::getItemOrNull(uuid)
     end
 
     # ------------------
@@ -53,7 +40,7 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        NxOndates::items()
+        Solingen::mikuTypeItems("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end
@@ -65,7 +52,7 @@ class NxOndates
     def self.report()
         system("clear")
         puts "ondates:"
-        NxOndates::items()
+        Solingen::mikuTypeItems("NxOndate")
             .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
             .each{|item|
                 puts NxOndates::toString(item)

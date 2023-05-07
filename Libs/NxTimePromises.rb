@@ -4,10 +4,10 @@ class NxTimePromises
     # NxTimePromises::operate()
     def self.operate()
         return if !Config::isPrimaryInstance()
-        BladeAdaptation::mikuTypeItems("NxTimePromise").each{|item|
+        Solingen::mikuTypeItems("NxTimePromise").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 Bank::put(item["account"], item["value"])
-                Blades::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
         }
     end
@@ -41,17 +41,17 @@ class NxTimePromises
         items.each{|promise|
             puts "NxTimePromise: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
             puts JSON.pretty_generate(promise)
-            Blades::init("NxTimePromise", promise["uuid"])
-            Blades::setAttribute2(uuid, "unixtime", promise["unixtime"])
-            Blades::setAttribute2(uuid, "datetime", promise["datetime"])
-            Blades::setAttribute2(uuid, "account", promise["account"])
-            Blades::setAttribute2(uuid, "value", promise["value"])
+            Solingen::init("NxTimePromise", promise["uuid"])
+            Solingen::setAttribute2(uuid, "unixtime", promise["unixtime"])
+            Solingen::setAttribute2(uuid, "datetime", promise["datetime"])
+            Solingen::setAttribute2(uuid, "account", promise["account"])
+            Solingen::setAttribute2(uuid, "value", promise["value"])
         }
     end
 
     # NxTimePromises::show()
     def self.show()
-        BladeAdaptation::mikuTypeItems("NxTimePromise")
+        Solingen::mikuTypeItems("NxTimePromise")
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|capsule|
                 board = NxBoards::getItemOfNull(capsule["account"])

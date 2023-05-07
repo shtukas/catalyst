@@ -32,7 +32,7 @@ class Listing
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | monitors",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n> | scan",
+            "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
     end
 
@@ -43,7 +43,7 @@ class Listing
             "durationInHours" => hours
         }
         puts JSON.pretty_generate(tmpskip1)
-        Blades::setAttribute2(item["uuid"], "tmpskip1", directive)
+        Solingen::setAttribute2(item["uuid"], "tmpskip1", directive)
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
         XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
@@ -90,7 +90,7 @@ class Listing
                 "durationInHours" => durationInHours.to_f
             }
             puts JSON.pretty_generate(directive)
-            Blades::setAttribute2(item["uuid"], "tmpskip1", directive)
+            Solingen::setAttribute2(item["uuid"], "tmpskip1", directive)
             return
         end
 
@@ -106,11 +106,6 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             PolyActions::access(item)
-            return
-        end
-
-        if Interpreting::match("scan", input) then
-            MikuTypes::scan()
             return
         end
 
@@ -167,7 +162,7 @@ class Listing
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Blades::setAttribute2(item["uuid"], "boarduuid", nil)
+            Solingen::setAttribute2(item["uuid"], "boarduuid", nil)
             return
         end
 
@@ -182,7 +177,7 @@ class Listing
             return if item.nil?
             reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Blades::setAttribute2(item["uuid"], "field11", reference)
+            Solingen::setAttribute2(item["uuid"], "field11", reference)
             return
         end
 
@@ -245,7 +240,7 @@ class Listing
                 return
             end
             position = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
-            Blades::setAttribute2(item["uuid"], "position", position)
+            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -261,7 +256,7 @@ class Listing
             board    = NxBoards::interactivelySelectOneOrNull()
             position = NxTasksPositions::decidePositionAtOptionalBoard(board)
             engine   = TxEngines::interactivelyMakeEngineOrDefault()
-            Blades::setAttribute2(item["uuid"], "position", position)
+            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -285,7 +280,7 @@ class Listing
             end
             engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
-            Blades::setAttribute2(item["uuid"], "engine", engine)
+            Solingen::setAttribute2(item["uuid"], "engine", engine)
             return
         end
 
@@ -300,7 +295,7 @@ class Listing
             end
             engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
-            Blades::setAttribute2(item["uuid"], "engine", engine)
+            Solingen::setAttribute2(item["uuid"], "engine", engine)
             return
         end
 
@@ -506,7 +501,7 @@ class Listing
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            Blades::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            Solingen::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 
@@ -554,12 +549,12 @@ class Listing
                 "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "NxFloats::items()",
-                "lambda" => lambda { NxFloats::items() }
+                "name" => "Solingen::mikuTypeItems(NxFloat)",
+                "lambda" => lambda { Solingen::mikuTypeItems("NxFloat") }
             },
             {
-                "name" => "NxFires::items()",
-                "lambda" => lambda { NxFires::items() }
+                "name" => "Solingen::mikuTypeItems(NxFire)",
+                "lambda" => lambda { Solingen::mikuTypeItems("NxFire") }
             },
             {
                 "name" => "TimeCommitments::firstItem()",
@@ -643,7 +638,7 @@ class Listing
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil::isVisible(item)
         if item["boarduuid"] then
-            board = BladeAdaptation::getItemOrNull(item["boarduuid"])
+            board = Solingen::getItemOrNull(item["boarduuid"])
             return false if !DoNotShowUntil::isVisible(board)
         end
         true
@@ -656,10 +651,10 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems(nil).select{|item| item["interruption"] },
-            NxFires::items(),
+            Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            NxLines::items(),
+            Solingen::mikuTypeItems("NxLine"),
             TimeCommitments::firstItem(),
             TimeCommitments::listingitems(),
             Waves::listingItems(nil).select{|item| !item["interruption"] },
@@ -785,7 +780,7 @@ class Listing
                 puts "item: #{JSON.pretty_generate(item)}"
                 puts "could not find the board ^".green
                 exit
-                Blades::setAttribute2(item["uuid"], "boarduuid", nil)
+                Solingen::setAttribute2(item["uuid"], "boarduuid", nil)
             }
         end
 
@@ -826,7 +821,7 @@ class Listing
         spacecontrol.putsline ""
         puts TheLine::line()
 
-        floats = NxFloats::items().select{|item| item["boarduuid"].nil? }
+        floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
         if !floats.empty? then
             spacecontrol.putsline ""
             floats
@@ -871,14 +866,6 @@ class Listing
                     system("#{File.dirname(__FILE__)}/../pull-from-origin")
                 end
                 sleep 300
-            }
-        }
-
-        Thread.new {
-            sleep 10
-            loop {
-                MikuTypes::scan()
-                sleep 3600
             }
         }
 

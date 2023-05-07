@@ -121,28 +121,7 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/Blades.rb"
-
-=begin
-Blades
-    Blades::init(mikuType, uuid)
-    Blades::tokenToFilepath(token)
-    Blades::setAttribute2(uuid, attribute_name, value)
-    Blades::getAttributeOrNull1(filepath, attribute_name)
-    Blades::getMandatoryAttribute1(filepath, attribute_name)
-    Blades::addToSet1(filepath, set_id, element_id, value)
-    Blades::removeFromSet1(filpath, set_id, element_id)
-    Blades::putDatablob1(filepath, key, datablob)
-    Blades::getDatablobOrNull1(filepath, key)
-=end
-
-require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/MikuTypes.rb"
-
-=begin
-MikuTypes
-    MikuTypes::mikuTypeUUIDsCached(mikuType) # Cached
-    MikuTypes::mikuTypeUUIDsEnumeratorFromDiskScan(mikuType)
-=end
+require "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries/Solingen.rb"
 
 # ------------------------------------------------------------
 
@@ -150,11 +129,11 @@ require_relative "Anniversaries.rb"
 
 require_relative "Bank.rb"
 require_relative "NxBackups.rb"
-require_relative "BladeAdaptation.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CoreData.rb"
 require_relative "CommonUtils.rb"
+require_relative "CatalystSearch.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::setUnixtime(item, unixtime)

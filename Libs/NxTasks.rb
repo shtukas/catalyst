@@ -2,19 +2,9 @@
 
 class NxTasks
 
-    # NxTasks::items()
-    def self.items()
-        BladeAdaptation::mikuTypeItems("NxTask")
-    end
-
     # NxTasks::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
-        BladeAdaptation::getItemOrNull(uuid)
-    end
-
-    # NxTasks::destroy(uuid)
-    def self.destroy(uuid)
-        Blades::destroy(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -27,7 +17,7 @@ class NxTasks
 
         uuid = SecureRandom.uuid
 
-        Blades::init("NxPure", uuid)
+        Solingen::init("NxPure", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board    = NxBoards::interactivelySelectOneOrNull()
@@ -36,17 +26,17 @@ class NxTasks
 
         boarduuid = board ? board["uuid"] : nil
 
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        Blades::setAttribute2(uuid, "boarduuid", boarduuid)
-        Blades::setAttribute2(uuid, "position", position)
-        Blades::setAttribute2(uuid, "engine", engine)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "boarduuid", boarduuid)
+        Solingen::setAttribute2(uuid, "position", position)
+        Solingen::setAttribute2(uuid, "engine", engine)
 
-        Blades::setAttribute2(uuid, "mikuType", "NxTask")
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # NxTasks::netflix(title)
@@ -54,23 +44,23 @@ class NxTasks
         description = "Watch '#{title}' on Netflix"
         uuid = SecureRandom.uuid
 
-        Blades::init("NxPure", uuid)
+        Solingen::init("NxPure", uuid)
 
-        nhash = Blades::putDatablob2(uuid, url)
+        nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
         position = NxTasksPositions::automaticPositioningAtNoBoard(50)
 
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        Blades::setAttribute2(uuid, "boarduuid", nil)
-        Blades::setAttribute2(uuid, "position", position)
-        Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "boarduuid", nil)
+        Solingen::setAttribute2(uuid, "position", position)
+        Solingen::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
 
-        Blades::setAttribute2(uuid, "mikuType", "NxTask")
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # NxTasks::viennaUrl(url)
@@ -78,23 +68,23 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Blades::init("NxPure", uuid)
+        Solingen::init("NxPure", uuid)
 
-        nhash = Blades::putDatablob2(uuid, url)
+        nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
         position = NxTasksPositions::automaticPositioningAtNoBoard(50)
 
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        Blades::setAttribute2(uuid, "boarduuid", nil)
-        Blades::setAttribute2(uuid, "position", position)
-        Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "boarduuid", nil)
+        Solingen::setAttribute2(uuid, "position", position)
+        Solingen::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
 
-        Blades::setAttribute2(uuid, "mikuType", "NxTask")
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # NxTasks::bufferInImport(location)
@@ -102,24 +92,24 @@ class NxTasks
         description = File.basename(location)
         uuid = SecureRandom.uuid
 
-        Blades::init("NxPure", uuid)
+        Solingen::init("NxPure", uuid)
 
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
         position = NxTasksPositions::automaticPositioningAtNoBoard(50)
 
-        Blades::init("NxTask", uuid)
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        Blades::setAttribute2(uuid, "boarduuid", nil)
-        Blades::setAttribute2(uuid, "position", position)
-        Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+        Solingen::init("NxTask", uuid)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "boarduuid", nil)
+        Solingen::setAttribute2(uuid, "position", position)
+        Solingen::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
 
-        Blades::setAttribute2(uuid, "mikuType", "NxTask")
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::getItemOrNull(uuid)
     end
 
     # --------------------------------------------------

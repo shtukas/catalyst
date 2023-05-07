@@ -20,14 +20,9 @@ class NxBackups
             }
     end
 
-    # NxBackups::items()
-    def self.items()
-        BladeAdaptation::mikuTypeItems("NxBackup")
-    end
-
     # NxBackups::getItemByOperationOrNull(operation)
     def self.getItemByOperationOrNull(operation)
-        NxBackups::items()
+        Solingen::mikuTypeItems("NxBackup")
             .select{|item|
                 item["description"] == operation
             }
@@ -39,11 +34,6 @@ class NxBackups
         NxBackups::instructions()
             .select{|instruction| instruction["operation"] == operation }
             .first
-    end
-
-    # NxBackups::destroy(uuid)
-    def self.destroy(uuid)
-        Blades::destroy(uuid)
     end
 
     # NxBackups::dataMaintenance()
@@ -58,24 +48,24 @@ class NxBackups
                 item = NxBackups::getItemByOperationOrNull(instruction["operation"])
                 if item then
                     if item["periodInDays"] != instruction["periodInDays"] then
-                        Blades::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
+                        Solingen::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
                     end
                 else
                     uuid  = SecureRandom.uuid
-                    Blades::init("NxBackup", uuid)
-                    Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-                    Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-                    Blades::setAttribute2(uuid, "description", instruction["operation"])
-                    Blades::setAttribute2(uuid, "periodInDays", periodInDays)
-                    Blades::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
-                    Blades::setAttribute2(uuid, "lastDoneUnixtime", 0)
+                    Solingen::init("NxBackup", uuid)
+                    Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+                    Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+                    Solingen::setAttribute2(uuid, "description", instruction["operation"])
+                    Solingen::setAttribute2(uuid, "periodInDays", periodInDays)
+                    Solingen::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
+                    Solingen::setAttribute2(uuid, "lastDoneUnixtime", 0)
                 end
             }
 
         # In the second stage we are checking that each item has a corresponsing instruction
-        NxBackups::items()
+        Solingen::mikuTypeItems("NxBackup")
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
-            .each{|item| Blades::destroy(item["uuid"]) }
+            .each{|item| Solingen::destroy(item["uuid"]) }
     end
 
     # NxBackups::toString(item)
@@ -85,12 +75,12 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        NxBackups::items()
+        Solingen::mikuTypeItems("NxBackup")
             .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
     end
 
     # NxBackups::performDone(item)
     def self.performDone(item)
-        Blades::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
     end
 end

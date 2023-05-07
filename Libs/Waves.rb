@@ -1,19 +1,6 @@
 
 class Waves
 
-    # ------------------------------------------------------------------
-    # IO
-
-    # Waves::items()
-    def self.items()
-        BladeAdaptation::mikuTypeItems("Wave")
-    end
-
-    # Waves::destroy(itemuuid)
-    def self.destroy(itemuuid)
-        Blades::destroy(itemuuid)
-    end
-
     # --------------------------------------------------
     # Making
 
@@ -129,15 +116,15 @@ class Waves
         uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Blades::init("Wave", uuid)
-        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Blades::setAttribute2(uuid, "description", description)
-        Blades::setAttribute2(uuid, "nx46", nx46)
-        Blades::setAttribute2(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        Blades::setAttribute2(uuid, "field11", coredataref)
-        Blades::setAttribute2(uuid, "interruption", interruption)
-        BladeAdaptation::getItemOrNull(uuid)
+        Solingen::init("Wave", uuid)
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "nx46", nx46)
+        Solingen::setAttribute2(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "interruption", interruption)
+        Solingen::getItemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -157,7 +144,7 @@ class Waves
         # Indicator is either nil or a board
         # if nil them we return boardless items or and all interruptions ones
         # if board we return all the board items
-        waves = Waves::items()
+        waves = Solingen::mikuTypeItems("Wave")
                     .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
                     .select{|item|
                         item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
@@ -178,9 +165,9 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
-        Blades::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Blades::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-        Blades::setAttribute2(item["uuid"], "parking", nil)
+        Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Solingen::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        Solingen::setAttribute2(item["uuid"], "parking", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -191,7 +178,7 @@ class Waves
     # Waves::program()
     def self.program()
         loop {
-            items = Waves::items().sort{|w1, w2| w1["description"] <=> w2["description"] }
+            items = Solingen::mikuTypeItems("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
             return if wave.nil?
             Waves::program(wave)
@@ -214,12 +201,12 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                Blades::setAttribute2(item["uuid"], "description", description)
+                Solingen::setAttribute2(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                Blades::setAttribute2(item["uuid"], "nx46", nx46)
+                Solingen::setAttribute2(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveNx46WaveDone(item)
@@ -227,11 +214,11 @@ class Waves
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                Blades::setAttribute2(item["uuid"], "onlyOnDays", days)
+                Solingen::setAttribute2(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then
-                    Waves::destroy(item["uuid"])
+                    Solingen::destroy(item["uuid"])
                     return
                 end
             end

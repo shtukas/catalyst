@@ -4,7 +4,7 @@ class NxTasksBoardless
 
     # NxTasksBoardless::items()
     def self.items()
-        NxTasks::items()
+        Solingen::mikuTypeItems("NxTask")
             .select{|item| item["boarduuid"].nil? }
     end
 

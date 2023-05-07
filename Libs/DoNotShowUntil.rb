@@ -3,14 +3,14 @@ class DoNotShowUntil
 
     # DoNotShowUntil::setUnixtime(item, unixtime)
     def self.setUnixtime(item, unixtime)
-        Blades::setAttribute2(item["uuid"], "doNotShowUntil", unixtime)
+        Solingen::setAttribute2(item["uuid"], "doNotShowUntil", unixtime)
         # We use XCache for the special purpose of backup items on alexandra
         XCache::set("DoNotShowUntil:#{item["uuid"]}", unixtime)
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
     def self.getUnixtimeOrNull(item)
-        unixtime = Blades::getAttribute2(item["uuid"], "doNotShowUntil")
+        unixtime = Solingen::getAttributeOrNull2(item["uuid"], "doNotShowUntil")
         return unixtime if unixtime
         unixtime = XCache::getOrNull("DoNotShowUntil:#{item["uuid"]}")
         return unixtime.to_f if unixtime

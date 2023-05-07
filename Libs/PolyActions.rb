@@ -119,14 +119,14 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
@@ -145,28 +145,28 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOndates::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxFire" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOndates::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxTasks::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
@@ -194,7 +194,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::destroy(item["uuid"])
+                Solingen::destroy(item["uuid"])
             end
             return
         end
@@ -256,7 +256,7 @@ class PolyActions
             if first_time then
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green} ? '", true) then
                     NxBalls::stop(item)
-                    NxTasks::destroy(item["uuid"])
+                    Solingen::destroy(item["uuid"])
                 end
             end
             return
@@ -338,6 +338,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Blades::setAttribute2(item["uuid"], "description", description)
+        Solingen::setAttribute2(item["uuid"], "description", description)
     end
 end
