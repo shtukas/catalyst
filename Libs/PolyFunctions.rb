@@ -1,6 +1,6 @@
 class PolyFunctions
 
-    # PolyFunctions::itemsToBankingAccounts(item)
+    # PolyFunctions::itemsToBankingAccounts(item) # Array[{description, number}]
     def self.itemsToBankingAccounts(item)
 
         accounts = []

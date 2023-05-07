@@ -9,7 +9,7 @@ class NxMonitor1s
     # NxMonitor1s::dataMaintenance()
     def self.dataMaintenance()
         Solingen::mikuTypeItems("NxMonitor1").each{|monitor|
-            engine2 = TxEngines::engineMaintenance(monitor["description"], monitor["engine"])
+            engine2 = TxEngines::engineCarrierMaintenance(monitor)
             if engine2 then
                 Solingen::setAttribute2(monitor["uuid"], "engine", engine2)
             end

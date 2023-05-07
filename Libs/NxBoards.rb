@@ -102,7 +102,7 @@ class NxBoards
     # NxBoards::dataMaintenance()
     def self.dataMaintenance()
         Solingen::mikuTypeItems("NxBoard").each{|board|
-            engine2 = TxEngines::engineMaintenance(board["description"], board["engine"])
+            engine2 = TxEngines::engineCarrierMaintenance(board)
             if engine2 then
                 Solingen::setAttribute2(board["uuid"], "engine", engine2)
             end

@@ -12,8 +12,8 @@ class NxTimeCapsules
         }
     end
 
-    # NxTimeCapsules::makePromise(unixtime, account, value)
-    def self.makePromise(unixtime, account, value)
+    # NxTimeCapsules::capsule(unixtime, account, value)
+    def self.capsule(unixtime, account, value)
         {
             "uuid"     => SecureRandom.uuid,
             "mikuType" => "NxTimeCapsule",
@@ -24,29 +24,40 @@ class NxTimeCapsules
         }
     end
 
-    # NxTimeCapsules::smooth_compute(account, value, periodInDays)
-    def self.smooth_compute(account, value, periodInDays)
-        items = []
-        items << NxTimeCapsules::makePromise(Time.new.to_i, account, value)
-        unitpayment = -value.to_f/periodInDays
+    # NxTimeCapsules::smooth_compute2(item, value, periodInDays)
+    def self.smooth_compute2(item, value, periodInDays)
+        # This function takes an item that is engine carrier and performs the following operations
+        # 1. Issue a capsule that is going to substract that value from the item's engine capsule.
+        #    The value is meant to represent some partial overflow.
+        # 2. For each (1..periodInDays)
+        #    For each bank account derived from that object
+        #    issue a time capsule.
+
+        # Note that the value given is positive, so we substract and then add
+
+        capsules = []
+        capsules << NxTimeCapsules::capsule(Time.new.to_i, item["engine"]["capsule"], -value)
         (1..periodInDays).each{|i|
-            items << NxTimeCapsules::makePromise(Time.new.to_i + 86400*i, account, unitpayment)
+            # Array[{description, number}]
+            PolyFunctions::itemsToBankingAccounts(item).each{|ba|
+                capsules << NxTimeCapsules::capsule(Time.new.to_i + 86400*i, ba["number"], value.to_f/periodInDays)
+            }
         }
-        items
+        capsules
     end
 
-    # NxTimeCapsules::smooth_effect(account, value, periodInDays)
-    def self.smooth_effect(account, value, periodInDays)
-        items = NxTimeCapsules::smooth_compute(account, value, periodInDays)
-        items.each{|promise|
-            puts "NxTimeCapsule: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
-            puts JSON.pretty_generate(promise)
-            Solingen::init("NxTimeCapsule", promise["uuid"])
-            Solingen::setAttribute2(uuid, "unixtime", promise["unixtime"])
-            Solingen::setAttribute2(uuid, "datetime", promise["datetime"])
-            Solingen::setAttribute2(uuid, "account", promise["account"])
-            Solingen::setAttribute2(uuid, "value", promise["value"])
-        }
+    # NxTimeCapsules::smooth_effect2(item, value, periodInDays)
+    def self.smooth_effect2(item, value, periodInDays)
+        NxTimeCapsules::smooth_compute2(item, value, periodInDays)
+            .each{|capsule|
+                puts JSON.pretty_generate(capsule)
+                puts "NxTimeCapsule: account: #{capsule["account"]}; date: #{capsule["datetime"]}; #{capsule["value"]}".green
+                Solingen::init("NxTimeCapsule", capsule["uuid"])
+                Solingen::setAttribute2(uuid, "unixtime", capsule["unixtime"])
+                Solingen::setAttribute2(uuid, "datetime", capsule["datetime"])
+                Solingen::setAttribute2(uuid, "account", capsule["account"])
+                Solingen::setAttribute2(uuid, "value", capsule["value"])
+            }
     end
 
     # NxTimeCapsules::show()

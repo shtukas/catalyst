@@ -70,8 +70,10 @@ class TxEngines
         raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
     end
 
-    # TxEngines::engineMaintenance(description, engine)
-    def self.engineMaintenance(description, engine)
+    # TxEngines::engineCarrierMaintenance(item)
+    def self.engineCarrierMaintenance(item)
+        engine = item["engine"]
+        raise "(error: 9c622d97-ec96-4236-81d8-4c563684219f)" if engine.nil?
         if engine["type"] == "one sitting" then
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
@@ -83,18 +85,18 @@ class TxEngines
             return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
             if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
                 overflow = 0.5*engine["hours"]*3600
-                puts "I am about to smooth engine: #{engine}, overflow: #{(overflow.to_f/3600).round(2)} hours (for description: #{description})"
+                puts "I am about to smooth engine: #{engine}, overflow: #{(overflow.to_f/3600).round(2)} hours (for item: #{item})"
                 LucilleCore::pressEnterToContinue()
-                NxTimeCapsules::smooth_effect(engine["capsule"], -overflow, 20)
+                NxTimeCapsules::smooth_effect2(item, overflow, 20)
                 return nil
             end
-            puts "I am about to reset engine: #{engine} (for description: #{description})"
+            puts "I am about to reset engine: #{engine} (for item: #{item})"
             LucilleCore::pressEnterToContinue()
             Bank::put(engine["capsule"], -engine["hours"]*3600)
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
-        raise "could not TxEngines::engineMaintenance(description, engine) for engine: #{engine}"
+        raise "could not TxEngines::engineCarrierMaintenance(item) for engine: #{engine}, item: #{item}"
     end
 
     # TxEngines::toString(engine)
