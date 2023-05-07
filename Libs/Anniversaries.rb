@@ -115,19 +115,13 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        item = {
-            "uuid"                => uuid,
-            "mikuType"            => "NxAnniversary",
-            "unixtime"            => Time.new.to_i,
-            "datetime"            => Time.new.utc.iso8601,
-            "description"         => description,
-            "startdate"           => startdate,
-            "repeatType"          => repeatType,
-            "lastCelebrationDate" => lastCelebrationDate,
-        }
-
         Blades::init("NxAnniversary", uuid)
-        BladeAdaptation::commitItem(item)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "startdate", startdate)
+        Blades::setAttribute2(uuid, "repeatType", repeatType)
+        Blades::setAttribute2(uuid, "lastCelebrationDate", lastCelebrationDate)
 
         BladeAdaptation::getItemOrNull(uuid)
     end

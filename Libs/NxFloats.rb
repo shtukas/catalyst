@@ -10,11 +10,6 @@ class NxFloats
         BladeAdaptation::mikuTypeItems("NxFloat")
     end
 
-    # NxFloats::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxFloats::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)

@@ -147,15 +147,4 @@ class NxTasks
     def self.access(item)
         CoreData::access(item["uuid"], item["field11"])
     end
-
-    # NxTasks::recoordinates(item)
-    def self.recoordinates(item)
-        board    = NxBoards::interactivelySelectOneOrNull()
-        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
-        engine   = TxEngines::interactivelyMakeEngineOrDefault()
-        item["boarduuid"] = board ? board["uuid"] : nil
-        item["position"]  = position
-        item["engine"]    = engine
-        item
-    end
 end

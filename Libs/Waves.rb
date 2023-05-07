@@ -9,11 +9,6 @@ class Waves
         BladeAdaptation::mikuTypeItems("Wave")
     end
 
-    # Waves::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # Waves::destroy(itemuuid)
     def self.destroy(itemuuid)
         Blades::destroy(itemuuid)
@@ -183,10 +178,9 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
-        item["lastDoneDateTime"] = Time.now.utc.iso8601
-        item["lastDoneUnixtime"] = Time.new.to_i
-        item["parking"] = nil
-        BladeAdaptation::commitItem(item)
+        Blades::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Blades::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        Blades::setAttribute2(item["uuid"], "parking", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -218,12 +212,14 @@ class Waves
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
-                item["description"] = CommonUtils::editTextSynchronously(item["description"])
-                BladeAdaptation::commitItem(item)
+                description = CommonUtils::editTextSynchronously(item["description"])
+                next if description == ""
+                Blades::setAttribute2(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
-                item["nx46"] = Waves::makeNx46InteractivelyOrNull()
-                BladeAdaptation::commitItem(item)
+                nx46 = Waves::makeNx46InteractivelyOrNull()
+                next if nx46.nil?
+                Blades::setAttribute2(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveNx46WaveDone(item)
@@ -231,8 +227,7 @@ class Waves
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                item["onlyOnDays"] = days
-                BladeAdaptation::commitItem(item)
+                Blades::setAttribute2(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then

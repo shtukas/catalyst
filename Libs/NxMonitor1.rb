@@ -16,8 +16,7 @@ class NxMonitor1s
         NxMonitor1s::items().each{|monitor|
             engine2 = TxEngines::engineMaintenance(monitor["description"], monitor["engine"])
             if engine2 then
-                monitor["engine"] = engine2
-                BladeAdaptation::commitItem(monitor)
+                Blades::setAttribute2(monitor["uuid"], "engine", engine2)
             end
         }
     end

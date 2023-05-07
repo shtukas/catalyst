@@ -9,11 +9,6 @@ class NxOndates
         BladeAdaptation::mikuTypeItems("NxOndate")
     end
 
-    # NxOndates::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxOndates::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
@@ -40,16 +35,12 @@ class NxOndates
         return nil if description == ""
         uuid  = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxOndate",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-            "field11"     => coredataref
-        }
-        NxOndates::commit(item)
-        item
+        Blades::init("NxOndate", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # ------------------

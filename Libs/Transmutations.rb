@@ -11,44 +11,39 @@ class Transmutations
         LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", Transmutations::targetMikuTypes())
     end
 
-    # Transmutations::transmute(item)
-    def self.transmute(item)
+    # Transmutations::transmute(uuid)
+    def self.transmute(uuid)
+        sourceType = Blades::getMandatoryAttribute2(uuid, "mikuType")
+
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            puts JSON.pretty_generate(item)
-            item["mikuType"] = "NxTask"
-            board = NxBoards::interactivelySelectOneBoard()
-            engine = TxEngines::interactivelyMakeEngineOrDefault()
-            item["bloarduuid"] = bloarduuid
-            item["engine"]     = engine
-            puts JSON.pretty_generate(item)
-            BladeAdaptation::commitItem(item)
+            Blades::setAttribute2(uuid, "engine", TxEngines::interactivelyMakeEngineOrDefault())
+            Blades::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
+            Blades::setAttribute2(uuid, "mikuType", "NxFire")
+
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
-            puts JSON.pretty_generate(item)
-            item["mikuType"] = "NxFire"
-            if item["boarduuid"].nil? then
-                item = BoardsAndItems::maybeAskAndMaybeAttach(item)
-            end
-            puts JSON.pretty_generate(item)
-            BladeAdaptation::commitItem(item)
+            Blades::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
+            Blades::setAttribute2(uuid, "mikuType", "NxFire")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            puts JSON.pretty_generate(item)
-            item["mikuType"] = "NxTask"
-            item = NxTasks::recoordinates(item)
-            puts JSON.pretty_generate(item)
-            BladeAdaptation::commitItem(item)
+            board    = NxBoards::interactivelySelectOneOrNull()
+            position = NxTasksPositions::decidePositionAtOptionalBoard(board)
+            engine   = TxEngines::interactivelyMakeEngineOrDefault()
+            Blades::setAttribute2(uuid, "boarduuid", board ? board["uuid"] : nil)
+            Blades::setAttribute2(uuid, "position", position)
+            Blades::setAttribute2(uuid, "engine", engine)
+            Blades::setAttribute2(uuid, "mikuType", "NxTask")
             return
         end
 
-        puts "I do not know how to transmute #{item["mikuType"]} to #{targetMikuType}"
+        puts "I do not know how to transmute uuid: #{uuid}, sourceType: #{sourceType} to #{targetMikuType}"
         LucilleCore::pressEnterToContinue()
     end
 end

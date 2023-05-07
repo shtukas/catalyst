@@ -42,7 +42,10 @@ class NxTimePromises
             puts "NxTimePromise: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
             puts JSON.pretty_generate(promise)
             Blades::init("NxTimePromise", promise["uuid"])
-            BladeAdaptation::commitItem(promise)
+            Blades::setAttribute2(uuid, "unixtime", promise["unixtime"])
+            Blades::setAttribute2(uuid, "datetime", promise["datetime"])
+            Blades::setAttribute2(uuid, "account", promise["account"])
+            Blades::setAttribute2(uuid, "value", promise["value"])
         }
     end
 

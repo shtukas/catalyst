@@ -42,9 +42,8 @@ class Listing
             "unixtime"        => Time.new.to_f,
             "durationInHours" => hours
         }
-        item["tmpskip1"] = directive
-        puts JSON.pretty_generate(item)
-        BladeAdaptation::commitItem(item)
+        puts JSON.pretty_generate(tmpskip1)
+        Blades::setAttribute2(item["uuid"], "tmpskip1", directive)
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
         XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
@@ -86,12 +85,12 @@ class Listing
             _, durationInHours = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            item["tmpskip1"] = {
+            directive = {
                 "unixtime"        => Time.new.to_f,
                 "durationInHours" => durationInHours.to_f
             }
-            puts JSON.pretty_generate(item)
-            BladeAdaptation::commitItem(item)
+            puts JSON.pretty_generate(directive)
+            Blades::setAttribute2(item["uuid"], "tmpskip1", directive)
             return
         end
 
@@ -168,8 +167,7 @@ class Listing
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            item["boarduuid"] = nil
-            BladeAdaptation::commitItem(item)
+            Blades::setAttribute2(item["uuid"], "boarduuid", nil)
             return
         end
 
@@ -184,8 +182,7 @@ class Listing
             return if item.nil?
             reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            item["field11"] = reference
-            BladeAdaptation::commitItem(item)
+            Blades::setAttribute2(item["uuid"], "field11", reference)
             return
         end
 
@@ -247,9 +244,8 @@ class Listing
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            item["position"] = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
-            puts JSON.pretty_generate(item)
-            BladeAdaptation::commitItem(item)
+            position = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
+            Blades::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -262,9 +258,10 @@ class Listing
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            item = NxTasks::recoordinates(item)
-            puts JSON.pretty_generate(item)
-            BladeAdaptation::commitItem(item)
+            board    = NxBoards::interactivelySelectOneOrNull()
+            position = NxTasksPositions::decidePositionAtOptionalBoard(board)
+            engine   = TxEngines::interactivelyMakeEngineOrDefault()
+            Blades::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -288,8 +285,7 @@ class Listing
             end
             engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
-            item["engine"] = engine
-            BladeAdaptation::commitItem(item)
+            Blades::setAttribute2(item["uuid"], "engine", engine)
             return
         end
 
@@ -304,8 +300,7 @@ class Listing
             end
             engine = TxEngines::interactivelyMakeEngineOrDefault()
             return if engine.nil?
-            item["engine"] = engine
-            BladeAdaptation::commitItem(item)
+            Blades::setAttribute2(item["uuid"], "engine", engine)
             return
         end
 
@@ -323,15 +318,6 @@ class Listing
             return if item.nil?
             puts JSON.pretty_generate(item)
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("edit *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
-            BladeAdaptation::commitItem(item)
             return
         end
 
@@ -520,10 +506,7 @@ class Listing
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            item["datetime"] = "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00"
-            BladeAdaptation::commitItem(item)
-            puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
+            Blades::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

@@ -3,7 +3,7 @@ class NxNotes
 
     # NxNotes::getTextOrNull(item)
     def self.getTextOrNull(item)
-        item["note"]
+        Blades::getAttribute2(item["uuid"], "note")
     end
 
     # NxNotes::getText(item)
@@ -13,8 +13,7 @@ class NxNotes
 
     # NxNotes::commit(item, text)
     def self.commit(item, text)
-        item["note"] = text
-        BladeAdaptation::commitItem(item)
+        Blades::setAttribute2(item["uuid"], "note", text)
     end
 
     # NxNotes::toStringSuffix(item)

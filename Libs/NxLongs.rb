@@ -6,11 +6,6 @@ class NxLongs
         BladeAdaptation::mikuTypeItems("NxLong")
     end
 
-    # NxLongs::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxLongs::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
@@ -93,9 +88,8 @@ class NxLongs
                 next if Bank::getValue(item["uuid"]) < 3600*2
                 puts "transmuting task: #{item["description"]} into a long running project"
                 active = LucilleCore::askQuestionAnswerAsBoolean("active ? : ")
-                item["mikuType"] = "NxLong"
-                item["active"] = active
-                BladeAdaptation::commitItem(item)
+                Blades::setAttribute2(item["uuid"], "mikuType", "NxLong")
+                Blades::setAttribute2(item["uuid"], "active", active)
             }
 
         if NxLongs::items().size > 0 and NxLongs::items().none?{|item| item["active"] } then
@@ -104,8 +98,7 @@ class NxLongs
             loop {
                 item = NxLongs::interactivelySelectOneOrNull()
                 break if item.nil?
-                item["active"] = true
-                BladeAdaptation::commitItem(item)
+                Blades::setAttribute2(item["uuid"], "active", true)
                 break if !LucilleCore::askQuestionAnswerAsBoolean("more ? ")
             }
         end

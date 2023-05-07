@@ -15,22 +15,14 @@ class PhysicalTargets
         dailyTarget = LucilleCore::askQuestionAnswerAsString("daily target (empty to abort): ")
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
-        item = {
-            "uuid"        => SecureRandom.uuid,
-            "mikuType"    => "PhysicalTarget",
-            "description" => description,
-            "dailyTarget" => dailyTarget,
-            "date"        => CommonUtils::today(),
-            "counter"     => dailyTarget,
-            "lastUpdatedUnixtime" => nil
-        }
-        BladeAdaptation::commitItem(item)
-        item
-    end
-
-    # PhysicalTargets::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
+        uuid = SecureRandom.uuid
+        Blades::init("PhysicalTarget", uuid)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "dailyTarget", dailyTarget)
+        Blades::setAttribute2(uuid, "date", CommonUtils::today())
+        Blades::setAttribute2(uuid, "counter", 0)
+        Blades::setAttribute2(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # --------------------------------------------------------
@@ -45,9 +37,8 @@ class PhysicalTargets
     def self.listingItems()
         PhysicalTargets::items().each{|item|
             if item["date"] != CommonUtils::today() then
-                item["date"] = CommonUtils::today()
-                item["counter"] = 0
-                BladeAdaptation::commitItem(item)
+                Blades::setAttribute2(item["uuid"], "date", CommonUtils::today())
+                Blades::setAttribute2(item["uuid"], "counter", 0)
             end
         }
         PhysicalTargets::items()
@@ -62,10 +53,8 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        item["counter"] = item["counter"] + count
-        item["lastUpdatedUnixtime"] = Time.new.to_i
-        puts JSON.pretty_generate(item)
-        PhysicalTargets::commit(item)
+        Blades::setAttribute2(item["uuid"], "counter", counter)
+        Blades::setAttribute2(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
     # PhysicalTargets::access(item)

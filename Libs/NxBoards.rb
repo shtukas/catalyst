@@ -21,11 +21,6 @@ class NxBoards
         raise "looking for a board that should exists. item: #{JSON.pretty_generate(item)}"
     end
 
-    # NxBoards::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # ---------------------------------------------------------
     # Makers
     # ---------------------------------------------------------
@@ -36,16 +31,13 @@ class NxBoards
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        item = {
-            "uuid"          => uuid,
-            "mikuType"      => "NxBoard",
-            "unixtime"      => Time.new.to_i,
-            "datetime"      => Time.new.utc.iso8601,
-            "description"   => description,
-            "engine"        => TxEngines::interactivelyMakeEngineOrDefault()
-        }
-        NxBoards::commit(item)
-        item
+        engine = TxEngines::interactivelyMakeEngineOrDefault()
+        Blades::init("NxBoard", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "engine", engine)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # ---------------------------------------------------------
@@ -92,6 +84,14 @@ class NxBoards
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
     end
 
+    # NxBoards::interactivelySelectBoarduuidOrNull()
+    def self.interactivelySelectBoarduuidOrNull()
+        items = NxBoards::boardsOrdered()
+        board = LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
+        return nil if board.nil?
+        board["uuid"]
+    end
+
     # NxBoards::interactivelySelectOneBoard()
     def self.interactivelySelectOneBoard()
         loop {
@@ -109,8 +109,7 @@ class NxBoards
         NxBoards::items().each{|board|
             engine2 = TxEngines::engineMaintenance(board["description"], board["engine"])
             if engine2 then
-                board["engine"] = engine2
-                NxBoards::commit(board)
+                Blades::setAttribute2(board["uuid"], "engine", engine2)
             end
         }
     end
@@ -219,29 +218,24 @@ class BoardsAndItems
     # BoardsAndItems::attachToItem(item, board or nil)
     def self.attachToItem(item, board)
         return if board.nil?
-        item["boarduuid"] = board["uuid"]
-        BladeAdaptation::commitItem(item)
+        Blades::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
     end
 
     # BoardsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
-        return item if item["mikuType"] == "NxBoard"
-        return item if item["boarduuid"]
+        return if item["mikuType"] == "NxBoard"
+        return if item["boarduuid"]
         board = NxBoards::interactivelySelectOneOrNull()
-        return item if board.nil?
-        item["boarduuid"] = board["uuid"]
-        BladeAdaptation::commitItem(item)
-        item
+        return if board.nil?
+        Blades::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
     end
 
     # BoardsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
-        return item if item["mikuType"] == "NxBoard"
+        return if item["mikuType"] == "NxBoard"
         board = NxBoards::interactivelySelectOneOrNull()
-        return item if board.nil?
-        item["boarduuid"] = board["uuid"]
-        BladeAdaptation::commitItem(item)
-        item
+        return if board.nil?
+        Blades::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
     end
 
     # BoardsAndItems::toStringSuffix(item)

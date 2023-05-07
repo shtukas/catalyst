@@ -41,11 +41,6 @@ class NxBackups
             .first
     end
 
-    # NxBackups::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxBackups::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
@@ -63,20 +58,17 @@ class NxBackups
                 item = NxBackups::getItemByOperationOrNull(instruction["operation"])
                 if item then
                     if item["periodInDays"] != instruction["periodInDays"] then
-                        item["periodInDays"] = instruction["periodInDays"]
-                        BladeAdaptation::commitItem(item)
+                        Blades::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
                     end
                 else
-                    item = {
-                        "uuid"        => SecureRandom.uuid,
-                        "mikuType"    => "NxBackup",
-                        "unixtime"    => Time.new.to_i,
-                        "datetime"    => Time.new.utc.iso8601,
-                        "description" => instruction["operation"],
-                        "periodInDays"     => instruction["periodInDays"],
-                        "lastDoneUnixtime" => 0
-                    }
-                    BladeAdaptation::commitItem(item)
+                    uuid  = SecureRandom.uuid
+                    Blades::init("NxBackup", uuid)
+                    Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+                    Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+                    Blades::setAttribute2(uuid, "description", instruction["operation"])
+                    Blades::setAttribute2(uuid, "periodInDays", periodInDays)
+                    Blades::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
+                    Blades::setAttribute2(uuid, "lastDoneUnixtime", 0)
                 end
             }
 
@@ -84,23 +76,6 @@ class NxBackups
         NxBackups::items()
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
             .each{|item| Blades::destroy(item["uuid"]) }
-    end
-
-    # NxBackups::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
-        uuid  = SecureRandom.uuid
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxBackup",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-        }
-        puts JSON.pretty_generate(item)
-        NxBackups::commit(item)
-        item
     end
 
     # NxBackups::toString(item)
@@ -116,7 +91,6 @@ class NxBackups
 
     # NxBackups::performDone(item)
     def self.performDone(item)
-        item["lastDoneUnixtime"] = Time.new.to_i
-        BladeAdaptation::commitItem(item)
+        Blades::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
     end
 end

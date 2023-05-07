@@ -6,11 +6,6 @@ class NxLines
         BladeAdaptation::mikuTypeItems("NxLine")
     end
 
-    # NxLines::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxLines::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)

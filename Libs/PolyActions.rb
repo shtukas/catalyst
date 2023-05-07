@@ -330,15 +330,14 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-
         if item["mikuType"] == "DeviceBackup" then
             puts "There is no description edit for DeviceBackups"
             LucilleCore::pressEnterToContinue()
             return
         end
-
         puts "edit description:"
-        item["description"] = CommonUtils::editTextSynchronously(item["description"]).strip
-        BladeAdaptation::commitItem(item)
+        description = CommonUtils::editTextSynchronously(item["description"]).strip
+        return if description == ""
+        Blades::setAttribute2(item["uuid"], "description", description)
     end
 end

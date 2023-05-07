@@ -6,11 +6,6 @@ class NxFires
         BladeAdaptation::mikuTypeItems("NxFire")
     end
 
-    # NxFires::commit(item)
-    def self.commit(item)
-        BladeAdaptation::commitItem(item)
-    end
-
     # NxFires::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
