@@ -796,35 +796,25 @@ class Listing
         end
 
         if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
-            generalpermission = false
-            count = 0
             BladeAdaptation::getAllCatalystItemsEnumerator().each{|item|
                 next if item["boarduuid"].nil?
                 next if NxBoards::getItemOfNull(item["boarduuid"])
-                break if count > 100
                 puts "item: #{JSON.pretty_generate(item)}"
-                puts "could not find the board".green
-                if !generalpermission then
-                    puts "repairing ? ".green
-                    LucilleCore::pressEnterToContinue()
-                    generalpermission = true
-                end
-                item["boarduuid"] = nil
-                BladeAdaptation::commitItem(item)
-                count = count + 1
+                puts "could not find the board ^".green
+                exit
+                Blades::setAttribute2(item["uuid"], "boarduuid", nil)
             }
-
         end
 
         if Config::isPrimaryInstance() then
-            NxTimePromises::operate()
-            Bank::fileManagement()
-            NxBackups::dataMaintenance()
-            NxBoards::dataMaintenance()
-            NxMonitor1s::dataMaintenance()
-            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
-                NxLongs::dataMaintenance()
-            end
+             NxTimePromises::operate()
+             Bank::fileManagement()
+             NxBackups::dataMaintenance()
+             NxBoards::dataMaintenance()
+             NxMonitor1s::dataMaintenance()
+             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
+                 NxLongs::dataMaintenance()
+             end
         end
     end
 

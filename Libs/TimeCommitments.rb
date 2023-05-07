@@ -11,12 +11,11 @@ class TimeCommitments
     # TimeCommitments::activeItems()
     def self.activeItems()
         [
-            NxTasks::items()
-                .select{|item| item["boarduuid"] }
-                .select{|item| NxBalls::itemIsActive(item) },
-            NxLongs::items()
-                .select{|item| NxBalls::itemIsActive(item) },
-            NxTasksBoardless::items()
+            NxBoards::items()
+                .map{|board| NxTasksBoarded::itemsForListing(board).select{|item| NxBalls::itemIsActive(item)}}
+                .flatten,
+            NxLongs::items().select{|item| NxBalls::itemIsActive(item) },
+            NxTasksBoardless::itemsForListing()
                 .sort_by{|item| item["position"] }
                 .first(100)
                 .select{|item| NxBalls::itemIsActive(item) }
@@ -49,7 +48,7 @@ class TimeCommitments
                         }
                 end
                 if domain["uuid"] == "bea0e9c7-f609-47e7-beea-70e433e0c82e" then # NxTasks (boardless)
-                    NxTasksBoardless::items()
+                    NxTasksBoardless::itemsForListing()
                         .sort_by{|item| item["position"] }
                         .each{|item|
                             next if !DoNotShowUntil::isVisible(item)

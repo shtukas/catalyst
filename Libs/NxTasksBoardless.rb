@@ -8,6 +8,27 @@ class NxTasksBoardless
             .select{|item| item["boarduuid"].nil? }
     end
 
+    # NxTasksBoardless::itemsForListing()
+    def self.itemsForListing()
+        # {"items", "unixtime"}
+        packet = XCache::getOrNull("52b546df-a860-4042-9f92-882ce577b55c")
+        if packet then
+            packet = JSON.parse(packet)
+            if (Time.new.to_i - packet["unixtime"]) < 86400 then
+                return packet["items"]
+            else
+                # will make a new one
+            end
+        else
+            # will make a new one
+        end
+        puts "> computing new set of boardless items"
+        items = NxTasksBoardless::items().first(100)
+        packet = { "items" => items, "unixtime" => Time.new.to_i }
+        XCache::set("52b546df-a860-4042-9f92-882ce577b55c", JSON.generate(packet))
+        items
+    end
+
     # NxTasksBoardless::itemIsBoardlessTask(item)
     def self.itemIsBoardlessTask(item)
         return false if item["mikuType"] != "NxTask"
