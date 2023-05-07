@@ -26,6 +26,9 @@ class NxTasks
         return nil if description == ""
 
         uuid = SecureRandom.uuid
+
+        Blades::init("NxPure", uuid)
+
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board    = NxBoards::interactivelySelectOneOrNull()
         position = NxTasksPositions::decidePositionAtOptionalBoard(board)
@@ -33,7 +36,6 @@ class NxTasks
 
         boarduuid = board ? board["uuid"] : nil
 
-        Blades::init("NxTask", uuid)
         Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute2(uuid, "description", description)
@@ -42,6 +44,8 @@ class NxTasks
         Blades::setAttribute2(uuid, "position", position)
         Blades::setAttribute2(uuid, "engine", engine)
 
+        Blades::setAttribute2(uuid, "mikuType", "NxTask")
+
         BladeAdaptation::getItemOrNull(uuid)
     end
 
@@ -49,11 +53,13 @@ class NxTasks
     def self.netflix(title)
         description = "Watch '#{title}' on Netflix"
         uuid = SecureRandom.uuid
+
+        Blades::init("NxPure", uuid)
+
         nhash = Blades::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
         position = NxTasksPositions::automaticPositioningAtNoBoard(50)
 
-        Blades::init("NxTask", uuid)
         Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute2(uuid, "description", description)
@@ -61,6 +67,8 @@ class NxTasks
         Blades::setAttribute2(uuid, "boarduuid", nil)
         Blades::setAttribute2(uuid, "position", position)
         Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+
+        Blades::setAttribute2(uuid, "mikuType", "NxTask")
 
         BladeAdaptation::getItemOrNull(uuid)
     end
@@ -69,11 +77,13 @@ class NxTasks
     def self.viennaUrl(url)
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
+
+        Blades::init("NxPure", uuid)
+
         nhash = Blades::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
         position = NxTasksPositions::automaticPositioningAtNoBoard(50)
 
-        Blades::init("NxTask", uuid)
         Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Blades::setAttribute2(uuid, "description", description)
@@ -82,6 +92,8 @@ class NxTasks
         Blades::setAttribute2(uuid, "position", position)
         Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
 
+        Blades::setAttribute2(uuid, "mikuType", "NxTask")
+
         BladeAdaptation::getItemOrNull(uuid)
     end
 
@@ -89,6 +101,9 @@ class NxTasks
     def self.bufferInImport(location)
         description = File.basename(location)
         uuid = SecureRandom.uuid
+
+        Blades::init("NxPure", uuid)
+
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
         position = NxTasksPositions::automaticPositioningAtNoBoard(50)
@@ -101,6 +116,8 @@ class NxTasks
         Blades::setAttribute2(uuid, "boarduuid", nil)
         Blades::setAttribute2(uuid, "position", position)
         Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+
+        Blades::setAttribute2(uuid, "mikuType", "NxTask")
 
         BladeAdaptation::getItemOrNull(uuid)
     end

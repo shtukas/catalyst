@@ -20,19 +20,14 @@ class NxFires
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        uuid  = SecureRandom.uuid
+        uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxFire",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-            "field11"     => coredataref
-        }
-        puts JSON.pretty_generate(item)
-        NxFires::commit(item)
-        item
+        Blades::init("NxFire", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxFires::toString(item)

@@ -24,19 +24,14 @@ class NxOndates
         datetime = CommonUtils::interactivelySelectDateTimeIso8601UsingDateCode()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        uuid  = SecureRandom.uuid
+        uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxOndate",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => datetime,
-            "description" => description,
-            "field11"     => coredataref
-        }
-        puts JSON.pretty_generate(item)
-        NxOndates::commit(item)
-        item
+        Blades::init("NxOndate", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", datetime)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueNewTodayOrNull()

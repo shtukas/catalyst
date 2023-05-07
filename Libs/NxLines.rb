@@ -18,17 +18,14 @@ class NxLines
 
     # NxLines::issue(line)
     def self.issue(line)
-        uuid  = SecureRandom.uuid
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxLine",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => line,
-        }
-        puts JSON.pretty_generate(item)
-        NxLines::commit(item)
-        item
+        description = line
+        uuid = SecureRandom.uuid
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        Blades::init("NxFloat", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxLines::toString(item)
