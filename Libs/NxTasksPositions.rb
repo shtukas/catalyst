@@ -92,7 +92,10 @@ class NxTasksPositions
 
     # NxTasksPositions::decideNewPositionAtNoBoard()
     def self.decideNewPositionAtNoBoard()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["manual positioning", "automatic positioning (depth 10)", "automatic positioning (depth 100)", "next"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["stack top", "manual positioning", "automatic positioning (depth 10)", "automatic positioning (depth 100)", "next"])
+        if option == "stack top" then
+            return NxTasksPositions::firstPosition() - 1
+        end
         if option == "manual positioning" then
             return NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
         end
