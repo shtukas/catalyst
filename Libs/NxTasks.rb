@@ -38,7 +38,7 @@ class NxTasks
         item["field11"] = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
         board    = NxBoards::interactivelySelectOneOrNull()
-        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
+        position = NxTasks::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
 
         item["boarduuid"] = board ? board["uuid"] : nil
@@ -61,7 +61,7 @@ class NxTasks
             "description" => "Watch '#{title}' on Netflix",
             "field11"     => nil,
             "boarduuid"   => nil,
-            "position"    => NxTasksPositions::automaticPositioningAtNoBoard(50),
+            "position"    => NxTasksBoardless::automaticPositioningAtNoBoard(50),
             "engine"      => TxEngines::defaultEngine(nil),
         }
         BladeAdaptation::commitItem(item)
@@ -83,7 +83,7 @@ class NxTasks
             "description" => description,
             "field11"     => coredataref,
             "boarduuid"   => nil,
-            "position"    => NxTasksPositions::automaticPositioningAtNoBoard(50),
+            "position"    => NxTasksBoardless::automaticPositioningAtNoBoard(50),
             "engine"      => TxEngines::defaultEngine(nil),
         }
         BladeAdaptation::commitItem(item)
@@ -105,7 +105,7 @@ class NxTasks
             "description" => description,
             "field11"     => coredataref,
             "boarduuid"   => nil,
-            "position"    => NxTasksPositions::automaticPositioningAtNoBoard(50),
+            "position"    => NxTasksBoardless::automaticPositioningAtNoBoard(50),
             "engine"      => TxEngines::defaultEngine(nil),
         }
         BladeAdaptation::commitItem(item)
@@ -130,6 +130,64 @@ class NxTasks
         TxEngines::completionRatio(item["engine"])
     end
 
+    # -------------------------------------------
+    # Data: Positions
+
+    # NxTasks::firstPosition()
+    def self.firstPosition()
+        items = NxTasks::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"]}.min
+    end
+
+    # NxTasks::lastPosition()
+    def self.lastPosition()
+        items = NxTasks::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"]}.max
+    end
+
+    # NxTasks::thatPosition(positions)
+    def self.thatPosition(positions)
+        return rand if positions.empty?
+        if positions.size < 4 then
+            return positions.max + 0.5 + rand
+        end
+        positions # a = [1, 2, 8, 9]
+        x = positions.zip(positions.drop(1)) # [[1, 2], [2, 8], [8, nil]]
+        x = x.select{|pair| pair[1] } # [[1, 2], [2, 8]
+        differences = x.map{|pair| pair[1] - pair[0] } # [1, 7]
+        difference_average = differences.inject(0, :+).to_f/differences.size
+        x.each{|pair|
+            next if (pair[1] - pair[0]) < difference_average
+            return pair[0] + rand*(pair[1] - pair[0])
+        }
+        raise "NxTasks::thatPosition failed: positions: #{positions.join(", ")}"
+    end
+
+    # -------------------------------------------
+    # Data: Positions
+
+    # NxTasks::decidePositionAtOptionalBoard(mboard)
+    def self.decidePositionAtOptionalBoard(mboard)
+        if mboard then
+            NxTasksBoarded::decideNewPositionAtBoard(mboard)
+        else
+            NxTasksPositions::decideNewPositionAtNoBoard()
+        end
+    end
+
+    # NxTasks::decidePositionAtOptionalBoarduuid(boarduuid)
+    def self.decidePositionAtOptionalBoarduuid(boarduuid)
+        mboard =
+            if boarduuid then
+                BladeAdaptation::getItemOrNull(boarduuid)
+            else
+                nil
+            end
+        NxTasks::decidePositionAtOptionalBoard(mboard)
+    end
+
     # --------------------------------------------------
     # Operations
 
@@ -141,7 +199,7 @@ class NxTasks
     # NxTasks::recoordinates(item)
     def self.recoordinates(item)
         board    = NxBoards::interactivelySelectOneOrNull()
-        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
+        position = NxTasks::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
         item["boarduuid"] = board ? board["uuid"] : nil
         item["position"]  = position

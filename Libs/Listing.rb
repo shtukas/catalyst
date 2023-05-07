@@ -247,7 +247,7 @@ class Listing
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            item["position"] = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
+            item["position"] = NxTasks::decidePositionAtOptionalBoarduuid(item["boarduuid"])
             puts JSON.pretty_generate(item)
             BladeAdaptation::commitItem(item)
             return
@@ -578,14 +578,14 @@ class Listing
                 "name" => "NxFires::items()",
                 "lambda" => lambda { NxFires::items() }
             },
-            #{
-            #    "name" => "TimeCommitments::firstItem()",
-            #    "lambda" => lambda { TimeCommitments::firstItem() }
-            #},
-            #{
-            #    "name" => "TimeCommitments::listingitems()",
-            #    "lambda" => lambda { TimeCommitments::listingitems() }
-            #},
+            {
+                "name" => "TimeCommitments::firstItem()",
+                "lambda" => lambda { TimeCommitments::firstItem() }
+            },
+            {
+                "name" => "TimeCommitments::listingitems()",
+                "lambda" => lambda { TimeCommitments::listingitems() }
+            },
         ]
 
         runTest = lambda {|test|
