@@ -247,7 +247,7 @@ class Listing
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            item["position"] = NxTasks::decidePositionAtOptionalBoarduuid(item["boarduuid"])
+            item["position"] = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
             puts JSON.pretty_generate(item)
             BladeAdaptation::commitItem(item)
             return

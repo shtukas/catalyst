@@ -26,90 +26,83 @@ class NxTasks
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-
-        Blades::init("NxTask", uuid)
-
-        item = {}
-        item["uuid"] = uuid
-        item["mikuType"] = "NxTask"
-        item["unixtime"] = Time.new.to_i
-        item["datetime"] = Time.new.utc.iso8601
-        item["description"] = description
-        item["field11"] = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board    = NxBoards::interactivelySelectOneOrNull()
-        position = NxTasks::decidePositionAtOptionalBoard(board)
+        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
 
-        item["boarduuid"] = board ? board["uuid"] : nil
-        item["position"]  = position
-        item["engine"]    = engine
+        boarduuid = board ? board["uuid"] : nil
 
-        BladeAdaptation::commitItem(item)
-        item
+        Blades::init("NxTask", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        Blades::setAttribute2(uuid, "boarduuid", boarduuid)
+        Blades::setAttribute2(uuid, "position", position)
+        Blades::setAttribute2(uuid, "engine", engine)
+
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxTasks::netflix(title)
     def self.netflix(title)
-        uuid  = SecureRandom.uuid
+        description = "Watch '#{title}' on Netflix"
+        uuid = SecureRandom.uuid
+        nhash = Blades::putDatablob2(uuid, url)
+        coredataref = "url:#{nhash}"
+        position = NxTasksPositions::automaticPositioningAtNoBoard(50)
+
         Blades::init("NxTask", uuid)
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxTask",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => "Watch '#{title}' on Netflix",
-            "field11"     => nil,
-            "boarduuid"   => nil,
-            "position"    => NxTasksBoardless::automaticPositioningAtNoBoard(50),
-            "engine"      => TxEngines::defaultEngine(nil),
-        }
-        BladeAdaptation::commitItem(item)
-        item
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        Blades::setAttribute2(uuid, "boarduuid", nil)
+        Blades::setAttribute2(uuid, "position", position)
+        Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxTasks::viennaUrl(url)
     def self.viennaUrl(url)
         description = "(vienna) #{url}"
-        uuid  = SecureRandom.uuid
-        Blades::init("NxTask", uuid)
+        uuid = SecureRandom.uuid
         nhash = Blades::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxTask",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-            "field11"     => coredataref,
-            "boarduuid"   => nil,
-            "position"    => NxTasksBoardless::automaticPositioningAtNoBoard(50),
-            "engine"      => TxEngines::defaultEngine(nil),
-        }
-        BladeAdaptation::commitItem(item)
-        item
+        position = NxTasksPositions::automaticPositioningAtNoBoard(50)
+
+        Blades::init("NxTask", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        Blades::setAttribute2(uuid, "boarduuid", nil)
+        Blades::setAttribute2(uuid, "position", position)
+        Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # NxTasks::bufferInImport(location)
     def self.bufferInImport(location)
         description = File.basename(location)
         uuid = SecureRandom.uuid
-        Blades::init("NxTask", uuid)
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
-        item = {
-            "uuid"        => uuid,
-            "mikuType"    => "NxTask",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-            "field11"     => coredataref,
-            "boarduuid"   => nil,
-            "position"    => NxTasksBoardless::automaticPositioningAtNoBoard(50),
-            "engine"      => TxEngines::defaultEngine(nil),
-        }
-        BladeAdaptation::commitItem(item)
-        item
+        position = NxTasksPositions::automaticPositioningAtNoBoard(50)
+
+        Blades::init("NxTask", uuid)
+        Blades::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Blades::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Blades::setAttribute2(uuid, "description", description)
+        Blades::setAttribute2(uuid, "field11", coredataref)
+        Blades::setAttribute2(uuid, "boarduuid", nil)
+        Blades::setAttribute2(uuid, "position", position)
+        Blades::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
+
+        BladeAdaptation::getItemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -130,64 +123,6 @@ class NxTasks
         TxEngines::completionRatio(item["engine"])
     end
 
-    # -------------------------------------------
-    # Data: Positions
-
-    # NxTasks::firstPosition()
-    def self.firstPosition()
-        items = NxTasks::items()
-        return 1 if items.empty?
-        items.map{|item| item["position"]}.min
-    end
-
-    # NxTasks::lastPosition()
-    def self.lastPosition()
-        items = NxTasks::items()
-        return 1 if items.empty?
-        items.map{|item| item["position"]}.max
-    end
-
-    # NxTasks::thatPosition(positions)
-    def self.thatPosition(positions)
-        return rand if positions.empty?
-        if positions.size < 4 then
-            return positions.max + 0.5 + rand
-        end
-        positions # a = [1, 2, 8, 9]
-        x = positions.zip(positions.drop(1)) # [[1, 2], [2, 8], [8, nil]]
-        x = x.select{|pair| pair[1] } # [[1, 2], [2, 8]
-        differences = x.map{|pair| pair[1] - pair[0] } # [1, 7]
-        difference_average = differences.inject(0, :+).to_f/differences.size
-        x.each{|pair|
-            next if (pair[1] - pair[0]) < difference_average
-            return pair[0] + rand*(pair[1] - pair[0])
-        }
-        raise "NxTasks::thatPosition failed: positions: #{positions.join(", ")}"
-    end
-
-    # -------------------------------------------
-    # Data: Positions
-
-    # NxTasks::decidePositionAtOptionalBoard(mboard)
-    def self.decidePositionAtOptionalBoard(mboard)
-        if mboard then
-            NxTasksBoarded::decideNewPositionAtBoard(mboard)
-        else
-            NxTasksPositions::decideNewPositionAtNoBoard()
-        end
-    end
-
-    # NxTasks::decidePositionAtOptionalBoarduuid(boarduuid)
-    def self.decidePositionAtOptionalBoarduuid(boarduuid)
-        mboard =
-            if boarduuid then
-                BladeAdaptation::getItemOrNull(boarduuid)
-            else
-                nil
-            end
-        NxTasks::decidePositionAtOptionalBoard(mboard)
-    end
-
     # --------------------------------------------------
     # Operations
 
@@ -199,7 +134,7 @@ class NxTasks
     # NxTasks::recoordinates(item)
     def self.recoordinates(item)
         board    = NxBoards::interactivelySelectOneOrNull()
-        position = NxTasks::decidePositionAtOptionalBoard(board)
+        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
         engine   = TxEngines::interactivelyMakeEngineOrDefault()
         item["boarduuid"] = board ? board["uuid"] : nil
         item["position"]  = position
