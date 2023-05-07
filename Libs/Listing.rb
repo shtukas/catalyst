@@ -30,7 +30,7 @@ class Listing
             "    - ondate   : redate",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | monitors",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | monitors | projects",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -106,6 +106,16 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             PolyActions::access(item)
+            return
+        end
+
+        if Interpreting::match("project", input) then
+            NxLongs::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("projects", input) then
+            NxLongs::program1()
             return
         end
 
