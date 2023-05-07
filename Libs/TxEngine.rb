@@ -85,7 +85,7 @@ class TxEngines
                 overflow = 0.5*engine["hours"]*3600
                 puts "I am about to smooth engine: #{engine}, overflow: #{(overflow.to_f/3600).round(2)} hours (for description: #{description})"
                 LucilleCore::pressEnterToContinue()
-                NxTimePromises::smooth_effect(engine["capsule"], -overflow, 20)
+                NxTimeCapsules::smooth_effect(engine["capsule"], -overflow, 20)
                 return nil
             end
             puts "I am about to reset engine: #{engine} (for description: #{description})"

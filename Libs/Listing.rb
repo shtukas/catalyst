@@ -167,7 +167,7 @@ class Listing
         end
 
         if Interpreting::match("time promises", input) then
-            NxTimePromises::show()
+            NxTimeCapsules::show()
             return
         end
 
@@ -785,7 +785,7 @@ class Listing
         end
 
         if Config::isPrimaryInstance() then
-             NxTimePromises::operate()
+             NxTimeCapsules::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
              NxBoards::dataMaintenance()

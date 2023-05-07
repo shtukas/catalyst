@@ -1,10 +1,10 @@
 
-class NxTimePromises
+class NxTimeCapsules
 
-    # NxTimePromises::operate()
+    # NxTimeCapsules::operate()
     def self.operate()
         return if !Config::isPrimaryInstance()
-        Solingen::mikuTypeItems("NxTimePromise").each{|item|
+        Solingen::mikuTypeItems("NxTimeCapsule").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 Bank::put(item["account"], item["value"])
                 Solingen::destroy(item["uuid"])
@@ -12,11 +12,11 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::makePromise(unixtime, account, value)
+    # NxTimeCapsules::makePromise(unixtime, account, value)
     def self.makePromise(unixtime, account, value)
         {
             "uuid"     => SecureRandom.uuid,
-            "mikuType" => "NxTimePromise",
+            "mikuType" => "NxTimeCapsule",
             "unixtime" => unixtime,
             "datetime" => Time.at(unixtime).utc.iso8601,
             "account"  => account,
@@ -24,24 +24,24 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::smooth_compute(account, value, periodInDays)
+    # NxTimeCapsules::smooth_compute(account, value, periodInDays)
     def self.smooth_compute(account, value, periodInDays)
         items = []
-        items << NxTimePromises::makePromise(Time.new.to_i, account, value)
+        items << NxTimeCapsules::makePromise(Time.new.to_i, account, value)
         unitpayment = -value.to_f/periodInDays
         (1..periodInDays).each{|i|
-            items << NxTimePromises::makePromise(Time.new.to_i + 86400*i, account, unitpayment)
+            items << NxTimeCapsules::makePromise(Time.new.to_i + 86400*i, account, unitpayment)
         }
         items
     end
 
-    # NxTimePromises::smooth_effect(account, value, periodInDays)
+    # NxTimeCapsules::smooth_effect(account, value, periodInDays)
     def self.smooth_effect(account, value, periodInDays)
-        items = NxTimePromises::smooth_compute(account, value, periodInDays)
+        items = NxTimeCapsules::smooth_compute(account, value, periodInDays)
         items.each{|promise|
-            puts "NxTimePromise: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
+            puts "NxTimeCapsule: account: #{promise["account"]}; date: #{promise["datetime"]}; #{promise["value"]}".green
             puts JSON.pretty_generate(promise)
-            Solingen::init("NxTimePromise", promise["uuid"])
+            Solingen::init("NxTimeCapsule", promise["uuid"])
             Solingen::setAttribute2(uuid, "unixtime", promise["unixtime"])
             Solingen::setAttribute2(uuid, "datetime", promise["datetime"])
             Solingen::setAttribute2(uuid, "account", promise["account"])
@@ -49,9 +49,9 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::show()
+    # NxTimeCapsules::show()
     def self.show()
-        Solingen::mikuTypeItems("NxTimePromise")
+        Solingen::mikuTypeItems("NxTimeCapsule")
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|capsule|
                 board = NxBoards::getItemOfNull(capsule["account"])
