@@ -30,7 +30,7 @@ class Listing
             "    - ondate   : redate",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | monitors | projects",
+            "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitors | projects",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -176,7 +176,7 @@ class Listing
             return
         end
 
-        if Interpreting::match("time promises", input) then
+        if Interpreting::match("capsules", input) then
             NxTimeCapsules::show()
             return
         end
