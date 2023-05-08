@@ -4,7 +4,22 @@ class Catalyst
 
     # Catalyst::catalystItems()
     def self.catalystItems()
-        Solingen::mikuTypeItems("Wave")
+        [
+            "NxAnniversary",
+            "NxBackup",
+            "NxBoard",
+            "NxFire",
+            "NxFloat",
+            "NxLine",
+            "NxLong",
+            "NxOndate",
+            "NxTask",
+            "Wave"
+        ]
+            .map{|mikuType|
+                Solingen::mikuTypeItems(mikuType)
+            }
+            .flatten
     end
 
     # Catalyst::fsckItem(item)
@@ -15,7 +30,7 @@ class Catalyst
     # Catalyst::fsck()
     def self.fsck()
         # We use a .to_a here because otherwise the error is not propagated up (Ruby weirdness)
-        BladeAdaptation::getAllCatalystItemsEnumerator().to_a.each{|item|
+        Catalyst::catalystItems().each{|item|
             Catalyst::fsckItem(item)
         }
     end

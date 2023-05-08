@@ -784,13 +784,11 @@ class Listing
         end
 
         if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
-            BladeAdaptation::getAllCatalystItemsEnumerator().each{|item|
+            Catalyst::catalystItems().each{|item|
                 next if item["boarduuid"].nil?
                 next if NxBoards::getItemOfNull(item["boarduuid"])
-                puts "item: #{JSON.pretty_generate(item)}"
-                puts "could not find the board ^".green
+                puts "Could not find a board for this item: #{JSON.pretty_generate(item)}".green
                 exit
-                Solingen::setAttribute2(item["uuid"], "boarduuid", nil)
             }
         end
 
