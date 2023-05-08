@@ -58,7 +58,6 @@ class TheLine
         TheLine::referenceMonitor()
         reference = TheLine::getReference()
         current = TheLine::getCurrentCount()
-        version = CommonUtils::localLastCommitId()
-        "(inventory: #{current}, #{(current.to_f/reference["count"]).round(5)}, reference: #{reference["count"]} @ #{reference["datetime"]}) (version: #{version})"
+        "(inventory: #{current}, #{(current.to_f/reference["count"]).round(5)}, reference: #{reference["count"]} @ #{reference["datetime"]})"
     end
 end
