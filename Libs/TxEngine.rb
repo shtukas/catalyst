@@ -115,8 +115,8 @@ class TxEngines
             todayIdealInHours = engine["hours"].to_f/5
             percentage = 100*todayDoneInHours.to_f/todayIdealInHours
 
-            strings << "(engine: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green }) of today #{todayIdealInHours} hours"
-            strings << ", #{(Bank::getValue(engine["capsule"]).to_f/3600).round(2)} (#{"#{(100*TxEngines::completionRatio(engine)).round(2)}%".green}) of weekly #{engine["hours"]} hours"
+            strings << "(engine: today: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green }) of #{todayIdealInHours} hours"
+            strings << ", period: #{(Bank::getValue(engine["capsule"]).to_f/3600).round(2)} (#{"#{(100*TxEngines::completionRatio(engine)).round(2)}%".green}) of #{engine["hours"]} hours"
 
             hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
             timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
