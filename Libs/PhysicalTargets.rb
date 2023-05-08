@@ -48,7 +48,7 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        Solingen::setAttribute2(item["uuid"], "counter", counter)
+        Solingen::setAttribute2(item["uuid"], "counter", count + Solingen::getAttributeOrNull2(item["uuid"], "counter"))
         Solingen::setAttribute2(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
