@@ -35,8 +35,9 @@ class NxLongs
             store = ItemStore.new()
 
             puts "active projects:"
-            Solingen::mikuTypeItems("NxLong").select{|item| item["active"] }
-                .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
+            Solingen::mikuTypeItems("NxLong")
+                .select{|item| item["active"] }
+                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
@@ -46,7 +47,8 @@ class NxLongs
             puts ""
 
             puts "sleeping projects:"
-            Solingen::mikuTypeItems("NxLong").select{|item| !item["active"] }
+            Solingen::mikuTypeItems("NxLong")
+                .select{|item| !item["active"] }
                 .sort_by{|item| item["unixtime"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
