@@ -48,7 +48,7 @@ class NxTasks
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
-        position = NxTasksPositions::automaticPositioningAtNoBoard(50)
+        position = NxTasksPositions::slice_positioning2_boardless(50, 100)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -72,7 +72,7 @@ class NxTasks
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
-        position = NxTasksPositions::automaticPositioningAtNoBoard(50)
+        position = NxTasksPositions::slice_positioning2_boardless(50, 100)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -96,7 +96,7 @@ class NxTasks
 
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
-        position = NxTasksPositions::automaticPositioningAtNoBoard(50)
+        position = NxTasksPositions::slice_positioning2_boardless(50, 100)
 
         Solingen::init("NxTask", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)

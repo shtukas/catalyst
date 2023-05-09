@@ -19,8 +19,8 @@ class NxTasksPositions
         items.map{|item| item["position"]}.max
     end
 
-    # NxTasksPositions::thatPosition(positions)
-    def self.thatPosition(positions)
+    # NxTasksPositions::computeThatPosition(positions)
+    def self.computeThatPosition(positions)
         return rand if positions.empty?
         if positions.size < 4 then
             return positions.max + 0.5 + rand
@@ -34,7 +34,13 @@ class NxTasksPositions
             next if (pair[1] - pair[0]) < difference_average
             return pair[0] + rand*(pair[1] - pair[0])
         }
-        raise "NxTasksPositions::thatPosition failed: positions: #{positions.join(", ")}"
+        raise "NxTasksPositions::computeThatPosition failed: positions: #{positions.join(", ")}"
+    end
+
+    # NxTasksPositions::slice_positioning1(items, index1, index2)
+    def self.slice_positioning1(items, index1, index2)
+        positions = items.drop(index1).take(index2-index1).map{|item| item["position"] }
+        NxTasksPositions::computeThatPosition(positions)
     end
 
     # -------------------------------------------
@@ -81,13 +87,12 @@ class NxTasksPositions
         position.to_f
     end
 
-    # NxTasksPositions::automaticPositioningAtNoBoard(depth)
-    def self.automaticPositioningAtNoBoard(depth)
+    # NxTasksPositions::slice_positioning2_boardless(index1, index2)
+    def self.slice_positioning2_boardless(index1, index2)
         items = NxTasksBoardless::items()
                     .sort_by{|item| item["position"] }
-                    .take(depth)
-        positions = items.map{|item| item["position"]}
-        NxTasksPositions::thatPosition(positions)
+                    .take(index1, index2)
+        NxTasksPositions::slice_positioning1(items, index1, index2)
     end
 
     # NxTasksPositions::decideNewPositionAtNoBoard()
@@ -99,11 +104,11 @@ class NxTasksPositions
         if option == "manual positioning" then
             return NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
         end
-        if option == "automatic positioning (depth 10)" then
-            return NxTasksPositions::automaticPositioningAtNoBoard(10)
+        if option == "automatic positioning (10, 20)" then
+            return NxTasksPositions::slice_positioning2_boardless(10, 20)
         end
-        if option == "automatic positioning (depth 100)" then
-            return NxTasksPositions::automaticPositioningAtNoBoard(100)
+        if option == "automatic positioning (50, 100)" then
+            return NxTasksPositions::slice_positioning2_boardless(50, 100)
         end
         if option == "next" then
             return NxTasksPositions::lastPosition() + 0.5 + rand
