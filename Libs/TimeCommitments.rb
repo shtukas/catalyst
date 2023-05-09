@@ -41,7 +41,7 @@ class TimeCommitments
                 if domain["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then # Long Running Projects
                     Solingen::mikuTypeItems("NxLong")
                         .select{|item| item["active"] }
-                        .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
+                        .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
                         .each{|item|
                             next if !DoNotShowUntil::isVisible(item)
                             return [item]
