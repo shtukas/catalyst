@@ -91,7 +91,7 @@ class NxTasksPositions
     def self.slice_positioning2_boardless(index1, index2)
         items = NxTasksBoardless::items()
                     .sort_by{|item| item["position"] }
-                    .take(index1, index2)
+                    .take(index2)
         NxTasksPositions::slice_positioning1(items, index1, index2)
     end
 
