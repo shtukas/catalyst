@@ -11,9 +11,9 @@ class Transmutations
         LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", Transmutations::targetMikuTypes())
     end
 
-    # Transmutations::transmute(uuid)
-    def self.transmute(uuid)
-        sourceType = Solingen::getMandatoryAttribute2(uuid, "mikuType")
+    # Transmutations::transmute(item)
+    def self.transmute(item)
+        sourceType = Solingen::getMandatoryAttribute2(item["uuid"], "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
