@@ -13,7 +13,8 @@ class Transmutations
 
     # Transmutations::transmute(item)
     def self.transmute(item)
-        sourceType = Solingen::getMandatoryAttribute2(item["uuid"], "mikuType")
+        uuid = item["uuid"]
+        sourceType = Solingen::getMandatoryAttribute2(uuid, "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
