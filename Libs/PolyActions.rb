@@ -16,13 +16,20 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLambda" then
-            item["lambda"].call()
+        if item["mikuType"] == "NxAnniversary" then
+            Anniversaries::accessAndDone(item)
             return
         end
 
-        if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::accessAndDone(item)
+        if item["mikuType"] == "NxBackup" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxBackups::performDone(item)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxLambda" then
+            item["lambda"].call()
             return
         end
 
