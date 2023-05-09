@@ -42,7 +42,7 @@ class Listing
             "unixtime"        => Time.new.to_f,
             "durationInHours" => hours
         }
-        puts JSON.pretty_generate(tmpskip1)
+        puts JSON.pretty_generate(directive)
         Solingen::setAttribute2(item["uuid"], "tmpskip1", directive)
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
