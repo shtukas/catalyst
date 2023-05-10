@@ -21,7 +21,7 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | Dx02",
             "",
             "specific types commands:",
             "    - boards   : engine (<n>)",
@@ -116,6 +116,26 @@ class Listing
 
         if Interpreting::match("projects", input) then
             NxLongs::program1()
+            return
+        end
+
+        if Interpreting::match("Dx02", input) then
+            loop {
+                input = LucilleCore::askQuestionAnswerAsString("position or description (empty to exit): ")
+                return if input == ""
+                if (position = CommonUtils::parseAsInteger(input)) then
+                    item = store.get(position)
+                    next if item.nil?
+                else
+                    line = input
+                    item = NxLines::issue(line)
+                end
+                directive = LucilleCore::askQuestionAnswerAsString("HH:MM HH:MM (appointment); <ordinal:float> for fluid: ")
+                directive = Dx02s::stringToDx03(directive)
+                item = Dx02s::issueDx02(item, directive)
+                puts JSON.pretty_generate(item)
+                puts ""
+            }
             return
         end
 
@@ -661,13 +681,14 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems(nil).select{|item| item["interruption"] },
+            Dx02s::listingItems(),
             Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             Solingen::mikuTypeItems("NxLine"),
+            Waves::listingItems(nil).select{|item| !item["interruption"] },
             TimeCommitments::firstItem(),
             TimeCommitments::listingitems(),
-            Waves::listingItems(nil).select{|item| !item["interruption"] },
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -768,7 +789,7 @@ class Listing
 
     # Listing::isInterruption(item)
     def self.isInterruption(item)
-        item["interruption"] # this is only carried by some waves at the moment
+        item["interruption"]
     end
 
     # Listing::dataMaintenance()

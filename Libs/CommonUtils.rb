@@ -457,6 +457,14 @@ class CommonUtils
         str == str.to_i.to_s
     end
 
+    # CommonUtils::parseAsInteger(str) # integer or null
+    def self.parseAsInteger(str)
+        if str == str.to_i.to_s then
+            return str.to_i
+        end
+        nil
+    end
+
     # CommonUtils::getNewValueEveryNSeconds(uuid, n)
     def self.getNewValueEveryNSeconds(uuid, n)
       Digest::SHA1.hexdigest("6bb2e4cf-f627-43b3-812d-57ff93012588:#{uuid}:#{(Time.new.to_f/n).to_i.to_s}")

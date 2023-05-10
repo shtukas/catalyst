@@ -1,0 +1,18 @@
+Dx02 = {
+   uuid      : String
+   mikuType  : "Dx02"
+   itemuuid  :
+   directive : Dx03
+}
+
+Dx03 are positioning directives of Dx02 items
+Dx03 =
+       {
+           type     : "appointment"
+           startTime: "HH:MM"
+           endTime  : "HH:MM"
+       }
+       {
+           type    : "fluid"
+           ordinal : Float
+       }

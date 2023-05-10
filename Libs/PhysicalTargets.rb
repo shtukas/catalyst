@@ -39,6 +39,10 @@ class PhysicalTargets
         Solingen::mikuTypeItems("PhysicalTarget")
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
+            .map{|item|
+                item["interruption"] = true
+                item
+            }
     end
 
     # --------------------------------------------------------

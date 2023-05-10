@@ -138,6 +138,10 @@ class Anniversaries
     def self.listingItems()
         Solingen::mikuTypeItems("NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
+            .map{|item|
+                item["interruption"] = true
+                item
+            }
     end
 
     # ----------------------------------------------------------------------------------
