@@ -131,9 +131,7 @@ class Listing
                     item = NxLines::issue(line)
                 end
                 input = LucilleCore::askQuestionAnswerAsString("HH:MM HH:MM (appointment); <ordinal:float> for fluid: ")
-                dx03 = Dx02s::userInputToDx03(input)
-                dx04 = Dx02s::itemToDx04(item)
-                item = Dx02s::issueDx02(item, dx03, dx04)
+                item = Dx02s::issueDx02(Dx02s::itemToDx04(item), Dx02s::userInputToDx03(input))
                 puts JSON.pretty_generate(item)
                 puts ""
             }
@@ -587,14 +585,6 @@ class Listing
                 "name" => "Solingen::mikuTypeItems(NxFire)",
                 "lambda" => lambda { Solingen::mikuTypeItems("NxFire") }
             },
-            {
-                "name" => "TimeCommitments::firstItem()",
-                "lambda" => lambda { TimeCommitments::firstItem() }
-            },
-            {
-                "name" => "TimeCommitments::listingitems()",
-                "lambda" => lambda { TimeCommitments::listingitems() }
-            },
         ]
 
         runTest = lambda {|test|
@@ -636,8 +626,8 @@ class Listing
                 "lambda" => lambda { Listing::items() }
             },
             {
-                "name" => "Listing::printItems()",
-                "lambda" => lambda { Listing::printItems(ItemStore.new(), Listing::items()) }
+                "name" => "Listing::printEvalItems()",
+                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), Listing::items()) }
             },
         ]
                     .map{|test|
@@ -688,8 +678,6 @@ class Listing
             NxBackups::listingItems(),
             Solingen::mikuTypeItems("NxLine"),
             Waves::listingItems(nil).select{|item| !item["interruption"] },
-            TimeCommitments::firstItem(),
-            TimeCommitments::listingitems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -842,8 +830,8 @@ class Listing
         }
     end
 
-    # Listing::printItems(store, items)
-    def self.printItems(store, items)
+    # Listing::printEvalItems(store, items)
+    def self.printEvalItems(store, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -910,7 +898,7 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printItems(store, Listing::items())
+            Listing::printEvalItems(store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

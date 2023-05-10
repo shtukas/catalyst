@@ -1,19 +1,8 @@
 Dx02:
     uuid        : String
     mikuType    : "Dx02"
-    positioning : Dx03
     payload     : Dx04
-
-Dx03:
-   {
-       type     : "appointment"
-       startTime: "HH:MM"
-       endTime  : "HH:MM"
-   }
-   {
-       type    : "fluid"
-       ordinal : Float
-   }
+    positioning : Dx03
 
 Dx04:
     {
@@ -25,3 +14,14 @@ Dx04:
         "generatoruuid" : String
         "periodInHours" : Float
     }
+
+Dx03:
+   {
+       type     : "appointment"
+       startTime: "HH:MM"
+       endTime  : "HH:MM"
+   }
+   {
+       type    : "fluid"
+       ordinal : Float
+   }

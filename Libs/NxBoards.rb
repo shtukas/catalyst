@@ -69,6 +69,30 @@ class NxBoards
         Solingen::mikuTypeItems("NxBoard").select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsActive(board) }
     end
 
+    # NxBoards::topItemOrNull(board)
+    def self.topItemOrNull(board)
+        NxBoards::itemsForProgram1(board)
+            .each{|item|
+                next if !DoNotShowUntil::isVisible(item)
+                return item
+            }
+        nil
+    end
+
+    # NxBoards::issueBoardDayDx02s(board)
+    def self.issueBoardDayDx02s(board)
+        (1..4).each {|i|
+            Dx02s::issueDx02(Dx02s::generatorToDx04(board), Dx02s::ordinalToDx03Fluid(i*2 + rand))
+        }
+    end
+
+    # NxBoards::issueDayDx02s()
+    def self.issueDayDx02s()
+        Solingen::mikuTypeItems("NxBoard").each{|board|
+            NxBoards::issueBoardDayDx02s(board)
+        }
+    end
+
     # ---------------------------------------------------------
     # Selectors
     # ---------------------------------------------------------

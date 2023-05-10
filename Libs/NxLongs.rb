@@ -19,7 +19,7 @@ class NxLongs
 
     # NxLongs::toString(item)
     def self.toString(item)
-        "(⛵️) #{item["active"] ? "(active)" : "(sleeping)"} #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(long) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{item["active"] ? "(active)" : "(sleeping)"}"
     end
 
     # NxLongs::program1()

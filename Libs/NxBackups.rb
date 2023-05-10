@@ -70,7 +70,7 @@ class NxBackups
 
     # NxBackups::toString(item)
     def self.toString(item)
-        "(backup) #{item["description"]}"
+        "(bckp) #{item["description"]}"
     end
 
     # NxBackups::listingItems()

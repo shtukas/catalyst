@@ -117,7 +117,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) (#{item["position"].round(2)}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(task) #{item["description"]} #{TxEngines::toString(item["engine"])} (#{item["position"].round(2)})"
     end
 
     # NxTasks::toStringNoEngine(item)

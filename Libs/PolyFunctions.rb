@@ -113,4 +113,36 @@ class PolyFunctions
         puts "I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c)"
     end
+
+    # PolyFunctions::topItemOfCollectionOrNull(generatoruuid)
+    def self.topItemOfCollectionOrNull(generatoruuid)
+        generator = Solingen::getItemOrNull(generatoruuid)
+        return nil if generator.nil?
+        if generator["mikuType"] == "NxBoard" then
+            board = generator
+            return NxBoards::topItemOrNull(board)
+        end
+        if generator["mikuType"] == "NxMonitor1" then
+            monitor = generator
+            if monitor["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then # Long Running Projects
+                Solingen::mikuTypeItems("NxLong")
+                    .select{|item| item["active"] }
+                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+                    .each{|item|
+                        next if !DoNotShowUntil::isVisible(item)
+                        return item
+                    }
+            end
+            if monitor["uuid"] == "bea0e9c7-f609-47e7-beea-70e433e0c82e" then # NxTasks (boardless)
+                NxTasksBoardless::items()
+                    .sort_by{|item| item["position"] }
+                    .each{|item|
+                        next if !DoNotShowUntil::isVisible(item)
+                        next if NxTasks::completionRatio(item) >= 1
+                        return item
+                    }
+            end
+        end
+        nil
+    end
 end
