@@ -4,7 +4,7 @@ class TimeCommitments
     # TimeCommitments::listingitems()
     def self.listingitems()
         (NxBoards::listingItems() + NxMonitor1s::listingItems())
-            .select{|item| TxEngines::completionRatio(item["engine"]) < 1 }
+            .select{|item| TxEngines::completionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
             .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
     end
 
