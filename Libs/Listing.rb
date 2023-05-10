@@ -130,9 +130,10 @@ class Listing
                     line = input
                     item = NxLines::issue(line)
                 end
-                directive = LucilleCore::askQuestionAnswerAsString("HH:MM HH:MM (appointment); <ordinal:float> for fluid: ")
-                directive = Dx02s::stringToDx03(directive)
-                item = Dx02s::issueDx02(item, directive)
+                input = LucilleCore::askQuestionAnswerAsString("HH:MM HH:MM (appointment); <ordinal:float> for fluid: ")
+                dx03 = Dx02s::userInputToDx03(input)
+                dx04 = Dx02s::itemToDx04(item)
+                item = Dx02s::issueDx02(item, dx03, dx04)
                 puts JSON.pretty_generate(item)
                 puts ""
             }
