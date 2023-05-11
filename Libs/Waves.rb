@@ -217,7 +217,7 @@ class Waves
                 Solingen::setAttribute2(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy '#{Waves::toString(item).green}' ? ", true) then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
                     Solingen::destroy(item["uuid"])
                     return
                 end

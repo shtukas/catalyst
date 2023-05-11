@@ -27,10 +27,11 @@ class Listing
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | Dx02",
             "",
             "specific types commands:",
-            "    - boards   : engine (<n>)",
-            "    - monitors : engine (<n>)",
-            "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
             "    - ondate   : redate",
+            "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
+            "    - Dx02     : forget",
+            "    - monitors : engine (<n>)",
+            "    - boards   : engine (<n>)",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitors | projects",
@@ -457,6 +458,18 @@ class Listing
 
         if Interpreting::match("capsules", input) then
             NxTimeCapsules::show()
+            return
+        end
+
+        if Interpreting::match("forget", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "Dx02" then
+                puts "You can only run `forget` on a Dx02"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Dx02s::destroy(item["uuid"])
             return
         end
 
