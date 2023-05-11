@@ -112,10 +112,10 @@ class Dx02s
     # Dx02s::positioningToString(positioning)
     def self.positioningToString(positioning)
         if positioning["type"] == "appointment" then
-            return "(#{positioning["startTime"]} to #{positioning["endTime"]})         "
+            return "#{positioning["startTime"]} to #{positioning["endTime"]}         "
         end
         if positioning["type"] == "fluid" then
-            return "                 (#{"%6.2f" % positioning["ordinal"]})"
+            return "               (#{"%6.2f" % positioning["ordinal"]})"
         end
         raise "(error: 521cebb2-5e28-44e1-8f5a-5fd5d078350d)"
     end
