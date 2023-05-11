@@ -138,13 +138,13 @@ class Dx02s
     def self.styleToString(item)
         style = item["style"]
         if style["type"] == "appointment" and style["endTime"] then
-            return "#{style["startTime"]} to #{style["endTime"]}         "
+            return "#{style["startTime"]} to #{style["endTime"]}"
         end
         if style["type"] == "appointment" and style["endTime"].nil? then
             return "#{style["startTime"]}                  "
         end
         if style["type"] == "fluid" then
-            return "               (#{"%6.2f" % item["position"]})"
+            return "              "
         end
         raise "(error: 521cebb2-5e28-44e1-8f5a-5fd5d078350d)"
     end
@@ -156,7 +156,7 @@ class Dx02s
 
     # Dx02s::listingItems()
     def self.listingItems()
-        Dx02s::items().sort_by{|item| ["position"] }
+        Dx02s::items().sort_by{|item| item["position"] }
     end
 
     # ------------------------
