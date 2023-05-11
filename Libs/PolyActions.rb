@@ -10,14 +10,14 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] == "DeviceBackup" then
-            puts item["announce"]
+        if item["mikuType"] == "NxBackup" then
+            puts item["description"]
             LucilleCore::pressEnterToContinue()
             return
         end
 
         if item["mikuType"] == "Dx02" then
-            Dx02s::access(dx02)
+            Dx02s::access(item)
             return
         end
 
@@ -113,15 +113,17 @@ class PolyActions
 
         # order: alphabetical order
 
-        if item["mikuType"] == "DeviceBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing '#{item["announce"].green} ? '", true) then
-                DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["period"] * 86400)
+        if item["mikuType"] == "NxBackup" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing '#{PolyFunctions::toString(item).green} ? '", true) then
+                DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["periodInDays"] * 86400)
             end
             return
         end
 
         if item["mikuType"] == "Dx02" then
-            Dx02s::done(dx02)
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing '#{PolyFunctions::toString(item).green} ? '", true) then
+                Dx02s::done(item)
+            end
             return
         end
 
@@ -229,7 +231,7 @@ class PolyActions
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
 
-        if item["mikuType"] == "DeviceBackup" then
+        if item["mikuType"] == "NxBackup" then
             PolyActions::access(item)
             return
         end
@@ -354,8 +356,8 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-        if item["mikuType"] == "DeviceBackup" then
-            puts "There is no description edit for DeviceBackups"
+        if item["mikuType"] == "NxBackup" then
+            puts "There is no description edit for NxBackups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
             return
         end

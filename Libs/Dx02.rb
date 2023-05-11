@@ -143,17 +143,22 @@ class Dx02s
 
     # Dx02s::done(dx02)
     def self.done(dx02)
-        if payload["type"] == "item" then
-            item = payload["item"]
-            item = Solingen::getItemOrNull(item["uuid"])
-            if item then
-                PolyActions::done(item)
+        NxBalls::stop(dx02)
+        both = LucilleCore::askQuestionAnswerAsBoolean("Both Dx20 and payload done ? ")
+        if both then
+            payload = dx02["payload"]
+            if payload["type"] == "item" then
+                item = payload["item"]
+                item = Solingen::getItemOrNull(item["uuid"])
+                if item then
+                    PolyActions::done(item)
+                end
             end
-        end
-        if payload["type"] == "topItem" then
-            topItem = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
-            if topItem then
-                PolyActions::done(topItem)
+            if payload["type"] == "topItem" then
+                topItem = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
+                if topItem then
+                    PolyActions::done(topItem)
+                end
             end
         end
         Dx02s::destroy(dx02["uuid"])
