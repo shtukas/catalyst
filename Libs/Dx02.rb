@@ -17,6 +17,20 @@ class Dx02s
             .map{|filepath| JSON.parse(IO.read(filepath)) }
     end
 
+    # Dx02s::commit(item)
+    def self.commit(item)
+        LucilleCore::locationsAtFolder(Dx02s::storeFolderpath())
+            .select{|location| File.basename(location).start_with?("Dx02-") }
+            .each{|filepath|
+                i = JSON.parse(IO.read(filepath))
+                if i["uuid"] == item["uuid"] then
+                    FileUtils.rm(filepath)
+                end
+            }
+        filepath = "#{Dx02s::storeFolderpath()}/Dx02-#{SecureRandom.hex}.json"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
+    end
+
     # Dx02s::destroy(uuid)
     def self.destroy(uuid)
         LucilleCore::locationsAtFolder(Dx02s::storeFolderpath())
@@ -51,46 +65,57 @@ class Dx02s
 
     # Dx02s::userInputToDx03(str)
     def self.userInputToDx03(str)
-        # "HH:MM HH:MM (appointment); <ordinal:float> (fluid)"
-        if str.include?(':') then
-            startTime, endTime = str.split(" ")
-            {
+        if str.include?(':') and str.include?(' ') then
+            startTime, endTime = str.split(' ')
+            return {
                "type"      => "appointment",
                "startTime" => startTime,
                "endTime"   => endTime
             }
-        else
-            ordinal = str.to_f
-            {
-               "type"    => "fluid",
-               "ordinal" => ordinal
+        end
+
+        if str.include?(':') then
+            startTime, endTime = str.split(" ")
+            return {
+               "type"      => "appointment",
+               "startTime" => startTime,
+               "endTime"   => nil
             }
         end
-    end
 
-    # Dx02s::ordinalToDx03Fluid(ordinal)
-    def self.ordinalToDx03Fluid(ordinal)
         {
-           "type"    => "fluid",
-           "ordinal" => ordinal
+           "type" => "fluid"
         }
     end
 
-    # Dx02s::issueDx02(payload, positioning)
-    def self.issueDx02(payload, positioning)
-        item = {
-            "uuid"        => SecureRandom.uuid,
-            "mikuType"    => "Dx02",
-            "payload"     => payload,
-            "positioning" => positioning,
+    # Dx02s::dx03Fluid()
+    def self.dx03Fluid()
+        {
+           "type" => "fluid"
         }
-        filepath = "#{Dx02s::storeFolderpath()}/Dx02-#{SecureRandom.uuid}.json"
-        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(item)) }
-        item
+    end
+
+    # Dx02s::issueDx02(payload, style, position = nil)
+    def self.issueDx02(payload, style, position = nil)
+        item = {
+            "uuid"      => SecureRandom.uuid,
+            "mikuType"  => "Dx02",
+            "payload"   => payload,
+            "style"     => style,
+            "position"  => position || Dx02s::nextPosition()
+        }
+        Dx02s::commit(item)
     end
 
     # ------------------------
     # Data
+
+    # Dx02s::nextPosition()
+    def self.nextPosition()
+        items = Dx02s::items()
+        return 1 if items.empty?
+        items.map{|item| item["position"] }.max + 1
+    end
 
     # Dx02s::payloadToString(payload)
     def self.payloadToString(payload)
@@ -109,33 +134,29 @@ class Dx02s
         raise "(error: 7E3C3122-8B47-4FAE-9BC6-A65208EC5E15) item: #{item}"
     end
 
-    # Dx02s::positioningToString(positioning)
-    def self.positioningToString(positioning)
-        if positioning["type"] == "appointment" then
-            return "#{positioning["startTime"]} to #{positioning["endTime"]}         "
+    # Dx02s::styleToString(item)
+    def self.styleToString(item)
+        style = item["style"]
+        if style["type"] == "appointment" and style["endTime"] then
+            return "#{style["startTime"]} to #{style["endTime"]}         "
         end
-        if positioning["type"] == "fluid" then
-            return "               (#{"%6.2f" % positioning["ordinal"]})"
+        if style["type"] == "appointment" and style["endTime"].nil? then
+            return "#{style["startTime"]}                  "
+        end
+        if style["type"] == "fluid" then
+            return "               (#{"%6.2f" % item["position"]})"
         end
         raise "(error: 521cebb2-5e28-44e1-8f5a-5fd5d078350d)"
     end
 
     # Dx02s::toString(item)
     def self.toString(item)
-        "(#{"Dx02".green}) #{Dx02s::positioningToString(item["positioning"])} #{Dx02s::payloadToString(item["payload"])}"
+        "(#{"%5.2f" % item["position"]}) #{Dx02s::styleToString(item)} #{Dx02s::payloadToString(item["payload"])}"
     end
 
     # Dx02s::listingItems()
     def self.listingItems()
-        lis1 = Dx02s::items()
-                    .select{|item| item["positioning"]["type"] == "appointment" }
-                    .sort_by{|item| item["positioning"]["startTime"] }
-
-        lis2 = Dx02s::items()
-                    .select{|item| item["positioning"]["type"] == "fluid" }
-                    .sort_by{|item| item["positioning"]["ordinal"] }
-
-        lis2.take(1) + lis1 + lis2.drop(1)
+        Dx02s::items().sort_by{|item| ["position"] }
     end
 
     # ------------------------
@@ -200,11 +221,11 @@ class Dx02s
         loop {
             break if dx02s.size < 2
             d1, d2 = dx02s
-            if d1["payload"]["type"] == "topItem" and d2["payload"]["type"] == "topItem" and d1["positioning"]["type"] == "fluid" and d2["positioning"]["type"] == "fluid" then
-                ordinal = 0.5*(d1["positioning"]["ordinal"]+d2["positioning"]["ordinal"])
+            if d1["payload"]["type"] == "topItem" and d2["payload"]["type"] == "topItem" and d1["style"]["type"] == "fluid" and d2["style"]["type"] == "fluid" then
+                position = 0.5*(d1["position"]+d2["position"])
                 item = Listing::firstDx02RelocatableItem()
                 puts JSON.pretty_generate(item)
-                dx02 = Dx02s::issueDx02(Dx02s::itemToDx04(item), Dx02s::ordinalToDx03Fluid(ordinal))
+                dx02 = Dx02s::issueDx02(Dx02s::itemToDx04(item), Dx02s::dx03Fluid(), position)
                 puts JSON.pretty_generate(dx02)
                 return
             end

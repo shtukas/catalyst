@@ -6,7 +6,7 @@ class NxLines
         description = line
         uuid = SecureRandom.uuid
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Solingen::init("NxFloat", uuid)
+        Solingen::init("NxLine", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)

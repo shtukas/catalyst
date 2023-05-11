@@ -390,7 +390,7 @@ class Listing
                     line = input
                     item = NxLines::issue(line)
                 end
-                input = LucilleCore::askQuestionAnswerAsString("HH:MM HH:MM (appointment); <ordinal:float> for fluid: ")
+                input = LucilleCore::askQuestionAnswerAsString("HH:MM (HH:MM) (appointment); <ordinal:float> (fluid): ")
                 item = Dx02s::issueDx02(Dx02s::itemToDx04(item), Dx02s::userInputToDx03(input))
                 puts JSON.pretty_generate(item)
                 puts ""
@@ -872,31 +872,7 @@ class Listing
         spacecontrol.putsline ""
         puts TheLine::line()
 
-        floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
-        if !floats.empty? then
-            spacecontrol.putsline ""
-            floats
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                }
-        end
-
         spacecontrol.putsline ""
-
-        active, items = items.partition{|item| NxBalls::itemIsActive(item) }
-        active
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-            }
-
-        interruption, items = items.partition{|item| Listing::isInterruption(item) }
-        interruption
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-            }
 
         items
             .each{|item|
@@ -931,7 +907,18 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, Listing::items())
+            # We are not changing the fundamental idea of calling items and displaying them in order (this is 
+            # for instance still true for domain specific listing: boards monitors etc).
+            # But we are currently experimenting with Dx02 bases listing.
+            # Therefore we call the items, perform some data manipulation and then display only the Dx02s 
+
+            floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
+            actives = [] # NxBalls::itemIsActive(item)
+            interruptions = [] # Listing::isInterruption(item)
+            items = Listing::items()
+            dx02s = Dx02s::listingItems()
+
+            Listing::printEvalItems(store, floats + actives + interruptions + dx02s)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

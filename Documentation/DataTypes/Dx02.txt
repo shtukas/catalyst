@@ -1,8 +1,9 @@
 Dx02:
-    uuid        : String
-    mikuType    : "Dx02"
-    payload     : Dx04
-    positioning : Dx03
+    uuid      : String
+    mikuType  : "Dx02"
+    payload   : Dx04
+    style     : Dx03
+    position  : Float
 
 Dx04:
     {
@@ -15,13 +16,14 @@ Dx04:
         "periodInHours" : Float
     }
 
+"HH:MM (HH:MM) (appointment); <position:float> (fluid)"
+
 Dx03:
     {
         type     : "appointment"
         startTime: "HH:MM"
-        endTime  : "HH:MM"
+        endTime  : "HH:MM" or null
     }
     {
-        type    : "fluid"
-        ordinal : Float
+        type : "fluid"
     }

@@ -82,7 +82,7 @@ class NxBoards
     # NxBoards::issueBoardDayDx02s(board)
     def self.issueBoardDayDx02s(board)
         (1..4).each {|i|
-            Dx02s::issueDx02(Dx02s::generatorToDx04(board), Dx02s::ordinalToDx03Fluid(i*2 + rand))
+            Dx02s::issueDx02(Dx02s::generatorToDx04(board), Dx02s::dx03Fluid(), i*2 + rand)
         }
     end
 
