@@ -187,6 +187,7 @@ class Dx02s
 
     # Dx02s::access(dx02)
     def self.access(dx02)
+        payload = dx02["payload"]
         if payload["type"] == "item" then
             item = payload["item"]
             item = Solingen::getItemOrNull(item["uuid"])
