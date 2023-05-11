@@ -201,6 +201,7 @@ class Dx02s
             else
                 PolyActions::access(item)
             end
+            return
         end
         if payload["type"] == "topItem" then
             topItem = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
@@ -211,6 +212,7 @@ class Dx02s
             else
                 PolyActions::access(topItem)
             end
+            return
         end
         raise "(error: 91f59fb6-e014-4ffe-9994-fe4098e6f5af) item: #{item}"
     end
