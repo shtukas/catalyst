@@ -9,11 +9,6 @@ class NxMonitor1s
         "(#{"monitor".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxMonitor1s::listingItems()
-    def self.listingItems()
-        Solingen::mikuTypeItems("NxMonitor1")
-    end
-
     # -------------------------------------
     # Ops
 

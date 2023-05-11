@@ -91,7 +91,7 @@ class Listing
         end
     end
 
-    # Listing::isOverflowingTask(item)
+    # Listing::isOverflowingTask(item)ss
     def self.isOverflowingTask(item)
         return false if item["mikuType"] != "NxTask"
         TxEngines::completionRatio(item["engine"]) > 1
@@ -884,6 +884,14 @@ class Listing
 
         spacecontrol.putsline ""
         puts TheLine::line()
+
+        (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitor1"))
+            .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsActive(board) }
+            .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
+            .each{|board|
+                store.register(board, false)
+                spacecontrol.putsline Listing::itemToListingLine(store: store, item: board)
+            }
 
         spacecontrol.putsline ""
 
