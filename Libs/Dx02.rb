@@ -100,7 +100,11 @@ class Dx02s
         end
         if payload["type"] == "topItem" then
             topItem = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
-            return PolyFunctions::toString(topItem)
+            if topItem.nil? then
+                return "(Could not identify a top item for: generatoruuid: #{payload["generatoruuid"]})"
+            else
+                return PolyFunctions::toString(topItem)
+            end
         end
         raise "(error: 7E3C3122-8B47-4FAE-9BC6-A65208EC5E15) item: #{item}"
     end
@@ -123,7 +127,6 @@ class Dx02s
 
     # Dx02s::listingItems()
     def self.listingItems()
-
         lis1 = Dx02s::items()
                     .select{|item| item["positioning"]["type"] == "appointment" }
                     .sort_by{|item| item["positioning"]["startTime"] }
@@ -133,6 +136,27 @@ class Dx02s
                     .sort_by{|item| item["positioning"]["ordinal"] }
 
         lis2.take(1) + lis1 + lis2.drop(1)
+    end
 
+    # ------------------------
+    # Data
+
+    # Dx02s::dataManagement()
+    def self.dataManagement()
+        # Looking for gap between two consecutive "topItem"s
+        dx02s = Dx02s::listingItems()
+        loop {
+            break if dx02s.size < 2
+            d1, d2 = dx02s
+            if d1["payload"]["type"] == "topItem" and d2["payload"]["type"] == "topItem" and d1["positioning"]["type"] == "fluid" and d2["positioning"]["type"] == "fluid" then
+                ordinal = 0.5*(d1["positioning"]["ordinal"]+d2["positioning"]["ordinal"])
+                item = Listing::firstDx02RelocatableItem()
+                puts JSON.pretty_generate(item)
+                dx02 = Dx02s::issueDx02(Dx02s::itemToDx04(item), Dx02s::ordinalToDx03Fluid(ordinal))
+                puts JSON.pretty_generate(dx02)
+                return
+            end
+            dx02s.shift
+        }
     end
 end
