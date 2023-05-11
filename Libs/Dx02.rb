@@ -45,7 +45,7 @@ class Dx02s
         {
             "type"          => "topItem",
             "generatoruuid" => generator["uuid"],
-            "periodInHours" => 1
+            "periodInHours" => 0.45
         }
     end
 
@@ -139,7 +139,54 @@ class Dx02s
     end
 
     # ------------------------
-    # Data
+    # Ops
+
+    # Dx02s::done(dx02)
+    def self.done(dx02)
+        if payload["type"] == "item" then
+            item = payload["item"]
+            item = Solingen::getItemOrNull(item["uuid"])
+            if item then
+                PolyActions::done(item)
+            end
+        end
+        if payload["type"] == "topItem" then
+            topItem = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
+            if topItem then
+                PolyActions::done(topItem)
+            end
+        end
+        Dx02s::destroy(dx02["uuid"])
+    end
+
+    # Dx02s::access(dx02)
+    def self.access(dx02)
+        if payload["type"] == "item" then
+            item = payload["item"]
+            item = Solingen::getItemOrNull(item["uuid"])
+            if item.nil? then
+                puts "Looks like item: #{PolyFunctions::toString(item)} has disappeared"
+                puts "I am going to destroy the Dx02"
+                LucilleCore::pressEnterToContinue()
+                Dx02s::stop(dx02)
+                Dx02s::destroy(dx02["uuid"])
+                return
+            else
+                PolyActions::access(item)
+            end
+        end
+        if payload["type"] == "topItem" then
+            topItem = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
+            if topItem.nil? then
+                puts "(Could not identify a top item for: generatoruuid: #{payload["generatoruuid"]})"
+                LucilleCore::pressEnterToContinue()
+                return
+            else
+                PolyActions::access(topItem)
+            end
+        end
+        raise "(error: 91f59fb6-e014-4ffe-9994-fe4098e6f5af) item: #{item}"
+    end
 
     # Dx02s::dataManagement()
     def self.dataManagement()

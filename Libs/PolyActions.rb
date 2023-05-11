@@ -16,6 +16,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "Dx02" then
+            Dx02s::access(dx02)
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -112,6 +117,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing '#{item["announce"].green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["period"] * 86400)
             end
+            return
+        end
+
+        if item["mikuType"] == "Dx02" then
+            Dx02s::done(dx02)
             return
         end
 
@@ -220,6 +230,13 @@ class PolyActions
     def self.doubleDot(item)
 
         if item["mikuType"] == "DeviceBackup" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "Dx02" then
+            PolyFunctions::toString(item).green
+            NxBalls::start(item)
             PolyActions::access(item)
             return
         end

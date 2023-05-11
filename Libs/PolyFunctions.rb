@@ -44,13 +44,29 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
+        if item["mikuType"] == "Dx02" then
+            payload = item["payload"]
+            if payload["type"] == "item" then
+                i2 = payload["item"]
+                i2 = Solingen::getItemOrNull(i2["uuid"])
+                if i2 then
+                    accounts = accounts + PolyFunctions::itemsToBankingAccounts(i2)
+                end
+            end
+            if payload["type"] == "topItem" then
+                i2 = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
+                if i2 then
+                    accounts = accounts + PolyFunctions::itemsToBankingAccounts(i2)
+                end
+            end
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
             else
                 as + [account]
             end
-
         }
     end
 
