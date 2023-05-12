@@ -242,6 +242,8 @@ Thread.new {
         sleep 300
         next if $SolingeninMemoryData.nil?
         Blades::filepathsEnumerator().each{|filepath|
+            sleep 0.1
+
             next if !File.exist?(filepath)
 
             uuid = Blades::getMandatoryAttribute1(filepath, "uuid")

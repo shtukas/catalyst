@@ -858,10 +858,6 @@ class Listing
                 status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 break if !status
             }
-
-
-
-
     end
 
     # Listing::main()

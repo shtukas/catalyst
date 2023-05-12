@@ -251,6 +251,6 @@ class Waves
                 Time.new.to_i - item["visibleSince"]
             }
             .max
-        0.5*(1 - ageInSeconds.to_f/86400)
+        1 - ageInSeconds.to_f/86400
     end
 end
