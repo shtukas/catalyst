@@ -16,11 +16,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Dx02" then
-            Dx02s::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -102,13 +97,8 @@ class PolyActions
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
-    # PolyActions::done(item, force = false)
-    def self.done(item, force = false)
-
-        if force then
-            PolyActions::doneForce(item)
-            return
-        end
+    # PolyActions::done(item)
+    def self.done(item)
 
         NxBalls::stop(item)
 
@@ -122,11 +112,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing :'#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["periodInDays"] * 86400)
             end
-            return
-        end
-
-        if item["mikuType"] == "Dx02" then
-            Dx02s::done(item)
             return
         end
 
@@ -209,6 +194,83 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
+    # PolyActions::doneForce(item)
+    def self.doneForce(item)
+
+        NxBalls::stop(item)
+
+        # Removing park, if any.
+        item["parking"] = nil
+        item["skipped"] = false
+
+        # order: alphabetical order
+
+        if item["mikuType"] == "NxBackup" then
+            DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["periodInDays"] * 86400)
+            return
+        end
+
+        if item["mikuType"] == "NxLambda" then
+            return
+        end
+
+        if item["mikuType"] == "NxAnniversary" then
+            Anniversaries::done(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxLine" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            return
+        end
+
+        if item["mikuType"] == "NxBoard" then
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxFire" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxTask" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "PhysicalTarget" then
+            PhysicalTargets::performUpdate(item)
+            return
+        end
+
+        if item["mikuType"] == "Wave" then
+            Waves::performWaveNx46WaveDone(item)
+            return
+        end
+
+        puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
+        raise "(error: feed64e1-9567-4018-a7f2-37f4cbf7db3b)"
+    end
+
     # PolyActions::destroy(item)
     def self.destroy(item)
 
@@ -235,13 +297,6 @@ class PolyActions
     def self.doubleDot(item)
 
         if item["mikuType"] == "NxBackup" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "Dx02" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end

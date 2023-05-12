@@ -24,12 +24,11 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float | Dx02",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
             "",
             "specific types commands:",
             "    - ondate   : redate",
             "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
-            "    - Dx02     : forget",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
             "",
@@ -135,26 +134,11 @@ class Listing
 
     # Listing::items()
     def self.items()
-        p1 = [
+        [
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems(nil).select{|item| item["interruption"] },
-        ]
-            .flatten
-            .select{|item| Listing::listable(item) }
-
-        dx02s = Dx02s::listingItems()
-
-        dx02sUUIDs = dx02s.map{|dx02|
-            (lambda{|dx02|
-                if dx02["payload"]["type"] == "item" then
-                    return dx02["payload"]["item"]["uuid"]
-                end
-            }).call(dx02)
-        }.compact
-
-        p3 = [
             Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -163,10 +147,6 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-            .select{|item| !dx02sUUIDs.include?(item["uuid"]) }
-
-
-        (p1+dx02s+p3)
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
                     selected
@@ -174,14 +154,6 @@ class Listing
                     selected + [item]
                 end
             }
-    end
-
-    # Listing::firstDx02RelocatableItem()
-    def self.firstDx02RelocatableItem()
-        Listing::items()
-            .reject{|item| item["interruption"] }
-            .reject{|item| item["mikuType"] == "Dx02" }
-            .first
     end
 
     # Listing::itemToListingLine(store: nil, item: nil)
@@ -380,25 +352,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("Dx02", input) then
-            loop {
-                input = LucilleCore::askQuestionAnswerAsString("position or description (empty to exit): ")
-                return if input == ""
-                if (position = CommonUtils::parseAsInteger(input)) then
-                    item = store.get(position)
-                    next if item.nil?
-                else
-                    line = input
-                    item = NxLines::issue(line)
-                end
-                input = LucilleCore::askQuestionAnswerAsString("HH:MM (HH:MM) (appointment); <ordinal:float> (fluid): ")
-                item = Dx02s::issueDx02(Dx02s::itemToDx04(item), Dx02s::userInputToDx03(input))
-                puts JSON.pretty_generate(item)
-                puts ""
-            }
-            return
-        end
-
         if Interpreting::match("access *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -458,18 +411,6 @@ class Listing
 
         if Interpreting::match("capsules", input) then
             NxTimeCapsules::show()
-            return
-        end
-
-        if Interpreting::match("forget", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "Dx02" then
-                puts "You can only run `forget` on a Dx02"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Dx02s::destroy(item["uuid"])
             return
         end
 
@@ -856,7 +797,6 @@ class Listing
              if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
                  NxLongs::dataMaintenance()
              end
-             Dx02s::dataManagement()
         end
     end
 
@@ -928,18 +868,12 @@ class Listing
 
             store = ItemStore.new()
 
-            # We are not changing the fundamental idea of calling items and displaying them in order (this is 
-            # for instance still true for domain specific listing: boards monitors etc).
-            # But we are currently experimenting with Dx02 bases listing.
-            # Therefore we call the items, perform some data manipulation and then display only the Dx02s 
-
             floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
-            actives = [] # NxBalls::itemIsActive(item)
-            interruptions = [] # Listing::isInterruption(item)
             items = Listing::items()
-            dx02s = Dx02s::listingItems()
+            actives, items = items.partition{|item| NxBalls::itemIsActive(item) }
+            interruptions, items = items.partition{|item| Listing::isInterruption(item) }
 
-            Listing::printEvalItems(store, floats + actives + interruptions + dx02s)
+            Listing::printEvalItems(store,  actives + interruptions + floats + items)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

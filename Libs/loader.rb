@@ -140,7 +140,6 @@ require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
-require_relative "Dx02.rb"
 
 require_relative "Galaxy.rb"
 

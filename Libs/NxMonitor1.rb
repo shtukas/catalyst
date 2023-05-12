@@ -65,20 +65,6 @@ class NxMonitor1s
         }
     end
 
-    # NxMonitor1s::issueMonitorDayDx02s(monitor)
-    def self.issueMonitorDayDx02s(monitor)
-        (1..4).each {|i|
-            Dx02s::issueDx02(Dx02s::generatorToDx04(monitor), Dx02s::dx03Fluid(), i*3 + rand)
-        }
-    end
-
-    # NxMonitor1s::issueDayDx02s()
-    def self.issueDayDx02s()
-        Solingen::mikuTypeItems("NxMonitor1").each{|monitor|
-            NxMonitor1s::issueMonitorDayDx02s(monitor)
-        }
-    end
-
     # NxMonitor1s::dataMaintenance()
     def self.dataMaintenance()
         Solingen::mikuTypeItems("NxMonitor1").each{|monitor|

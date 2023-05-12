@@ -74,20 +74,6 @@ class NxBoards
         nil
     end
 
-    # NxBoards::issueBoardDayDx02s(board)
-    def self.issueBoardDayDx02s(board)
-        (1..4).each {|i|
-            Dx02s::issueDx02(Dx02s::generatorToDx04(board), Dx02s::dx03Fluid(), i*2 + rand)
-        }
-    end
-
-    # NxBoards::issueDayDx02s()
-    def self.issueDayDx02s()
-        Solingen::mikuTypeItems("NxBoard").each{|board|
-            NxBoards::issueBoardDayDx02s(board)
-        }
-    end
-
     # ---------------------------------------------------------
     # Selectors
     # ---------------------------------------------------------
@@ -254,23 +240,6 @@ class BoardsAndItems
 
     # BoardsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
-        if item["mikuType"] == "Dx02" then
-            payload = item["payload"] 
-            if payload["type"] == "item" then
-                i2 = payload["item"]
-                i2 = Solingen::getItemOrNull(i2["uuid"])
-                if i2 then
-                    return BoardsAndItems::toStringSuffix(i2)
-                end
-            end
-            if payload["type"] == "topItem" then
-                i2 = PolyFunctions::topItemOfCollectionOrNull(payload["generatoruuid"])
-                if i2 then
-                    return BoardsAndItems::toStringSuffix(i2)
-                end
-            end
-        end
-
         return "" if item["boarduuid"].nil?
         board = NxBoards::getItemOfNull(item["boarduuid"])
         if board then
