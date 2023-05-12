@@ -199,7 +199,7 @@ class NxTasks
 
     # NxTasks::boardlessMonitorToString(item)
     def self.boardlessMonitorToString(item)
-        "(#{"monitor tasks boardless".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(#{"monit".green}) boardless tasks #{TxEngines::toString(item["engine"])}"
     end
 
     # NxTasks::boardlessMonitorDataMaintenance()

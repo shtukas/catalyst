@@ -122,7 +122,7 @@ class NxLongs
 
     # NxLongs::monitorToString(item)
     def self.monitorToString(item)
-        "(#{"monitor longs".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(#{"monit".green}) NxLongs #{TxEngines::toString(item["engine"])}"
     end
 
     # NxLongs::monitorDataMaintenance()

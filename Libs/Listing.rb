@@ -825,12 +825,12 @@ class Listing
         spacecontrol.putsline ""
         puts TheLine::line()
 
-        (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
+        (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
             .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
             .each{|item|
                 store.register(item, false)
                 line = Listing::itemToListingLine(store: store, item: item)
-                if TxEngines::completionRatio(item["engine"]) >= 1 then
+                if PolyFunctions::completionRatio(item) >= 1 then
                     line = line.yellow
                 end
                 if NxBalls::itemIsActive(item) then

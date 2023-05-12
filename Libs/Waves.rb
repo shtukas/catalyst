@@ -224,4 +224,17 @@ class Waves
             end
         }
     end
+
+    # -------------------------------------
+    # Monitor
+
+    # Waves::monitorToString(item)
+    def self.monitorToString(item)
+        "(#{"monit".green}) Waves (completion ratio: #{PolyFunctions::completionRatio(item).round(2)})"
+    end
+
+    # Waves::completionRatio()
+    def self.completionRatio()
+        0.5
+    end
 end

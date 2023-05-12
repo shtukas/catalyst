@@ -88,6 +88,9 @@ class PolyFunctions
         if item["mikuType"] == "NxMonitorTasksBoardless" then
             return NxTasks::boardlessMonitorToString(item)
         end
+        if item["mikuType"] == "NxMonitorWaves" then
+            return Waves::monitorToString(item)
+        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
@@ -146,6 +149,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxMonitorTasksBoardless" then
             return TxEngines::completionRatio(item["engine"])
+        end
+        if item["mikuType"] == "NxMonitorWaves" then
+            return Waves::completionRatio()
         end
         raise "(error: b31c7245-31cd-4546-8eac-1803ef843801) could not compute generic completion ratio for item: #{item}"
     end
