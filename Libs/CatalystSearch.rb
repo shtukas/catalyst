@@ -20,7 +20,7 @@ class CatalystSearch
                                 .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] }
                 item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", selected, lambda{|i| i["description"] })
                 break if item.nil?
-                PolyActions::access(item)
+                PolyActions::program(item)
             }
         }
         nil
