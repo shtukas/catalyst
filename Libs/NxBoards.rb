@@ -64,14 +64,11 @@ class NxBoards
         TxEngines::completionRatio(board["engine"])
     end
 
-    # NxBoards::topItemOrNull(board)
-    def self.topItemOrNull(board)
+    # NxBoards::firstItems(board)
+    def self.firstItems(board)
         NxBoards::itemsForProgram1(board)
-            .each{|item|
-                next if !DoNotShowUntil::isVisible(item)
-                return item
-            }
-        nil
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .first(6)
     end
 
     # ---------------------------------------------------------

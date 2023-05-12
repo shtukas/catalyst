@@ -106,37 +106,38 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        puts "I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
-        raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c)"
+        raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
 
-    # PolyFunctions::topItemOfCollectionOrNull(generatoruuid)
-    def self.topItemOfCollectionOrNull(generatoruuid)
-        generator = Solingen::getItemOrNull(generatoruuid)
-        return nil if generator.nil?
-        if generator["mikuType"] == "NxBoard" then
-            board = generator
-            return NxBoards::topItemOrNull(board)
+    # PolyFunctions::firstItems(thing)
+    def self.firstItems(thing)
+        if thing["mikuType"] == "NxBoard" then
+            return NxBoards::firstItems(thing)
         end
-        if generator["mikuType"] == "NxMonitorLongs" then
+        if thing["mikuType"] == "NxMonitorLongs" then
             return Solingen::mikuTypeItems("NxLong")
                 .select{|item| item["active"] }
                 .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-                .each{|item|
-                    next if !DoNotShowUntil::isVisible(item)
-                    return item
-                }
         end
-        if generator["mikuType"] == "NxMonitorTasksBoardless" then
+        if thing["mikuType"] == "NxMonitorTasksBoardless" then
             return NxTasks::boardlessItems()
                 .sort_by{|item| item["position"] }
-                .each{|item|
-                    next if !DoNotShowUntil::isVisible(item)
-                    next if NxTasks::completionRatio(item) >= 1
-                    return item
+                .reduce([]){|selected, item|
+                    if selected.size >= 6 then
+                        selected
+                    else
+                        if NxTasks::completionRatio(item) >= 1 or !DoNotShowUntil::isVisible(item) then
+                            selected
+                        else
+                            selected + [item]
+                        end
+                    end
                 }
         end
-        nil
+        if thing["mikuType"] == "NxMonitorWaves" then
+            return Waves::listingItems(nil).select{|item| !item["interruption"] }.first(6)
+        end
+        raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::firstItems((#{JSON.pretty_generate(thing)})"
     end
 
     # PolyFunctions::completionRatio(item)

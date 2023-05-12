@@ -143,7 +143,6 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             Solingen::mikuTypeItems("NxLine"),
-            Waves::listingItems(nil).select{|item| !item["interruption"] },
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -879,7 +878,19 @@ class Listing
             actives, items = items.partition{|item| NxBalls::itemIsActive(item) }
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
 
-            Listing::printEvalItems(store,  actives + interruptions + floats + items)
+            managed = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
+                .flatten
+                .map{|thing|
+                    {
+                        "completion" => PolyFunctions::completionRatio(thing),
+                        "firstItems" => PolyFunctions::firstItems(thing)
+                    }
+                }
+                .sort_by{|thing| thing["completion"]}
+                .map{|thing| thing["firstItems"] }
+                .flatten
+
+            Listing::printEvalItems(store,  actives + interruptions + floats + items + managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
