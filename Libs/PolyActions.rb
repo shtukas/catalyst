@@ -110,7 +110,7 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing :'#{PolyFunctions::toString(item).green} ? '", true) then
-                DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["periodInDays"] * 86400)
+                DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
             end
             return
         end
