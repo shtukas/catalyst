@@ -41,7 +41,7 @@ class NxBoards
 
     # NxBoards::toString(item)
     def self.toString(item)
-        "(#{"board".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(#{"boar".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxBoards::boardsOrdered()
