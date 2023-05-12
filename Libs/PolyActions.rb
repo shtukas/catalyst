@@ -185,7 +185,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing :'#{Waves::toString(item).green} ? '", true) then
-                Waves::performWaveNx46WaveDone(item)
+                Waves::performWaveDone(item)
             end
             return
         end
@@ -286,7 +286,7 @@ class PolyActions
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing :'#{Waves::toString(item).green} ? '", true) then
                 NxBalls::stop(item)
-                Waves::performWaveNx46WaveDone(item)
+                Waves::performWaveDone(item)
             end
             return
         end

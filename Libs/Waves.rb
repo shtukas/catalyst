@@ -145,9 +145,17 @@ class Waves
         # if nil them we return boardless items or and all interruptions ones
         # if board we return all the board items
         waves = Solingen::mikuTypeItems("Wave")
+                    .select{|item| Listing::listable(item) }
                     .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
                     .select{|item|
                         item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+                    }
+                    .map{|item|
+                        if item["visibleSince"].nil? then
+                            item["visibleSince"] = Time.new.to_i
+                            Solingen::setAttribute2(item["uuid"], "visibleSince", Time.new.to_i)
+                        end
+                        item
                     }
         if indicator.nil? then
             waves.select{|wave| wave["boarduuid"].nil? or wave["interruption"]}
@@ -160,14 +168,15 @@ class Waves
     # -------------------------------------------------------------------------
     # Operations
 
-    # Waves::performWaveNx46WaveDone(item)
-    def self.performWaveNx46WaveDone(item)
+    # Waves::performWaveDone(item)
+    def self.performWaveDone(item)
 
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
         Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         Solingen::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
         Solingen::setAttribute2(item["uuid"], "parking", nil)
+        Solingen::setAttribute2(item["uuid"], "visibleSince", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -209,7 +218,7 @@ class Waves
                 Solingen::setAttribute2(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
-                Waves::performWaveNx46WaveDone(item)
+                Waves::performWaveDone(item)
                 return
             end
             if action == "set days of the week" then
@@ -235,6 +244,13 @@ class Waves
 
     # Waves::completionRatio()
     def self.completionRatio()
-        0.5
+        items = Waves::listingItems(nil)
+        return 1 if items.empty?
+        ageInSeconds = items
+            .map{|item|
+                Time.new.to_i - item["visibleSince"]
+            }
+            .max
+        0.5*(1 - ageInSeconds.to_f/86400)
     end
 end
