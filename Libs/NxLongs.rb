@@ -73,7 +73,7 @@ class NxLongs
     # NxLongs::program()
     def self.program2()
         loop {
-            monitor = Solingen::getItem("347fe760-3c19-4618-8bf3-9854129b5009")
+            monitor = Solingen::mikuTypeItems("NxMonitorLongs").first
             puts NxLongs::monitorToString(monitor)
             actions = ["program(NxLongs)", "start", "add time"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
@@ -127,7 +127,7 @@ class NxLongs
 
     # NxLongs::monitorDataMaintenance()
     def self.monitorDataMaintenance()
-        monitor = Solingen::getItem("347fe760-3c19-4618-8bf3-9854129b5009")
+        monitor = Solingen::mikuTypeItems("NxMonitorLongs").first
         engine2 = TxEngines::engineCarrierMaintenance(monitor)
         if engine2 then
             Solingen::setAttribute2(monitor["uuid"], "engine", engine2)

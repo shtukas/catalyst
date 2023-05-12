@@ -815,16 +815,19 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, items)
-    def self.printEvalItems(store, items)
+    # Listing::printEvalItems(store, floats, items)
+    def self.printEvalItems(store, floats, items)
         system("clear")
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+        things = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves")
+
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4 - things.size)
 
         spacecontrol.putsline ""
-        puts TheLine::line()
+        spacecontrol.putsline TheLine::line()
 
-        (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
+        spacecontrol.putsline ""
+        things
             .sort_by{|item| PolyFunctions::completionRatio(item) }
             .each{|item|
                 store.register(item, false)
@@ -838,14 +841,27 @@ class Listing
                 spacecontrol.putsline line
             }
 
-        spacecontrol.putsline ""
+        if floats.size > 0 then
+            spacecontrol.putsline ""
+            floats
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
 
+        spacecontrol.putsline ""
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 break if !status
             }
+
+
+
+
     end
 
     # Listing::main()
@@ -875,7 +891,6 @@ class Listing
 
             floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
             items = Listing::items()
-            actives, items = items.partition{|item| NxBalls::itemIsActive(item) }
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
 
             managed = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
@@ -890,7 +905,7 @@ class Listing
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
-            Listing::printEvalItems(store, floats + actives + interruptions + items + managed)
+            Listing::printEvalItems(store, floats, interruptions + items + managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

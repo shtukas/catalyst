@@ -29,7 +29,7 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxLong" then
-            monitor =  Solingen::getItem("347fe760-3c19-4618-8bf3-9854129b5009") # NxLongs Monitor
+            monitor =  Solingen::mikuTypeItems("NxMonitorLongs").first # NxLongs Monitor
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
