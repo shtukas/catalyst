@@ -119,6 +119,11 @@ class CoreData
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
             url = Solingen::getDatablobOrNull2(uuid, nhash)
+            if url.nil? then
+                puts "(error) I could not retrieve url for reference string: #{referenceString}"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             puts "url: #{url}"
             CommonUtils::openUrlUsingSafari(url)
             LucilleCore::pressEnterToContinue()
@@ -172,11 +177,16 @@ class CoreData
             nhash = referenceString.split(":")[1]
             text = Solingen::getDatablobOrNull2(uuid, nhash)
             if text.nil? then
-                raise "CoreData::fsck: could not extract text for uuid: #{uuid}, referenceString: #{referenceString}"
+                raise "CoreData::fsck: could not extract text for uuid: #{uuid}, reference string: #{referenceString}"
             end
             return
         end
         if referenceString.start_with?("url") then
+            nhash = referenceString.split(":")[1]
+            url = Solingen::getDatablobOrNull2(uuid, nhash)
+            if url.nil? then
+                raise "CoreData::fsck: could not extract url for uuid: #{uuid}, reference string: #{referenceString}"
+            end
             return
         end
         if referenceString.start_with?("aion-point") then
