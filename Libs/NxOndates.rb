@@ -35,7 +35,7 @@ class NxOndates
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "(ondate: #{item["datetime"][0, 10]}) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(ondt) (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # NxOndates::listingItems()

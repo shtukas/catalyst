@@ -162,7 +162,7 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
-            line = line.gsub("Px02", "(interruption) ".red)
+            line = line.gsub("Px02", "(intt) ".red)
         else
             line = line.gsub("Px02", "")
         end
