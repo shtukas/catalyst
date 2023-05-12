@@ -148,8 +148,6 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 
-require_relative "NxMonitor1.rb"
-
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
@@ -160,8 +158,6 @@ require_relative "NxTimeCapsules.rb"
 require_relative "NxFires.rb"
 require_relative "NxFloats.rb"
 require_relative "NxLongs.rb"
-require_relative "NxTasksBoardless.rb"
-require_relative "NxTasksBoarded.rb"
 require_relative "NxTasksPositions.rb"
 
 require_relative "ProgrammableBooleans.rb"

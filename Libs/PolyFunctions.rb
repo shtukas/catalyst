@@ -29,18 +29,12 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxLong" then
-            monitor = Solingen::getItemOrNull("347fe760-3c19-4618-8bf3-9854129b5009") # Long Running Projects
-            if monitor.nil? then
-                raise "(error: 0be6394d-dde3-4025-867e-757ef534c695) could not find monitor for NxLong"
-            end
+            monitor =  Solingen::getItem("347fe760-3c19-4618-8bf3-9854129b5009") # NxLongs Monitor
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
-        if NxTasksBoardless::itemIsBoardlessTask(item) then
-            monitor = Solingen::getItemOrNull("bea0e9c7-f609-47e7-beea-70e433e0c82e") # NxTasks (boardless)
-            if monitor.nil? then
-                raise "(error: 87d87e8b-123a-49de-9aca-30d49d38aa12) could not find monitor for NxTask Boardless"
-            end
+        if NxTasks::itemIsBoardless(item) then
+            monitor = Solingen::getItem("bea0e9c7-f609-47e7-beea-70e433e0c82e") # NxTasksBoardless Monitor
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
@@ -88,8 +82,11 @@ class PolyFunctions
         if item["mikuType"] == "NxLong" then
             return NxLongs::toString(item)
         end
-        if item["mikuType"] == "NxMonitor1" then
-            return NxMonitor1s::toString(item)
+        if item["mikuType"] == "NxMonitorLongs" then
+            return NxLongs::monitorToString(item)
+        end
+        if item["mikuType"] == "NxMonitorTasksBoardless" then
+            return NxTasks::boardlessMonitorToString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
@@ -118,27 +115,38 @@ class PolyFunctions
             board = generator
             return NxBoards::topItemOrNull(board)
         end
-        if generator["mikuType"] == "NxMonitor1" then
-            monitor = generator
-            if monitor["uuid"] == "347fe760-3c19-4618-8bf3-9854129b5009" then # Long Running Projects
-                Solingen::mikuTypeItems("NxLong")
-                    .select{|item| item["active"] }
-                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-                    .each{|item|
-                        next if !DoNotShowUntil::isVisible(item)
-                        return item
-                    }
-            end
-            if monitor["uuid"] == "bea0e9c7-f609-47e7-beea-70e433e0c82e" then # NxTasks (boardless)
-                NxTasksBoardless::items()
-                    .sort_by{|item| item["position"] }
-                    .each{|item|
-                        next if !DoNotShowUntil::isVisible(item)
-                        next if NxTasks::completionRatio(item) >= 1
-                        return item
-                    }
-            end
+        if generator["mikuType"] == "NxMonitorLongs" then
+            return Solingen::mikuTypeItems("NxLong")
+                .select{|item| item["active"] }
+                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+                .each{|item|
+                    next if !DoNotShowUntil::isVisible(item)
+                    return item
+                }
+        end
+        if generator["mikuType"] == "NxMonitorTasksBoardless" then
+            return NxTasks::boardlessItems()
+                .sort_by{|item| item["position"] }
+                .each{|item|
+                    next if !DoNotShowUntil::isVisible(item)
+                    next if NxTasks::completionRatio(item) >= 1
+                    return item
+                }
         end
         nil
+    end
+
+    # PolyFunctions::completionRatio(item)
+    def self.completionRatio(item)
+        if item["mikuType"] == "NxBoard" then
+            return TxEngines::completionRatio(item["engine"])
+        end
+        if item["mikuType"] == "NxMonitorLongs" then
+            return TxEngines::completionRatio(item["engine"])
+        end
+        if item["mikuType"] == "NxMonitorTasksBoardless" then
+            return TxEngines::completionRatio(item["engine"])
+        end
+        raise "(error: b31c7245-31cd-4546-8eac-1803ef843801) could not compute generic completion ratio for item: #{item}"
     end
 end

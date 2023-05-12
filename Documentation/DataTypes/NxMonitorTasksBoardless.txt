@@ -1,0 +1,6 @@
+
+NxMonitorTasksBoardless (Blade) singleton
+    "uuid"        : "bea0e9c7-f609-47e7-beea-70e433e0c82e"
+    "mikuType"    : "NxMonitorTasksBoardless"
+    "description" : String
+    "engine"      : TxEngine

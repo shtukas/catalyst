@@ -22,6 +22,12 @@ class NxLongs
         "(long) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])} #{item["active"] ? "(active)" : "(sleeping)"}"
     end
 
+    # NxLongs::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        items = Solingen::mikuTypeItems("NxLong").select{|item| !item["active"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxLongs::toString(item) })
+    end
+
     # NxLongs::program1()
     def self.program1()
         loop {
@@ -64,16 +70,31 @@ class NxLongs
         }
     end
 
-    # NxLongs::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        items = Solingen::mikuTypeItems("NxLong").select{|item| !item["active"] }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxLongs::toString(item) })
+    # NxLongs::program()
+    def self.program2()
+        loop {
+            monitor = Solingen::getItem("347fe760-3c19-4618-8bf3-9854129b5009")
+            puts NxLongs::monitorToString(monitor)
+            actions = ["program(NxLongs)", "start", "add time"]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
+            break if action.nil?
+            if action == "start" then
+                PolyActions::start(monitor)
+            end
+            if action == "add time" then
+                timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
+                PolyActions::addTimeToItem(monitor, timeInHours*3600)
+            end
+            if action == "program(NxLongs)" then
+                NxLongs::program1()
+            end
+        }
     end
 
     # NxLongs::dataMaintenance()
     def self.dataMaintenance()
         # We scan the tasks and any boardless task with more than 2 hours in the bank is automatically turned into a long running project
-        NxTasksBoardless::items()
+        NxTasks::boardlessItems()
             .sort_by{|item| item["position"] }
             .first(100)
             .each{|item|
@@ -93,6 +114,23 @@ class NxLongs
                 Solingen::setAttribute2(item["uuid"], "active", true)
                 break if !LucilleCore::askQuestionAnswerAsBoolean("more ? ")
             }
+        end
+    end
+
+    # -------------------------------------
+    # Monitor
+
+    # NxLongs::monitorToString(item)
+    def self.monitorToString(item)
+        "(#{"monitor longs".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+    end
+
+    # NxLongs::monitorDataMaintenance()
+    def self.monitorDataMaintenance()
+        monitor = Solingen::getItem("347fe760-3c19-4618-8bf3-9854129b5009")
+        engine2 = TxEngines::engineCarrierMaintenance(monitor)
+        if engine2 then
+            Solingen::setAttribute2(monitor["uuid"], "engine", engine2)
         end
     end
 end

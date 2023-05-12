@@ -38,8 +38,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitor1" then
-            NxMonitor1s::access(item)
+        if item["mikuType"] == "NxMonitorLongs" then
+            NxLongs::program()
             return
         end
 
@@ -194,83 +194,6 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::doneForce(item)
-    def self.doneForce(item)
-
-        NxBalls::stop(item)
-
-        # Removing park, if any.
-        item["parking"] = nil
-        item["skipped"] = false
-
-        # order: alphabetical order
-
-        if item["mikuType"] == "NxBackup" then
-            DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["instruction"]["periodInDays"] * 86400)
-            return
-        end
-
-        if item["mikuType"] == "NxLambda" then
-            return
-        end
-
-        if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::done(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxFloat" then
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxLine" then
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            return
-        end
-
-        if item["mikuType"] == "NxBoard" then
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxFire" then
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "PhysicalTarget" then
-            PhysicalTargets::performUpdate(item)
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            Waves::performWaveNx46WaveDone(item)
-            return
-        end
-
-        puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
-        raise "(error: feed64e1-9567-4018-a7f2-37f4cbf7db3b)"
-    end
-
     # PolyActions::destroy(item)
     def self.destroy(item)
 
@@ -313,8 +236,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitor1" then
-            PolyActions::access(item)
+        if item["mikuType"] == "NxMonitorLongs" then
+            NxLongs::program()
             return
         end
 

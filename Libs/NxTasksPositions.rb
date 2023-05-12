@@ -74,7 +74,7 @@ class NxTasksPositions
     # NxTasksPositions::interactivelyDecidePositionAtNoBoardAtTop()
     def self.interactivelyDecidePositionAtNoBoardAtTop()
         puts "-- begin-------------".green
-        NxTasksBoardless::items()
+        NxTasks::boardlessItems()
             .sort_by{|item| item["position"] }
             .take(CommonUtils::screenHeight()-5)
             .each{|item| puts NxTasks::toStringNoEngine(item) }
@@ -89,7 +89,7 @@ class NxTasksPositions
 
     # NxTasksPositions::slice_positioning2_boardless(index1, index2)
     def self.slice_positioning2_boardless(index1, index2)
-        items = NxTasksBoardless::items()
+        items = NxTasks::boardlessItems()
                     .sort_by{|item| item["position"] }
                     .take(index2)
         NxTasksPositions::slice_positioning1(items, index1, index2)

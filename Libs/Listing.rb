@@ -33,7 +33,7 @@ class Listing
             "    - boards   : engine (<n>)",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitors | projects",
+            "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitor longs | projects",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -391,13 +391,13 @@ class Listing
             return
         end
 
-        if Interpreting::match("monitors", input) then
-            NxMonitor1s::program3()
+        if Interpreting::match("monitor longs", input) then
+            NxLongs::program()
             return
         end
 
         if Interpreting::match("tasks", input) then
-            NxTasksBoardless::program1()
+            NxTasks::boardlessItemsProgram1()
             return
         end
 
@@ -793,7 +793,7 @@ class Listing
              Bank::fileManagement()
              NxBackups::dataMaintenance()
              NxBoards::dataMaintenance()
-             NxMonitor1s::dataMaintenance()
+             NxLongs::monitorDataMaintenance()
              if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
                  NxLongs::dataMaintenance()
              end
@@ -825,12 +825,18 @@ class Listing
         spacecontrol.putsline ""
         puts TheLine::line()
 
-        (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitor1"))
-            .select{|board| TxEngines::completionRatio(board["engine"]) < 1 or NxBalls::itemIsActive(board) }
+        (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
             .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
-            .each{|board|
-                store.register(board, false)
-                spacecontrol.putsline Listing::itemToListingLine(store: store, item: board)
+            .each{|item|
+                store.register(item, false)
+                line = Listing::itemToListingLine(store: store, item: item)
+                if TxEngines::completionRatio(item["engine"]) >= 1 then
+                    line = line.yellow
+                end
+                if NxBalls::itemIsActive(item) then
+                    line = line.green
+                end
+                spacecontrol.putsline line
             }
 
         spacecontrol.putsline ""
