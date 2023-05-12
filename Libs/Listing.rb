@@ -756,7 +756,7 @@ class Listing
         end
 
         if input == "waves" then
-            Waves::program()
+            Waves::program1()
             return
         end
 
