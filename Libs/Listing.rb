@@ -825,7 +825,7 @@ class Listing
         puts TheLine::line()
 
         (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
-            .sort_by{|item| TxEngines::completionRatio(item["engine"]) }
+            .sort_by{|item| PolyFunctions::completionRatio(item) }
             .each{|item|
                 store.register(item, false)
                 line = Listing::itemToListingLine(store: store, item: item)
@@ -886,8 +886,8 @@ class Listing
                         "firstItems" => PolyFunctions::firstItems(thing)
                     }
                 }
-                .sort_by{|thing| thing["completion"]}
-                .map{|thing| thing["firstItems"] }
+                .sort_by{|packet| packet["completion"]}
+                .map{|packet| packet["firstItems"] }
                 .flatten
 
             Listing::printEvalItems(store,  actives + interruptions + floats + items + managed)
