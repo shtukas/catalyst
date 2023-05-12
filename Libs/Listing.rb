@@ -890,7 +890,7 @@ class Listing
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
-            Listing::printEvalItems(store,  actives + interruptions + floats + items + managed)
+            Listing::printEvalItems(store, floats + actives + interruptions + items + managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
