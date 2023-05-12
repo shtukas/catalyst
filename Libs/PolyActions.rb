@@ -241,6 +241,16 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxMonitorWaves" then
+            Waves::program1()
+            return
+        end
+
+        if item["mikuType"] == "NxMonitorTasksBoardless" then
+            NxTasks::boardlessItemsProgram2()
+            return
+        end
+
         if item["mikuType"] == "NxFire" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -309,7 +319,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            Waves::program(item)
+            Waves::program2(item)
             return
         end
 

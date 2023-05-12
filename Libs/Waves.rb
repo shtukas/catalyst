@@ -184,23 +184,13 @@ class Waves
         DoNotShowUntil::setUnixtime(item, unixtime)
     end
 
-    # Waves::program()
-    def self.program()
-        loop {
-            items = Solingen::mikuTypeItems("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
-            wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
-            return if wave.nil?
-            Waves::program(wave)
-        }
-    end
-
     # Waves::access(item)
     def self.access(item)
         puts Waves::toString(item).green
         CoreData::access(item["uuid"], item["field11"])
     end
 
-    # Waves::program(item)
+    # Waves::program2(item)
     def self.program(item)
         loop {
             puts Waves::toString(item)
@@ -231,6 +221,16 @@ class Waves
                     return
                 end
             end
+        }
+    end
+
+    # Waves::program1()
+    def self.program1()
+        loop {
+            items = Solingen::mikuTypeItems("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
+            wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
+            return if wave.nil?
+            Waves::program2(wave)
         }
     end
 
