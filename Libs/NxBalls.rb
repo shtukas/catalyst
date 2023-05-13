@@ -100,7 +100,6 @@ class NxBalls
             NxBalls::destroyNxBall(item)
             return
         end
-        # Item is running
         nxball = NxBalls::getNxBallOrNull(item)
         if nxball["instance"] != Config::thisInstanceId() then
             puts "This ball wasn't created here, was created at #{nxball["instance"]}."
@@ -119,9 +118,8 @@ class NxBalls
         return if !NxBalls::itemIsRunning(item)
         nxball = NxBalls::getNxBallOrNull(item)
         if nxball["instance"] != Config::thisInstanceId() then
-            puts "This ball wasn't created here, was created at #{nxball["instance"]}. You cannot pause it, but you can stop it."
-            LucilleCore::pressEnterToContinue()
-            return
+            puts "This ball wasn't created here, was created at #{nxball["instance"]}."
+            return if !LucilleCore::askQuestionAnswerAsBoolean("Confirm pause operation: ")
         end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
