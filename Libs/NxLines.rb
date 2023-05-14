@@ -5,7 +5,6 @@ class NxLines
     def self.issue(line)
         description = line
         uuid = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         Solingen::init("NxLine", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)

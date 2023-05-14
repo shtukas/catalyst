@@ -24,13 +24,14 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | drop | float",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | fifo | fifo time | fifo times | float",
             "",
             "specific types commands:",
             "    - ondate   : redate",
             "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
+            "    - fifos    : fifo set <n> <fifo position>",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitor longs | projects",
@@ -343,6 +344,58 @@ class Listing
 
         if Interpreting::match("project", input) then
             NxLongs::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("fifo", input) then
+            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if line == ""
+            payload = NxLines::issue(line)
+            BoardsAndItems::askAndMaybeAttach(payload)
+            position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+            if position.size == 0 then
+                position = NxFifos::nextPosition1()
+            else
+                position = position.to_f
+            end
+            NxFifos::issue1("pascal", payload, position)
+            return
+        end
+
+        if Interpreting::match("fifo set * *", input) then
+            _, _, listord, position = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] == "NxFifo" then
+                Solingen::setAttribute2(item["uuid"], "position", position.to_f)
+                return
+            end
+            NxFifos::issue1(item["mikuType"], item, position.to_f)
+            return
+        end
+
+        if Interpreting::match("fifo time", input) then
+            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if line == ""
+            payload = NxLines::issue(line)
+            BoardsAndItems::askAndMaybeAttach(payload)
+            time = LucilleCore::askQuestionAnswerAsString("time HH:YY: ")
+            item = NxFifos::issue2("appointment", payload, time)
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("fifo times", input) then
+            loop {
+                puts ""
+                line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+                return if line == ""
+                payload = NxLines::issue(line)
+                BoardsAndItems::askAndMaybeAttach(payload)
+                time = LucilleCore::askQuestionAnswerAsString("time HH:YY: ")
+                item = NxFifos::issue2("appointment", payload, time)
+                puts JSON.pretty_generate(item)
+            }
             return
         end
 
@@ -815,8 +868,8 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, floats, items)
-    def self.printEvalItems(store, floats, items)
+    # Listing::printEvalItems(store, floats, fifos, items)
+    def self.printEvalItems(store, floats, fifos, items)
         system("clear")
 
         things = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves")
@@ -844,6 +897,16 @@ class Listing
         if floats.size > 0 then
             spacecontrol.putsline ""
             floats
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        if fifos.size > 0 then
+            spacecontrol.putsline ""
+            fifos
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
@@ -888,7 +951,15 @@ class Listing
             floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
             items = Listing::items()
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
-
+            interruptions.each{|item|
+                NxFifos::issueIfNotPresent("interruption", item)
+            }
+            items.first(3).each{|item|
+                NxFifos::issueIfNotPresent(item["mikuType"], item)
+            }
+            fifos = NxFifos::listingItems()
+            fifospayloaduuids = fifos.map{|item| item["payload"]["uuid"] }
+            items = items.select{|item| !fifospayloaduuids.include?(item["uuid"]) }
             managed = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
                 .flatten
                 .map{|thing|
@@ -901,7 +972,7 @@ class Listing
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
-            Listing::printEvalItems(store, floats, interruptions + items + managed)
+            Listing::printEvalItems(store, floats, fifos, items + managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
