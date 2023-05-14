@@ -14,7 +14,11 @@ class TxEngines
             return TxEngines::defaultEngine(uuid)
         end
         if type == "daily-recovery-time (default, with to 1 hour)" then
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ")
+            if hours == "" then
+                hours = "1"
+            end
+            hours = hours.to_f
             return {
                 "uuid"  => uuid,
                 "type"  => "daily-recovery-time",
