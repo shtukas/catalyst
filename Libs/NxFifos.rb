@@ -7,6 +7,9 @@ class NxFifos
     # NxFifos::itemToListingLine(item)
     def self.itemToListingLine(item)
         item = Solingen::getItemOrNull(item["uuid"])
+        if item .nil? then
+            raise "(error: payload has disappeared)"
+        end
         line = "Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
@@ -27,7 +30,12 @@ class NxFifos
 
     # NxFifos::toString(item)
     def self.toString(item)
-        "(fifo) (#{"%6.3f" % item["position"]}) #{item["time"] ? "[#{item["time"]}] " : "        "}#{NxFifos::itemToListingLine(item["payload"])}"
+        begin
+            "(fifo) (#{"%6.3f" % item["position"]}) #{item["time"] ? "[#{item["time"]}] " : "        "}#{NxFifos::itemToListingLine(item["payload"])}"
+        rescue
+            Solingen::destroy(item["uuid"])
+            return "(fifo item has just been deleted)"
+        end
     end
 
     # NxFifos::nextPosition1()
