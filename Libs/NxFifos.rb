@@ -6,6 +6,7 @@ class NxFifos
 
     # NxFifos::itemToListingLine(item)
     def self.itemToListingLine(item)
+        item = Solingen::getItemOrNull(item["uuid"])
         line = "Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
