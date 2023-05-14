@@ -138,6 +138,7 @@ class PolyActions
 
         if item["mikuType"] == "NxFifo" then
             PolyActions::done(item["payload"])
+            Solingen::destroy(item["uuid"])
             return
         end
 
@@ -248,6 +249,7 @@ class PolyActions
 
         if item["mikuType"] == "NxFifo" then
             PolyActions::doubleDot(item["payload"])
+            Solingen::destroy(item["uuid"])
             return
         end
 
