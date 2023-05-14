@@ -31,7 +31,7 @@ class Listing
             "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
-            "    - fifos    : fifo set <n> <fifo position>",
+            "    - fifos    : fifo set <n> <fifo position> | forget",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitor longs | projects",
@@ -419,6 +419,18 @@ class Listing
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
+            return
+        end
+
+        if Interpreting::match("forget", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxFifo" then
+                puts "You can run `forget` on NxFifo items only"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Solingen::destroy(item["uuid"])
             return
         end
 
