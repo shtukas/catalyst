@@ -220,16 +220,17 @@ class BoardsAndItems
 
     # BoardsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
-        return if item["mikuType"] == "NxBoard"
         return if item["boarduuid"]
-        board = NxBoards::interactivelySelectOneOrNull()
-        return if board.nil?
-        Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
+        BoardsAndItems::askAndMaybeAttach(item)
     end
 
     # BoardsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
         return if item["mikuType"] == "NxBoard"
+        if item["mikuType"] == "NxFifo" then
+            BoardsAndItems::askAndMaybeAttach(item["payload"])
+            return
+        end
         board = NxBoards::interactivelySelectOneOrNull()
         return if board.nil?
         Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
