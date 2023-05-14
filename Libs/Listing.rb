@@ -425,12 +425,13 @@ class Listing
         if Interpreting::match("forget", input) then
             item = store.getDefault()
             return if item.nil?
-            if item["mikuType"] != "NxFifo" then
+            if item["mikuType"] == "NxFifo" then
+                Solingen::destroy(item["uuid"])
+            else
                 puts "You can run `forget` on NxFifo items only"
                 LucilleCore::pressEnterToContinue()
-                return
             end
-            Solingen::destroy(item["uuid"])
+            
             return
         end
 
