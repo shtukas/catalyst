@@ -28,6 +28,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFifo" then
+            PolyActions::access(item["payload"])
+            return
+        end
+
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -128,6 +133,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxFifo" then
+            PolyActions::done(item["payload"])
             return
         end
 
@@ -236,6 +246,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFifo" then
+            PolyActions::doubleDot(item["payload"])
+            return
+        end
+
         if item["mikuType"] == "NxMonitorLongs" then
             NxLongs::program()
             return
@@ -318,6 +333,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFifo" then
+            PolyActions::program(item["payload"])
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
             return
@@ -350,6 +370,10 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "There is no description edit for NxBackups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
+            return
+        end
+        if item["mikuType"] == "NxFifo" then
+            PolyActions::editDescription(item["payload"])
             return
         end
         puts "edit description:"
