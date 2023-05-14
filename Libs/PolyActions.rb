@@ -130,6 +130,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFloat" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
@@ -137,12 +143,24 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFifo" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             PolyActions::done(item["payload"])
             Solingen::destroy(item["uuid"])
             return
         end
 
         if item["mikuType"] == "NxLine" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
@@ -162,6 +180,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
@@ -169,6 +193,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFire" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
@@ -176,6 +206,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
@@ -183,6 +219,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
+            if NxNotes::hasNoteText(item) then
+                puts "The item has a note, I am going to make you review it."
+                LucilleCore::pressEnterToContinue()
+                NxNotes::edit(item)
+                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end

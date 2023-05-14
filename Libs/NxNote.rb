@@ -11,6 +11,11 @@ class NxNotes
         NxNotes::getTextOrNull(item) || ""
     end
 
+    # NxNotes::hasNoteText(item)
+    def self.hasNoteText(item)
+        NxNotes::getText(item).strip.size > 0
+    end
+
     # NxNotes::commit(item, text)
     def self.commit(item, text)
         Solingen::setAttribute2(item["uuid"], "note", text)
