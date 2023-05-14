@@ -109,7 +109,7 @@ class NxFifos
     # NxFifos::issueIfNotPresent(issuerId, payload)
     def self.issueIfNotPresent(issuerId, payload)
         return if NxFifos::payloadIsPresent(payload)
-        position = NxFifos::nextPosition2()
+        position = NxFifos::nextPosition2(issuerId)
         item = NxFifos::issue1(issuerId, payload, position)
     end
 end
