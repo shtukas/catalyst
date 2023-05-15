@@ -84,10 +84,12 @@ class NxFifos
         Solingen::mikuTypeItems("NxFifo")
             .sort_by{|item| item["position"] }
             .map{|item|
-                payload1 = item["payload"]
-                payload2 = Solingen::getItemOrNull(payload1["uuid"])
-                if JSON.generate(payload2) != JSON.generate(payload1) then
-                    Solingen::setAttribute2(item["uuid"], "payload", payload2)
+                if item["payload"] then
+                    payload1 = item["payload"]
+                    payload2 = Solingen::getItemOrNull(payload1["uuid"])
+                    if JSON.generate(payload2) != JSON.generate(payload1) then
+                        Solingen::setAttribute2(item["uuid"], "payload", payload2)
+                    end
                 end
                 item
             }

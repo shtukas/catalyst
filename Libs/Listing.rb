@@ -998,7 +998,7 @@ class Listing
             fires = Solingen::mikuTypeItems("NxFire").select{|item| Listing::listable(item) }
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
             fifos = NxFifos::listingItems().select{|item| Listing::listable(item) }
-            fifospayloaduuids = fifos.map{|item| item["payload"]["uuid"] }
+            fifospayloaduuids = fifos.map{|item| item["payload"] ? item["payload"]["uuid"] : nil }.compact
             items = items.select{|item| !fifospayloaduuids.include?(item["uuid"]) }
             managed = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
                 .flatten

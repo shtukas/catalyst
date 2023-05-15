@@ -138,5 +138,4 @@ class NxTasksPositions
             end
         NxTasksPositions::decidePositionAtOptionalBoard(mboard)
     end
-
 end
