@@ -140,7 +140,6 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems(nil).select{|item| item["interruption"] },
-            Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             Solingen::mikuTypeItems("NxLine"),
