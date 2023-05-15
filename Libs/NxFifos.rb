@@ -117,11 +117,4 @@ class NxFifos
         Solingen::setAttribute2(uuid, "position", position)
         Solingen::getItemOrNull(uuid)
     end
-
-    # NxFifos::issueIfNotPresent(issuerId, payload)
-    def self.issueIfNotPresent(issuerId, payload)
-        return if NxFifos::payloadIsPresent(payload)
-        position = NxFifos::nextPosition1(issuerId)
-        item = NxFifos::issue1(issuerId, payload, position)
-    end
 end

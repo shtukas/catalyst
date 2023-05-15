@@ -893,8 +893,8 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, fs, fifos, items)
-    def self.printEvalItems(store, fs, fifos, items)
+    # Listing::printEvalItems(store, floats, fires, interruptions, fifos, items)
+    def self.printEvalItems(store, floats, fires, interruptions, fifos, items)
         system("clear")
 
         things = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves")
@@ -919,9 +919,29 @@ class Listing
                 spacecontrol.putsline line
             }
 
-        if fs.size > 0 then
+        if floats.size > 0 then
             spacecontrol.putsline ""
-            fs
+            floats
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        if fires.size > 0 then
+            spacecontrol.putsline ""
+            fires
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        if interruptions.size > 0 then
+            spacecontrol.putsline ""
+            interruptions
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
@@ -973,15 +993,10 @@ class Listing
 
             store = ItemStore.new()
 
-            fs = Solingen::mikuTypeItems("NxFire") + Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
             items = Listing::items()
+            floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
+            fires = Solingen::mikuTypeItems("NxFire")
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
-            interruptions.each{|item|
-                NxFifos::issueIfNotPresent("interruption", item)
-            }
-            items.first(3).each{|item|
-                NxFifos::issueIfNotPresent(item["mikuType"], item)
-            }
             fifos = NxFifos::listingItems()
             fifospayloaduuids = fifos.map{|item| item["payload"]["uuid"] }
             items = items.select{|item| !fifospayloaduuids.include?(item["uuid"]) }
@@ -990,14 +1005,14 @@ class Listing
                 .map{|thing|
                     {
                         "completion" => PolyFunctions::completionRatio(thing),
-                        "firstItems" => PolyFunctions::firstItems(thing)
+                        "firstItems" => PolyFunctions::firstItemsForMainListing(thing)
                     }
                 }
                 .sort_by{|packet| packet["completion"]}
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
-            Listing::printEvalItems(store, fs, fifos, items + managed)
+            Listing::printEvalItems(store, floats, fires, interruptions, fifos, items + managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

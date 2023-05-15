@@ -119,10 +119,10 @@ class PolyFunctions
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
 
-    # PolyFunctions::firstItems(thing)
-    def self.firstItems(thing)
+    # PolyFunctions::firstItemsForMainListing(thing)
+    def self.firstItemsForMainListing(thing)
         if thing["mikuType"] == "NxBoard" then
-            return NxBoards::firstItems(thing)
+            return NxBoards::firstItems(thing).reject{|item| item["mikuType"] == "NxFloat" }
         end
         if thing["mikuType"] == "NxMonitorLongs" then
             return Solingen::mikuTypeItems("NxLong")
@@ -147,7 +147,7 @@ class PolyFunctions
         if thing["mikuType"] == "NxMonitorWaves" then
             return Waves::listingItems(nil).select{|item| !item["interruption"] }.first(6)
         end
-        raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::firstItems((#{JSON.pretty_generate(thing)})"
+        raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::firstItemsForMainListing((#{JSON.pretty_generate(thing)})"
     end
 
     # PolyFunctions::completionRatio(item)

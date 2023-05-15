@@ -6,8 +6,8 @@ class NxFloats
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         Solingen::init("NxFloat", uuid)
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
@@ -21,7 +21,7 @@ class NxFloats
 
     # NxFloats::toString(item)
     def self.toString(item)
-        "(float) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "(floa) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # ------------------------------------

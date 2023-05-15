@@ -118,13 +118,15 @@ class NxBoards
     # NxBoards::itemsForProgram1(board)
     def self.itemsForProgram1(board)
         [
-            NxOndates::listingItems(),
+            Solingen::mikuTypeItems("NxFloat"),
+            Solingen::mikuTypeItems("NxLine"),
             Solingen::mikuTypeItems("NxFire"),
+            NxOndates::listingItems(),
             Waves::listingItems(board),
             NxBoards::boardToItemsOrdered(board)
         ]
             .flatten
-            .select{|item| item["boarduuid"] == board["uuid"] }
+            .select{|item| (item["boarduuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
                     selected
@@ -148,16 +150,6 @@ class NxBoards
 
             store.register(board, false)
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: board))
-            spacecontrol.putsline ""
-
-            Solingen::mikuTypeItems("NxFloat")
-                .select{|item| item["boarduuid"] == board["uuid"] }
-                .sort_by{|item| item["unixtime"] }
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item)) 
-                    status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
-                    break if !status
-                }
             spacecontrol.putsline ""
 
             items = NxBoards::itemsForProgram1(board)
