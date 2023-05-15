@@ -102,6 +102,7 @@ class Listing
         return true if NxBalls::itemIsRunning(item)
 
         return false if item["mikuType"] == "DesktopTx1"
+        return false if item["mikuType"] == "NxFire"
         return false if item["mikuType"] == "NxFloat"
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
