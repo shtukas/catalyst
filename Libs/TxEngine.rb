@@ -69,7 +69,8 @@ class TxEngines
             # if not completed, we return the lowest
             day_completion_ratio = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
             period_completion_ratio = Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
-            return [day_completion_ratio, period_completion_ratio].max
+            return period_completion_ratio if period_completion_ratio >= 1
+            return day_completion_ratio
         end
         raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
     end

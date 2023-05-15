@@ -39,7 +39,10 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxFifo" then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(item["payload"])
+            payload = Solingen::getItemOrNull(item["payload"]["uuid"])
+            if payload then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(item["payload"])
+            end
         end
 
         accounts.reduce([]){|as, account|
