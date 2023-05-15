@@ -59,19 +59,31 @@ class Solingen
         return $SolingeninMemoryData if $SolingeninMemoryData
         $SolingeninMemoryData = {} # Map[mikuType, Map[uuid, item]]
 
-        data = XCache::getOrNull("7ea6cdc2-c1fe-4e89-89d2-6f29bad54bed")
-        if data then
-            data = JSON.parse(data)
-            $SolingeninMemoryData = data
-            return $SolingeninMemoryData
-        end
-
         data = {}
         puts "Initialising Solingen data from blades"
         Blades::filepathsEnumerator().each{|filepath|
             puts "> Initialising Solingen data from blades: blade filepath: #{filepath}"
+
             uuid = Blades::getMandatoryAttribute1(filepath, "uuid")
+
+            # First, let's compare that filepath is the recorded filepath for the uuid
+            # This will enable us to detect duplicate blades and merge them
+            knownFilepath = XCache::getOrNull("blades:uuid->filepath:mapping:7239cf3f7b6d:#{uuid}")
+            if knownFilepath and File.exist?(knownFilepath) and knownFilepath != filepath then
+                filepath1 = filepath
+                filepath2 = knownFilepath
+                filepath = Blades::merge(filepath1, filepath2)
+            end
+
+            if (unixtime = Blades::getAttributeOrNull1(filepath, "deleted")) then
+                if (Time.new.to_i - unixtime) > 86400*7 then
+                    FileUtils.rm(filepath)
+                end
+                next
+            end
+
             XCache::set("blades:uuid->filepath:mapping:7239cf3f7b6d:#{uuid}", filepath)
+
             item = Solingen::getBladeAsItem(filepath)
             if data[item["mikuType"]].nil? then
                 data[item["mikuType"]] = {}
@@ -79,14 +91,12 @@ class Solingen
             data[item["mikuType"]][item["uuid"]] = item
         }
 
-        XCache::set("7ea6cdc2-c1fe-4e89-89d2-6f29bad54bed", JSON.generate(data))
         $SolingeninMemoryData = data
         $SolingeninMemoryData
     end
 
     # Solingen::setInMemoryData(data)
     def self.setInMemoryData(data)
-        XCache::set("7ea6cdc2-c1fe-4e89-89d2-6f29bad54bed", JSON.generate(data))
         $SolingeninMemoryData = data
     end
 
@@ -219,16 +229,6 @@ class Solingen
         nil
     end
 
-    # Solingen::getItem(uuid)
-    def self.getItem(uuid)
-        mikuTypes = Solingen::getInMemoryData().keys
-        data = Solingen::getInMemoryData()
-        mikuTypes.each{|mikuType|
-            return data[mikuType][uuid] if data[mikuType][uuid]
-        }
-        raise "Solingen::getItem(uuid) could not find item for uuid: #{uuid}"
-    end
-
     # Solingen::mikuTypeCount(mikuType)
     def self.mikuTypeCount(mikuType)
         data = Solingen::getInMemoryData()
@@ -242,8 +242,6 @@ Thread.new {
         sleep 300
         next if $SolingeninMemoryData.nil?
         Blades::filepathsEnumerator().each{|filepath|
-            sleep 0.1
-
             next if !File.exist?(filepath)
 
             uuid = Blades::getMandatoryAttribute1(filepath, "uuid")
@@ -267,15 +265,9 @@ Thread.new {
                 next
             end
             XCache::set("blades:uuid->filepath:mapping:7239cf3f7b6d:#{uuid}", filepath)
-            next if XCache::getFlag("d1af995a-2b1e-465e-a8d1-3c56e937ea4a:#{filepath}") # we have already seen this one
-            data = Solingen::getInMemoryData()
+
             item = Solingen::getBladeAsItem(filepath)
-            if data[item["mikuType"]].nil? then
-                data[item["mikuType"]] = {}
-            end
-            data[item["mikuType"]][item["uuid"]] = item
-            Solingen::setInMemoryData(data)
-            XCache::setFlag("d1af995a-2b1e-465e-a8d1-3c56e937ea4a:#{filepath}", true)
+            Solingen::putItemIntoInMemoryData(item)
         }
     }
 }
