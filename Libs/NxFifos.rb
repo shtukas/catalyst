@@ -86,7 +86,7 @@ class NxFifos
             .map{|item|
                 payload1 = item["payload"]
                 payload2 = Solingen::getItemOrNull(payload1["uuid"])
-                if payload2 != payload1 then
+                if JSON.generate(payload2) != JSON.generate(payload1) then
                     Solingen::setAttribute2(item["uuid"], "payload", payload2)
                 end
                 item
