@@ -191,7 +191,7 @@ class Waves
     end
 
     # Waves::program2(item)
-    def self.program(item)
+    def self.program2(item)
         loop {
             puts Waves::toString(item)
             actions = ["update description", "update wave pattern", "perform done", "set days of the week", "destroy"]
