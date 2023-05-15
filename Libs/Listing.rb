@@ -994,10 +994,10 @@ class Listing
             store = ItemStore.new()
 
             items = Listing::items()
-            floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }
-            fires = Solingen::mikuTypeItems("NxFire")
+            floats = Solingen::mikuTypeItems("NxFloat").select{|item| item["boarduuid"].nil? }.select{|item| Listing::listable(item) }
+            fires = Solingen::mikuTypeItems("NxFire").select{|item| Listing::listable(item) }
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
-            fifos = NxFifos::listingItems()
+            fifos = NxFifos::listingItems().select{|item| Listing::listable(item) }
             fifospayloaduuids = fifos.map{|item| item["payload"]["uuid"] }
             items = items.select{|item| !fifospayloaduuids.include?(item["uuid"]) }
             managed = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
