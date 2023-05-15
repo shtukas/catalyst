@@ -431,7 +431,19 @@ class Listing
                 puts "You can run `forget` on NxFifo items only"
                 LucilleCore::pressEnterToContinue()
             end
-            
+            return
+        end
+
+        if Interpreting::match("forget *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] == "NxFifo" then
+                Solingen::destroy(item["uuid"])
+            else
+                puts "You can run `forget` on NxFifo items only"
+                LucilleCore::pressEnterToContinue()
+            end
             return
         end
 
