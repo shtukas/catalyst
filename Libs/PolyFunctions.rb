@@ -123,29 +123,24 @@ class PolyFunctions
     def self.firstItemsForMainListing(thing)
         if thing["mikuType"] == "NxBoard" then
             return NxBoards::firstItemsForMainListing(thing)
+                    .first(6)
         end
         if thing["mikuType"] == "NxMonitorLongs" then
             return Solingen::mikuTypeItems("NxLong")
-                .select{|item| item["active"] }
-                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+                    .select{|item| item["active"] }
+                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+                    .first(6)
         end
         if thing["mikuType"] == "NxMonitorTasksBoardless" then
-            return NxTasks::boardlessItems()
-                .sort_by{|item| item["position"] }
-                .reduce([]){|selected, item|
-                    if selected.size >= 6 then
-                        selected
-                    else
-                        if NxTasks::completionRatio(item) >= 1 or !DoNotShowUntil::isVisible(item) then
-                            selected
-                        else
-                            selected + [item]
-                        end
-                    end
-                }
+            items = NxTasks::boardlessItems().sort_by{|item| item["position"] }
+            i1s = items.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+            i2s = items.drop(3).take(3)
+            return i1s + i2s
         end
         if thing["mikuType"] == "NxMonitorWaves" then
-            return Waves::listingItems(nil).select{|item| !item["interruption"] }.first(6)
+            return Waves::listingItems(nil)
+                    .select{|item| !item["interruption"] }
+                    .first(6)
         end
         raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::firstItemsForMainListing((#{JSON.pretty_generate(thing)})"
     end

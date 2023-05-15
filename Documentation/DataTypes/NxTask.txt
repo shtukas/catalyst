@@ -6,7 +6,6 @@ NxTask: (Blade)
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
     "position"    : Float
-    "engine"      : TxEngine
 
     "field11"     : null or CoreData reference string
     "boarduuid"   : null of String

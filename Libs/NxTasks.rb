@@ -17,12 +17,11 @@ class NxTasks
 
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxPure", uuid)
+        Solingen::init("NxTask", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board    = NxBoards::interactivelySelectOneOrNull()
         position = NxTasksPositions::decidePositionAtOptionalBoard(board)
-        engine   = TxEngines::interactivelyMakeEngineOrDefault()
 
         boarduuid = board ? board["uuid"] : nil
 
@@ -32,9 +31,6 @@ class NxTasks
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "boarduuid", boarduuid)
         Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "engine", engine)
-
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
@@ -44,7 +40,7 @@ class NxTasks
         description = "Watch '#{title}' on Netflix"
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxPure", uuid)
+        Solingen::init("NxTask", uuid)
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
@@ -56,9 +52,6 @@ class NxTasks
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "boarduuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
-
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
@@ -68,7 +61,7 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxPure", uuid)
+        Solingen::init("NxTask", uuid)
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
@@ -80,9 +73,6 @@ class NxTasks
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "boarduuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
-
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
@@ -92,22 +82,18 @@ class NxTasks
         description = File.basename(location)
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxPure", uuid)
+        Solingen::init("NxTask", uuid)
 
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
         position = NxTasksPositions::slice_positioning2_boardless(50, 100)
 
-        Solingen::init("NxTask", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "boarduuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "engine", TxEngines::defaultEngine(nil))
-
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
@@ -117,17 +103,12 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) #{item["description"]} #{TxEngines::toString(item["engine"])} (#{item["position"].round(2)})"
+        "(task) #{item["description"]} (#{item["position"].round(2)})"
     end
 
     # NxTasks::toStringNoEngine(item)
     def self.toStringNoEngine(item)
         "(task) (#{item["position"].round(2)}) #{item["description"]}"
-    end
-
-    # NxTasks::completionRatio(item)
-    def self.completionRatio(item)
-        TxEngines::completionRatio(item["engine"])
     end
 
     # --------------------------------------------------
