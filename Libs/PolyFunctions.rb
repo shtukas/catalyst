@@ -122,7 +122,7 @@ class PolyFunctions
     # PolyFunctions::firstItemsForMainListing(thing)
     def self.firstItemsForMainListing(thing)
         if thing["mikuType"] == "NxBoard" then
-            return NxBoards::firstItems(thing).reject{|item| item["mikuType"] == "NxFloat" }
+            return NxBoards::firstItemsForMainListing(thing)
         end
         if thing["mikuType"] == "NxMonitorLongs" then
             return Solingen::mikuTypeItems("NxLong")

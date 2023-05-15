@@ -49,14 +49,22 @@ class NxBoards
         Solingen::mikuTypeItems("NxBoard").sort_by{|item| TxEngines::completionRatio(item["engine"]) }
     end
 
-    # NxBoards::boardToItems(board)
-    def self.boardToItems(board)
+    # NxBoards::boardToNxTasks(board)
+    def self.boardToNxTasks(board)
         Solingen::mikuTypeItems("NxTask").select{|item| item["boarduuid"] == board["uuid"] }
     end
 
-    # NxBoards::boardToItemsOrdered(board)
-    def self.boardToItemsOrdered(board)
-        NxBoards::boardToItems(board).sort_by{|item| item["position"] }
+    # NxBoards::boardToNxTasksOrdered(board)
+    def self.boardToNxTasksOrdered(board)
+        NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
+    end
+
+    # NxBoards::boardToNxTasksForListing(board)
+    def self.boardToNxTasksForListing(board)
+        items = NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
+        i1s = items.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        i2s = items.drop(3)
+        i1s + i2s
     end
 
     # NxBoards::completionRatio(board)
@@ -66,7 +74,7 @@ class NxBoards
 
     # NxBoards::firstItems(board)
     def self.firstItems(board)
-        NxBoards::itemsForProgram1(board)
+        NxBoards::itemsForBoardListing(board)
             .select{|item| DoNotShowUntil::isVisible(item) }
             .first(6)
     end
@@ -115,15 +123,15 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::itemsForProgram1(board)
-    def self.itemsForProgram1(board)
+    # NxBoards::itemsForBoardListing(board)
+    def self.itemsForBoardListing(board)
         [
             Solingen::mikuTypeItems("NxFloat"),
             Solingen::mikuTypeItems("NxLine"),
             Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems(board),
-            NxBoards::boardToItemsOrdered(board)
+            NxBoards::boardToNxTasksForListing(board)
         ]
             .flatten
             .select{|item| (item["boarduuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }
@@ -136,8 +144,27 @@ class NxBoards
             }
     end
 
-    # NxBoards::program1(board)
-    def self.program1(board)
+    # NxBoards::firstItemsForMainListing(board)
+    def self.firstItemsForMainListing(board)
+        [
+            Solingen::mikuTypeItems("NxLine"),
+            NxOndates::listingItems(),
+            Waves::listingItems(board),
+            NxBoards::boardToNxTasksForListing(board)
+        ]
+            .flatten
+            .select{|item| (item["boarduuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+    end
+
+    # NxBoards::boardListing(board)
+    def self.boardListing(board)
         loop {
 
             system("clear")
@@ -152,7 +179,7 @@ class NxBoards
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: board))
             spacecontrol.putsline ""
 
-            items = NxBoards::itemsForProgram1(board)
+            items = NxBoards::itemsForBoardListing(board)
             items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
             items
@@ -187,7 +214,7 @@ class NxBoards
                 PolyActions::addTimeToItem(board, timeInHours*3600)
             end
             if action == "program(board)" then
-                NxBoards::program1(board)
+                NxBoards::boardListing(board)
             end
         }
     end
