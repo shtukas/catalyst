@@ -22,9 +22,6 @@ class NxFifos
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
-        if Listing::isOverflowingTask(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
         line
     end
 

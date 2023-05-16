@@ -91,12 +91,6 @@ class Listing
         end
     end
 
-    # Listing::isOverflowingTask(item)ss
-    def self.isOverflowingTask(item)
-        return false if item["mikuType"] != "NxTask"
-        TxEngines::completionRatio(item["engine"]) > 1
-    end
-
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return true if NxBalls::itemIsRunning(item)
@@ -170,9 +164,6 @@ class Listing
             line = line.green
         end
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
-        if Listing::isOverflowingTask(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
         line
