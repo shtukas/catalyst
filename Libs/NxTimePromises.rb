@@ -11,8 +11,8 @@ class NxTimeCapsules
         }
     end
 
-    # NxTimeCapsules::build(unixtime, account, value)
-    def self.build(unixtime, account, value)
+    # NxTimeCapsules::make(unixtime, account, value)
+    def self.make(unixtime, account, value)
         {
             "uuid"     => SecureRandom.uuid,
             "mikuType" => "NxTimeCapsule",
@@ -48,8 +48,8 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::build(unixtime, targetuuid, value)
-    def self.build(unixtime, targetuuid, value)
+    # NxTimePromises::make(unixtime, targetuuid, value)
+    def self.make(unixtime, targetuuid, value)
         {
             "uuid"       => SecureRandom.uuid,
             "mikuType"   => "NxTimePromise",
@@ -60,8 +60,8 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::build_things(item, value, periodInDays)
-    def self.build_things(item, value, periodInDays)
+    # NxTimePromises::compute_things(item, value, periodInDays)
+    def self.compute_things(item, value, periodInDays)
         # This function takes an item that is engine carrier and performs the following operations
 
         # 1. Issue a capsule that is going to substract that value from the item's engine capsule.
@@ -74,21 +74,22 @@ class NxTimePromises
         # Note that the value given is positive, so we substract and then add
 
         things = []
-        things << NxTimeCapsules::build(Time.new.to_i, item["engine"]["capsule"], -value)
+        things << NxTimeCapsules::make(Time.new.to_i, item["engine"]["capsule"], -value)
         (1..periodInDays).each{|i|
-            things << NxTimePromises::build(Time.new.to_i + 86400*i, item["uuid"], value)
+            things << NxTimePromises::make(Time.new.to_i + 86400*i, item["uuid"], value.to_f/periodInDays)
         }
         things
     end
 
     # NxTimePromises::issue_things(item, value, periodInDays)
     def self.issue_things(item, value, periodInDays)
-        NxTimePromises::build_things(item, value, periodInDays)
+        NxTimePromises::compute_things(item, value, periodInDays)
             .each{|thing|
+                uuid = thing["uuid"]
                 if thing["mikuType"] == "NxTimeCapsule" then
                     puts JSON.pretty_generate(thing)
                     puts "NxTimeCapsule: account: #{thing["account"]}; date: #{thing["datetime"]}; #{thing["value"]}".green
-                    Solingen::init("NxTimeCapsule", thing["uuid"])
+                    Solingen::init("NxTimeCapsule", uuid)
                     Solingen::setAttribute2(uuid, "unixtime", thing["unixtime"])
                     Solingen::setAttribute2(uuid, "datetime", thing["datetime"])
                     Solingen::setAttribute2(uuid, "account", thing["account"])
@@ -97,7 +98,7 @@ class NxTimePromises
                 if thing["mikuType"] == "NxTimePromise" then
                     puts JSON.pretty_generate(thing)
                     puts "NxTimePromise: targetuuid: #{thing["targetuuid"]}; date: #{thing["datetime"]}; #{thing["value"]}".green
-                    Solingen::init("NxTimePromise", thing["uuid"])
+                    Solingen::init("NxTimePromise", uuid)
                     Solingen::setAttribute2(uuid, "unixtime", thing["unixtime"])
                     Solingen::setAttribute2(uuid, "datetime", thing["datetime"])
                     Solingen::setAttribute2(uuid, "targetuuid", thing["targetuuid"])
@@ -117,7 +118,7 @@ class NxTimePromises
         Solingen::mikuTypeItems("NxTimePromise")
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|promise|
-                targetitem = Solingen::getItemOrNull(item["targetuuid"])
+                targetitem = Solingen::getItemOrNull(promise["targetuuid"])
                 if targetitem.nil? then
                     puts "Could not recover item for target uuid: #{item["targetuuid"]}"
                 end
