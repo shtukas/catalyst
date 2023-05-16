@@ -56,7 +56,6 @@ class NxBackups
                     Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
                     Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
                     Solingen::setAttribute2(uuid, "description", instruction["operation"])
-                    Solingen::setAttribute2(uuid, "periodInDays", periodInDays)
                     Solingen::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
                     Solingen::setAttribute2(uuid, "lastDoneUnixtime", 0)
                 end

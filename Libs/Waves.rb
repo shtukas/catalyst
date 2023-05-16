@@ -150,13 +150,6 @@ class Waves
                     .select{|item|
                         item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
                     }
-                    .map{|item|
-                        if item["visibleSince"].nil? then
-                            item["visibleSince"] = Time.new.to_i
-                            Solingen::setAttribute2(item["uuid"], "visibleSince", Time.new.to_i)
-                        end
-                        item
-                    }
         if indicator.nil? then
             waves.select{|wave| wave["boarduuid"].nil? or wave["interruption"]}
         else
@@ -176,7 +169,6 @@ class Waves
         Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         Solingen::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
         Solingen::setAttribute2(item["uuid"], "parking", nil)
-        Solingen::setAttribute2(item["uuid"], "visibleSince", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -246,11 +238,6 @@ class Waves
     def self.completionRatio()
         items = Waves::listingItems(nil)
         return 1 if items.empty?
-        ageInSeconds = items
-            .map{|item|
-                Time.new.to_i - item["visibleSince"]
-            }
-            .max
-        [1 - ageInSeconds.to_f/86400, 0].max
+        1.to_f/items.count 
     end
 end
