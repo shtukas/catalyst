@@ -34,7 +34,7 @@ class Listing
             "    - fifos    : fifo set <n> <fifo position> | forget (<n>)",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | longs | projects",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs | projects",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -483,8 +483,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("capsules", input) then
-            NxTimeCapsules::show()
+        if Interpreting::match("time promises", input) then
+            NxTimePromises::show()
             return
         end
 
@@ -848,6 +848,7 @@ class Listing
 
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
+             NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
              NxBoards::dataMaintenance()
