@@ -28,13 +28,13 @@ class Listing
             "",
             "specific types commands:",
             "    - ondate   : redate",
-            "    - tasks    : engine (<n>) | position <n> | coordinates <n>",
+            "    - tasks    : position <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
-            "    - fifos    : fifo set <n> <fifo position> | forget",
+            "    - fifos    : fifo set <n> <fifo position> | forget (<n>)",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | monitor longs | projects",
+            "divings       : anniversaries | ondates | waves | todos | desktop | capsules | tasks | boards | longs | projects",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n>",
         ].join("\n")
@@ -474,8 +474,8 @@ class Listing
             return
         end
 
-        if Interpreting::match("monitor longs", input) then
-            NxLongs::program()
+        if Interpreting::match("longs", input) then
+            NxLongs::program2()
             return
         end
 
@@ -566,22 +566,6 @@ class Listing
                 return
             end
             position = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
-            return
-        end
-
-        if Interpreting::match("coordinates *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "coordinates is only available to NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            board    = NxBoards::interactivelySelectOneOrNull()
-            position = NxTasksPositions::decidePositionAtOptionalBoard(board)
-            engine   = TxEngines::interactivelyMakeEngineOrDefault()
             Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end

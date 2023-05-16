@@ -70,7 +70,7 @@ class NxLongs
         }
     end
 
-    # NxLongs::program()
+    # NxLongs::program2()
     def self.program2()
         loop {
             monitor = Solingen::mikuTypeItems("NxMonitorLongs").first
