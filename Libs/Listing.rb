@@ -404,6 +404,12 @@ class Listing
             return
         end
 
+        if Interpreting::match("mikuTypes", input) then
+            puts Solingen::mikuTypes()
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if Interpreting::match("access *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
