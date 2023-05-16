@@ -17,7 +17,14 @@ class NxTasks
 
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxTask", uuid)
+        # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
+        # because the blade need to exist for aion points data blobs to have a place to go.
+
+        # We cannot give to the blade a NxTask type because NxTasksPositions::decidePositionAtOptionalBoard
+        # will find an item without a position in the collection, which is going to break sorting
+        # There for we create a NxPure and we will recast as NxTask later
+
+        Solingen::init("NxPure", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         board    = NxBoards::interactivelySelectOneOrNull()
@@ -32,6 +39,8 @@ class NxTasks
         Solingen::setAttribute2(uuid, "boarduuid", boarduuid)
         Solingen::setAttribute2(uuid, "position", position)
 
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+
         Solingen::getItemOrNull(uuid)
     end
 
@@ -40,7 +49,7 @@ class NxTasks
         description = "Watch '#{title}' on Netflix"
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxTask", uuid)
+        Solingen::init("NxPure", uuid)
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
@@ -52,6 +61,8 @@ class NxTasks
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "boarduuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
+
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
@@ -61,7 +72,7 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxTask", uuid)
+        Solingen::init("NxPure", uuid)
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
@@ -74,6 +85,8 @@ class NxTasks
         Solingen::setAttribute2(uuid, "boarduuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
 
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+
         Solingen::getItemOrNull(uuid)
     end
 
@@ -82,7 +95,7 @@ class NxTasks
         description = File.basename(location)
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxTask", uuid)
+        Solingen::init("NxPure", uuid)
 
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
@@ -94,6 +107,8 @@ class NxTasks
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "boarduuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
+
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
