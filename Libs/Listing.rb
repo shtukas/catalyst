@@ -991,7 +991,6 @@ class Listing
                     }
                 }
                 .sort_by{|packet| packet["completion"]}
-                .first(1)
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
