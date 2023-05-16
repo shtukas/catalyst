@@ -3,7 +3,7 @@ class Transmutations
 
     # Transmutations::targetMikuTypes()
     def self.targetMikuTypes()
-        ["NxFire", "NxTask"]
+        ["NxFloat", "NxFire", "NxTask"]
     end
 
     # Transmutations::interactivelySelectMikuTypeOrNull()
@@ -30,6 +30,12 @@ class Transmutations
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
             Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
             Solingen::setAttribute2(uuid, "mikuType", "NxFire")
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxFloat" then
+            Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
+            Solingen::setAttribute2(uuid, "mikuType", "NxFloat")
             return
         end
 

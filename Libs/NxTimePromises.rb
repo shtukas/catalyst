@@ -109,20 +109,20 @@ class NxTimePromises
 
     # NxTimePromises::show()
     def self.show()
-        Solingen::mikuTypeItems("NxTimeCapsule")
+        (Solingen::mikuTypeItems("NxTimeCapsule") + Solingen::mikuTypeItems("NxTimePromise"))
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
-            .each{|capsule|
-                board = NxBoards::getItemOfNull(capsule["account"])
-                puts "#{Time.at(capsule["unixtime"]).to_s} : #{capsule["account"]} : #{capsule["value"]}#{board ? " (#{board["description"]})" : ""}"
-            }
-        Solingen::mikuTypeItems("NxTimePromise")
-            .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
-            .each{|promise|
-                targetitem = Solingen::getItemOrNull(promise["targetuuid"])
-                if targetitem.nil? then
-                    puts "Could not recover item for target uuid: #{item["targetuuid"]}"
+            .each{|thing|
+                if thing["mikuType"] == "NxTimeCapsule" then
+                    board = NxBoards::getItemOfNull(thing["account"])
+                    puts "#{Time.at(thing["unixtime"]).to_s} : #{thing["account"]} : #{thing["value"]}#{board ? " (#{board["description"]})" : ""}"
                 end
-                puts "#{Time.at(promise["unixtime"]).to_s} : #{PolyFunctions::toString(targetitem)} : #{promise["value"]}"
+                if thing["mikuType"] == "NxTimePromise" then
+                    targetitem = Solingen::getItemOrNull(thing["targetuuid"])
+                    if targetitem.nil? then
+                        puts "Could not recover item for target uuid: #{item["targetuuid"]}"
+                    end
+                    puts "#{Time.at(thing["unixtime"]).to_s} : #{PolyFunctions::toString(targetitem)} : #{thing["value"]}"
+                end
             }
         LucilleCore::pressEnterToContinue()
     end
