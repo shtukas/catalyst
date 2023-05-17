@@ -936,8 +936,8 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, floats, fires, fifos, interruptions, items, managed)
-    def self.printEvalItems(store, floats, fires, fifos, interruptions, items, managed)
+    # Listing::printEvalItems(store, floats, runningmonitors, fires, fifos, interruptions, items, managed)
+    def self.printEvalItems(store, floats, runningmonitors, fires, fifos, interruptions, items, managed)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -945,6 +945,16 @@ class Listing
         if floats.size > 0 then
             spacecontrol.putsline ""
             floats
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        if runningmonitors.size > 0 then
+            spacecontrol.putsline ""
+            runningmonitors
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
@@ -1029,6 +1039,9 @@ class Listing
                         .select{|item| Listing::listable(item) }
                         .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
 
+            monitors = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves")
+            runningmonitors = monitors.select{|item| NxBalls::itemIsActive(item) }
+
             fires = Solingen::mikuTypeItems("NxFire")
                         .select{|item| Listing::listable(item) }
                         .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
@@ -1038,7 +1051,7 @@ class Listing
 
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
 
-            managed = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
+            managed = monitors
                 .flatten
                 .map{|thing|
                     {
@@ -1050,7 +1063,7 @@ class Listing
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
-            Listing::printEvalItems(store, floats, fires, fifos, interruptions, items, managed)
+            Listing::printEvalItems(store, floats, runningmonitors, fires, fifos, interruptions, items, managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
