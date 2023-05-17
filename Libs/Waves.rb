@@ -238,6 +238,6 @@ class Waves
     def self.completionRatio()
         items = Waves::listingItems(nil)
         return 1 if items.empty?
-        1.to_f/items.count 
+        0.5
     end
 end
