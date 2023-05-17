@@ -936,8 +936,8 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, floats, runningmonitors, fires, fifos, interruptions, items, managed)
-    def self.printEvalItems(store, floats, runningmonitors, fires, fifos, interruptions, items, managed)
+    # Listing::printEvalItems(store, floats, items)
+    def self.printEvalItems(store, floats, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -952,58 +952,15 @@ class Listing
                 }
         end
 
-        if runningmonitors.size > 0 then
+        if items.size > 0 then
             spacecontrol.putsline ""
-            runningmonitors
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
                 }
         end
-
-        if fires.size > 0 then
-            spacecontrol.putsline ""
-            fires
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        if interruptions.size > 0 then
-            spacecontrol.putsline ""
-            interruptions
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        spacecontrol.putsline ""
-
-        items
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item, triage: true)
-                break if !status
-            }
-
-        fifos
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                break if !status
-            }
-
-        managed
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                break if !status
-            }
     end
 
     # Listing::main()
@@ -1032,24 +989,32 @@ class Listing
             store = ItemStore.new()
 
             fifos = NxFifos::listingItems().select{|item| Listing::listable(item) }
+
             fifospayloaduuids = fifos.map{|item| item["payload"] ? item["payload"]["uuid"] : nil }.compact
 
             floats = Solingen::mikuTypeItems("NxFloat")
-                        .select{|item| item["boarduuid"].nil? }
-                        .select{|item| Listing::listable(item) }
-                        .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+                .select{|item| item["boarduuid"].nil? }
+                .select{|item| Listing::listable(item) }
+                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
 
-            monitors = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves")
-            runningmonitors = monitors.select{|item| NxBalls::itemIsActive(item) }
+            monitors = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
+
+            runningmonitors = monitors
+                .select{|item| NxBalls::itemIsActive(item) }
 
             fires = Solingen::mikuTypeItems("NxFire")
-                        .select{|item| Listing::listable(item) }
-                        .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+                .select{|item| Listing::listable(item) }
+                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
 
             items = Listing::items()
-                            .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
 
             interruptions, items = items.partition{|item| Listing::isInterruption(item) }
+
+            interruption = interruptions
+                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+
+            items = items
+                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
 
             managed = monitors
                 .flatten
@@ -1063,7 +1028,7 @@ class Listing
                 .map{|packet| packet["firstItems"] }
                 .flatten
 
-            Listing::printEvalItems(store, floats, runningmonitors, fires, fifos, interruptions, items, managed)
+            Listing::printEvalItems(store, floats, runningmonitors + interruption + fires + items  + fifos + managed)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
