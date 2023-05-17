@@ -98,9 +98,6 @@ class PolyFunctions
         if item["mikuType"] == "NxMonitorTasksBoardless" then
             return NxTasks::boardlessMonitorToString(item)
         end
-        if item["mikuType"] == "NxMonitorWaves" then
-            return Waves::monitorToString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
@@ -137,11 +134,6 @@ class PolyFunctions
             i2s = items.drop(3).take(3)
             return i1s + i2s
         end
-        if monitor["mikuType"] == "NxMonitorWaves" then
-            return Waves::listingItems(nil)
-                    .select{|item| !item["interruption"] }
-                    .first(6)
-        end
         raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::firstItemsForMainListing((#{JSON.pretty_generate(monitor)})"
     end
 
@@ -155,9 +147,6 @@ class PolyFunctions
         end
         if monitor["mikuType"] == "NxMonitorTasksBoardless" then
             return TxEngines::completionRatio(monitor["engine"])
-        end
-        if monitor["mikuType"] == "NxMonitorWaves" then
-            return Waves::completionRatio()
         end
         raise "(error: b31c7245-31cd-4546-8eac-1803ef843801) could not compute generic completion ratio for monitor: #{monitor}"
     end

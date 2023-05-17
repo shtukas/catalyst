@@ -44,11 +44,6 @@ class NxFifos
 
     # NxFifos::nextPosition1(issuerId)
     def self.nextPosition1(issuerId)
-        if issuerId == "interruption" then
-            items = Solingen::mikuTypeItems("NxFifo").select{|item| item["payload"]["interruption"] }
-            return NxFifos::firstPosition1()-1 if items.empty?
-            return items.map{|item| item["position"] }.max + 1
-        end
         items = Solingen::mikuTypeItems("NxFifo")
         return 1 if items.empty?
         items.map{|item| item["position"] }.max + 1

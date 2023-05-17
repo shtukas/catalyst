@@ -31,7 +31,7 @@ class Listing
             "    - tasks    : position <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
-            "    - fifos    : fifo set <n> <fifo position> | forget (<n>) | >>> <target position>",
+            "    - fifos    : fifo set <n> <fifo position> | forget (<n>) | >> <target position>",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs | projects",
@@ -130,16 +130,43 @@ class Listing
 
     # Listing::items()
     def self.items()
-        [
-            PhysicalTargets::listingItems(),
-            Anniversaries::listingItems(),
-            Desktop::listingItems(),
-            Waves::listingItems(nil).select{|item| item["interruption"] },
-            NxOndates::listingItems(),
-            NxBackups::listingItems(),
-            Solingen::mikuTypeItems("NxLine"),
-        ]
+        fifos = NxFifos::listingItems().select{|item| Listing::listable(item) }
+
+        fifospayloaduuids = fifos.map{|item| item["payload"] ? item["payload"]["uuid"] : nil }.compact
+
+        floats = Solingen::mikuTypeItems("NxFloat")
+            .select{|item| item["boarduuid"].nil? }
+            .select{|item| Listing::listable(item) }
+            .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+
+        monitors = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless")
+
+        runningmonitors = monitors
+            .select{|item| NxBalls::itemIsActive(item) }
+
+        fires = Solingen::mikuTypeItems("NxFire")
+            .select{|item| Listing::listable(item) }
+            .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+
+        interruptions = Waves::listingItems(nil)
+            .select{|item| item["interruption"] }
+            .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+
+        waves = Waves::listingItems(nil)
+
+        managed = monitors
             .flatten
+            .map{|thing|
+                {
+                    "completion" => PolyFunctions::completionRatio(thing),
+                    "firstItems" => PolyFunctions::firstItemsForMainListing(thing).select{|item| Listing::listable(item) }
+                }
+            }
+            .sort_by{|packet| packet["completion"]}
+            .map{|packet| packet["firstItems"] }
+            .flatten
+
+        (runningmonitors + Anniversaries::listingItems() + Desktop::listingItems() + PhysicalTargets::listingItems() + interruptions + fires + NxBackups::listingItems() + NxOndates::listingItems() + waves + Solingen::mikuTypeItems("NxLine") + fifos + managed)
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
@@ -150,10 +177,10 @@ class Listing
             }
     end
 
-    # Listing::itemToListingLine(store: nil, item: nil, triage: false)
-    def self.itemToListingLine(store: nil, item: nil, triage: false)
+    # Listing::itemToListingLine(store: nil, item: nil)
+    def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString(triage: triage)})" : "     "
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
         line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
@@ -298,31 +325,11 @@ class Listing
             return
         end
 
-        if Interpreting::match(">>> *", input) then
+        if Interpreting::match(">> *", input) then
             _, fifoposition = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             NxFifos::issue1(item["mikuType"], item, fifoposition.to_f)
-            return
-        end
-
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Listing::tmpskip1(item)
-            return
-        end
-
-        if Interpreting::match(">> *", input) then
-            _, durationInHours = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            directive = {
-                "unixtime"        => Time.new.to_f,
-                "durationInHours" => durationInHours.to_f
-            }
-            puts JSON.pretty_generate(directive)
-            Solingen::setAttribute2(item["uuid"], "tmpskip1", directive)
             return
         end
 
@@ -352,7 +359,7 @@ class Listing
 
                 store = ItemStore.new()
 
-                things = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves")
+                things = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless")
                 things
                     .sort_by{|item| PolyFunctions::completionRatio(item) }
                     .each{|item|
@@ -988,47 +995,11 @@ class Listing
 
             store = ItemStore.new()
 
-            fifos = NxFifos::listingItems().select{|item| Listing::listable(item) }
-
-            fifospayloaduuids = fifos.map{|item| item["payload"] ? item["payload"]["uuid"] : nil }.compact
-
             floats = Solingen::mikuTypeItems("NxFloat")
                 .select{|item| item["boarduuid"].nil? }
                 .select{|item| Listing::listable(item) }
-                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
 
-            monitors = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless") + Solingen::mikuTypeItems("NxMonitorWaves"))
-
-            runningmonitors = monitors
-                .select{|item| NxBalls::itemIsActive(item) }
-
-            fires = Solingen::mikuTypeItems("NxFire")
-                .select{|item| Listing::listable(item) }
-                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
-
-            items = Listing::items()
-
-            interruptions, items = items.partition{|item| Listing::isInterruption(item) }
-
-            interruption = interruptions
-                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
-
-            items = items
-                .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
-
-            managed = monitors
-                .flatten
-                .map{|thing|
-                    {
-                        "completion" => PolyFunctions::completionRatio(thing),
-                        "firstItems" => PolyFunctions::firstItemsForMainListing(thing).select{|item| Listing::listable(item) }
-                    }
-                }
-                .sort_by{|packet| packet["completion"]}
-                .map{|packet| packet["firstItems"] }
-                .flatten
-
-            Listing::printEvalItems(store, floats, runningmonitors + interruption + fires + items  + fifos + managed)
+            Listing::printEvalItems(store, floats, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

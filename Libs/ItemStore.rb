@@ -21,11 +21,8 @@ class ItemStore
         @items.last["uuid"] == @defaultItem["uuid"]
     end
 
-    def prefixString(triage: false)
+    def prefixString()
         indx = @items.size-1
-        if triage and latestEnteredItemIsDefault() then
-            return ">>>"
-        end
         latestEnteredItemIsDefault() ? "-->".green : "#{"%3d" % indx}"
     end
 

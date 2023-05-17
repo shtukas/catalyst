@@ -8,7 +8,6 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
-    - "interruption"   : displayed in priority
 
 (2) Carried by all objects, help with resolution
 

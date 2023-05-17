@@ -300,11 +300,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitorWaves" then
-            Waves::program1()
-            return
-        end
-
         if item["mikuType"] == "NxMonitorTasksBoardless" then
             NxTasks::boardlessItemsProgram2()
             return

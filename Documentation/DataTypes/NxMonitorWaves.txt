@@ -1,4 +1,0 @@
-
-NxMonitorWaves (Blade) singleton
-    "uuid"        : String
-    "mikuType"    : "NxMonitorWaves"
