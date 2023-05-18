@@ -24,7 +24,7 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | fifo | fifo time | fifo times | float",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | long | fifo | fifo time | fifo times | float",
             "",
             "specific types commands:",
             "    - ondate   : redate",
@@ -34,7 +34,7 @@ class Listing
             "    - fifos    : fifo set <n> <fifo position> | fifo <fifo position> (defaul item goes to position) | fifo next | forget (<n>)",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs | projects",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
         ].join("\n")
