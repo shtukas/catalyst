@@ -31,7 +31,7 @@ class Listing
             "    - tasks    : position <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
-            "    - fifos    : fifo set <n> <fifo position> | forget (<n>) | >> <target position>",
+            "    - fifos    : fifo set <n> <fifo position> | fifo <fifo position> (defaul item goes to position) | forget (<n>)",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs | projects",
@@ -327,14 +327,6 @@ class Listing
             return
         end
 
-        if Interpreting::match(">> *", input) then
-            _, fifoposition = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxFifos::issue1(item["mikuType"], item, fifoposition.to_f)
-            return
-        end
-
         if Interpreting::match("add time *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -421,6 +413,14 @@ class Listing
                 return
             end
             NxFifos::issue1(item["mikuType"], item, position.to_f)
+            return
+        end
+
+        if Interpreting::match("fifo *", input) then
+            _, fifoposition = Interpreting::tokenizer(input)
+            item = store.getDefault()
+            return if item.nil?
+            NxFifos::issue1(item["mikuType"], item, fifoposition.to_f)
             return
         end
 
