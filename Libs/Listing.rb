@@ -145,6 +145,12 @@ class Listing
         runningmonitors = monitors
             .select{|item| NxBalls::itemIsActive(item) }
 
+        monitorsRunninItems = monitors
+            .map{|monitor|
+                PolyFunctions::monitorToRunningItems(monitor)
+            }
+            .flatten
+
         fires = Solingen::mikuTypeItems("NxFire")
 
         interruptions = 
@@ -160,16 +166,20 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
-        xfloats = (runningmonitors + Anniversaries::listingItems() + Desktop::listingItems() + fires + NxBackups::listingItems() + ondates + waves + Solingen::mikuTypeItems("NxLine"))
+        xfloats = (monitorsRunninItems + runningmonitors + Anniversaries::listingItems() + Desktop::listingItems() + fires + NxBackups::listingItems() + ondates + waves + Solingen::mikuTypeItems("NxLine"))
             .select{|item| Listing::listable(item) }
             .select{|item| !fifospayloaduuids.include?(item["uuid"]) }
+
+        runningXFloats, xfloat = xfloats.partition{|item| NxBalls::itemIsActive(item) }
 
         monitors = monitors
             .select{|item| Listing::listable(item) }
             .sort_by{|item| PolyFunctions::completionRatio(item) }
             .select{|item| !fifospayloaduuids.include?(item["uuid"]) }
 
-        [burner, interruptions, xfloats, fifos, monitors]
+        runnings = monitorsRunninItems + runningmonitors + runningXFloats
+
+        [burner, runnings, interruptions, xfloats, fifos, monitors]
     end
 
     # Listing::itemToListingLine(store: nil, item: nil)
@@ -958,11 +968,21 @@ class Listing
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
-        burner, interruptions, xfloats, fifos, monitors = items
+        burner, runnings, interruptions, xfloats, fifos, monitors = items
 
         if burner.size > 0 then
             spacecontrol.putsline ""
             burner
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        if runnings.size > 0 then
+            spacecontrol.putsline ""
+            runnings
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)

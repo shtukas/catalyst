@@ -116,24 +116,23 @@ class PolyFunctions
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
 
-    # PolyFunctions::firstItemsForMainListing(monitor, size)
-    def self.firstItemsForMainListing(monitor, size)
+    # PolyFunctions::monitorToRunningItems(monitor)
+    # Monitors are either: NxBoard, NxBoard,
+    def self.monitorToRunningItems(monitor)
         if monitor["mikuType"] == "NxBoard" then
-            return NxBoards::firstItemsForMainListing(monitor, size)
+            return NxBoards::runningItems(monitor)
         end
         if monitor["mikuType"] == "NxMonitorLongs" then
             return Solingen::mikuTypeItems("NxLong")
-                    .select{|item| item["active"] }
-                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-                    .first(size)
+                    .select{|item| NxBalls::itemIsActive(item) }
         end
         if monitor["mikuType"] == "NxMonitorTasksBoardless" then
-            items = NxTasks::boardlessItems().sort_by{|item| item["position"] }
-            i1s = items.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-            i2s = items.drop(3).take(size-3)
-            return i1s + i2s
+            return NxTasks::boardlessItems()
+                .sort_by{|item| item["position"] }
+                .take(16)
+                .select{|item| NxBalls::itemIsActive(item) }
         end
-        raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::firstItemsForMainListing((#{JSON.pretty_generate(monitor)}, size)"
+        raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::monitorToRunningItems((#{JSON.pretty_generate(monitor)}, size)"
     end
 
     # PolyFunctions::completionRatio(monitor)

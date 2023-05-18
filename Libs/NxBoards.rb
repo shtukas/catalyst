@@ -69,11 +69,16 @@ class NxBoards
         TxEngines::completionRatio(board["engine"])
     end
 
-    # NxBoards::firstItems(board)
-    def self.firstItems(board)
-        NxBoards::itemsForBoardListing(board)
-            .select{|item| DoNotShowUntil::isVisible(item) }
-            .first(6)
+    # NxBoards::runningItems(board)
+    def self.runningItems(board)
+        [
+            Solingen::mikuTypeItems("NxLine"),
+            NxOndates::listingItems(),
+            Waves::listingItems(board),
+            NxBoards::boardToNxTasksForListing(board)
+        ]
+            .flatten
+            .select{|item| NxBalls::itemIsActive(item) }
     end
 
     # ---------------------------------------------------------
@@ -139,26 +144,6 @@ class NxBoards
                     selected + [item]
                 end
             }
-    end
-
-    # NxBoards::firstItemsForMainListing(board, size)
-    def self.firstItemsForMainListing(board, size)
-        [
-            Solingen::mikuTypeItems("NxLine"),
-            NxOndates::listingItems(),
-            Waves::listingItems(board),
-            NxBoards::boardToNxTasksForListing(board)
-        ]
-            .flatten
-            .select{|item| (item["boarduuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-            .first(size)
     end
 
     # NxBoards::boardListing(board)
