@@ -41,7 +41,7 @@ class NxTimePromises
                 bankaccounts = PolyFunctions::itemsToBankingAccounts(targetitem)
                 bankaccounts.each{|account|
                     puts "adding #{item["value"]} to account: #{account}"
-                    Bank::put(account, item["value"])
+                    Bank::put(account["number"], item["value"])
                 }
                 Solingen::destroy(item["uuid"])
             end
