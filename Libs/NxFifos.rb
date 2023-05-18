@@ -82,6 +82,7 @@ class NxFifos
                     if JSON.generate(payload2) != JSON.generate(payload1) then
                         Solingen::setAttribute2(item["uuid"], "payload", payload2)
                     end
+                    item["payload"] =  payload2
                 end
                 item
             }
