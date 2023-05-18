@@ -296,7 +296,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxMonitorLongs" then
-            NxLongs::program()
+            NxLongs::program2()
             return
         end
 
