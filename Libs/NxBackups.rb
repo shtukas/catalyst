@@ -82,4 +82,16 @@ class NxBackups
     def self.performDone(item)
         Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
     end
+
+    # NxBackups::program(item)
+    def self.program(item)
+        loop {
+            puts PolyFunctions::toString(item).green
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["perform done"])
+            return if action.nil?
+            if action == "perform done" then
+                NxBackups::performDone(item)
+            end
+        }
+    end
 end

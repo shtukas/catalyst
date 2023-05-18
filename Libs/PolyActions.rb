@@ -367,6 +367,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBackup" then
+            NxBackups::program(item)
+            return
+        end
+
         if item["mikuType"] == "NxBoard" then
             PolyActions::access(item)
             return
