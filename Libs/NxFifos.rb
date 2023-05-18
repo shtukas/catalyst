@@ -42,8 +42,8 @@ class NxFifos
         items.map{|item| item["position"] }.max + 1
     end
 
-    # NxFifos::nextPosition1(issuerId)
-    def self.nextPosition1(issuerId)
+    # NxFifos::nextPosition1()
+    def self.nextPosition1()
         items = Solingen::mikuTypeItems("NxFifo")
         return 1 if items.empty?
         items.map{|item| item["position"] }.max + 1

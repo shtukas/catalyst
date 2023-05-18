@@ -31,7 +31,7 @@ class Listing
             "    - tasks    : position <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
-            "    - fifos    : fifo set <n> <fifo position> | fifo <fifo position> (defaul item goes to position) | forget (<n>)",
+            "    - fifos    : fifo set <n> <fifo position> | fifo <fifo position> (defaul item goes to position) | fifo next | forget (<n>)",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs | projects",
@@ -421,6 +421,13 @@ class Listing
             item = store.getDefault()
             return if item.nil?
             NxFifos::issue1(item["mikuType"], item, fifoposition.to_f)
+            return
+        end
+
+        if Interpreting::match("fifo next", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxFifos::issue1(item["mikuType"], item, NxFifos::nextPosition1())
             return
         end
 
