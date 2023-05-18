@@ -9,7 +9,7 @@ class Catalyst
             "NxBackup",
             "NxBoard",
             "NxFire",
-            "NxFloat",
+            "NxBurner",
             "NxLine",
             "NxLong",
             "NxOndate",

@@ -80,8 +80,8 @@ class PolyFunctions
         if item["mikuType"] == "NxFifo" then
             return NxFifos::toString(item)
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
+        if item["mikuType"] == "NxBurner" then
+            return NxBurners::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

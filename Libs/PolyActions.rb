@@ -38,7 +38,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxBurner" then
             CoreData::access(item["uuid"], item["field11"])
             return
         end
@@ -129,7 +129,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxBurner" then
             if NxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it."
                 LucilleCore::pressEnterToContinue()
@@ -312,7 +312,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxBurner" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)

@@ -97,7 +97,7 @@ class Listing
 
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFire"
-        return false if item["mikuType"] == "NxFloat"
+        return false if item["mikuType"] == "NxBurner"
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
@@ -135,7 +135,7 @@ class Listing
 
         fifospayloaduuids = fifos.map{|item| item["payload"] ? item["payload"]["uuid"] : nil }.compact
 
-        burner = Solingen::mikuTypeItems("NxFloat")
+        burner = Solingen::mikuTypeItems("NxBurner")
             .select{|item| item["boarduuid"].nil? }
             .select{|item| Listing::listable(item) }
             .select{|item| !fifospayloaduuids.include?(item["uuid"]) }
@@ -229,8 +229,8 @@ class Listing
                 "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "Solingen::mikuTypeItems(NxFloat)",
-                "lambda" => lambda { Solingen::mikuTypeItems("NxFloat") }
+                "name" => "Solingen::mikuTypeItems(NxBurner)",
+                "lambda" => lambda { Solingen::mikuTypeItems("NxBurner") }
             },
             {
                 "name" => "Solingen::mikuTypeItems(NxFire)",
@@ -774,7 +774,7 @@ class Listing
         end
 
         if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNewOrNull()
+            item = NxBurners::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             BoardsAndItems::maybeAskAndMaybeAttach(item)

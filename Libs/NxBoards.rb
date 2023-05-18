@@ -128,7 +128,7 @@ class NxBoards
     # NxBoards::itemsForBoardListing(board)
     def self.itemsForBoardListing(board)
         [
-            Solingen::mikuTypeItems("NxFloat"),
+            Solingen::mikuTypeItems("NxBurner"),
             Solingen::mikuTypeItems("NxLine"),
             Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
