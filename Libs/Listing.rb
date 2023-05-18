@@ -159,7 +159,7 @@ class Listing
             .map{|thing|
                 {
                     "completion" => PolyFunctions::completionRatio(thing),
-                    "firstItems" => PolyFunctions::firstItemsForMainListing(thing).select{|item| Listing::listable(item) }
+                    "firstItems" => PolyFunctions::firstItemsForMainListing(thing, 6).select{|item| Listing::listable(item) }
                 }
             }
             .sort_by{|packet| packet["completion"]}

@@ -61,10 +61,7 @@ class NxBoards
 
     # NxBoards::boardToNxTasksForListing(board)
     def self.boardToNxTasksForListing(board)
-        items = NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
-        i1s = items.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        i2s = items.drop(3)
-        i1s + i2s
+        NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
     end
 
     # NxBoards::completionRatio(board)
@@ -144,8 +141,8 @@ class NxBoards
             }
     end
 
-    # NxBoards::firstItemsForMainListing(board)
-    def self.firstItemsForMainListing(board)
+    # NxBoards::firstItemsForMainListing(board, size)
+    def self.firstItemsForMainListing(board, size)
         [
             Solingen::mikuTypeItems("NxLine"),
             NxOndates::listingItems(),
@@ -161,6 +158,7 @@ class NxBoards
                     selected + [item]
                 end
             }
+            .first(size)
     end
 
     # NxBoards::boardListing(board)
