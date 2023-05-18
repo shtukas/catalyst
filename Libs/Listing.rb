@@ -159,7 +159,7 @@ class Listing
                 PhysicalTargets::listingItems()
             ]
             .flatten
-
+            .select{|item| Listing::listable(item) }
 
         waves = Waves::listingItems(nil)
             .select{|item| !item["interruption"] }
@@ -970,10 +970,14 @@ class Listing
 
         burner, runnings, interruptions, xfloats, fifos, monitors = items
 
+        shownuuids = []
+
         if burner.size > 0 then
             spacecontrol.putsline ""
             burner
                 .each{|item|
+                    next if shownuuids.include?(item["uuid"])
+                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
@@ -984,6 +988,8 @@ class Listing
             spacecontrol.putsline ""
             runnings
                 .each{|item|
+                    next if shownuuids.include?(item["uuid"])
+                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
@@ -994,6 +1000,8 @@ class Listing
             spacecontrol.putsline ""
             interruptions
                 .each{|item|
+                    next if shownuuids.include?(item["uuid"])
+                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
@@ -1005,6 +1013,8 @@ class Listing
             spacecontrol.putsline "(triage)"
             xfloats
                 .each{|item|
+                    next if shownuuids.include?(item["uuid"])
+                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
@@ -1015,6 +1025,8 @@ class Listing
             spacecontrol.putsline ""
             fifos
                 .each{|item|
+                    next if shownuuids.include?(item["uuid"])
+                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
@@ -1025,6 +1037,8 @@ class Listing
             spacecontrol.putsline ""
             monitors
                 .each{|item|
+                    next if shownuuids.include?(item["uuid"])
+                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status
