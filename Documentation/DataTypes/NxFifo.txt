@@ -1,8 +1,0 @@
-
-NxFifo: (Blade)
-    "uuid"     : String
-    "mikuType" : "NxFifo"
-    "issuerId" : String
-    "payload"  : CatalystItem
-    "time"     : null or "HH:MM" carried by appointment items
-    "position" : Float

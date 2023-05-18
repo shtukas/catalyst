@@ -28,11 +28,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFifo" then
-            PolyActions::access(item["payload"])
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -139,18 +134,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxFifo" then
-            if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
-                LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
-            end
-            PolyActions::done(item["payload"])
-            Solingen::destroy(item["uuid"])
             return
         end
 
@@ -289,12 +272,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFifo" then
-            PolyActions::doubleDot(item["payload"])
-            Solingen::destroy(item["uuid"])
-            return
-        end
-
         if item["mikuType"] == "NxMonitorLongs" then
             NxLongs::program2()
             return
@@ -377,11 +354,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFifo" then
-            PolyActions::program(item["payload"])
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
             return
@@ -414,10 +386,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "There is no description edit for NxBackups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
-            return
-        end
-        if item["mikuType"] == "NxFifo" then
-            PolyActions::editDescription(item["payload"])
             return
         end
         puts "edit description:"

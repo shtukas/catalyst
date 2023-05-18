@@ -24,14 +24,13 @@ class Listing
     def self.listingCommands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | long | fifo | fifo time | fifo times | float",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | long | float",
             "",
             "specific types commands:",
             "    - ondate   : redate",
             "    - tasks    : position <n>",
             "    - monitors : engine (<n>)",
             "    - boards   : engine (<n>)",
-            "    - fifos    : fifo set <n> <fifo position> | fifo <fifo position> (defaul item goes to position) | fifo next | forget (<n>)",
             "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs",
@@ -131,14 +130,8 @@ class Listing
     # Listing::items()
     def self.items()
 
-        fifos = NxFifos::listingItems().select{|item| Listing::listable(item) }
-
-        fifospayloaduuids = fifos.map{|item| item["payload"] ? item["payload"]["uuid"] : nil }.compact
-
         burner = Solingen::mikuTypeItems("NxBurner")
             .select{|item| item["boarduuid"].nil? }
-            .select{|item| Listing::listable(item) }
-            .select{|item| !fifospayloaduuids.include?(item["uuid"]) }
 
         monitors = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
 
@@ -146,40 +139,49 @@ class Listing
             .select{|item| NxBalls::itemIsActive(item) }
 
         monitorsRunninItems = monitors
-            .map{|monitor|
-                PolyFunctions::monitorToRunningItems(monitor)
-            }
+            .map{|monitor| PolyFunctions::monitorToRunningItems(monitor) }
             .flatten
 
         fires = Solingen::mikuTypeItems("NxFire")
 
-        interruptions = 
+        interruptions =
             [
                 Waves::listingItems(nil).select{|item| item["interruption"] },
                 PhysicalTargets::listingItems()
             ]
             .flatten
-            .select{|item| Listing::listable(item) }
 
         waves = Waves::listingItems(nil)
             .select{|item| !item["interruption"] }
 
         ondates = NxOndates::listingItems()
 
-        xfloats = (monitorsRunninItems + runningmonitors + Anniversaries::listingItems() + Desktop::listingItems() + fires + NxBackups::listingItems() + ondates + waves + Solingen::mikuTypeItems("NxLine"))
-            .select{|item| Listing::listable(item) }
-            .select{|item| !fifospayloaduuids.include?(item["uuid"]) }
-
-        runningXFloats, xfloat = xfloats.partition{|item| NxBalls::itemIsActive(item) }
-
         monitors = monitors
-            .select{|item| Listing::listable(item) }
             .sort_by{|item| PolyFunctions::completionRatio(item) }
-            .select{|item| !fifospayloaduuids.include?(item["uuid"]) }
 
-        runnings = monitorsRunninItems + runningmonitors + runningXFloats
-
-        [burner, runnings, interruptions, xfloats, fifos, monitors]
+        [
+            burner,
+            runningmonitors,
+            monitorsRunninItems,
+            Anniversaries::listingItems(),
+            Desktop::listingItems(),
+            fires,
+            interruptions,
+            NxBackups::listingItems(),
+            NxBackups::listingItems(),
+            waves,
+            ondates,
+            monitors
+        ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if !selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected + [item]
+                else
+                    selected
+                end
+            }
     end
 
     # Listing::itemToListingLine(store: nil, item: nil)
@@ -399,73 +401,6 @@ class Listing
             return
         end
 
-        if Interpreting::match("fifo", input) then
-            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if line == ""
-            payload = NxLines::issue(line)
-            BoardsAndItems::askAndMaybeAttach(payload)
-            position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
-            if position.size == 0 then
-                position = NxFifos::nextPosition1()
-            else
-                position = position.to_f
-            end
-            NxFifos::issue1("pascal", payload, position)
-            return
-        end
-
-        if Interpreting::match("fifo set * *", input) then
-            _, _, listord, position = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] == "NxFifo" then
-                Solingen::setAttribute2(item["uuid"], "position", position.to_f)
-                return
-            end
-            NxFifos::issue1(item["mikuType"], item, position.to_f)
-            return
-        end
-
-        if Interpreting::match("fifo *", input) then
-            _, fifoposition = Interpreting::tokenizer(input)
-            item = store.getDefault()
-            return if item.nil?
-            NxFifos::issue1(item["mikuType"], item, fifoposition.to_f)
-            return
-        end
-
-        if Interpreting::match("fifo next", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxFifos::issue1(item["mikuType"], item, NxFifos::nextPosition1())
-            return
-        end
-
-        if Interpreting::match("fifo time", input) then
-            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if line == ""
-            payload = NxLines::issue(line)
-            BoardsAndItems::askAndMaybeAttach(payload)
-            time = LucilleCore::askQuestionAnswerAsString("time HH:YY: ")
-            item = NxFifos::issue2("appointment", payload, time)
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("fifo times", input) then
-            loop {
-                puts ""
-                line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-                return if line == ""
-                payload = NxLines::issue(line)
-                BoardsAndItems::askAndMaybeAttach(payload)
-                time = LucilleCore::askQuestionAnswerAsString("time HH:YY: ")
-                item = NxFifos::issue2("appointment", payload, time)
-                puts JSON.pretty_generate(item)
-            }
-            return
-        end
-
         if Interpreting::match("projects", input) then
             NxLongs::program1()
             return
@@ -492,31 +427,6 @@ class Listing
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
-            return
-        end
-
-        if Interpreting::match("forget", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] == "NxFifo" then
-                Solingen::destroy(item["uuid"])
-            else
-                puts "You can run `forget` on NxFifo items only"
-                LucilleCore::pressEnterToContinue()
-            end
-            return
-        end
-
-        if Interpreting::match("forget *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] == "NxFifo" then
-                Solingen::destroy(item["uuid"])
-            else
-                puts "You can run `forget` on NxFifo items only"
-                LucilleCore::pressEnterToContinue()
-            end
             return
         end
 
@@ -965,80 +875,11 @@ class Listing
     # Listing::printEvalItems(store, items)
     def self.printEvalItems(store, items)
         system("clear")
-
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-        burner, runnings, interruptions, xfloats, fifos, monitors = items
-
-        shownuuids = []
-
-        if burner.size > 0 then
+        if items.size > 0 then
             spacecontrol.putsline ""
-            burner
+            items
                 .each{|item|
-                    next if shownuuids.include?(item["uuid"])
-                    shownuuids << item["uuid"]
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        if runnings.size > 0 then
-            spacecontrol.putsline ""
-            runnings
-                .each{|item|
-                    next if shownuuids.include?(item["uuid"])
-                    shownuuids << item["uuid"]
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        if interruptions.size > 0 then
-            spacecontrol.putsline ""
-            interruptions
-                .each{|item|
-                    next if shownuuids.include?(item["uuid"])
-                    shownuuids << item["uuid"]
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        if xfloats.size > 0 then
-            spacecontrol.putsline ""
-            spacecontrol.putsline "(triage)"
-            xfloats
-                .each{|item|
-                    next if shownuuids.include?(item["uuid"])
-                    shownuuids << item["uuid"]
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        if fifos.size > 0 then
-            spacecontrol.putsline ""
-            fifos
-                .each{|item|
-                    next if shownuuids.include?(item["uuid"])
-                    shownuuids << item["uuid"]
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        if monitors.size > 0 then
-            spacecontrol.putsline ""
-            monitors
-                .each{|item|
-                    next if shownuuids.include?(item["uuid"])
-                    shownuuids << item["uuid"]
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                     break if !status

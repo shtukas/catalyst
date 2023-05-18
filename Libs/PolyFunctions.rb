@@ -38,13 +38,6 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
-        if item["mikuType"] == "NxFifo" then
-            payload = Solingen::getItemOrNull(item["payload"]["uuid"])
-            if payload then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(item["payload"])
-            end
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -76,9 +69,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
-        end
-        if item["mikuType"] == "NxFifo" then
-            return NxFifos::toString(item)
         end
         if item["mikuType"] == "NxBurner" then
             return NxBurners::toString(item)
