@@ -23,7 +23,7 @@ class Listing
     # Listing::listingCommands()
     def self.listingCommands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | skip | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | project | fifo | fifo time | fifo times | float",
             "",
             "specific types commands:",
@@ -317,6 +317,13 @@ class Listing
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
+            return
+        end
+
+        if Interpreting::match("skip", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Listing::tmpskip1(item)
             return
         end
 
