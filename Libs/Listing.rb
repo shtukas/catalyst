@@ -154,6 +154,9 @@ class Listing
 
         waves = Waves::listingItems(nil)
 
+        ondates = NxOndates::listingItems()
+            .reject{|item| fifospayloaduuids.include?(item["uuid"]) }
+
         managed = monitors
             .flatten
             .map{|thing|
@@ -166,7 +169,7 @@ class Listing
             .map{|packet| packet["firstItems"] }
             .flatten
 
-        (runningmonitors + Anniversaries::listingItems() + Desktop::listingItems() + PhysicalTargets::listingItems() + interruptions + fires + NxBackups::listingItems() + NxOndates::listingItems() + waves + Solingen::mikuTypeItems("NxLine") + fifos + managed)
+        (runningmonitors + Anniversaries::listingItems() + Desktop::listingItems() + PhysicalTargets::listingItems() + interruptions + fires + NxBackups::listingItems() + ondates + waves + Solingen::mikuTypeItems("NxLine") + fifos + managed)
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
