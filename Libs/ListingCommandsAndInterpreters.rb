@@ -190,6 +190,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("long", input) then
+            item = NxLongs::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            BoardsAndItems::askAndMaybeAttach(item)
+            return
+        end
+
         if Interpreting::match("longs", input) then
             NxLongs::program2()
             return
