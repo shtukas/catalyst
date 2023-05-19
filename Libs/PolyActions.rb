@@ -214,6 +214,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTime" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
             return
