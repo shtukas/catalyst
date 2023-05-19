@@ -113,8 +113,8 @@ class Waves
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
-        Solingen::init("Wave", uuid)
         uuid = SecureRandom.uuid
+        Solingen::init("Wave", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
