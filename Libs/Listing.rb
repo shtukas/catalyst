@@ -151,7 +151,6 @@ class Listing
             fires,
             interruptions,
             NxBackups::listingItems(),
-            NxBackups::listingItems(),
             times,
             waves,
             ondates,

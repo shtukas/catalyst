@@ -19,7 +19,7 @@ class NxTimes
 
     # NxTimes::listingItems()
     def self.listingItems()
-        Solingen::mikuTypeItems("NxMonitorLongs")
+        Solingen::mikuTypeItems("NxTime")
             .sort_by{|item| item["time"] }
     end
 end
