@@ -147,6 +147,7 @@ require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
+require_relative "ListingCommandsAndInterpreters.rb"
 
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
@@ -159,6 +160,7 @@ require_relative "NxBurners.rb"
 require_relative "NxLongs.rb"
 require_relative "NxTasksPositions.rb"
 require_relative "NxTimePromises.rb"
+require_relative "NxTimes.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
