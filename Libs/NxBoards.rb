@@ -176,7 +176,7 @@ class NxBoards
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == ""
 
-            Listing::listingCommandInterpreter(input, store, nil)
+            ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
     end
 
