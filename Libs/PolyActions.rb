@@ -28,6 +28,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTime" then
+            return
+        end
+
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -116,6 +120,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
+            return
+        end
+
+        if item["mikuType"] == "NxTime" then
+            Solingen::destroy(item["uuid"])
             return
         end
 
@@ -286,6 +295,11 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxTime" then
+            Solingen::destroy(item["uuid"])
             return
         end
 
