@@ -117,9 +117,6 @@ class Listing
 
         monitors = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
 
-        runningmonitors = monitors
-            .select{|item| NxBalls::itemIsActive(item) }
-
         monitorsRunninItems = monitors
             .map{|monitor| PolyFunctions::monitorToRunningItems(monitor) }
             .flatten
@@ -145,8 +142,6 @@ class Listing
 
         [
             burner,
-            runningmonitors,
-            monitorsRunninItems,
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             fires,
@@ -155,6 +150,7 @@ class Listing
             times,
             waves,
             ondates,
+            monitorsRunninItems,
             monitors
         ]
             .flatten
