@@ -20,7 +20,6 @@ class Transmutations
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            Solingen::setAttribute2(uuid, "engine", TxEngines::interactivelyMakeEngineOrDefault())
             Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
             Solingen::setAttribute2(uuid, "mikuType", "NxFire")
 
@@ -42,10 +41,8 @@ class Transmutations
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
             board    = NxBoards::interactivelySelectOneOrNull()
             position = NxTasksPositions::decidePositionAtOptionalBoard(board)
-            engine   = TxEngines::interactivelyMakeEngineOrDefault()
             Solingen::setAttribute2(uuid, "boarduuid", board ? board["uuid"] : nil)
             Solingen::setAttribute2(uuid, "position", position)
-            Solingen::setAttribute2(uuid, "engine", engine)
             Solingen::setAttribute2(uuid, "mikuType", "NxTask")
             return
         end
