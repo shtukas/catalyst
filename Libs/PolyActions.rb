@@ -159,6 +159,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxLong" then
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             puts "done-ing item: #{item["description"]}"
             NxBackups::performDone(item)
