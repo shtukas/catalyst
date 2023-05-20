@@ -68,38 +68,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("monitors", input) then
-
-            loop {
-
-                system("clear")
-
-                puts ""
-
-                spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-                store = ItemStore.new()
-
-                things = Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless")
-                things
-                    .sort_by{|item| PolyFunctions::completionRatio(item) }
-                    .each{|item|
-                        store.register(item, false)
-                        line = Listing::itemToListingLine(store: store, item: item)
-                        if PolyFunctions::completionRatio(item) >= 1 then
-                            line = line.yellow
-                        end
-                        if NxBalls::itemIsActive(item) then
-                            line = line.green
-                        end
-                        spacecontrol.putsline line
-                    }
-
-                puts ""
-                input = LucilleCore::askQuestionAnswerAsString("> ")
-                return if input == ""
-
-                ListingCommandsAndInterpreters::interpreter(input, store, nil)
-            }
+            Monitors::program()
             return
         end
 

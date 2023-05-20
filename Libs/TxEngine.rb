@@ -56,8 +56,8 @@ class TxEngines
         TxEngines::defaultEngine(uuid)
     end
 
-    # TxEngines::completionRatio(engine)
-    def self.completionRatio(engine)
+    # TxEngines::dayCompletionRatio(engine)
+    def self.dayCompletionRatio(engine)
         if engine["type"] == "one sitting" then
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
@@ -67,12 +67,25 @@ class TxEngines
         if engine["type"] == "weekly-time" then
             # if completed, we return the highest of both completion ratios
             # if not completed, we return the lowest
-            day_completion_ratio = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
-            period_completion_ratio = Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
-            return period_completion_ratio if period_completion_ratio >= 1
-            return day_completion_ratio
+            return Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
         end
-        raise "could not TxEngines::completionRatio(engine) for engine: #{engine}"
+        raise "could not TxEngines::dayCompletionRatio(engine) for engine: #{engine}"
+    end
+
+    # TxEngines::periodCompletionRatio(engine)
+    def self.periodCompletionRatio(engine)
+        if engine["type"] == "one sitting" then
+            engine = TxEngines::defaultEngine(engine["uuid"])
+        end
+        if engine["type"] == "daily-recovery-time" then
+            return (Bank::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]*3600
+        end
+        if engine["type"] == "weekly-time" then
+            # if completed, we return the highest of both completion ratios
+            # if not completed, we return the lowest
+            return Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
+        end
+        raise "could not TxEngines::dayCompletionRatio(engine) for engine: #{engine}"
     end
 
     # TxEngines::engineCarrierMaintenance(item)
@@ -110,18 +123,13 @@ class TxEngines
             engine = TxEngines::defaultEngine(engine["uuid"])
         end
         if engine["type"] == "daily-recovery-time" then
-            todayDoneInHours = Bank::recoveredAverageHoursPerDay(engine["uuid"])
-            percentage = 100*todayDoneInHours.to_f/engine["hours"]
-            return "(engine: #{todayDoneInHours.round(2)} (#{"#{percentage.round(2)}%".green}) of daily #{engine["hours"]} hours)"
+            return "(engine: #{(100*TxEngines::dayCompletionRatio(engine)).round(2).to_s.green}% of #{engine["hours"]} hours)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
-            todayDoneInHours = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
-            todayIdealInHours = engine["hours"].to_f/5
-            percentage = 100*todayDoneInHours.to_f/todayIdealInHours
 
-            strings << "(engine: today: #{todayDoneInHours.round(2)} of #{todayIdealInHours} hours (#{"#{percentage.round(2)}%".green })"
-            strings << ", period: #{(Bank::getValue(engine["capsule"]).to_f/3600).round(2)} of #{engine["hours"]} hours (#{"#{(100*TxEngines::completionRatio(engine)).round(2)}%".green})"
+            strings << "(engine: today: #{"#{(100*TxEngines::dayCompletionRatio(engine)).round(2)}%".green} of #{engine["hours"].to_f/5} hours"
+            strings << ", period: #{"#{(100*TxEngines::periodCompletionRatio(engine)).round(2)}%".green} of #{engine["hours"]} hours"
 
             hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
             timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400

@@ -46,7 +46,7 @@ class NxBoards
 
     # NxBoards::boardsOrdered()
     def self.boardsOrdered()
-        Solingen::mikuTypeItems("NxBoard").sort_by{|item| TxEngines::completionRatio(item["engine"]) }
+        Solingen::mikuTypeItems("NxBoard").sort_by{|item| TxEngines::dayCompletionRatio(item["engine"]) }
     end
 
     # NxBoards::boardToNxTasks(board)
@@ -62,11 +62,6 @@ class NxBoards
     # NxBoards::boardToNxTasksForListing(board)
     def self.boardToNxTasksForListing(board)
         NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
-    end
-
-    # NxBoards::completionRatio(board)
-    def self.completionRatio(board)
-        TxEngines::completionRatio(board["engine"])
     end
 
     # NxBoards::runningItems(board)

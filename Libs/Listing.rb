@@ -118,7 +118,7 @@ class Listing
         monitors = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
 
         monitorsRunninItems = monitors
-            .map{|monitor| PolyFunctions::monitorToRunningItems(monitor) }
+            .map{|monitor| Monitors::monitorToRunningItems(monitor) }
             .flatten
 
         fires = Solingen::mikuTypeItems("NxFire")
@@ -138,7 +138,9 @@ class Listing
         ondates = NxOndates::listingItems()
 
         monitors = monitors
-            .sort_by{|item| PolyFunctions::completionRatio(item) }
+            .select{|item| Monitors::periodCompletionRatio(item) < 1 }
+            .select{|item| Monitors::dayCompletionRatio(item) < 1 }
+            .sort_by{|item| Monitors::dayCompletionRatio(item) }
 
         [
             burner,

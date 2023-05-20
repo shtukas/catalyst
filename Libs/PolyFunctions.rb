@@ -108,37 +108,4 @@ class PolyFunctions
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
-
-    # PolyFunctions::monitorToRunningItems(monitor)
-    # Monitors are either: NxBoard, NxBoard,
-    def self.monitorToRunningItems(monitor)
-        if monitor["mikuType"] == "NxBoard" then
-            return NxBoards::runningItems(monitor)
-        end
-        if monitor["mikuType"] == "NxMonitorLongs" then
-            return Solingen::mikuTypeItems("NxLong")
-                    .select{|item| NxBalls::itemIsActive(item) }
-        end
-        if monitor["mikuType"] == "NxMonitorTasksBoardless" then
-            return NxTasks::boardlessItems()
-                .sort_by{|item| item["position"] }
-                .take(16)
-                .select{|item| NxBalls::itemIsActive(item) }
-        end
-        raise "(error: 580b9d54-07a5-479b-aeef-cd5e2c1c6e35) I do not know how to PolyFunctions::monitorToRunningItems((#{JSON.pretty_generate(monitor)}, size)"
-    end
-
-    # PolyFunctions::completionRatio(monitor)
-    def self.completionRatio(monitor)
-        if monitor["mikuType"] == "NxBoard" then
-            return TxEngines::completionRatio(monitor["engine"])
-        end
-        if monitor["mikuType"] == "NxMonitorLongs" then
-            return TxEngines::completionRatio(monitor["engine"])
-        end
-        if monitor["mikuType"] == "NxMonitorTasksBoardless" then
-            return TxEngines::completionRatio(monitor["engine"])
-        end
-        raise "(error: b31c7245-31cd-4546-8eac-1803ef843801) could not compute generic completion ratio for monitor: #{monitor}"
-    end
 end
