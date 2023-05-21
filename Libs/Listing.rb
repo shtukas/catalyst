@@ -140,7 +140,7 @@ class Listing
         monitors = monitors
             .select{|item| Monitors::periodCompletionRatio(item) < 1 }
             .select{|item| Monitors::dayCompletionRatio(item) < 1 }
-            .sort_by{|item| Monitors::dayCompletionRatio(item) }
+            .sort_by{|item| Monitors::listingOrderingRatio(item) }
 
         [
             burner,

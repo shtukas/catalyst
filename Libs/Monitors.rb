@@ -48,6 +48,11 @@ class Monitors
         raise "(error: b31c7245-31cd-4546-8eac-1803ef843801) could not compute period completion ratio for monitor: #{monitor}"
     end
 
+    # Monitors::listingOrderingRatio(engine)
+    def self.listingOrderingRatio(engine)
+        0.9*Monitors::dayCompletionRatio(engine) + 0.1*Monitors::periodCompletionRatio(engine)
+    end
+
     # Monitors::program()
     def self.program()
         loop {
