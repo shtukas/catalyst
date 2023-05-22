@@ -163,6 +163,7 @@ require_relative "NxLongs.rb"
 require_relative "NxTasksPositions.rb"
 require_relative "NxTimePromises.rb"
 require_relative "NxTimes.rb"
+require_relative "NxThreads.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

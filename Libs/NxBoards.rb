@@ -76,6 +76,11 @@ class NxBoards
             .select{|item| NxBalls::itemIsActive(item) }
     end
 
+    # NxBoards::boardToThreads(board)
+    def self.boardToThreads(board)
+        Solingen::mikuTypeItems("NxThread").select{|thread| thread["boarduuid"] == board["uuid"] }
+    end
+
     # ---------------------------------------------------------
     # Selectors
     # ---------------------------------------------------------
@@ -128,7 +133,8 @@ class NxBoards
             Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems(board),
-            NxBoards::boardToNxTasksForListing(board)
+            NxBoards::boardToNxTasksForListing(board),
+            NxBoards::boardToThreads(board)
         ]
             .flatten
             .select{|item| (item["boarduuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }

@@ -1,4 +1,4 @@
-# encoding: UTF-8
+
 
 class NxTasks
 
@@ -15,7 +15,11 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        uuid = SecureRandom.uuid
+        type = nil
+        loop {
+            type = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("type", ["boardless", "boarded"])
+            break if type
+        }
 
         # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
         # because the blade need to exist for aion points data blobs to have a place to go.
@@ -24,22 +28,33 @@ class NxTasks
         # will find an item without a position in the collection, which is going to break sorting
         # There for we create a NxPure and we will recast as NxTask later
 
+        uuid = SecureRandom.uuid
         Solingen::init("NxPure", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        board    = NxBoards::interactivelySelectOneOrNull()
-        position = NxTasksPositions::decidePositionAtOptionalBoard(board)
+        if type == "boardless" then
+            coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+            position = NxTasksPositions::decidePositionAtOptionalBoard(nil)
+            Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+            Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+            Solingen::setAttribute2(uuid, "description", description)
+            Solingen::setAttribute2(uuid, "field11", coredataref)
+            Solingen::setAttribute2(uuid, "position", position)
+            Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+        end
 
-        boarduuid = board ? board["uuid"] : nil
+        if type == "boarded" then
+            coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "boarduuid", boarduuid)
-        Solingen::setAttribute2(uuid, "position", position)
+            board, thread, position = NxTasks::interactivelyDetermineItemCoordinates()
 
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+            Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+            Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+            Solingen::setAttribute2(uuid, "description", description)
+            Solingen::setAttribute2(uuid, "field11", coredataref)
+            Solingen::setAttribute2(uuid, "threaduuid", thread["uuid"])
+            Solingen::setAttribute2(uuid, "position", position)
+            Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+        end
 
         Solingen::getItemOrNull(uuid)
     end
@@ -126,17 +141,6 @@ class NxTasks
         "(task) (#{item["position"].round(2)}) #{item["description"]}"
     end
 
-    # --------------------------------------------------
-    # Operations
-
-    # NxTasks::access(item)
-    def self.access(item)
-        CoreData::access(item["uuid"], item["field11"])
-    end
-
-    # --------------------------------------------------
-    # Boardless Items
-
     # NxTasks::boardlessItems()
     def self.boardlessItems()
         Solingen::mikuTypeItems("NxTask")
@@ -207,13 +211,26 @@ class NxTasks
         end
     end
 
-    # --------------------------------------------------
-    # Boarded Items
-
     # NxTasks::boardedItems(board)
     def self.boardedItems(board)
         Solingen::mikuTypeItems("NxTask")
             .select{|item| item["boarduuid"] == board["uuid"] }
             .sort_by{|item| item["position"] }
+    end
+
+    # --------------------------------------------------
+    # Operations
+
+    # NxTasks::access(item)
+    def self.access(item)
+        CoreData::access(item["uuid"], item["field11"])
+    end
+
+    # NxTasks::interactivelyDetermineItemCoordinates()
+    def self.interactivelyDetermineItemCoordinates()
+        board = NxBoards::interactivelySelectOneBoard()
+        thread = NxThreads::architectThreadAtBoard(board)
+        position = NxTasksPositions::decideNewPositionAtThread(thread)
+        [board, thread, position]
     end
 end

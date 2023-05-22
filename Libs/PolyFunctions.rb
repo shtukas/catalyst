@@ -1,3 +1,4 @@
+
 class PolyFunctions
 
     # PolyFunctions::itemsToBankingAccounts(item) # Array[{description, number}]
@@ -25,6 +26,13 @@ class PolyFunctions
             board = NxBoards::getItemOfNull(item["boarduuid"])
             if board then
                 accounts = accounts + PolyFunctions::itemsToBankingAccounts(board)
+            end
+        end
+
+        if item["threaduuid"] then
+            thread = NxBoards::getItemOfNull(item["threaduuid"])
+            if thread then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(thread)
             end
         end
 
@@ -96,6 +104,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
+        end
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

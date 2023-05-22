@@ -117,6 +117,18 @@ class NxTasksPositions
     end
 
     # -------------------------------------------
+
+    # NxTasksPositions::decideNewPositionAtThread(thread)
+    def self.decideNewPositionAtThread(thread)
+        items = NxThreads::threadToItems(thread)
+        return 1 if items.size > 0
+        items.sort_by{|item|
+            puts "#{item["position"]} : #{item["description"]}"
+        }
+        LucilleCore::askQuestionAnswerAsString("position: ").to_f
+    end
+
+    # -------------------------------------------
     # Data: Positions
 
     # NxTasksPositions::decidePositionAtOptionalBoard(mboard)

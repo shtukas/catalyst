@@ -6,7 +6,7 @@ class ListingCommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | long | float | time | times",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | long | float | time | times | thread",
             "",
             "specific types commands:",
             "    - ondate   : redate",
@@ -86,6 +86,13 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("projects", input) then
             NxLongs::program1()
+            return
+        end
+
+        if Interpreting::match("thread", input) then
+            item = NxThreads::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
