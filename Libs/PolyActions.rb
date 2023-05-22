@@ -233,6 +233,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxThread" then
+            NxThreads::destroy(item["uuid"])
+            return
+        end
+
         if item["mikuType"] == "NxTime" then
             Solingen::destroy(item["uuid"])
             return

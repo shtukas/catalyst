@@ -163,10 +163,7 @@ class NxBoards
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: board))
             spacecontrol.putsline ""
 
-            items = NxBoards::itemsForBoardListing(board)
-            items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
-            items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
-            items
+            NxBoards::itemsForBoardListing(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))

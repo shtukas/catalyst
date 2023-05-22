@@ -21,7 +21,7 @@ class NxBurners
 
     # NxBurners::toString(item)
     def self.toString(item)
-        "(floa) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "( ⛵️ ) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # ------------------------------------
