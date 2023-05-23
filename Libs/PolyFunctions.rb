@@ -22,17 +22,10 @@ class PolyFunctions
             }
         end
 
-        if item["boarduuid"] then
-            board = NxBoards::getItemOfNull(item["boarduuid"])
-            if board then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(board)
-            end
-        end
-
-        if item["threaduuid"] then
-            thread = NxBoards::getItemOfNull(item["threaduuid"])
-            if thread then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(thread)
+        if item["parentuuid"] then
+            parent = NxPrincipals::getItemOfNull(item["parentuuid"])
+            if parent then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
             end
         end
 
@@ -69,8 +62,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxBoard" then
-            return NxBoards::toString(item)
+        if item["mikuType"] == "NxPrincipal" then
+            return NxPrincipals::toString(item)
         end
         if item["mikuType"] == "NxClique" then
             return NxCliques::toString(item)

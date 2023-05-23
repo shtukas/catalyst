@@ -151,10 +151,10 @@ class Waves
                         item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
                     }
         if indicator.nil? then
-            waves.select{|wave| wave["boarduuid"].nil? or wave["interruption"]}
+            waves.select{|wave| wave["parentuuid"].nil? or wave["interruption"]}
         else
             board = indicator
-            waves.select{|wave| wave["boarduuid"] == board["uuid"] }
+            waves.select{|wave| wave["parentuuid"] == board["uuid"] }
         end
     end
 

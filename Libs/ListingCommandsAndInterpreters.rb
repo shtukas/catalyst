@@ -169,7 +169,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("boards", input) then
-            NxBoards::program3()
+            NxPrincipals::program3()
             return
         end
 
@@ -188,14 +188,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("tasks", input) then
             NxTasks::boardlessItemsProgram1()
-            return
-        end
-
-        if Interpreting::match("unboard *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Solingen::setAttribute2(item["uuid"], "boarduuid", nil)
             return
         end
 
@@ -274,17 +266,22 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("position *", input) then
+        if Interpreting::match("coordinates *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
-                puts "position is only available to NxTasks"
+                puts "coordinates is only available to NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            position = NxTasksPositions::decidePositionAtOptionalBoarduuid(item["boarduuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
+            optional_parent, optional_position = NxTasks::interactivelyDetermineItemCoordinates()
+            if optional_parent then
+                Solingen::setAttribute2(item["uuid"], "parent", optional_parent["uuid"])
+            end
+            if optional_position then
+                Solingen::setAttribute2(item["uuid"], "position", optional_position)
+            end
             return
         end
 
@@ -301,8 +298,8 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxBoard", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
-                puts "Only NxTask, NxBoard and NxMonitors are carrying engine"
+            if !["NxPrincipal", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
+                puts "Only NxTask, NxPrincipal and NxMonitors are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -316,8 +313,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxBoard", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
-                puts "Only NxTask, NxBoard and NxMonitors are carrying engine"
+            if !["NxPrincipal", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
+                puts "Only NxTask, NxPrincipal and NxMonitors are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end

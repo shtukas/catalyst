@@ -10,6 +10,8 @@ Wave (Blade):
     "lastDoneDateTime" : DateTime Iso 8601 UTC Zulu
     "field11"          : CoreData reference string
 
+    "parentuuid"       : null or String
+
     "interruption"     : null or boolean, indicates if the item is interruption (priority)
 
     "onlyOnDays"       : null or Array[week days names lowercase english] 

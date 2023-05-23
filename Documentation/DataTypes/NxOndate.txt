@@ -6,4 +6,4 @@ NxOndate (Blade)
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : description,
     "field11"     : coredataref
-    "boarduuid"   : null or String
+    "parentuuid"  : null or String

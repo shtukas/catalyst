@@ -5,4 +5,4 @@ NxThread: (Blade)
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
-    "boarduuid"   : String 
+    "parentuuid"  : String 

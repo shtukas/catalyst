@@ -1,7 +1,7 @@
 
-NxBoard (Blade)
+NxPrincipal (Blade)
     "uuid"          : String
-    "mikuType"      : "NxBoard"
+    "mikuType"      : "NxPrincipal"
     "unixtime"      : Float
     "datetime"      : DateTime Iso 8601 UTC Zulu
     "description"   : String

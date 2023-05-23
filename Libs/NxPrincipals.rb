@@ -1,17 +1,17 @@
-class NxBoards
+class NxPrincipals
 
     # ---------------------------------------------------------
     # IO
     # ---------------------------------------------------------
 
-    # NxBoards::getItemOfNull(uuid)
+    # NxPrincipals::getItemOfNull(uuid)
     def self.getItemOfNull(uuid)
         Solingen::getItemOrNull(uuid)
     end
 
-    # NxBoards::getItemFailIfMissing(uuid)
+    # NxPrincipals::getItemFailIfMissing(uuid)
     def self.getItemFailIfMissing(uuid)
-        board = NxBoards::getItemOfNull(uuid)
+        board = NxPrincipals::getItemOfNull(uuid)
         return board if board
         raise "looking for a board that should exists. item: #{JSON.pretty_generate(item)}"
     end
@@ -21,13 +21,13 @@ class NxBoards
     # ---------------------------------------------------------
 
     # This can only be called from nslog
-    # NxBoards::interactivelyIssueNewOrNull()
+    # NxPrincipals::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
         engine = TxEngines::interactivelyMakeEngineOrDefault()
-        Solingen::init("NxBoard", uuid)
+        Solingen::init("NxPrincipal", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
@@ -39,70 +39,70 @@ class NxBoards
     # Data
     # ---------------------------------------------------------
 
-    # NxBoards::toString(item)
+    # NxPrincipals::toString(item)
     def self.toString(item)
         "(#{"boar".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxBoards::boardsOrdered()
+    # NxPrincipals::boardsOrdered()
     def self.boardsOrdered()
-        Solingen::mikuTypeItems("NxBoard").sort_by{|item| TxEngines::dayCompletionRatio(item["engine"]) }
+        Solingen::mikuTypeItems("NxPrincipal").sort_by{|item| TxEngines::dayCompletionRatio(item["engine"]) }
     end
 
-    # NxBoards::boardToNxTasks(board)
+    # NxPrincipals::boardToNxTasks(board)
     def self.boardToNxTasks(board)
-        Solingen::mikuTypeItems("NxTask").select{|item| item["boarduuid"] == board["uuid"] }
+        Solingen::mikuTypeItems("NxTask").select{|item| item["parentuuid"] == board["uuid"] }
     end
 
-    # NxBoards::boardToNxTasksOrdered(board)
+    # NxPrincipals::boardToNxTasksOrdered(board)
     def self.boardToNxTasksOrdered(board)
-        NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
+        NxPrincipals::boardToNxTasks(board).sort_by{|item| item["position"] }
     end
 
-    # NxBoards::boardToNxTasksForListing(board)
+    # NxPrincipals::boardToNxTasksForListing(board)
     def self.boardToNxTasksForListing(board)
-        NxBoards::boardToNxTasks(board).sort_by{|item| item["position"] }
+        NxPrincipals::boardToNxTasks(board).sort_by{|item| item["position"] }
     end
 
-    # NxBoards::runningItems(board)
+    # NxPrincipals::runningItems(board)
     def self.runningItems(board)
         [
             Solingen::mikuTypeItems("NxLine"),
             NxOndates::listingItems(),
             Waves::listingItems(board),
-            NxBoards::boardToNxTasksForListing(board)
+            NxPrincipals::boardToNxTasksForListing(board)
         ]
             .flatten
             .select{|item| NxBalls::itemIsActive(item) }
     end
 
-    # NxBoards::boardToThreads(board)
+    # NxPrincipals::boardToThreads(board)
     def self.boardToThreads(board)
-        Solingen::mikuTypeItems("NxThread").select{|thread| thread["boarduuid"] == board["uuid"] }
+        Solingen::mikuTypeItems("NxThread").select{|thread| thread["parentuuid"] == board["uuid"] }
     end
 
     # ---------------------------------------------------------
     # Selectors
     # ---------------------------------------------------------
 
-    # NxBoards::interactivelySelectOneOrNull()
+    # NxPrincipals::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxBoards::boardsOrdered()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
+        items = NxPrincipals::boardsOrdered()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxPrincipals::toString(item) })
     end
 
-    # NxBoards::interactivelySelectBoarduuidOrNull()
+    # NxPrincipals::interactivelySelectBoarduuidOrNull()
     def self.interactivelySelectBoarduuidOrNull()
-        items = NxBoards::boardsOrdered()
-        board = LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxBoards::toString(item) })
+        items = NxPrincipals::boardsOrdered()
+        board = LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxPrincipals::toString(item) })
         return nil if board.nil?
         board["uuid"]
     end
 
-    # NxBoards::interactivelySelectOneBoard()
+    # NxPrincipals::interactivelySelectOneBoard()
     def self.interactivelySelectOneBoard()
         loop {
-            item = NxBoards::interactivelySelectOneOrNull()
+            item = NxPrincipals::interactivelySelectOneOrNull()
             return item if item
         }
     end
@@ -111,9 +111,9 @@ class NxBoards
     # Ops
     # ---------------------------------------------------------
 
-    # NxBoards::dataMaintenance()
+    # NxPrincipals::dataMaintenance()
     def self.dataMaintenance()
-        Solingen::mikuTypeItems("NxBoard").each{|board|
+        Solingen::mikuTypeItems("NxPrincipal").each{|board|
             engine2 = TxEngines::engineCarrierMaintenance(board)
             if engine2 then
                 Solingen::setAttribute2(board["uuid"], "engine", engine2)
@@ -125,7 +125,7 @@ class NxBoards
     # Programs
     # ---------------------------------------------------------
 
-    # NxBoards::itemsForBoardListing(board)
+    # NxPrincipals::itemsForBoardListing(board)
     def self.itemsForBoardListing(board)
         [
             Solingen::mikuTypeItems("NxBurner"),
@@ -133,11 +133,11 @@ class NxBoards
             Solingen::mikuTypeItems("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems(board),
-            NxBoards::boardToNxTasksForListing(board),
-            NxBoards::boardToThreads(board)
+            NxPrincipals::boardToNxTasksForListing(board),
+            NxPrincipals::boardToThreads(board)
         ]
             .flatten
-            .select{|item| (item["boarduuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }
+            .select{|item| (item["parentuuid"] == board["uuid"]) or NxBalls::itemIsActive(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"]}.flatten.include?(item["uuid"]) then
                     selected
@@ -147,7 +147,7 @@ class NxBoards
             }
     end
 
-    # NxBoards::boardListing(board)
+    # NxPrincipals::boardListing(board)
     def self.boardListing(board)
         loop {
 
@@ -163,7 +163,7 @@ class NxBoards
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: board))
             spacecontrol.putsline ""
 
-            NxBoards::itemsForBoardListing(board)
+            NxPrincipals::itemsForBoardListing(board)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
@@ -178,12 +178,12 @@ class NxBoards
         }
     end
 
-    # NxBoards::program2(board)
+    # NxPrincipals::program2(board)
     def self.program2(board)
         loop {
-            board = NxBoards::getItemOfNull(board["uuid"])
+            board = NxPrincipals::getItemOfNull(board["uuid"])
             return if board.nil?
-            puts NxBoards::toString(board)
+            puts NxPrincipals::toString(board)
             actions = ["program(board)", "start", "add time"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
@@ -195,17 +195,17 @@ class NxBoards
                 PolyActions::addTimeToItem(board, timeInHours*3600)
             end
             if action == "program(board)" then
-                NxBoards::boardListing(board)
+                NxPrincipals::boardListing(board)
             end
         }
     end
 
-    # NxBoards::program3()
+    # NxPrincipals::program3()
     def self.program3()
         loop {
-            board = NxBoards::interactivelySelectOneOrNull()
+            board = NxPrincipals::interactivelySelectOneOrNull()
             return if board.nil?
-            NxBoards::program2(board)
+            NxPrincipals::program2(board)
         }
     end
 end
@@ -215,31 +215,31 @@ class BoardsAndItems
     # BoardsAndItems::attachToItem(item, board or nil)
     def self.attachToItem(item, board)
         return if board.nil?
-        Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
+        Solingen::setAttribute2(item["uuid"], "parentuuid", board["uuid"])
     end
 
     # BoardsAndItems::maybeAskAndMaybeAttach(item)
     def self.maybeAskAndMaybeAttach(item)
-        return if item["boarduuid"]
+        return if item["parentuuid"]
         BoardsAndItems::askAndMaybeAttach(item)
     end
 
     # BoardsAndItems::askAndMaybeAttach(item)
     def self.askAndMaybeAttach(item)
-        return if item["mikuType"] == "NxBoard"
-        board = NxBoards::interactivelySelectOneOrNull()
+        return if item["mikuType"] == "NxPrincipal"
+        board = NxPrincipals::interactivelySelectOneOrNull()
         return if board.nil?
-        Solingen::setAttribute2(item["uuid"], "boarduuid", board["uuid"])
+        Solingen::setAttribute2(item["uuid"], "parentuuid", board["uuid"])
     end
 
     # BoardsAndItems::toStringSuffix(item)
     def self.toStringSuffix(item)
-        return "" if item["boarduuid"].nil?
-        board = NxBoards::getItemOfNull(item["boarduuid"])
-        if board then
-            " (board: #{board["description"].green})"
+        return "" if item["parentuuid"].nil?
+        parent = NxPrincipals::getItemOfNull(item["parentuuid"])
+        if parent then
+            " (parent: #{parent["description"].green})"
         else
-            " (board: not found, boarduuid: #{item["boarduuid"]})"
+            " (parent: not found, parentuuid: #{item["parentuuid"]})"
         end
     end
 end
