@@ -332,7 +332,6 @@ class PolyActions
 
         if item["mikuType"] == "NxThread" then
             PolyFunctions::toString(item).green
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end
