@@ -41,12 +41,13 @@ class NxPrincipals
 
     # NxPrincipals::toString(item)
     def self.toString(item)
-        "(#{"boar".green}) #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "- #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxPrincipals::boardsOrdered()
-    def self.boardsOrdered()
-        Solingen::mikuTypeItems("NxPrincipal").sort_by{|item| TxEngines::dayCompletionRatio(item["engine"]) }
+    # NxPrincipals::itemsOrdered()
+    def self.itemsOrdered()
+        Solingen::mikuTypeItems("NxPrincipal")
+            .sort_by{|item| TxEngines::listingCompletionRatio(item["engine"]) }
     end
 
     # NxPrincipals::boardToNxTasks(board)
@@ -87,13 +88,13 @@ class NxPrincipals
 
     # NxPrincipals::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxPrincipals::boardsOrdered()
+        items = NxPrincipals::itemsOrdered()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxPrincipals::toString(item) })
     end
 
     # NxPrincipals::interactivelySelectBoarduuidOrNull()
     def self.interactivelySelectBoarduuidOrNull()
-        items = NxPrincipals::boardsOrdered()
+        items = NxPrincipals::itemsOrdered()
         board = LucilleCore::selectEntityFromListOfEntitiesOrNull("board", items, lambda{|item| NxPrincipals::toString(item) })
         return nil if board.nil?
         board["uuid"]

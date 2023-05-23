@@ -338,7 +338,16 @@ class Listing
     # Listing::printEvalItems(store, items)
     def self.printEvalItems(store, items)
         system("clear")
+
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+        spacecontrol.putsline ""
+        NxPrincipals::itemsOrdered()
+            .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 }
+            .each{|item|
+                puts NxPrincipals::toString(item)
+            }
+
         if items.size > 0 then
             spacecontrol.putsline ""
             items
