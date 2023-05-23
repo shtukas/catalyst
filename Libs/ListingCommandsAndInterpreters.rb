@@ -46,6 +46,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Listing::tmpskip1(item)
+            return
+        end
+
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
