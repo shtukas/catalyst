@@ -6,13 +6,13 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         datetime = Time.new.utc.iso8601
-        board = NxBoards::interactivelySelectOneBoard()
+        board = NxPrincipals::interactivelySelectOneBoard()
         uuid = SecureRandom.uuid
         Solingen::init("NxThread", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", datetime)
         Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "boarduuid", board["uuid"])
+        Solingen::setAttribute2(uuid, "parentuuid", board["uuid"])
         Solingen::getItemOrNull(uuid)
     end
 
@@ -33,7 +33,7 @@ class NxThreads
     # NxThreads::threadToItems(thread)
     def self.threadToItems(thread)
         Solingen::mikuTypeItems("NxTask")
-            .select{|item| item["threaduuid"] == thread["uuid"] }
+            .select{|item| item["parentuuid"] == thread["uuid"] }
     end
 
     # ------------------
@@ -93,13 +93,13 @@ class NxThreads
     # NxThreads::interactivelySelectThreadAtBoardOrNull(board)
     def self.interactivelySelectThreadAtBoardOrNull(board)
         threads = Solingen::mikuTypeItems("NxThread")
-                    .select{|item| item["boarduuid"] == board["uuid"] }
+                    .select{|item| item["parentuuid"] == board["uuid"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxThreads::architectThreadAtBoard(board)
     def self.architectThreadAtBoard(board)
-        if NxBoards::boardToThreads(board).empty? then
+        if NxPrincipals::boardToThreads(board).empty? then
             loop {
                 thread = NxThreads::interactivelyIssueNewOrNull(board)
                 return thread if thread

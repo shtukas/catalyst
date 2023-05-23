@@ -15,46 +15,27 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        type = nil
-        loop {
-            type = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("type", ["boardless", "boarded"])
-            break if type
-        }
-
         # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
         # because the blade need to exist for aion points data blobs to have a place to go.
 
-        # We cannot give to the blade a NxTask type because NxTasksPositions::decidePositionAtOptionalBoard
-        # will find an item without a position in the collection, which is going to break sorting
-        # There for we create a NxPure and we will recast as NxTask later
+        # We also cannot give to the blade a NxTask type because NxTasksPositions::decidePositionAtOptionalBoard
+        # will find an item without a position in the collection, which is going 
+        # to break sorting. There for we create a NxPure and we will recast as 
+        # NxTask later.
 
         uuid = SecureRandom.uuid
         Solingen::init("NxPure", uuid)
 
-        if type == "boardless" then
-            coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-            position = NxTasksPositions::decidePositionAtOptionalBoard(nil)
-            Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-            Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-            Solingen::setAttribute2(uuid, "description", description)
-            Solingen::setAttribute2(uuid, "field11", coredataref)
-            Solingen::setAttribute2(uuid, "position", position)
-            Solingen::setAttribute2(uuid, "mikuType", "NxTask")
-        end
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        parent, position = NxTasks::interactivelyDetermineItemCoordinates()
 
-        if type == "boarded" then
-            coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-
-            board, thread, position = NxTasks::interactivelyDetermineItemCoordinates()
-
-            Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-            Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-            Solingen::setAttribute2(uuid, "description", description)
-            Solingen::setAttribute2(uuid, "field11", coredataref)
-            Solingen::setAttribute2(uuid, "threaduuid", thread["uuid"])
-            Solingen::setAttribute2(uuid, "position", position)
-            Solingen::setAttribute2(uuid, "mikuType", "NxTask")
-        end
+        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "parentuuid", parent ? parent["uuid"] : nil)
+        Solingen::setAttribute2(uuid, "position", position)
+        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
     end
@@ -74,7 +55,7 @@ class NxTasks
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "boarduuid", nil)
+        Solingen::setAttribute2(uuid, "parentuuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
 
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
@@ -97,7 +78,7 @@ class NxTasks
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "boarduuid", nil)
+        Solingen::setAttribute2(uuid, "parentuuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
 
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
@@ -120,7 +101,7 @@ class NxTasks
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "boarduuid", nil)
+        Solingen::setAttribute2(uuid, "parentuuid", nil)
         Solingen::setAttribute2(uuid, "position", position)
 
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
@@ -144,13 +125,13 @@ class NxTasks
     # NxTasks::boardlessItems()
     def self.boardlessItems()
         Solingen::mikuTypeItems("NxTask")
-            .select{|item| item["boarduuid"].nil? }
+            .select{|item| item["parentuuid"].nil? }
     end
 
     # NxTasks::itemIsBoardless(item)
     def self.itemIsBoardless(item)
         return false if item["mikuType"] != "NxTask"
-        return false if item["boarduuid"]
+        return false if item["parentuuid"]
         true
     end
 
@@ -214,7 +195,7 @@ class NxTasks
     # NxTasks::boardedItems(board)
     def self.boardedItems(board)
         Solingen::mikuTypeItems("NxTask")
-            .select{|item| item["boarduuid"] == board["uuid"] }
+            .select{|item| item["parentuuid"] == board["uuid"] }
             .sort_by{|item| item["position"] }
     end
 
@@ -226,11 +207,30 @@ class NxTasks
         CoreData::access(item["uuid"], item["field11"])
     end
 
-    # NxTasks::interactivelyDetermineItemCoordinates()
+    # NxTasks::interactivelyDetermineItemCoordinates() # [optional parent, optional position]
     def self.interactivelyDetermineItemCoordinates()
-        board = NxBoards::interactivelySelectOneBoard()
-        thread = NxThreads::architectThreadAtBoard(board)
-        position = NxTasksPositions::decideNewPositionAtThread(thread)
-        [board, thread, position]
+        options = [
+            "board+thread",
+            "board",
+            "boardless"
+        ]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        return [nil, nil] if option.nil?
+        if option == "board+thread" then
+            board = NxPrincipals::interactivelySelectOneBoard()
+            thread = NxThreads::architectThreadAtBoard(board)
+            position = NxTasksPositions::decideNewPositionAtThread(thread)
+            return [thread, position]
+        end
+        if option == "board" then
+            board = NxPrincipals::interactivelySelectOneBoard()
+            position = NxTasksPositions::decideNewPositionAtBoard(board)
+            return [board, position]
+        end
+        if option == "boardless" then
+            position = NxTasksPositions::decideNewPositionAtNoBoard()
+            return [nil, position]
+        end
+        raise "(error: 92cc-1f3ac9abd66a ; unknown case)"
     end
 end

@@ -9,4 +9,4 @@ NxTask: (Blade)
 
     "field11"     : null or CoreData reference string
 
-    "threaduuid"  : null or String
+    "parentuuid"  : null or String (parent can be a board or a thread)

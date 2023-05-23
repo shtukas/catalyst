@@ -7,7 +7,7 @@ class Catalyst
         [
             "NxAnniversary",
             "NxBackup",
-            "NxBoard",
+            "NxPrincipal",
             "NxFire",
             "NxBurner",
             "NxLine",

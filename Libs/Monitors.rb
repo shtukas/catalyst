@@ -2,10 +2,10 @@
 class Monitors
 
     # Monitors::monitorToRunningItems(monitor)
-    # Monitors are either: NxBoard, NxBoard,
+    # Monitors are either: NxPrincipal, NxPrincipal,
     def self.monitorToRunningItems(monitor)
-        if monitor["mikuType"] == "NxBoard" then
-            return NxBoards::runningItems(monitor)
+        if monitor["mikuType"] == "NxPrincipal" then
+            return NxPrincipals::runningItems(monitor)
         end
         if monitor["mikuType"] == "NxMonitorLongs" then
             return Solingen::mikuTypeItems("NxLong")
@@ -22,7 +22,7 @@ class Monitors
 
     # Monitors::dayCompletionRatio(monitor)
     def self.dayCompletionRatio(monitor)
-        if monitor["mikuType"] == "NxBoard" then
+        if monitor["mikuType"] == "NxPrincipal" then
             return TxEngines::dayCompletionRatio(monitor["engine"])
         end
         if monitor["mikuType"] == "NxMonitorLongs" then
@@ -36,7 +36,7 @@ class Monitors
 
     # Monitors::periodCompletionRatio(monitor)
     def self.periodCompletionRatio(monitor)
-        if monitor["mikuType"] == "NxBoard" then
+        if monitor["mikuType"] == "NxPrincipal" then
             return TxEngines::periodCompletionRatio(monitor["engine"])
         end
         if monitor["mikuType"] == "NxMonitorLongs" then
@@ -63,7 +63,7 @@ class Monitors
 
             store = ItemStore.new()
 
-            (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
+            (Solingen::mikuTypeItems("NxPrincipal") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
                 .sort_by{|item| Monitors::periodCompletionRatio(item) }
                 .each{|item|
                     store.register(item, false)

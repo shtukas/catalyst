@@ -37,10 +37,6 @@ class Listing
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil::isVisible(item)
-        if item["boarduuid"] then
-            board = Solingen::getItemOrNull(item["boarduuid"])
-            return false if !DoNotShowUntil::isVisible(board)
-        end
         true
     end
 
@@ -113,9 +109,9 @@ class Listing
     def self.items()
 
         burner = Solingen::mikuTypeItems("NxBurner")
-            .select{|item| item["boarduuid"].nil? }
+            .select{|item| item["parentuuid"].nil? }
 
-        monitors = (Solingen::mikuTypeItems("NxBoard") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
+        monitors = (Solingen::mikuTypeItems("NxPrincipal") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
 
         monitorsRunninItems = monitors
             .map{|monitor| Monitors::monitorToRunningItems(monitor) }
@@ -303,9 +299,9 @@ class Listing
 
         if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
             Catalyst::catalystItems().each{|item|
-                next if item["boarduuid"].nil?
-                next if NxBoards::getItemOfNull(item["boarduuid"])
-                puts "Could not find a board for this item: #{JSON.pretty_generate(item)}".green
+                next if item["parentuuid"].nil?
+                next if Solingen::getItemOfNull(item["parentuuid"])
+                puts "Could not find a parent for this item: #{JSON.pretty_generate(item)}".green
                 exit
             }
         end
@@ -315,7 +311,7 @@ class Listing
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
-             NxBoards::dataMaintenance()
+             NxPrincipals::dataMaintenance()
              NxLongs::monitorDataMaintenance()
              if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
                  NxLongs::dataMaintenance()
@@ -342,7 +338,16 @@ class Listing
     # Listing::printEvalItems(store, items)
     def self.printEvalItems(store, items)
         system("clear")
+
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+        spacecontrol.putsline ""
+        NxPrincipals::itemsOrdered()
+            .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 }
+            .each{|item|
+                puts NxPrincipals::toString(item)
+            }
+
         if items.size > 0 then
             spacecontrol.putsline ""
             items

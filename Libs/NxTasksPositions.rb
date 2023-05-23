@@ -48,7 +48,7 @@ class NxTasksPositions
     # NxTasksPositions::interactivelyDecidePositionAtBoardAtTop(board)
     def self.interactivelyDecidePositionAtBoardAtTop(board)
         puts "-- begin-------------".green
-        NxBoards::boardToNxTasksOrdered(board)
+        NxPrincipals::boardToNxTasksOrdered(board)
             .take(CommonUtils::screenHeight()-5)
             .each{|item| puts NxTasks::toStringNoEngine(item) }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
@@ -138,16 +138,5 @@ class NxTasksPositions
         else
             NxTasksPositions::decideNewPositionAtNoBoard()
         end
-    end
-
-    # NxTasksPositions::decidePositionAtOptionalBoarduuid(boarduuid)
-    def self.decidePositionAtOptionalBoarduuid(boarduuid)
-        mboard =
-            if boarduuid then
-                Solingen::getItemOrNull(boarduuid)
-            else
-                nil
-            end
-        NxTasksPositions::decidePositionAtOptionalBoard(mboard)
     end
 end

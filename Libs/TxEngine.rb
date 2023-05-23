@@ -88,6 +88,15 @@ class TxEngines
         raise "could not TxEngines::dayCompletionRatio(engine) for engine: #{engine}"
     end
 
+    # TxEngines::listingCompletionRatio(engine)
+    def self.listingCompletionRatio(engine)
+        period = TxEngines::periodCompletionRatio(engine)
+        return period if period >= 1
+        day = TxEngines::dayCompletionRatio(engine)
+        return day if day >= 1
+        0.9*day + 0.1*period
+    end
+
     # TxEngines::engineCarrierMaintenance(item)
     def self.engineCarrierMaintenance(item)
         engine = item["engine"]

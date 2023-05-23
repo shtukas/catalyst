@@ -11,39 +11,46 @@ class Transmutations
         LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", Transmutations::targetMikuTypes())
     end
 
+    # Transmutations::setCoordinates(itemuuid)
+    def self.setCoordinates(itemuuid)
+        optional_parent, optional_position = NxTasks::interactivelyDetermineItemCoordinates()
+        if optional_parent then
+            Solingen::setAttribute2(item["uuid"], "parent", optional_parent["uuid"])
+        end
+        if optional_position then
+            Solingen::setAttribute2(item["uuid"], "position", optional_position)
+        end
+    end
+
     # Transmutations::transmute(item)
     def self.transmute(item)
-        uuid = item["uuid"]
-        sourceType = Solingen::getMandatoryAttribute2(uuid, "mikuType")
+
+        sourceType = Solingen::getMandatoryAttribute2(item["uuid"], "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
-            Solingen::setAttribute2(uuid, "mikuType", "NxFire")
-
+            Transmutations::setCoordinates(item["uuid"])
+            Solingen::setAttribute2(item["uuid"], "mikuType", "NxFire")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
-            Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
-            Solingen::setAttribute2(uuid, "mikuType", "NxFire")
+            Transmutations::setCoordinates(item["uuid"])
+            Solingen::setAttribute2(item["uuid"], "mikuType", "NxFire")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxBurner" then
-            Solingen::setAttribute2(uuid, "boarduuid", NxBoards::interactivelySelectBoarduuidOrNull())
-            Solingen::setAttribute2(uuid, "mikuType", "NxBurner")
+            Transmutations::setCoordinates(item["uuid"])
+            Solingen::setAttribute2(item["uuid"], "mikuType", "NxBurner")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            board    = NxBoards::interactivelySelectOneOrNull()
-            position = NxTasksPositions::decidePositionAtOptionalBoard(board)
-            Solingen::setAttribute2(uuid, "boarduuid", board ? board["uuid"] : nil)
-            Solingen::setAttribute2(uuid, "position", position)
-            Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+            Transmutations::setCoordinates(item["uuid"])
+            Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end
 
