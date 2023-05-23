@@ -121,7 +121,7 @@ class NxTimePromises
                     if targetitem.nil? then
                         puts "Could not recover item for target uuid: #{item["targetuuid"]}"
                     end
-                    puts "#{Time.at(thing["unixtime"]).to_s} : #{PolyFunctions::toString(targetitem)} : #{thing["value"]}"
+                    puts "#{Time.at(thing["unixtime"]).to_s} : #{targetitem["description"]} : #{thing["value"]}"
                 end
             }
         LucilleCore::pressEnterToContinue()
