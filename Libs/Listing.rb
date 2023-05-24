@@ -206,6 +206,14 @@ class Listing
                 "name" => "Solingen::mikuTypeItems(NxFire)",
                 "lambda" => lambda { Solingen::mikuTypeItems("NxFire") }
             },
+            {
+                "name" => "NxPrincipals::itemsOrdered()",
+                "lambda" => lambda { NxPrincipals::itemsOrdered() }
+            },
+            {
+                "name" => "NxTimes::listingItems()",
+                "lambda" => lambda { NxTimes::listingItems() }
+            },
         ]
 
         runTest = lambda {|test|
@@ -341,12 +349,15 @@ class Listing
                 }
         end
 
-        spacecontrol.putsline ""
-        NxPrincipals::itemsOrdered()
+        principals = NxPrincipals::itemsOrdered()
             .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 }
-            .each{|item|
-                puts NxPrincipals::toString(item)
-            }
+        if principals.size > 0 then
+            spacecontrol.putsline ""
+            principals
+                .each{|item|
+                    puts NxPrincipals::toString(item)
+                }
+        end
 
         if items.size > 0 then
             spacecontrol.putsline ""
