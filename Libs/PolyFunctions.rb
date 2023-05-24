@@ -96,15 +96,4 @@ class PolyFunctions
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
-
-    # PolyFunctions::parentingSuffix(item)
-    def self.parentingSuffix(item)
-        return "" if item["parentuuid"].nil?
-        parent = NxPrincipals::getItemOrNull(item["parentuuid"])
-        if parent then
-            " (parent: #{parent["description"].green})"
-        else
-            " (parent: not found, parentuuid: #{item["parentuuid"]})"
-        end
-    end
 end

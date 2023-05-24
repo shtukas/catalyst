@@ -126,13 +126,27 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
+        principals = [
+            NxPrincipals::runningPrincipals(),
+            NxPrincipals::itemsOrdered()
+                .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
+        ]
+            .flatten
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+
         threads = 
             [
                 NxThreads::runningThreads(),
-                NxPrincipals::itemsOrdered()
-                            .map{|principal|
-                                NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-                            }
+                principals
+                    .map{|principal|
+                        NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
+                    }
             ]
                 .flatten
                 .reduce([]){|selected, item|
@@ -165,11 +179,24 @@ class Listing
             }
     end
 
+    # Listing::parentingSuffixForListing(item)
+    def self.parentingSuffixForListing(item)
+        return "" if item["mikuType"] == "NxTask"
+        return "" if item["mikuType"] == "NxThread"
+        return "" if item["parentuuid"].nil?
+        parent = NxPrincipals::getItemOrNull(item["parentuuid"])
+        if parent then
+            " (parent: #{parent["description"].green})"
+        else
+            " (parent: not found, parentuuid: #{item["parentuuid"]})"
+        end
+    end
+
     # Listing::itemToListingLine(store: nil, item: nil)
     def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PolyFunctions::parentingSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{Listing::parentingSuffixForListing(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else

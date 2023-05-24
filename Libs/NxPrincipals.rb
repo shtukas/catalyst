@@ -60,6 +60,11 @@ class NxPrincipals
         Solingen::mikuTypeItems("NxThread").select{|thread| thread["parentuuid"] == principal["uuid"] }
     end
 
+    # NxPrincipals::runningPrincipals()
+    def self.runningPrincipals()
+        Solingen::mikuTypeItems("NxPrincipal").select{|item| NxBalls::itemIsActive(item) }
+    end
+
     # ---------------------------------------------------------
     # Selectors
     # ---------------------------------------------------------
