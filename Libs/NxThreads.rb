@@ -39,6 +39,11 @@ class NxThreads
             .select{|item| item["parentuuid"] == thread["uuid"] }
     end
 
+    # NxThreads::runningThreads()
+    def self.runningThreads()
+        Solingen::mikuTypeItems("NxThread").select{|item| NxBalls::itemIsActive(item) }
+    end
+
     # ------------------
     # Ops
 

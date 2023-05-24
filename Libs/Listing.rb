@@ -126,10 +126,22 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
-        threads = NxPrincipals::itemsOrdered()
-                    .map{|principal|
-                        NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-                    }
+        threads = 
+            [
+                NxThreads::runningThreads(),
+                NxPrincipals::itemsOrdered()
+                            .map{|principal|
+                                NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
+                            }
+            ]
+                .flatten
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
 
         [
             burner,
