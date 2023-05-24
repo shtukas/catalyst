@@ -7,17 +7,17 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => "self: #{item["mikuType"]}",
+            "description" => item["mikuType"],
             "number"      => item["uuid"]
         }
 
         if item["engine"] then
             accounts << {
-                "description" => "self's engine",
+                "description" => "engine",
                 "number"      => item["engine"]["uuid"]
             }
             accounts << {
-                "description" => "self's engine capsule",
+                "description" => nil,
                 "number"      => item["engine"]["capsule"]
             }
         end

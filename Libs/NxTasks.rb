@@ -145,6 +145,11 @@ class NxTasks
         "(task) (#{"%5.2f" % item["position"]}) #{item["description"]}"
     end
 
+    # NxTasks::runningTasks()
+    def self.runningTasks()
+
+    end
+
     # --------------------------------------------------
     # Operations
 

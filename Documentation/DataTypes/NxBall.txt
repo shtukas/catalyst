@@ -1,5 +1,6 @@
 NxBall
 {
+    "itemuuid"      : String
     "type"          : "running" | "paused"
     "startunixtime" : Unixtime
     "accounts"      : Array[Account],

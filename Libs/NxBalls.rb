@@ -25,6 +25,7 @@ class NxBalls
     # NxBalls::issueNxBall(item, accounts)
     def self.issueNxBall(item, accounts)
         nxball = {
+            "itemuuid"       => item["uuid"],
             "instance"       => Config::thisInstanceId(),
             "type"           => "running",
             "startunixtime"  => Time.new.to_i,
@@ -177,5 +178,13 @@ class NxBalls
         nxball = NxBalls::getNxBallOrNull(item)
         return "" if nxball.nil?
         " #{NxBalls::nxBallToString(nxball)}"
+    end
+
+    # NxBalls::runningItems()
+    def self.runningItems()
+        NxBalls::all()
+            .map{|ball| ball["itemuuid"] }
+            .map{|uuid| Solingen::getItemOrNull(uuid) }
+            .compact
     end
 end

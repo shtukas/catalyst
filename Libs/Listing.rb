@@ -126,36 +126,11 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
-        principals = [
-            NxPrincipals::runningPrincipals(),
-            NxPrincipals::itemsOrdered()
-                .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
-        ]
-            .flatten
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-
-        threads = 
-            [
-                NxThreads::runningThreads(),
-                principals
+        threads = NxPrincipals::itemsOrdered()
+                    .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
                     .map{|principal|
                         NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
                     }
-            ]
-                .flatten
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
 
         [
             burner,
@@ -166,6 +141,7 @@ class Listing
             NxBackups::listingItems(),
             waves,
             ondates,
+            NxBalls::runningItems(),
             threads
         ]
             .flatten
