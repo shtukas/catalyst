@@ -120,8 +120,6 @@ class Listing
             ]
             .flatten
 
-        times = NxTimes::listingItems()
-
         waves = Waves::listingItems(nil)
             .select{|item| !item["interruption"] }
 
@@ -139,7 +137,6 @@ class Listing
             fires,
             interruptions,
             NxBackups::listingItems(),
-            times,
             waves,
             ondates,
             threads
@@ -332,6 +329,17 @@ class Listing
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+        times = NxTimes::listingItems()
+        if times.size > 0 then
+            spacecontrol.putsline ""
+            times
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
 
         spacecontrol.putsline ""
         NxPrincipals::itemsOrdered()
