@@ -46,6 +46,9 @@ class NxThreads
     def self.program(thread)
         loop {
 
+            thread = Solingen::getItemOrNull(thread["uuid"])
+            return if thread.nil?
+
             system("clear")
 
             puts ""
