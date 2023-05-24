@@ -1,5 +1,0 @@
-
-NxMonitorLongs (Blade) singleton
-    "uuid"        : String
-    "mikuType"    : "NxMonitorLongs"
-    "engine"      : TxEngine

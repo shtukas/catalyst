@@ -1,5 +1,0 @@
-
-NxMonitorTasksBoardless (Blade) singleton
-    "uuid"        : String
-    "mikuType"    : "NxMonitorTasksBoardless"
-    "engine"      : TxEngine

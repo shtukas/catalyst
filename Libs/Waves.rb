@@ -229,11 +229,6 @@ class Waves
     # -------------------------------------
     # Monitor
 
-    # Waves::monitorToString(item)
-    def self.monitorToString(item)
-        "(#{"moni".green}) Waves (completion ratio: #{Monitors::dayCompletionRatio(item).round(2)})"
-    end
-
     # Waves::completionRatio()
     def self.completionRatio()
         items = Waves::listingItems(nil)

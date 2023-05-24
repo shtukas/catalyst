@@ -23,20 +23,10 @@ class PolyFunctions
         end
 
         if item["parentuuid"] then
-            parent = NxPrincipals::getItemOfNull(item["parentuuid"])
+            parent = NxPrincipals::getItemOrNull(item["parentuuid"])
             if parent then
                 accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
             end
-        end
-
-        if item["mikuType"] == "NxLong" then
-            monitor =  Solingen::mikuTypeItems("NxMonitorLongs").first # NxLongs Monitor
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
-        end
-
-        if NxTasks::itemIsBoardless(item) then
-            monitor = Solingen::getItem("bea0e9c7-f609-47e7-beea-70e433e0c82e") # NxTasksBoardless Monitor
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(monitor)
         end
 
         accounts.reduce([]){|as, account|
@@ -83,12 +73,6 @@ class PolyFunctions
         if item["mikuType"] == "NxLong" then
             return NxLongs::toString(item)
         end
-        if item["mikuType"] == "NxMonitorLongs" then
-            return NxLongs::monitorToString(item)
-        end
-        if item["mikuType"] == "NxMonitorTasksBoardless" then
-            return NxTasks::boardlessMonitorToString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
@@ -111,5 +95,16 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
+    end
+
+    # PolyFunctions::parentingSuffix(item)
+    def self.parentingSuffix(item)
+        return "" if item["parentuuid"].nil?
+        parent = NxPrincipals::getItemOrNull(item["parentuuid"])
+        if parent then
+            " (parent: #{parent["description"].green})"
+        else
+            " (parent: not found, parentuuid: #{item["parentuuid"]})"
+        end
     end
 end

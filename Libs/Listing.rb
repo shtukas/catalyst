@@ -111,12 +111,6 @@ class Listing
         burner = Solingen::mikuTypeItems("NxBurner")
             .select{|item| item["parentuuid"].nil? }
 
-        monitors = (Solingen::mikuTypeItems("NxPrincipal") + Solingen::mikuTypeItems("NxMonitorLongs") + Solingen::mikuTypeItems("NxMonitorTasksBoardless"))
-
-        monitorsRunninItems = monitors
-            .map{|monitor| Monitors::monitorToRunningItems(monitor) }
-            .flatten
-
         fires = Solingen::mikuTypeItems("NxFire")
 
         interruptions =
@@ -133,10 +127,10 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
-        monitors = monitors
-            .select{|item| Monitors::periodCompletionRatio(item) < 1 }
-            .select{|item| Monitors::dayCompletionRatio(item) < 1 }
-            .sort_by{|item| Monitors::listingOrderingRatio(item) }
+        threads = NxPrincipals::itemsOrdered()
+                    .map{|principal|
+                        NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
+                    }
 
         [
             burner,
@@ -148,8 +142,7 @@ class Listing
             times,
             waves,
             ondates,
-            monitorsRunninItems,
-            monitors
+            threads
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -166,7 +159,7 @@ class Listing
     def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{BoardsAndItems::toStringSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{PolyFunctions::parentingSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else
@@ -300,7 +293,7 @@ class Listing
         if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
             Catalyst::catalystItems().each{|item|
                 next if item["parentuuid"].nil?
-                next if Solingen::getItemOfNull(item["parentuuid"])
+                next if Solingen::getItemOrNull(item["parentuuid"])
                 puts "Could not find a parent for this item: #{JSON.pretty_generate(item)}".green
                 exit
             }
@@ -312,7 +305,6 @@ class Listing
              Bank::fileManagement()
              NxBackups::dataMaintenance()
              NxPrincipals::dataMaintenance()
-             NxLongs::monitorDataMaintenance()
              if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("d65fec63-6b80-4372-b36b-5362fb1ace2e", 3600*8) then
                  NxLongs::dataMaintenance()
              end

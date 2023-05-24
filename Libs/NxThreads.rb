@@ -1,18 +1,20 @@
 
 class NxThreads
 
-    # NxThreads::interactivelyIssueNewOrNull(board = nil)
-    def self.interactivelyIssueNewOrNull(board = nil)
+    # NxThreads::interactivelyIssueNewOrNull(principal = nil)
+    def self.interactivelyIssueNewOrNull(principal = nil)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         datetime = Time.new.utc.iso8601
-        board = NxPrincipals::interactivelySelectOneBoard()
+        principal = NxPrincipals::interactivelySelectOnePrincipal()
+        active = LucilleCore::askQuestionAnswerAsBoolean("active ?: ")
         uuid = SecureRandom.uuid
         Solingen::init("NxThread", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", datetime)
         Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "parentuuid", board["uuid"])
+        Solingen::setAttribute2(uuid, "parentuuid", principal["uuid"])
+        Solingen::setAttribute2(uuid, "active", active)
         Solingen::getItemOrNull(uuid)
     end
 
@@ -21,7 +23,8 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
-        "(thrd) #{item["description"]}"
+        parent = Solingen::getItemOrNull(item["parentuuid"])
+        "(thrd) #{item["description"]} (#{parent["description"]})"
     end
 
     # NxThreads::listingItems()
@@ -30,8 +33,8 @@ class NxThreads
             .sort_by{|item| item["unixtime"] }
     end
 
-    # NxThreads::threadToItems(thread)
-    def self.threadToItems(thread)
+    # NxThreads::items(thread)
+    def self.items(thread)
         Solingen::mikuTypeItems("NxTask")
             .select{|item| item["parentuuid"] == thread["uuid"] }
     end
@@ -55,10 +58,7 @@ class NxThreads
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: thread))
             spacecontrol.putsline ""
 
-            items = NxThreads::threadToItems(thread)
-            items = CommonUtils::putFirst(items, lambda{|item| Listing::isInterruption(item) })
-            items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsActive(item) })
-            items
+            NxThreads::items(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))
@@ -82,7 +82,7 @@ class NxThreads
     def self.destroy(uuid)
         thread = Solingen::getItemOrNull(uuid)
         return if thread.nil?
-        if NxThreads::threadToItems(thread).size > 0 then
+        if NxThreads::items(thread).size > 0 then
             puts "You cannot delete a thread that has elements in it"
             LucilleCore::pressEnterToContinue()
             return
@@ -99,7 +99,7 @@ class NxThreads
 
     # NxThreads::architectThreadAtBoard(board)
     def self.architectThreadAtBoard(board)
-        if NxPrincipals::boardToThreads(board).empty? then
+        if NxPrincipals::threads(board).empty? then
             loop {
                 thread = NxThreads::interactivelyIssueNewOrNull(board)
                 return thread if thread
@@ -121,5 +121,15 @@ class NxThreads
                 return thread if thread
             }
         end
+    end
+
+    # NxThreads::decideNewPositionAtThread(thread)
+    def self.decideNewPositionAtThread(thread)
+        items = NxThreads::items(thread)
+        return 1 if items.size > 0
+        items.sort_by{|item|
+            puts "#{item["position"]} : #{item["description"]}"
+        }
+        LucilleCore::askQuestionAnswerAsString("position: ").to_f
     end
 end

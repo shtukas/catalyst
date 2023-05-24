@@ -607,4 +607,22 @@ class CommonUtils
         }
         nil
     end
+
+    # CommonUtils::computeThatPosition(positions)
+    def self.computeThatPosition(positions)
+        return rand if positions.empty?
+        if positions.size < 4 then
+            return positions.max + 0.5 + rand
+        end
+        positions # a = [1, 2, 8, 9]
+        x = positions.zip(positions.drop(1)) # [[1, 2], [2, 8], [8, nil]]
+        x = x.select{|pair| pair[1] } # [[1, 2], [2, 8]
+        differences = x.map{|pair| pair[1] - pair[0] } # [1, 7]
+        difference_average = differences.inject(0, :+).to_f/differences.size
+        x.each{|pair|
+            next if (pair[1] - pair[0]) < difference_average
+            return pair[0] + rand*(pair[1] - pair[0])
+        }
+        raise "CommonUtils::computeThatPosition failed: positions: #{positions.join(", ")}"
+    end
 end

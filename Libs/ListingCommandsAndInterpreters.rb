@@ -6,16 +6,16 @@ class ListingCommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | long | float | time | times | thread",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | float | time | times | thread",
             "",
             "specific types commands:",
-            "    - ondate   : redate",
-            "    - tasks    : position <n>",
-            "    - monitors : engine (<n>)",
-            "    - boards   : engine (<n>)",
+            "    - ondate     : redate",
+            "    - tasks      : position <n>",
+            "    - monitors   : engine (<n>)",
+            "    - principals : engine (<n>)",
             "",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | tasks | boards | longs",
+            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | principals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
         ].join("\n")
@@ -74,11 +74,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("monitors", input) then
-            Monitors::program()
-            return
-        end
-
         if Interpreting::match("access", input) then
             item = store.getDefault()
             return if item.nil?
@@ -110,7 +105,6 @@ class ListingCommandsAndInterpreters
             return if description == ""
             item = NxTimes::issue(time, description)
             puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
             return
         end
 
@@ -123,7 +117,6 @@ class ListingCommandsAndInterpreters
                 return if description == ""
                 item = NxTimes::issue(time, description)
                 puts JSON.pretty_generate(item)
-                BoardsAndItems::askAndMaybeAttach(item)
             }
             return
         end
@@ -152,42 +145,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("board", input) then
-            item = store.getDefault()
-            return if item.nil?
-            puts "boarding: #{PolyFunctions::toString(item).green}"
-            BoardsAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("board *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            BoardsAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("boards", input) then
+        if Interpreting::match("principals", input) then
             NxPrincipals::program3()
-            return
-        end
-
-        if Interpreting::match("long", input) then
-            item = NxLongs::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            BoardsAndItems::askAndMaybeAttach(item)
-            return
-        end
-
-        if Interpreting::match("longs", input) then
-            NxLongs::program2()
-            return
-        end
-
-        if Interpreting::match("tasks", input) then
-            NxTasks::boardlessItemsProgram1()
             return
         end
 
@@ -393,7 +352,6 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -406,7 +364,6 @@ class ListingCommandsAndInterpreters
             item = NxFires::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -414,7 +371,6 @@ class ListingCommandsAndInterpreters
             item = NxBurners::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -519,7 +475,6 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
@@ -534,7 +489,6 @@ class ListingCommandsAndInterpreters
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            BoardsAndItems::maybeAskAndMaybeAttach(item)
             return
         end
 
