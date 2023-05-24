@@ -351,7 +351,7 @@ class Listing
         end
 
         principals = NxPrincipals::itemsOrdered()
-            .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 }
+            .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
         if principals.size > 0 then
             spacecontrol.putsline ""
             principals
