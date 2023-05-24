@@ -46,7 +46,7 @@ class NxPrincipals
 
     # NxPrincipals::toString(item)
     def self.toString(item)
-        "- #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "(prpl) #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxPrincipals::itemsOrdered()

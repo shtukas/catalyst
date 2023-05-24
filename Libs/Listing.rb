@@ -75,6 +75,7 @@ class Listing
         return false if item["mikuType"] == "NxFire"
         return false if item["mikuType"] == "NxBurner"
         return false if item["mikuType"] == "NxTime"
+        return false if item["mikuType"] == "NxPrincipal"
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
@@ -337,7 +338,9 @@ class Listing
         NxPrincipals::itemsOrdered()
             .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 }
             .each{|item|
-                puts NxPrincipals::toString(item)
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                break if !status
             }
 
         if items.size > 0 then
