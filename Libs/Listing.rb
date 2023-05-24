@@ -121,8 +121,6 @@ class Listing
             ]
             .flatten
 
-        times = NxTimes::listingItems()
-
         waves = Waves::listingItems(nil)
             .select{|item| !item["interruption"] }
 
@@ -140,7 +138,6 @@ class Listing
             fires,
             interruptions,
             NxBackups::listingItems(),
-            times,
             waves,
             ondates,
             threads
@@ -209,6 +206,14 @@ class Listing
             {
                 "name" => "Solingen::mikuTypeItems(NxFire)",
                 "lambda" => lambda { Solingen::mikuTypeItems("NxFire") }
+            },
+            {
+                "name" => "NxPrincipals::itemsOrdered()",
+                "lambda" => lambda { NxPrincipals::itemsOrdered() }
+            },
+            {
+                "name" => "NxTimes::listingItems()",
+                "lambda" => lambda { NxTimes::listingItems() }
             },
         ]
 
@@ -334,14 +339,28 @@ class Listing
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
-        spacecontrol.putsline ""
-        NxPrincipals::itemsOrdered()
+        times = NxTimes::listingItems()
+        if times.size > 0 then
+            spacecontrol.putsline ""
+            times
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        principals = NxPrincipals::itemsOrdered()
             .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 }
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                break if !status
-            }
+        if principals.size > 0 then
+            spacecontrol.putsline ""
+            principals
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
 
         if items.size > 0 then
             spacecontrol.putsline ""
