@@ -6,4 +6,3 @@ NxThread: (Blade)
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
     "parentuuid"  : String
-    "active"      : Boolean

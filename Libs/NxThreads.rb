@@ -7,14 +7,12 @@ class NxThreads
         return nil if description == ""
         datetime = Time.new.utc.iso8601
         principal = NxPrincipals::interactivelySelectOnePrincipal()
-        active = LucilleCore::askQuestionAnswerAsBoolean("active ?: ")
         uuid = SecureRandom.uuid
         Solingen::init("NxThread", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", datetime)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "parentuuid", principal["uuid"])
-        Solingen::setAttribute2(uuid, "active", active)
         Solingen::getItemOrNull(uuid)
     end
 

@@ -46,7 +46,6 @@ class NxTasks
             Solingen::setAttribute2(uuid, "datetime", datetime)
             Solingen::setAttribute2(uuid, "description", description)
             Solingen::setAttribute2(uuid, "parentuuid", principal["uuid"])
-            Solingen::setAttribute2(uuid, "active", false)
             Solingen::getItemOrNull(uuid)
         }
         principal = Solingen::getItemOrNull(NxPrincipals::gaiauuid())
