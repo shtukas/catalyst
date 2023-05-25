@@ -75,7 +75,6 @@ class Listing
         return false if item["mikuType"] == "NxFire"
         return false if item["mikuType"] == "NxBurner"
         return false if item["mikuType"] == "NxTime"
-        return false if item["mikuType"] == "NxPrincipal"
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
@@ -109,8 +108,7 @@ class Listing
     # Listing::items()
     def self.items()
 
-        burner = Solingen::mikuTypeItems("NxBurner")
-            .select{|item| item["parentuuid"].nil? }
+        anniversary = Anniversaries::listingItems()
 
         fires = Solingen::mikuTypeItems("NxFire")
 
@@ -121,28 +119,28 @@ class Listing
             ]
             .flatten
 
-        waves = Waves::listingItems(nil)
-            .select{|item| !item["interruption"] }
+        backups = NxBackups::listingItems()
 
-        ondates = NxOndates::listingItems()
+        threads1 = Solingen::mikuTypeItems("NxThread")
+                    .select{|thread| thread["engine"] }
+                    .select{|thread| TxEngines::listingCompletionRatio(thread["engine"]) < 1 or NxBalls::itemIsActive(thread) }
 
-        threads = NxPrincipals::itemsOrdered()
-                    .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
-                    .map{|principal|
-                        NxPrincipals::threads(principal).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-                    }
+        threads2 = Solingen::mikuTypeItems("NxThread")
+                    .select{|thread| thread["engine"].nil? }
+                    .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
+
+        threads3 = Solingen::mikuTypeItems("NxThread")
+                    .select{|thread| thread["engine"] }
+                    .select{|thread| TxEngines::listingCompletionRatio(thread["engine"]) >= 1 }
 
         [
-            burner,
-            Anniversaries::listingItems(),
+            NxBalls::runningItems(),
+            anniversary,
             Desktop::listingItems(),
             fires,
             interruptions,
-            NxBackups::listingItems(),
-            waves,
-            ondates,
-            NxBalls::runningItems(),
-            threads
+            backups,
+            threads1 + threads2 + threads3
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -155,24 +153,11 @@ class Listing
             }
     end
 
-    # Listing::parentingSuffixForListing(item)
-    def self.parentingSuffixForListing(item)
-        return "" if item["mikuType"] == "NxTask"
-        return "" if item["mikuType"] == "NxThread"
-        return "" if item["parentuuid"].nil?
-        parent = NxPrincipals::getItemOrNull(item["parentuuid"])
-        if parent then
-            " (parent: #{parent["description"].green})"
-        else
-            " (parent: not found, parentuuid: #{item["parentuuid"]})"
-        end
-    end
-
     # Listing::itemToListingLine(store: nil, item: nil)
     def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{Listing::parentingSuffixForListing(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else
@@ -221,10 +206,6 @@ class Listing
             {
                 "name" => "Solingen::mikuTypeItems(NxFire)",
                 "lambda" => lambda { Solingen::mikuTypeItems("NxFire") }
-            },
-            {
-                "name" => "NxPrincipals::itemsOrdered()",
-                "lambda" => lambda { NxPrincipals::itemsOrdered() }
             },
             {
                 "name" => "NxTimes::listingItems()",
@@ -325,7 +306,6 @@ class Listing
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
-             NxPrincipals::dataMaintenance()
         end
     end
 
@@ -355,18 +335,6 @@ class Listing
         if times.size > 0 then
             spacecontrol.putsline ""
             times
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                    break if !status
-                }
-        end
-
-        principals = NxPrincipals::itemsOrdered()
-            .select{|item| TxEngines::listingCompletionRatio(item["engine"]) < 1 or NxBalls::itemIsActive(item) }
-        if principals.size > 0 then
-            spacecontrol.putsline ""
-            principals
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)

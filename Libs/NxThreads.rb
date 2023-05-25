@@ -6,13 +6,11 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         datetime = Time.new.utc.iso8601
-        principal = NxPrincipals::interactivelySelectOnePrincipal()
         uuid = SecureRandom.uuid
         Solingen::init("NxThread", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", datetime)
         Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "parentuuid", principal["uuid"])
         Solingen::getItemOrNull(uuid)
     end
 
@@ -21,8 +19,13 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
-        parent = Solingen::getItemOrNull(item["parentuuid"])
-        "(thrd) #{item["description"]} (#{parent["description"]})"
+        suffix =
+            if item["engine"] then
+                " #{TxEngines::toString(item["engine"])}"
+            else
+                ""
+            end
+        "(thrd) #{item["description"].ljust(30)}#{suffix}"
     end
 
     # NxThreads::listingItems()
@@ -31,8 +34,8 @@ class NxThreads
             .sort_by{|item| item["unixtime"] }
     end
 
-    # NxThreads::items(thread)
-    def self.items(thread)
+    # NxThreads::tasks(thread)
+    def self.tasks(thread)
         Solingen::mikuTypeItems("NxTask")
             .select{|item| item["parentuuid"] == thread["uuid"] }
     end
@@ -40,6 +43,25 @@ class NxThreads
     # NxThreads::runningThreads()
     def self.runningThreads()
         Solingen::mikuTypeItems("NxThread").select{|item| NxBalls::itemIsActive(item) }
+    end
+
+    # NxThreads::children(thread)
+    def self.children(thread)
+        [
+            [
+                Solingen::mikuTypeItems("NxBurner"),
+                Solingen::mikuTypeItems("NxFire"),
+                Solingen::mikuTypeItems("NxOndate"),
+                Solingen::mikuTypeItems("Wave"),
+            ]
+                .flatten
+                .select{|item| item["parentuuid"] == thread["uuid"] },
+
+            Solingen::mikuTypeItems("NxTask")
+                .select{|item| item["parentuuid"] == thread["uuid"] }
+                .sort_by{|item| item["position"] }
+        ]
+            .flatten
     end
 
     # ------------------
@@ -64,7 +86,7 @@ class NxThreads
             spacecontrol.putsline(Listing::itemToListingLine(store: store, item: thread))
             spacecontrol.putsline ""
 
-            NxThreads::items(thread)
+            NxThreads::children(thread)
                 .sort_by{|item| item["position"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
@@ -89,7 +111,7 @@ class NxThreads
     def self.destroy(uuid)
         thread = Solingen::getItemOrNull(uuid)
         return if thread.nil?
-        if NxThreads::items(thread).size > 0 then
+        if NxThreads::tasks(thread).size > 0 then
             puts "You cannot delete a thread that has elements in it"
             LucilleCore::pressEnterToContinue()
             return
@@ -97,42 +119,50 @@ class NxThreads
         Solingen::destroy(uuid)
     end
 
-    # NxThreads::interactivelySelectThreadAtBoardOrNull(board)
-    def self.interactivelySelectThreadAtBoardOrNull(board)
+    # NxThreads::interactivelySelectThreadOrNull()
+    def self.interactivelySelectThreadOrNull()
         threads = Solingen::mikuTypeItems("NxThread")
-                    .select{|item| item["parentuuid"] == board["uuid"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxThreads::architectThreadAtBoard(board)
-    def self.architectThreadAtBoard(board)
-        if NxPrincipals::threads(board).empty? then
-            loop {
-                thread = NxThreads::interactivelyIssueNewOrNull(board)
-                return thread if thread
-            }
+    # NxThreads::interactivelySelectThread()
+    def self.interactivelySelectThread()
+        loop {
+            thread = NxThreads::interactivelySelectThreadOrNull()
+            return thread if thread
+        }
+    end
+
+    # NxThreads::interactivelyDecideCoordinates(mikuType) # [thread, position or null]
+    def self.interactivelyDecideCoordinates(mikuType)
+        thread = NxThreads::interactivelySelectThread()
+        if mikuType == "NxTask" then
+            position = NxThreads::decideNewPositionAtThread(thread)
+            return [thread, position]
+        else
+            return [thread, nil]
         end
-        thread = NxThreads::interactivelySelectThreadAtBoardOrNull(board)
-        return thread if thread
-        puts "You did not select a thread. Select follow up action"
-        action = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("action", ["select one of the existing threads", "make a new thread"])
-        if action == "select one of the existing threads" then
-            loop {
-                thread = NxThreads::interactivelySelectThreadAtBoardOrNull(board)
-                return thread if thread
-            }
-        end
-        if action == "make a new thread" then
-            loop {
-                thread = NxThreads::interactivelyIssueNewOrNull(board)
-                return thread if thread
-            }
-        end
+    end
+
+    # NxThreads::coordinatesForVienna()
+    def self.coordinatesForVienna()
+        thread = Solingen::mikuTypeItems("NxThread").select{|thread| thread["description"] == "Vienna" }.first
+        items = NxThreads::tasks(thread)
+        position = (items.size > 0) ? (items.map{|item| item["position"]}.max + rand) : 1
+        [thread, position]
+    end
+
+    # NxThreads::coordinatesForNxTasksBufferIn()
+    def self.coordinatesForNxTasksBufferIn()
+        thread = Solingen::mikuTypeItems("NxThread").select{|thread| thread["description"] == "NxTasks-BufferIn" }.first
+        items = NxThreads::tasks(thread)
+        position = (items.size > 0) ? (items.map{|item| item["position"]}.max + rand) : 1
+        [thread, position]
     end
 
     # NxThreads::decideNewPositionAtThread(thread)
     def self.decideNewPositionAtThread(thread)
-        items = NxThreads::items(thread)
+        items = NxThreads::tasks(thread)
         return 1 if items.size > 0
         items.sort_by{|item|
             puts "#{item["position"]} : #{item["description"]}"

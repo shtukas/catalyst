@@ -145,11 +145,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("principals", input) then
-            NxPrincipals::program3()
-            return
-        end
-
         if Interpreting::match("time promises", input) then
             NxTimePromises::show()
             return
@@ -229,18 +224,14 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "coordinates is only available to NxTasks"
+            if !["NxBurner", "NxFire", "NxOndate", "NxTask", "Wave"].include?(item["mikuType"]) then
+                puts "coordinates is only available to #{item["mikuType"]}"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            optional_parent, optional_position = NxTasks::interactivelyDetermineItemCoordinates()
-            if optional_parent then
-                Solingen::setAttribute2(item["uuid"], "parent", optional_parent["uuid"])
-            end
-            if optional_position then
-                Solingen::setAttribute2(item["uuid"], "position", optional_position)
-            end
+            thread, position = NxThreads::interactivelyDecideCoordinates(item["mikuType"])
+            Solingen::setAttribute2(item["uuid"], "parentuuid", thread["uuid"])
+            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -257,8 +248,8 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxPrincipal", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
-                puts "Only NxTask, NxPrincipal and NxMonitors are carrying engine"
+            if item["mikuType"] != "NxThread" then
+                puts "Only NxThread are carrying engines"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -272,8 +263,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxPrincipal", "NxTask", "NxMonitors"].include?(item["mikuType"]) then
-                puts "Only NxTask, NxPrincipal and NxMonitors are carrying engine"
+            if item["mikuType"] != "NxThread" then
+                puts "Only NxThread are carrying engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -325,12 +316,6 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("manual countdown", input) then
             PhysicalTargets::issueNewOrNull()
             return
-        end
-
-        if Interpreting::match("netflix", input) then
-            title = LucilleCore::askQuestionAnswerAsString("title: ")
-            item = NxTasks::netflix(title)
-            puts JSON.pretty_generate(item)
         end
 
         if Interpreting::match("note", input) then

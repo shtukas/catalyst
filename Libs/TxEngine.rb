@@ -117,9 +117,15 @@ class TxEngines
                 NxTimePromises::issue_things(item, overflow, 20)
                 return nil
             end
-            puts "I am about to reset engine: #{engine} (for item: #{item})"
+            puts "> I am about to reset engine: #{engine} (for item: #{item})"
             LucilleCore::pressEnterToContinue()
             Bank::put(engine["capsule"], -engine["hours"]*3600)
+            if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ?") then
+                hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
+                if hours.size > 0 then
+                    engine["hours"] = hours.to_f
+                end
+            end
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
@@ -137,8 +143,8 @@ class TxEngines
         if engine["type"] == "weekly-time" then
             strings = []
 
-            strings << "(engine: today: #{"#{(100*TxEngines::dayCompletionRatio(engine)).round(2)}%".green} of #{engine["hours"].to_f/5} hours"
-            strings << ", period: #{"#{(100*TxEngines::periodCompletionRatio(engine)).round(2)}%".green} of #{engine["hours"]} hours"
+            strings << "(engine: today: #{"#{"%5.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+            strings << ", period: #{"#{"%5.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
             hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
             timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400

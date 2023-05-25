@@ -8,10 +8,13 @@ class NxFires
         uuid = SecureRandom.uuid
         Solingen::init("NxFire", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        thread, position = NxThreads::interactivelyDecideCoordinates("NxFire")
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "parentuuid", thread["uuid"])
+        Solingen::setAttribute2(uuid, "position", position)
         Solingen::getItemOrNull(uuid)
     end
 
