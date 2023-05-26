@@ -11,14 +11,19 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["engine"] then
+        if item["mikuType"] == "NxThread" and item["engineuuid"] then
+            engine = Solingen::getItemOrNull(item["engineuuid"])
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
+        end
+
+        if item["mikuType"] == "TxEngine" then
             accounts << {
-                "description" => "engine",
-                "number"      => item["engine"]["uuid"]
+                "description" => "TxEngine(#{item["description"]})",
+                "number"      => item["uuid"]
             }
             accounts << {
                 "description" => nil,
-                "number"      => item["engine"]["capsule"]
+                "number"      => item["capsule"]
             }
         end
 
@@ -90,6 +95,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
+        end
+        if item["mikuType"] == "TxEngine" then
+            return TxEngines::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

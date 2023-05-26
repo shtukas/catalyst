@@ -19,13 +19,21 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
+        padding = XCache::getOrDefaultValue("thread-description-padding-ee0606f5-4ef6", "0").to_i
         suffix =
-            if item["engine"] then
-                " #{TxEngines::toString(item["engine"])}"
+            if item["engineuuid"] then
+                engine = Solingen::getItemOrNull(item["engineuuid"])
+                " #{engine["description"].green}"
             else
                 ""
             end
-        "(thrd) #{item["description"].ljust(30)}#{suffix}"
+        "(thrd) #{item["description"].ljust(padding)}#{suffix}"
+    end
+
+    # NxThreads::listingCompletionRatio(thread)
+    def self.listingCompletionRatio(thread)
+        engine = Solingen::getItemOrNull(thread["engineuuid"])
+        TxEngines::listingCompletionRatio(engine)
     end
 
     # NxThreads::listingItems()
@@ -110,7 +118,7 @@ class NxThreads
     def self.destroy(uuid)
         thread = Solingen::getItemOrNull(uuid)
         return if thread.nil?
-        if NxThreads::tasks(thread).size > 0 then
+        if NxThreads::children(thread).size > 0 then
             puts "You cannot delete a thread that has elements in it"
             LucilleCore::pressEnterToContinue()
             return

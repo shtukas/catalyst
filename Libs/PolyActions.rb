@@ -93,6 +93,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxEngine" then
+            TxEngines::program1(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             Waves::access(item)
             return
@@ -243,6 +248,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxEngine" then
+            NxBalls::stop(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing :'#{Waves::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -357,7 +367,13 @@ class PolyActions
             return
         end
 
-        puts "I don't know how to doubleDot '#{item["mikuType"]}'"
+        if item["mikuType"] == "TxEngine" then
+            puts "You cannot double dot an engine, you can access it or start/stop it"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        puts "I don't know how to double dot '#{item["mikuType"]}'"
         LucilleCore::pressEnterToContinue()
     end
 
@@ -381,6 +397,11 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
+            return
+        end
+
+        if item["mikuType"] == "TxEngine" then
+            TxEngines::program1(item)
             return
         end
 

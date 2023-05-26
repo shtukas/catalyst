@@ -10,6 +10,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - ondate     : redate",
+            "    - NxTask     : position",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | principals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
@@ -241,6 +242,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("engines", input) then
+            TxEngines::program2()
+            return
+        end
+
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -250,22 +256,14 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if item["engine"] then
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit", "make new"])
-                return if option.nil?
-                if option == "edit" then
-                    engine = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item["engine"])))
-                    Solingen::setAttribute2(item["uuid"], "engine", engine)
-                end
-                if option == "make new" then
-                    engine = TxEngines::interactivelyMakeEngineOrDefault()
-                    return if engine.nil?
-                    Solingen::setAttribute2(item["uuid"], "engine", engine)
-                end
-            else
-                engine = TxEngines::interactivelyMakeEngineOrDefault()
-                return if engine.nil?
-                Solingen::setAttribute2(item["uuid"], "engine", engine)
+            engine = TxEngines::interactivelySelectOneOrNull()
+            if engine then
+                Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("You did not select anything would you like to build an engine for this item ? ") then
+                engine = TxEngines::interactivelyIssueEngineOrNull()
+                Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
             end
             return
         end
@@ -394,6 +392,20 @@ class ListingCommandsAndInterpreters
                 return
             end
             NxOndates::redate(item)
+            return
+        end
+
+        if Interpreting::match("position *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "position is reserved for NxTask"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            position = LucilleCore::askQuestionAnswerAsString("position : ").to_f
+            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 

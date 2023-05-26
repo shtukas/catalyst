@@ -124,16 +124,16 @@ class Listing
         ondates = NxOndates::listingItems()
 
         threads1 = Solingen::mikuTypeItems("NxThread")
-                    .select{|thread| thread["engine"] }
-                    .select{|thread| TxEngines::listingCompletionRatio(thread["engine"]) < 1 or NxBalls::itemIsActive(thread) }
+                    .select{|thread| thread["engineuuid"] }
+                    .select{|thread| NxThreads::listingCompletionRatio(thread) < 1 or NxBalls::itemIsActive(thread) }
 
         threads2 = Solingen::mikuTypeItems("NxThread")
-                    .select{|thread| thread["engine"].nil? }
+                    .select{|thread| thread["engineuuid"].nil? }
                     .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
 
         threads3 = Solingen::mikuTypeItems("NxThread")
-                    .select{|thread| thread["engine"] }
-                    .select{|thread| TxEngines::listingCompletionRatio(thread["engine"]) >= 1 }
+                    .select{|thread| thread["engineuuid"] }
+                    .select{|thread| NxThreads::listingCompletionRatio(thread) >= 1 }
 
         [
             NxBalls::runningItems(),
@@ -160,7 +160,13 @@ class Listing
     def self.itemToListingLine(store: nil, item: nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{PolyFunctions::toString(item)}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+
+        str1 = PolyFunctions::toString(item)
+        if item["mikuType"] == "TxEngine" then
+            str1 = TxEngines::toString(item, true)
+        end
+
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else
@@ -304,11 +310,18 @@ class Listing
             }
         end
 
+        padding = ([0] + Solingen::mikuTypeItems("TxEngine").map{|engine| engine["description"].size }).max
+        XCache::set("engine-description-padding-26f3d54692dc", padding)
+
+        padding = ([0] + Solingen::mikuTypeItems("NxThread").map{|thread| thread["description"].size }).max
+        XCache::set("thread-description-padding-ee0606f5-4ef6", padding)
+
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
+             TxEngines::maintenance()
         end
     end
 
@@ -333,6 +346,14 @@ class Listing
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+        spacecontrol.putsline ""
+        TxEngines::listingItems()
+            .each{|engine| 
+                store.register(engine, false)
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: engine)
+                break if !status
+            }
 
         times = NxTimes::listingItems()
         if times.size > 0 then

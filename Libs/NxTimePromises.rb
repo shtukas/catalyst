@@ -60,30 +60,30 @@ class NxTimePromises
         }
     end
 
-    # NxTimePromises::compute_things(item, value, periodInDays)
-    def self.compute_things(item, value, periodInDays)
-        # This function takes an item that is engine carrier and performs the following operations
+    # NxTimePromises::compute_capsules(engine, value, periodInDays)
+    def self.compute_capsules(engine, value, periodInDays)
+        # This function takes an engine and performs the following operations
 
-        # 1. Issue a capsule that is going to substract that value from the item's engine capsule.
-        #    Note that the two capsules in the previous sentence are not the same type :)
+        # 1. Issue a capsule that is going to substract that value from the engine's capsule.
+        #    Note that the two "capsule"s in the previous sentence do not represent the same type :)
         #    The value is meant to represent some partial overflow.
 
         # 2. For each (1..periodInDays)
-        #    issue a promise against the item (using the item uuid)
+        #    issue a promise against the engine (using the engine uuid)
 
         # Note that the value given is positive, so we substract and then add
 
         things = []
-        things << NxTimeCapsules::make(Time.new.to_i, item["engine"]["capsule"], -value)
+        things << NxTimeCapsules::make(Time.new.to_i, engine["capsule"], -value)
         (1..periodInDays).each{|i|
-            things << NxTimePromises::make(Time.new.to_i + 86400*i, item["uuid"], value.to_f/periodInDays)
+            things << NxTimePromises::make(Time.new.to_i + 86400*i, engine["uuid"], value.to_f/periodInDays)
         }
         things
     end
 
-    # NxTimePromises::issue_things(item, value, periodInDays)
-    def self.issue_things(item, value, periodInDays)
-        NxTimePromises::compute_things(item, value, periodInDays)
+    # NxTimePromises::issue_things(engine, value, periodInDays)
+    def self.issue_things(engine, value, periodInDays)
+        NxTimePromises::compute_capsules(engine, value, periodInDays)
             .each{|thing|
                 uuid = thing["uuid"]
                 if thing["mikuType"] == "NxTimeCapsule" then
