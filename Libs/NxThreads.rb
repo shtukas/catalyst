@@ -87,7 +87,6 @@ class NxThreads
             spacecontrol.putsline ""
 
             NxThreads::children(thread)
-                .sort_by{|item| item["position"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item)) 
                     status = spacecontrol.putsline(Listing::itemToListingLine(store: store, item: item))

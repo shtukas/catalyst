@@ -121,6 +121,8 @@ class Listing
 
         backups = NxBackups::listingItems()
 
+        ondates = NxOndates::listingItems()
+
         threads1 = Solingen::mikuTypeItems("NxThread")
                     .select{|thread| thread["engine"] }
                     .select{|thread| TxEngines::listingCompletionRatio(thread["engine"]) < 1 or NxBalls::itemIsActive(thread) }
@@ -140,6 +142,7 @@ class Listing
             fires,
             interruptions,
             backups,
+            ondates,
             threads1 + threads2 + threads3
         ]
             .flatten
