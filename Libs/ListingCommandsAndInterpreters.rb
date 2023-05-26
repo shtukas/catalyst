@@ -241,32 +241,32 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxThread" then
-                puts "Only NxThread are carrying engines"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            engine = TxEngines::interactivelyMakeEngineOrDefault()
-            return if engine.nil?
-            Solingen::setAttribute2(item["uuid"], "engine", engine)
-            return
-        end
-
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxThread" then
-                puts "Only NxThread are carrying engine"
+                puts "Only NxThreads carry engine"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            engine = TxEngines::interactivelyMakeEngineOrDefault()
-            return if engine.nil?
-            Solingen::setAttribute2(item["uuid"], "engine", engine)
+            if item["engine"] then
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit", "make new"])
+                return if option.nil?
+                if option == "edit" then
+                    engine = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item["engine"])))
+                    Solingen::setAttribute2(item["uuid"], "engine", engine)
+                end
+                if option == "make new" then
+                    engine = TxEngines::interactivelyMakeEngineOrDefault()
+                    return if engine.nil?
+                    Solingen::setAttribute2(item["uuid"], "engine", engine)
+                end
+            else
+                engine = TxEngines::interactivelyMakeEngineOrDefault()
+                return if engine.nil?
+                Solingen::setAttribute2(item["uuid"], "engine", engine)
+            end
             return
         end
 
