@@ -5,15 +5,11 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | board (<n>) | unboard <n> | note (<n>) | coredata <n> | skip | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coordinates <n> | note (<n>) | coredata <n> | skip | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | float | time | times | thread",
             "",
             "specific types commands:",
             "    - ondate     : redate",
-            "    - tasks      : position <n>",
-            "    - monitors   : engine (<n>)",
-            "    - principals : engine (<n>)",
-            "",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | principals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
