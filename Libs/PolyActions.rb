@@ -47,11 +47,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPrincipal" then
-            NxPrincipals::program2(item)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -59,22 +54,6 @@ class PolyActions
 
         if item["mikuType"] == "NxFire" then
             CoreData::access(item["uuid"], item["field11"])
-            return
-        end
-
-        if item["mikuType"] == "NxPrincipal" then
-            puts NxPrincipals::toString(item)
-            actions = ["set hours", "access items"]
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
-            return if action.nil?
-            if action == "set hours" then
-                puts "Not implemented yet"
-                LucilleCore::pressEnterToContinue()
-            end
-            if action == "access items" then
-                puts "Not implemented yet"
-                LucilleCore::pressEnterToContinue()
-            end
             return
         end
 
@@ -175,12 +154,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPrincipal" then
-            puts "There is no done action on NxPrincipals. If it was running, I have stopped it."
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if NxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it."
@@ -276,12 +249,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPrincipal" then
-            puts "You cannot destroy a board by issuing a command. Do it in nslog."
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
@@ -290,11 +257,6 @@ class PolyActions
     def self.doubleDot(item)
 
         if item["mikuType"] == "NxBackup" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxPrincipal" then
             PolyActions::access(item)
             return
         end
@@ -387,11 +349,6 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             NxBackups::program(item)
-            return
-        end
-
-        if item["mikuType"] == "NxPrincipal" then
-            PolyActions::access(item)
             return
         end
 

@@ -113,7 +113,7 @@ class NxTimePromises
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|thing|
                 if thing["mikuType"] == "NxTimeCapsule" then
-                    board = NxPrincipals::getItemOrNull(thing["account"])
+                    board = Solingen::getItemOrNull(thing["account"])
                     puts "#{Time.at(thing["unixtime"]).to_s} : #{thing["account"]} : #{thing["value"]}#{board ? " (#{board["description"]})" : ""}"
                 end
                 if thing["mikuType"] == "NxTimePromise" then

@@ -28,7 +28,7 @@ class PolyFunctions
         end
 
         if item["parentuuid"] then
-            parent = NxPrincipals::getItemOrNull(item["parentuuid"])
+            parent = Solingen::getItemOrNull(item["parentuuid"])
             if parent then
                 accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
             end
@@ -56,9 +56,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
-        end
-        if item["mikuType"] == "NxPrincipal" then
-            return NxPrincipals::toString(item)
         end
         if item["mikuType"] == "NxClique" then
             return NxCliques::toString(item)
