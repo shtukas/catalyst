@@ -25,7 +25,7 @@ class NxThreads
                 engine = Solingen::getItemOrNull(item["engineuuid"])
                 " #{engine["description"].green}"
             else
-                ""
+                " #{Bank::recoveredAverageHoursPerDay(item["uuid"])}"
             end
         "(thrd) #{item["description"].ljust(padding)}#{suffix}"
     end
@@ -104,6 +104,11 @@ class NxThreads
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == ""
+
+            if input == "task here" then
+                NxTasks::interactivelyIssueNewTaskAtThreadOrNull(thread)
+                next
+            end
 
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
