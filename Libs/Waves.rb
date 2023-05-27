@@ -139,23 +139,14 @@ class Waves
     # -------------------------------------------------------------------------
     # Data (2)
 
-    # Waves::listingItems(indicator)
-    def self.listingItems(indicator)
-        # Indicator is either nil or a board
-        # if nil them we return boardless items or and all interruptions ones
-        # if board we return all the board items
-        waves = Solingen::mikuTypeItems("Wave")
-                    .select{|item| Listing::listable(item) }
-                    .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-                    .select{|item|
-                        item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-                    }
-        if indicator.nil? then
-            waves.select{|wave| wave["parentuuid"].nil? or wave["interruption"]}
-        else
-            board = indicator
-            waves.select{|wave| wave["parentuuid"] == board["uuid"] }
-        end
+    # Waves::listingItems()
+    def self.listingItems()
+        Solingen::mikuTypeItems("Wave")
+            .select{|item| Listing::listable(item) }
+            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+            .select{|item|
+                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+            }
     end
 
     # -------------------------------------------------------------------------
@@ -224,15 +215,5 @@ class Waves
             return if wave.nil?
             Waves::program2(wave)
         }
-    end
-
-    # -------------------------------------
-    # Monitor
-
-    # Waves::completionRatio()
-    def self.completionRatio()
-        items = Waves::listingItems(nil)
-        return 1 if items.empty?
-        0.5
     end
 end

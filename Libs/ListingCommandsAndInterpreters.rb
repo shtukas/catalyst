@@ -10,7 +10,6 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - ondate     : redate",
-            "    - NxTask     : position",
             "transmutation : transmute (<n>)",
             "divings       : anniversaries | ondates | waves | todos | desktop | time promises | principals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
@@ -85,13 +84,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("projects", input) then
             NxLongs::program1()
-            return
-        end
-
-        if Interpreting::match("thread", input) then
-            item = NxThreads::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -214,21 +206,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
-            return
-        end
-
-        if Interpreting::match("coordinates *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if !["NxBurner", "NxFire", "NxOndate", "NxTask", "Wave"].include?(item["mikuType"]) then
-                puts "coordinates is only available to #{item["mikuType"]}"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            thread, position = NxThreads::interactivelyDecideCoordinates(item["mikuType"])
-            Solingen::setAttribute2(item["uuid"], "parentuuid", thread["uuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -387,20 +364,6 @@ class ListingCommandsAndInterpreters
                 return
             end
             NxOndates::redate(item)
-            return
-        end
-
-        if Interpreting::match("position *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "position is reserved for NxTask"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            position = LucilleCore::askQuestionAnswerAsString("position : ").to_f
-            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 

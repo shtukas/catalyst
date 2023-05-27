@@ -62,11 +62,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            NxThreads::access(item)
-            return
-        end
-
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             return
@@ -206,11 +201,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            NxThreads::destroy(item["uuid"])
-            return
-        end
-
         if item["mikuType"] == "NxTime" then
             Solingen::destroy(item["uuid"])
             return
@@ -283,12 +273,6 @@ class PolyActions
         if item["mikuType"] == "NxBurner" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            PolyFunctions::toString(item).green
             PolyActions::access(item)
             return
         end

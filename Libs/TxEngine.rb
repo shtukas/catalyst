@@ -226,6 +226,13 @@ class TxEngines
         LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", Solingen::mikuTypeItems("TxEngine"), lambda{|item| TxEngines::toString0(item) })
     end
 
+    # TxEngines::interactivelySelectOneUUIDOrNull()
+    def self.interactivelySelectOneUUIDOrNull()
+        engine = TxEngines::interactivelySelectOneOrNull()
+        return engine["uuid"] if engine
+        nil
+    end
+
     # TxEngines::listingItems()
     def self.listingItems()
         Solingen::mikuTypeItems("TxEngine")

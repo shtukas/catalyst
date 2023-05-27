@@ -1,14 +1,4 @@
-Catalyst items are json object with at least a uuid ("uuid") and a miku type ("mikuType"). 
-
-Elements that are children are 
-    - NxBurner
-    - NxFire
-    - NxOndate
-    - NxTask
-    - NxThread
-    - Wave
-
-Those elements can have a "parentuuid" attribute.
+Catalyst items are json object with at least a uuid ("uuid") and a miku type ("mikuType").
 
 Cross types conventions:
 

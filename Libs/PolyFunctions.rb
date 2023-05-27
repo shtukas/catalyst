@@ -27,13 +27,6 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
         end
 
-        if item["parentuuid"] then
-            parent = Solingen::getItemOrNull(item["parentuuid"])
-            if parent then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
-            end
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -83,9 +76,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
-        end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

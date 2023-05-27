@@ -20,33 +20,21 @@ class Transmutations
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            thread, position = NxThreads::interactivelyDecideCoordinates("NxTask")
-            Solingen::setAttribute2(item["uuid"], "parentuuid", thread["uuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
-            thread, position = NxThreads::interactivelyDecideCoordinates("NxTask")
-            Solingen::setAttribute2(item["uuid"], "parentuuid", thread["uuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxFire")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxBurner" then
-            thread, position = NxThreads::interactivelyDecideCoordinates("NxTask")
-            Solingen::setAttribute2(item["uuid"], "parentuuid", thread["uuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxBurner")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            thread, position = NxThreads::interactivelyDecideCoordinates("NxTask")
-            Solingen::setAttribute2(item["uuid"], "parentuuid", thread["uuid"])
-            Solingen::setAttribute2(item["uuid"], "position", position)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end

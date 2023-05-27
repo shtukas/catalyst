@@ -1,8 +1,0 @@
-
-NxThread: (Blade)
-    "uuid"        : String
-    "mikuType"    : "NxThread"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : String
-    "engineuuid"  : null or TxEngine

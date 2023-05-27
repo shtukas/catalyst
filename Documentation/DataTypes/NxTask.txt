@@ -5,6 +5,4 @@ NxTask: (Blade)
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
-    "position"    : Float
     "field11"     : null or CoreData reference string
-    "parentuuid"  : String

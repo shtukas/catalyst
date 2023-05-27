@@ -110,11 +110,15 @@ class Listing
 
         anniversary = Anniversaries::listingItems()
 
+        burners = Solingen::mikuTypeItems("NxBurner")
+
         fires = Solingen::mikuTypeItems("NxFire")
+
+        waves = Waves::listingItems()
 
         interruptions =
             [
-                Waves::listingItems(nil).select{|item| item["interruption"] },
+                waves.select{|item| item["interruption"] },
                 PhysicalTargets::listingItems()
             ]
             .flatten
@@ -123,29 +127,28 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
-        threads1 = Solingen::mikuTypeItems("NxThread")
-                    .select{|thread| thread["engineuuid"] }
-                    .select{|thread| NxThreads::listingCompletionRatio(thread) < 1 or NxBalls::itemIsActive(thread) }
-                    .sort_by{|thread| NxThreads::listingCompletionRatio(thread) }
+        tasks = Solingen::mikuTypeItems("NxTask")
+                    .sort_by{|item| item["unixtime"] }
+                    .reverse
 
-        threads2 = Solingen::mikuTypeItems("NxThread")
-                    .select{|thread| thread["engineuuid"].nil? }
-                    .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-
-        threads3 = Solingen::mikuTypeItems("NxThread")
-                    .select{|thread| thread["engineuuid"] }
-                    .select{|thread| NxThreads::listingCompletionRatio(thread) >= 1 }
-                    .sort_by{|thread| NxThreads::listingCompletionRatio(thread) }
+        enginestasks = Solingen::mikuTypeItems("TxEngine")
+            .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
+            .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 }
+            .map{|engine| tasks.select{|task| task["engineuuid"] == engine["uuid"] } }
+            .flatten
 
         [
             NxBalls::runningItems(),
             anniversary,
             Desktop::listingItems(),
+            burners,
             fires,
             interruptions,
             backups,
             ondates,
-            threads1 + threads2 + threads3
+            waves.select{|item| !item["interruption"] },
+            enginestasks,
+            tasks.first(10)
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -169,9 +172,6 @@ class Listing
         end
 
         engineSuffix = TxEngines::itemToEngineSuffix(item)
-        if item["mikuType"] == "NxThread" then
-            engineSuffix = ""
-        end
 
         line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{engineSuffix}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
@@ -208,8 +208,8 @@ class Listing
                 "lambda" => lambda { PhysicalTargets::listingItems() }
             },
             {
-                "name" => "Waves::listingItems(nil)",
-                "lambda" => lambda { Waves::listingItems(nil) }
+                "name" => "Waves::listingItems()",
+                "lambda" => lambda { Waves::listingItems() }
             },
             {
                 "name" => "TheLine::line()",
@@ -308,20 +308,8 @@ class Listing
                 }
         end
 
-        if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("c8793d37-0a9c-48ec-98f7-d0e1f8f5744c", 86400) then
-            Catalyst::catalystItems().each{|item|
-                next if item["parentuuid"].nil?
-                next if Solingen::getItemOrNull(item["parentuuid"])
-                puts "Could not find a parent for this item: #{JSON.pretty_generate(item)}".green
-                exit
-            }
-        end
-
         padding = ([0] + Solingen::mikuTypeItems("TxEngine").map{|engine| engine["description"].size }).max
         XCache::set("engine-description-padding-26f3d54692dc", padding)
-
-        padding = ([0] + Solingen::mikuTypeItems("NxThread").map{|thread| thread["description"].size }).max
-        XCache::set("thread-description-padding-ee0606f5-4ef6", padding)
 
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
