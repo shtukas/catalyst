@@ -256,4 +256,14 @@ class TxEngines
             TxEngines::program1(engine)
         }
     end
+
+    # TxEngines::itemToEngineSuffix(item)
+    def self.itemToEngineSuffix(item)
+        if item["engineuuid"] then
+            engine = Solingen::getItemOrNull(item["engineuuid"])
+            " #{"(#{engine["description"]})".green}"
+        else
+            ""
+        end
+    end
 end

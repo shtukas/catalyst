@@ -23,7 +23,7 @@ class NxThreads
         suffix =
             if item["engineuuid"] then
                 engine = Solingen::getItemOrNull(item["engineuuid"])
-                " #{engine["description"].green}"
+                " #{"(#{engine["description"]})".green}"
             else
                 " #{Bank::recoveredAverageHoursPerDay(item["uuid"])}"
             end

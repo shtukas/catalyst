@@ -251,17 +251,12 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxThread" then
-                puts "Only NxThreads carry engine"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             engine = TxEngines::interactivelySelectOneOrNull()
             if engine then
                 Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("You did not select anything would you like to build an engine for this item ? ") then
+            if LucilleCore::askQuestionAnswerAsBoolean("You did not select anything would you like to build an engine for this item ? ", false) then
                 engine = TxEngines::interactivelyIssueEngineOrNull()
                 Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
             end

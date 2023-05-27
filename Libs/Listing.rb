@@ -126,6 +126,7 @@ class Listing
         threads1 = Solingen::mikuTypeItems("NxThread")
                     .select{|thread| thread["engineuuid"] }
                     .select{|thread| NxThreads::listingCompletionRatio(thread) < 1 or NxBalls::itemIsActive(thread) }
+                    .sort_by{|thread| NxThreads::listingCompletionRatio(thread) }
 
         threads2 = Solingen::mikuTypeItems("NxThread")
                     .select{|thread| thread["engineuuid"].nil? }
@@ -134,6 +135,7 @@ class Listing
         threads3 = Solingen::mikuTypeItems("NxThread")
                     .select{|thread| thread["engineuuid"] }
                     .select{|thread| NxThreads::listingCompletionRatio(thread) >= 1 }
+                    .sort_by{|thread| NxThreads::listingCompletionRatio(thread) }
 
         [
             NxBalls::runningItems(),
@@ -166,7 +168,12 @@ class Listing
             str1 = TxEngines::toString(item, true)
         end
 
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        engineSuffix = TxEngines::itemToEngineSuffix(item)
+        if item["mikuType"] == "NxThread" then
+            engineSuffix = ""
+        end
+
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{engineSuffix}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else
