@@ -260,18 +260,20 @@ class TxEngines
     # TxEngines::program1(engine)
     def self.program1(engine)
         loop {
-            actions = ["set hours", "listing"]
+            actions = ["set hours", "listing (default)"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
-            return if action.nil?
             if action == "set hours" then
                 hours = LucilleCore::askQuestionAnswerAsString("hours (empty to abort): ")
                 return if hours == ""
                 hours = hours.to_f
                 Solingen::setAttribute2(engine["uuid"], "hours", hours)
+                return
             end
-            if action == "listing" then
+            if action == "listing" or action.nil? then
                 TxEngines::program0(engine)
+                return
             end
+            raise "(error: 4ad5e1b7-6d40-4055-bd9b-8562625a9cec) unknown action: #{action}" 
         }
     end
 
