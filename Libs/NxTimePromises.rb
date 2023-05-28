@@ -36,6 +36,7 @@ class NxTimePromises
                 if targetitem.nil? then
                     puts "Could not recover item for target uuid: #{item["targetuuid"]}"
                     LucilleCore::pressEnterToContinue()
+                    Solingen::destroy(item["uuid"])
                     next
                 end
                 bankaccounts = PolyFunctions::itemsToBankingAccounts(targetitem)
