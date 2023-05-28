@@ -372,16 +372,24 @@ class Listing
         end
     end
 
+    # Listing::checkForCodeUpdates()
+    def self.checkForCodeUpdates()
+        if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
+            puts "Attempting to download new code"
+            system("#{File.dirname(__FILE__)}/../pull-from-origin")
+        end
+    end
+
     # Listing::main()
     def self.main()
+
+        Listing::checkForCodeUpdates()
+
         initialCodeTrace = CommonUtils::stargateTraceCode()
 
         Thread.new {
             loop {
-                if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
-                    puts "Attempting to download new code"
-                    system("#{File.dirname(__FILE__)}/../pull-from-origin")
-                end
+                Listing::checkForCodeUpdates()
                 sleep 300
             }
         }
