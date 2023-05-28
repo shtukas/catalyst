@@ -56,6 +56,23 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("ack", input) then
+            item = store.getDefault()
+            return if item.nil?
+            unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
+            DoNotShowUntil::setUnixtime(item, unixtime)
+            return
+        end
+
+        if Interpreting::match("ack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
+            DoNotShowUntil::setUnixtime(item, unixtime)
+            return
+        end
+
         if Interpreting::match("add time *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
