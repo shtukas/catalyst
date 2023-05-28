@@ -6,12 +6,12 @@ class ListingCommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coordinates <n> | note (<n>) | coredata <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | float | time | times | thread",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread",
             "",
             "specific types commands:",
             "    - ondate     : redate",
             "transmutation : transmute (<n>)",
-            "divings       : anniversaries | ondates | waves | todos | desktop | time promises | principals",
+            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | principals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
         ].join("\n")
@@ -53,6 +53,11 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Listing::tmpskip1(item)
+            return
+        end
+
+        if Interpreting::match("burners", input) then
+            NxBurners::program2()
             return
         end
 
@@ -335,7 +340,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
+        if Interpreting::match("burner", input) then
             item = NxBurners::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
