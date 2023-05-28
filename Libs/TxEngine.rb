@@ -240,10 +240,27 @@ class TxEngines
             .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 }
     end
 
+    # TxEngines::program0(engine)
+    def self.program0(engine)
+        loop {
+            items = Listing::items().select{|item| item["engineuuid"] == engine["uuid"] }
+            store = ItemStore.new()
+
+            Listing::printEvalItems(store, items)
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == ""
+            return if input == "exit"
+
+            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+        }
+    end
+
     # TxEngines::program1(engine)
     def self.program1(engine)
         loop {
-            actions = ["set hours"]
+            actions = ["set hours", "listing"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
             return if action.nil?
             if action == "set hours" then
@@ -251,6 +268,9 @@ class TxEngines
                 return if hours == ""
                 hours = hours.to_f
                 Solingen::setAttribute2(engine["uuid"], "hours", hours)
+            end
+            if action == "listing" then
+                TxEngines::program0(engine)
             end
         }
     end

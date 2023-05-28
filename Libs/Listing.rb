@@ -383,8 +383,6 @@ class Listing
     # Listing::main()
     def self.main()
 
-        Listing::checkForCodeUpdates()
-
         initialCodeTrace = CommonUtils::stargateTraceCode()
 
         Thread.new {
@@ -403,9 +401,11 @@ class Listing
 
             Listing::dataMaintenance()
 
+            items = Listing::items()
+
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, Listing::items())
+            Listing::printEvalItems(store, items)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

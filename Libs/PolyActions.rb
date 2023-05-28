@@ -314,8 +314,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxEngine" then
-            puts "You cannot double dot an engine, you can access it or start/stop it"
-            LucilleCore::pressEnterToContinue()
+            TxEngines::program1(item)
             return
         end
 
