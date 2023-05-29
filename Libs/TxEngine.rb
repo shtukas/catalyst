@@ -233,6 +233,13 @@ class TxEngines
         nil
     end
 
+    # TxEngines::pendingEngines()
+    def self.pendingEngines()
+        Solingen::mikuTypeItems("TxEngine")
+            .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 }
+            .select{|engine| DoNotShowUntil::isVisible(engine) }
+    end
+
     # TxEngines::listingItems()
     def self.listingItems()
         Solingen::mikuTypeItems("TxEngine")
