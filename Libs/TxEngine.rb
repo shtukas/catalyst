@@ -237,7 +237,6 @@ class TxEngines
     def self.listingItems()
         Solingen::mikuTypeItems("TxEngine")
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
-            .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 }
     end
 
     # TxEngines::program0(engine)
@@ -260,9 +259,9 @@ class TxEngines
     # TxEngines::program1(engine)
     def self.program1(engine)
         loop {
-            actions = ["set hours", "listing (default)"]
+            actions = ["reset hours", "add time", "listing (default)"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
-            if action == "set hours" then
+            if action == "reset hours" then
                 hours = LucilleCore::askQuestionAnswerAsString("hours (empty to abort): ")
                 return if hours == ""
                 hours = hours.to_f
@@ -271,6 +270,11 @@ class TxEngines
             end
             if action == "listing" or action.nil? then
                 TxEngines::program0(engine)
+                return
+            end
+            if action == "add time" or action.nil? then
+                timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
+                PolyActions::addTimeToItem(engine, timeInHours*3600)
                 return
             end
             raise "(error: 4ad5e1b7-6d40-4055-bd9b-8562625a9cec) unknown action: #{action}" 
