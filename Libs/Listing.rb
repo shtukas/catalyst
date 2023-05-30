@@ -132,8 +132,9 @@ class Listing
                     .reverse
 
         enginestasks = Solingen::mikuTypeItems("TxEngine")
+            .select{|engine| DoNotShowUntil::isVisible(engine) or NxBalls::itemIsActive(engine) }
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
-            .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 }
+            .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 or NxBalls::itemIsActive(engine) }
             .map{|engine| tasks.select{|task| task["engineuuid"] == engine["uuid"] } }
             .flatten
 
