@@ -301,7 +301,12 @@ class TxEngines
     def self.itemToEngineSuffix(item)
         if item["engineuuid"] then
             engine = Solingen::getItemOrNull(item["engineuuid"])
-            " #{"(#{engine["description"]})".green}"
+            if engine.nil? then
+                Solingen::setAttribute2(item["uuid"], "engineuuid", nil)
+                ""
+            else
+                " #{"(#{engine["description"]})".green}"
+            end
         else
             ""
         end
