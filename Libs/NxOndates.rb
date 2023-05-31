@@ -52,16 +52,22 @@ class NxOndates
     # ------------------
     # Ops
 
-    # NxOndates::report()
-    def self.report()
-        system("clear")
-        puts "ondates:"
-        Solingen::mikuTypeItems("NxOndate")
-            .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
-            .each{|item|
-                puts NxOndates::toString(item)
-            }
-        LucilleCore::pressEnterToContinue()
+    # NxOndates::program()
+    def self.program()
+        loop {
+            items = Solingen::mikuTypeItems("NxOndate")
+                        .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
+            store = ItemStore.new()
+
+            Listing::printEvalItems(store, items)
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == ""
+            return if input == "exit"
+
+            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+        }
     end
 
     # NxOndates::access(item)

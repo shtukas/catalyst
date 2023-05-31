@@ -246,10 +246,48 @@ class TxEngines
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
     end
 
+    # TxEngines::itemsForProgram0(engine)
+    def self.itemsForProgram0(engine)
+
+        burners = Solingen::mikuTypeItems("NxBurner")
+                    .select{|burner| burner["engineuuid"] == engine["uuid"] }
+
+        fires = Solingen::mikuTypeItems("NxFire")
+                    .select{|burner| burner["engineuuid"] == engine["uuid"] }
+
+        waves = Waves::listingItems()
+                    .select{|burner| burner["engineuuid"] == engine["uuid"] }
+
+        ondates = NxOndates::listingItems()
+                    .select{|burner| burner["engineuuid"] == engine["uuid"] }
+
+        tasks = Solingen::mikuTypeItems("NxTask")
+                    .select{|task| task["engineuuid"] == engine["uuid"] }
+                    .sort_by{|item| item["unixtime"] }
+
+        [
+            Desktop::listingItems(),
+            burners,
+            fires,
+            waves,
+            ondates,
+            tasks
+        ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if !selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected + [item]
+                else
+                    selected
+                end
+            }
+    end
+
     # TxEngines::program0(engine)
     def self.program0(engine)
         loop {
-            items = Listing::items().select{|item| item["engineuuid"] == engine["uuid"] }
+            items = TxEngines::itemsForProgram0(engine)
             store = ItemStore.new()
 
             Listing::printEvalItems(store, items)

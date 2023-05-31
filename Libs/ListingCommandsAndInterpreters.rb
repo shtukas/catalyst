@@ -329,7 +329,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            NxOndates::report()
+            NxOndates::program()
             return
         end
 
