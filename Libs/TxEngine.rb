@@ -275,7 +275,7 @@ class TxEngines
                 Solingen::setAttribute2(engine["uuid"], "hours", hours)
                 return
             end
-            if action == "listing" or action.nil? then
+            if action == "listing (default)" or action.nil? then
                 TxEngines::program0(engine)
                 return
             end
