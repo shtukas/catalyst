@@ -290,7 +290,7 @@ class TxEngines
             items = TxEngines::itemsForProgram0(engine)
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, items)
+            Listing::printEvalItems(store, [], items)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

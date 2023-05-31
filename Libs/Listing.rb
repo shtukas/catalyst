@@ -271,7 +271,7 @@ class Listing
             },
             {
                 "name" => "Listing::printEvalItems()",
-                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), Listing::items()) }
+                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), TxEngines::listingItems(), Listing::items()) }
             },
         ]
                     .map{|test|
@@ -338,17 +338,17 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, items)
-    def self.printEvalItems(store, items)
+    # Listing::printEvalItems(store, prelude, items)
+    def self.printEvalItems(store, prelude, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
         spacecontrol.putsline ""
-        TxEngines::listingItems()
-            .each{|engine| 
-                store.register(engine, false)
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: engine)
+        prelude
+            .each{|item| 
+                store.register(item, false)
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
                 break if !status
             }
 
@@ -403,11 +403,9 @@ class Listing
 
             Listing::dataMaintenance()
 
-            items = Listing::items()
-
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, items)
+            Listing::printEvalItems(store, TxEngines::listingItems(), Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
