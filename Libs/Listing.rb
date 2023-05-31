@@ -108,13 +108,10 @@ class Listing
     # Listing::items()
     def self.items()
 
-        pendingEngines = TxEngines::pendingEngines()
-        pendingEngineUUIDs = pendingEngines.map{|engine| engine["uuid"] }
-
         anniversary = Anniversaries::listingItems()
 
         burners = Solingen::mikuTypeItems("NxBurner")
-                    .select{|burner| burner["engineuuid"].nil? or pendingEngineUUIDs.include?(burner["engineuuid"]) }
+                    .select{|burner| burner["engineuuid"].nil? }
 
         fires = Solingen::mikuTypeItems("NxFire")
 
