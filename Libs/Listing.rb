@@ -139,8 +139,10 @@ class Listing
             .map{|engine| tasks.select{|task| task["engineuuid"] == engine["uuid"] } }
             .flatten
 
+        runningItems = NxBalls::runningItems().reject{|item| item["mikuType"] == "TxEngine" }
+
         [
-            NxBalls::runningItems(),
+            runningItems,
             anniversary,
             Desktop::listingItems(),
             burners,
