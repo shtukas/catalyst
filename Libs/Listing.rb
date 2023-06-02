@@ -139,10 +139,10 @@ class Listing
             .map{|engine| tasks.select{|task| task["engineuuid"] == engine["uuid"] } }
             .flatten
 
-        runningItems = NxBalls::runningItems().reject{|item| item["mikuType"] == "TxEngine" }
+        runningEngines, runningItemsNonEngine = NxBalls::runningItems().partition{|item| item["mikuType"] == "TxEngine" }
 
-        [
-            runningItems,
+        items = [
+            runningItemsNonEngine,
             anniversary,
             Desktop::listingItems(),
             burners,
@@ -163,6 +163,13 @@ class Listing
                     selected
                 end
             }
+
+        if runningEngines.size > 0 then
+            uuids = runningEngines.map{|engine| engine["uuid"] }
+            items = items.select{|item| uuids.include?(item["engineuuid"]) }
+        end
+
+        items
     end
 
     # Listing::itemToListingLine(store: nil, item: nil)
