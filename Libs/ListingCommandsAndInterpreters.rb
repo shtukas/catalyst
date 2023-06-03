@@ -78,6 +78,19 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("clique *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            TxClique::program1Item(item)
+            return
+        end
+
+        if Interpreting::match("cliques", input) then
+            TxClique::program3Cliques()
+            return
+        end
+
         if Interpreting::match("add time *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)

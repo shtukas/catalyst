@@ -1,0 +1,6 @@
+
+TxClique:
+    "mikuType"    : "TxClique"
+    "cliqueuuid"  : String
+    "position"    : Float
+    "description" : String or null

@@ -182,9 +182,7 @@ class Listing
             str1 = TxEngines::toString(item, true)
         end
 
-        engineSuffix = TxEngines::itemToEngineSuffix(item)
-
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{engineSuffix}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{TxEngines::itemToEngineSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else
