@@ -129,8 +129,7 @@ class Listing
         ondates = NxOndates::listingItems()
 
         tasks = Solingen::mikuTypeItems("NxTask")
-                    .sort_by{|item| item["unixtime"] }
-                    .reverse
+                    .sort_by{|item| item["clique"]["position"] }
 
         enginestasks = Solingen::mikuTypeItems("TxEngine")
             .select{|engine| DoNotShowUntil::isVisible(engine) or NxBalls::itemIsActive(engine) }

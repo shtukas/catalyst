@@ -292,6 +292,22 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("position *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "position is only valid for NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            clique = item["clique"]
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            clique["position"] = position
+            Solingen::setAttribute2(item["uuid"], "clique", clique)
+            return
+        end
+
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
