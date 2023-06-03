@@ -126,6 +126,7 @@ require_relative "Solingen.rb"
 # ------------------------------------------------------------
 
 require_relative "Anniversaries.rb"
+require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
 require_relative "NxBackups.rb"
