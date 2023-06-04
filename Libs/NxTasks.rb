@@ -18,7 +18,7 @@ class NxTasks
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
-        clique = TxClique::architectCliqueInEngineOpt(engineuuid)
+        clique = TxCliques::architectCliqueInEngineOpt(engineuuid)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -40,7 +40,7 @@ class NxTasks
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
-        clique = TxClique::architectCliqueInEngineOpt(nil)
+        clique = TxCliques::architectCliqueInEngineOpt(nil)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -60,7 +60,7 @@ class NxTasks
 
         nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
         coredataref = "aion-point:#{nhash}"
-        clique = TxClique::architectCliqueInEngineOpt(nil)
+        clique = TxCliques::architectCliqueInEngineOpt(nil)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -79,7 +79,7 @@ class NxTasks
 
         Solingen::init("NxPure", uuid)
 
-        clique = TxClique::architectCliqueInEngineOpt(nil)
+        clique = TxCliques::architectCliqueInEngineOpt(nil)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -94,7 +94,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) (#{"%5.2f" % item["clique"]["position"]})#{TxClique::cliqueSuffix(item)} #{item["description"]}"
+        "(task) (#{"%5.2f" % item["clique"]["position"]})#{TxEngines::itemToEngineSuffix(item)}#{TxCliques::cliqueSuffix(item)} #{item["description"]}"
     end
 
     # --------------------------------------------------

@@ -83,6 +83,9 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
+        if item["mikuType"] == "TxClique" then
+            return TxCliques::toString(item)
+        end
         if item["mikuType"] == "TxEngine" then
             return TxEngines::toString(item)
         end

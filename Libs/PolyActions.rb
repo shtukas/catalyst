@@ -239,6 +239,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOndate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Solingen::destroy(item["uuid"])
+            end
+            return
+        end
+
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
@@ -315,6 +322,11 @@ class PolyActions
 
         if item["mikuType"] == "TxEngine" then
             TxEngines::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "TxClique" then
+            TxCliques::program2Clique(item["cliqueuuid"])
             return
         end
 

@@ -135,7 +135,7 @@ class Listing
             .select{|engine| DoNotShowUntil::isVisible(engine) or NxBalls::itemIsActive(engine) }
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
             .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 or NxBalls::itemIsActive(engine) }
-            .map{|engine| tasks.select{|task| task["engineuuid"] == engine["uuid"] } }
+            .map{|engine| TxEngines::engineToListingTasks(engine) }
             .flatten
 
         runningEngines, runningItemsNonEngine = NxBalls::runningItems().partition{|item| item["mikuType"] == "TxEngine" }
@@ -181,15 +181,25 @@ class Listing
             str1 = TxEngines::toString(item, true)
         end
 
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{TxEngines::itemToEngineSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        itemToEngineSuffix = 
+            if item["mikuType"] == "NxTask" then
+                ""
+            else
+                TxEngines::itemToEngineSuffix(item)
+            end
+
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{itemToEngineSuffix}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
         else
             line = line.gsub("Px02", "")
         end
+
         if NxBalls::itemIsActive(item) then
             line = line.green
         end
+
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end

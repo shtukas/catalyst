@@ -1,7 +1,16 @@
 
-class TxClique
+class TxCliques
 
-    # TxClique::newClique()
+    # TxCliques::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
+    def self.engineUUIDOptToCliqueUUIDs(engineuuidOpt)
+        Solingen::mikuTypeItems("NxTask")
+            .select{|task| task["engineuuid"] == engineuuidOpt }
+            .select{|task| task["clique"] }
+            .map{|task| task["clique"]["cliqueuuid"] }
+            .uniq
+    end
+
+    # TxCliques::newClique()
     def self.newClique()
         {
             "mikuType"    => "TxClique",
@@ -11,23 +20,14 @@ class TxClique
         }
     end
 
-    # TxClique::cliqueUUIDToNxTasks(cliqueuuid)
+    # TxCliques::cliqueUUIDToNxTasks(cliqueuuid)
     def self.cliqueUUIDToNxTasks(cliqueuuid)
         Solingen::mikuTypeItems("NxTask")
             .select{|task| task["clique"] }
             .select{|task| task["clique"]["cliqueuuid"] == cliqueuuid }
     end
 
-    # TxClique::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
-    def self.engineUUIDOptToCliqueUUIDs(engineuuidOpt)
-        Solingen::mikuTypeItems("NxTask")
-            .select{|task| task["engineuuid"] == engineuuidOpt }
-            .select{|task| task["clique"] }
-            .map{|task| task["clique"]["cliqueuuid"] }
-            .uniq
-    end
-
-    # TxClique::cliqueUUIDToNewFirstPosition(cliqueuuid)
+    # TxCliques::cliqueUUIDToNewFirstPosition(cliqueuuid)
     def self.cliqueUUIDToNewFirstPosition(cliqueuuid)
         position = Solingen::mikuTypeItems("NxTask")
             .select{|task| task["clique"] }
@@ -44,7 +44,7 @@ class TxClique
         end
     end
 
-    # TxClique::cliqueUUIDToLastPosition(cliqueuuid)
+    # TxCliques::cliqueUUIDToLastPosition(cliqueuuid)
     def self.cliqueUUIDToLastPosition(cliqueuuid)
         Solingen::mikuTypeItems("NxTask")
             .select{|task| task["clique"] }
@@ -56,8 +56,8 @@ class TxClique
             }
     end
 
-    # TxClique::getCliqueDescriptionOrNull(cliqueuuid)
-    def self.getCliqueDescriptionOrNull(cliqueuuid)
+    # TxCliques::cliqueUUIDToDescriptionOrNull(cliqueuuid)
+    def self.cliqueUUIDToDescriptionOrNull(cliqueuuid)
         Solingen::mikuTypeItems("NxTask")
             .select{|task| task["clique"] }
             .map{|task| task["clique"] }
@@ -67,39 +67,57 @@ class TxClique
             .first
     end
 
-    # TxClique::architectCliqueInEngineOpt(engineuuidOpt)
+    # TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)
+    def self.cliqueUUIDToRepresentativeClique(cliqueuuid)
+        task = TxCliques::cliqueUUIDToNxTasks(cliqueuuid).first
+        return nil if task.nil?
+        task["clique"].clone
+    end
+
+    # TxCliques::architectCliqueInEngineOpt(engineuuidOpt)
     def self.architectCliqueInEngineOpt(engineuuidOpt)
-        cliqueuuids = TxClique::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
+        cliqueuuids = TxCliques::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
         if cliqueuuids.size == 0 then
-            return TxClique::newClique()
+            return TxCliques::newClique()
         end
-        cliqueuuids = cliqueuuids.select{|cliqueuuid| TxClique::cliqueUUIDToNxTasks(cliqueuuid).size < 40 }
+
+        if engineuuidOpt then
+            namedClique = TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
+            return namedClique if namedClique
+        end
+
+        cliqueuuids = cliqueuuids.select{|cliqueuuid| TxCliques::cliqueUUIDToNxTasks(cliqueuuid).size < 40 }
         if cliqueuuids.size == 0 then
-            return TxClique::newClique()
+            return TxCliques::newClique()
         end
         cliqueuuid = cliqueuuids.first
         {
             "mikuType"    => "TxClique",
             "cliqueuuid"  => cliqueuuid,
-            "position"    => TxClique::cliqueUUIDToLastPosition(cliqueuuid) + 1,
-            "description" => TxClique::getCliqueDescriptionOrNull(cliqueuuid)
+            "position"    => TxCliques::cliqueUUIDToLastPosition(cliqueuuid) + 1,
+            "description" => TxCliques::cliqueUUIDToDescriptionOrNull(cliqueuuid)
         }
     end
 
-    # TxClique::interactivelySelectNamedClique()
-    def self.interactivelySelectNamedClique()
-        descriptions = Solingen::mikuTypeItems("NxTask").map{|task| task["clique"]["description"] }.compact.uniq
+    # TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
+    def self.interactivelySelectNamedCliqueOrNull(engineuuidOpt)
+        descriptions = Solingen::mikuTypeItems("NxTask")
+                            .select{|task| task["engineuuid"] == engineuuidOpt }
+                            .map{|task| task["clique"]["description"] }
+                            .compact
+                            .uniq
         description = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", descriptions)
-        return if description.nil?
+        return nil if description.nil?
         Solingen::mikuTypeItems("NxTask").each{|task|
             if task["clique"]["description"] == description then
                 return task["clique"]
             end
         }
+        nil
     end
 
-    # TxClique::program1Item(item)
-    def self.program1Item(item)
+    # TxCliques::program1CatalystItem(item)
+    def self.program1CatalystItem(item)
         loop {
             item = Solingen::getItemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
@@ -121,20 +139,17 @@ class TxClique
         }
     end
 
-    # TxClique::program2Clique(cliqueuuid)
+    # TxCliques::program2Clique(cliqueuuid)
     def self.program2Clique(cliqueuuid)
-        getRepresentativeClique = lambda{
-            TxClique::cliqueUUIDToNxTasks(cliqueuuid).first["clique"].clone
-        }
         getEngineuuidOpt = lambda{
-            TxClique::cliqueUUIDToNxTasks(cliqueuuid).map{|t| t["engineuuid"] }.compact.first
+            TxCliques::cliqueUUIDToNxTasks(cliqueuuid).map{|t| t["engineuuid"] }.compact.first
         }
         getDescriptionOpt = lambda{
-            TxClique::cliqueUUIDToNxTasks(cliqueuuid).map{|t| t["engine"]["description"] }.compact.first
+            TxCliques::cliqueUUIDToNxTasks(cliqueuuid).map{|t| t["engine"]["description"] }.compact.first
         }
 
         loop {
-            items = TxClique::cliqueUUIDToNxTasks(cliqueuuid)
+            items = TxCliques::cliqueUUIDToNxTasks(cliqueuuid)
                         .sort_by{|t| t["clique"]["position"] }
             store = ItemStore.new()
 
@@ -153,11 +168,11 @@ class TxClique
             return if input == "exit"
 
             if input == "rename clique" then
-                clique = getRepresentativeClique.call()
+                clique = TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)
                 puts "old name: #{clique["description"]}"
                 newname = LucilleCore::askQuestionAnswerAsString("new name (empty to abort): ")
                 next if newname == ""
-                TxClique::cliqueUUIDToNxTasks(cliqueuuid).each{|t|
+                TxCliques::cliqueUUIDToNxTasks(cliqueuuid).each{|t|
                     clique = t["clique"]
                     clique["description"] = newname
                     Solingen::setAttribute2(t["uuid"], "clique", clique)
@@ -169,7 +184,7 @@ class TxClique
                 newItems.lines.map{|l| l.strip }.reverse.each{|line|
                     t = NxTasks::lineToTask(line)
                     Solingen::setAttribute2(t["uuid"], "engineuuid", getEngineuuidOpt.call())
-                    position = TxClique::cliqueUUIDToNewFirstPosition(cliqueuuid)
+                    position = TxCliques::cliqueUUIDToNewFirstPosition(cliqueuuid)
                     description = getDescriptionOpt.call()
                     clique = {
                         "mikuType"    => "TxClique",
@@ -199,17 +214,29 @@ class TxClique
         }
     end
 
-    # TxClique::program3Cliques()
+    # TxCliques::program3Cliques()
     def self.program3Cliques()
-        clique = TxClique::interactivelySelectNamedClique()
-        TxClique::program2Clique(clique["cliqueuuid"])
+        engineuuidOpt = TxEngines::interactivelySelectOneUUIDOrNull()
+        return if engineuuidOpt.nil?
+        clique = TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
+        return if clique.nil?
+        TxCliques::program2Clique(clique["cliqueuuid"])
     end
 
-    # TxClique::cliqueSuffix(item)
+    # TxCliques::cliqueSuffix(item)
     def self.cliqueSuffix(item)
         return "" if item["mikuType"] != "NxTask"
         clique = item["clique"]
         return "" if clique["description"].nil?
         " (#{clique["description"]})".green
+    end
+
+    # TxCliques::toString(clique)
+    def self.toString(clique)
+        if clique["description"] then
+            "(clqu) #{clique["description"]}"
+        else
+            "(clqu) #{clique["cliqueuuid"]}"
+        end
     end
 end

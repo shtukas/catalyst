@@ -246,6 +246,19 @@ class TxEngines
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
     end
 
+    # TxEngines::engineToListingTasks(engine)
+    def self.engineToListingTasks(engine)
+        cliqueuuids = TxCliques::engineUUIDOptToCliqueUUIDs(engine["uuid"])
+        cliqueuuids = CommonUtils::putFirst(cliqueuuids, lambda{|cliqueuuid| TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)["description"] })
+        tasks = cliqueuuids
+                    .map{|cliqueuuid|
+                        TxCliques::cliqueUUIDToNxTasks(cliqueuuid)
+                            .sort_by{|task| task["clique"]["position"] }
+                    }
+                    .flatten
+        tasks
+    end
+
     # TxEngines::itemsForProgram0(engine)
     def self.itemsForProgram0(engine)
 
@@ -261,9 +274,7 @@ class TxEngines
         ondates = NxOndates::listingItems()
                     .select{|burner| burner["engineuuid"] == engine["uuid"] }
 
-        tasks = Solingen::mikuTypeItems("NxTask")
-                    .select{|task| task["engineuuid"] == engine["uuid"] }
-                    .sort_by{|item| item["unixtime"] }
+        tasks = TxEngines::engineToListingTasks(engine)
 
         [
             Desktop::listingItems(),
@@ -287,9 +298,10 @@ class TxEngines
     # TxEngines::program0(engine)
     def self.program0(engine)
         loop {
-            items = TxEngines::itemsForProgram0(engine)
+
             store = ItemStore.new()
 
+            items = TxEngines::itemsForProgram0(engine)
             Listing::printEvalItems(store, [], items)
 
             puts ""

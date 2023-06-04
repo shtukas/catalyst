@@ -82,12 +82,12 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxClique::program1Item(item)
+            TxCliques::program1CatalystItem(item)
             return
         end
 
         if Interpreting::match("cliques", input) then
-            TxClique::program3Cliques()
+            TxCliques::program3Cliques()
             return
         end
 
