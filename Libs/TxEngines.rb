@@ -249,7 +249,8 @@ class TxEngines
     # TxEngines::engineToListingTasks(engine)
     def self.engineToListingTasks(engine)
         cliqueuuids = TxCliques::engineUUIDOptToCliqueUUIDs(engine["uuid"])
-        cliqueuuids = CommonUtils::putFirst(cliqueuuids, lambda{|cliqueuuid| TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)["description"] })
+        c1s, c2s = cliqueuuids.partition{|cliqueuuid| TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)["description"] }
+        cliqueuuids = c1s.sort_by{|cliqueuuid| Bank::recoveredAverageHoursPerDay(cliqueuuid) } + c2s.sort_by{|cliqueuuid| Bank::recoveredAverageHoursPerDay(cliqueuuid) }
         tasks = cliqueuuids
                     .map{|cliqueuuid|
                         TxCliques::cliqueUUIDToNxTasks(cliqueuuid)

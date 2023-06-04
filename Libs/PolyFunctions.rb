@@ -27,6 +27,13 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
         end
 
+        if item["cliqueuuid"] then
+            accounts << {
+                "description" => "TxClique",
+                "number"      => item["cliqueuuid"]
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
