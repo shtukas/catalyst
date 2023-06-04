@@ -156,12 +156,7 @@ class TxCliques
             Listing::printEvalItems(store, [], items)
 
             puts ""
-            [
-                "rename clique",
-                "stack items on top",
-                "put line at position"
-            ]
-                .each{|t| puts t }
+            puts "rename clique | stack items on top | put line at position"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == ""
