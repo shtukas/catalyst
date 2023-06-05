@@ -1,15 +1,6 @@
 
 class TxCliques
 
-    # TxCliques::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
-    def self.engineUUIDOptToCliqueUUIDs(engineuuidOpt)
-        Solingen::mikuTypeItems("NxTask")
-            .select{|task| task["engineuuid"] == engineuuidOpt }
-            .select{|task| task["clique"] }
-            .map{|task| task["clique"]["cliqueuuid"] }
-            .uniq
-    end
-
     # TxCliques::newClique()
     def self.newClique()
         {
@@ -76,7 +67,7 @@ class TxCliques
 
     # TxCliques::architectCliqueInEngineOpt(engineuuidOpt)
     def self.architectCliqueInEngineOpt(engineuuidOpt)
-        cliqueuuids = TxCliques::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
+        cliqueuuids = TxEngines::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
         if cliqueuuids.size == 0 then
             return TxCliques::newClique()
         end
@@ -167,11 +158,7 @@ class TxCliques
                 puts "old name: #{clique["description"]}"
                 newname = LucilleCore::askQuestionAnswerAsString("new name (empty to abort): ")
                 next if newname == ""
-                TxCliques::cliqueUUIDToNxTasks(cliqueuuid).each{|t|
-                    clique = t["clique"]
-                    clique["description"] = newname
-                    Solingen::setAttribute2(t["uuid"], "clique", clique)
-                }
+                TxCliques::renameClique(cliqueuuid, newname)
             end
             if input == "stack items on top" then
                 newItems = CommonUtils::editTextSynchronously("").strip
@@ -211,11 +198,13 @@ class TxCliques
 
     # TxCliques::program3Cliques()
     def self.program3Cliques()
-        engineuuidOpt = TxEngines::interactivelySelectOneUUIDOrNull()
-        return if engineuuidOpt.nil?
-        clique = TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
-        return if clique.nil?
-        TxCliques::program2Clique(clique["cliqueuuid"])
+        loop {
+            engineuuidOpt = TxEngines::interactivelySelectOneUUIDOrNull()
+            return if engineuuidOpt.nil?
+            clique = TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
+            next if clique.nil?
+            TxCliques::program2Clique(clique["cliqueuuid"])
+        }
     end
 
     # TxCliques::cliqueSuffix(item)
@@ -233,5 +222,14 @@ class TxCliques
         else
             "(clqu) #{clique["cliqueuuid"]}"
         end
+    end
+
+    # TxCliques::renameClique(cliqueuuid, description)
+    def self.renameClique(cliqueuuid, description)
+        TxCliques::cliqueUUIDToNxTasks(cliqueuuid).each{|t|
+            clique = t["clique"]
+            clique["description"] = description
+            Solingen::setAttribute2(t["uuid"], "clique", clique)
+        }
     end
 end

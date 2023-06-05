@@ -168,8 +168,26 @@ class TxEngines
         raise "could not TxEngines::engineMaintenance(engine) for engine: #{engine}, engine: #{engine}"
     end
 
-    # TxEngines::maintenance()
-    def self.maintenance()
+    # TxEngines::generalMaintenance()
+    def self.generalMaintenance()
+        # We need to enforce that each clique of a engine has a name
+
+        Solingen::mikuTypeItems("TxEngine").each{|engine|
+            TxEngines::engineUUIDOptToCliqueUUIDs(engine["uuid"]).each{|cliqueuuid|
+                clique = TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)
+                if clique["description"].nil? then
+                    TxCliques::cliqueUUIDToNxTasks(cliqueuuid)
+                        .sort_by{|task| task["clique"]["position"] }
+                        .each{|task|
+                            puts NxTasks::toString(task)
+                        }
+                    puts ""
+                    description = LucilleCore::askQuestionAnswerAsString("description: ")
+                    TxCliques::renameClique(cliqueuuid, description)
+                end
+            }
+        }
+
         Solingen::mikuTypeItems("TxEngine").each{|engine| TxEngines::engineMaintenance(engine) }
     end
 
@@ -248,7 +266,7 @@ class TxEngines
 
     # TxEngines::engineToListingTasks(engine)
     def self.engineToListingTasks(engine)
-        cliqueuuids = TxCliques::engineUUIDOptToCliqueUUIDs(engine["uuid"])
+        cliqueuuids = TxEngines::engineUUIDOptToCliqueUUIDs(engine["uuid"])
         c1s, c2s = cliqueuuids.partition{|cliqueuuid| TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)["description"] }
         cliqueuuids = c1s.sort_by{|cliqueuuid| Bank::recoveredAverageHoursPerDay(cliqueuuid) } + c2s.sort_by{|cliqueuuid| Bank::recoveredAverageHoursPerDay(cliqueuuid) }
         tasks = cliqueuuids
@@ -310,6 +328,13 @@ class TxEngines
             return if input == ""
             return if input == "exit"
 
+            if input == "cliques" then
+                clique = TxCliques::interactivelySelectNamedCliqueOrNull(engine["uuid"])
+                next if clique.nil?
+                TxCliques::program2Clique(clique["cliqueuuid"])
+                next
+            end
+
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
     end
@@ -361,5 +386,14 @@ class TxEngines
         else
             ""
         end
+    end
+
+    # TxEngines::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
+    def self.engineUUIDOptToCliqueUUIDs(engineuuidOpt)
+        Solingen::mikuTypeItems("NxTask")
+            .select{|task| task["engineuuid"] == engineuuidOpt }
+            .select{|task| task["clique"] }
+            .map{|task| task["clique"]["cliqueuuid"] }
+            .uniq
     end
 end
