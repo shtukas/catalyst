@@ -316,16 +316,6 @@ class Listing
 
     # Listing::dataMaintenance()
     def self.dataMaintenance()
-        if Config::isPrimaryInstance() then
-            LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/NxTasks-FrontElements-BufferIn")
-                .each{|location|
-                    next if File.basename(location).start_with?(".")
-                    item = NxTasks::bufferInImport(location)
-                    puts "Picked up from NxTasks-FrontElements-BufferIn: #{JSON.pretty_generate(item)}"
-                    LucilleCore::removeFileSystemLocation(location)
-                }
-        end
-
         padding = ([0] + Solingen::mikuTypeItems("TxEngine").map{|engine| engine["description"].size }).max
         XCache::set("engine-description-padding-26f3d54692dc", padding)
 
