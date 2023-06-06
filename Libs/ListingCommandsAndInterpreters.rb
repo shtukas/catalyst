@@ -61,6 +61,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("drop", input) then
+            NxDrops::interactivelyIssueNewOrNull()
+            return
+        end
+
         if Interpreting::match("ack", input) then
             item = store.getDefault()
             return if item.nil?

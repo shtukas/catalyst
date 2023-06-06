@@ -128,6 +128,9 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
+        drops = Solingen::mikuTypeItems("NxDrop")
+                    .sort_by{|item| item["unixtime"] }
+
         tasks = Solingen::mikuTypeItems("NxTask")
                     .sort_by{|item| item["clique"]["position"] }
 
@@ -150,6 +153,7 @@ class Listing
             backups,
             ondates,
             waves.select{|item| !item["interruption"] },
+            drops,
             enginestasks,
             tasks.first(10)
         ]

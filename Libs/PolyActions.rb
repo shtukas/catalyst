@@ -28,6 +28,40 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDrop" then
+            actions = [
+                "start, do and done",
+                "start, do, stop and ignore until tomorrow",
+                "transmute"
+            ]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
+            return action.nil?
+            if action == "start, do and done" then
+                NxBalls::start(item)
+                if item["field11"] then
+                    CoreData::access(item["uuid"], item["field11"])
+                end
+                puts "Waiting until you are done"
+                LucilleCore::pressEnterToContinue()
+                Solingen::destroy(item["uuid"])
+            end
+            if action == "start, do, stop and ignore until tomorrow" then
+                NxBalls::start(item)
+                if item["field11"] then
+                    CoreData::access(item["uuid"], item["field11"])
+                end
+                puts "Waiting until you are done"
+                LucilleCore::pressEnterToContinue()
+                NxBalls::stop(item)
+                unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
+                DoNotShowUntil::setUnixtime(item, unixtime)
+            end
+            if action == "transmute" then
+                Transmutations::transmute(item)
+            end
+            return
+        end
+
         if item["mikuType"] == "NxTime" then
             return
         end
