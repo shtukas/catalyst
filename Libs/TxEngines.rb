@@ -168,10 +168,8 @@ class TxEngines
         raise "could not TxEngines::engineMaintenance(engine) for engine: #{engine}, engine: #{engine}"
     end
 
-    # TxEngines::generalMaintenance()
-    def self.generalMaintenance()
-        # We need to enforce that each clique of a engine has a name
-
+    # TxEngines::ensureEachCliqueOfAnEngineHasAName()
+    def self.ensureEachCliqueOfAnEngineHasAName()
         Solingen::mikuTypeItems("TxEngine").each{|engine|
             TxEngines::engineUUIDOptToCliqueUUIDs(engine["uuid"]).each{|cliqueuuid|
                 clique = TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)
@@ -187,7 +185,11 @@ class TxEngines
                 end
             }
         }
+    end
 
+    # TxEngines::generalMaintenance()
+    def self.generalMaintenance()
+        TxEngines::ensureEachCliqueOfAnEngineHasAName()
         Solingen::mikuTypeItems("TxEngine").each{|engine| TxEngines::engineMaintenance(engine) }
     end
 

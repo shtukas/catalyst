@@ -67,25 +67,41 @@ class TxCliques
 
     # TxCliques::architectCliqueInEngineOpt(engineuuidOpt)
     def self.architectCliqueInEngineOpt(engineuuidOpt)
+
+        TxEngines::ensureEachCliqueOfAnEngineHasAName()
+
         cliqueuuids = TxEngines::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
         if cliqueuuids.size == 0 then
-            return TxCliques::newClique()
+            if engineuuidOpt then
+                clique = TxCliques::newClique()
+                description = LucilleCore::askQuestionAnswerAsString("clique description: ")
+                clique["description"] = description
+                return clique
+            else
+                return TxCliques::newClique()
+            end
         end
 
-        if engineuuidOpt then
-            namedClique = TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
-            return namedClique if namedClique
-        end
+        namedClique = TxCliques::interactivelySelectNamedCliqueOrNull(engineuuidOpt)
+        return namedClique if namedClique
 
         cliqueuuids = cliqueuuids.select{|cliqueuuid| TxCliques::cliqueUUIDToNxTasks(cliqueuuid).size < 40 }
         if cliqueuuids.size == 0 then
-            return TxCliques::newClique()
+            if engineuuidOpt then
+                clique = TxCliques::newClique()
+                description = LucilleCore::askQuestionAnswerAsString("clique description: ")
+                clique["description"] = description
+                return clique
+            else
+                return TxCliques::newClique()
+            end
         end
         cliqueuuid = cliqueuuids.first
+        position = TxCliques::cliqueUUIDToLastPosition(cliqueuuid) + 1
         {
             "mikuType"    => "TxClique",
             "cliqueuuid"  => cliqueuuid,
-            "position"    => TxCliques::cliqueUUIDToLastPosition(cliqueuuid) + 1,
+            "position"    => position,
             "description" => TxCliques::cliqueUUIDToDescriptionOrNull(cliqueuuid)
         }
     end
