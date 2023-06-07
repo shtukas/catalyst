@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - ondate     : redate",
-            "transmutation : transmute (<n>)",
+            "transmutation : recast (<n>)",
             "divings       : anniversaries | ondates | waves | burners | desktop | time promises | principals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
@@ -89,7 +89,9 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             engine = TxEngines::interactivelySelectOneOrNull()
             return if engine.nil?
+            puts JSON.pretty_generate(engine)
             clique = TxCliques::architectCliqueInEngineOpt(engine["uuid"])
+            puts JSON.pretty_generate(clique)
             Solingen::setAttribute2(item["uuid"], "cliqueuuid", clique["uuid"])
             return
         end
@@ -274,11 +276,11 @@ class ListingCommandsAndInterpreters
             engine = TxEngines::interactivelySelectOneOrNull()
             if engine then
                 Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("You did not select anything would you like to build an engine for this item ? ", false) then
-                engine = TxEngines::interactivelyIssueEngineOrNull()
-                Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
+                if item["mikuType"] == "NxTask" then
+                    if LucilleCore::askQuestionAnswerAsBoolean("Would you like to also set a clique and position ? ") then
+                        NxTasks::setCliqueAndPositionAtEngine(engine, item)
+                    end
+                end
             end
             return
         end
@@ -309,10 +311,8 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            clique = item["clique"]
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            clique["position"] = position
-            Solingen::setAttribute2(item["uuid"], "clique", clique)
+            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 
@@ -426,14 +426,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("transmute", input) then
+        if Interpreting::match("recast", input) then
             item = store.getDefault()
             return if item.nil?
             Transmutations::transmute(item)
             return
         end
 
-        if Interpreting::match("transmute *", input) then
+        if Interpreting::match("recast *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?

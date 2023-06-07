@@ -85,4 +85,12 @@ class NxTasks
     def self.access(item)
         CoreData::access(item["uuid"], item["field11"])
     end
+
+    # NxTasks::setCliqueAndPositionAtEngine(engine, task)
+    def self.setCliqueAndPositionAtEngine(engine, task)
+        clique = TxCliques::architectCliqueInEngineOpt(engine["uuid"])
+        position = TxCliques::interactivelySelectPositionInClique(clique)
+        Solingen::setAttribute2(task["uuid"], "cliqueuuid", clique["uuid"])
+        Solingen::setAttribute2(task["uuid"], "position", position)
+    end
 end

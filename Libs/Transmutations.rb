@@ -14,7 +14,7 @@ class Transmutations
     # Transmutations::transmute(item)
     def self.transmute(item)
 
-        setTaskEngineAndClique = lambda {|item|
+        setTaskEngineCliqueAndPosition = lambda {|item|
             engineuuid = 
                 if item["engineuuid"] then
                     item["engineuuid"]
@@ -23,8 +23,8 @@ class Transmutations
                     Solingen::setAttribute2(item["uuid"], "engineuuid", engineuuid)
                     engineuuid
                 end
-            clique = TxCliques::architectCliqueInEngineOpt(engineuuid)
-            Solingen::setAttribute2(item["uuid"], "clique", clique)
+            engine = Solingen::getItemOrNull(engineuuid)
+            NxTasks::setCliqueAndPositionAtEngine(engine, item)
         }
 
         sourceType = Solingen::getMandatoryAttribute2(item["uuid"], "mikuType")
@@ -43,14 +43,14 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxTask" then
+            setTaskEngineCliqueAndPosition.call(item)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            setTaskEngineAndClique.call(item)
             return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
+            setTaskEngineCliqueAndPosition.call(item)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            setTaskEngineAndClique.call(item)
             return
         end
 
@@ -65,12 +65,12 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
+            setTaskEngineCliqueAndPosition.call(item)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            setTaskEngineAndClique.call(item)
             return
         end
 
-        puts "I do not know how to transmute uuid: #{uuid}, sourceType: #{sourceType} to #{targetMikuType}"
+        puts "I do not know how to transmute uuid: #{item["uuid"]}, sourceType: #{sourceType} to #{targetMikuType}"
         LucilleCore::pressEnterToContinue()
     end
 end

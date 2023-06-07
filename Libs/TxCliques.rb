@@ -45,7 +45,8 @@ class TxCliques
     # TxCliques::cliqueSuffix(item)
     def self.cliqueSuffix(item)
         return "" if item["mikuType"] != "NxTask"
-        clique = item["clique"]
+        clique = Solingen::getItemOrNull(item["cliqueuuid"])
+        return "" if clique.nil?
         return "" if clique["description"].nil?
         " (#{clique["description"]})".green
     end
