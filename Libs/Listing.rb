@@ -132,7 +132,8 @@ class Listing
                     .sort_by{|item| item["unixtime"] }
 
         tasks = Solingen::mikuTypeItems("NxTask")
-                    .sort_by{|item| item["clique"]["position"] }
+                    .sort_by{|item| item["position"] }
+                    .first(10)
 
         enginestasks = Solingen::mikuTypeItems("TxEngine")
             .select{|engine| DoNotShowUntil::isVisible(engine) or NxBalls::itemIsActive(engine) }
@@ -155,7 +156,7 @@ class Listing
             waves.select{|item| !item["interruption"] },
             drops,
             enginestasks,
-            tasks.first(10)
+            tasks
         ]
             .flatten
             .select{|item| Listing::listable(item) }

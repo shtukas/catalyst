@@ -87,7 +87,10 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxCliques::program1CatalystItem(item)
+            engine = TxEngines::interactivelySelectOneOrNull()
+            return if engine.nil?
+            clique = TxCliques::architectCliqueInEngineOpt(engine["uuid"])
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", clique["uuid"])
             return
         end
 

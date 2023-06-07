@@ -19,6 +19,7 @@ class NxTasks
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
         clique = TxCliques::architectCliqueInEngineOpt(engineuuid)
+        position = TxCliques::interactivelySelectPositionInClique(clique)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -26,6 +27,7 @@ class NxTasks
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
         Solingen::setAttribute2(uuid, "clique", clique)
+        Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
@@ -41,50 +43,29 @@ class NxTasks
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
         clique = TxCliques::architectCliqueInEngineOpt(nil)
+        position = TxCliques::cliqueToNewLastPosition(clique)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "clique", clique)
+        Solingen::setAttribute2(uuid, "cliqueuuid", clique["uuid"])
+        Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
         Solingen::getItemOrNull(uuid)
     end
 
-    # NxTasks::bufferInImport(location)
-    def self.bufferInImport(location)
-        description = File.basename(location)
+    # NxTasks::lineToCliqueTask(line, engineuuid, cliqueuuid, position)
+    def self.lineToCliqueTask(line, engineuuid, cliqueuuid, position)
         uuid = SecureRandom.uuid
-
-        Solingen::init("NxPure", uuid)
-
-        nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
-        coredataref = "aion-point:#{nhash}"
-        clique = TxCliques::architectCliqueInEngineOpt(nil)
-
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "clique", clique)
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
-        Solingen::getItemOrNull(uuid)
-    end
-
-    # NxTasks::lineToTask(line)
-    def self.lineToTask(line)
-        uuid = SecureRandom.uuid
-
         description = line
-
         Solingen::init("NxPure", uuid)
-
-        clique = TxCliques::architectCliqueInEngineOpt(nil)
-
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "clique", clique)
+        Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
+        Solingen::setAttribute2(uuid, "cliqueuuid", cliqueuuid)
+        Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
         Solingen::getItemOrNull(uuid)
     end
@@ -94,7 +75,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) (#{"%5.2f" % item["clique"]["position"]})#{TxEngines::itemToEngineSuffix(item)}#{TxCliques::cliqueSuffix(item)} #{item["description"]}"
+        "(task) (#{"%5.2f" % item["position"]})#{TxEngines::itemToEngineSuffix(item)}#{TxCliques::cliqueSuffix(item)} #{item["description"]}"
     end
 
     # --------------------------------------------------

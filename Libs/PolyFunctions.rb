@@ -60,8 +60,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
         end
-        if item["mikuType"] == "NxClique" then
-            return NxCliques::toString(item)
+        if item["mikuType"] == "TxClique" then
+            return TxCliques::toString(item)
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)

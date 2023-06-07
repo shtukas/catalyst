@@ -1,6 +1,7 @@
 
 TxClique:
+    "uuid"        : String
     "mikuType"    : "TxClique"
-    "cliqueuuid"  : String
-    "position"    : Float
-    "description" : String or null
+    "unixtime"    : Integer
+    "engineuuid"  : null or String
+    "description" : null or String

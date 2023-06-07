@@ -171,17 +171,14 @@ class TxEngines
     # TxEngines::ensureEachCliqueOfAnEngineHasAName()
     def self.ensureEachCliqueOfAnEngineHasAName()
         Solingen::mikuTypeItems("TxEngine").each{|engine|
-            TxEngines::engineUUIDOptToCliqueUUIDs(engine["uuid"]).each{|cliqueuuid|
-                clique = TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)
+            TxEngines::engineUUIDOptToCliques(engine["uuid"]).each{|clique|
                 if clique["description"].nil? then
-                    TxCliques::cliqueUUIDToNxTasks(cliqueuuid)
-                        .sort_by{|task| task["clique"]["position"] }
-                        .each{|task|
-                            puts NxTasks::toString(task)
-                        }
-                    puts ""
-                    description = LucilleCore::askQuestionAnswerAsString("description: ")
-                    TxCliques::renameClique(cliqueuuid, description)
+                    description = nil
+                    loop {
+                        description = LucilleCore::askQuestionAnswerAsString("description: ")
+                        break if description != ""
+                    }
+                    Solingen::setAttribute2(clique["uuid"], "description", description)
                 end
             }
         }
@@ -268,16 +265,13 @@ class TxEngines
 
     # TxEngines::engineToListingTasks(engine)
     def self.engineToListingTasks(engine)
-        cliqueuuids = TxEngines::engineUUIDOptToCliqueUUIDs(engine["uuid"])
-        c1s, c2s = cliqueuuids.partition{|cliqueuuid| TxCliques::cliqueUUIDToRepresentativeClique(cliqueuuid)["description"] }
-        cliqueuuids = c1s.sort_by{|cliqueuuid| Bank::recoveredAverageHoursPerDay(cliqueuuid) } + c2s.sort_by{|cliqueuuid| Bank::recoveredAverageHoursPerDay(cliqueuuid) }
-        tasks = cliqueuuids
-                    .map{|cliqueuuid|
-                        TxCliques::cliqueUUIDToNxTasks(cliqueuuid)
-                            .sort_by{|task| task["clique"]["position"] }
-                    }
-                    .flatten
-        tasks
+        TxEngines::engineUUIDOptToCliques(engine["uuid"])
+            .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
+            .map{|clique|
+                TxCliques::cliqueToNxTasks(clique)
+                    .sort_by{|task| task["position"] }
+            }
+            .flatten
     end
 
     # TxEngines::itemsForProgram0(engine)
@@ -331,7 +325,7 @@ class TxEngines
             return if input == "exit"
 
             if input == "cliques" then
-                clique = TxCliques::interactivelySelectNamedCliqueOrNull(engine["uuid"])
+                clique = TxCliques::interactivelySelectCliqueOrNull(engine["uuid"])
                 next if clique.nil?
                 TxCliques::program2Clique(clique["cliqueuuid"])
                 next
@@ -390,12 +384,9 @@ class TxEngines
         end
     end
 
-    # TxEngines::engineUUIDOptToCliqueUUIDs(engineuuidOpt)
-    def self.engineUUIDOptToCliqueUUIDs(engineuuidOpt)
-        Solingen::mikuTypeItems("NxTask")
-            .select{|task| task["engineuuid"] == engineuuidOpt }
-            .select{|task| task["clique"] }
-            .map{|task| task["clique"]["cliqueuuid"] }
-            .uniq
+    # TxEngines::engineUUIDOptToCliques(engineuuidOpt)
+    def self.engineUUIDOptToCliques(engineuuidOpt)
+        Solingen::mikuTypeItems("TxClique")
+            .select{|clique| clique["engineuuid"] == engineuuidOpt }
     end
 end

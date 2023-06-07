@@ -76,8 +76,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxClique" then
-            NxCliques::access(item)
+        if item["mikuType"] == "TxClique" then
+            TxCliques::access(item)
             return
         end
 
@@ -236,6 +236,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTime" then
+            puts "done-ing: '#{NxTimes::toString(item).green}'"
             Solingen::destroy(item["uuid"])
             return
         end
@@ -338,7 +339,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxClique" then
+        if item["mikuType"] == "TxClique" then
             PolyActions::access(item)
             return
         end
