@@ -77,7 +77,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxClique" then
-            TxCliques::access(item)
+            TxCliques::program2(item)
             return
         end
 
@@ -357,11 +357,6 @@ class PolyActions
 
         if item["mikuType"] == "TxEngine" then
             TxEngines::program1(item)
-            return
-        end
-
-        if item["mikuType"] == "TxClique" then
-            TxCliques::program2(item["cliqueuuid"])
             return
         end
 

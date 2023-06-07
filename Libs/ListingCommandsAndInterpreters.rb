@@ -83,19 +83,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("clique *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            engine = TxEngines::interactivelySelectOneOrNull()
-            return if engine.nil?
-            puts JSON.pretty_generate(engine)
-            clique = TxCliques::architectCliqueInEngineOpt(engine["uuid"])
-            puts JSON.pretty_generate(clique)
-            Solingen::setAttribute2(item["uuid"], "cliqueuuid", clique["uuid"])
-            return
-        end
-
         if Interpreting::match("cliques", input) then
             TxCliques::program3()
             return
@@ -269,19 +256,19 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine *", input) then
+        if Interpreting::match("coordinates *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            engine = TxEngines::interactivelySelectOneOrNull()
-            if engine then
-                Solingen::setAttribute2(item["uuid"], "engineuuid", engine["uuid"])
-                if item["mikuType"] == "NxTask" then
-                    if LucilleCore::askQuestionAnswerAsBoolean("Would you like to also set a clique and position ? ") then
-                        NxTasks::setCliqueAndPositionAtEngine(engine, item)
-                    end
-                end
+            if item["mikuType"] != "NxTask" then
+                puts "position is only valid for NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
             end
+            engineuuid, clique, position = NxTasks::coordinates()
+            Solingen::setAttribute2(item["uuid"], "engineuuid", engineuuid)
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", clique["uuid"])
+            Solingen::setAttribute2(item["uuid"], "position", position)
             return
         end
 

@@ -53,44 +53,59 @@ class TxCliques
 
     # TxCliques::toString(clique)
     def self.toString(clique)
-        if clique["description"] then
-            "(clqu) #{clique["description"]}"
-        else
-            "(clqu) #{clique["cliqueuuid"]}"
-        end
+        name1 = clique["description"] ? clique["description"] : clique["uuid"]
+        
+        suffix =
+            if clique["engineuuid"] then
+                engine = Solingen::getItemOrNull(clique["engineuuid"])
+                if engine then
+                    " (#{engine["description"]})".green
+                else
+                    ""
+                end
+            else
+                ""
+            end
+
+        "(clqu) #{name1}#{suffix}"
+    end
+
+    # TxCliques::cliquesWithoutEngine()
+    def self.cliquesWithoutEngine()
+        Solingen::mikuTypeItems("TxClique")
+            .select{|clique| clique["engineuuid"].nil? }
     end
 
     # -------------------------
     # Ops
 
-    # TxCliques::architectCliqueInEngineOpt(engineuuidOpt)
-    def self.architectCliqueInEngineOpt(engineuuidOpt)
+    # TxCliques::architectCliqueInEngine(engine)
+    def self.architectCliqueInEngine(engine)
         TxEngines::ensureEachCliqueOfAnEngineHasAName()
-        if engineuuidOpt then
-            engineuuid = engineuuidOpt
-            clique = TxCliques::interactivelySelectCliqueOrNull(engineuuid)
-            return clique if clique
-            loop {
-                description = LucilleCore::askQuestionAnswerAsString("new clique description: ")
-                break if description != ""
-            }
-            return TxCliques::issueNewClique(engineuuid, description)
-        else
-            clique = TxEngines::engineUUIDOptToCliques(engineuuidOpt)
-                        .sort_by{|clique| clique["unixtime"] }
-                        .last
-            if clique and TxCliques::cliqueToNxTasks(clique).size < 40 then
-                return clique
-            end
-            return TxCliques::issueNewClique(nil, nil)
-        end
+        clique = TxCliques::interactivelySelectCliqueOrNull(engine)
+        return clique if clique
+        loop {
+            description = LucilleCore::askQuestionAnswerAsString("new clique description: ")
+            break if description != ""
+        }
+        TxCliques::issueNewClique(engine["uuid"], description)
     end
 
-    # TxCliques::interactivelySelectCliqueOrNull(engineuuidOpt)
-    def self.interactivelySelectCliqueOrNull(engineuuidOpt)
-        cliques = Solingen::mikuTypeItems("TxClique")
-                            .select{|clique| clique["engineuuid"] == engineuuidOpt }
-                            .sort_by{|clique| clique["unixtime"] }
+    # TxCliques::cliqueForNewItemAtNoEngine()
+    def self.cliqueForNewItemAtNoEngine()
+        clique = TxEngines::engineUUIDOptToCliques(engineuuidOpt)
+                    .sort_by{|clique| clique["unixtime"] }
+                    .last
+        if clique and TxCliques::cliqueToNxTasks(clique).size < 40 then
+            return clique
+        end
+        return TxCliques::issueNewClique(nil, nil)
+    end
+
+    # TxCliques::interactivelySelectCliqueOrNull(engine)
+    def self.interactivelySelectCliqueOrNull(engine)
+        cliques = TxEngines::engineToCliques(engine)
+                    .sort_by{|clique| clique["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| TxCliques::toString(clique) })
     end
 
@@ -116,18 +131,27 @@ class TxCliques
     def self.program2(clique)
 
         loop {
+            system("clear")
             items = TxCliques::cliqueToNxTasks(clique)
                         .sort_by{|t| t["position"] }
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, [], items)
+            puts ""
+            puts TxCliques::toString(clique)
+            puts ""
+
+            items
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  Listing::itemToListingLine(store: store, item: item)
+                }
 
             puts ""
             puts "rename clique | stack items on top | put line at position"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == ""
-            return if input == "exit"
+            break if input == ""
+            break if input == "exit"
 
             if input == "rename clique" then
                 puts "old description: #{clique["description"]}"
@@ -153,6 +177,13 @@ class TxCliques
 
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
+
+        if TxCliques::cliqueToNxTasks(clique).empty? then
+            puts "You are leaving an empty Clique"
+            if LucilleCore::askQuestionAnswerAsBoolean("Would you like to destroy it ? ") then
+                Solingen::destroy(clique["uuid"])
+            end
+        end
     end
 
     # TxCliques::program3()
@@ -160,7 +191,7 @@ class TxCliques
         loop {
             engine = TxEngines::interactivelySelectOneOrNull()
             return if engine.nil?
-            clique = TxCliques::interactivelySelectCliqueOrNull(engine["uuid"])
+            clique = TxCliques::interactivelySelectCliqueOrNull(engine)
             next if clique.nil?
             TxCliques::program2(clique)
         }

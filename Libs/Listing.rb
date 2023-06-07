@@ -131,21 +131,22 @@ class Listing
         drops = Solingen::mikuTypeItems("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        tasks = Solingen::mikuTypeItems("NxTask")
-                    .sort_by{|item| item["position"] }
-                    .first(10)
-
-        enginestasks = Solingen::mikuTypeItems("TxEngine")
+        cliques1 = Solingen::mikuTypeItems("TxEngine")
             .select{|engine| DoNotShowUntil::isVisible(engine) or NxBalls::itemIsActive(engine) }
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
             .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 or NxBalls::itemIsActive(engine) }
-            .map{|engine| TxEngines::engineToListingTasks(engine) }
+            .map{|engine| 
+                TxEngines::engineToCliques(engine)
+                    .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
+            }
             .flatten
 
-        runningEngines, runningItemsNonEngine = NxBalls::runningItems().partition{|item| item["mikuType"] == "TxEngine" }
+        cliques2 = TxCliques::cliquesWithoutEngine()
+            .sort_by{|clique| clique["unixtime"] }
+            .take(10)
+            .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
 
         items = [
-            runningItemsNonEngine,
             anniversary,
             Desktop::listingItems(),
             burners,
@@ -155,8 +156,7 @@ class Listing
             ondates,
             waves.select{|item| !item["interruption"] },
             drops,
-            enginestasks,
-            tasks
+            cliques1 + cliques2
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -167,11 +167,6 @@ class Listing
                     selected
                 end
             }
-
-        if runningEngines.size > 0 then
-            uuids = runningEngines.map{|engine| engine["uuid"] }
-            items = items.select{|item| uuids.include?(item["engineuuid"]) }
-        end
 
         items
     end
@@ -186,12 +181,11 @@ class Listing
             str1 = TxEngines::toString(item, true)
         end
 
-        itemToEngineSuffix = 
-            if item["mikuType"] == "NxTask" then
-                ""
-            else
-                TxEngines::itemToEngineSuffix(item)
-            end
+        itemToEngineSuffix = (lambda {|item|
+            return "" if item["mikuType"] == "NxTask"
+            return "" if item["mikuType"] == "TxClique"
+            TxEngines::itemToEngineSuffix(item)
+        }).call(item)
 
         line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{itemToEngineSuffix}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
 

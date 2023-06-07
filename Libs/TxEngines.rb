@@ -268,6 +268,12 @@ class TxEngines
             .select{|clique| clique["engineuuid"] == engineuuidOpt }
     end
 
+    # TxEngines::engineToCliques(engine)
+    def self.engineToCliques(engine)
+        Solingen::mikuTypeItems("TxClique")
+            .select{|clique| clique["engineuuid"] == engine["uuid"] }
+    end
+
     # -------------------------
     # Ops
 
@@ -355,9 +361,9 @@ class TxEngines
             return if input == "exit"
 
             if input == "cliques" then
-                clique = TxCliques::interactivelySelectCliqueOrNull(engine["uuid"])
+                clique = TxCliques::interactivelySelectCliqueOrNull(engine)
                 next if clique.nil?
-                TxCliques::program2(clique["cliqueuuid"])
+                TxCliques::program2(clique["uuid"])
                 next
             end
 
@@ -368,25 +374,28 @@ class TxEngines
     # TxEngines::program1(engine)
     def self.program1(engine)
         loop {
-            actions = ["reset hours", "add time", "listing (default)"]
+            actions = ["reset hours", "add time", "cliques"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
+            return if action.nil?
             if action == "reset hours" then
                 hours = LucilleCore::askQuestionAnswerAsString("hours (empty to abort): ")
                 return if hours == ""
                 hours = hours.to_f
                 Solingen::setAttribute2(engine["uuid"], "hours", hours)
-                return
             end
-            if action == "listing (default)" or action.nil? then
-                TxEngines::program0(engine)
-                return
+            if action == "cliques" then
+                loop {
+                    cliques = TxEngines::engineToCliques(engine)
+                                .sort_by{|item| item["description"] }
+                    clique = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| TxCliques::toString(clique) })
+                    break if clique.nil?
+                    TxCliques::program2(clique)
+                }
             end
-            if action == "add time" or action.nil? then
+            if action == "add time" then
                 timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
                 PolyActions::addTimeToItem(engine, timeInHours*3600)
-                return
             end
-            raise "(error: 4ad5e1b7-6d40-4055-bd9b-8562625a9cec) unknown action: #{action}" 
         }
     end
 

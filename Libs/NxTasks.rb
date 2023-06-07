@@ -5,6 +5,27 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
+    # NxTasks::coordinates()
+    def self.coordinates()
+        engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
+        engine =
+            if engineuuid then
+                engine = Solingen::getItemOrNull(engineuuid)
+            else
+                nil
+            end
+
+        clique = 
+            if engine then
+                TxCliques::architectCliqueInEngine(engine)
+            else
+                TxCliques::cliquesWithoutEngine()
+            end
+
+        position = TxCliques::interactivelySelectPositionInClique(clique)
+        [engineuuid, clique, position]
+    end
+
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
@@ -17,16 +38,15 @@ class NxTasks
         Solingen::init("NxPure", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
-        clique = TxCliques::architectCliqueInEngineOpt(engineuuid)
-        position = TxCliques::interactivelySelectPositionInClique(clique)
+
+        engineuuid, clique, position = NxTasks::coordinates()
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
         Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
-        Solingen::setAttribute2(uuid, "clique", clique)
+        Solingen::setAttribute2(uuid, "cliqueuuid", clique["uuid"])
         Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
@@ -42,7 +62,7 @@ class NxTasks
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
-        clique = TxCliques::architectCliqueInEngineOpt(nil)
+        clique = TxCliques::cliqueForNewItemAtNoEngine()
         position = TxCliques::cliqueToNewLastPosition(clique)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
@@ -75,7 +95,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "( 👩🏻‍💻 ) (#{"%5.2f" % item["position"]})#{TxEngines::itemToEngineSuffix(item)}#{TxCliques::cliqueSuffix(item)} #{item["description"]}"
+        "( 👩🏻‍💻 ) (#{"%5.2f" % item["position"]}) #{item["description"]}"
     end
 
     # --------------------------------------------------
@@ -88,7 +108,7 @@ class NxTasks
 
     # NxTasks::setCliqueAndPositionAtEngine(engine, task)
     def self.setCliqueAndPositionAtEngine(engine, task)
-        clique = TxCliques::architectCliqueInEngineOpt(engine["uuid"])
+        clique = TxCliques::architectCliqueInEngine(engine)
         position = TxCliques::interactivelySelectPositionInClique(clique)
         Solingen::setAttribute2(task["uuid"], "cliqueuuid", clique["uuid"])
         Solingen::setAttribute2(task["uuid"], "position", position)

@@ -13,10 +13,6 @@ class PolyFunctions
 
         if item["mikuType"] == "TxEngine" then
             accounts << {
-                "description" => "TxEngine(#{item["description"]})",
-                "number"      => item["uuid"]
-            }
-            accounts << {
                 "description" => nil,
                 "number"      => item["capsule"]
             }
@@ -24,14 +20,16 @@ class PolyFunctions
 
         if item["engineuuid"] then
             engine = Solingen::getItemOrNull(item["engineuuid"])
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
+            if engine then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
+            end
         end
 
         if item["cliqueuuid"] then
-            accounts << {
-                "description" => "TxClique",
-                "number"      => item["cliqueuuid"]
-            }
+            clique = Solingen::getItemOrNull(item["cliqueuuid"])
+            if clique then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(clique)
+            end
         end
 
         accounts.reduce([]){|as, account|
