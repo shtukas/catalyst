@@ -1,6 +1,9 @@
 
 class TxCliques
 
+    # -------------------------
+    # IO
+
     # TxCliques::issueNewClique(engineuuidOpt, descriptionOpt)
     def self.issueNewClique(engineuuidOpt, descriptionOpt)
         uuid = SecureRandom.uuid
@@ -10,6 +13,9 @@ class TxCliques
         Solingen::setAttribute2(uuid, "description", descriptionOpt)
         Solingen::getItemOrNull(uuid)
     end
+
+    # -------------------------
+    # Data
 
     # TxCliques::cliqueToNxTasks(clique)
     def self.cliqueToNxTasks(clique)
@@ -35,6 +41,26 @@ class TxCliques
         return 1 if positions.size == 0
         positions.sort.last + rand
     end
+
+    # TxCliques::cliqueSuffix(item)
+    def self.cliqueSuffix(item)
+        return "" if item["mikuType"] != "NxTask"
+        clique = item["clique"]
+        return "" if clique["description"].nil?
+        " (#{clique["description"]})".green
+    end
+
+    # TxCliques::toString(clique)
+    def self.toString(clique)
+        if clique["description"] then
+            "(clqu) #{clique["description"]}"
+        else
+            "(clqu) #{clique["cliqueuuid"]}"
+        end
+    end
+
+    # -------------------------
+    # Ops
 
     # TxCliques::architectCliqueInEngineOpt(engineuuidOpt)
     def self.architectCliqueInEngineOpt(engineuuidOpt)
@@ -85,8 +111,8 @@ class TxCliques
         position
     end
 
-    # TxCliques::program2Clique(clique)
-    def self.program2Clique(clique)
+    # TxCliques::program2(clique)
+    def self.program2(clique)
 
         loop {
             items = TxCliques::cliqueToNxTasks(clique)
@@ -104,7 +130,7 @@ class TxCliques
 
             if input == "rename clique" then
                 puts "old description: #{clique["description"]}"
-                description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+                description = LucilleCore::askQuestionAnswerAsString("new description (empty to abort): ")
                 next if description == ""
                 Solingen::setAttribute2(clique["uuid"], "description", description)
             end
@@ -128,31 +154,14 @@ class TxCliques
         }
     end
 
-    # TxCliques::program3Cliques()
-    def self.program3Cliques()
+    # TxCliques::program3()
+    def self.program3()
         loop {
             engine = TxEngines::interactivelySelectOneOrNull()
             return if engine.nil?
             clique = TxCliques::interactivelySelectCliqueOrNull(engine["uuid"])
             next if clique.nil?
-            TxCliques::program2Clique(clique)
+            TxCliques::program2(clique)
         }
-    end
-
-    # TxCliques::cliqueSuffix(item)
-    def self.cliqueSuffix(item)
-        return "" if item["mikuType"] != "NxTask"
-        clique = item["clique"]
-        return "" if clique["description"].nil?
-        " (#{clique["description"]})".green
-    end
-
-    # TxCliques::toString(clique)
-    def self.toString(clique)
-        if clique["description"] then
-            "(clqu) #{clique["description"]}"
-        else
-            "(clqu) #{clique["cliqueuuid"]}"
-        end
     end
 end

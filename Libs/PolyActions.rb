@@ -361,7 +361,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxClique" then
-            TxCliques::program2Clique(item["cliqueuuid"])
+            TxCliques::program2(item["cliqueuuid"])
             return
         end
 

@@ -327,7 +327,7 @@ class TxEngines
             if input == "cliques" then
                 clique = TxCliques::interactivelySelectCliqueOrNull(engine["uuid"])
                 next if clique.nil?
-                TxCliques::program2Clique(clique["cliqueuuid"])
+                TxCliques::program2(clique["cliqueuuid"])
                 next
             end
 

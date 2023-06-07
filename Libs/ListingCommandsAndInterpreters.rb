@@ -95,7 +95,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("cliques", input) then
-            TxCliques::program3Cliques()
+            TxCliques::program3()
             return
         end
 
