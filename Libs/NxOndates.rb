@@ -79,9 +79,8 @@ class NxOndates
     def self.redate(item)
         unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
-        item["datetime"] = Time.at(unixtime).utc.iso8601
-        item["parking"] = nil
-        NxOndates::commit(item)
+        Solingen::setAttribute2(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
+        Solingen::setAttribute2(item["uuid"], "parking", nil)
         DoNotShowUntil::setUnixtime(item, unixtime)
     end
 end
