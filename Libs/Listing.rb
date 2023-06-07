@@ -146,6 +146,10 @@ class Listing
             .take(10)
             .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
 
+        cliques = cliques1 + cliques2
+
+        tasks = TxCliques::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
+
         items = [
             anniversary,
             Desktop::listingItems(),
@@ -156,7 +160,8 @@ class Listing
             ondates,
             waves.select{|item| !item["interruption"] },
             drops,
-            cliques1 + cliques2
+            tasks,
+            cliques
         ]
             .flatten
             .select{|item| Listing::listable(item) }

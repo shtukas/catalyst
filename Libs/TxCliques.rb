@@ -67,7 +67,7 @@ class TxCliques
                 ""
             end
 
-        "(clqu) #{name1}#{suffix}"
+        " 🔹  #{name1}#{suffix}"
     end
 
     # TxCliques::cliquesWithoutEngine()

@@ -23,7 +23,7 @@ class NxBurners
 
     # NxBurners::toString(item)
     def self.toString(item)
-        "( 🕯️  ) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        " 🕯️   #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # ------------------------------------

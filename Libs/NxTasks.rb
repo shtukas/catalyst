@@ -95,7 +95,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "( 👩🏻‍💻 ) (#{"%5.2f" % item["position"]}) #{item["description"]}"
+        " 👩🏻‍💻  (#{"%5.2f" % item["position"]}) #{item["description"]}"
     end
 
     # --------------------------------------------------
