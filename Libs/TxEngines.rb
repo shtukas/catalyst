@@ -1,10 +1,8 @@
 
 class TxEngines
 
-    # TxEngines::interactivelySelectEngineTypeOrNull()
-    def self.interactivelySelectEngineTypeOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["daily-recovery-time (default, with to 1 hour)", "weekly-time"])
-    end
+    # -------------------------
+    # IO
 
     # TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
     def self.interactivelyMakeEngineOrDefault(uuid = nil)
@@ -84,6 +82,17 @@ class TxEngines
         raise "Houston (4bcee194f1a0), we have a problem."
     end
 
+    # TxEngines::interactivelyMakeEngine(uuid = nil)
+    def self.interactivelyMakeEngine(uuid = nil)
+        engine = TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
+        return engine if engine
+        puts "using default engine"
+        TxEngines::defaultEngine(uuid)
+    end
+
+    # -------------------------
+    # Data
+
     # TxEngines::defaultEngine(uuid = nil)
     def self.defaultEngine(uuid = nil)
         uuid = uuid || SecureRandom.hex
@@ -93,14 +102,6 @@ class TxEngines
             "hours"         => 1,
             "lastResetTime" => Time.new.to_i
         }
-    end
-
-    # TxEngines::interactivelyMakeEngine(uuid = nil)
-    def self.interactivelyMakeEngine(uuid = nil)
-        engine = TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
-        return engine if engine
-        puts "using default engine"
-        TxEngines::defaultEngine(uuid)
     end
 
     # TxEngines::dayCompletionRatio(engine)
@@ -136,58 +137,6 @@ class TxEngines
         day = TxEngines::dayCompletionRatio(engine)
         return day if day >= 1
         0.9*day + 0.1*period
-    end
-
-    # TxEngines::engineMaintenance(engine)
-    def self.engineMaintenance(engine)
-        if engine["type"] == "daily-recovery-time" then
-            return nil
-        end
-        if engine["type"] == "weekly-time" then
-            return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
-            return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
-            if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
-                overflow = 0.5*engine["hours"]*3600
-                puts "I am about to smooth engine #{TxEngines::toString(engine)}, overflow: #{(overflow.to_f/3600).round(2)} hours for engine: #{engine["description"]}"
-                LucilleCore::pressEnterToContinue()
-                NxTimePromises::issue_things(engine, overflow, 20)
-                return nil
-            end
-            puts "> I am about to reset engine: #{TxEngines::toString(engine)}"
-            LucilleCore::pressEnterToContinue()
-            Bank::put(engine["capsule"], -engine["hours"]*3600)
-            if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
-                hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
-                if hours.size > 0 then
-                    engine["hours"] = hours.to_f
-                end
-            end
-            engine["lastResetTime"] = Time.new.to_i
-            return engine
-        end
-        raise "could not TxEngines::engineMaintenance(engine) for engine: #{engine}, engine: #{engine}"
-    end
-
-    # TxEngines::ensureEachCliqueOfAnEngineHasAName()
-    def self.ensureEachCliqueOfAnEngineHasAName()
-        Solingen::mikuTypeItems("TxEngine").each{|engine|
-            TxEngines::engineUUIDOptToCliques(engine["uuid"]).each{|clique|
-                if clique["description"].nil? then
-                    description = nil
-                    loop {
-                        description = LucilleCore::askQuestionAnswerAsString("description: ")
-                        break if description != ""
-                    }
-                    Solingen::setAttribute2(clique["uuid"], "description", description)
-                end
-            }
-        }
-    end
-
-    # TxEngines::generalMaintenance()
-    def self.generalMaintenance()
-        TxEngines::ensureEachCliqueOfAnEngineHasAName()
-        Solingen::mikuTypeItems("TxEngine").each{|engine| TxEngines::engineMaintenance(engine) }
     end
 
     # TxEngines::toString(engine, shouldPad = false)
@@ -236,18 +185,6 @@ class TxEngines
     # TxEngines::toString0(engine)
     def self.toString0(engine)
         "(engine) #{engine["description"]}"
-    end
-
-    # TxEngines::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", Solingen::mikuTypeItems("TxEngine"), lambda{|item| TxEngines::toString0(item) })
-    end
-
-    # TxEngines::interactivelySelectOneUUIDOrNull()
-    def self.interactivelySelectOneUUIDOrNull()
-        engine = TxEngines::interactivelySelectOneOrNull()
-        return engine["uuid"] if engine
-        nil
     end
 
     # TxEngines::pendingEngines()
@@ -310,6 +247,99 @@ class TxEngines
             }
     end
 
+    # TxEngines::itemToEngineSuffix(item)
+    def self.itemToEngineSuffix(item)
+        if item["engineuuid"] then
+            engine = Solingen::getItemOrNull(item["engineuuid"])
+            if engine.nil? then
+                Solingen::setAttribute2(item["uuid"], "engineuuid", nil)
+                ""
+            else
+                " #{"(#{engine["description"]})".green}"
+            end
+        else
+            ""
+        end
+    end
+
+    # TxEngines::engineUUIDOptToCliques(engineuuidOpt)
+    def self.engineUUIDOptToCliques(engineuuidOpt)
+        Solingen::mikuTypeItems("TxClique")
+            .select{|clique| clique["engineuuid"] == engineuuidOpt }
+    end
+
+    # -------------------------
+    # Ops
+
+    # TxEngines::interactivelySelectEngineTypeOrNull()
+    def self.interactivelySelectEngineTypeOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["daily-recovery-time (default, with to 1 hour)", "weekly-time"])
+    end
+
+    # TxEngines::engineMaintenance(engine)
+    def self.engineMaintenance(engine)
+        if engine["type"] == "daily-recovery-time" then
+            return nil
+        end
+        if engine["type"] == "weekly-time" then
+            return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
+            return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
+            if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
+                overflow = 0.5*engine["hours"]*3600
+                puts "I am about to smooth engine #{TxEngines::toString(engine)}, overflow: #{(overflow.to_f/3600).round(2)} hours for engine: #{engine["description"]}"
+                LucilleCore::pressEnterToContinue()
+                NxTimePromises::issue_things(engine, overflow, 20)
+                return nil
+            end
+            puts "> I am about to reset engine: #{TxEngines::toString(engine)}"
+            LucilleCore::pressEnterToContinue()
+            Bank::put(engine["capsule"], -engine["hours"]*3600)
+            if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
+                hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
+                if hours.size > 0 then
+                    engine["hours"] = hours.to_f
+                end
+            end
+            engine["lastResetTime"] = Time.new.to_i
+            return engine
+        end
+        raise "could not TxEngines::engineMaintenance(engine) for engine: #{engine}, engine: #{engine}"
+    end
+
+    # TxEngines::ensureEachCliqueOfAnEngineHasAName()
+    def self.ensureEachCliqueOfAnEngineHasAName()
+        Solingen::mikuTypeItems("TxEngine").each{|engine|
+            TxEngines::engineUUIDOptToCliques(engine["uuid"]).each{|clique|
+                if clique["description"].nil? then
+                    description = nil
+                    loop {
+                        description = LucilleCore::askQuestionAnswerAsString("description: ")
+                        break if description != ""
+                    }
+                    Solingen::setAttribute2(clique["uuid"], "description", description)
+                end
+            }
+        }
+    end
+
+    # TxEngines::generalMaintenance()
+    def self.generalMaintenance()
+        TxEngines::ensureEachCliqueOfAnEngineHasAName()
+        Solingen::mikuTypeItems("TxEngine").each{|engine| TxEngines::engineMaintenance(engine) }
+    end
+
+    # TxEngines::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", Solingen::mikuTypeItems("TxEngine"), lambda{|item| TxEngines::toString0(item) })
+    end
+
+    # TxEngines::interactivelySelectOneUUIDOrNull()
+    def self.interactivelySelectOneUUIDOrNull()
+        engine = TxEngines::interactivelySelectOneOrNull()
+        return engine["uuid"] if engine
+        nil
+    end
+
     # TxEngines::program0(engine)
     def self.program0(engine)
         loop {
@@ -367,26 +397,5 @@ class TxEngines
             return if engine.nil?
             TxEngines::program1(engine)
         }
-    end
-
-    # TxEngines::itemToEngineSuffix(item)
-    def self.itemToEngineSuffix(item)
-        if item["engineuuid"] then
-            engine = Solingen::getItemOrNull(item["engineuuid"])
-            if engine.nil? then
-                Solingen::setAttribute2(item["uuid"], "engineuuid", nil)
-                ""
-            else
-                " #{"(#{engine["description"]})".green}"
-            end
-        else
-            ""
-        end
-    end
-
-    # TxEngines::engineUUIDOptToCliques(engineuuidOpt)
-    def self.engineUUIDOptToCliques(engineuuidOpt)
-        Solingen::mikuTypeItems("TxClique")
-            .select{|clique| clique["engineuuid"] == engineuuidOpt }
     end
 end
