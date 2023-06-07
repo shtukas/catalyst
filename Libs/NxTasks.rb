@@ -75,7 +75,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "(task) (#{"%5.2f" % item["position"]})#{TxEngines::itemToEngineSuffix(item)}#{TxCliques::cliqueSuffix(item)} #{item["description"]}"
+        "( 👩🏻‍💻 ) (#{"%5.2f" % item["position"]})#{TxEngines::itemToEngineSuffix(item)}#{TxCliques::cliqueSuffix(item)} #{item["description"]}"
     end
 
     # --------------------------------------------------

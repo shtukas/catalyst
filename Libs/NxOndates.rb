@@ -39,7 +39,7 @@ class NxOndates
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "(ondt) (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
+        "( 🗓️  ) (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
     # NxOndates::listingItems()
