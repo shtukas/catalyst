@@ -33,7 +33,7 @@ class NxDrops
             puts JSON.pretty_generate(item)
             NxBalls::start(item)
             CoreData::access(item["uuid"], item["field11"])
-            puts "Waiting until you are done"
+            puts "Next step is destruction"
             LucilleCore::pressEnterToContinue()
             Solingen::destroy(item["uuid"])
         end
