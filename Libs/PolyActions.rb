@@ -30,31 +30,17 @@ class PolyActions
 
         if item["mikuType"] == "NxDrop" then
             actions = [
-                "start, do and done",
-                "start, do, stop and ignore until tomorrow",
+                "start, access and done",
                 "transmute"
             ]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
             return action.nil?
-            if action == "start, do and done" then
+            if action == "start, access and done" then
                 NxBalls::start(item)
-                if item["field11"] then
-                    CoreData::access(item["uuid"], item["field11"])
-                end
+                CoreData::access(item["uuid"], item["field11"])
                 puts "Waiting until you are done"
                 LucilleCore::pressEnterToContinue()
                 Solingen::destroy(item["uuid"])
-            end
-            if action == "start, do, stop and ignore until tomorrow" then
-                NxBalls::start(item)
-                if item["field11"] then
-                    CoreData::access(item["uuid"], item["field11"])
-                end
-                puts "Waiting until you are done"
-                LucilleCore::pressEnterToContinue()
-                NxBalls::stop(item)
-                unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
-                DoNotShowUntil::setUnixtime(item, unixtime)
             end
             if action == "transmute" then
                 Transmutations::transmute(item)
@@ -280,6 +266,27 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxDrop" then
+            actions = [
+                "start, access and done",
+                "transmute"
+            ]
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
+            return action.nil?
+            if action == "start, access and done" then
+                puts JSON.pretty_generate(item)
+                NxBalls::start(item)
+                CoreData::access(item["uuid"], item["field11"])
+                puts "Waiting until you are done"
+                LucilleCore::pressEnterToContinue()
+                Solingen::destroy(item["uuid"])
+            end
+            if action == "transmute" then
+                Transmutations::transmute(item)
+            end
             return
         end
 
