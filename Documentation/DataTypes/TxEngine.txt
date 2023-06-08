@@ -1,6 +1,5 @@
 
 TxEngine:
-    "type"          : "weekly-time"
     "hours"         : Float
     "lastResetTime" : Unixtime
     "capsule"       : String

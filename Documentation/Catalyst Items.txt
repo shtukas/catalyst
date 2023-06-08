@@ -7,7 +7,6 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
-    - "engineuuid"     : uuid of an engine
 
 (2) Carried by all objects, help with resolution
 

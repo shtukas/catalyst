@@ -4,13 +4,16 @@ class TxCliques
     # -------------------------
     # IO
 
-    # TxCliques::issueNewClique(engineuuidOpt, descriptionOpt)
-    def self.issueNewClique(engineuuidOpt, descriptionOpt)
+    # TxCliques::interactivelyIssueNewClique()
+    def self.interactivelyIssueNewClique()
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+        engine = TxEngines::interactivelyMakeEngineOrDefault()
         uuid = SecureRandom.uuid
         Solingen::init("TxClique", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "engineuuid", engineuuidOpt)
-        Solingen::setAttribute2(uuid, "description", descriptionOpt)
+        Solingen::setAttribute2(uuid, "description", description)
+        Solingen::setAttribute2(uuid, "engine", engine)
         Solingen::getItemOrNull(uuid)
     end
 
@@ -53,27 +56,32 @@ class TxCliques
 
     # TxCliques::toString(clique)
     def self.toString(clique)
-        name1 = clique["description"] ? clique["description"] : clique["uuid"]
-        
+        padding = XCache::getOrDefaultValue("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", "0").to_i
         suffix =
-            if clique["engineuuid"] then
-                engine = Solingen::getItemOrNull(clique["engineuuid"])
-                if engine then
-                    " (#{engine["description"]})".green
-                else
-                    ""
-                end
+            if clique["engine"] then
+                " #{TxEngines::toString1(clique["engine"])}".green
             else
                 ""
             end
-
-        "🔹 #{name1}#{suffix}"
+        "🔹 #{clique["description"].ljust(padding)}#{suffix}"
     end
 
     # TxCliques::cliquesWithoutEngine()
     def self.cliquesWithoutEngine()
         Solingen::mikuTypeItems("TxClique")
             .select{|clique| clique["engineuuid"].nil? }
+    end
+
+    # TxCliques::management()
+    def self.management()
+        padding = Solingen::mikuTypeItems("TxClique").map{|clique| clique["description"].size }.max
+        XCache::set("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", padding)
+    end
+
+    # TxCliques::listingRatio(clique)
+    def self.listingRatio(clique)
+        engine = clique["engine"]
+        0.9 * TxEngines::dayCompletionRatio(engine) + 0.1 * TxEngines::periodCompletionRatio(engine)
     end
 
     # -------------------------
@@ -108,6 +116,8 @@ class TxCliques
     def self.program2(clique)
 
         loop {
+            clique = Solingen::getItemOrNull(clique["uuid"])
+            return if clique.nil?
             system("clear")
             items = TxCliques::cliqueToNxTasks(clique)
                         .sort_by{|t| t["position"] }

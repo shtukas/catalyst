@@ -3,6 +3,5 @@ TxClique:
     "uuid"        : String
     "mikuType"    : "TxClique"
     "unixtime"    : Integer
-    "engineuuid"  : null or String
     "description" : null or String
     "engine"      : TxEngine

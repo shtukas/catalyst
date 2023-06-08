@@ -11,13 +11,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["engineuuid"] then
-            engine = Solingen::getItemOrNull(item["engineuuid"])
-            if engine then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
-            end
-        end
-
         if item["cliqueuuid"] then
             clique = Solingen::getItemOrNull(item["cliqueuuid"])
             if clique then

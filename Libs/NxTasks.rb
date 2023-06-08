@@ -82,7 +82,16 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "👩🏻‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]}"
+        if item["cliqueuuid"] then
+            clique = Solingen::getItemOrNull(item["cliqueuuid"])
+            if clique.nil? then
+                Solingen::setAttribute2(item["uuid"], "cliqueuuid", nil)
+                return NxTasks::toString(item)
+            end
+            "👩‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]} (#{clique["description"]})"
+        else
+            "👨🏻‍💻 #{item["description"]}"
+        end
     end
 
     # --------------------------------------------------

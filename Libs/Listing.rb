@@ -111,7 +111,6 @@ class Listing
         anniversary = Anniversaries::listingItems()
 
         burners = Solingen::mikuTypeItems("NxBurner")
-                    .select{|burner| burner["engineuuid"].nil? }
 
         fires = Solingen::mikuTypeItems("NxFire")
 
@@ -131,9 +130,35 @@ class Listing
         drops = Solingen::mikuTypeItems("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        cliques = Solingen::mikuTypeItems("TxClique")
+        cliques = [] #Solingen::mikuTypeItems("TxClique")
+                    #.select{|clique| TxCliques::listingRatio(clique) < 1 }
+                    #.sort_by{|clique| TxCliques::listingRatio(clique) }
 
-        tasks = TxCliques::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
+        tasks1 = 
+            if cliques.empty? then
+                []
+            else
+                TxCliques::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
+            end
+
+        tasks2 =
+            if cliques.empty? then
+                Solingen::mikuTypeItems("NxTask")
+                    .sort_by{|task| task["unixtime"] }
+                    .reduce([]){|selected, task|
+                        if selected.size >= 6 then
+                            selected
+                        else
+                            if Bank::recoveredAverageHoursPerDay(task["uuid"]) < 1 then
+                                selected + [task]
+                            else
+                                selected
+                            end
+                        end
+                    }
+            else
+                []
+            end
 
         items = [
             anniversary,
@@ -145,8 +170,9 @@ class Listing
             ondates,
             waves.select{|item| !item["interruption"] },
             drops,
-            tasks,
-            cliques
+            tasks1,
+            cliques,
+            tasks2
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -301,6 +327,7 @@ class Listing
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
+             TxCliques::management()
         end
     end
 

@@ -4,122 +4,34 @@ class TxEngines
     # -------------------------
     # IO
 
-    # TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
-    def self.interactivelyMakeEngineOrDefault(uuid = nil)
-        uuid = uuid || SecureRandom.hex
-        type = TxEngines::interactivelySelectEngineTypeOrNull()
-        if type.nil? then
-            return TxEngines::defaultEngine(uuid)
-        end
-        if type == "daily-recovery-time (default, with to 1 hour)" then
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ")
-            if hours == "" then
-                hours = "1"
-            end
-            hours = hours.to_f
-            return {
-                "uuid"  => uuid,
-                "type"  => "daily-recovery-time",
-                "hours" => hours
-            }
-        end
-        if type == "weekly-time" then
-            return {
-                "uuid"          => uuid, # used for the completion ratio computation
-                "type"          => "weekly-time",
-                "hours"         => LucilleCore::askQuestionAnswerAsString("hours: ").to_f,
-                "lastResetTime" => 0,
-                "capsule"       => SecureRandom.hex # used for the time management
-            }
-        end
-        raise "Houston (39), we have a problem."
+    # TxEngines::makeEngine(uuid, hours)
+    def self.makeEngine(uuid, hours)
+        {
+            "uuid"          => uuid,
+            "hours"         => hours,
+            "lastResetTime" => 0,
+            "capsule"       => SecureRandom.hex # used for the time management
+        }
     end
 
-    # TxEngines::interactivelyIssueEngineOrNull()
-    def self.interactivelyIssueEngineOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
-
-        type = TxEngines::interactivelySelectEngineTypeOrNull()
-        return nil if type.nil?
-
-        if type == "daily-recovery-time" then
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ")
-            if hours == "" then
-                return TxEngines::interactivelyIssueEngineOrNull()
-            end
-            hours = hours.to_f
-
-            uuid = SecureRandom.uuid
-            Solingen::init("TxEngine", uuid)
-            Solingen::setAttribute2(uuid, "mikuType", "TxEngine")
-            Solingen::setAttribute2(uuid, "description", description)
-            Solingen::setAttribute2(uuid, "type", "daily-recovery-time")
-            Solingen::setAttribute2(uuid, "hours", hours)
-            return Solingen::getItemOrNull(uuid)
-        end
-
-        if type == "weekly-time" then
-            return {
-                "uuid"          => uuid, # used for the completion ratio computation
-                "type"          => "weekly-time",
-                "hours"         => LucilleCore::askQuestionAnswerAsString("hours: ").to_f,
-                "lastResetTime" => 0,
-                "capsule"       => SecureRandom.hex # used for the time management
-            }
-
-            uuid = SecureRandom.uuid
-            Solingen::init("TxEngine", uuid)
-            Solingen::setAttribute2(uuid, "mikuType", "TxEngine")
-            Solingen::setAttribute2(uuid, "description", description)
-            Solingen::setAttribute2(uuid, "type", "weekly-time")
-            Solingen::setAttribute2(uuid, "hours", hours)
-            Solingen::setAttribute2(uuid, "lastResetTime", 0)
-            Solingen::setAttribute2(uuid, "capsule", SecureRandom.hex)
-            return Solingen::getItemOrNull(uuid)
-        end
-
-        raise "Houston (4bcee194f1a0), we have a problem."
+    # TxEngines::interactivelyMakeEngineOrDefault()
+    def self.interactivelyMakeEngineOrDefault()
+        uuid = SecureRandom.uuid
+        hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+        TxEngines::makeEngine(uuid, hours)
     end
 
     # -------------------------
     # Data
 
-    # TxEngines::defaultEngine(uuid = nil)
-    def self.defaultEngine(uuid = nil)
-        uuid = uuid || SecureRandom.hex
-        {
-            "uuid"          => uuid,
-            "type"          => "daily-recovery-time",
-            "hours"         => 1,
-            "lastResetTime" => Time.new.to_i
-        }
-    end
-
     # TxEngines::dayCompletionRatio(engine)
     def self.dayCompletionRatio(engine)
-        if engine["type"] == "daily-recovery-time" then
-            return (Bank::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]*3600
-        end
-        if engine["type"] == "weekly-time" then
-            # if completed, we return the highest of both completion ratios
-            # if not completed, we return the lowest
-            return Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
-        end
-        raise "could not TxEngines::dayCompletionRatio(engine) for engine: #{engine}"
+        Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
     end
 
     # TxEngines::periodCompletionRatio(engine)
     def self.periodCompletionRatio(engine)
-        if engine["type"] == "daily-recovery-time" then
-            return (Bank::recoveredAverageHoursPerDay(engine["uuid"]))/engine["hours"]*3600
-        end
-        if engine["type"] == "weekly-time" then
-            # if completed, we return the highest of both completion ratios
-            # if not completed, we return the lowest
-            return Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
-        end
-        raise "could not TxEngines::dayCompletionRatio(engine) for engine: #{engine}"
+        Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
     end
 
     # TxEngines::listingCompletionRatio(engine)
@@ -131,46 +43,40 @@ class TxEngines
         0.9*day + 0.1*period
     end
 
-    # TxEngines::toString(engine, shouldPad = false)
-    def self.toString(engine, shouldPad = false)
-        if engine["type"] == "daily-recovery-time" then
-            return "#{engine["description"]} (engine: #{(100*TxEngines::dayCompletionRatio(engine)).round(2).to_s.green}% of #{engine["hours"]} hours)"
-        end
-        if engine["type"] == "weekly-time" then
-            strings = []
-
-            strings << "#{engine["description"]} (engine: today: #{"#{"%5.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
-            strings << ", period: #{"#{"%5.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
-
-            hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
-            timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
-            itHassBeenAWeek = timeSinceResetInDays >= 7
-
-            if hasReachedObjective and itHassBeenAWeek then
-                strings << ", awaiting data management"
-            end
-
-            if hasReachedObjective and !itHassBeenAWeek then
-                strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset"
-            end
-
-            if !hasReachedObjective and !itHassBeenAWeek then
-                strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
-            end
-
-            if !hasReachedObjective and itHassBeenAWeek then
-                strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
-            end
-
-            strings << ")"
-            return strings.join()
-        end
-        raise "could not TxEngines::toString(engine) for engine: #{engine}"
-    end
-
     # TxEngines::toString0(engine)
     def self.toString0(engine)
         "(engine) #{engine["description"]}"
+    end
+
+    # TxEngines::toString1(engine)
+    def self.toString1(engine)
+        strings = []
+
+        strings << "(engine: today: #{"#{"%5.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << ", period: #{"#{"%5.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
+
+        hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
+        timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
+        itHassBeenAWeek = timeSinceResetInDays >= 7
+
+        if hasReachedObjective and itHassBeenAWeek then
+            strings << ", awaiting data management"
+        end
+
+        if hasReachedObjective and !itHassBeenAWeek then
+            strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset"
+        end
+
+        if !hasReachedObjective and !itHassBeenAWeek then
+            strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
+        end
+
+        if !hasReachedObjective and itHassBeenAWeek then
+            strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
+        end
+
+        strings << ")"
+        strings.join()
     end
 
     # TxEngines::pendingEngines()
@@ -278,12 +184,12 @@ class TxEngines
             return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
             if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
                 overflow = 0.5*engine["hours"]*3600
-                puts "I am about to smooth engine #{TxEngines::toString(engine)}, overflow: #{(overflow.to_f/3600).round(2)} hours for engine: #{engine["description"]}"
+                puts "I am about to smooth engine #{TxEngines::toString1(engine)}, overflow: #{(overflow.to_f/3600).round(2)} hours for engine: #{engine["description"]}"
                 LucilleCore::pressEnterToContinue()
                 NxTimePromises::issue_things(engine, overflow, 20)
                 return nil
             end
-            puts "> I am about to reset engine: #{TxEngines::toString(engine)}"
+            puts "> I am about to reset engine: #{TxEngines::toString1(engine)}"
             LucilleCore::pressEnterToContinue()
             Bank::put(engine["capsule"], -engine["hours"]*3600)
             if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
