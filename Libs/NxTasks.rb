@@ -102,7 +102,7 @@ class NxTasks
             end
             "🫧 (#{"%5.2f" % item["position"]}) #{item["description"]} (#{clique["description"]})"
         else
-            "👨🏻‍💻 #{item["description"]}"
+            "👨🏻‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]}"
         end
     end
 

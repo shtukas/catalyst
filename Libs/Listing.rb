@@ -40,8 +40,8 @@ class Listing
         true
     end
 
-    # Listing::skipfragment(item)
-    def self.skipfragment(item)
+    # Listing::skipSuffix(item)
+    def self.skipSuffix(item)
         skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
                 return item["tmpskip1"]
@@ -59,9 +59,8 @@ class Listing
             (Time.new.to_f < targetTime) ? targetTime : nil
         }
 
-        targetTime = skipTargetTimeOrNull.call(item)
-        if targetTime then
-            "(tmpskip1'ed for #{((targetTime-Time.new.to_f).to_f/3600).round(2)} more hours) ".yellow
+        if skipTargetTimeOrNull.call(item) then
+            " (tmpskip1'ed)".yellow
         else
             ""
         end
@@ -192,10 +191,10 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} #{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{Listing::skipSuffix(item)}"
 
         if Listing::isInterruption(item) then
-            line = line.gsub("Px02", "🧀 ".red)
+            line = line.gsub("Px02", "🧀 ")
         else
             line = line.gsub("Px02", "")
         end

@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | skip | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | holiday <n> | skip | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread",
             "",
             "specific types commands:",
@@ -71,7 +71,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("ack", input) then
+        if Interpreting::match("holiday", input) then
             item = store.getDefault()
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
@@ -79,7 +79,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("ack *", input) then
+        if Interpreting::match("holiday *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
