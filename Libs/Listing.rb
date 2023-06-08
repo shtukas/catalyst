@@ -171,7 +171,7 @@ class Listing
         line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if Listing::isInterruption(item) then
-            line = line.gsub("Px02", "(intt) ".red)
+            line = line.gsub("Px02", "🧀 ".red)
         else
             line = line.gsub("Px02", "")
         end
