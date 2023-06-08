@@ -8,4 +8,4 @@ NxTask: (Blade)
     "field11"     : null or CoreData reference string
 
     "cliqueuuid"  : null or String
-    "position"    : null or Float (should be set if in a clique)
+    "position"    : Float

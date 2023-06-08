@@ -155,30 +155,11 @@ class Listing
                     .select{|clique| TxCliques::listingRatio(clique) < 1 }
                     .sort_by{|clique| TxCliques::listingRatio(clique) }
 
-        tasks1 = 
+        tasks = 
             if cliques.empty? then
                 []
             else
                 TxCliques::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
-            end
-
-        tasks2 =
-            if cliques.empty? then
-                Solingen::mikuTypeItems("NxTask")
-                    .sort_by{|task| task["unixtime"] }
-                    .reduce([]){|selected, task|
-                        if selected.size >= 6 then
-                            selected
-                        else
-                            if Bank::recoveredAverageHoursPerDay(task["uuid"]) < 1 then
-                                selected + [task]
-                            else
-                                selected
-                            end
-                        end
-                    }
-            else
-                []
             end
 
         items = [
@@ -188,9 +169,8 @@ class Listing
             ondates,
             waves.select{|item| !item["interruption"] },
             drops,
-            tasks1,
+            tasks,
             cliques,
-            tasks2
         ]
             .flatten
             .select{|item| Listing::listable(item) }

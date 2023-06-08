@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - ondate     : redate",
             "transmutation : recast (<n>)",
-            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | principals",
+            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | cliques",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
         ].join("\n")
@@ -46,6 +46,11 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Listing::tmpskip1(item, 3.14)
+            return
+        end
+
+        if Interpreting::match("cliques", input) then
+            TxCliques::program3()
             return
         end
 

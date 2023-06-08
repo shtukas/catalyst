@@ -1,6 +1,11 @@
 
 class TxCliques
 
+    # TxCliques::infinityuuid()
+    def self.infinityuuid()
+        "9297479b-17de-427e-8622-a7e52f90020c"
+    end
+
     # -------------------------
     # IO
 
@@ -22,6 +27,23 @@ class TxCliques
 
     # TxCliques::cliqueToNxTasks(clique)
     def self.cliqueToNxTasks(clique)
+        if clique["uuid"] == TxCliques::infinityuuid() then
+            return Solingen::mikuTypeItems("NxTask")
+                .select{|item| item["cliqueuuid"].nil? }
+                .sort_by{|task| task["position"] }
+                .reduce([]){|selected, task|
+                    if selected.size >= 6 then
+                        selected
+                    else
+                        if Bank::recoveredAverageHoursPerDay(task["uuid"]) < 1 then
+                            selected + [task]
+                        else
+                            selected
+                        end
+                    end
+                }
+        end
+
         Solingen::mikuTypeItems("NxTask")
             .select{|task| task["cliqueuuid"] == clique["uuid"] }
     end
@@ -36,13 +58,6 @@ class TxCliques
         else
             position - 1
         end
-    end
-
-    # TxCliques::cliqueToNewLastPosition(clique)
-    def self.cliqueToNewLastPosition(clique)
-        positions = TxCliques::cliqueToNxTasks(clique).map{|task| task["position"] }
-        return 1 if positions.size == 0
-        positions.sort.last + rand
     end
 
     # TxCliques::cliqueSuffix(item)
@@ -66,12 +81,6 @@ class TxCliques
         "🔹 #{clique["description"].ljust(padding)}#{suffix}"
     end
 
-    # TxCliques::cliquesWithoutEngine()
-    def self.cliquesWithoutEngine()
-        Solingen::mikuTypeItems("TxClique")
-            .select{|clique| clique["engineuuid"].nil? }
-    end
-
     # TxCliques::management()
     def self.management()
         padding = Solingen::mikuTypeItems("TxClique").map{|clique| clique["description"].size }.max
@@ -90,6 +99,7 @@ class TxCliques
     # TxCliques::interactivelySelectCliqueOrNull()
     def self.interactivelySelectCliqueOrNull()
         cliques = Solingen::mikuTypeItems("TxClique")
+                    .select{|clique| clique["uuid"] != TxCliques::infinityuuid() }
                     .sort_by{|clique| clique["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| TxCliques::toString(clique) })
     end
@@ -114,6 +124,12 @@ class TxCliques
 
     # TxCliques::program2(clique)
     def self.program2(clique)
+
+        if clique["uuid"] == TxCliques::infinityuuid() then
+            puts "You cannot run program on Infinity"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
 
         loop {
             clique = Solingen::getItemOrNull(clique["uuid"])
@@ -176,7 +192,7 @@ class TxCliques
     def self.program3()
         loop {
             clique = TxCliques::interactivelySelectCliqueOrNull()
-            next if clique.nil?
+            break if clique.nil?
             TxCliques::program2(clique)
         }
     end

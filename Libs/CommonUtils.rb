@@ -614,6 +614,7 @@ class CommonUtils
         if positions.size < 4 then
             return positions.max + 0.5 + rand
         end
+        positions = positions.sort
         positions # a = [1, 2, 8, 9]
         x = positions.zip(positions.drop(1)) # [[1, 2], [2, 8], [8, nil]]
         x = x.select{|pair| pair[1] } # [[1, 2], [2, 8]

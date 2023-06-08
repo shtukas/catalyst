@@ -5,6 +5,13 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
+    # NxTasks::cliquelessPositions()
+    def self.cliquelessPositions()
+        Solingen::mikuTypeItems("NxTask")
+            .select{|task| task["cliqueuuid"].nil? }
+            .map{|task| task["position"] }
+    end
+
     # NxTasks::coordinates()
     def self.coordinates()
         cliqueuuid = nil
@@ -14,6 +21,8 @@ class NxTasks
         if clique then
             cliqueuuid = clique["uuid"]
             position = TxCliques::interactivelySelectPositionInClique(clique)
+        else
+            position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions())
         end
 
         [cliqueuuid, position]
@@ -55,10 +64,13 @@ class NxTasks
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
 
+        position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions())
+
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
+        Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
         Solingen::getItemOrNull(uuid)
     end
