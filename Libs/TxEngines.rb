@@ -82,14 +82,6 @@ class TxEngines
         raise "Houston (4bcee194f1a0), we have a problem."
     end
 
-    # TxEngines::interactivelyMakeEngine(uuid = nil)
-    def self.interactivelyMakeEngine(uuid = nil)
-        engine = TxEngines::interactivelyMakeEngineOrDefault(uuid = nil)
-        return engine if engine
-        puts "using default engine"
-        TxEngines::defaultEngine(uuid)
-    end
-
     # -------------------------
     # Data
 
@@ -141,19 +133,13 @@ class TxEngines
 
     # TxEngines::toString(engine, shouldPad = false)
     def self.toString(engine, shouldPad = false)
-        padding =
-            if shouldPad then
-                XCache::getOrDefaultValue("engine-description-padding-26f3d54692dc", "0").to_i
-            else
-                0
-            end
         if engine["type"] == "daily-recovery-time" then
-            return "#{engine["description"].ljust(padding)} (engine: #{(100*TxEngines::dayCompletionRatio(engine)).round(2).to_s.green}% of #{engine["hours"]} hours)"
+            return "#{engine["description"]} (engine: #{(100*TxEngines::dayCompletionRatio(engine)).round(2).to_s.green}% of #{engine["hours"]} hours)"
         end
         if engine["type"] == "weekly-time" then
             strings = []
 
-            strings << "#{engine["description"].ljust(padding)} (engine: today: #{"#{"%5.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+            strings << "#{engine["description"]} (engine: today: #{"#{"%5.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
             strings << ", period: #{"#{"%5.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
             hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
@@ -346,31 +332,6 @@ class TxEngines
         nil
     end
 
-    # TxEngines::program0(engine)
-    def self.program0(engine)
-        loop {
-
-            store = ItemStore.new()
-
-            items = TxEngines::itemsForProgram0(engine)
-            Listing::printEvalItems(store, [], items)
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == ""
-            return if input == "exit"
-
-            if input == "cliques" then
-                clique = TxCliques::interactivelySelectCliqueOrNull(engine)
-                next if clique.nil?
-                TxCliques::program2(clique["uuid"])
-                next
-            end
-
-            ListingCommandsAndInterpreters::interpreter(input, store, nil)
-        }
-    end
-
     # TxEngines::program1(engine)
     def self.program1(engine)
         loop {
@@ -396,15 +357,6 @@ class TxEngines
                 timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
                 PolyActions::addTimeToItem(engine, timeInHours*3600)
             end
-        }
-    end
-
-    # TxEngines::program2()
-    def self.program2()
-        loop {
-            engine = TxEngines::interactivelySelectOneOrNull()
-            return if engine.nil?
-            TxEngines::program1(engine)
         }
     end
 end

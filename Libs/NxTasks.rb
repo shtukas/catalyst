@@ -7,23 +7,16 @@ class NxTasks
 
     # NxTasks::coordinates()
     def self.coordinates()
-        engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
-        engine =
-            if engineuuid then
-                engine = Solingen::getItemOrNull(engineuuid)
-            else
-                nil
-            end
+        cliqueuuid = nil
+        position = nil
 
-        clique = 
-            if engine then
-                TxCliques::architectCliqueInEngine(engine)
-            else
-                TxCliques::cliquesWithoutEngine()
-            end
+        clique = TxCliques::interactivelySelectCliqueOrNull()
+        if clique then
+            cliqueuuid = clique["uuid"]
+            position = TxCliques::interactivelySelectPositionInClique(clique)
+        end
 
-        position = TxCliques::interactivelySelectPositionInClique(clique)
-        [engineuuid, clique, position]
+        [cliqueuuid, position]
     end
 
     # NxTasks::interactivelyIssueNewOrNull()
@@ -39,15 +32,14 @@ class NxTasks
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        engineuuid, clique, position = NxTasks::coordinates()
+        cliqueuuid, position = NxTasks::coordinates()
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
-        Solingen::setAttribute2(uuid, "cliqueuuid", clique["uuid"])
         Solingen::setAttribute2(uuid, "position", position)
+        Solingen::setAttribute2(uuid, "cliqueuuid", cliqueuuid)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
 
         Solingen::getItemOrNull(uuid)
@@ -62,28 +54,23 @@ class NxTasks
 
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
-        clique = TxCliques::cliqueForNewItemAtNoEngine()
-        position = TxCliques::cliqueToNewLastPosition(clique)
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "cliqueuuid", clique["uuid"])
-        Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
         Solingen::getItemOrNull(uuid)
     end
 
-    # NxTasks::lineToCliqueTask(line, engineuuid, cliqueuuid, position)
-    def self.lineToCliqueTask(line, engineuuid, cliqueuuid, position)
+    # NxTasks::lineToCliqueTask(line, cliqueuuid, position)
+    def self.lineToCliqueTask(line, cliqueuuid, position)
         uuid = SecureRandom.uuid
         description = line
         Solingen::init("NxPure", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
         Solingen::setAttribute2(uuid, "cliqueuuid", cliqueuuid)
         Solingen::setAttribute2(uuid, "position", position)
         Solingen::setAttribute2(uuid, "mikuType", "NxTask")
@@ -104,13 +91,5 @@ class NxTasks
     # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["uuid"], item["field11"])
-    end
-
-    # NxTasks::setCliqueAndPositionAtEngine(engine, task)
-    def self.setCliqueAndPositionAtEngine(engine, task)
-        clique = TxCliques::architectCliqueInEngine(engine)
-        position = TxCliques::interactivelySelectPositionInClique(clique)
-        Solingen::setAttribute2(task["uuid"], "cliqueuuid", clique["uuid"])
-        Solingen::setAttribute2(task["uuid"], "position", position)
     end
 end

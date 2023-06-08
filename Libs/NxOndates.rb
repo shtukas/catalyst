@@ -9,12 +9,10 @@ class NxOndates
         uuid = SecureRandom.uuid
         Solingen::init("NxOndate", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", datetime)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
         Solingen::getItemOrNull(uuid)
     end
 
@@ -25,12 +23,10 @@ class NxOndates
         uuid  = SecureRandom.uuid
         Solingen::init("NxOndate", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "engineuuid", engineuuid)
         Solingen::getItemOrNull(uuid)
     end
 
@@ -59,7 +55,7 @@ class NxOndates
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, [], items)
+            Listing::printEvalItems(store, items)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

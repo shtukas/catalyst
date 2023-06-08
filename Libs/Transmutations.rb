@@ -14,19 +14,6 @@ class Transmutations
     # Transmutations::transmute(item)
     def self.transmute(item)
 
-        setTaskEngineCliqueAndPosition = lambda {|item|
-            engineuuid = 
-                if item["engineuuid"] then
-                    item["engineuuid"]
-                else
-                    engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
-                    Solingen::setAttribute2(item["uuid"], "engineuuid", engineuuid)
-                    engineuuid
-                end
-            engine = Solingen::getItemOrNull(engineuuid)
-            NxTasks::setCliqueAndPositionAtEngine(engine, item)
-        }
-
         sourceType = Solingen::getMandatoryAttribute2(item["uuid"], "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
@@ -43,13 +30,17 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxTask" then
-            setTaskEngineCliqueAndPosition.call(item)
+            cliqueuuid, position = NxTasks::coordinates()
+            Solingen::setAttribute2(item["uuid"], "position", position)
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", cliqueuuid)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            setTaskEngineCliqueAndPosition.call(item)
+            cliqueuuid, position = NxTasks::coordinates()
+            Solingen::setAttribute2(item["uuid"], "position", position)
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", cliqueuuid)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -65,7 +56,9 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            setTaskEngineCliqueAndPosition.call(item)
+            cliqueuuid, position = NxTasks::coordinates()
+            Solingen::setAttribute2(item["uuid"], "position", position)
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", cliqueuuid)
             Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end

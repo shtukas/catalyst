@@ -131,22 +131,7 @@ class Listing
         drops = Solingen::mikuTypeItems("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        cliques1 = Solingen::mikuTypeItems("TxEngine")
-            .select{|engine| DoNotShowUntil::isVisible(engine) or NxBalls::itemIsActive(engine) }
-            .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
-            .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 or NxBalls::itemIsActive(engine) }
-            .map{|engine| 
-                TxEngines::engineToCliques(engine)
-                    .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
-            }
-            .flatten
-
-        cliques2 = TxCliques::cliquesWithoutEngine()
-            .sort_by{|clique| clique["unixtime"] }
-            .take(10)
-            .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
-
-        cliques = cliques1 + cliques2
+        cliques = Solingen::mikuTypeItems("TxClique")
 
         tasks = TxCliques::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
 
@@ -182,17 +167,8 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
         str1 = PolyFunctions::toString(item)
-        if item["mikuType"] == "TxEngine" then
-            str1 = TxEngines::toString(item, true)
-        end
 
-        itemToEngineSuffix = (lambda {|item|
-            return "" if item["mikuType"] == "NxTask"
-            return "" if item["mikuType"] == "TxClique"
-            TxEngines::itemToEngineSuffix(item)
-        }).call(item)
-
-        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{itemToEngineSuffix}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} Px02#{Listing::skipfragment(item)}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if Listing::isInterruption(item) then
             line = line.gsub("Px02", "(intt) ".red)
@@ -291,7 +267,7 @@ class Listing
             },
             {
                 "name" => "Listing::printEvalItems()",
-                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), TxEngines::listingItems(), Listing::items()) }
+                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), Listing::items()) }
             },
         ]
                     .map{|test|
@@ -320,15 +296,11 @@ class Listing
 
     # Listing::dataMaintenance()
     def self.dataMaintenance()
-        padding = ([0] + Solingen::mikuTypeItems("TxEngine").map{|engine| engine["description"].size }).max
-        XCache::set("engine-description-padding-26f3d54692dc", padding)
-
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
-             TxEngines::generalMaintenance()
         end
     end
 
@@ -348,19 +320,11 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, prelude, items)
-    def self.printEvalItems(store, prelude, items)
+    # Listing::printEvalItems(store, items)
+    def self.printEvalItems(store, items)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-        spacecontrol.putsline ""
-        prelude
-            .each{|item| 
-                store.register(item, false)
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                break if !status
-            }
 
         times = NxTimes::listingItems()
         if times.size > 0 then
@@ -415,7 +379,7 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, TxEngines::listingItems(), Listing::items())
+            Listing::printEvalItems(store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

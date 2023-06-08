@@ -7,5 +7,5 @@ NxTask: (Blade)
     "description" : String
     "field11"     : null or CoreData reference string
 
-    "cliqueuuid"  : String
-    "position"    : Float
+    "cliqueuuid"  : null or String
+    "position"    : null or Float (should be set if in a clique)

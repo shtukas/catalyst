@@ -11,13 +11,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["mikuType"] == "TxEngine" then
-            accounts << {
-                "description" => nil,
-                "number"      => item["capsule"]
-            }
-        end
-
         if item["engineuuid"] then
             engine = Solingen::getItemOrNull(item["engineuuid"])
             if engine then
@@ -93,9 +86,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "TxClique" then
             return TxCliques::toString(item)
-        end
-        if item["mikuType"] == "TxEngine" then
-            return TxEngines::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

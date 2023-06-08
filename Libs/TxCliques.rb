@@ -67,7 +67,7 @@ class TxCliques
                 ""
             end
 
-        " 🔹  #{name1}#{suffix}"
+        "🔹 #{name1}#{suffix}"
     end
 
     # TxCliques::cliquesWithoutEngine()
@@ -79,32 +79,9 @@ class TxCliques
     # -------------------------
     # Ops
 
-    # TxCliques::architectCliqueInEngine(engine)
-    def self.architectCliqueInEngine(engine)
-        TxEngines::ensureEachCliqueOfAnEngineHasAName()
-        clique = TxCliques::interactivelySelectCliqueOrNull(engine)
-        return clique if clique
-        loop {
-            description = LucilleCore::askQuestionAnswerAsString("new clique description: ")
-            break if description != ""
-        }
-        TxCliques::issueNewClique(engine["uuid"], description)
-    end
-
-    # TxCliques::cliqueForNewItemAtNoEngine()
-    def self.cliqueForNewItemAtNoEngine()
-        clique = TxEngines::engineUUIDOptToCliques(engineuuidOpt)
-                    .sort_by{|clique| clique["unixtime"] }
-                    .last
-        if clique and TxCliques::cliqueToNxTasks(clique).size < 40 then
-            return clique
-        end
-        return TxCliques::issueNewClique(nil, nil)
-    end
-
-    # TxCliques::interactivelySelectCliqueOrNull(engine)
-    def self.interactivelySelectCliqueOrNull(engine)
-        cliques = TxEngines::engineToCliques(engine)
+    # TxCliques::interactivelySelectCliqueOrNull()
+    def self.interactivelySelectCliqueOrNull()
+        cliques = Solingen::mikuTypeItems("TxClique")
                     .sort_by{|clique| clique["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| TxCliques::toString(clique) })
     end
@@ -154,8 +131,7 @@ class TxCliques
             break if input == "exit"
 
             if input == "rename clique" then
-                puts "old description: #{clique["description"]}"
-                description = LucilleCore::askQuestionAnswerAsString("new description (empty to abort): ")
+                description = CommonUtils::editTextSynchronously(clique["description"])
                 next if description == ""
                 Solingen::setAttribute2(clique["uuid"], "description", description)
             end
@@ -164,14 +140,14 @@ class TxCliques
                 next if text == ""
                 text.lines.map{|l| l.strip }.reverse.each{|line|
                     position = TxCliques::cliqueToNewFirstPosition(clique)
-                    t = NxTasks::lineToCliqueTask(line, clique["engineuuid"], clique["uuid"], position)
+                    t = NxTasks::lineToCliqueTask(line, clique["uuid"], position)
                     puts JSON.pretty_generate(t)
                 }
             end
             if input == "put line at position" then
                 line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                t = NxTasks::lineToCliqueTask(line, clique["engineuuid"], clique["uuid"], position)
+                t = NxTasks::lineToCliqueTask(line, clique["uuid"], position)
                 puts JSON.pretty_generate(t)
             end
 
@@ -189,9 +165,7 @@ class TxCliques
     # TxCliques::program3()
     def self.program3()
         loop {
-            engine = TxEngines::interactivelySelectOneOrNull()
-            return if engine.nil?
-            clique = TxCliques::interactivelySelectCliqueOrNull(engine)
+            clique = TxCliques::interactivelySelectCliqueOrNull()
             next if clique.nil?
             TxCliques::program2(clique)
         }
