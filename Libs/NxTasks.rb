@@ -88,7 +88,7 @@ class NxTasks
                 Solingen::setAttribute2(item["uuid"], "cliqueuuid", nil)
                 return NxTasks::toString(item)
             end
-            "👩‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]} (#{clique["description"]})"
+            "🫧 (#{"%5.2f" % item["position"]}) #{item["description"]} (#{clique["description"]})"
         else
             "👨🏻‍💻 #{item["description"]}"
         end

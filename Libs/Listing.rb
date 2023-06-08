@@ -105,14 +105,35 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::items()
-    def self.items()
-
-        anniversary = Anniversaries::listingItems()
+    # Listing::items1()
+    def self.items1()
 
         burners = Solingen::mikuTypeItems("NxBurner")
 
         fires = Solingen::mikuTypeItems("NxFire")
+
+        items = [
+            Desktop::listingItems(),
+            burners,
+            fires
+        ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if !selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected + [item]
+                else
+                    selected
+                end
+            }
+
+        items
+    end
+
+    # Listing::items2()
+    def self.items2()
+
+        anniversaries = Anniversaries::listingItems()
 
         waves = Waves::listingItems()
 
@@ -130,9 +151,9 @@ class Listing
         drops = Solingen::mikuTypeItems("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        cliques = [] #Solingen::mikuTypeItems("TxClique")
-                    #.select{|clique| TxCliques::listingRatio(clique) < 1 }
-                    #.sort_by{|clique| TxCliques::listingRatio(clique) }
+        cliques = Solingen::mikuTypeItems("TxClique")
+                    .select{|clique| TxCliques::listingRatio(clique) < 1 }
+                    .sort_by{|clique| TxCliques::listingRatio(clique) }
 
         tasks1 = 
             if cliques.empty? then
@@ -161,10 +182,7 @@ class Listing
             end
 
         items = [
-            anniversary,
-            Desktop::listingItems(),
-            burners,
-            fires,
+            anniversaries,
             interruptions,
             backups,
             ondates,
@@ -288,8 +306,12 @@ class Listing
 
         results2 = [
             {
-                "name" => "Listing::items()",
-                "lambda" => lambda { Listing::items() }
+                "name" => "Listing::items1()",
+                "lambda" => lambda { Listing::items1() }
+            },
+            {
+                "name" => "Listing::items2()",
+                "lambda" => lambda { Listing::items2() }
             },
             {
                 "name" => "Listing::printEvalItems()",
@@ -347,8 +369,8 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, items)
-    def self.printEvalItems(store, items)
+    # Listing::printEvalItems(store, items1, items2)
+    def self.printEvalItems(store, items1, items2)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -364,9 +386,19 @@ class Listing
                 }
         end
 
-        if items.size > 0 then
+        if items1.size > 0 then
             spacecontrol.putsline ""
-            items
+            items1
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    break if !status
+                }
+        end
+
+        if items2.size > 0 then
+            spacecontrol.putsline ""
+            items2
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
@@ -406,7 +438,7 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, Listing::items())
+            Listing::printEvalItems(store, Listing::items1(), Listing::items2())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
