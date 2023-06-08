@@ -22,7 +22,7 @@ class NxTasks
             cliqueuuid = clique["uuid"]
             position = TxCliques::interactivelySelectPositionInClique(clique)
         else
-            position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions())
+            position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions().sort.first(100))
         end
 
         [cliqueuuid, position]
