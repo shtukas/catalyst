@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coordinates <n> | note (<n>) | coredata <n> | skip | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | coordinates <n> | note (<n>) | coredata <n> | skip | destroy <n>",
             "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread",
             "",
             "specific types commands:",
@@ -63,6 +63,25 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("drop", input) then
             NxDrops::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
+            return if engineuuid.nil?
+            Solingen::setAttribute2(item["uuid"], "engineuuid", engineuuid)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            engineuuid = TxEngines::interactivelySelectOneUUIDOrNull()
+            return if engineuuid.nil?
+            Solingen::setAttribute2(item["uuid"], "engineuuid", engineuuid)
             return
         end
 
