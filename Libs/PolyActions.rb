@@ -98,6 +98,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDrop" then
+            puts "destroy-ing: '#{NxDrops::toString(item).green}'"
+            Solingen::destroy(item["uuid"])
+            return
+        end
+
         if item["mikuType"] == "NxLambda" then
             return
         end
