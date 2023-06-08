@@ -99,7 +99,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDrop" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{NxDrops::toString(item).green}'", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{NxDrops::toString(item).green}' ? ", true) then
                 Solingen::destroy(item["uuid"])
             end
             return
