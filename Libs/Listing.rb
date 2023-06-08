@@ -20,8 +20,8 @@ class Listing
     # -----------------------------------------
     # Data
 
-    # Listing::tmpskip1(item, hours = 1)
-    def self.tmpskip1(item, hours = 1)
+    # Listing::tmpskip1(item, hours)
+    def self.tmpskip1(item, hours)
         directive = {
             "unixtime"        => Time.new.to_f,
             "durationInHours" => hours

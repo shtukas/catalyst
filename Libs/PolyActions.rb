@@ -29,22 +29,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDrop" then
-            actions = [
-                "start, access and done",
-                "transmute"
-            ]
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
-            return action.nil?
-            if action == "start, access and done" then
-                NxBalls::start(item)
-                CoreData::access(item["uuid"], item["field11"])
-                puts "Waiting until you are done"
-                LucilleCore::pressEnterToContinue()
-                Solingen::destroy(item["uuid"])
-            end
-            if action == "transmute" then
-                Transmutations::transmute(item)
-            end
+            NxDrops::program(item)
             return
         end
 
@@ -270,23 +255,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDrop" then
-            actions = [
-                "start, access and done",
-                "transmute"
-            ]
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
-            return action.nil?
-            if action == "start, access and done" then
-                puts JSON.pretty_generate(item)
-                NxBalls::start(item)
-                CoreData::access(item["uuid"], item["field11"])
-                puts "Waiting until you are done"
-                LucilleCore::pressEnterToContinue()
-                Solingen::destroy(item["uuid"])
-            end
-            if action == "transmute" then
-                Transmutations::transmute(item)
-            end
+            NxDrops::program(item)
             return
         end
 
@@ -371,6 +340,11 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
+            return
+        end
+
+        if item["mikuType"] == "NxDrop" then
+            NxDrops::program(item)
             return
         end
 
