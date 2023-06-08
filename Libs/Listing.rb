@@ -328,8 +328,8 @@ class Listing
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::dataMaintenance()
-             TxCliques::management()
         end
+        TxCliques::management()
     end
 
     # Listing::launchNxBallMonitor()
