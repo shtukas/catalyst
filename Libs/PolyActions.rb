@@ -267,9 +267,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxOndates::access(item)
-            end
+            PolyFunctions::toString(item).green
+            NxBalls::start(item)
+            PolyActions::access(item)
             return
         end
 
