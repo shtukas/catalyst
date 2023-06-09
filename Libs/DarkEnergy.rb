@@ -34,7 +34,7 @@ class PositiveSpace
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute "delete from energy where uuid=?", [item["uuid"]]
+        db.execute "delete from energy where uuid=?", [uuid]
         db.close
     end
 

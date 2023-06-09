@@ -303,7 +303,7 @@ class Listing
             },
             {
                 "name" => "Listing::printEvalItems()",
-                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), Listing::items()) }
+                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), Listing::items1(), Listing::items2()) }
             },
         ]
                     .map{|test|
@@ -332,14 +332,15 @@ class Listing
 
     # Listing::maintenance()
     def self.maintenance()
+        NxOrbitals::management()
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
+             PositiveSpace::maintenance()
         end
-        NxOrbitals::management()
     end
 
     # Listing::launchNxBallMonitor()
