@@ -17,10 +17,10 @@ class NxTasks
         cliqueuuid = nil
         position = nil
 
-        clique = TxCliques::interactivelySelectCliqueOrNull()
+        clique = NxOrbitals::interactivelySelectCliqueOrNull()
         if clique then
             cliqueuuid = clique["uuid"]
-            position = TxCliques::interactivelySelectPositionInClique(clique)
+            position = NxOrbitals::interactivelySelectPositionInClique(clique)
         else
             position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions().sort.first(100))
         end

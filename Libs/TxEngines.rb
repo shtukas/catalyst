@@ -97,7 +97,7 @@ class TxEngines
         TxEngines::engineUUIDOptToCliques(engine["uuid"])
             .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
             .map{|clique|
-                TxCliques::cliqueToNxTasks(clique)
+                NxOrbitals::cliqueToNxTasks(clique)
                     .sort_by{|task| task["position"] }
             }
             .flatten
@@ -156,13 +156,13 @@ class TxEngines
 
     # TxEngines::engineUUIDOptToCliques(engineuuidOpt)
     def self.engineUUIDOptToCliques(engineuuidOpt)
-        Solingen::mikuTypeItems("TxClique")
+        Solingen::mikuTypeItems("NxOrbital")
             .select{|clique| clique["engineuuid"] == engineuuidOpt }
     end
 
     # TxEngines::engineToCliques(engine)
     def self.engineToCliques(engine)
-        Solingen::mikuTypeItems("TxClique")
+        Solingen::mikuTypeItems("NxOrbital")
             .select{|clique| clique["engineuuid"] == engine["uuid"] }
     end
 
@@ -254,9 +254,9 @@ class TxEngines
                 loop {
                     cliques = TxEngines::engineToCliques(engine)
                                 .sort_by{|item| item["description"] }
-                    clique = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| TxCliques::toString(clique) })
+                    clique = LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| NxOrbitals::toString(clique) })
                     break if clique.nil?
-                    TxCliques::program2(clique)
+                    NxOrbitals::program2(clique)
                 }
             end
             if action == "add time" then

@@ -149,15 +149,15 @@ class Listing
         drops = Solingen::mikuTypeItems("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        cliques = Solingen::mikuTypeItems("TxClique")
-                    .select{|clique| TxCliques::listingRatio(clique) < 1 }
-                    .sort_by{|clique| TxCliques::listingRatio(clique) }
+        cliques = Solingen::mikuTypeItems("NxOrbital")
+                    .select{|clique| NxOrbitals::listingRatio(clique) < 1 }
+                    .sort_by{|clique| NxOrbitals::listingRatio(clique) }
 
         tasks = 
             if cliques.empty? then
                 []
             else
-                TxCliques::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
+                NxOrbitals::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
             end
 
         items = [
@@ -328,7 +328,7 @@ class Listing
              Bank::fileManagement()
              NxBackups::dataMaintenance()
         end
-        TxCliques::management()
+        NxOrbitals::management()
     end
 
     # Listing::launchNxBallMonitor()

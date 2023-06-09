@@ -1,7 +1,7 @@
 
-TxClique:
+NxOrbital:
     "uuid"        : String
-    "mikuType"    : "TxClique"
+    "mikuType"    : "NxOrbital"
     "unixtime"    : Integer
     "description" : null or String
     "engine"      : TxEngine

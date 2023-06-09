@@ -1,7 +1,7 @@
 
-class TxCliques
+class NxOrbitals
 
-    # TxCliques::infinityuuid()
+    # NxOrbitals::infinityuuid()
     def self.infinityuuid()
         "9297479b-17de-427e-8622-a7e52f90020c"
     end
@@ -9,13 +9,13 @@ class TxCliques
     # -------------------------
     # IO
 
-    # TxCliques::interactivelyIssueNewClique()
+    # NxOrbitals::interactivelyIssueNewClique()
     def self.interactivelyIssueNewClique()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         engine = TxEngines::interactivelyMakeEngineOrDefault()
         uuid = SecureRandom.uuid
-        Solingen::init("TxClique", uuid)
+        Solingen::init("NxOrbital", uuid)
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "description", description)
         Solingen::setAttribute2(uuid, "engine", engine)
@@ -25,9 +25,9 @@ class TxCliques
     # -------------------------
     # Data
 
-    # TxCliques::cliqueToNxTasks(clique)
+    # NxOrbitals::cliqueToNxTasks(clique)
     def self.cliqueToNxTasks(clique)
-        if clique["uuid"] == TxCliques::infinityuuid() then
+        if clique["uuid"] == NxOrbitals::infinityuuid() then
             return Solingen::mikuTypeItems("NxTask")
                 .select{|item| item["cliqueuuid"].nil? }
                 .sort_by{|task| task["position"] }
@@ -48,9 +48,9 @@ class TxCliques
             .select{|task| task["cliqueuuid"] == clique["uuid"] }
     end
 
-    # TxCliques::cliqueToNewFirstPosition(clique)
+    # NxOrbitals::cliqueToNewFirstPosition(clique)
     def self.cliqueToNewFirstPosition(clique)
-        positions = TxCliques::cliqueToNxTasks(clique).map{|task| task["position"] }
+        positions = NxOrbitals::cliqueToNxTasks(clique).map{|task| task["position"] }
         return 1 if positions.size == 0
         position = positions.sort.first
         if position > 1 then
@@ -60,7 +60,7 @@ class TxCliques
         end
     end
 
-    # TxCliques::cliqueSuffix(item)
+    # NxOrbitals::cliqueSuffix(item)
     def self.cliqueSuffix(item)
         return "" if item["mikuType"] != "NxTask"
         clique = Solingen::getItemOrNull(item["cliqueuuid"])
@@ -69,7 +69,7 @@ class TxCliques
         " (#{clique["description"]})".green
     end
 
-    # TxCliques::toString(clique)
+    # NxOrbitals::toString(clique)
     def self.toString(clique)
         padding = XCache::getOrDefaultValue("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", "0").to_i
         suffix =
@@ -81,13 +81,13 @@ class TxCliques
         "🔹 #{clique["description"].ljust(padding)}#{suffix}"
     end
 
-    # TxCliques::management()
+    # NxOrbitals::management()
     def self.management()
-        padding = Solingen::mikuTypeItems("TxClique").map{|clique| clique["description"].size }.max
+        padding = Solingen::mikuTypeItems("NxOrbital").map{|clique| clique["description"].size }.max
         XCache::set("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", padding)
     end
 
-    # TxCliques::listingRatio(clique)
+    # NxOrbitals::listingRatio(clique)
     def self.listingRatio(clique)
         engine = clique["engine"]
         0.9 * TxEngines::dayCompletionRatio(engine) + 0.1 * TxEngines::periodCompletionRatio(engine)
@@ -96,17 +96,17 @@ class TxCliques
     # -------------------------
     # Ops
 
-    # TxCliques::interactivelySelectCliqueOrNull()
+    # NxOrbitals::interactivelySelectCliqueOrNull()
     def self.interactivelySelectCliqueOrNull()
-        cliques = Solingen::mikuTypeItems("TxClique")
-                    .select{|clique| clique["uuid"] != TxCliques::infinityuuid() }
+        cliques = Solingen::mikuTypeItems("NxOrbital")
+                    .select{|clique| clique["uuid"] != NxOrbitals::infinityuuid() }
                     .sort_by{|clique| clique["unixtime"] }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| TxCliques::toString(clique) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| NxOrbitals::toString(clique) })
     end
 
-    # TxCliques::interactivelySelectPositionInClique(clique)
+    # NxOrbitals::interactivelySelectPositionInClique(clique)
     def self.interactivelySelectPositionInClique(clique)
-        tasks = TxCliques::cliqueToNxTasks(clique)
+        tasks = NxOrbitals::cliqueToNxTasks(clique)
         return 1 if tasks.empty?
         tasks
             .sort_by{|task| task["position"] }
@@ -122,10 +122,10 @@ class TxCliques
         position
     end
 
-    # TxCliques::program2(clique)
+    # NxOrbitals::program2(clique)
     def self.program2(clique)
 
-        if clique["uuid"] == TxCliques::infinityuuid() then
+        if clique["uuid"] == NxOrbitals::infinityuuid() then
             puts "You cannot run program on Infinity"
             LucilleCore::pressEnterToContinue()
             return
@@ -135,12 +135,12 @@ class TxCliques
             clique = Solingen::getItemOrNull(clique["uuid"])
             return if clique.nil?
             system("clear")
-            items = TxCliques::cliqueToNxTasks(clique)
+            items = NxOrbitals::cliqueToNxTasks(clique)
                         .sort_by{|t| t["position"] }
             store = ItemStore.new()
 
             puts ""
-            puts TxCliques::toString(clique)
+            puts NxOrbitals::toString(clique)
             puts ""
 
             items
@@ -165,7 +165,7 @@ class TxCliques
                 text = CommonUtils::editTextSynchronously("").strip
                 next if text == ""
                 text.lines.map{|l| l.strip }.reverse.each{|line|
-                    position = TxCliques::cliqueToNewFirstPosition(clique)
+                    position = NxOrbitals::cliqueToNewFirstPosition(clique)
                     t = NxTasks::lineToCliqueTask(line, clique["uuid"], position)
                     puts JSON.pretty_generate(t)
                 }
@@ -180,7 +180,7 @@ class TxCliques
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
 
-        if TxCliques::cliqueToNxTasks(clique).empty? then
+        if NxOrbitals::cliqueToNxTasks(clique).empty? then
             puts "You are leaving an empty Clique"
             if LucilleCore::askQuestionAnswerAsBoolean("Would you like to destroy it ? ") then
                 Solingen::destroy(clique["uuid"])
@@ -188,12 +188,12 @@ class TxCliques
         end
     end
 
-    # TxCliques::program3()
+    # NxOrbitals::program3()
     def self.program3()
         loop {
-            clique = TxCliques::interactivelySelectCliqueOrNull()
+            clique = NxOrbitals::interactivelySelectCliqueOrNull()
             break if clique.nil?
-            TxCliques::program2(clique)
+            NxOrbitals::program2(clique)
         }
     end
 end

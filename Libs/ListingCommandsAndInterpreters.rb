@@ -50,7 +50,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("cliques", input) then
-            TxCliques::program3()
+            NxOrbitals::program3()
             return
         end
 
@@ -89,7 +89,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("cliques", input) then
-            TxCliques::program3()
+            NxOrbitals::program3()
             return
         end
 
