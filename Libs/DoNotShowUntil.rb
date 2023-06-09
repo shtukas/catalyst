@@ -10,7 +10,7 @@ class DoNotShowUntil
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
     def self.getUnixtimeOrNull(item)
-        unixtime = DarkEnergy::getAttribute(item["uuid"], "doNotShowUntil")
+        unixtime = DarkEnergy::read(item["uuid"], "doNotShowUntil")
         return unixtime if unixtime
         unixtime = XCache::getOrNull("DoNotShowUntil:#{item["uuid"]}")
         return unixtime.to_f if unixtime

@@ -421,8 +421,8 @@ class DarkEnergy
         DarkEnergy::commit(item)
     end
 
-    # DarkEnergy::getAttribute(uuid, attribute)
-    def self.getAttribute(uuid, attribute)
+    # DarkEnergy::read(uuid, attribute)
+    def self.read(uuid, attribute)
         item = DarkEnergy::itemOrNull(uuid)
         return nil if item.nil?
         item[attribute]

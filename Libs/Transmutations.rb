@@ -14,7 +14,7 @@ class Transmutations
     # Transmutations::transmute(item)
     def self.transmute(item)
 
-        sourceType = DarkEnergy::getAttribute(item["uuid"], "mikuType")
+        sourceType = DarkEnergy::read(item["uuid"], "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?

@@ -52,7 +52,7 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        DarkEnergy::patch(item["uuid"], "counter", count + DarkEnergy::getAttribute(item["uuid"], "counter"))
+        DarkEnergy::patch(item["uuid"], "counter", count + DarkEnergy::read(item["uuid"], "counter"))
         DarkEnergy::patch(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 

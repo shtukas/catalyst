@@ -3,7 +3,7 @@ class NxNotes
 
     # NxNotes::getTextOrNull(item)
     def self.getTextOrNull(item)
-        DarkEnergy::getAttribute(item["uuid"], "note")
+        DarkEnergy::read(item["uuid"], "note")
     end
 
     # NxNotes::getText(item)
