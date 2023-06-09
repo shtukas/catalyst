@@ -12,10 +12,18 @@ class PolyFunctions
         }
 
         if item["cliqueuuid"] then
-            clique = Solingen::getItemOrNull(item["cliqueuuid"])
-            if clique then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(clique)
+            orbital = Solingen::getItemOrNull(item["cliqueuuid"])
+            if orbital then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(orbital)
             end
+        end
+
+        if item["mikuType"] == "NxOrbital" then
+            engine = item["engine"]
+            accounts << {
+                "description" => "TxEngine",
+                "number"      => engine["capsule"]
+            }
         end
 
         accounts.reduce([]){|as, account|
