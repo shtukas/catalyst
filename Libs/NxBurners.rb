@@ -24,9 +24,29 @@ class NxBurners
         "🕯️  #{item["description"]}#{CoreData::referenceStringToSuffixString(item["field11"])}"
     end
 
+    # NxBurners::itemsForOrbital(orbital)
+    def self.itemsForOrbital(orbital)
+        Solingen::mikuTypeItems("NxBurner").select{|item| item["cliqueuuid"] == orbital["uuid"] }
+    end
+
+    # NxBurners::itemsWithoutOrbital()
+    def self.itemsWithoutOrbital()
+        Solingen::mikuTypeItems("NxBurner").select{|item| item["cliqueuuid"].nil? }
+    end
+
     # ------------------------------------
     # Ops
     # ------------------------------------
+
+    # NxBurners::maintenance()
+    def self.maintenance()
+        Solingen::mikuTypeItems("NxBurner")
+            .each{|item|
+                if item["cliqueuuid"] and Solingen::getItemOrNull(item["cliqueuuid"]).nil? then
+                    Solingen::setAttribute2(uuid, "cliqueuuid", nil)
+                end
+            }
+    end
 
     # NxBurners::access(item)
     def self.access(item)

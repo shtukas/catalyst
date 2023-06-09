@@ -97,7 +97,7 @@ class TxEngines
         TxEngines::engineUUIDOptToCliques(engine["uuid"])
             .sort_by{|clique| Bank::recoveredAverageHoursPerDay(clique["uuid"]) }
             .map{|clique|
-                NxOrbitals::cliqueToNxTasks(clique)
+                NxOrbitals::orbitalToNxTasks(clique)
                     .sort_by{|task| task["position"] }
             }
             .flatten

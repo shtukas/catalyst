@@ -5,13 +5,13 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | holiday <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | orbital (<n>) | holiday <n> | skip | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new orbital",
             "",
             "specific types commands:",
             "    - ondate     : redate",
             "transmutation : recast (<n>)",
-            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | cliques",
+            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | orbitals",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
         ].join("\n")
@@ -49,7 +49,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cliques", input) then
+        if Interpreting::match("orbitals", input) then
             NxOrbitals::program3()
             return
         end
@@ -85,11 +85,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
             DoNotShowUntil::setUnixtime(item, unixtime)
-            return
-        end
-
-        if Interpreting::match("cliques", input) then
-            NxOrbitals::program3()
             return
         end
 
@@ -220,6 +215,32 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
+            return
+        end
+
+        if Interpreting::match("new orbital", input) then
+            orbital = NxOrbitals::interactivelyIssueNewOrNull()
+            return if orbital.nil?
+            puts JSON.pretty_generate(orbital)
+            return
+        end
+
+        if Interpreting::match("orbital", input) then
+            item = store.getDefault()
+            return if item.nil?
+            orbital = NxOrbitals::interactivelySelectOneOrNull()
+            return if orbital.nil?
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", orbital["uuid"])
+            return
+        end
+
+        if Interpreting::match("orbital *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            orbital = NxOrbitals::interactivelySelectOneOrNull()
+            return if orbital.nil?
+            Solingen::setAttribute2(item["uuid"], "cliqueuuid", orbital["uuid"])
             return
         end
 

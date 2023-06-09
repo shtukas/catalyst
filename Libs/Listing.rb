@@ -66,6 +66,14 @@ class Listing
         end
     end
 
+    # Listing::orbitalSuffix(item)
+    def self.orbitalSuffix(item)
+        return "" if item["cliqueuuid"].nil?
+        orbital = Solingen::getItemOrNull(item["cliqueuuid"])
+        return "" if orbital.nil?
+        " (#{orbital["description"]})".green
+    end
+
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return true if NxBalls::itemIsRunning(item)
@@ -107,7 +115,7 @@ class Listing
     # Listing::items1()
     def self.items1()
 
-        burners = Solingen::mikuTypeItems("NxBurner")
+        burners = NxBurners::itemsWithoutOrbital()
 
         fires = Solingen::mikuTypeItems("NxFire")
 
@@ -157,7 +165,7 @@ class Listing
             if cliques.empty? then
                 []
             else
-                NxOrbitals::cliqueToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
+                NxOrbitals::orbitalToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
             end
 
         items = [
@@ -190,21 +198,23 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        line = "#{storePrefix} #{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{Listing::skipSuffix(item)}"
+        interruptionPreffix = 
+            if Listing::isInterruption(item) then
+                "🧀 "
+            else
+                ""
+            end
 
-        if Listing::isInterruption(item) then
-            line = line.gsub("Px02", "🧀 ")
-        else
-            line = line.gsub("Px02", "")
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{Listing::orbitalSuffix(item)}#{Listing::skipSuffix(item)}"
+
+        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
         end
 
         if NxBalls::itemIsActive(item) then
             line = line.green
         end
 
-        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
         line
     end
 
@@ -320,13 +330,14 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::dataMaintenance()
-    def self.dataMaintenance()
+    # Listing::maintenance()
+    def self.maintenance()
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
              NxTimePromises::operate()
              Bank::fileManagement()
-             NxBackups::dataMaintenance()
+             NxBackups::maintenance()
+             NxBurners::maintenance()
         end
         NxOrbitals::management()
     end
@@ -412,7 +423,7 @@ class Listing
                 break
             end
 
-            Listing::dataMaintenance()
+            Listing::maintenance()
 
             store = ItemStore.new()
 

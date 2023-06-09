@@ -36,8 +36,8 @@ class NxBackups
             .first
     end
 
-    # NxBackups::dataMaintenance()
-    def self.dataMaintenance()
+    # NxBackups::maintenance()
+    def self.maintenance()
 
         # -----------------------------------------------
         # In the first stage we just check that every instruction has a corresponding NxBackup with 

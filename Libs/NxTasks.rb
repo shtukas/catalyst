@@ -5,8 +5,8 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
-    # NxTasks::cliquelessPositions()
-    def self.cliquelessPositions()
+    # NxTasks::orbitalFreePositions()
+    def self.orbitalFreePositions()
         Solingen::mikuTypeItems("NxTask")
             .select{|task| task["cliqueuuid"].nil? }
             .map{|task| task["position"] }
@@ -17,12 +17,12 @@ class NxTasks
         cliqueuuid = nil
         position = nil
 
-        clique = NxOrbitals::interactivelySelectCliqueOrNull()
+        clique = NxOrbitals::interactivelySelectOneOrNull()
         if clique then
             cliqueuuid = clique["uuid"]
-            position = NxOrbitals::interactivelySelectPositionInClique(clique)
+            position = NxOrbitals::interactivelySelectTaskPositionInOrbital(clique)
         else
-            position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions().sort.first(100))
+            position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions().sort.first(100))
         end
 
         [cliqueuuid, position]
@@ -64,7 +64,7 @@ class NxTasks
         nhash = Solingen::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
 
-        position = CommonUtils::computeThatPosition(NxTasks::cliquelessPositions())
+        position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions())
 
         Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
@@ -75,8 +75,8 @@ class NxTasks
         Solingen::getItemOrNull(uuid)
     end
 
-    # NxTasks::lineToCliqueTask(line, cliqueuuid, position)
-    def self.lineToCliqueTask(line, cliqueuuid, position)
+    # NxTasks::lineToOrbitalTask(line, cliqueuuid, position)
+    def self.lineToOrbitalTask(line, cliqueuuid, position)
         uuid = SecureRandom.uuid
         description = line
         Solingen::init("NxPure", uuid)
@@ -94,16 +94,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        if item["cliqueuuid"] then
-            clique = Solingen::getItemOrNull(item["cliqueuuid"])
-            if clique.nil? then
-                Solingen::setAttribute2(item["uuid"], "cliqueuuid", nil)
-                return NxTasks::toString(item)
-            end
-            "🫧 (#{"%5.2f" % item["position"]}) #{item["description"]} (#{clique["description"]})"
-        else
-            "👨🏻‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]}"
-        end
+        "👨🏻‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]}"
     end
 
     # --------------------------------------------------
@@ -112,5 +103,15 @@ class NxTasks
     # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["uuid"], item["field11"])
+    end
+
+    # NxBurners::maintenance()
+    def self.maintenance()
+        Solingen::mikuTypeItems("NxBurner")
+            .each{|item|
+                if item["cliqueuuid"] and Solingen::getItemOrNull(item["cliqueuuid"]).nil? then
+                    Solingen::setAttribute2(uuid, "cliqueuuid", nil)
+                end
+            }
     end
 end

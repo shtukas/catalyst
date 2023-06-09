@@ -9,8 +9,8 @@ class NxOrbitals
     # -------------------------
     # IO
 
-    # NxOrbitals::interactivelyIssueNewClique()
-    def self.interactivelyIssueNewClique()
+    # NxOrbitals::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         engine = TxEngines::interactivelyMakeEngineOrDefault()
@@ -25,8 +25,8 @@ class NxOrbitals
     # -------------------------
     # Data
 
-    # NxOrbitals::cliqueToNxTasks(clique)
-    def self.cliqueToNxTasks(clique)
+    # NxOrbitals::orbitalToNxTasks(clique)
+    def self.orbitalToNxTasks(clique)
         if clique["uuid"] == NxOrbitals::infinityuuid() then
             return Solingen::mikuTypeItems("NxTask")
                 .select{|item| item["cliqueuuid"].nil? }
@@ -48,9 +48,9 @@ class NxOrbitals
             .select{|task| task["cliqueuuid"] == clique["uuid"] }
     end
 
-    # NxOrbitals::cliqueToNewFirstPosition(clique)
-    def self.cliqueToNewFirstPosition(clique)
-        positions = NxOrbitals::cliqueToNxTasks(clique).map{|task| task["position"] }
+    # NxOrbitals::orbitalToTaskNewFirstPosition(clique)
+    def self.orbitalToTaskNewFirstPosition(clique)
+        positions = NxOrbitals::orbitalToNxTasks(clique).map{|task| task["position"] }
         return 1 if positions.size == 0
         position = positions.sort.first
         if position > 1 then
@@ -60,8 +60,8 @@ class NxOrbitals
         end
     end
 
-    # NxOrbitals::cliqueSuffix(item)
-    def self.cliqueSuffix(item)
+    # NxOrbitals::orbitalSuffix(item)
+    def self.orbitalSuffix(item)
         return "" if item["mikuType"] != "NxTask"
         clique = Solingen::getItemOrNull(item["cliqueuuid"])
         return "" if clique.nil?
@@ -96,17 +96,17 @@ class NxOrbitals
     # -------------------------
     # Ops
 
-    # NxOrbitals::interactivelySelectCliqueOrNull()
-    def self.interactivelySelectCliqueOrNull()
+    # NxOrbitals::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
         cliques = Solingen::mikuTypeItems("NxOrbital")
                     .select{|clique| clique["uuid"] != NxOrbitals::infinityuuid() }
                     .sort_by{|clique| clique["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| NxOrbitals::toString(clique) })
     end
 
-    # NxOrbitals::interactivelySelectPositionInClique(clique)
-    def self.interactivelySelectPositionInClique(clique)
-        tasks = NxOrbitals::cliqueToNxTasks(clique)
+    # NxOrbitals::interactivelySelectTaskPositionInOrbital(clique)
+    def self.interactivelySelectTaskPositionInOrbital(clique)
+        tasks = NxOrbitals::orbitalToNxTasks(clique)
         return 1 if tasks.empty?
         tasks
             .sort_by{|task| task["position"] }
@@ -122,68 +122,74 @@ class NxOrbitals
         position
     end
 
-    # NxOrbitals::program2(clique)
-    def self.program2(clique)
+    # NxOrbitals::program2(orbital)
+    def self.program2(orbital)
 
-        if clique["uuid"] == NxOrbitals::infinityuuid() then
+        if orbital["uuid"] == NxOrbitals::infinityuuid() then
             puts "You cannot run program on Infinity"
             LucilleCore::pressEnterToContinue()
             return
         end
 
         loop {
-            clique = Solingen::getItemOrNull(clique["uuid"])
-            return if clique.nil?
+            orbital = Solingen::getItemOrNull(orbital["uuid"])
+            return if orbital.nil?
             system("clear")
-            items = NxOrbitals::cliqueToNxTasks(clique)
-                        .sort_by{|t| t["position"] }
+
             store = ItemStore.new()
 
             puts ""
-            puts NxOrbitals::toString(clique)
+            puts NxOrbitals::toString(orbital)
+            
             puts ""
-
-            items
+            NxBurners::itemsForOrbital(orbital)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::itemToListingLine(store: store, item: item)
                 }
 
             puts ""
-            puts "rename clique | stack items on top | put line at position"
+            NxOrbitals::orbitalToNxTasks(orbital).sort_by{|t| t["position"] }
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  Listing::itemToListingLine(store: store, item: item)
+                }
+
+            puts ""
+            puts "rename orbital | stack items on top | put line at position"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             break if input == ""
             break if input == "exit"
 
-            if input == "rename clique" then
-                description = CommonUtils::editTextSynchronously(clique["description"])
+            if input == "rename orbital" then
+                description = CommonUtils::editTextSynchronously(orbital["description"])
                 next if description == ""
-                Solingen::setAttribute2(clique["uuid"], "description", description)
+                Solingen::setAttribute2(orbital["uuid"], "description", description)
             end
             if input == "stack items on top" then
                 text = CommonUtils::editTextSynchronously("").strip
                 next if text == ""
                 text.lines.map{|l| l.strip }.reverse.each{|line|
-                    position = NxOrbitals::cliqueToNewFirstPosition(clique)
-                    t = NxTasks::lineToCliqueTask(line, clique["uuid"], position)
+                    position = NxOrbitals::orbitalToTaskNewFirstPosition(orbital)
+                    t = NxTasks::lineToOrbitalTask(line, orbital["uuid"], position)
                     puts JSON.pretty_generate(t)
                 }
             end
             if input == "put line at position" then
                 line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                t = NxTasks::lineToCliqueTask(line, clique["uuid"], position)
+                t = NxTasks::lineToOrbitalTask(line, orbital["uuid"], position)
                 puts JSON.pretty_generate(t)
             end
 
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
 
-        if NxOrbitals::cliqueToNxTasks(clique).empty? then
-            puts "You are leaving an empty Clique"
+        if NxOrbitals::orbitalToNxTasks(orbital).empty? then
+            puts "You are leaving an empty orbital"
             if LucilleCore::askQuestionAnswerAsBoolean("Would you like to destroy it ? ") then
-                Solingen::destroy(clique["uuid"])
+                Solingen::destroy(orbital["uuid"])
             end
         end
     end
@@ -191,7 +197,7 @@ class NxOrbitals
     # NxOrbitals::program3()
     def self.program3()
         loop {
-            clique = NxOrbitals::interactivelySelectCliqueOrNull()
+            clique = NxOrbitals::interactivelySelectOneOrNull()
             break if clique.nil?
             NxOrbitals::program2(clique)
         }
