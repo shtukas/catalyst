@@ -7,6 +7,7 @@ require 'digest/sha1'
 # Digest::SHA256.file(myFile).hexdigest
 
 class NegativeSpace
+
     # NegativeSpace::bladeRepository()
     def self.bladeRepository()
         "#{ENV["HOME"]}/Galaxy/DataHub/Blades"
