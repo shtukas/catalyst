@@ -113,8 +113,7 @@ class Listing
 
         items = [
             Desktop::listingItems(),
-            burners,
-            fires
+            (burners + fires).sort_by{|item| item["unixtime"] }
         ]
             .flatten
             .select{|item| Listing::listable(item) }
