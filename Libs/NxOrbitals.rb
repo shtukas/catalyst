@@ -156,18 +156,18 @@ class NxOrbitals
                 }
 
             puts ""
-            puts "rename orbital | stack items on top | put line at position"
+            puts "rename (rename orbital) | stack (stack items on top) | line (put line at position)"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             break if input == ""
             break if input == "exit"
 
-            if input == "rename orbital" then
+            if input == "rename" then
                 description = CommonUtils::editTextSynchronously(orbital["description"])
                 next if description == ""
                 Solingen::setAttribute2(orbital["uuid"], "description", description)
             end
-            if input == "stack items on top" then
+            if input == "stack" then
                 text = CommonUtils::editTextSynchronously("").strip
                 next if text == ""
                 text.lines.map{|l| l.strip }.reverse.each{|line|
@@ -176,7 +176,7 @@ class NxOrbitals
                     puts JSON.pretty_generate(t)
                 }
             end
-            if input == "put line at position" then
+            if input == "line" then
                 line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
                 t = NxTasks::lineToOrbitalTask(line, orbital["uuid"], position)
