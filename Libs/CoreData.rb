@@ -14,8 +14,8 @@ class CoreData
         LucilleCore::selectEntityFromListOfEntitiesOrNull("coredata reference type", types)
     end
 
-    # CoreData::interactivelyMakeNewReferenceStringOrNull(uuid) # payload string
-    def self.interactivelyMakeNewReferenceStringOrNull(uuid)
+    # CoreData::interactivelyMakeNewReferenceStringOrNull() # payload string
+    def self.interactivelyMakeNewReferenceStringOrNull()
         # This function is called during the making of a new node (or when we are issuing a new payload of an existing node)
         # It does stuff and returns a payload string or null
         referencetype = CoreData::interactivelySelectCoreDataReferenceType()
@@ -24,18 +24,18 @@ class CoreData
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")
-            nhash = DarkMatter::putBlob(uuid, text)
+            nhash = DarkMatter::putBlob(text)
             return "text:#{nhash}"
         end
         if referencetype == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url: ")
-            nhash = DarkMatter::putBlob(uuid, url)
+            nhash = DarkMatter::putBlob(url)
             return "url:#{nhash}"
         end
         if referencetype == "aion point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(DarkMatterElizabethLegacy.new(uuid), location)
+            nhash = AionCore::commitLocationReturnHash(DarkMatterElizabeth.new(), location)
             return "aion-point:#{nhash}" 
         end
         if referencetype == "open cycle" then
@@ -109,7 +109,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = NegativeSpace::getDatablobOrNull2(uuid, nhash)
+            text = DarkMatter::getBlobOrNull(nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
@@ -118,7 +118,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = NegativeSpace::getDatablobOrNull2(uuid, nhash)
+            url = DarkMatter::getBlobOrNull(nhash)
             if url.nil? then
                 puts "(error) I could not retrieve url for reference string: #{referenceString}"
                 LucilleCore::pressEnterToContinue()
@@ -136,7 +136,7 @@ class CoreData
             exportFoldername = "aion-point-#{exportId}"
             exportFolder = "#{Config::pathToDesktop()}/#{exportFoldername}"
             FileUtils.mkdir(exportFolder)
-            AionCore::exportHashAtFolder(DarkMatterElizabethLegacy.new(uuid), nhash, exportFolder)
+            AionCore::exportHashAtFolder(DarkMatterElizabeth.new(), nhash, exportFolder)
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -177,7 +177,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = NegativeSpace::getDatablobOrNull2(uuid, nhash)
+            text = DarkMatter::getBlobOrNull(nhash)
             if text.nil? then
                 raise "CoreData::fsck: could not extract text for uuid: #{uuid}, reference string: #{referenceString}"
             end
@@ -185,7 +185,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = NegativeSpace::getDatablobOrNull2(uuid, nhash)
+            url = DarkMatter::getBlobOrNull(nhash)
             if url.nil? then
                 raise "CoreData::fsck: could not extract url for uuid: #{uuid}, reference string: #{referenceString}"
             end
@@ -193,7 +193,7 @@ class CoreData
         end
         if referenceString.start_with?("aion-point") then
             nhash = referenceString.split(":")[1]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(DarkMatterElizabethLegacy.new(uuid), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(DarkMatterElizabeth.new(), nhash)
             return
         end
         if referenceString.start_with?("open-cycle") then

@@ -115,7 +115,7 @@ class Waves
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
         DarkEnergy::init("Wave", uuid)
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)

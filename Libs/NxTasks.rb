@@ -39,7 +39,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxPure", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
 
         cliqueuuid, position = NxTasks::coordinates()
 
@@ -61,7 +61,7 @@ class NxTasks
 
         DarkEnergy::init("NxPure", uuid)
 
-        nhash = DarkMatter::putBlob(uuid, url)
+        nhash = DarkMatter::putBlob(url)
         coredataref = "url:#{nhash}"
 
         position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions())

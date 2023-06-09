@@ -7,7 +7,7 @@ class NxFires
         return nil if description == ""
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxFire", uuid)
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
