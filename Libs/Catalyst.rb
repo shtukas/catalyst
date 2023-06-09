@@ -23,7 +23,7 @@ class Catalyst
 
     # Catalyst::fsckItem(item)
     def self.fsckItem(item)
-        CoreData::fsck(item["uuid"], item["field11"])
+        CoreData::fsck(item)
     end
 
     # Catalyst::fsck()

@@ -164,9 +164,11 @@ class CoreData
         raise "CoreData, I do not know how to access '#{referenceString}'"
     end
 
-    # CoreData::fsck(uuid, referenceString)
-    def self.fsck(uuid, referenceString)
-        puts "CoreData::fsck(uuid: #{uuid}, referenceString: #{referenceString})"
+    # CoreData::fsck(item)
+    def self.fsck(item)
+        uuid = item["uuid"]
+        referenceString = item["field11"]
+        puts "CoreData::fsck(#{JSON.pretty_generate(item)})"
         if referenceString.nil? then
             return
         end
