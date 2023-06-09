@@ -104,7 +104,6 @@ class NegativeSpace
     end
 end
 
-
 class DarkMatter
 
     # DarkMatter::getBlobOrNull(nhash)
@@ -364,7 +363,7 @@ class DarkEnergy
     # DarkEnergy::all()
     def self.all()
         items = []
-        db = SQLite3::Database.new(filepath)
+        db = SQLite3::Database.new(PositiveSpace::databaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
