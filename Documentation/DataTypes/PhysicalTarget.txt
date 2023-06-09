@@ -1,5 +1,5 @@
 
-PhysicalTarget (Blade)
+PhysicalTarget 
     "uuid"                : String
     "mikuType"            : "PhysicalTarget"
     "description"         : String 

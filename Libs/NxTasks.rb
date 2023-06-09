@@ -7,7 +7,7 @@ class NxTasks
 
     # NxTasks::orbitalFreePositions()
     def self.orbitalFreePositions()
-        Solingen::mikuTypeItems("NxTask")
+        DarkEnergy::mikuType("NxTask")
             .select{|task| task["cliqueuuid"].nil? }
             .map{|task| task["position"] }
     end
@@ -37,21 +37,21 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        Solingen::init("NxPure", uuid)
+        DarkEnergy::init("NxPure", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
         cliqueuuid, position = NxTasks::coordinates()
 
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "cliqueuuid", cliqueuuid)
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "position", position)
+        DarkEnergy::patch(uuid, "cliqueuuid", cliqueuuid)
+        DarkEnergy::patch(uuid, "mikuType", "NxTask")
 
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # NxTasks::viennaUrl(url)
@@ -59,34 +59,34 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Solingen::init("NxPure", uuid)
+        DarkEnergy::init("NxPure", uuid)
 
-        nhash = Solingen::putDatablob2(uuid, url)
+        nhash = DarkMatter::putBlob(uuid, url)
         coredataref = "url:#{nhash}"
 
         position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions())
 
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "position", position)
+        DarkEnergy::patch(uuid, "mikuType", "NxTask")
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # NxTasks::lineToOrbitalTask(line, cliqueuuid, position)
     def self.lineToOrbitalTask(line, cliqueuuid, position)
         uuid = SecureRandom.uuid
         description = line
-        Solingen::init("NxPure", uuid)
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "cliqueuuid", cliqueuuid)
-        Solingen::setAttribute2(uuid, "position", position)
-        Solingen::setAttribute2(uuid, "mikuType", "NxTask")
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::init("NxPure", uuid)
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "cliqueuuid", cliqueuuid)
+        DarkEnergy::patch(uuid, "position", position)
+        DarkEnergy::patch(uuid, "mikuType", "NxTask")
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -107,10 +107,10 @@ class NxTasks
 
     # NxBurners::maintenance()
     def self.maintenance()
-        Solingen::mikuTypeItems("NxBurner")
+        DarkEnergy::mikuType("NxBurner")
             .each{|item|
-                if item["cliqueuuid"] and Solingen::getItemOrNull(item["cliqueuuid"]).nil? then
-                    Solingen::setAttribute2(uuid, "cliqueuuid", nil)
+                if item["cliqueuuid"] and DarkEnergy::itemOrNull(item["cliqueuuid"]).nil? then
+                    DarkEnergy::patch(uuid, "cliqueuuid", nil)
                 end
             }
     end

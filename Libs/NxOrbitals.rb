@@ -15,11 +15,11 @@ class NxOrbitals
         return nil if description == ""
         engine = TxEngines::interactivelyMakeEngineOrDefault()
         uuid = SecureRandom.uuid
-        Solingen::init("NxOrbital", uuid)
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "engine", engine)
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::init("NxOrbital", uuid)
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "engine", engine)
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # -------------------------
@@ -28,7 +28,7 @@ class NxOrbitals
     # NxOrbitals::orbitalToNxTasks(clique)
     def self.orbitalToNxTasks(clique)
         if clique["uuid"] == NxOrbitals::infinityuuid() then
-            return Solingen::mikuTypeItems("NxTask")
+            return DarkEnergy::mikuType("NxTask")
                 .select{|item| item["cliqueuuid"].nil? }
                 .sort_by{|task| task["position"] }
                 .reduce([]){|selected, task|
@@ -44,7 +44,7 @@ class NxOrbitals
                 }
         end
 
-        Solingen::mikuTypeItems("NxTask")
+        DarkEnergy::mikuType("NxTask")
             .select{|task| task["cliqueuuid"] == clique["uuid"] }
     end
 
@@ -63,7 +63,7 @@ class NxOrbitals
     # NxOrbitals::orbitalSuffix(item)
     def self.orbitalSuffix(item)
         return "" if item["mikuType"] != "NxTask"
-        clique = Solingen::getItemOrNull(item["cliqueuuid"])
+        clique = DarkEnergy::itemOrNull(item["cliqueuuid"])
         return "" if clique.nil?
         return "" if clique["description"].nil?
         " (#{clique["description"]})".green
@@ -83,7 +83,7 @@ class NxOrbitals
 
     # NxOrbitals::management()
     def self.management()
-        padding = Solingen::mikuTypeItems("NxOrbital").map{|clique| clique["description"].size }.max
+        padding = DarkEnergy::mikuType("NxOrbital").map{|clique| clique["description"].size }.max
         XCache::set("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", padding)
     end
 
@@ -98,7 +98,7 @@ class NxOrbitals
 
     # NxOrbitals::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cliques = Solingen::mikuTypeItems("NxOrbital")
+        cliques = DarkEnergy::mikuType("NxOrbital")
                     .select{|clique| clique["uuid"] != NxOrbitals::infinityuuid() }
                     .sort_by{|clique| clique["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| NxOrbitals::toString(clique) })
@@ -132,7 +132,7 @@ class NxOrbitals
         end
 
         loop {
-            orbital = Solingen::getItemOrNull(orbital["uuid"])
+            orbital = DarkEnergy::itemOrNull(orbital["uuid"])
             return if orbital.nil?
             system("clear")
 
@@ -165,7 +165,7 @@ class NxOrbitals
             if input == "rename" then
                 description = CommonUtils::editTextSynchronously(orbital["description"])
                 next if description == ""
-                Solingen::setAttribute2(orbital["uuid"], "description", description)
+                DarkEnergy::patch(orbital["uuid"], "description", description)
             end
             if input == "stack" then
                 text = CommonUtils::editTextSynchronously("").strip
@@ -189,7 +189,7 @@ class NxOrbitals
         if NxOrbitals::orbitalToNxTasks(orbital).empty? then
             puts "You are leaving an empty orbital"
             if LucilleCore::askQuestionAnswerAsBoolean("Would you like to destroy it ? ") then
-                Solingen::destroy(orbital["uuid"])
+                DarkEnergy::destroy(orbital["uuid"])
             end
         end
     end

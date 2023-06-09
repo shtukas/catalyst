@@ -16,7 +16,7 @@ class Catalyst
             "Wave"
         ]
             .map{|mikuType|
-                Solingen::mikuTypeItems(mikuType)
+                DarkEnergy::mikuType(mikuType)
             }
             .flatten
     end

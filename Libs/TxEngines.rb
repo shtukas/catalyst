@@ -81,14 +81,14 @@ class TxEngines
 
     # TxEngines::pendingEngines()
     def self.pendingEngines()
-        Solingen::mikuTypeItems("TxEngine")
+        DarkEnergy::mikuType("TxEngine")
             .select{|engine| TxEngines::listingCompletionRatio(engine) < 1 }
             .select{|engine| DoNotShowUntil::isVisible(engine) }
     end
 
     # TxEngines::listingItems()
     def self.listingItems()
-        Solingen::mikuTypeItems("TxEngine")
+        DarkEnergy::mikuType("TxEngine")
             .sort_by{|engine| TxEngines::listingCompletionRatio(engine) }
     end
 
@@ -106,10 +106,10 @@ class TxEngines
     # TxEngines::itemsForProgram0(engine)
     def self.itemsForProgram0(engine)
 
-        burners = Solingen::mikuTypeItems("NxBurner")
+        burners = DarkEnergy::mikuType("NxBurner")
                     .select{|burner| burner["engineuuid"] == engine["uuid"] }
 
-        fires = Solingen::mikuTypeItems("NxFire")
+        fires = DarkEnergy::mikuType("NxFire")
                     .select{|burner| burner["engineuuid"] == engine["uuid"] }
 
         waves = Waves::listingItems()
@@ -142,9 +142,9 @@ class TxEngines
     # TxEngines::itemToEngineSuffix(item)
     def self.itemToEngineSuffix(item)
         if item["engineuuid"] then
-            engine = Solingen::getItemOrNull(item["engineuuid"])
+            engine = DarkEnergy::itemOrNull(item["engineuuid"])
             if engine.nil? then
-                Solingen::setAttribute2(item["uuid"], "engineuuid", nil)
+                DarkEnergy::patch(item["uuid"], "engineuuid", nil)
                 ""
             else
                 " #{"(#{engine["description"]})".green}"
@@ -156,13 +156,13 @@ class TxEngines
 
     # TxEngines::engineUUIDOptToCliques(engineuuidOpt)
     def self.engineUUIDOptToCliques(engineuuidOpt)
-        Solingen::mikuTypeItems("NxOrbital")
+        DarkEnergy::mikuType("NxOrbital")
             .select{|clique| clique["engineuuid"] == engineuuidOpt }
     end
 
     # TxEngines::engineToCliques(engine)
     def self.engineToCliques(engine)
-        Solingen::mikuTypeItems("NxOrbital")
+        DarkEnergy::mikuType("NxOrbital")
             .select{|clique| clique["engineuuid"] == engine["uuid"] }
     end
 
@@ -176,37 +176,31 @@ class TxEngines
 
     # TxEngines::engineMaintenance(engine)
     def self.engineMaintenance(engine)
-        if engine["type"] == "daily-recovery-time" then
+        return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
+        return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
+        if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
+            overflow = 0.5*engine["hours"]*3600
+            puts "I am about to smooth engine #{TxEngines::toString1(engine)}, overflow: #{(overflow.to_f/3600).round(2)} hours for engine: #{engine["description"]}"
+            LucilleCore::pressEnterToContinue()
+            NxTimePromises::issue_things(engine, overflow, 20)
             return nil
         end
-        if engine["type"] == "weekly-time" then
-            return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
-            return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
-            if Bank::getValue(engine["capsule"]).to_f/3600 > 1.5*engine["hours"] then
-                overflow = 0.5*engine["hours"]*3600
-                puts "I am about to smooth engine #{TxEngines::toString1(engine)}, overflow: #{(overflow.to_f/3600).round(2)} hours for engine: #{engine["description"]}"
-                LucilleCore::pressEnterToContinue()
-                NxTimePromises::issue_things(engine, overflow, 20)
-                return nil
+        puts "> I am about to reset engine: #{TxEngines::toString1(engine)}"
+        LucilleCore::pressEnterToContinue()
+        Bank::put(engine["capsule"], -engine["hours"]*3600)
+        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
+            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
+            if hours.size > 0 then
+                engine["hours"] = hours.to_f
             end
-            puts "> I am about to reset engine: #{TxEngines::toString1(engine)}"
-            LucilleCore::pressEnterToContinue()
-            Bank::put(engine["capsule"], -engine["hours"]*3600)
-            if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
-                hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
-                if hours.size > 0 then
-                    engine["hours"] = hours.to_f
-                end
-            end
-            engine["lastResetTime"] = Time.new.to_i
-            return engine
         end
-        raise "could not TxEngines::engineMaintenance(engine) for engine: #{engine}, engine: #{engine}"
+        engine["lastResetTime"] = Time.new.to_i
+        engine
     end
 
     # TxEngines::ensureEachCliqueOfAnEngineHasAName()
     def self.ensureEachCliqueOfAnEngineHasAName()
-        Solingen::mikuTypeItems("TxEngine").each{|engine|
+        DarkEnergy::mikuType("TxEngine").each{|engine|
             TxEngines::engineUUIDOptToCliques(engine["uuid"]).each{|clique|
                 if clique["description"].nil? then
                     description = nil
@@ -214,7 +208,7 @@ class TxEngines
                         description = LucilleCore::askQuestionAnswerAsString("description: ")
                         break if description != ""
                     }
-                    Solingen::setAttribute2(clique["uuid"], "description", description)
+                    DarkEnergy::patch(clique["uuid"], "description", description)
                 end
             }
         }
@@ -223,12 +217,12 @@ class TxEngines
     # TxEngines::generalMaintenance()
     def self.generalMaintenance()
         TxEngines::ensureEachCliqueOfAnEngineHasAName()
-        Solingen::mikuTypeItems("TxEngine").each{|engine| TxEngines::engineMaintenance(engine) }
+        DarkEnergy::mikuType("TxEngine").each{|engine| TxEngines::engineMaintenance(engine) }
     end
 
     # TxEngines::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", Solingen::mikuTypeItems("TxEngine"), lambda{|item| TxEngines::toString0(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", DarkEnergy::mikuType("TxEngine"), lambda{|item| TxEngines::toString0(item) })
     end
 
     # TxEngines::interactivelySelectOneUUIDOrNull()
@@ -248,7 +242,7 @@ class TxEngines
                 hours = LucilleCore::askQuestionAnswerAsString("hours (empty to abort): ")
                 return if hours == ""
                 hours = hours.to_f
-                Solingen::setAttribute2(engine["uuid"], "hours", hours)
+                DarkEnergy::patch(engine["uuid"], "hours", hours)
             end
             if action == "cliques" then
                 loop {

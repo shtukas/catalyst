@@ -1,5 +1,5 @@
 
-NxOndate (Blade)
+NxOndate 
     "uuid"        : uuid
     "mikuType"    : "NxOndate"
     "unixtime"    : Float

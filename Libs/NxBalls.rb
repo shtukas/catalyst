@@ -184,7 +184,7 @@ class NxBalls
     def self.runningItems()
         NxBalls::all()
             .map{|ball| ball["itemuuid"] }
-            .map{|uuid| Solingen::getItemOrNull(uuid) }
+            .map{|uuid| DarkEnergy::itemOrNull(uuid) }
             .compact
     end
 end

@@ -3,10 +3,10 @@ class NxTimeCapsules
     # NxTimeCapsules::operate()
     def self.operate()
         return if !Config::isPrimaryInstance()
-        Solingen::mikuTypeItems("NxTimeCapsule").each{|item|
+        DarkEnergy::mikuType("NxTimeCapsule").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 Bank::put(item["account"], item["value"])
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
         }
     end
@@ -29,14 +29,14 @@ class NxTimePromises
     # NxTimePromises::operate()
     def self.operate()
         return if !Config::isPrimaryInstance()
-        Solingen::mikuTypeItems("NxTimePromise").each{|item|
+        DarkEnergy::mikuType("NxTimePromise").each{|item|
             if Time.new.to_i > item["unixtime"] then
                 puts "Performing time promise against target uuid: #{item["targetuuid"]}".green
-                targetitem = Solingen::getItemOrNull(item["targetuuid"])
+                targetitem = DarkEnergy::itemOrNull(item["targetuuid"])
                 if targetitem.nil? then
                     puts "Could not recover item for target uuid: #{item["targetuuid"]}"
                     LucilleCore::pressEnterToContinue()
-                    Solingen::destroy(item["uuid"])
+                    DarkEnergy::destroy(item["uuid"])
                     next
                 end
                 bankaccounts = PolyFunctions::itemsToBankingAccounts(targetitem)
@@ -44,7 +44,7 @@ class NxTimePromises
                     puts "adding #{item["value"]} to account: #{account}"
                     Bank::put(account["number"], item["value"])
                 }
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
         }
     end
@@ -90,35 +90,35 @@ class NxTimePromises
                 if thing["mikuType"] == "NxTimeCapsule" then
                     puts JSON.pretty_generate(thing)
                     puts "NxTimeCapsule: account: #{thing["account"]}; date: #{thing["datetime"]}; #{thing["value"]}".green
-                    Solingen::init("NxTimeCapsule", uuid)
-                    Solingen::setAttribute2(uuid, "unixtime", thing["unixtime"])
-                    Solingen::setAttribute2(uuid, "datetime", thing["datetime"])
-                    Solingen::setAttribute2(uuid, "account", thing["account"])
-                    Solingen::setAttribute2(uuid, "value", thing["value"])
+                    DarkEnergy::init("NxTimeCapsule", uuid)
+                    DarkEnergy::patch(uuid, "unixtime", thing["unixtime"])
+                    DarkEnergy::patch(uuid, "datetime", thing["datetime"])
+                    DarkEnergy::patch(uuid, "account", thing["account"])
+                    DarkEnergy::patch(uuid, "value", thing["value"])
                 end
                 if thing["mikuType"] == "NxTimePromise" then
                     puts JSON.pretty_generate(thing)
                     puts "NxTimePromise: targetuuid: #{thing["targetuuid"]}; date: #{thing["datetime"]}; #{thing["value"]}".green
-                    Solingen::init("NxTimePromise", uuid)
-                    Solingen::setAttribute2(uuid, "unixtime", thing["unixtime"])
-                    Solingen::setAttribute2(uuid, "datetime", thing["datetime"])
-                    Solingen::setAttribute2(uuid, "targetuuid", thing["targetuuid"])
-                    Solingen::setAttribute2(uuid, "value", thing["value"])
+                    DarkEnergy::init("NxTimePromise", uuid)
+                    DarkEnergy::patch(uuid, "unixtime", thing["unixtime"])
+                    DarkEnergy::patch(uuid, "datetime", thing["datetime"])
+                    DarkEnergy::patch(uuid, "targetuuid", thing["targetuuid"])
+                    DarkEnergy::patch(uuid, "value", thing["value"])
                 end
             }
     end
 
     # NxTimePromises::show()
     def self.show()
-        (Solingen::mikuTypeItems("NxTimeCapsule") + Solingen::mikuTypeItems("NxTimePromise"))
+        (DarkEnergy::mikuType("NxTimeCapsule") + DarkEnergy::mikuType("NxTimePromise"))
             .sort{|c1, c2| c1["unixtime"] <=> c2["unixtime"] }
             .each{|thing|
                 if thing["mikuType"] == "NxTimeCapsule" then
-                    board = Solingen::getItemOrNull(thing["account"])
+                    board = DarkEnergy::itemOrNull(thing["account"])
                     puts "#{Time.at(thing["unixtime"]).to_s} : #{thing["account"]} : #{thing["value"]}#{board ? " (#{board["description"]})" : ""}"
                 end
                 if thing["mikuType"] == "NxTimePromise" then
-                    targetitem = Solingen::getItemOrNull(thing["targetuuid"])
+                    targetitem = DarkEnergy::itemOrNull(thing["targetuuid"])
                     if targetitem.nil? then
                         puts "Could not recover item for target uuid: #{item["targetuuid"]}"
                     end

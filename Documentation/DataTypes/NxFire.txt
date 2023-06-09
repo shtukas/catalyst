@@ -1,5 +1,5 @@
 
-NxFire: (Blade)
+NxFire: 
     "uuid"        : String
     "mikuType"    : "NxFire"
     "unixtime"    : Float

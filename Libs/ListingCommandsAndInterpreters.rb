@@ -142,12 +142,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("mikuTypes", input) then
-            puts Solingen::mikuTypes()
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if Interpreting::match("access *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -177,7 +171,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Solingen::setAttribute2(item["uuid"], "field11", reference)
+            DarkEnergy::patch(item["uuid"], "field11", reference)
             return
         end
 
@@ -208,7 +202,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
             item.to_a.each{|key, value|
-                Solingen::setAttribute2(item["uuid"], key, value)
+                DarkEnergy::patch(item["uuid"], key, value)
             }
             return
         end
@@ -230,7 +224,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             orbital = NxOrbitals::interactivelySelectOneOrNull()
             return if orbital.nil?
-            Solingen::setAttribute2(item["uuid"], "cliqueuuid", orbital["uuid"])
+            DarkEnergy::patch(item["uuid"], "cliqueuuid", orbital["uuid"])
             return
         end
 
@@ -240,7 +234,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             orbital = NxOrbitals::interactivelySelectOneOrNull()
             return if orbital.nil?
-            Solingen::setAttribute2(item["uuid"], "cliqueuuid", orbital["uuid"])
+            DarkEnergy::patch(item["uuid"], "cliqueuuid", orbital["uuid"])
             return
         end
 
@@ -304,7 +298,7 @@ class ListingCommandsAndInterpreters
                 return
             end
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            Solingen::setAttribute2(item["uuid"], "position", position)
+            DarkEnergy::patch(item["uuid"], "position", position)
             return
         end
 
@@ -483,7 +477,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            Solingen::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            DarkEnergy::patch(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

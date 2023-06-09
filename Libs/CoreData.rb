@@ -24,18 +24,18 @@ class CoreData
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")
-            nhash = Solingen::putDatablob2(uuid, text)
+            nhash = DarkMatter::putBlob(uuid, text)
             return "text:#{nhash}"
         end
         if referencetype == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url: ")
-            nhash = Solingen::putDatablob2(uuid, url)
+            nhash = DarkMatter::putBlob(uuid, url)
             return "url:#{nhash}"
         end
         if referencetype == "aion point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(BladeElizabeth.new(uuid), location)
+            nhash = AionCore::commitLocationReturnHash(DarkMatterElizabethLegacy.new(uuid), location)
             return "aion-point:#{nhash}" 
         end
         if referencetype == "open cycle" then
@@ -109,7 +109,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Solingen::getDatablobOrNull2(uuid, nhash)
+            text = NegativeSpace::getDatablobOrNull2(uuid, nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
@@ -118,7 +118,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = Solingen::getDatablobOrNull2(uuid, nhash)
+            url = NegativeSpace::getDatablobOrNull2(uuid, nhash)
             if url.nil? then
                 puts "(error) I could not retrieve url for reference string: #{referenceString}"
                 LucilleCore::pressEnterToContinue()
@@ -136,7 +136,7 @@ class CoreData
             exportFoldername = "aion-point-#{exportId}"
             exportFolder = "#{Config::pathToDesktop()}/#{exportFoldername}"
             FileUtils.mkdir(exportFolder)
-            AionCore::exportHashAtFolder(BladeElizabeth.new(uuid), nhash, exportFolder)
+            AionCore::exportHashAtFolder(DarkMatterElizabethLegacy.new(uuid), nhash, exportFolder)
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -175,7 +175,7 @@ class CoreData
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Solingen::getDatablobOrNull2(uuid, nhash)
+            text = NegativeSpace::getDatablobOrNull2(uuid, nhash)
             if text.nil? then
                 raise "CoreData::fsck: could not extract text for uuid: #{uuid}, reference string: #{referenceString}"
             end
@@ -183,7 +183,7 @@ class CoreData
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = Solingen::getDatablobOrNull2(uuid, nhash)
+            url = NegativeSpace::getDatablobOrNull2(uuid, nhash)
             if url.nil? then
                 raise "CoreData::fsck: could not extract url for uuid: #{uuid}, reference string: #{referenceString}"
             end
@@ -191,7 +191,7 @@ class CoreData
         end
         if referenceString.start_with?("aion-point") then
             nhash = referenceString.split(":")[1]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(BladeElizabeth.new(uuid), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(DarkMatterElizabethLegacy.new(uuid), nhash)
             return
         end
         if referenceString.start_with?("open-cycle") then

@@ -120,8 +120,6 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
-require_relative "Solingen.rb"
-
 # ------------------------------------------------------------
 
 require_relative "Anniversaries.rb"

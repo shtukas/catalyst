@@ -9,7 +9,7 @@ class TheLine
 
     # TheLine::count()
     def self.count()
-        ["NxTask", "NxFire", "NxOndate"].map{|mikuType| Solingen::mikuTypeCount(mikuType) }.inject(0, :+)
+        ["NxTask", "NxFire", "NxOndate"].map{|mikuType| DarkEnergy::mikuTypeCount(mikuType) }.inject(0, :+)
     end
 
     # TheLine::getCurrentCount()

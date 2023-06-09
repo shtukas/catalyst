@@ -3,7 +3,7 @@ class NxNotes
 
     # NxNotes::getTextOrNull(item)
     def self.getTextOrNull(item)
-        Solingen::getAttributeOrNull2(item["uuid"], "note")
+        DarkEnergy::getAttribute(item["uuid"], "note")
     end
 
     # NxNotes::getText(item)
@@ -18,7 +18,7 @@ class NxNotes
 
     # NxNotes::commit(item, text)
     def self.commit(item, text)
-        Solingen::setAttribute2(item["uuid"], "note", text)
+        DarkEnergy::patch(item["uuid"], "note", text)
     end
 
     # NxNotes::toStringSuffix(item)

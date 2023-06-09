@@ -11,13 +11,13 @@ class PhysicalTargets
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
-        Solingen::init("PhysicalTarget", uuid)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "dailyTarget", dailyTarget)
-        Solingen::setAttribute2(uuid, "date", CommonUtils::today())
-        Solingen::setAttribute2(uuid, "counter", 0)
-        Solingen::setAttribute2(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::init("PhysicalTarget", uuid)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "dailyTarget", dailyTarget)
+        DarkEnergy::patch(uuid, "date", CommonUtils::today())
+        DarkEnergy::patch(uuid, "counter", 0)
+        DarkEnergy::patch(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------
@@ -30,13 +30,13 @@ class PhysicalTargets
 
     # PhysicalTargets::listingItems()
     def self.listingItems()
-        Solingen::mikuTypeItems("PhysicalTarget").each{|item|
+        DarkEnergy::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
-                Solingen::setAttribute2(item["uuid"], "date", CommonUtils::today())
-                Solingen::setAttribute2(item["uuid"], "counter", 0)
+                DarkEnergy::patch(item["uuid"], "date", CommonUtils::today())
+                DarkEnergy::patch(item["uuid"], "counter", 0)
             end
         }
-        Solingen::mikuTypeItems("PhysicalTarget")
+        DarkEnergy::mikuType("PhysicalTarget")
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
             .map{|item|
@@ -52,8 +52,8 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        Solingen::setAttribute2(item["uuid"], "counter", count + Solingen::getAttributeOrNull2(item["uuid"], "counter"))
-        Solingen::setAttribute2(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
+        DarkEnergy::patch(item["uuid"], "counter", count + DarkEnergy::getAttribute(item["uuid"], "counter"))
+        DarkEnergy::patch(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
     # PhysicalTargets::access(item)

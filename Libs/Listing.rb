@@ -27,7 +27,7 @@ class Listing
             "durationInHours" => hours
         }
         puts JSON.pretty_generate(directive)
-        Solingen::setAttribute2(item["uuid"], "tmpskip1", directive)
+        DarkEnergy::patch(item["uuid"], "tmpskip1", directive)
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
         XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
@@ -69,7 +69,7 @@ class Listing
     # Listing::orbitalSuffix(item)
     def self.orbitalSuffix(item)
         return "" if item["cliqueuuid"].nil?
-        orbital = Solingen::getItemOrNull(item["cliqueuuid"])
+        orbital = DarkEnergy::itemOrNull(item["cliqueuuid"])
         return "" if orbital.nil?
         " (#{orbital["description"]})".green
     end
@@ -117,7 +117,7 @@ class Listing
 
         burners = NxBurners::itemsWithoutOrbital()
 
-        fires = Solingen::mikuTypeItems("NxFire")
+        fires = DarkEnergy::mikuType("NxFire")
 
         items = [
             Desktop::listingItems(),
@@ -154,10 +154,10 @@ class Listing
 
         ondates = NxOndates::listingItems()
 
-        drops = Solingen::mikuTypeItems("NxDrop")
+        drops = DarkEnergy::mikuType("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        cliques = Solingen::mikuTypeItems("NxOrbital")
+        cliques = DarkEnergy::mikuType("NxOrbital")
                     .select{|clique| NxOrbitals::listingRatio(clique) < 1 }
                     .sort_by{|clique| NxOrbitals::listingRatio(clique) }
 
@@ -246,12 +246,12 @@ class Listing
                 "lambda" => lambda { TheLine::line() }
             },
             {
-                "name" => "Solingen::mikuTypeItems(NxBurner)",
-                "lambda" => lambda { Solingen::mikuTypeItems("NxBurner") }
+                "name" => "DarkEnergy::mikuType(NxBurner)",
+                "lambda" => lambda { DarkEnergy::mikuType("NxBurner") }
             },
             {
-                "name" => "Solingen::mikuTypeItems(NxFire)",
-                "lambda" => lambda { Solingen::mikuTypeItems("NxFire") }
+                "name" => "DarkEnergy::mikuType(NxFire)",
+                "lambda" => lambda { DarkEnergy::mikuType("NxFire") }
             },
             {
                 "name" => "NxTimes::listingItems()",

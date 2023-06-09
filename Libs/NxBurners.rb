@@ -6,13 +6,13 @@ class NxBurners
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Solingen::init("NxBurner", uuid)
+        DarkEnergy::init("NxBurner", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # ------------------------------------
@@ -26,12 +26,12 @@ class NxBurners
 
     # NxBurners::itemsForOrbital(orbital)
     def self.itemsForOrbital(orbital)
-        Solingen::mikuTypeItems("NxBurner").select{|item| item["cliqueuuid"] == orbital["uuid"] }
+        DarkEnergy::mikuType("NxBurner").select{|item| item["cliqueuuid"] == orbital["uuid"] }
     end
 
     # NxBurners::itemsWithoutOrbital()
     def self.itemsWithoutOrbital()
-        Solingen::mikuTypeItems("NxBurner").select{|item| item["cliqueuuid"].nil? }
+        DarkEnergy::mikuType("NxBurner").select{|item| item["cliqueuuid"].nil? }
     end
 
     # ------------------------------------
@@ -40,10 +40,10 @@ class NxBurners
 
     # NxBurners::maintenance()
     def self.maintenance()
-        Solingen::mikuTypeItems("NxBurner")
+        DarkEnergy::mikuType("NxBurner")
             .each{|item|
-                if item["cliqueuuid"] and Solingen::getItemOrNull(item["cliqueuuid"]).nil? then
-                    Solingen::setAttribute2(uuid, "cliqueuuid", nil)
+                if item["cliqueuuid"] and DarkEnergy::itemOrNull(item["cliqueuuid"]).nil? then
+                    DarkEnergy::patch(uuid, "cliqueuuid", nil)
                 end
             }
     end
@@ -61,7 +61,7 @@ class NxBurners
             return if action.nil?
             if action == "done" then
                 if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction of burner: #{item["description"].green} ? ", true) then
-                    Solingen::destroy(item["uuid"])
+                    DarkEnergy::destroy(item["uuid"])
                 end
             end
         }
@@ -70,7 +70,7 @@ class NxBurners
     # NxBurners::program2()
     def self.program2()
         loop {
-            items = Solingen::mikuTypeItems("NxBurner").sort{|w1, w2| w1["unixtime"] <=> w2["unixtime"] }
+            items = DarkEnergy::mikuType("NxBurner").sort{|w1, w2| w1["unixtime"] <=> w2["unixtime"] }
             item = LucilleCore::selectEntityFromListOfEntitiesOrNull("burner", items, lambda{|item| item["description"] })
             return if item.nil?
             NxBurners::program1(item)

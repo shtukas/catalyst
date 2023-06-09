@@ -22,7 +22,7 @@ class NxBackups
 
     # NxBackups::getItemByOperationOrNull(operation)
     def self.getItemByOperationOrNull(operation)
-        Solingen::mikuTypeItems("NxBackup")
+        DarkEnergy::mikuType("NxBackup")
             .select{|item|
                 item["description"] == operation
             }
@@ -48,23 +48,23 @@ class NxBackups
                 item = NxBackups::getItemByOperationOrNull(instruction["operation"])
                 if item then
                     if item["periodInDays"] != instruction["periodInDays"] then
-                        Solingen::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
+                        DarkEnergy::patch(item["uuid"], "periodInDays", instruction["periodInDays"])
                     end
                 else
                     uuid  = SecureRandom.uuid
-                    Solingen::init("NxBackup", uuid)
-                    Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-                    Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-                    Solingen::setAttribute2(uuid, "description", instruction["operation"])
-                    Solingen::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
-                    Solingen::setAttribute2(uuid, "lastDoneUnixtime", 0)
+                    DarkEnergy::init("NxBackup", uuid)
+                    DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+                    DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+                    DarkEnergy::patch(uuid, "description", instruction["operation"])
+                    DarkEnergy::patch(uuid, "periodInDays", instruction["periodInDays"])
+                    DarkEnergy::patch(uuid, "lastDoneUnixtime", 0)
                 end
             }
 
         # In the second stage we are checking that each item has a corresponsing instruction
-        Solingen::mikuTypeItems("NxBackup")
+        DarkEnergy::mikuType("NxBackup")
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
-            .each{|item| Solingen::destroy(item["uuid"]) }
+            .each{|item| DarkEnergy::destroy(item["uuid"]) }
     end
 
     # NxBackups::toString(item)
@@ -74,13 +74,13 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        Solingen::mikuTypeItems("NxBackup")
+        DarkEnergy::mikuType("NxBackup")
             .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
     end
 
     # NxBackups::performDone(item)
     def self.performDone(item)
-        Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        DarkEnergy::patch(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
     end
 
     # NxBackups::program(item)

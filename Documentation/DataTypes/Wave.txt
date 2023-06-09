@@ -1,5 +1,5 @@
 
-Wave (Blade):
+Wave :
     "uuid"             : uuid
     "mikuType"         : "Wave"
     "unixtime"         : unixtime

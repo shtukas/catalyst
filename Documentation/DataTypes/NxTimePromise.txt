@@ -1,5 +1,5 @@
 
-NxTimePromise: (Blade)
+NxTimePromise: 
     "uuid"          : String
     "mikuType"      : "NxTimePromise"
     "unixtime"      : Float

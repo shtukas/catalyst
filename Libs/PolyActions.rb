@@ -100,7 +100,7 @@ class PolyActions
 
         if item["mikuType"] == "NxDrop" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{NxDrops::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -110,7 +110,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTime" then
-            Solingen::destroy(item["uuid"])
+            DarkEnergy::destroy(item["uuid"])
             return
         end
 
@@ -127,7 +127,7 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -140,13 +140,13 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLong" then
-            Solingen::destroy(item["uuid"])
+            DarkEnergy::destroy(item["uuid"])
             return
         end
 
@@ -164,7 +164,7 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -177,7 +177,7 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -190,7 +190,7 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -203,14 +203,14 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTime" then
             puts "done-ing: '#{NxTimes::toString(item).green}'"
-            Solingen::destroy(item["uuid"])
+            DarkEnergy::destroy(item["uuid"])
             return
         end
 
@@ -237,14 +237,14 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Solingen::destroy(item["uuid"])
+                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -281,7 +281,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTime" then
-            Solingen::destroy(item["uuid"])
+            DarkEnergy::destroy(item["uuid"])
             return
         end
 
@@ -300,7 +300,7 @@ class PolyActions
             if first_time then
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green} ? '", true) then
                     NxBalls::stop(item)
-                    Solingen::destroy(item["uuid"])
+                    DarkEnergy::destroy(item["uuid"])
                 end
             end
             return
@@ -387,6 +387,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Solingen::setAttribute2(item["uuid"], "description", description)
+        DarkEnergy::patch(item["uuid"], "description", description)
     end
 end

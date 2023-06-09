@@ -14,52 +14,52 @@ class Transmutations
     # Transmutations::transmute(item)
     def self.transmute(item)
 
-        sourceType = Solingen::getMandatoryAttribute2(item["uuid"], "mikuType")
+        sourceType = DarkEnergy::getAttribute(item["uuid"], "mikuType")
 
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxBurner" then
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxBurner")
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxBurner")
             return
         end
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxFire" then
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxFire")
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFire")
             return
         end
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxTask" then
             cliqueuuid, position = NxTasks::coordinates()
-            Solingen::setAttribute2(item["uuid"], "position", position)
-            Solingen::setAttribute2(item["uuid"], "cliqueuuid", cliqueuuid)
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
+            DarkEnergy::patch(item["uuid"], "position", position)
+            DarkEnergy::patch(item["uuid"], "cliqueuuid", cliqueuuid)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
             cliqueuuid, position = NxTasks::coordinates()
-            Solingen::setAttribute2(item["uuid"], "position", position)
-            Solingen::setAttribute2(item["uuid"], "cliqueuuid", cliqueuuid)
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
+            DarkEnergy::patch(item["uuid"], "position", position)
+            DarkEnergy::patch(item["uuid"], "cliqueuuid", cliqueuuid)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxBurner" then
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxBurner")
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxBurner")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxFire")
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFire")
             return
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
             cliqueuuid, position = NxTasks::coordinates()
-            Solingen::setAttribute2(item["uuid"], "position", position)
-            Solingen::setAttribute2(item["uuid"], "cliqueuuid", cliqueuuid)
-            Solingen::setAttribute2(item["uuid"], "mikuType", "NxTask")
+            DarkEnergy::patch(item["uuid"], "position", position)
+            DarkEnergy::patch(item["uuid"], "cliqueuuid", cliqueuuid)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
 

@@ -1,5 +1,5 @@
 
-NxTime: (Blade)
+NxTime: 
     "uuid"        : String
     "mikuType"    : "NxTime"
     "unixtime"    : Float

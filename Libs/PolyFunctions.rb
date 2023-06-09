@@ -12,7 +12,7 @@ class PolyFunctions
         }
 
         if item["cliqueuuid"] then
-            orbital = Solingen::getItemOrNull(item["cliqueuuid"])
+            orbital = DarkEnergy::itemOrNull(item["cliqueuuid"])
             if orbital then
                 accounts = accounts + PolyFunctions::itemsToBankingAccounts(orbital)
             end

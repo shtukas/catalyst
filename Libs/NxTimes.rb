@@ -4,12 +4,12 @@ class NxTimes
     # NxTimes::issue(time, description)
     def self.issue(time, description)
         uuid = SecureRandom.uuid
-        Solingen::init("NxTime", uuid)
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "time", time)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::init("NxTime", uuid)
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "time", time)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # NxTimes::toString(item)
@@ -19,7 +19,7 @@ class NxTimes
 
     # NxTimes::listingItems()
     def self.listingItems()
-        Solingen::mikuTypeItems("NxTime")
+        DarkEnergy::mikuType("NxTime")
             .sort_by{|item| item["time"] }
     end
 end

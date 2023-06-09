@@ -114,17 +114,17 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        Solingen::init("Wave", uuid)
+        DarkEnergy::init("Wave", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Solingen::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Solingen::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Solingen::setAttribute2(uuid, "description", description)
-        Solingen::setAttribute2(uuid, "nx46", nx46)
-        Solingen::setAttribute2(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        Solingen::setAttribute2(uuid, "field11", coredataref)
-        Solingen::setAttribute2(uuid, "interruption", interruption)
-        Solingen::getItemOrNull(uuid)
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "nx46", nx46)
+        DarkEnergy::patch(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "interruption", interruption)
+        DarkEnergy::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -141,7 +141,7 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        Solingen::mikuTypeItems("Wave")
+        DarkEnergy::mikuType("Wave")
             .select{|item| Listing::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
@@ -157,9 +157,9 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: #{Waves::toString(item)}"
-        Solingen::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Solingen::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-        Solingen::setAttribute2(item["uuid"], "parking", nil)
+        DarkEnergy::patch(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        DarkEnergy::patch(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        DarkEnergy::patch(item["uuid"], "parking", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -183,12 +183,12 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                Solingen::setAttribute2(item["uuid"], "description", description)
+                DarkEnergy::patch(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                Solingen::setAttribute2(item["uuid"], "nx46", nx46)
+                DarkEnergy::patch(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveDone(item)
@@ -196,11 +196,11 @@ class Waves
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                Solingen::setAttribute2(item["uuid"], "onlyOnDays", days)
+                DarkEnergy::patch(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
-                    Solingen::destroy(item["uuid"])
+                    DarkEnergy::destroy(item["uuid"])
                     return
                 end
             end
@@ -210,7 +210,7 @@ class Waves
     # Waves::program1()
     def self.program1()
         loop {
-            items = Solingen::mikuTypeItems("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
+            items = DarkEnergy::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
             return if wave.nil?
             Waves::program2(wave)
