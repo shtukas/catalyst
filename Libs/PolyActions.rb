@@ -72,6 +72,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxEngine" then
+            TxEngines::program(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             Waves::access(item)
             return
@@ -325,6 +330,11 @@ class PolyActions
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "TxEngine" then
+            TxEngines::program(item)
             return
         end
 

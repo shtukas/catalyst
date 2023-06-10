@@ -6,12 +6,12 @@ class ListingCommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | engine (<n>) | holiday <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
             "",
             "specific types commands:",
-            "    - ondate     : redate",
+            "    - ondate  : redate",
             "transmutation : recast (<n>)",
-            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | orbitals",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
+            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | sequences | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
         ].join("\n")
@@ -74,6 +74,16 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("drop", input) then
             NxDrops::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("cores", input) then
+            NxCores::program()
+            return
+        end
+
+        if Interpreting::match("sequences", input) then
+            NxSequences::program3()
             return
         end
 

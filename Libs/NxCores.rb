@@ -29,7 +29,7 @@ class NxCores
             LucilleCore::pressEnterToContinue()
             return NxCores::interactivelyIssueNewOrNull()
         end
-        core = NxCores::makeCore(uuid, hours)
+        core = NxCores::makeCore(uuid, description, hours)
         DarkEnergy::commit(core)
         core
     end
@@ -61,7 +61,7 @@ class NxCores
         padding = XCache::getOrDefaultValue("0e067f3e-a954-4138-8336-876240b9b7dd", "0").to_i
         strings = []
 
-        strings << "#{core["description"].ljust(padding)} (core: today: #{"#{"%5.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        strings << "☕️ #{core["description"].ljust(padding)} (core: today: #{"#{"%5.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%5.2f" % (100*NxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
@@ -84,7 +84,7 @@ class NxCores
             strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
         end
 
-        strings << ")"
+        strings << ") (metric: #{NxCores::listingMetric(core).round(2)})"
         strings.join()
     end
 
@@ -111,6 +111,11 @@ class NxCores
         else
             ""
         end
+    end
+
+    # NxCores::listingMetric(core)
+    def self.listingMetric(core)
+        0.5 * (1 - NxCores::listingCompletionRatio(core))
     end
 
     # -------------------------
@@ -179,6 +184,15 @@ class NxCores
             if action == "program" then
                 NxCores::program0(core)
             end
+        }
+    end
+
+    # NxCores::program()
+    def self.program()
+        loop {
+            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", DarkEnergy::mikuType("NxCore"), lambda{|core| NxCores::toString(core) })
+            break if core.nil?
+            NxCores::program1(core)
         }
     end
 

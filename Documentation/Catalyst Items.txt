@@ -7,5 +7,8 @@ Cross types conventions:
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-Types except NxCores can carry a "coreuuid"
-Types expect NxCores and NxSequences can carry a "sequenceuuid"
+We enforce that sequences have core or an engine
+
+NxTasks can be orphan or have a core or an engine (if they are orphan, they are displayed by the infinity core)
+
+

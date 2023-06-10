@@ -161,6 +161,8 @@ require_relative "NxDrops.rb"
 require_relative "NxCores.rb"
 require_relative "NxSequences.rb"
 
+require_relative "Metrics.rb"
+
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"

@@ -92,54 +92,22 @@ class Listing
     # Listing::items2()
     def self.items2()
 
-        anniversaries = Anniversaries::listingItems()
-
-        waves = Waves::listingItems()
-
-        interruptions =
-            [
-                waves.select{|item| item["interruption"] },
-                PhysicalTargets::listingItems()
-            ]
-            .flatten
-
-        backups = NxBackups::listingItems()
-
-        ondates = NxOndates::listingItems()
-
-        drops = DarkEnergy::mikuType("NxDrop")
-                    .sort_by{|item| item["unixtime"] }
-
-        cliques = DarkEnergy::mikuType("NxSequence")
-
-        tasks = 
-            if cliques.empty? then
-                []
-            else
-                NxSequences::orbitalToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
-            end
-
         items = [
-            anniversaries,
-            interruptions,
-            backups,
-            ondates,
-            waves.select{|item| !item["interruption"] },
-            drops,
-            tasks,
-            cliques,
+            Anniversaries::listingItems(),
+            Waves::listingItems(),
+            PhysicalTargets::listingItems(),
+            NxBackups::listingItems(),
+            NxOndates::listingItems(),
+            DarkEnergy::mikuType("NxDrop"),
+            DarkEnergy::mikuType("NxSequence"),
+            NxCores::listingItems(),
+            DarkEnergy::mikuType("TxEngine")
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if !selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected + [item]
-                else
-                    selected
-                end
-            }
 
         items
+            .sort_by{|item| Metrics::item(item) }.reverse
     end
 
     # Listing::itemToListingLine(store: nil, item: nil)
@@ -156,7 +124,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxSequences::sequenceSuffix(item)}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxCores::coreSuffix(item).green}#{NxSequences::sequenceSuffix(item)}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -191,6 +159,26 @@ class Listing
             {
                 "name" => "Waves::listingItems()",
                 "lambda" => lambda { Waves::listingItems() }
+            },
+            {
+                "name" => "NxBackups::listingItems()",
+                "lambda" => lambda { NxBackups::listingItems() }
+            },
+            {
+                "name" => "DarkEnergy::mikuType(NxDrop)",
+                "lambda" => lambda { DarkEnergy::mikuType("NxDrop") }
+            },
+            {
+                "name" => "DarkEnergy::mikuType(TxEngine)",
+                "lambda" => lambda { DarkEnergy::mikuType("TxEngine") }
+            },
+            {
+                "name" => "DarkEnergy::mikuType(NxSequence)",
+                "lambda" => lambda { DarkEnergy::mikuType("NxSequence") }
+            },
+            {
+                "name" => "NxCores::listingItems()",
+                "lambda" => lambda { NxCores::listingItems() }
             },
             {
                 "name" => "TheLine::line()",
@@ -290,6 +278,8 @@ class Listing
              NxBurners::maintenance()
              PositiveSpace::maintenance()
              NxCores::generalMaintenance()
+             NxSequences::maintenance()
+             TxEngines::maintenance()
         end
     end
 
@@ -325,15 +315,6 @@ class Listing
                     break if !status
                 }
         end
-
-        spacecontrol.putsline ""
-        DarkEnergy::mikuType("NxCore")
-            .sort_by{|item| NxCores::listingCompletionRatio(item) }
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
-                break if !status
-            }
 
         if items1.size > 0 then
             spacecontrol.putsline ""

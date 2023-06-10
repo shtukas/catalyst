@@ -72,6 +72,11 @@ class NxTasks
         DarkEnergy::patch(uuid, "field11", coredataref)
         DarkEnergy::patch(uuid, "position", position)
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
+
+        engine = TxEngines::makeEngine(SecureRandom.hex, uuid, Time.new.to_i, 1, 30)
+        DarkEnergy::commit(engine)
+        DarkEnergy::patch(item["uuid"], "engineuuid", engine["uuid"])
+
         DarkEnergy::itemOrNull(uuid)
     end
 
@@ -97,11 +102,42 @@ class NxTasks
         "👨🏻‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]}"
     end
 
+    # NxTasks::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("NxTask").first(1000)
+    end
+
     # --------------------------------------------------
     # Operations
 
     # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["uuid"], item["field11"])
+    end
+
+    # NxTasks::setDriverAttempt(item) # boolean
+    def self.setDriverAttempt(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "sequence", "engine"])
+        return false if option.nil?
+        if option == "core" then
+            core = NxCores::interactivelySelectOneOrNull()
+            return false if core.nil?
+            DarkEnergy::patch(item["uuid"], "coreuuid", core["uuid"])
+            return true
+        end
+        if option == "sequence" then
+            sequence = NxSequences::interactivelySelectOneOrNull()
+            return false if sequence.nil?
+            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
+            return true
+        end
+        if option == "engine" then
+            return TxEngines::interactivelyEngineSpawnAttempt(item)
+        end
+    end
+
+    # NxTasks::program(task)
+    def self.program(task)
+        PolyActions::doubleDot(task)
     end
 end
