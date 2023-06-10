@@ -158,6 +158,7 @@ require_relative "NxBurners.rb"
 require_relative "NxTimePromises.rb"
 require_relative "NxTimes.rb"
 require_relative "NxDrops.rb"
+require_relative "NxCores.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
