@@ -130,9 +130,20 @@ class PositiveSpace
         JSON.parse(IO.read("/Users/pascal/Galaxy/DataBank/Stargate-Config.json"))["isLeaderInstance"]
     end
 
+    # PositiveSpace::ageOrNull()
+    def self.ageOrNull()
+        filepaths = LucilleCore::locationsAtFolder("#{ENV['HOME']}/Galaxy/DataHub/DeepSpace/DarkEnergy/02-journal")
+                        .select{|location| location[-5, 5] == ".json" }
+        return nil if filepaths.empty?
+        filepaths.map{|filepath| Time.new.to_f - File.mtime(filepath).to_i }.min
+    end
+
     # PositiveSpace::maintenance()
     def self.maintenance()
         return if !PositiveSpace::isLeaderInstance()
+        age = PositiveSpace::ageOrNull()
+        return if age.nil?
+        return if age < 60
         loop {
             filepath = PositiveSpace::getFirstJournalItemOrNull()
             break if filepath.nil?
@@ -145,7 +156,6 @@ class PositiveSpace
             end
             FileUtils.rm(filepath)
         }
-
     end
 end
 
