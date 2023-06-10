@@ -46,7 +46,7 @@ class Metrics
         end
 
         if item["mikuType"] == "NxCore" then
-            return NxCores::listingMetric(item)
+            return NxCores::listingmetric(item)
         end
 
         if item["mikuType"] == "NxBackup" then
@@ -54,7 +54,7 @@ class Metrics
         end
 
         if item["mikuType"] == "TxEngine" then
-            return TxEngines::metric(item)
+            return TxEngines::listingmetric(item)
         end
 
         if item["mikuType"] == "Wave" then

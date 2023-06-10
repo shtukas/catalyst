@@ -99,9 +99,9 @@ class Listing
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            DarkEnergy::mikuType("NxSequence"),
+            NxSequences::listingItems(),
             NxCores::listingItems(),
-            DarkEnergy::mikuType("TxEngine")
+            TxEngines::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

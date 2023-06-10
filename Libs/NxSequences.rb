@@ -26,7 +26,7 @@ class NxSequences
     # NxSequences::toString(clique)
     def self.toString(clique)
         padding = XCache::getOrDefaultValue("348d7483-82bd-4a9e-9028-7d42b3952204", "0").to_i
-        "🔹 #{clique["description"].ljust(padding)} (metric: #{NxSequences::listingMetric(clique).round(2)})"
+        "🔹 #{clique["description"].ljust(padding)} (metric: #{NxSequences::listingmetric(clique).round(2)})"
     end
 
     # NxSequences::nxTasks(clique)
@@ -55,13 +55,19 @@ class NxSequences
         " (#{sequence["description"]})".green
     end
 
-    # NxSequences::listingMetric(item)
-    def self.listingMetric(item)
+    # NxSequences::listingmetric(item)
+    def self.listingmetric(item)
         numbers = [
             Metrics::coreuuid(item),
             Metrics::engineuuid(item)
         ].compact
         return (numbers.size > 0 ? (0.5 + 0.5 * numbers.max) : 0.5)
+    end
+
+    # NxSequences::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("NxSequence")
+            .select{|sequence| NxSequences::listingmetric(sequence) >= 0.2 }
     end
 
     # -------------------------

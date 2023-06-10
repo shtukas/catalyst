@@ -43,7 +43,7 @@ class TxEngines
         deadlineInstant = engine["startTime"] + engine["deadlineInDifferentialDays"]*86400
         timespanLeftToDealine = deadlineInstant - currentInstant
         timespanLeftConsideringEstimationAndDone = engine["durationEstimateInHours"]*3600 - Bank::getValue(engine["uuid"])
-        "🚗 (engine: #{timespanLeftConsideringEstimationAndDone.to_f/3600} hours left to do, over #{timespanLeftToDealine.to_f/86400} days, metric: #{TxEngines::metric(engine).round()})"
+        "🚗 (engine: #{timespanLeftConsideringEstimationAndDone.to_f/3600} hours left to do, over #{(timespanLeftToDealine.to_f/86400).round(2)} days, metric: #{TxEngines::listingmetric(engine).round(2)})"
     end
 
     # TxEngines::engineSuffix(item)
@@ -57,8 +57,8 @@ class TxEngines
         TxEngines::toString(engine)
     end
 
-    # TxEngines::metric(engine)
-    def self.metric(engine)
+    # TxEngines::listingmetric(engine)
+    def self.listingmetric(engine)
         t0 = engine["startTime"]
         t1 = Time.new.to_i
         t2 = t1 + engine["durationEstimateInHours"]*3600
@@ -74,6 +74,12 @@ class TxEngines
     # TxEngines::getItemForEngineOrNull(engine)
     def self.getItemForEngineOrNull(engine)
         DarkEnergy::itemOrNull(engine["targetuuid"])
+    end
+
+    # TxEngines::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("TxEngine")
+            .select{|engine| TxEngines::listingmetric(engine) >= 0.1 }
     end
 
     # -------------------------

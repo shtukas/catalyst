@@ -84,7 +84,7 @@ class NxCores
             strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
         end
 
-        strings << ") (metric: #{NxCores::listingMetric(core).round(2)})"
+        strings << ") (metric: #{NxCores::listingmetric(core).round(2)})"
         strings.join()
     end
 
@@ -113,8 +113,8 @@ class NxCores
         end
     end
 
-    # NxCores::listingMetric(core)
-    def self.listingMetric(core)
+    # NxCores::listingmetric(core)
+    def self.listingmetric(core)
         0.5 * (1 - NxCores::listingCompletionRatio(core))
     end
 
