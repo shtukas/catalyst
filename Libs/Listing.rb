@@ -20,58 +20,11 @@ class Listing
     # -----------------------------------------
     # Data
 
-    # Listing::tmpskip1(item, hours)
-    def self.tmpskip1(item, hours)
-        directive = {
-            "unixtime"        => Time.new.to_f,
-            "durationInHours" => hours
-        }
-        puts JSON.pretty_generate(directive)
-        DarkEnergy::patch(item["uuid"], "tmpskip1", directive)
-        # The backup items are dynamically generated and do not correspond to item
-        # in the database. We also put the skip directive to the cache
-        XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
-    end
-
     # Listing::listable(item)
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil::isVisible(item)
         true
-    end
-
-    # Listing::skipSuffix(item)
-    def self.skipSuffix(item)
-        skipDirectiveOrNull = lambda {|item|
-            if item["tmpskip1"] then
-                return item["tmpskip1"]
-            end
-            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
-            if cachedDirective then
-                return JSON.parse(cachedDirective)
-            end
-        }
-
-        skipTargetTimeOrNull = lambda {|item|
-            directive = skipDirectiveOrNull.call(item)
-            return nil if directive.nil?
-            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
-            (Time.new.to_f < targetTime) ? targetTime : nil
-        }
-
-        if skipTargetTimeOrNull.call(item) then
-            " (tmpskip1'ed)".yellow
-        else
-            ""
-        end
-    end
-
-    # Listing::orbitalSuffix(item)
-    def self.orbitalSuffix(item)
-        return "" if item["sequenceuuid"].nil?
-        orbital = DarkEnergy::itemOrNull(item["sequenceuuid"])
-        return "" if orbital.nil?
-        " (#{orbital["description"]})".green
     end
 
     # Listing::canBeDefault(item)
@@ -115,7 +68,7 @@ class Listing
     # Listing::items1()
     def self.items1()
 
-        burners = NxBurners::itemsWithoutOrbital()
+        burners = DarkEnergy::mikuType("NxBurner")
 
         fires = DarkEnergy::mikuType("NxFire")
 
@@ -158,8 +111,6 @@ class Listing
                     .sort_by{|item| item["unixtime"] }
 
         cliques = DarkEnergy::mikuType("NxSequence")
-                    .select{|clique| NxSequences::listingRatio(clique) < 1 }
-                    .sort_by{|clique| NxSequences::listingRatio(clique) }
 
         tasks = 
             if cliques.empty? then
@@ -205,7 +156,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{Listing::orbitalSuffix(item)}#{Listing::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxSequences::sequenceSuffix(item)}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -332,14 +283,13 @@ class Listing
 
     # Listing::maintenance()
     def self.maintenance()
-        NxSequences::management()
         if Config::isPrimaryInstance() then
-             NxTimeCapsules::operate()
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
              PositiveSpace::maintenance()
+             NxCores::generalMaintenance()
         end
     end
 
@@ -375,6 +325,15 @@ class Listing
                     break if !status
                 }
         end
+
+        spacecontrol.putsline ""
+        DarkEnergy::mikuType("NxCore")
+            .sort_by{|item| NxCores::listingCompletionRatio(item) }
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                break if !status
+            }
 
         if items1.size > 0 then
             spacecontrol.putsline ""

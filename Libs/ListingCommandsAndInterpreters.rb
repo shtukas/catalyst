@@ -5,8 +5,8 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | orbital (<n>) | holiday <n> | skip | destroy <n>",
-            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new orbital",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | engine (<n>) | holiday <n> | skip | destroy <n>",
+            "makers   : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
             "",
             "specific types commands:",
             "    - ondate     : redate",
@@ -45,7 +45,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
-            Listing::tmpskip1(item, 3.14)
+            TmpSkip1::tmpskip1(item, 3.14)
             return
         end
 
@@ -57,7 +57,13 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Listing::tmpskip1(item, 3.14)
+            TmpSkip1::tmpskip1(item, 3.14)
+            return
+        end
+
+        if Interpreting::match("mikutypes", input) then
+            puts JSON.pretty_generate(DarkEnergy::all().map{|item| item["mikuType"] }.uniq.sort)
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -68,6 +74,36 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("drop", input) then
             NxDrops::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("core", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxCores::giveCoreToItemAttempt(item)
+            return
+        end
+
+        if Interpreting::match("core *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxCores::giveCoreToItemAttempt(item)
+            return
+        end
+
+        if Interpreting::match("sequence", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxSequences::giveSequenceToItemAttempt(item)
+            return
+        end
+
+        if Interpreting::match("sequence *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxSequences::giveSequenceToItemAttempt(item)
             return
         end
 
@@ -85,6 +121,21 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
             DoNotShowUntil::setUnixtime(item, unixtime)
+            return
+        end
+
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            TxEngines::interactivelyEngineSpawnAttempt(item)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            TxEngines::interactivelyEngineSpawnAttempt(item)
             return
         end
 
@@ -212,29 +263,36 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("new orbital", input) then
+        if Interpreting::match("new sequence", input) then
             orbital = NxSequences::interactivelyIssueNewOrNull()
             return if orbital.nil?
             puts JSON.pretty_generate(orbital)
             return
         end
 
-        if Interpreting::match("orbital", input) then
-            item = store.getDefault()
-            return if item.nil?
-            orbital = NxSequences::interactivelySelectOneOrNull()
-            return if orbital.nil?
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", orbital["uuid"])
+        if Interpreting::match("new core", input) then
+            core = NxCores::interactivelyIssueNewOrNull()
+            return if core.nil?
+            puts JSON.pretty_generate(core)
             return
         end
 
-        if Interpreting::match("orbital *", input) then
+        if Interpreting::match("sequence", input) then
+            item = store.getDefault()
+            return if item.nil?
+            sequence = NxSequences::interactivelySelectOneOrNull()
+            return if sequence.nil?
+            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
+            return
+        end
+
+        if Interpreting::match("sequence *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            orbital = NxSequences::interactivelySelectOneOrNull()
-            return if orbital.nil?
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", orbital["uuid"])
+            sequence = NxSequences::interactivelySelectOneOrNull()
+            return if sequence.nil?
+            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
             return
         end
 

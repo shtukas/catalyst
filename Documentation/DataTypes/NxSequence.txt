@@ -4,4 +4,3 @@ NxSequence:
     "mikuType"    : "NxSequence"
     "unixtime"    : Integer
     "description" : null or String
-    "engine"      : TxEngine

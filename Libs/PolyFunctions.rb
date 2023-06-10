@@ -55,6 +55,9 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
+        end
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
         end

@@ -13,20 +13,23 @@ class NxSequences
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        engine = TxEngines::interactivelyMakeEngineOrDefault()
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxSequence", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::itemOrNull(uuid)
     end
 
     # -------------------------
     # Data
 
-    # NxSequences::orbitalToNxTasks(clique)
-    def self.orbitalToNxTasks(clique)
+    # NxSequences::toString(clique)
+    def self.toString(clique)
+        "🔹 #{clique["description"]}"
+    end
+
+    # NxSequences::nxTasks(clique)
+    def self.nxTasks(clique)
         if clique["uuid"] == NxSequences::infinityuuid() then
             return DarkEnergy::mikuType("NxTask")
                 .select{|item| item["sequenceuuid"].nil? }
@@ -48,9 +51,9 @@ class NxSequences
             .select{|task| task["sequenceuuid"] == clique["uuid"] }
     end
 
-    # NxSequences::orbitalToTaskNewFirstPosition(clique)
-    def self.orbitalToTaskNewFirstPosition(clique)
-        positions = NxSequences::orbitalToNxTasks(clique).map{|task| task["position"] }
+    # NxSequences::tasksNewFirstPosition(clique)
+    def self.tasksNewFirstPosition(clique)
+        positions = NxSequences::nxTasks(clique).map{|task| task["position"] }
         return 1 if positions.size == 0
         position = positions.sort.first
         if position > 1 then
@@ -60,37 +63,12 @@ class NxSequences
         end
     end
 
-    # NxSequences::orbitalSuffix(item)
-    def self.orbitalSuffix(item)
-        return "" if item["mikuType"] != "NxTask"
-        clique = DarkEnergy::itemOrNull(item["sequenceuuid"])
-        return "" if clique.nil?
-        return "" if clique["description"].nil?
-        " (#{clique["description"]})".green
-    end
-
-    # NxSequences::toString(clique)
-    def self.toString(clique)
-        padding = XCache::getOrDefaultValue("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", "0").to_i
-        suffix =
-            if clique["engine"] then
-                " #{TxEngines::toString1(clique["engine"])}".green
-            else
-                ""
-            end
-        "🔹 #{clique["description"].ljust(padding)}#{suffix}"
-    end
-
-    # NxSequences::management()
-    def self.management()
-        padding = DarkEnergy::mikuType("NxSequence").map{|clique| clique["description"].size }.max
-        XCache::set("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", padding)
-    end
-
-    # NxSequences::listingRatio(clique)
-    def self.listingRatio(clique)
-        engine = clique["engine"]
-        0.9 * TxEngines::dayCompletionRatio(engine) + 0.1 * TxEngines::periodCompletionRatio(engine)
+    # NxSequences::sequenceSuffix(item)
+    def self.sequenceSuffix(item)
+        return "" if item["sequenceuuid"].nil?
+        sequence = DarkEnergy::itemOrNull(item["sequenceuuid"])
+        return "" if sequence.nil?
+        " (#{sequence["description"]})".green
     end
 
     # -------------------------
@@ -106,7 +84,7 @@ class NxSequences
 
     # NxSequences::interactivelySelectTaskPositionInOrbital(clique)
     def self.interactivelySelectTaskPositionInOrbital(clique)
-        tasks = NxSequences::orbitalToNxTasks(clique)
+        tasks = NxSequences::nxTasks(clique)
         return 1 if tasks.empty?
         tasks
             .sort_by{|task| task["position"] }
@@ -149,7 +127,7 @@ class NxSequences
                 }
 
             puts ""
-            NxSequences::orbitalToNxTasks(orbital).sort_by{|t| t["position"] }
+            NxSequences::nxTasks(orbital).sort_by{|t| t["position"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::itemToListingLine(store: store, item: item)
@@ -171,7 +149,7 @@ class NxSequences
                 text = CommonUtils::editTextSynchronously("").strip
                 next if text == ""
                 text.lines.map{|l| l.strip }.reverse.each{|line|
-                    position = NxSequences::orbitalToTaskNewFirstPosition(orbital)
+                    position = NxSequences::tasksNewFirstPosition(orbital)
                     t = NxTasks::lineToOrbitalTask(line, orbital["uuid"], position)
                     puts JSON.pretty_generate(t)
                 }
@@ -186,7 +164,7 @@ class NxSequences
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
 
-        if NxSequences::orbitalToNxTasks(orbital).empty? then
+        if NxSequences::nxTasks(orbital).empty? then
             puts "You are leaving an empty orbital"
             if LucilleCore::askQuestionAnswerAsBoolean("Would you like to destroy it ? ") then
                 DarkEnergy::destroy(orbital["uuid"])
@@ -201,5 +179,17 @@ class NxSequences
             break if clique.nil?
             NxSequences::program2(clique)
         }
+    end
+
+    # NxSequences::giveSequenceToItemAttempt(item)
+    def self.giveSequenceToItemAttempt(item)
+        if item["mikuType"] == "NxCore" or item["mikuType"] == "NxSequence" then
+            puts "You cannot give a sequence to a NxCore or a NxSequence"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        sequence = NxSequences::interactivelySelectOneOrNull()
+        return if sequence.nil?
+        DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
     end
 end

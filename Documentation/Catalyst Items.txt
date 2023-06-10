@@ -8,3 +8,4 @@ Cross types conventions:
     - "tmpskip1"       : TmpSkip1
 
 Types except NxCores can carry a "coreuuid"
+Types expect NxCores and NxSequences can carry a "sequenceuuid"

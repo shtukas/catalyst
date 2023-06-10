@@ -1,5 +1,8 @@
 
 TxEngine:
-    "hours"         : Float
-    "lastResetTime" : Unixtime
-    "capsule"       : String
+    "uuid"                       : String
+    "mikuType"                   : "TxEngine"
+    "targetuuid"                 : String
+    "startTime"                  : Float
+    "durationEstimateInHours"    : Unixtime
+    "deadlineInDifferentialDays" : String

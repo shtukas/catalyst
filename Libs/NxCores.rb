@@ -56,16 +56,12 @@ class NxCores
         0.9*day + 0.1*period
     end
 
-    # NxCores::toString0(core)
-    def self.toString0(core)
-        "(core) #{core["description"]}"
-    end
-
-    # NxCores::toString1(core)
-    def self.toString1(core)
+    # NxCores::toString(core)
+    def self.toString(core)
+        padding = XCache::getOrDefaultValue("0e067f3e-a954-4138-8336-876240b9b7dd", "0").to_i
         strings = []
 
-        strings << "(core: today: #{"#{"%5.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        strings << "#{core["description"].ljust(padding)} (core: today: #{"#{"%5.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%5.2f" % (100*NxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
@@ -92,13 +88,6 @@ class NxCores
         strings.join()
     end
 
-    # NxCores::pendingEngines()
-    def self.pendingEngines()
-        DarkEnergy::mikuType("NxCore")
-            .select{|core| NxCores::listingCompletionRatio(core) < 1 }
-            .select{|core| DoNotShowUntil::isVisible(core) }
-    end
-
     # NxCores::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxCore")
@@ -107,11 +96,10 @@ class NxCores
 
     # NxCores::coreToContents(core)
     def self.coreToContents(core)
-
     end
 
-    # NxCores::coreToEngineSuffix(item)
-    def self.coreToEngineSuffix(item)
+    # NxCores::coreSuffix(item)
+    def self.coreSuffix(item)
         if item["coreuuid"] then
             core = DarkEnergy::itemOrNull(item["coreuuid"])
             if core.nil? then
@@ -134,12 +122,12 @@ class NxCores
         return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
         if Bank::getValue(core["capsule"]).to_f/3600 > 1.5*core["hours"] then
             overflow = 0.5*core["hours"]*3600
-            puts "I am about to smooth core #{NxCores::toString1(core)}, overflow: #{(overflow.to_f/3600).round(2)} hours for core: #{core["description"]}"
+            puts "I am about to smooth core #{NxCores::toString(core)}, overflow: #{(overflow.to_f/3600).round(2)} hours for core: #{core["description"]}"
             LucilleCore::pressEnterToContinue()
             NxTimePromises::issue_things(core, overflow, 20)
             return nil
         end
-        puts "> I am about to reset core: #{NxCores::toString1(core)}"
+        puts "> I am about to reset core: #{NxCores::toString(core)}"
         LucilleCore::pressEnterToContinue()
         Bank::put(core["capsule"], -core["hours"]*3600)
         if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{core["hours"]} hours ? ") then
@@ -152,15 +140,17 @@ class NxCores
         core
     end
 
-
     # NxCores::generalMaintenance()
     def self.generalMaintenance()
+        padding = DarkEnergy::mikuType("NxCore").map{|core| core["description"].size }.max
+        XCache::set("0e067f3e-a954-4138-8336-876240b9b7dd", padding)
+
         DarkEnergy::mikuType("NxCore").each{|core| NxCores::coreMaintenance(core) }
     end
 
     # NxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", DarkEnergy::mikuType("NxCore"), lambda{|item| NxCores::toString0(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", DarkEnergy::mikuType("NxCore"), lambda{|item| item["description"] })
     end
 
     # NxCores::interactivelySelectOneUUIDOrNull()
@@ -190,5 +180,17 @@ class NxCores
                 NxCores::program0(core)
             end
         }
+    end
+
+    # NxCores::giveCoreToItemAttempt(item)
+    def self.giveCoreToItemAttempt(item)
+        if item["mikuType"] == "NxCore" then
+            puts "You cannot give a core to a NxCore"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        core = NxCores::interactivelySelectOneOrNull()
+        return if core.nil?
+        DarkEnergy::patch(item["uuid"], "coreuuid", core["uuid"])
     end
 end
