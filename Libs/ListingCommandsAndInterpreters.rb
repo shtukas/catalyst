@@ -50,7 +50,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("orbitals", input) then
-            NxOrbitals::program3()
+            NxSequences::program3()
             return
         end
 
@@ -213,7 +213,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("new orbital", input) then
-            orbital = NxOrbitals::interactivelyIssueNewOrNull()
+            orbital = NxSequences::interactivelyIssueNewOrNull()
             return if orbital.nil?
             puts JSON.pretty_generate(orbital)
             return
@@ -222,7 +222,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("orbital", input) then
             item = store.getDefault()
             return if item.nil?
-            orbital = NxOrbitals::interactivelySelectOneOrNull()
+            orbital = NxSequences::interactivelySelectOneOrNull()
             return if orbital.nil?
             DarkEnergy::patch(item["uuid"], "sequenceuuid", orbital["uuid"])
             return
@@ -232,7 +232,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            orbital = NxOrbitals::interactivelySelectOneOrNull()
+            orbital = NxSequences::interactivelySelectOneOrNull()
             return if orbital.nil?
             DarkEnergy::patch(item["uuid"], "sequenceuuid", orbital["uuid"])
             return

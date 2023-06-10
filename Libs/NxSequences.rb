@@ -1,7 +1,7 @@
 
-class NxOrbitals
+class NxSequences
 
-    # NxOrbitals::infinityuuid()
+    # NxSequences::infinityuuid()
     def self.infinityuuid()
         "9297479b-17de-427e-8622-a7e52f90020c"
     end
@@ -9,13 +9,13 @@ class NxOrbitals
     # -------------------------
     # IO
 
-    # NxOrbitals::interactivelyIssueNewOrNull()
+    # NxSequences::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         engine = TxEngines::interactivelyMakeEngineOrDefault()
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxOrbital", uuid)
+        DarkEnergy::init("NxSequence", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "engine", engine)
@@ -25,9 +25,9 @@ class NxOrbitals
     # -------------------------
     # Data
 
-    # NxOrbitals::orbitalToNxTasks(clique)
+    # NxSequences::orbitalToNxTasks(clique)
     def self.orbitalToNxTasks(clique)
-        if clique["uuid"] == NxOrbitals::infinityuuid() then
+        if clique["uuid"] == NxSequences::infinityuuid() then
             return DarkEnergy::mikuType("NxTask")
                 .select{|item| item["sequenceuuid"].nil? }
                 .sort_by{|task| task["position"] }
@@ -48,9 +48,9 @@ class NxOrbitals
             .select{|task| task["sequenceuuid"] == clique["uuid"] }
     end
 
-    # NxOrbitals::orbitalToTaskNewFirstPosition(clique)
+    # NxSequences::orbitalToTaskNewFirstPosition(clique)
     def self.orbitalToTaskNewFirstPosition(clique)
-        positions = NxOrbitals::orbitalToNxTasks(clique).map{|task| task["position"] }
+        positions = NxSequences::orbitalToNxTasks(clique).map{|task| task["position"] }
         return 1 if positions.size == 0
         position = positions.sort.first
         if position > 1 then
@@ -60,7 +60,7 @@ class NxOrbitals
         end
     end
 
-    # NxOrbitals::orbitalSuffix(item)
+    # NxSequences::orbitalSuffix(item)
     def self.orbitalSuffix(item)
         return "" if item["mikuType"] != "NxTask"
         clique = DarkEnergy::itemOrNull(item["sequenceuuid"])
@@ -69,7 +69,7 @@ class NxOrbitals
         " (#{clique["description"]})".green
     end
 
-    # NxOrbitals::toString(clique)
+    # NxSequences::toString(clique)
     def self.toString(clique)
         padding = XCache::getOrDefaultValue("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", "0").to_i
         suffix =
@@ -81,13 +81,13 @@ class NxOrbitals
         "🔹 #{clique["description"].ljust(padding)}#{suffix}"
     end
 
-    # NxOrbitals::management()
+    # NxSequences::management()
     def self.management()
-        padding = DarkEnergy::mikuType("NxOrbital").map{|clique| clique["description"].size }.max
+        padding = DarkEnergy::mikuType("NxSequence").map{|clique| clique["description"].size }.max
         XCache::set("ba9117eb-7a6f-474c-b53e-1c7a80ac0c6c", padding)
     end
 
-    # NxOrbitals::listingRatio(clique)
+    # NxSequences::listingRatio(clique)
     def self.listingRatio(clique)
         engine = clique["engine"]
         0.9 * TxEngines::dayCompletionRatio(engine) + 0.1 * TxEngines::periodCompletionRatio(engine)
@@ -96,17 +96,17 @@ class NxOrbitals
     # -------------------------
     # Ops
 
-    # NxOrbitals::interactivelySelectOneOrNull()
+    # NxSequences::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cliques = DarkEnergy::mikuType("NxOrbital")
-                    .select{|clique| clique["uuid"] != NxOrbitals::infinityuuid() }
+        cliques = DarkEnergy::mikuType("NxSequence")
+                    .select{|clique| clique["uuid"] != NxSequences::infinityuuid() }
                     .sort_by{|clique| clique["unixtime"] }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| NxOrbitals::toString(clique) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("clique", cliques, lambda{|clique| NxSequences::toString(clique) })
     end
 
-    # NxOrbitals::interactivelySelectTaskPositionInOrbital(clique)
+    # NxSequences::interactivelySelectTaskPositionInOrbital(clique)
     def self.interactivelySelectTaskPositionInOrbital(clique)
-        tasks = NxOrbitals::orbitalToNxTasks(clique)
+        tasks = NxSequences::orbitalToNxTasks(clique)
         return 1 if tasks.empty?
         tasks
             .sort_by{|task| task["position"] }
@@ -122,10 +122,10 @@ class NxOrbitals
         position
     end
 
-    # NxOrbitals::program2(orbital)
+    # NxSequences::program2(orbital)
     def self.program2(orbital)
 
-        if orbital["uuid"] == NxOrbitals::infinityuuid() then
+        if orbital["uuid"] == NxSequences::infinityuuid() then
             puts "You cannot run program on Infinity"
             LucilleCore::pressEnterToContinue()
             return
@@ -139,7 +139,7 @@ class NxOrbitals
             store = ItemStore.new()
 
             puts ""
-            puts NxOrbitals::toString(orbital)
+            puts NxSequences::toString(orbital)
             
             puts ""
             NxBurners::itemsForOrbital(orbital)
@@ -149,7 +149,7 @@ class NxOrbitals
                 }
 
             puts ""
-            NxOrbitals::orbitalToNxTasks(orbital).sort_by{|t| t["position"] }
+            NxSequences::orbitalToNxTasks(orbital).sort_by{|t| t["position"] }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::itemToListingLine(store: store, item: item)
@@ -171,7 +171,7 @@ class NxOrbitals
                 text = CommonUtils::editTextSynchronously("").strip
                 next if text == ""
                 text.lines.map{|l| l.strip }.reverse.each{|line|
-                    position = NxOrbitals::orbitalToTaskNewFirstPosition(orbital)
+                    position = NxSequences::orbitalToTaskNewFirstPosition(orbital)
                     t = NxTasks::lineToOrbitalTask(line, orbital["uuid"], position)
                     puts JSON.pretty_generate(t)
                 }
@@ -186,7 +186,7 @@ class NxOrbitals
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
 
-        if NxOrbitals::orbitalToNxTasks(orbital).empty? then
+        if NxSequences::orbitalToNxTasks(orbital).empty? then
             puts "You are leaving an empty orbital"
             if LucilleCore::askQuestionAnswerAsBoolean("Would you like to destroy it ? ") then
                 DarkEnergy::destroy(orbital["uuid"])
@@ -194,12 +194,12 @@ class NxOrbitals
         end
     end
 
-    # NxOrbitals::program3()
+    # NxSequences::program3()
     def self.program3()
         loop {
-            clique = NxOrbitals::interactivelySelectOneOrNull()
+            clique = NxSequences::interactivelySelectOneOrNull()
             break if clique.nil?
-            NxOrbitals::program2(clique)
+            NxSequences::program2(clique)
         }
     end
 end

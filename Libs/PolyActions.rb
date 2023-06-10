@@ -47,8 +47,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOrbital" then
-            NxOrbitals::program2(item)
+        if item["mikuType"] == "NxSequence" then
+            NxSequences::program2(item)
             return
         end
 
@@ -312,7 +312,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOrbital" then
+        if item["mikuType"] == "NxSequence" then
             PolyActions::access(item)
             return
         end

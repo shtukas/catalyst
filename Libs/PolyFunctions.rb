@@ -58,8 +58,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
         end
-        if item["mikuType"] == "NxOrbital" then
-            return NxOrbitals::toString(item)
+        if item["mikuType"] == "NxSequence" then
+            return NxSequences::toString(item)
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
@@ -91,8 +91,8 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxOrbital" then
-            return NxOrbitals::toString(item)
+        if item["mikuType"] == "NxSequence" then
+            return NxSequences::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

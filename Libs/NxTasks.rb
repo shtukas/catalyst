@@ -17,10 +17,10 @@ class NxTasks
         sequenceuuid = nil
         position = nil
 
-        clique = NxOrbitals::interactivelySelectOneOrNull()
+        clique = NxSequences::interactivelySelectOneOrNull()
         if clique then
             sequenceuuid = clique["uuid"]
-            position = NxOrbitals::interactivelySelectTaskPositionInOrbital(clique)
+            position = NxSequences::interactivelySelectTaskPositionInOrbital(clique)
         else
             position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions().sort.first(100))
         end

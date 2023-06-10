@@ -157,15 +157,15 @@ class Listing
         drops = DarkEnergy::mikuType("NxDrop")
                     .sort_by{|item| item["unixtime"] }
 
-        cliques = DarkEnergy::mikuType("NxOrbital")
-                    .select{|clique| NxOrbitals::listingRatio(clique) < 1 }
-                    .sort_by{|clique| NxOrbitals::listingRatio(clique) }
+        cliques = DarkEnergy::mikuType("NxSequence")
+                    .select{|clique| NxSequences::listingRatio(clique) < 1 }
+                    .sort_by{|clique| NxSequences::listingRatio(clique) }
 
         tasks = 
             if cliques.empty? then
                 []
             else
-                NxOrbitals::orbitalToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
+                NxSequences::orbitalToNxTasks(cliques.first).sort_by{|item| item["position"] }.first(5)
             end
 
         items = [
@@ -332,7 +332,7 @@ class Listing
 
     # Listing::maintenance()
     def self.maintenance()
-        NxOrbitals::management()
+        NxSequences::management()
         if Config::isPrimaryInstance() then
              NxTimeCapsules::operate()
              NxTimePromises::operate()

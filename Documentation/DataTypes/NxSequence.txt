@@ -1,7 +1,7 @@
 
-NxOrbital:
+NxSequence:
     "uuid"        : String
-    "mikuType"    : "NxOrbital"
+    "mikuType"    : "NxSequence"
     "unixtime"    : Integer
     "description" : null or String
     "engine"      : TxEngine
