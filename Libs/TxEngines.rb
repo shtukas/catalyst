@@ -79,7 +79,7 @@ class TxEngines
     # TxEngines::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("TxEngine")
-            .select{|engine| TxEngines::listingmetric(engine) >= 0.1 }
+            .select{|engine| TxEngines::listingmetric(engine) >= 0.051 }
     end
 
     # -------------------------
