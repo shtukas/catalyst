@@ -2,15 +2,9 @@ Catalyst items are json object with at least a uuid ("uuid") and a miku type ("m
 
 Cross types conventions:
 
-    - "n3timestamp"    : Unixtime, Float (2)
     - "field11"        : coredata reference string
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-(2) Carried by all objects, help with resolution
-
-TmpSkip1 : {
-    "unixtime": Float,
-    "durationInHours": Float
-} // Skipped until unixtime + durationInHours*3600
+Types except NxCores can carry a "coreuuid"

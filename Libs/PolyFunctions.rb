@@ -11,19 +11,25 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["cliqueuuid"] then
-            orbital = DarkEnergy::itemOrNull(item["cliqueuuid"])
-            if orbital then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(orbital)
+        if item["coreuuid"] then
+            core = DarkEnergy::itemOrNull(item["coreuuid"])
+            if core then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
             end
         end
 
-        if item["mikuType"] == "NxOrbital" then
-            engine = item["engine"]
+        if item["mikuType"] == "NxCore" then
             accounts << {
-                "description" => "TxEngine",
-                "number"      => engine["capsule"]
+                "description" => "NxCore",
+                "number"      => item["capsule"]
             }
+        end
+
+        if item["sequenceuuid"] then
+            sequence = DarkEnergy::itemOrNull(item["sequenceuuid"])
+            if sequence then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(sequence)
+            end
         end
 
         accounts.reduce([]){|as, account|

@@ -224,7 +224,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             orbital = NxOrbitals::interactivelySelectOneOrNull()
             return if orbital.nil?
-            DarkEnergy::patch(item["uuid"], "cliqueuuid", orbital["uuid"])
+            DarkEnergy::patch(item["uuid"], "sequenceuuid", orbital["uuid"])
             return
         end
 
@@ -234,7 +234,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             orbital = NxOrbitals::interactivelySelectOneOrNull()
             return if orbital.nil?
-            DarkEnergy::patch(item["uuid"], "cliqueuuid", orbital["uuid"])
+            DarkEnergy::patch(item["uuid"], "sequenceuuid", orbital["uuid"])
             return
         end
 

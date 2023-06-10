@@ -8,24 +8,24 @@ class NxTasks
     # NxTasks::orbitalFreePositions()
     def self.orbitalFreePositions()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| task["cliqueuuid"].nil? }
+            .select{|task| task["sequenceuuid"].nil? }
             .map{|task| task["position"] }
     end
 
     # NxTasks::coordinates()
     def self.coordinates()
-        cliqueuuid = nil
+        sequenceuuid = nil
         position = nil
 
         clique = NxOrbitals::interactivelySelectOneOrNull()
         if clique then
-            cliqueuuid = clique["uuid"]
+            sequenceuuid = clique["uuid"]
             position = NxOrbitals::interactivelySelectTaskPositionInOrbital(clique)
         else
             position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions().sort.first(100))
         end
 
-        [cliqueuuid, position]
+        [sequenceuuid, position]
     end
 
     # NxTasks::interactivelyIssueNewOrNull()
@@ -41,14 +41,14 @@ class NxTasks
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
 
-        cliqueuuid, position = NxTasks::coordinates()
+        sequenceuuid, position = NxTasks::coordinates()
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
         DarkEnergy::patch(uuid, "position", position)
-        DarkEnergy::patch(uuid, "cliqueuuid", cliqueuuid)
+        DarkEnergy::patch(uuid, "sequenceuuid", sequenceuuid)
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
 
         DarkEnergy::itemOrNull(uuid)
@@ -75,15 +75,15 @@ class NxTasks
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxTasks::lineToOrbitalTask(line, cliqueuuid, position)
-    def self.lineToOrbitalTask(line, cliqueuuid, position)
+    # NxTasks::lineToOrbitalTask(line, sequenceuuid, position)
+    def self.lineToOrbitalTask(line, sequenceuuid, position)
         uuid = SecureRandom.uuid
         description = line
         DarkEnergy::init("NxPure", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "cliqueuuid", cliqueuuid)
+        DarkEnergy::patch(uuid, "sequenceuuid", sequenceuuid)
         DarkEnergy::patch(uuid, "position", position)
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
         DarkEnergy::itemOrNull(uuid)
@@ -103,15 +103,5 @@ class NxTasks
     # NxTasks::access(item)
     def self.access(item)
         CoreData::access(item["uuid"], item["field11"])
-    end
-
-    # NxBurners::maintenance()
-    def self.maintenance()
-        DarkEnergy::mikuType("NxBurner")
-            .each{|item|
-                if item["cliqueuuid"] and DarkEnergy::itemOrNull(item["cliqueuuid"]).nil? then
-                    DarkEnergy::patch(uuid, "cliqueuuid", nil)
-                end
-            }
     end
 end

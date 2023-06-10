@@ -26,12 +26,12 @@ class NxBurners
 
     # NxBurners::itemsForOrbital(orbital)
     def self.itemsForOrbital(orbital)
-        DarkEnergy::mikuType("NxBurner").select{|item| item["cliqueuuid"] == orbital["uuid"] }
+        DarkEnergy::mikuType("NxBurner").select{|item| item["sequenceuuid"] == orbital["uuid"] }
     end
 
     # NxBurners::itemsWithoutOrbital()
     def self.itemsWithoutOrbital()
-        DarkEnergy::mikuType("NxBurner").select{|item| item["cliqueuuid"].nil? }
+        DarkEnergy::mikuType("NxBurner").select{|item| item["sequenceuuid"].nil? }
     end
 
     # ------------------------------------
@@ -41,11 +41,6 @@ class NxBurners
     # NxBurners::maintenance()
     def self.maintenance()
         DarkEnergy::mikuType("NxBurner")
-            .each{|item|
-                if item["cliqueuuid"] and DarkEnergy::itemOrNull(item["cliqueuuid"]).nil? then
-                    DarkEnergy::patch(uuid, "cliqueuuid", nil)
-                end
-            }
     end
 
     # NxBurners::access(item)

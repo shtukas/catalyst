@@ -1,0 +1,7 @@
+
+TmpSkip1
+{
+    "unixtime": Float,
+    "durationInHours": Float
+} 
+// Skipped until unixtime + durationInHours*3600

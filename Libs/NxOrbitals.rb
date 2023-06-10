@@ -29,7 +29,7 @@ class NxOrbitals
     def self.orbitalToNxTasks(clique)
         if clique["uuid"] == NxOrbitals::infinityuuid() then
             return DarkEnergy::mikuType("NxTask")
-                .select{|item| item["cliqueuuid"].nil? }
+                .select{|item| item["sequenceuuid"].nil? }
                 .sort_by{|task| task["position"] }
                 .reduce([]){|selected, task|
                     if selected.size >= 6 then
@@ -45,7 +45,7 @@ class NxOrbitals
         end
 
         DarkEnergy::mikuType("NxTask")
-            .select{|task| task["cliqueuuid"] == clique["uuid"] }
+            .select{|task| task["sequenceuuid"] == clique["uuid"] }
     end
 
     # NxOrbitals::orbitalToTaskNewFirstPosition(clique)
@@ -63,7 +63,7 @@ class NxOrbitals
     # NxOrbitals::orbitalSuffix(item)
     def self.orbitalSuffix(item)
         return "" if item["mikuType"] != "NxTask"
-        clique = DarkEnergy::itemOrNull(item["cliqueuuid"])
+        clique = DarkEnergy::itemOrNull(item["sequenceuuid"])
         return "" if clique.nil?
         return "" if clique["description"].nil?
         " (#{clique["description"]})".green

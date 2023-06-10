@@ -68,8 +68,8 @@ class Listing
 
     # Listing::orbitalSuffix(item)
     def self.orbitalSuffix(item)
-        return "" if item["cliqueuuid"].nil?
-        orbital = DarkEnergy::itemOrNull(item["cliqueuuid"])
+        return "" if item["sequenceuuid"].nil?
+        orbital = DarkEnergy::itemOrNull(item["sequenceuuid"])
         return "" if orbital.nil?
         " (#{orbital["description"]})".green
     end
