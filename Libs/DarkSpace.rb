@@ -225,8 +225,11 @@ class DarkEnergy
                     # So we are always doing the reject
                     items = items.reject{|x| x["uuid"] == i["uuid"] }
                 else
+                    # Here we need to handle both cases, because the item may have varying mikuTypes in the journal
                     if i["mikuType"] == mikuType then
                         items = items.reject{|x| x["uuid"] == i["uuid"]} + [i]
+                    else
+                        items = items.reject{|x| x["uuid"] == i["uuid"]}
                     end
                 end
             }
