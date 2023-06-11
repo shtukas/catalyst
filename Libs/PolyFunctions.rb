@@ -27,7 +27,7 @@ class PolyFunctions
 
         if item["mikuType"] == "NxCore" then
             accounts << {
-                "description" => "NxCore",
+                "description" => "NxCore capsule",
                 "number"      => item["capsule"]
             }
         end

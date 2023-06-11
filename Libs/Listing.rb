@@ -185,6 +185,10 @@ class Listing
                 "name" => "NxTimes::listingItems()",
                 "lambda" => lambda { NxTimes::listingItems() }
             },
+            {
+                "name" => "TxEngines::listingItems()",
+                "lambda" => lambda { TxEngines::listingItems() }
+            },
         ]
 
         runTest = lambda {|test|
