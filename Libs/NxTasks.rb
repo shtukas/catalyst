@@ -5,27 +5,33 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
-    # NxTasks::orbitalFreePositions()
-    def self.orbitalFreePositions()
+    # NxTasks::coreFreePositions()
+    def self.coreFreePositions()
         DarkEnergy::mikuType("NxTask")
             .select{|task| task["sequenceuuid"].nil? }
             .map{|task| task["position"] }
     end
 
-    # NxTasks::coordinates()
-    def self.coordinates()
-        sequenceuuid = nil
-        position = nil
+    # NxTasks::coordinates(item or null)
+    def self.coordinates(item)
+        core = 
+            if item then
+                if item["coreuuid"] then
+                    DarkEnergy::itemOrNull(item["coreuuid"])
+                else
+                    NxCores::interactivelySelectOneOrNull()
+                end
+            else
+                 NxCores::interactivelySelectOneOrNull()
+            end
 
-        clique = NxSequences::interactivelySelectOneOrNull()
-        if clique then
-            sequenceuuid = clique["uuid"]
-            position = NxSequences::interactivelySelectTaskPositionInOrbital(clique)
+        if core then
+            position = NxCores::firstPositionInCore(core)
         else
-            position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions().sort.first(100))
+            position = CommonUtils::computeThatPosition(NxTasks::coreFreePositions().sort.first(100))
         end
 
-        [sequenceuuid, position]
+        [core ? core["uuid"] : nil, position]
     end
 
     # NxTasks::interactivelyIssueNewOrNull()
@@ -41,14 +47,14 @@ class NxTasks
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
 
-        sequenceuuid, position = NxTasks::coordinates()
+        coreuuid, position = NxTasks::coordinates(nil)
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "coreuuid", coreuuid)
         DarkEnergy::patch(uuid, "position", position)
-        DarkEnergy::patch(uuid, "sequenceuuid", sequenceuuid)
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
 
         DarkEnergy::itemOrNull(uuid)
@@ -64,7 +70,7 @@ class NxTasks
         nhash = DarkMatter::putBlob(url)
         coredataref = "url:#{nhash}"
 
-        position = CommonUtils::computeThatPosition(NxTasks::orbitalFreePositions())
+        position = CommonUtils::computeThatPosition(NxTasks::coreFreePositions())
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
@@ -72,11 +78,6 @@ class NxTasks
         DarkEnergy::patch(uuid, "field11", coredataref)
         DarkEnergy::patch(uuid, "position", position)
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
-
-        engine = TxEngines::makeEngine(SecureRandom.hex, uuid, Time.new.to_i, 1, 30)
-        DarkEnergy::commit(engine)
-        DarkEnergy::patch(item["uuid"], "engineuuid", engine["uuid"])
-
         DarkEnergy::itemOrNull(uuid)
     end
 
@@ -115,29 +116,19 @@ class NxTasks
         CoreData::access(item["uuid"], item["field11"])
     end
 
-    # NxTasks::setDriverAttempt(item) # boolean
-    def self.setDriverAttempt(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "sequence", "engine"])
-        return false if option.nil?
-        if option == "core" then
-            core = NxCores::interactivelySelectOneOrNull()
-            return false if core.nil?
-            DarkEnergy::patch(item["uuid"], "coreuuid", core["uuid"])
-            return true
-        end
-        if option == "sequence" then
-            sequence = NxSequences::interactivelySelectOneOrNull()
-            return false if sequence.nil?
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
-            return true
-        end
-        if option == "engine" then
-            return TxEngines::interactivelyEngineSpawnAttempt(item)
-        end
-    end
-
     # NxTasks::program(task)
     def self.program(task)
         PolyActions::doubleDot(task)
+    end
+
+    # NxTasks::maintenance()
+    def self.maintenance()
+        DarkEnergy::mikuType("NxTask").each{|task|
+            next if task["coreuuid"].nil?
+            core = DarkEnergy::itemOrNull(task["coreuuid"])
+            if core.nil? then
+                DarkEnergy::patch(task["uuid"], "coreuuid", nil)
+            end
+        }
     end
 end

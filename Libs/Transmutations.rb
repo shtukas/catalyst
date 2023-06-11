@@ -30,17 +30,17 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxTask" then
-            sequenceuuid, position = NxTasks::coordinates()
+            coreuuid, position = NxTasks::coordinates(nil)
+            DarkEnergy::patch(item["uuid"], "coreuuid", coreuuid)
             DarkEnergy::patch(item["uuid"], "position", position)
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequenceuuid)
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            sequenceuuid, position = NxTasks::coordinates()
+            coreuuid, position = NxTasks::coordinates(nil)
+            DarkEnergy::patch(item["uuid"], "coreuuid", coreuuid)
             DarkEnergy::patch(item["uuid"], "position", position)
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequenceuuid)
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -56,9 +56,9 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            sequenceuuid, position = NxTasks::coordinates()
+            coreuuid, position = NxTasks::coordinates(nil)
+            DarkEnergy::patch(item["uuid"], "coreuuid", coreuuid)
             DarkEnergy::patch(item["uuid"], "position", position)
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequenceuuid)
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end

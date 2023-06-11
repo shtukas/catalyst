@@ -1,6 +1,16 @@
 
 class NxCores
 
+    # NxCores::infinityuuid()
+    def self.infinityuuid()
+        "df40842a-f439-40d2-a274-bb8526a40189"
+    end
+
+    # NxCores::recoveryuuid()
+    def self.recoveryuuid()
+        "f96cc544-06ef-4e30-b415-e57e78eb3d73"
+    end
+
     # -------------------------
     # IO
 
@@ -94,8 +104,15 @@ class NxCores
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
     end
 
-    # NxCores::coreToContents(core)
-    def self.coreToContents(core)
+    # NxCores::tasks(core)
+    def self.tasks(core)
+        if core["uuid"] == NxCores::infinityuuid() then
+            return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] }
+        end
+        if core["uuid"] == NxCores::recoveryuuid() then
+            return DarkEnergy::mikuType("NxTask").sort_by{|task| task["unixtime"] }.reverse.take(100)
+        end
+        DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"] == core["uuid"] }.sort_by{|task| task["position"] }
     end
 
     # NxCores::coreSuffix(item)
@@ -116,6 +133,13 @@ class NxCores
     # NxCores::listingmetric(core)
     def self.listingmetric(core)
         0.5 * (1 - NxCores::listingCompletionRatio(core))
+    end
+
+    # NxCores::firstPositionInCore(core)
+    def self.firstPositionInCore(core)
+        tasks = NxCores::tasks(core)
+        return 1 if tasks.empty?
+        tasks.map{|task| task["position"] }.min
     end
 
     # -------------------------
@@ -155,7 +179,9 @@ class NxCores
 
     # NxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", DarkEnergy::mikuType("NxCore"), lambda{|item| item["description"] })
+        cores = DarkEnergy::mikuType("NxCore")
+                    .reject{|core| core["uuid"] == NxCores::infinityuuid() }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| item["description"] })
     end
 
     # NxCores::interactivelySelectOneUUIDOrNull()
@@ -167,22 +193,32 @@ class NxCores
 
     # NxCores::program0(core)
     def self.program0(core)
-        puts "NxCores::program0(core) needs to be implemented"
-        LucilleCore::pressEnterToContinue()
+        loop {
+            store = ItemStore.new()
+
+            Listing::printEvalItems(store, Listing::items1().select{|item| item["coreuuid"] == core["uuid"] }, NxCores::tasks(core))
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+        }
     end
 
     # NxCores::program1(core)
     def self.program1(core)
         loop {
-            actions = ["add time", "program"]
+            actions = ["program (default)", "add time"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
-            return if action.nil?
+            if action == "program (default)" or action.nil? then
+                NxCores::program0(core)
+                return
+            end
             if action == "add time" then
                 timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
                 PolyActions::addTimeToItem(core, timeInHours*3600)
-            end
-            if action == "program" then
-                NxCores::program0(core)
             end
         }
     end

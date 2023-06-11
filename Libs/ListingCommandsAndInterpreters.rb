@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | engine (<n>) | holiday <n> | skip | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | destroy <n>",
             "",
             "specific types commands:",
             "    - ondate  : redate",
@@ -49,11 +49,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("orbitals", input) then
-            NxSequences::program3()
-            return
-        end
-
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
@@ -82,11 +77,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sequences", input) then
-            NxSequences::program3()
-            return
-        end
-
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
@@ -99,21 +89,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxCores::giveCoreToItemAttempt(item)
-            return
-        end
-
-        if Interpreting::match("sequence", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxSequences::giveSequenceToItemAttempt(item)
-            return
-        end
-
-        if Interpreting::match("sequence *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxSequences::giveSequenceToItemAttempt(item)
             return
         end
 
@@ -131,21 +106,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
             DoNotShowUntil::setUnixtime(item, unixtime)
-            return
-        end
-
-        if Interpreting::match("engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            TxEngines::interactivelyEngineSpawnAttempt(item)
-            return
-        end
-
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            TxEngines::interactivelyEngineSpawnAttempt(item)
             return
         end
 
@@ -273,36 +233,10 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("new sequence", input) then
-            orbital = NxSequences::interactivelyIssueNewOrNull()
-            return if orbital.nil?
-            puts JSON.pretty_generate(orbital)
-            return
-        end
-
         if Interpreting::match("new core", input) then
             core = NxCores::interactivelyIssueNewOrNull()
             return if core.nil?
             puts JSON.pretty_generate(core)
-            return
-        end
-
-        if Interpreting::match("sequence", input) then
-            item = store.getDefault()
-            return if item.nil?
-            sequence = NxSequences::interactivelySelectOneOrNull()
-            return if sequence.nil?
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
-            return
-        end
-
-        if Interpreting::match("sequence *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            sequence = NxSequences::interactivelySelectOneOrNull()
-            return if sequence.nil?
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", sequence["uuid"])
             return
         end
 

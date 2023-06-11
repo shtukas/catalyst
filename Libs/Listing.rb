@@ -99,9 +99,7 @@ class Listing
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            NxSequences::listingItems(),
             NxCores::listingItems(),
-            TxEngines::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -124,7 +122,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxCores::coreSuffix(item).green}#{NxSequences::sequenceSuffix(item)}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxCores::coreSuffix(item).green}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -167,14 +165,6 @@ class Listing
             {
                 "name" => "DarkEnergy::mikuType(NxDrop)",
                 "lambda" => lambda { DarkEnergy::mikuType("NxDrop") }
-            },
-            {
-                "name" => "DarkEnergy::mikuType(TxEngine)",
-                "lambda" => lambda { DarkEnergy::mikuType("TxEngine") }
-            },
-            {
-                "name" => "DarkEnergy::mikuType(NxSequence)",
-                "lambda" => lambda { DarkEnergy::mikuType("NxSequence") }
             },
             {
                 "name" => "NxCores::listingItems()",
@@ -278,8 +268,7 @@ class Listing
              NxBurners::maintenance()
              PositiveSpace::maintenance()
              NxCores::generalMaintenance()
-             NxSequences::maintenance()
-             TxEngines::maintenance()
+             NxTasks::maintenance()
         end
     end
 

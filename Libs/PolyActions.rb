@@ -10,6 +10,11 @@ class PolyActions
 
         # types in alphabetical order
 
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             puts item["description"]
             LucilleCore::pressEnterToContinue()
@@ -47,11 +52,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequence" then
-            NxSequences::program2(item)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -69,11 +69,6 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
-            return
-        end
-
-        if item["mikuType"] == "TxEngine" then
-            TxEngines::program(item)
             return
         end
 
@@ -266,6 +261,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCore" then
+            puts PolyFunctions::toString(item).green
+            PolyActions::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxDrop" then
             NxDrops::program(item)
             return
@@ -317,11 +318,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequence" then
-            PolyActions::access(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -330,11 +326,6 @@ class PolyActions
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
             end
-            return
-        end
-
-        if item["mikuType"] == "TxEngine" then
-            TxEngines::program(item)
             return
         end
 

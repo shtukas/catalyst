@@ -1,6 +1,0 @@
-
-NxSequence:
-    "uuid"        : String
-    "mikuType"    : "NxSequence"
-    "unixtime"    : Integer
-    "description" : null or String

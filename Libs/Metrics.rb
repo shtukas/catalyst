@@ -31,7 +31,7 @@ class Metrics
             DarkEnergy::patch(item["uuid"], "engineuuid", nil)
             return nil
         end
-        Metrics::item(sequence)
+        Metrics::item(engine)
     end
 
     # Metrics::item(item)
@@ -53,10 +53,6 @@ class Metrics
             return 2.0
         end
 
-        if item["mikuType"] == "TxEngine" then
-            return TxEngines::listingmetric(item)
-        end
-
         if item["mikuType"] == "Wave" then
             return 2.3 if item["interruption"]
             return 1.5
@@ -64,14 +60,6 @@ class Metrics
 
         if item["mikuType"] == "NxOndate" then
             return 1.3
-        end
-
-        if item["mikuType"] == "NxSequence" then
-            numbers = [
-                Metrics::coreuuid(item),
-                Metrics::engineuuid(item)
-            ].compact
-            return (numbers.size > 0 ? (0.5 + 0.5 * numbers.max) : 0.5)
         end
 
         raise "cannot compute metric for item: #{item}"

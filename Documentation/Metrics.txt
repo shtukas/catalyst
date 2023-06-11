@@ -12,5 +12,4 @@ NxBackup             2.0
 Wave                 1.5
 NxOndate             1.3
 
-NxSequence           0.5 -> 1.0
 NxTask               0.0 -> 0.5

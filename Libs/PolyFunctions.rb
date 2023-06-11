@@ -18,20 +18,6 @@ class PolyFunctions
             end
         end
 
-        if item["sequenceuuid"] then
-            sequence = DarkEnergy::itemOrNull(item["sequenceuuid"])
-            if sequence then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(sequence)
-            end
-        end
-
-        if item["engineuuid"] then
-            engine = DarkEnergy::itemOrNull(item["engineuuid"])
-            if engine then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(engine)
-            end
-        end
-
         if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "NxCore",
@@ -68,9 +54,6 @@ class PolyFunctions
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
         end
-        if item["mikuType"] == "NxSequence" then
-            return NxSequences::toString(item)
-        end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)
         end
@@ -100,12 +83,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
-        end
-        if item["mikuType"] == "NxSequence" then
-            return NxSequences::toString(item)
-        end
-        if item["mikuType"] == "TxEngine" then
-            return TxEngines::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
