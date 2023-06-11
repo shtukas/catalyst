@@ -74,14 +74,12 @@ class NxTasks
         nhash = DarkMatter::putBlob(url)
         coredataref = "url:#{nhash}"
 
-        position = CommonUtils::computeThatPosition(NxTasks::coreFreePositions())
         engine = TxEngines::makeEngine(1, 30)
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::patch(uuid, "position", position)
         DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
         DarkEnergy::itemOrNull(uuid)
