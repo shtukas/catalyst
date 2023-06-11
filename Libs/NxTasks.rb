@@ -26,7 +26,7 @@ class NxTasks
             end
 
         if core then
-            position = NxCores::firstPositionInCore(core)
+            position = NxCores::firstPositionInCore(core) - 1
         else
             position = CommonUtils::computeThatPosition(NxTasks::coreFreePositions().sort.first(100))
         end
