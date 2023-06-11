@@ -108,12 +108,12 @@ class NxCores
     # NxCores::tasks_ordered(core)
     def self.tasks_ordered(core)
         if core["uuid"] == NxCores::infinityuuid() then
-            return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] }
+            return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] || 0 }
         end
         if core["uuid"] == NxCores::recoveryuuid() then
             return DarkEnergy::mikuType("NxTask").sort_by{|task| task["unixtime"] }.reverse.take(100)
         end
-        DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"] == core["uuid"] }.sort_by{|task| task["position"] }
+        DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"] == core["uuid"] }.sort_by{|task| task["position"] || 0 }
     end
 
     # NxCores::coreSuffix(item)
@@ -140,7 +140,7 @@ class NxCores
     def self.firstPositionInCore(core)
         tasks = NxCores::tasks_ordered(core)
         return 1 if tasks.empty?
-        tasks.map{|task| task["position"] }.min
+        tasks.map{|task| task["position"] || 0 }.min
     end
 
     # -------------------------

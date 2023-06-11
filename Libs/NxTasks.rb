@@ -9,7 +9,7 @@ class NxTasks
     def self.coreFreePositions()
         DarkEnergy::mikuType("NxTask")
             .select{|task| task["sequenceuuid"].nil? }
-            .map{|task| task["position"] }
+            .map{|task| task["position"] || 0 }
     end
 
     # NxTasks::coordinates(item or null)
@@ -100,7 +100,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "👨🏻‍💻 (#{"%5.2f" % item["position"]}) #{item["description"]}"
+        "👨🏻‍💻 (#{"%5.2f" % (item["position"] || 0)}) #{item["description"]}"
     end
 
     # NxTasks::listingItems()
