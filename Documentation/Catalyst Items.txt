@@ -7,8 +7,6 @@ Cross types conventions:
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-We enforce that sequences have core or an engine
-
 NxTasks can be orphan or have a core or an engine (if they are orphan, they are displayed by the infinity core)
 
 
