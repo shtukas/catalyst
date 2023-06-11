@@ -104,8 +104,8 @@ class NxCores
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
     end
 
-    # NxCores::tasks(core)
-    def self.tasks(core)
+    # NxCores::tasks_ordered(core)
+    def self.tasks_ordered(core)
         if core["uuid"] == NxCores::infinityuuid() then
             return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] }
         end
@@ -137,7 +137,7 @@ class NxCores
 
     # NxCores::firstPositionInCore(core)
     def self.firstPositionInCore(core)
-        tasks = NxCores::tasks(core)
+        tasks = NxCores::tasks_ordered(core)
         return 1 if tasks.empty?
         tasks.map{|task| task["position"] }.min
     end
@@ -181,6 +181,7 @@ class NxCores
     def self.interactivelySelectOneOrNull()
         cores = DarkEnergy::mikuType("NxCore")
                     .reject{|core| core["uuid"] == NxCores::infinityuuid() }
+                    .reject{|core| core["uuid"] == NxCores::recoveryuuid() }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| item["description"] })
     end
 
@@ -196,7 +197,9 @@ class NxCores
         loop {
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, Listing::items1().select{|item| item["coreuuid"] == core["uuid"] }, NxCores::tasks(core))
+            items1 = Listing::items1().select{|item| item["coreuuid"] == core["uuid"] }
+            items2 = NxCores::tasks_ordered(core)
+            Listing::printEvalItems(store, items1, items2)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
