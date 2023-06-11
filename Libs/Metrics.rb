@@ -1,39 +1,6 @@
 
 class Metrics
 
-    # Metrics::coreuuid(item)
-    def self.coreuuid(item)
-        return nil if item["coreuuid"].nil?
-        core = DarkEnergy::itemOrNull(item["coreuuid"])
-        if core.nil? then
-            DarkEnergy::patch(item["uuid"], "coreuuid", nil)
-            return nil
-        end
-        Metrics::item(core)
-    end
-
-    # Metrics::sequenceuuid(item)
-    def self.sequenceuuid(item)
-        return nil if item["sequenceuuid"].nil?
-        sequence = DarkEnergy::itemOrNull(item["sequenceuuid"])
-        if sequence.nil? then
-            DarkEnergy::patch(item["uuid"], "sequenceuuid", nil)
-            return nil
-        end
-        Metrics::item(sequence)
-    end
-
-    # Metrics::engineuuid(item)
-    def self.engineuuid(item)
-        return nil if item["engineuuid"].nil?
-        engine = DarkEnergy::itemOrNull(item["engineuuid"])
-        if engine.nil? then
-            DarkEnergy::patch(item["uuid"], "engineuuid", nil)
-            return nil
-        end
-        Metrics::item(engine)
-    end
-
     # Metrics::item(item)
     def self.item(item)
 

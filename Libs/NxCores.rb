@@ -101,6 +101,7 @@ class NxCores
     # NxCores::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxCore")
+            .select{|core| NxCores::listingCompletionRatio(core) < 1 }
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
     end
 
