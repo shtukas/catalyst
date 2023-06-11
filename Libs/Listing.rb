@@ -305,6 +305,15 @@ class Listing
                 }
         end
 
+        spacecontrol.putsline ""
+        DarkEnergy::mikuType("NxCore")
+            .sort_by{|core| NxCores::listingCompletionRatio(core) }
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                break if !status
+            }
+
         if items1.size > 0 then
             spacecontrol.putsline ""
             items1
