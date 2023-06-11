@@ -152,6 +152,23 @@ class NxCores
         tasks.map{|task| task["position"] || 0 }.min
     end
 
+    # NxCores::coreOwnedRunningTasksCore()
+    def self.coreOwnedRunningTasksCore()
+        DarkEnergy::mikuType("NxCore")
+            .map{|core| NxCores::tasks_ordered(core) }
+            .flatten
+            .select{|task| NxBalls::itemIsActive(task) }
+    end
+
+    # NxCores::coreOwnedRunningTasks()
+    def self.coreOwnedRunningTasks()
+        Memoize::evaluate(
+            "9b4eca84-3107-4e5f-9640-9b7e621d408e", 
+            lambda { NxCores::coreOwnedRunningTasksCore() },
+            600
+        ).select{|task| NxBalls::itemIsActive(task)}
+    end
+
     # -------------------------
     # Ops
 
@@ -205,9 +222,18 @@ class NxCores
     # NxCores::program0(core)
     def self.program0(core)
         loop {
+
+            system("clear")
+
             store = ItemStore.new()
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            puts ""
+            store.register(core, false)
+            spacecontrol.putsline Listing::itemToListingLine(store, core)
 
             Listing::printing(
+                spacecontrol,
                 store, 
                 [], # times
                 [], # cores display
@@ -282,3 +308,8 @@ class NxCores
         position.to_f
     end
 end
+
+
+
+
+

@@ -99,6 +99,7 @@ class Listing
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
+            NxCores::coreOwnedRunningTasks(),
             NxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxEngines::listingItems()
@@ -189,6 +190,18 @@ class Listing
                 "name" => "TxEngines::listingItems()",
                 "lambda" => lambda { TxEngines::listingItems() }
             },
+            {
+                "name" => "NxCores::coreOwnedRunningTasksCore()",
+                "lambda" => lambda { NxCores::coreOwnedRunningTasksCore() }
+            },
+            {
+                "name" => "Listing::burnersAndFires()",
+                "lambda" => lambda { Listing::burnersAndFires() }
+            },
+            {
+                "name" => "Listing::maintenance()",
+                "lambda" => lambda { Listing::maintenance() }
+            },
         ]
 
         runTest = lambda {|test|
@@ -226,16 +239,29 @@ class Listing
 
         results2 = [
             {
-                "name" => "Listing::burnersAndFires()",
-                "lambda" => lambda { Listing::burnersAndFires() }
-            },
-            {
                 "name" => "Listing::items2()",
                 "lambda" => lambda { Listing::items2() }
             },
             {
-                "name" => "Listing::printing()",
-                "lambda" => lambda { Listing::printing(ItemStore.new(), Listing::burnersAndFires(), Listing::items2()) }
+                "name" => "Listing::printing sequenne",
+                "lambda" => lambda { 
+                    Listing::maintenance()
+
+                    spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+                    store = ItemStore.new()
+
+                    system("clear")
+
+                    Listing::printing(
+                        spacecontrol,
+                        store, 
+                        NxTimes::listingItems(),
+                        DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
+                        TxEngines::listingItems(),
+                        Listing::burnersAndFires(),
+                        Listing::items2()
+                    )
+                }
             },
         ]
                     .map{|test|
@@ -291,11 +317,8 @@ class Listing
         }
     end
 
-    # Listing::printing(store, times, coresd, enginesd, burnersAndFires, items2)
-    def self.printing(store, times, coresd, enginesd, burnersAndFires, items2)
-        system("clear")
-
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+    # Listing::printing(spacecontrol, store, times, coresd, enginesd, burnersAndFires, items2)
+    def self.printing(spacecontrol, store, times, coresd, enginesd, burnersAndFires, items2)
 
         if times.size > 0 then
             spacecontrol.putsline ""
@@ -378,9 +401,13 @@ class Listing
 
             Listing::maintenance()
 
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
+            system("clear")
+
             Listing::printing(
+                spacecontrol,
                 store, 
                 NxTimes::listingItems(),
                 DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },

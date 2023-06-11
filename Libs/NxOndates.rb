@@ -51,12 +51,16 @@ class NxOndates
     # NxOndates::program()
     def self.program()
         loop {
-            items = DarkEnergy::mikuType("NxOndate")
-                        .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
+            system("clear")
+            
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
+            items = DarkEnergy::mikuType("NxOndate")
+                        .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
 
             Listing::printing(
+                spacecontrol,
                 store, 
                 [], # times
                 [], # cores display
