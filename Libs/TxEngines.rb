@@ -55,6 +55,12 @@ class TxEngines
     def self.listingItems()
         Catalyst::catalystItems()
             .select{|item| item["engine"] }
-            .sort{|item| TxEngines::metric(item["engine"]) }
+            .sort{|item| 
+                Memoize::evaluate(
+                    "034c49e8-5b41-48d9-af73-bfbdd2bbdbbe:#{item["engine"]["uuid"]}",
+                    lambda { TxEngines::metric(item["engine"]) },
+                    600
+                )
+            }
     end
 end

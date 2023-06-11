@@ -160,6 +160,8 @@ require_relative "NxTimes.rb"
 require_relative "NxDrops.rb"
 require_relative "NxCores.rb"
 
+require_relative "Memoize.rb"
+
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
@@ -172,8 +174,6 @@ require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
 require_relative "TmpSkip1.rb"
 require_relative "TxEngines.rb"
-
-require_relative "ViennaImport.rb"
 
 require_relative "Waves.rb"
 
