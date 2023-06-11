@@ -35,7 +35,6 @@ class Listing
         return false if item["mikuType"] == "NxFire"
         return false if item["mikuType"] == "NxBurner"
         return false if item["mikuType"] == "NxTime"
-        return false if item["mikuType"] == "NxCore"
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
@@ -93,24 +92,23 @@ class Listing
     # Listing::items2()
     def self.items2()
 
-        items = [
+        [
             Anniversaries::listingItems(),
-            Waves::listingItems(),
             PhysicalTargets::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
             NxCores::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
+            TxEngines::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-
-        items
-            .sort_by{|item| Metrics::item(item) }.reverse
     end
 
-    # Listing::itemToListingLine(store: nil, item: nil)
-    def self.itemToListingLine(store: nil, item: nil)
+    # Listing::itemToListingLine(store, item)
+    def self.itemToListingLine(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
@@ -123,7 +121,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxCores::coreSuffix(item).green}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxCores::coreSuffix(item).green}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -301,7 +299,7 @@ class Listing
             times
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
                     break if !status
                 }
         end
@@ -310,8 +308,17 @@ class Listing
         DarkEnergy::mikuType("NxCore")
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
             .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                store.register(item, false)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+
+        spacecontrol.putsline ""
+        TxEngines::listingItems()
+            .first(5)
+            .each{|item|
+                store.register(item, false)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
                 break if !status
             }
 
@@ -320,7 +327,7 @@ class Listing
             items1
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
                     break if !status
                 }
         end
@@ -330,7 +337,7 @@ class Listing
             items2
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store: store, item: item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
                     break if !status
                 }
         end

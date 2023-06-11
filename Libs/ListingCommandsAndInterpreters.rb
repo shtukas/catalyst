@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | destroy <n>",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | engine (<n>) | holiday <n> | skip | destroy <n>",
             "",
             "specific types commands:",
             "    - ondate  : redate",
@@ -89,6 +89,21 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxCores::giveCoreToItemAttempt(item)
+            return
+        end
+
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            TxEngines::setItemEngineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            TxEngines::setItemEngineAttempt(item)
             return
         end
 

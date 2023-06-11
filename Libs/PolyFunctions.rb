@@ -18,6 +18,13 @@ class PolyFunctions
             end
         end
 
+        if item["engine"] then
+            accounts << {
+                "description" => "TxEngine",
+                "number"      => item["engine"]["uuid"]
+            }
+        end
+
         if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "NxCore",

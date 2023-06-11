@@ -5,15 +5,15 @@ class Catalyst
     # Catalyst::catalystItems()
     def self.catalystItems()
         [
-            "NxAnniversary",
-            "NxBackup",
-            "NxFire",
-            "NxBurner",
-            "NxLine",
-            "NxLong",
-            "NxOndate",
-            "NxTask",
-            "Wave"
+          "NxAnniversary",
+          "NxBackup",
+          "NxBurner",
+          "NxCore",
+          "NxOndate",
+          "NxTask",
+          "NxTimePromise",
+          "PhysicalTarget",
+          "Wave"
         ]
             .map{|mikuType|
                 DarkEnergy::mikuType(mikuType)

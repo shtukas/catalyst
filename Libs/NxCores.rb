@@ -133,7 +133,7 @@ class NxCores
 
     # NxCores::listingmetric(core)
     def self.listingmetric(core)
-        0.5 * (1 - NxCores::listingCompletionRatio(core))
+        0.5 + 0.5 * (1 - NxCores::listingCompletionRatio(core))
     end
 
     # NxCores::firstPositionInCore(core)
