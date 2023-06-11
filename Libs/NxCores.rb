@@ -116,7 +116,11 @@ class NxCores
             return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] || 0 }
         end
         if core["uuid"] == NxCores::recoveryuuid() then
-            return DarkEnergy::mikuType("NxTask").sort_by{|task| task["unixtime"] }.reverse.take(NxCores::recoveryDepth())
+            return DarkEnergy::mikuType("NxTask")
+                .select{|task| task["coreuuid"].nil? }
+                .sort_by{|task| task["unixtime"] }
+                .reverse
+                .take(NxCores::recoveryDepth())
         end
         DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"] == core["uuid"] }.sort_by{|task| task["position"] || 0 }
     end
@@ -263,5 +267,18 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         DarkEnergy::patch(item["uuid"], "coreuuid", core["uuid"])
+    end
+
+    # NxCores::interactivelySelectPositionAmongTop(core)
+    def self.interactivelySelectPositionAmongTop(core)
+        NxCores::tasks_ordered(core).each{|item|
+            puts NxTasks::toString(item)
+        }
+        position = 0
+        loop {
+            position = LucilleCore::askQuestionAnswerAsString("position: ")
+            break if position != ""
+        }
+        position.to_f
     end
 end

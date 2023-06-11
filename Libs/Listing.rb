@@ -307,22 +307,26 @@ class Listing
                 }
         end
 
-        spacecontrol.putsline ""
-        coresd
-            .each{|item|
-                store.register(item, false)
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-                break if !status
-            }
+        if coresd.size > 0 then
+            spacecontrol.putsline ""
+            coresd
+                .each{|item|
+                    store.register(item, false)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    break if !status
+                }
+        end
 
-        spacecontrol.putsline ""
-        enginesd
-            .first(5)
-            .each{|item|
-                store.register(item, false)
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-                break if !status
-            }
+        if enginesd.size > 0 then
+            spacecontrol.putsline ""
+            enginesd
+                .first(5)
+                .each{|item|
+                    store.register(item, false)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    break if !status
+                }
+        end
 
         if burnersAndFires.size > 0 then
             spacecontrol.putsline ""

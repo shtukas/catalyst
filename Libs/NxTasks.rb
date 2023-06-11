@@ -26,7 +26,11 @@ class NxTasks
             end
 
         if core then
-            position = NxCores::firstPositionInCore(core) - 1
+            if LucilleCore::askQuestionAnswerAsBoolean("manually set position ? ", true) then
+                position = NxCores::interactivelySelectPositionAmongTop(core)
+            else
+                position = NxCores::firstPositionInCore(core) - 1
+            end
         else
             position = CommonUtils::computeThatPosition(NxTasks::coreFreePositions().sort.first(100))
         end
@@ -58,7 +62,7 @@ class NxTasks
         DarkEnergy::patch(uuid, "mikuType", "NxTask")
 
         item = DarkEnergy::itemOrNull(uuid)
-        if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+        if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ", false) then
             item = TxEngines::setItemEngine(item)
         end
         item
