@@ -214,7 +214,9 @@ class NxCores
     # NxCores::program1(core)
     def self.program1(core)
         loop {
-            actions = ["program (default)", "add time"]
+            core = DarkEnergy::itemOrNull(core["uuid"])
+            return if core.nil?
+            actions = ["program (default)", "add time", "rename"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
             if action == "program (default)" or action.nil? then
                 NxCores::program0(core)
@@ -223,6 +225,11 @@ class NxCores
             if action == "add time" then
                 timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
                 PolyActions::addTimeToItem(core, timeInHours*3600)
+            end
+            if action == "rename" then
+                description = LucilleCore::askQuestionAnswerAsString("description: ")
+                next if description == ""
+                DarkEnergy::patch(core["uuid"], "description", description)
             end
         }
     end

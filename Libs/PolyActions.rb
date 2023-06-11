@@ -304,7 +304,7 @@ class PolyActions
             NxBalls::start(item)
             NxTasks::access(item)
             if first_time then
-                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green} ? '", true) then
+                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                     NxBalls::stop(item)
                     DarkEnergy::destroy(item["uuid"])
                 end
