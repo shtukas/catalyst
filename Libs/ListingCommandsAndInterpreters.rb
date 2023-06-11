@@ -95,7 +95,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            TxEngines::setItemEngineAttempt(item)
+            TxEngines::setItemEngine(item)
             return
         end
 
@@ -103,7 +103,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxEngines::setItemEngineAttempt(item)
+            TxEngines::setItemEngine(item)
             return
         end
 

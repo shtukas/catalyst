@@ -147,7 +147,7 @@ class PositiveSpace
         loop {
             filepath = PositiveSpace::getFirstJournalItemOrNull()
             break if filepath.nil?
-            puts "PositiveSpace::maintenance(): journal process: #{filepath}"
+            puts "PositiveSpace::maintenance(): journal process: #{filepath}".green
             item = JSON.parse(IO.read(filepath))
             if item["mikuType"] == "NxDeleted" then
                 PositiveSpace::database_destroy(item["uuid"])

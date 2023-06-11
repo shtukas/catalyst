@@ -21,10 +21,12 @@ class TxEngines
         TxEngines::makeEngine(estimatedDurationInHours, deadlineInRelativeDays)
     end
 
-    # TxEngines::setItemEngineAttempt(item)
-    def self.setItemEngineAttempt(item)
+    # TxEngines::setItemEngine(item) # item (updated)
+    def self.setItemEngine(item)
         engine = TxEngines::interactivelyMakeEngine()
         DarkEnergy::patch(item["uuid"], "engine", engine)
+        item["engine"] = engine
+        item
     end
 
     # TxEngines::metric(engine)

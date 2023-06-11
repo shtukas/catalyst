@@ -268,6 +268,7 @@ class Listing
              PositiveSpace::maintenance()
              NxCores::generalMaintenance()
              NxTasks::maintenance()
+             ViennaImport::import()
         end
     end
 

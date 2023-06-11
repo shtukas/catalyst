@@ -1,8 +1,3 @@
-# encoding: UTF-8
-
-require_relative "Libs/loader.rb"
-
-exit if (Config::thisInstanceId() != "Lucille20-pascal")
 
 VIENNA_PATH_TO_DATA = "#{Config::userHomeDirectory()}/Library/Application Support/Vienna/messages.db"
 
@@ -34,14 +29,19 @@ class ViennaLinkFeeder
     end
 end
 
-viennaLinkFeeder = ViennaLinkFeeder.new()
-
-loop {
-    link = viennaLinkFeeder.next()
-    break if link.nil?
-    puts "vienna: #{link}"
-    item = NxTasks::viennaUrl(link)
-    puts JSON.pretty_generate(item)
-    viennaLinkFeeder.done(link)
-    sleep 0.1
-}
+class ViennaImport
+    # ViennaImport::import()
+    def self.import()
+        return if !Config::isPrimaryInstance()
+        viennaLinkFeeder = ViennaLinkFeeder.new()
+        loop {
+            link = viennaLinkFeeder.next()
+            break if link.nil?
+            puts "vienna: #{link}"
+            item = NxTasks::viennaUrl(link)
+            puts JSON.pretty_generate(item)
+            viennaLinkFeeder.done(link)
+            sleep 0.1
+        }
+    end
+end
