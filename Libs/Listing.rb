@@ -290,13 +290,14 @@ class Listing
 
     # Listing::maintenance()
     def self.maintenance()
+        NxCores::maintenance_all_instances()
         if Config::isPrimaryInstance() then
              NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
              PositiveSpace::maintenance()
-             NxCores::generalMaintenance()
+             NxCores::maintenance_leader_instance()
              NxTasks::maintenance()
         end
     end

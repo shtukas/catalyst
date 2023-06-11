@@ -172,8 +172,8 @@ class NxCores
     # -------------------------
     # Ops
 
-    # NxCores::coreMaintenance(core)
-    def self.coreMaintenance(core)
+    # NxCores::maintenance_one_core(core)
+    def self.maintenance_one_core(core)
         return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
         return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
         if Bank::getValue(core["capsule"]).to_f/3600 > 1.5*core["hours"] then
@@ -196,12 +196,15 @@ class NxCores
         core
     end
 
-    # NxCores::generalMaintenance()
-    def self.generalMaintenance()
+    # NxCores::maintenance_all_instances()
+    def self.maintenance_all_instances()
         padding = DarkEnergy::mikuType("NxCore").map{|core| core["description"].size }.max
         XCache::set("0e067f3e-a954-4138-8336-876240b9b7dd", padding)
+    end
 
-        DarkEnergy::mikuType("NxCore").each{|core| NxCores::coreMaintenance(core) }
+    # NxCores::maintenance_leader_instance()
+    def self.maintenance_leader_instance()
+        DarkEnergy::mikuType("NxCore").each{|core| NxCores::maintenance_one_core(core) }
     end
 
     # NxCores::interactivelySelectOneOrNull()
