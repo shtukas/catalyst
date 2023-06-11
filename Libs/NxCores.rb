@@ -11,6 +11,11 @@ class NxCores
         "f96cc544-06ef-4e30-b415-e57e78eb3d73"
     end
 
+    # NxCores::recoveryDepth()
+    def self.recoveryDepth()
+        50
+    end
+
     # -------------------------
     # IO
 
@@ -111,7 +116,7 @@ class NxCores
             return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] || 0 }
         end
         if core["uuid"] == NxCores::recoveryuuid() then
-            return DarkEnergy::mikuType("NxTask").sort_by{|task| task["unixtime"] }.reverse.take(100)
+            return DarkEnergy::mikuType("NxTask").sort_by{|task| task["unixtime"] }.reverse.take(NxCores::recoveryDepth())
         end
         DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"] == core["uuid"] }.sort_by{|task| task["position"] || 0 }
     end
@@ -198,9 +203,14 @@ class NxCores
         loop {
             store = ItemStore.new()
 
-            items1 = Listing::items1().select{|item| item["coreuuid"] == core["uuid"] }
-            items2 = NxCores::tasks_ordered(core)
-            Listing::printEvalItems(store, items1, items2)
+            Listing::printing(
+                store, 
+                [], # times
+                [], # cores display
+                [], # engines display
+                Listing::burnersAndFires().select{|item| item["coreuuid"] == core["uuid"] },
+                NxCores::tasks_ordered(core)
+            )
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

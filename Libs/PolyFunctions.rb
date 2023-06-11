@@ -16,6 +16,13 @@ class PolyFunctions
             if core then
                 accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
             end
+        else
+            if item["mikuType"] == "NxTask" then
+                core = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+                if core then
+                    accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
+                end
+            end
         end
 
         if item["engine"] then
@@ -23,6 +30,13 @@ class PolyFunctions
                 "description" => "TxEngine",
                 "number"      => item["engine"]["uuid"]
             }
+        end
+
+        if NxTasks::latestUUIDs(NxCores::recoveryDepth()).include?(item["uuid"]) then
+            core = DarkEnergy::itemOrNull(NxCores::recoveryuuid())
+            if core then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
+            end
         end
 
         if item["mikuType"] == "NxCore" then

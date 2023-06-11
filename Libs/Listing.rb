@@ -65,8 +65,8 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::items1()
-    def self.items1()
+    # Listing::burnersAndFires()
+    def self.burnersAndFires()
 
         burners = DarkEnergy::mikuType("NxBurner")
 
@@ -226,16 +226,16 @@ class Listing
 
         results2 = [
             {
-                "name" => "Listing::items1()",
-                "lambda" => lambda { Listing::items1() }
+                "name" => "Listing::burnersAndFires()",
+                "lambda" => lambda { Listing::burnersAndFires() }
             },
             {
                 "name" => "Listing::items2()",
                 "lambda" => lambda { Listing::items2() }
             },
             {
-                "name" => "Listing::printEvalItems()",
-                "lambda" => lambda { Listing::printEvalItems(ItemStore.new(), Listing::items1(), Listing::items2()) }
+                "name" => "Listing::printing()",
+                "lambda" => lambda { Listing::printing(ItemStore.new(), Listing::burnersAndFires(), Listing::items2()) }
             },
         ]
                     .map{|test|
@@ -291,13 +291,12 @@ class Listing
         }
     end
 
-    # Listing::printEvalItems(store, items1, items2)
-    def self.printEvalItems(store, items1, items2)
+    # Listing::printing(store, times, coresd, enginesd, burnersAndFires, items2)
+    def self.printing(store, times, coresd, enginesd, burnersAndFires, items2)
         system("clear")
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
-        times = NxTimes::listingItems()
         if times.size > 0 then
             spacecontrol.putsline ""
             times
@@ -309,8 +308,7 @@ class Listing
         end
 
         spacecontrol.putsline ""
-        DarkEnergy::mikuType("NxCore")
-            .sort_by{|core| NxCores::listingCompletionRatio(core) }
+        coresd
             .each{|item|
                 store.register(item, false)
                 status = spacecontrol.putsline Listing::itemToListingLine(store, item)
@@ -318,7 +316,7 @@ class Listing
             }
 
         spacecontrol.putsline ""
-        TxEngines::listingItems()
+        enginesd
             .first(5)
             .each{|item|
                 store.register(item, false)
@@ -326,9 +324,9 @@ class Listing
                 break if !status
             }
 
-        if items1.size > 0 then
+        if burnersAndFires.size > 0 then
             spacecontrol.putsline ""
-            items1
+            burnersAndFires
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store, item)
@@ -378,7 +376,14 @@ class Listing
 
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, Listing::items1(), Listing::items2())
+            Listing::printing(
+                store, 
+                NxTimes::listingItems(),
+                DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
+                TxEngines::listingItems(),
+                Listing::burnersAndFires(),
+                Listing::items2()
+            )
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

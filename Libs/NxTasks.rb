@@ -109,6 +109,11 @@ class NxTasks
         DarkEnergy::mikuType("NxTask").first(1000)
     end
 
+    # NxTasks::latestUUIDs(size)
+    def self.latestUUIDs(size)
+        DarkEnergy::mikuType("NxTask").sort_by{|task| task["unixtime"] }.reverse.take(size).map{|item| item["uuid"] }
+    end
+
     # --------------------------------------------------
     # Operations
 

@@ -55,7 +55,15 @@ class NxOndates
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
             store = ItemStore.new()
 
-            Listing::printEvalItems(store, [], items)
+
+            Listing::printing(
+                store, 
+                [], # times
+                [], # cores display
+                [], # engines display
+                [],
+                items
+            )
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
