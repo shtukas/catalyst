@@ -309,6 +309,11 @@ class PolyActions
                     DarkEnergy::destroy(item["uuid"])
                 end
             end
+            if NxBalls::itemIsRunning(item) then
+                if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
+                    NxBalls::stop(item)
+                end
+            end
             return
         end
 

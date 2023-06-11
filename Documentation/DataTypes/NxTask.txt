@@ -2,7 +2,7 @@
 NxTask: 
 
     -----------------------------------------------------------
-    "version"      : null or "classic"
+    "variant"      : null or "classic"
 
     "uuid"         : String
     "mikuType"     : "NxTask"
@@ -16,7 +16,7 @@ NxTask:
     "engineuuid"   : null or String, uuid of an engine
 
     -----------------------------------------------------------
-    "version"      : "stack"
+    "variant"      : "stack"
 
     "uuid"         : String
     "mikuType"     : "NxTask"
@@ -32,14 +32,18 @@ NxTask:
     "stack"        : Array[StackEntry]
 
 StackEntry {
-    "mikuType" => "StackEntry"
-    "type"     => "first"
-    "position" => 0
+    "uuid"        => String
+    "mikuType"    => "StackEntry"
+    "variant"     => "origin"
+    "position"    => 0
+    "description" => String
+    "field11"     => null or CoreData reference string
 }
 
 StackEntry {
+    "uuid"     => String
     "mikuType" => "StackEntry"
-    "type"     => "first"
+    "variant"  => "plus"
     "position" => Float
     "line"     => String
 }

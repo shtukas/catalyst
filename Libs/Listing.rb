@@ -132,6 +132,13 @@ class Listing
             line = line.green
         end
 
+        if item["mikuType"] == "NxTask" and item["variant"] == "stack" then
+             line = line + "\n" +  item["stack"]
+                                        .sort_by{|entry| entry["position"] }
+                                        .map{|entry| "               #{NxTasks::stackEntryToString(entry)}" }
+                                        .join("\n")
+        end
+
         line
     end
 

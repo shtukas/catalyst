@@ -121,14 +121,75 @@ class NxTasks
     # --------------------------------------------------
     # Operations
 
-    # NxTasks::access(item)
-    def self.access(item)
-        CoreData::access(item["uuid"], item["field11"])
+    # NxTasks::stackEntryToString(entry)
+    def self.stackEntryToString(entry)
+        if entry["variant"] == "origin" then
+            return "#{"%7.3f" % entry["position"]} #{entry["description"]}"
+        end
+        if entry["variant"] == "plus" then
+            return "#{"%7.3f" % entry["position"]} #{entry["line"]}"
+        end
     end
 
-    # NxTasks::program(task)
-    def self.program(task)
-        PolyActions::doubleDot(task)
+    # NxTasks::access(task)
+    def self.access(task)
+
+        if task["field11"] == "null" then
+            task["field11"] = nil
+            DarkEnergy::patch(task["uuid"], "field11", nil)
+        end
+
+        if task["variant"] == "classic" then
+            if LucilleCore::askQuestionAnswerAsBoolean("> access ? ") then
+                CoreData::access(task["uuid"], task["field11"])
+            end
+            return
+        end
+
+        if task["field11"] and LucilleCore::askQuestionAnswerAsBoolean("> access field11 ? ") then
+            CoreData::access(task["uuid"], task["field11"])
+        end
+
+        loop  {
+            puts "@stack:"
+            task["stack"]
+                .sort_by{|entry| entry["position"] }
+                .each{|entry|
+                    puts "   ・ #{NxTasks::stackEntryToString(entry)}"
+                }
+            puts ""
+            puts "> add | top | stack | done | exit"
+            command = LucilleCore::askQuestionAnswerAsString("commands: ")
+            return if (command == "" or command == "exit")
+            if command == "add" then
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                line = LucilleCore::askQuestionAnswerAsString("line: ")
+                task["stack"] << NxTasks::makeStackPlusEntry(position, line)
+                DarkEnergy::commit(task)
+            end
+            if command == "top" then
+                position = task["stack"].map{|entry| entry["position"] }.min - rand
+                line = LucilleCore::askQuestionAnswerAsString("line: ")
+                task["stack"] << NxTasks::makeStackPlusEntry(position, line)
+                DarkEnergy::commit(task)
+            end
+            if command == "done" then
+                entries = task["stack"].sort_by{|entry| entry["position"] }
+                entry = LucilleCore::selectEntityFromListOfEntitiesOrNull("entry", entries, lambda{|entry| entryToString.call(entry) })
+                task["stack"] = task["stack"].reject{|e| e["uuid"] == entry["uuid"] }
+                DarkEnergy::commit(task)
+            end
+            if command == "stack" then
+                text = CommonUtils::editTextSynchronously("").strip
+                next if text == ""
+                lines = text.lines.to_a.reverse.map{|line| line.strip }
+                lines.each{|line|
+                    position = task["stack"].map{|entry| entry["position"] }.min - rand
+                    task["stack"] << NxTasks::makeStackPlusEntry(position, line)
+                }
+                DarkEnergy::commit(task)
+            end
+        }
     end
 
     # NxTasks::maintenance()
@@ -140,5 +201,42 @@ class NxTasks
                 DarkEnergy::patch(task["uuid"], "coreuuid", nil)
             end
         }
+    end
+
+    # --------------------------------------------------
+    # Stacks Ops
+
+    # NxTasks::makeStackPlusEntry(position, line)
+    def self.makeStackPlusEntry(position, line)
+        {
+            "uuid"     => SecureRandom.uuid,
+            "mikuType" => "StackEntry",
+            "variant"  => "plus",
+            "position" => position,
+            "line"     => line
+        }
+    end
+
+    # NxTasks::initiateStack(item)
+    def self.initiateStack(item)
+        if item["mikuType"] != "NxTask" then
+            puts "You cannot stack a non NxTask"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        if item["variant"].nil? or item["variant"] == "classic" then
+            item["variant"] = "stack"
+            item["stack"] = []
+            item["stack"] << {
+                "uuid"        => SecureRandom.uuid,
+                "mikuType"    => "StackEntry",
+                "variant"     => "origin",
+                "position"    => 0,
+                "description" => item["description"],
+                "field11"     => item["field11"]
+            }
+            DarkEnergy::commit(item)
+        end
+        NxTasks::access(item)
     end
 end

@@ -20,7 +20,7 @@ class CoreData
         # It does stuff and returns a payload string or null
         referencetype = CoreData::interactivelySelectCoreDataReferenceType()
         if referencetype.nil? then
-            return "null"
+            return nil
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")

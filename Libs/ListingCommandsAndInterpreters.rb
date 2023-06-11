@@ -8,7 +8,8 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | engine (<n>) | holiday <n> | skip | destroy <n>",
             "",
             "specific types commands:",
-            "    - ondate  : redate",
+            "    - OnDate  : redate",
+            "    - NxTask  : stack (<n>)",
             "transmutation : recast (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
             "divings       : anniversaries | ondates | waves | burners | desktop | time promises | sequences | cores",
@@ -89,6 +90,31 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxCores::giveCoreToItemAttempt(item)
+            return
+        end
+
+        if Interpreting::match("stack", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "You cannot stack a non NxTask"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            NxTasks::initiateStack(item)
+            return
+        end
+
+        if Interpreting::match("stack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "You cannot stack a non NxTask"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            NxTasks::initiateStack(item)
             return
         end
 
