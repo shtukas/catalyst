@@ -76,4 +76,14 @@ class TxEdges
         return nil if entry.nil?
         entry["position"]
     end
+
+    # TxEdges::getParentOrNull(item)
+    def self.getParentOrNull(item)
+        # Technically an item can have several parents, but practically that won't happen
+        DarkEnergy::mikuType("TxEdge")
+            .select{|edge| edge["childuuid"] == item["uuid"] }
+            .map{|edge| DarkEnergy::itemOrNull(edge["parentuuid"]) }
+            .compact
+            .first
+    end
 end

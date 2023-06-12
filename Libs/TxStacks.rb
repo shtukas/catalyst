@@ -35,4 +35,46 @@ class TxStacks
         }
         position.to_f
     end
+
+    # TxPools::program(stack)
+    def self.program(stack)
+        loop {
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts ""
+            store.register(stack, false)
+            puts Listing::itemToListingLine(store, stack)
+
+            TxEdges::children_ordered(stack)
+                .each{|item|
+                    store.register(item, false)
+                    Listing::itemToListingLine(store, item)
+                }
+
+            puts ""
+            puts ".. (<n>) | task | child"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                TxEdges::issueEdge(stack, task, nil)
+                next
+            end
+
+            if input == "child" then
+                task = TxEdges::interativelyIssueNewChildOrNull()
+                next if task.nil?
+                TxEdges::issueEdge(stack, task, nil)
+                next
+            end
+
+            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+        }
+    end
 end

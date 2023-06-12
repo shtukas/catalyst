@@ -73,6 +73,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxPool" then
+            PolyActions::program(item)
+        end
+
+        if item["mikuType"] == "TxStack" then
+            PolyActions::program(item)
+        end
+
         if item["mikuType"] == "Wave" then
             Waves::access(item)
             return
@@ -326,6 +334,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxPool" then
+            PolyActions::program(item)
+        end
+
+        if item["mikuType"] == "TxStack" then
+            PolyActions::program(item)
+        end
+
         if item["mikuType"] == "Wave" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -362,6 +378,14 @@ class PolyActions
         if item["mikuType"] == "NxDrop" then
             NxDrops::program(item)
             return
+        end
+
+        if item["mikuType"] == "TxPool" then
+            TxPools::program(item)
+        end
+
+        if item["mikuType"] == "TxStack" then
+            TxStacks::program(item)
         end
 
         puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"

@@ -246,9 +246,24 @@ class NxCores
             )
 
             puts ""
+            puts ".. (<n>) | task | child"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                TxEdges::issueEdge(core, task, nil)
+                next
+            end
+
+            if input == "child" then
+                task = TxEdges::interativelyIssueNewChildOrNull()
+                next if task.nil?
+                TxEdges::issueEdge(core, task, nil)
+                next
+            end
 
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }

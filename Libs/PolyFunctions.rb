@@ -11,20 +11,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["coreuuid"] then
-            core = DarkEnergy::itemOrNull(item["coreuuid"])
-            if core then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
-            end
-        else
-            if item["mikuType"] == "NxTask" then
-                core = DarkEnergy::itemOrNull(NxCores::infinityuuid())
-                if core then
-                    accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
-                end
-            end
-        end
-
         if item["engine"] then
             accounts << {
                 "description" => "TxEngine",
@@ -32,18 +18,24 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" and item["coreuuid"].nil? and NxTasks::latestUUIDs(NxCores::recoveryDepth()).include?(item["uuid"]) then
-            core = DarkEnergy::itemOrNull(NxCores::recoveryuuid())
-            if core then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
-            end
-        end
-
         if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "NxCore capsule",
                 "number"      => item["capsule"]
             }
+        end
+
+        parent = TxEdges::getParentOrNull(item)
+
+        if parent then
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
+        end
+
+        if item["mikuType"] == "NxTask" and parent.nil? then
+            core = DarkEnergy::itemOrNull(NxCores::recoveryuuid())
+            if core then
+                accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
+            end
         end
 
         accounts.reduce([]){|as, account|
