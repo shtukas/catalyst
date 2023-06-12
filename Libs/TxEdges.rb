@@ -56,6 +56,14 @@ class TxEdges
         DarkEnergy::commit(child)
     end
 
+    # TxEdges::children(parent)
+    def self.children(parent)
+        DarkEnergy::mikuType("TxEdge")
+            .select{|edge| edge["parentuuid"] == parent["uuid"] }
+            .map{|edge| DarkEnergy::itemOrNull(edge["childuuid"]) }
+            .compact
+    end
+
     # TxEdges::children_ordered(parent)
     def self.children_ordered(parent)
         DarkEnergy::mikuType("TxEdge")
@@ -67,12 +75,18 @@ class TxEdges
 
     # TxEdges::getPositionOrNull(parent, child)
     def self.getPositionOrNull(parent, child)
-        entry = DarkEnergy::mikuType("TxEdge")
-            .select{|edge| edge["parentuuid"] == parent["uuid"] }
-            .select{|edge| edge["childuuid"] == child["uuid"] }
-            .first
-        return nil if entry.nil?
-        entry["position"]
+        Memoize::evaluate(
+            "1b917287-6118-48f7-8a56-6f988f0f2836:#{parent["uuid"]}:#{child["uuid"]}",
+            lambda { 
+                entry = DarkEnergy::mikuType("TxEdge")
+                    .select{|edge| edge["parentuuid"] == parent["uuid"] }
+                    .select{|edge| edge["childuuid"] == child["uuid"] }
+                    .first
+                return nil if entry.nil?
+                entry["position"]
+            },
+            86400
+        )
     end
 
     # TxEdges::getParentOrNull(item)

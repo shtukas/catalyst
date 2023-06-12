@@ -40,4 +40,10 @@ class Memoize
 
         value
     end
+
+    # Memoize::decache(computationId)
+    def self.decache(computationId)
+        XCache::destroy(computationId)
+        $InMemoryX1k23[computationId].nil?
+    end
 end

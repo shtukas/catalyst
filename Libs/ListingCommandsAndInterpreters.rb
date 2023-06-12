@@ -336,20 +336,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("position *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "position is only valid for NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            DarkEnergy::patch(item["uuid"], "position", position)
-            return
-        end
-
         if Interpreting::match("task", input) then
             # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
             task = NxTasks::interactivelyIssueNewOrNull()

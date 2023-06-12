@@ -29,7 +29,7 @@ class TxPools
             store.register(pool, false)
             puts Listing::itemToListingLine(store, pool)
 
-            TxEdges::children_ordered(pool)
+            TxEdges::children(pool)
                 .each{|item|
                     store.register(item, false)
                     Listing::itemToListingLine(store, item)
