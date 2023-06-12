@@ -19,6 +19,15 @@ class Memoize
             end
         end
 
+        packet = XCache::getOrNull(computationId)
+        if packet then
+            packet = JSON.parse(packet)
+            if (Time.new.to_i - packet["unixtime"]) < retentionTime then
+                $InMemoryX1k23[computationId] = packet
+                return packet["value"].clone
+            end
+        end
+
         value = l.call()
 
         packet = {
@@ -26,6 +35,7 @@ class Memoize
             "value"    => value
         }
 
+        XCache::set(computationId, JSON.generate(packet))
         $InMemoryX1k23[computationId] = packet
 
         value

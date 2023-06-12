@@ -1,19 +1,15 @@
 
 class TxPools
 
-    # TxPools::issue(description)
-    def self.issue(description)
-        uuid = SecureRandom.uuid
-        DarkEnergy::init("TxPool", uuid)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
-    end
-
-    # TxPools::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # TxPools::interactivelyMakeOrNull()
+    def self.interactivelyMakeOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        TxPools::issue(description)
+        {
+            "uuid"        => uuid,
+            "mikuType"    => "TxPool",
+            "description" => description
+        }
     end
 
     # TxPools::toString(item)
@@ -40,22 +36,13 @@ class TxPools
                 }
 
             puts ""
-            puts ".. (<n>) | task | child"
+            puts ".. (<n>) | child"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
-                task = NxTasks::interactivelyIssueNewOrNull()
-                next if task.nil?
-                TxEdges::issueEdge(pool, task, nil)
-                next
-            end
-
             if input == "child" then
-                task = TxEdges::interativelyIssueNewChildOrNull()
-                next if task.nil?
-                TxEdges::issueEdge(pool, task, nil)
+                TxEdges::interactivelyIssueChildOrNothing(pool)
                 next
             end
 

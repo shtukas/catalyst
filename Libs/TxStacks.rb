@@ -1,19 +1,15 @@
 
 class TxStacks
 
-    # TxStacks::issue(description)
-    def self.issue(description)
-        uuid = SecureRandom.uuid
-        DarkEnergy::init("TxStack", uuid)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
-    end
-
-    # TxStacks::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # TxStacks::interactivelyMakeOrNull()
+    def self.interactivelyMakeOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        TxStacks::issue(description)
+        {
+            "uuid"        => uuid,
+            "mikuType"    => "TxStack",
+            "description" => description
+        }
     end
 
     # TxStacks::toString(item)
@@ -55,22 +51,13 @@ class TxStacks
                 }
 
             puts ""
-            puts ".. (<n>) | task | child"
+            puts ".. (<n>) | child"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
-                task = NxTasks::interactivelyIssueNewOrNull()
-                next if task.nil?
-                TxEdges::issueEdge(stack, task, nil)
-                next
-            end
-
             if input == "child" then
-                task = TxEdges::interativelyIssueNewChildOrNull()
-                next if task.nil?
-                TxEdges::issueEdge(stack, task, nil)
+                TxEdges::interactivelyIssueChildOrNothing(stack)
                 next
             end
 

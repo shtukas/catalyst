@@ -1,50 +1,9 @@
 
 NxTask: 
 
-    -----------------------------------------------------------
-    "variant"      : null or "classic"
-
     "uuid"         : String
     "mikuType"     : "NxTask"
     "unixtime"     : Float
     "datetime"     : DateTime Iso 8601 UTC Zulu
     "description"  : String
     "field11"      : null or CoreData reference string
-
-    "coreuuid"     : null or String, uuid of a core
-    "position"     : Float
-    "engineuuid"   : null or String, uuid of an engine
-
-    -----------------------------------------------------------
-    "variant"      : "stack"
-
-    "uuid"         : String
-    "mikuType"     : "NxTask"
-    "unixtime"     : Float
-    "datetime"     : DateTime Iso 8601 UTC Zulu
-    "description"  : String
-    "field11"      : null or CoreData reference string
-
-    "coreuuid"     : null or String, uuid of a core
-    "position"     : Float
-    "engineuuid"   : null or String, uuid of an engine
-
-    "stack"        : Array[StackEntry]
-
-StackEntry {
-    "uuid"        => String
-    "mikuType"    => "StackEntry"
-    "variant"     => "origin"
-    "position"    => 0
-    "description" => String
-    "field11"     => null or CoreData reference string
-}
-
-StackEntry {
-    "uuid"     => String
-    "mikuType" => "StackEntry"
-    "variant"  => "plus"
-    "position" => Float
-    "line"     => String
-}
-

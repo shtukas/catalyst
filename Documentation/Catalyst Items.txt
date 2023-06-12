@@ -7,6 +7,4 @@ Cross types conventions:
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-NxTasks can be orphan or have a core (and an optional position) or an engine (if they are orphan, they are displayed by the infinity core)
-
-
+Some elementd can have an engine, mostly tasks and containers (pools and stacks)

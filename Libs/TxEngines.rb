@@ -42,19 +42,46 @@ class TxEngines
 
     # TxEngines::engineSuffix(item)
     def self.engineSuffix(item)
-        return "" if item["engine"].nil?
-        engine = item["engine"]
+        Memoize::evaluate(
+            "da4568a3-3bdf-4466-b502-0f60c963e76a:#{item["uuid"]}",
+            lambda { 
+                return "" if item["engine"].nil?
+                engine = item["engine"]
 
-        left = engine["estimated-duration-in-hours"]*3600 - Bank::getValue(engine["uuid"])
-        timeToDeadline = (engine["start-unixtime"] + engine["deadline-in-relative-days"]*86400) - Time.new.to_i
+                left = engine["estimated-duration-in-hours"]*3600 - Bank::getValue(engine["uuid"])
+                timeToDeadline = (engine["start-unixtime"] + engine["deadline-in-relative-days"]*86400) - Time.new.to_i
 
-        " (🚗, metric: #{TxEngines::metric(engine).round(2)}; #{(left.to_f/3600).round(2)} hours left over #{(timeToDeadline.to_f/86400).round(2)} days)"
+                " (🚗, metric: #{TxEngines::metric(engine).round(2)}; #{(left.to_f/3600).round(2)} hours left over #{(timeToDeadline.to_f/86400).round(2)} days)"
+            },
+            600
+        )
+    end
+
+    # TxEngines::items_with_an_engine()
+    def self.items_with_an_engine()
+        Catalyst::catalystItems()
+            .select{|item| item["engine"] }
     end
 
     # TxEngines::listingItems()
     def self.listingItems()
-        Catalyst::catalystItems()
-            .select{|item| item["engine"] }
+        items = Memoize::evaluate(
+            "8cf20b38-ab0d-4bab-b541-07fe27950d2c",
+            lambda { 
+                    TxEngines::items_with_an_engine()
+                        .sort{|item| 
+                            Memoize::evaluate(
+                                "034c49e8-5b41-48d9-af73-bfbdd2bbdbbe:#{item["engine"]["uuid"]}",
+                                lambda { TxEngines::metric(item["engine"]) },
+                                600
+                            )
+                        }
+                        .first(10)
+            },
+            3600
+        ).map{|item| DarkEnergy::itemOrNull(item["uuid"]) }
+
+        items
             .sort{|item| 
                 Memoize::evaluate(
                     "034c49e8-5b41-48d9-af73-bfbdd2bbdbbe:#{item["engine"]["uuid"]}",

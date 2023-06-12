@@ -19,21 +19,18 @@ class TxEdges
         edge
     end
 
-    # TxEdges::interativelyIssueNewChildOrNull()
-    def self.interativelyIssueNewChildOrNull()
+    # TxEdges::interativelyMakeNewChildOrNull()
+    def self.interativelyMakeNewChildOrNull()
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["task", "pool", "stack"])
         return nil if option
         if option == "task" then
-            child = NxTasks::interactivelyIssueNewOrNull()
-            return nil if child.nil?
+            return NxTasks::interactivelyMakeOrNull()
         end
         if option == "pool" then
-            child = TxPools::interactivelyIssueNewOrNull()
-            return nil if child.nil?
+            return TxPools::interactivelyMakeOrNull()
         end
         if option == "stack" then
-            child = TxStacks::interactivelyIssueNewOrNull()
-            return nil if child.nil?
+            return TxStacks::interactivelyMakeOrNull()
         end
         child
     end
@@ -44,7 +41,7 @@ class TxEdges
         if !supportedParentTypes.include?(parent["mikuType"]) then
             raise "Unsupported parent type: #{parent["mikuType"]}"
         end
-        child = TxEdges::interativelyIssueNewChildOrNull()
+        child = TxEdges::interativelyMakeNewChildOrNull()
         if parent["mikuType"] == "NxCore" then
             position = NxCores::interactivelySelectPositionAmongTop(parent)
             TxEdges::issueEdge(parent, child, position)
@@ -56,6 +53,7 @@ class TxEdges
             position = TxStacks::interactivelySelectPosition(parent)
             TxEdges::issueEdge(parent, child, position)
         end
+        DarkEnergy::commit(child)
     end
 
     # TxEdges::children_ordered(parent)
@@ -85,5 +83,28 @@ class TxEdges
             .map{|edge| DarkEnergy::itemOrNull(edge["parentuuid"]) }
             .compact
             .first
+    end
+
+    # TxEdges::interativelyMakeNewContainerOrNull()
+    def self.interativelyMakeNewContainerOrNull()
+        mikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["TxPool", "TxStack"])
+        return nil if mikuType
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+        {
+            "uuid"        => SecureRandom.uuid,
+            "mikuType"    => mikuType,
+            "description" => description
+        }
+    end
+
+    # TxEdges::liftAttempt(item)
+    def self.liftAttempt(item)
+        container = TxEdges::interativelyMakeNewContainerOrNull()
+        return if container.nil?
+        container["uuid"] = item["uuid"]
+        item["uuid"] = SecureRandom.uuid
+        DarkEnergy::commit(item) # we put the item first because if we put the container first and the item commit fails, we lose the item
+        DarkEnergy::commit(container)
     end
 end

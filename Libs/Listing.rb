@@ -15,6 +15,43 @@ class SpaceControl
     end
 end
 
+class Speedometer
+    def initialize()
+
+    end
+
+    def start_contest()
+        @contest = []
+    end
+
+    def contest_entry(description, l)
+        t1 = Time.new.to_f
+        l.call()
+        t2 = Time.new.to_f
+        @contest << {
+            "description" => description,
+            "time"        => t2 - t1
+        }
+    end
+
+    def end_contest()
+        @contest
+            .sort_by{|entry| entry["time"] }
+            .reverse
+            .each{|entry| puts "#{"%6.2f" % entry["time"]}: #{entry["description"]}" }
+    end
+
+    def start_unit(description)
+        @description = description
+        @t = Time.new.to_f
+    end
+
+    def end_unit()
+        puts "#{"%6.2f" % (Time.new.to_f - @t)}: #{@description}"
+    end
+
+end
+
 class Listing
 
     # -----------------------------------------
@@ -95,7 +132,6 @@ class Listing
 
     # Listing::items2()
     def self.items2()
-
         items = [
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
@@ -103,7 +139,7 @@ class Listing
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            NxCores::coreOwnedRunningTasks(),
+            NxTasks::runningTasks(),
             NxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxEngines::listingItems()
@@ -133,7 +169,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{NxCores::coreSuffix(item).green}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -141,13 +177,6 @@ class Listing
 
         if NxBalls::itemIsActive(item) then
             line = line.green
-        end
-
-        if item["mikuType"] == "NxTask" and item["variant"] == "stack" then
-             line = line + "\n" +  item["stack"]
-                                        .sort_by{|entry| entry["position"] }
-                                        .map{|entry| "               #{NxTasks::stackEntryToString(entry)}" }
-                                        .join("\n")
         end
 
         line
@@ -159,149 +188,71 @@ class Listing
     # Listing::speedTest()
     def self.speedTest()
 
-        tests = [
-            {
-                "name" => "Anniversaries::listingItems()",
-                "lambda" => lambda { Anniversaries::listingItems() }
-            },
-            {
-                "name" => "NxOndates::listingItems()",
-                "lambda" => lambda { NxOndates::listingItems() }
-            },
-            {
-                "name" => "PhysicalTargets::listingItems()",
-                "lambda" => lambda { PhysicalTargets::listingItems() }
-            },
-            {
-                "name" => "Waves::listingItems()",
-                "lambda" => lambda { Waves::listingItems() }
-            },
-            {
-                "name" => "NxBackups::listingItems()",
-                "lambda" => lambda { NxBackups::listingItems() }
-            },
-            {
-                "name" => "DarkEnergy::mikuType(NxDrop)",
-                "lambda" => lambda { DarkEnergy::mikuType("NxDrop") }
-            },
-            {
-                "name" => "NxCores::listingItems()",
-                "lambda" => lambda { NxCores::listingItems() }
-            },
-            {
-                "name" => "TheLine::line()",
-                "lambda" => lambda { TheLine::line() }
-            },
-            {
-                "name" => "DarkEnergy::mikuType(NxBurner)",
-                "lambda" => lambda { DarkEnergy::mikuType("NxBurner") }
-            },
-            {
-                "name" => "DarkEnergy::mikuType(NxFire)",
-                "lambda" => lambda { DarkEnergy::mikuType("NxFire") }
-            },
-            {
-                "name" => "NxTimes::listingItems()",
-                "lambda" => lambda { NxTimes::listingItems() }
-            },
-            {
-                "name" => "TxEngines::listingItems()",
-                "lambda" => lambda { TxEngines::listingItems() }
-            },
-            {
-                "name" => "NxCores::coreOwnedRunningTasksCore()",
-                "lambda" => lambda { NxCores::coreOwnedRunningTasksCore() }
-            },
-            {
-                "name" => "Listing::burnersAndFires()",
-                "lambda" => lambda { Listing::burnersAndFires() }
-            },
-            {
-                "name" => "Listing::maintenance()",
-                "lambda" => lambda { Listing::maintenance() }
-            },
-        ]
+        spot = Speedometer.new()
 
-        runTest = lambda {|test|
-            t1 = Time.new.to_f
-            (1..3).each{ test["lambda"].call() }
-            t2 = Time.new.to_f
-            {
-                "name" => test["name"],
-                "runtime" => (t2 - t1).to_f/3
-            }
-        }
-
-        printTestResults = lambda{|result, padding|
-            puts "- #{result["name"].ljust(padding)} : #{"%6.3f" % result["runtime"]}"
-        }
-
-        padding = tests.map{|test| test["name"].size }.max
-
-        # dry run to initialise things
-
-        tests
-            .each{|test|
-                test["lambda"].call()
-            }
-
-        # tests
-
-        results1 = tests
-                    .map{|test|
-                        puts "running: #{test["name"]}"
-                        runTest.call(test)
-                    }
-                    .sort{|r1, r2| r1["runtime"] <=> r2["runtime"] }
-                    .reverse
-
-        results2 = [
-            {
-                "name" => "Listing::items2()",
-                "lambda" => lambda { Listing::items2() }
-            },
-            {
-                "name" => "Listing::printing sequenne",
-                "lambda" => lambda { 
-                    Listing::maintenance()
-
-                    spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-                    store = ItemStore.new()
-
-                    system("clear")
-
-                    Listing::printing(
-                        spacecontrol,
-                        store, 
-                        NxTimes::listingItems(),
-                        DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
-                        TxEngines::listingItems(),
-                        Listing::burnersAndFires(),
-                        Listing::items2()
-                    )
-                }
-            },
-        ]
-                    .map{|test|
-                        puts "running: #{test["name"]}"
-                        runTest.call(test)
-                    }
-                    .sort{|r1, r2| r1["runtime"] <=> r2["runtime"] }
-                    .reverse
+        spot.start_contest()
+        spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
+        spot.contest_entry("DarkEnergy::mikuType(NxBurner)", lambda{ DarkEnergy::mikuType("NxBurner") })
+        spot.contest_entry("DarkEnergy::mikuType(NxDrop)", lambda{ DarkEnergy::mikuType("NxDrop") })
+        spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
+        spot.contest_entry("Listing::burnersAndFires()", lambda{ Listing::burnersAndFires() })
+        spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
+        spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
+        spot.contest_entry("NxCores::listingItems()", lambda{ NxCores::listingItems() })
+        spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxTasks::runningTasks()", lambda{ NxTasks::runningTasks() })
+        spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
+        spot.contest_entry("NxTimes::listingItems(true)", lambda{ NxTimes::listingItems(true) })
+        spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
+        spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
+        spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
+        spot.contest_entry("TxEngines::listingItems()", lambda{ TxEngines::listingItems() })
+        spot.end_contest()
 
         puts ""
 
-        results1
-            .each{|result|
-                printTestResults.call(result, padding)
-            }
+        spot.start_unit("Listing::items2()")
+        Listing::items2()
+        spot.end_unit()
 
-        puts ""
+        spot.start_unit("Listing::maintenance()")
+        Listing::maintenance()
+        spot.end_unit()
 
-        results2
-            .each{|result|
-                printTestResults.call(result, padding)
-            }
+        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+        store = ItemStore.new()
+
+        spot.start_unit("NxTimes::listingItems(false)")
+        is1 = NxTimes::listingItems(false)
+        spot.end_unit()
+
+        spot.start_unit("NxCores")
+        is2 = DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) }
+        spot.end_unit()
+
+        spot.start_unit("TxEngines::listingItems()")
+        is3 = TxEngines::listingItems()
+        spot.end_unit()
+
+        spot.start_unit("Listing::burnersAndFires()")
+        is4 = Listing::burnersAndFires()
+        spot.end_unit()
+
+        spot.start_unit("Listing::items2()")
+        is5 = Listing::items2()
+        spot.end_unit()
+
+        spot.start_unit("Listing::printing")
+        Listing::printing(
+            spacecontrol,
+            store, 
+            is1,
+            is2,
+            is3,
+            is4,
+            is5
+        )
+        spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
     end

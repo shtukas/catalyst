@@ -99,7 +99,7 @@ class NxCores
             strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
         end
 
-        strings << ") (metric: #{NxCores::listingmetric(core).round(2)})"
+        strings << ")"
         strings.join()
     end
 
@@ -108,65 +108,6 @@ class NxCores
         DarkEnergy::mikuType("NxCore")
             .select{|core| NxCores::listingCompletionRatio(core) < 1 }
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
-    end
-
-    # NxCores::tasks_ordered(core)
-    def self.tasks_ordered(core)
-        if core["uuid"] == NxCores::infinityuuid() then
-            return DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"].nil? or (task["coreuuid"] == core["uuid"]) }.sort_by{|task| task["position"] || 0 }
-        end
-        if core["uuid"] == NxCores::recoveryuuid() then
-            return DarkEnergy::mikuType("NxTask")
-                .select{|task| task["coreuuid"].nil? }
-                .sort_by{|task| task["unixtime"] }
-                .reverse
-                .take(NxCores::recoveryDepth())
-        end
-        DarkEnergy::mikuType("NxTask").select{|task| task["coreuuid"] == core["uuid"] }.sort_by{|task| task["position"] || 0 }
-    end
-
-    # NxCores::coreSuffix(item)
-    def self.coreSuffix(item)
-        if item["coreuuid"] then
-            core = DarkEnergy::itemOrNull(item["coreuuid"])
-            if core.nil? then
-                DarkEnergy::patch(item["uuid"], "coreuuid", nil)
-                ""
-            else
-                " #{"(#{core["description"]})".green}"
-            end
-        else
-            ""
-        end
-    end
-
-    # NxCores::listingmetric(core)
-    def self.listingmetric(core)
-        0.5 + 0.5 * (1 - NxCores::listingCompletionRatio(core))
-    end
-
-    # NxCores::firstPositionInCore(core)
-    def self.firstPositionInCore(core)
-        tasks = NxCores::tasks_ordered(core)
-        return 1 if tasks.empty?
-        tasks.map{|task| task["position"] || 0 }.min
-    end
-
-    # NxCores::coreOwnedRunningTasksCore()
-    def self.coreOwnedRunningTasksCore()
-        DarkEnergy::mikuType("NxCore")
-            .map{|core| NxCores::tasks_ordered(core) }
-            .flatten
-            .select{|task| NxBalls::itemIsActive(task) }
-    end
-
-    # NxCores::coreOwnedRunningTasks()
-    def self.coreOwnedRunningTasks()
-        Memoize::evaluate(
-            "9b4eca84-3107-4e5f-9640-9b7e621d408e", 
-            lambda { NxCores::coreOwnedRunningTasksCore() },
-            600
-        ).select{|task| NxBalls::itemIsActive(task)}
     end
 
     # -------------------------
@@ -242,26 +183,17 @@ class NxCores
                 [], # cores display
                 [], # engines display
                 Listing::burnersAndFires().select{|item| item["coreuuid"] == core["uuid"] },
-                NxCores::tasks_ordered(core)
+                TxEdges::children_ordered(core)
             )
 
             puts ""
-            puts ".. (<n>) | task | child"
+            puts ".. (<n>) | child"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
-                task = NxTasks::interactivelyIssueNewOrNull()
-                next if task.nil?
-                TxEdges::issueEdge(core, task, nil)
-                next
-            end
-
             if input == "child" then
-                task = TxEdges::interativelyIssueNewChildOrNull()
-                next if task.nil?
-                TxEdges::issueEdge(core, task, nil)
+                TxEdges::interactivelyIssueChildOrNothing(core)
                 next
             end
 
@@ -315,7 +247,7 @@ class NxCores
 
     # NxCores::interactivelySelectPositionAmongTop(core)
     def self.interactivelySelectPositionAmongTop(core)
-        NxCores::tasks_ordered(core).each{|item|
+        TxEdges::children_ordered(core).each{|item|
             puts NxTasks::toString(item)
         }
         position = 0
@@ -324,6 +256,16 @@ class NxCores
             break if position != ""
         }
         position.to_f
+    end
+
+    # NxCores::issueEdgeOrNothing(itemuuid)
+    def self.issueEdgeOrNothing(itemuuid)
+        core = NxCores::interactivelySelectOneOrNull()
+        return if core.nil?
+        position = NxCores::interactivelySelectPositionAmongTop(core)
+        edge = TxEdges::make(core["uuid"], itemuuid, position)
+        puts JSON.pretty_generate(edge)
+        DarkEnergy::commit(edge)
     end
 end
 

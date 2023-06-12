@@ -98,28 +98,28 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack", input) then
+        if Interpreting::match("lift", input) then
             item = store.getDefault()
             return if item.nil?
             if item["mikuType"] != "NxTask" then
-                puts "You cannot stack a non NxTask"
+                puts "Only NxTasks can be lifted"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            NxTasks::initiateStack(item)
+            TxEdges::liftAttempt(item)
             return
         end
 
-        if Interpreting::match("stack *", input) then
+        if Interpreting::match("lift *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
-                puts "You cannot stack a non NxTask"
+                puts "Only NxTasks can be lifted"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            NxTasks::initiateStack(item)
+            TxEdges::liftAttempt(item)
             return
         end
 
@@ -351,9 +351,14 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
+            # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
+            task = NxTasks::interactivelyIssueNewOrNull()
+            return if task.nil?
+            puts JSON.pretty_generate(task)
+            core = NxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            position = NxCores::interactivelySelectPositionAmongTop(core)
+            TxEdges::issueEdge(core, task, position)
             return
         end
 
