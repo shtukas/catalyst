@@ -139,7 +139,7 @@ class NxTasks
             DarkEnergy::patch(task["uuid"], "field11", nil)
         end
 
-        if task["variant"] == "classic" then
+        if task["variant"].nil? or task["variant"] == "classic" then
             if LucilleCore::askQuestionAnswerAsBoolean("> access ? ") then
                 CoreData::access(task["uuid"], task["field11"])
             end
