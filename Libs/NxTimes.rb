@@ -30,7 +30,7 @@ class NxTimes
     # NxTimes::hasPendingTime()
     def self.hasPendingTime()
         currentTime = Time.new.strftime("%H:%M")
-        DarkEnergy::mikuType("NxTime").any?{|item| item["time"] >= currentTime }
+        DarkEnergy::mikuType("NxTime").any?{|item| item["time"] <= currentTime }
     end
 
     # NxTimes::reschedule()
