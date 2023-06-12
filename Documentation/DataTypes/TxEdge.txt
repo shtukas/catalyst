@@ -1,0 +1,9 @@
+Definitions for the Catalyst network
+
+TxEdge {
+    "uuid"       : String
+    "mikuType"   : "TxEdge"
+    "parentuuid" : String
+    "childuuid"  : String
+    "position"   : Float or null
+}

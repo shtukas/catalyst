@@ -105,6 +105,12 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
+        if item["mikuType"] == "TxPool" then
+            return TxPools::toString(item)
+        end
+        if item["mikuType"] == "TxStack" then
+            return TxStacks::toString(item)
+        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end

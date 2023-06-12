@@ -1,0 +1,7 @@
+Definitions for the Catalyst network
+
+TxPool {
+    "uuid"        : String
+    "mikuType"    : "TxPool"
+    "description" : String
+}

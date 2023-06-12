@@ -1,0 +1,7 @@
+Definitions for the Catalyst network
+
+TxStack {
+    "uuid"        : String
+    "mikuType"    : "TxStack"
+    "description" : String
+}
