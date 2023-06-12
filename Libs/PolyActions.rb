@@ -11,7 +11,8 @@ class PolyActions
         # types in alphabetical order
 
         if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
+            #NxCores::program1(item)
+            NxCores::program0(item)
             return
         end
 
