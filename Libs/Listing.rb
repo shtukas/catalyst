@@ -133,13 +133,13 @@ class Listing
     # Listing::items2()
     def self.items2()
         items = [
+            NxBalls::runningItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            NxTasks::runningTasks(),
             NxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxEngines::listingItems()
@@ -200,7 +200,6 @@ class Listing
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxCores::listingItems()", lambda{ NxCores::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxTasks::runningTasks()", lambda{ NxTasks::runningTasks() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
         spot.contest_entry("NxTimes::listingItems(true)", lambda{ NxTimes::listingItems(true) })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })

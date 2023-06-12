@@ -163,6 +163,36 @@ class NxCores
         core
     end
 
+    # NxCores::children_ordered(core)
+    def self.children_ordered(core)
+        if core["uuid"] == NxCores::infinityuuid() then
+            return Memoize::evaluate(
+                "827d8bb1-1065-4727-b5d7-1db3cf9e5342",
+                lambda { 
+                    DarkEnergy::mikuType("NxTask")
+                        .select{|task| TxEdges::getParentOrNull(task).nil? }
+                        .sort_by{|task| task["unixtime"] }
+                        .first(100)
+                },
+                86400
+            )
+        end
+        if core["uuid"] == NxCores::recoveryuuid() then
+            return Memoize::evaluate(
+                "2f8cd125-6309-4e36-bef6-ea08580d824e",
+                lambda { 
+                    DarkEnergy::mikuType("NxTask")
+                        .select{|task| TxEdges::getParentOrNull(task).nil? }
+                        .sort_by{|task| task["unixtime"] }
+                        .reverse
+                        .first(100)
+                },
+                86400
+            )
+        end
+        TxEdges::children_ordered(core)
+    end
+
     # NxCores::program0(core)
     def self.program0(core)
         loop {
@@ -183,7 +213,7 @@ class NxCores
                 [], # cores display
                 [], # engines display
                 Listing::burnersAndFires().select{|item| item["coreuuid"] == core["uuid"] },
-                TxEdges::children_ordered(core)
+                NxCores::children_ordered(core)
             )
 
             puts ""
