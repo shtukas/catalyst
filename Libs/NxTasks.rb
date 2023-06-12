@@ -140,9 +140,7 @@ class NxTasks
         end
 
         if task["variant"].nil? or task["variant"] == "classic" then
-            if LucilleCore::askQuestionAnswerAsBoolean("> access ? ") then
-                CoreData::access(task["uuid"], task["field11"])
-            end
+            CoreData::access(task["uuid"], task["field11"])
             return
         end
 
