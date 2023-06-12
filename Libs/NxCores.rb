@@ -212,7 +212,7 @@ class NxCores
                 [], # times
                 [], # cores display
                 [], # engines display
-                Listing::burnersAndFires().select{|item| item["coreuuid"] == core["uuid"] },
+                Listing::burnersAndFires().select{|item| TxEdges::parentChild(core, item)},
                 NxCores::children_ordered(core)
             )
 
@@ -272,7 +272,8 @@ class NxCores
         end
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        DarkEnergy::patch(item["uuid"], "coreuuid", core["uuid"])
+        position = NxCores::interactivelySelectPositionAmongTop(core)
+        TxEdges::issueEdge(core, item, position)
     end
 
     # NxCores::interactivelySelectPositionAmongTop(core)
@@ -296,6 +297,14 @@ class NxCores
         edge = TxEdges::make(core["uuid"], itemuuid, position)
         puts JSON.pretty_generate(edge)
         DarkEnergy::commit(edge)
+    end
+
+    # NxCores::coreSuffix(item)
+    def self.coreSuffix(item)
+        parent = TxEdges::getParentOrNull(item)
+        return nil if parent.nil?
+        return nil if parent["mikuType"] != "NxCore"
+        " (#{parent["description"]})".green
     end
 end
 

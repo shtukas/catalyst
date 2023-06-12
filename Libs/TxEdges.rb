@@ -89,6 +89,13 @@ class TxEdges
         )
     end
 
+    # TxEdges::parentChild(px, cx)
+    def self.parentChild(px, cx)
+        parent = TxEdges::getParentOrNull(cx)
+        return false if parent.nil?
+        parent["uuid"] == px["uuid"]
+    end
+
     # TxEdges::getParentOrNull(item)
     def self.getParentOrNull(item)
         # Technically an item can have several parents, but practically that won't happen

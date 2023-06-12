@@ -96,15 +96,4 @@ class NxTasks
     def self.access(task)
         DarkEnergy::patch(task["uuid"], "field11", nil)
     end
-
-    # NxTasks::maintenance()
-    def self.maintenance()
-        DarkEnergy::mikuType("NxTask").each{|task|
-            next if task["coreuuid"].nil?
-            core = DarkEnergy::itemOrNull(task["coreuuid"])
-            if core.nil? then
-                DarkEnergy::patch(task["uuid"], "coreuuid", nil)
-            end
-        }
-    end
 end
