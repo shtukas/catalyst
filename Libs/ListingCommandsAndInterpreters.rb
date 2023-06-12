@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
             "divings       : anniversaries | ondates | waves | burners | desktop | time promises | sequences | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n> | inventory",
+            "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
     end
 
@@ -60,6 +60,11 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("mikutypes", input) then
             puts JSON.pretty_generate(DarkEnergy::all().map{|item| item["mikuType"] }.uniq.sort)
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("reschedule", input) then
+            NxTimes::reschedule()
             return
         end
 

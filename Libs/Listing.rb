@@ -34,7 +34,11 @@ class Listing
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFire"
         return false if item["mikuType"] == "NxBurner"
-        return false if item["mikuType"] == "NxTime"
+        
+        if item["mikuType"] == "NxTime" then
+            return item["canBeDefault"]
+        end
+
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
@@ -92,7 +96,7 @@ class Listing
     # Listing::items2()
     def self.items2()
 
-        [
+        items = [
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -106,6 +110,13 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
+
+
+        if NxTimes::hasPendingTime() then
+            NxTimes::listingItems(true) + items
+        else
+            items.take(1) + NxTimes::listingItems(true) + items.drop(1)
+        end
     end
 
     # Listing::itemToListingLine(store, item)
@@ -417,7 +428,7 @@ class Listing
             Listing::printing(
                 spacecontrol,
                 store, 
-                NxTimes::listingItems(),
+                NxTimes::listingItems(false),
                 DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
                 TxEngines::listingItems(),
                 Listing::burnersAndFires(),
