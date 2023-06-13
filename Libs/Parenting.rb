@@ -80,12 +80,11 @@ class Parenting
     # Parenting::getPositionOrNull(parent, child)
     def self.getPositionOrNull(parent, child)
         return nil if parent["children"].nil?
-        entry = DarkEnergy::mikuType("TxEdge")
-            .select{|edge| edge["parentuuid"] == parent["uuid"] }
-            .select{|edge| edge["childuuid"] == child["uuid"] }
-            .first
-        return nil if entry.nil?
-        entry["position"]
+        tx8 = parent["children"]
+                    .select{|tx8| tx8["childuuid"] == child["uuid"] }
+                    .first
+        return nil if tx8.nil?
+        tx8["position"]
     end
 
     # Parenting::isParentChild(px, cx)
