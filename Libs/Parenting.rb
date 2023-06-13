@@ -28,7 +28,7 @@ class Parenting
     # Parenting::interativelyMakeNewChildOrNull()
     def self.interativelyMakeNewChildOrNull()
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["task", "pool", "stack"])
-        return nil if option
+        return nil if option.nil?
         if option == "task" then
             return NxTasks::interactivelyMakeOrNull()
         end
@@ -38,7 +38,6 @@ class Parenting
         if option == "stack" then
             return TxStacks::interactivelyMakeOrNull()
         end
-        child
     end
 
     # Parenting::interactivelyIssueChildOrNothing(parent)
@@ -48,6 +47,7 @@ class Parenting
             raise "Unsupported parent type: #{parent["mikuType"]}"
         end
         child = Parenting::interativelyMakeNewChildOrNull()
+        return if child.nil?
         if parent["mikuType"] == "NxCore" then
             position = NxCores::interactivelySelectPositionAmongTop(parent)
             Parenting::set_objects(parent, child, position)
