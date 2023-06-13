@@ -83,9 +83,9 @@ class NxTasks
     def self.toString(item)
         position = NxTasks::getItemPositionOrNull(item)
         if position then
-            "⛳️ (#{"%5.2f" % position}) #{item["description"]}"
+            "⛳️ (#{"%5.2f" % position}) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
         else
-            "⛳️ (missing position) #{item["description"]}"
+            "⛳️ (missing position) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
         end
     end
 

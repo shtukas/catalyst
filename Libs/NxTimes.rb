@@ -14,7 +14,7 @@ class NxTimes
 
     # NxTimes::toString(item)
     def self.toString(item)
-        "(time) [#{item["time"]}] #{item["description"]}"
+        "(time) [#{item["time"]}] #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # NxTimes::listingItems(canBeDefault)

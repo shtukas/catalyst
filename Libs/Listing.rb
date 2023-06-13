@@ -174,7 +174,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

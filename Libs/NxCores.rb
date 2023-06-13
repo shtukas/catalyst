@@ -94,8 +94,8 @@ class NxCores
         padding = XCache::getOrDefaultValue("0e067f3e-a954-4138-8336-876240b9b7dd", "0").to_i
         strings = []
 
-        strings << "☕️ #{core["description"].ljust(padding)} (core: today: #{"#{"%5.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
-        strings << ", period: #{"#{"%5.2f" % (100*NxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
+        strings << "☕️ #{core["description"].ljust(padding)} (core: today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        strings << ", period: #{"#{"%6.2f" % (100*NxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
         timeSinceResetInDays = (Time.new.to_i - core["lastResetTime"]).to_f/86400
