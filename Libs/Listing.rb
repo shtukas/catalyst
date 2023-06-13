@@ -180,6 +180,10 @@ class Listing
             line = line.yellow
         end
 
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
         if NxBalls::itemIsActive(item) then
             line = line.green
         end
