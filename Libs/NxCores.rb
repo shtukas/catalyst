@@ -247,13 +247,30 @@ class NxCores
             )
 
             puts ""
-            puts ".. (<n>) | child"
+            puts ".. (<n>) | task | pool | stack"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "child" then
-                Parenting::interactivelyIssueChildOrNothing(core)
+            if input == "task" then
+                child = NxTasks::interactivelyMakeOrNull()
+                next if child.nil?
+                position = TxStacks::interactivelySelectPosition(core)
+                Parenting::set_objects(core, child, position)
+                next
+            end
+            if input == "pool" then
+                child = TxPools::interactivelyMakeOrNull()
+                next if child.nil?
+                position = TxStacks::interactivelySelectPosition(core)
+                Parenting::set_objects(core, child, position)
+                next
+            end
+            if input == "stack" then
+                child = TxStacks::interactivelyMakeOrNull()
+                next if child.nil?
+                position = TxStacks::interactivelySelectPosition(core)
+                Parenting::set_objects(core, child, position)
                 next
             end
 

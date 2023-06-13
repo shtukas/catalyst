@@ -14,12 +14,17 @@ class TxStacks
 
     # TxStacks::toString(item)
     def self.toString(item)
-        "👨🏻‍💻 #{item["description"]}"
+        position = NxTasks::getItemPositionOrNull(item)
+        if position then
+            "👨🏻‍💻 (#{"%5.2f" % position}) #{item["description"]}"
+        else
+            "👨🏻‍💻 (missing position) #{item["description"]}"
+        end
     end
 
     # TxStacks::interactivelySelectPosition(stack)
     def self.interactivelySelectPosition(stack)
-        puts TxStacks::toString(item).green
+        puts TxStacks::toString(stack).green
         Parenting::children_ordered(stack).each{|item|
             position = Parenting::getPositionOrNull(stack, item)
             puts "    - (#{"%6.3f" % position}) #{PolyFunctions::toString(item)}"
@@ -51,13 +56,30 @@ class TxStacks
                 }
 
             puts ""
-            puts ".. (<n>) | child"
+            puts ".. (<n>) | task | pool | stack"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "child" then
-                Parenting::interactivelyIssueChildOrNothing(stack)
+            if input == "task" then
+                child = NxTasks::interactivelyMakeOrNull()
+                next if child.nil?
+                position = TxStacks::interactivelySelectPosition(stack)
+                Parenting::set_objects(stack, child, position)
+                next
+            end
+            if input == "pool" then
+                child = TxPools::interactivelyMakeOrNull()
+                next if child.nil?
+                position = TxStacks::interactivelySelectPosition(stack)
+                Parenting::set_objects(stack, child, position)
+                next
+            end
+            if input == "stack" then
+                child = TxStacks::interactivelyMakeOrNull()
+                next if child.nil?
+                position = TxStacks::interactivelySelectPosition(stack)
+                Parenting::set_objects(stack, child, position)
                 next
             end
 

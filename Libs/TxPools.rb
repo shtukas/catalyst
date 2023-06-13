@@ -6,7 +6,7 @@ class TxPools
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         {
-            "uuid"        => uuid,
+            "uuid"        => SecureRandom.uuid,
             "mikuType"    => "TxPool",
             "description" => description
         }
@@ -14,7 +14,12 @@ class TxPools
 
     # TxPools::toString(item)
     def self.toString(item)
-        "👩‍💻 #{item["description"]}"
+        position = NxTasks::getItemPositionOrNull(item)
+        if position then
+            "👩‍💻 (#{"%5.2f" % position}) #{item["description"]}"
+        else
+            "👩‍💻 (missing position) #{item["description"]}"
+        end
     end
 
     # TxPools::program(pool)
@@ -36,13 +41,30 @@ class TxPools
                 }
 
             puts ""
-            puts ".. (<n>) | child"
+            puts ".. (<n>) | task | pool | stack"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "child" then
-                Parenting::interactivelyIssueChildOrNothing(pool)
+            if input == "task" then
+                child = NxTasks::interactivelyMakeOrNull()
+                next if child.nil?
+                position = rand
+                Parenting::set_objects(pool, child, position)
+                next
+            end
+            if input == "pool" then
+                child = TxPools::interactivelyMakeOrNull()
+                next if child.nil?
+                position = rand
+                Parenting::set_objects(pool, child, position)
+                next
+            end
+            if input == "stack" then
+                child = TxStacks::interactivelyMakeOrNull()
+                next if child.nil?
+                position = rand
+                Parenting::set_objects(pool, child, position)
                 next
             end
 

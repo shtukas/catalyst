@@ -25,45 +25,9 @@ class Parenting
         DarkEnergy::commit(child)
     end
 
-    # Parenting::interativelyMakeNewChildOrNull()
-    def self.interativelyMakeNewChildOrNull()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["task", "pool", "stack"])
-        return nil if option.nil?
-        if option == "task" then
-            return NxTasks::interactivelyMakeOrNull()
-        end
-        if option == "pool" then
-            return TxPools::interactivelyMakeOrNull()
-        end
-        if option == "stack" then
-            return TxStacks::interactivelyMakeOrNull()
-        end
-    end
-
-    # Parenting::interactivelyIssueChildOrNothing(parent)
-    def self.interactivelyIssueChildOrNothing(parent)
-        supportedParentTypes = ["NxCore", "TxPool", "TxStack"]
-        if !supportedParentTypes.include?(parent["mikuType"]) then
-            raise "Unsupported parent type: #{parent["mikuType"]}"
-        end
-        child = Parenting::interativelyMakeNewChildOrNull()
-        return if child.nil?
-        if parent["mikuType"] == "NxCore" then
-            position = NxCores::interactivelySelectPositionAmongTop(parent)
-            Parenting::set_objects(parent, child, position)
-        end
-        if parent["mikuType"] == "TxPool" then
-            Parenting::set_objects(parent, child, 0)
-        end
-        if parent["mikuType"] == "TxStack" then
-            position = TxStacks::interactivelySelectPosition(parent)
-            Parenting::set_objects(parent, child, position)
-        end
-        DarkEnergy::commit(child)
-    end
-
     # Parenting::children(parent)
     def self.children(parent)
+        return [] if parent["children"].nil?
         parent["children"]
             .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
             .compact
@@ -113,10 +77,8 @@ class Parenting
 
     # Parenting::childrenPositions(parent)
     def self.childrenPositions(parent)
-        DarkEnergy::mikuType("TxEdge")
-            .select{|edge| edge["parentuuid"] == parent["uuid"] }
-            .map{|edge| edge["position"] }
-            .compact
+        return [] if parent["children"].nil?
+        parent["children"].map{|tx8| tx8["position"] }
     end
 
     # Parenting::liftAttempt(item)

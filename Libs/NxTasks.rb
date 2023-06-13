@@ -85,9 +85,8 @@ class NxTasks
         if position then
             "⛳️ (#{"%5.2f" % position}) #{item["description"]}"
         else
-            "⛳️ #{item["description"]}"
+            "⛳️ (missing position) #{item["description"]}"
         end
-        
     end
 
     # --------------------------------------------------
