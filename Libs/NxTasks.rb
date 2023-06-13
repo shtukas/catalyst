@@ -94,6 +94,6 @@ class NxTasks
 
     # NxTasks::access(task)
     def self.access(task)
-        DarkEnergy::patch(task["uuid"], "field11", nil)
+        CoreData::access(task["uuid"], task["field11"])
     end
 end
