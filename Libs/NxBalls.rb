@@ -107,6 +107,9 @@ class NxBalls
             return if !LucilleCore::askQuestionAnswerAsBoolean("Confirm stop operation: ")
         end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
+        if item["mikuType"] == "NxTask" then
+            timespanInSeconds = [timespanInSeconds, 300].max # we want all tasks to contribute to at least 5 mins
+        end
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
             Bank::put(account["number"], timespanInSeconds)
