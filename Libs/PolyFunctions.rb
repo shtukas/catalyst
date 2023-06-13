@@ -11,13 +11,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["engine"] then
-            accounts << {
-                "description" => "TxEngine",
-                "number"      => item["engine"]["uuid"]
-            }
-        end
-
         if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "NxCore capsule",
@@ -32,11 +25,11 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxTask" and NxCores::infinity_uuids().include?(item["uuid"]) then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::infinitycore())
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::grid1())
         end
 
         if item["mikuType"] == "NxTask" and NxCores::reverseinfinity_uuids().include?(item["uuid"]) then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::reverseinfinitycore())
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::grid2())
         end
 
         accounts.reduce([]){|as, account|

@@ -141,7 +141,6 @@ class Listing
             DarkEnergy::mikuType("NxDrop"),
             NxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            TxEngines::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -175,7 +174,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TxEngines::engineSuffix(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -211,7 +210,6 @@ class Listing
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
-        spot.contest_entry("TxEngines::listingItems()", lambda{ TxEngines::listingItems() })
         spot.end_contest()
 
         puts ""
@@ -235,10 +233,6 @@ class Listing
         is2 = DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) }
         spot.end_unit()
 
-        spot.start_unit("TxEngines::listingItems()")
-        is3 = TxEngines::listingItems()
-        spot.end_unit()
-
         spot.start_unit("Listing::burnersAndFires()")
         is4 = Listing::burnersAndFires()
         spot.end_unit()
@@ -253,7 +247,6 @@ class Listing
             store, 
             is1,
             is2,
-            is3,
             is4,
             is5
         )
@@ -291,8 +284,8 @@ class Listing
         }
     end
 
-    # Listing::printing(spacecontrol, store, times, coresd, enginesd, burnersAndFires, items2)
-    def self.printing(spacecontrol, store, times, coresd, enginesd, burnersAndFires, items2)
+    # Listing::printing(spacecontrol, store, times, coresd, burnersAndFires, items2)
+    def self.printing(spacecontrol, store, times, coresd, burnersAndFires, items2)
 
         if times.size > 0 then
             spacecontrol.putsline ""
@@ -307,17 +300,6 @@ class Listing
         if coresd.size > 0 then
             spacecontrol.putsline ""
             coresd
-                .each{|item|
-                    store.register(item, false)
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-                    break if !status
-                }
-        end
-
-        if enginesd.size > 0 then
-            spacecontrol.putsline ""
-            enginesd
-                .first(5)
                 .each{|item|
                     store.register(item, false)
                     status = spacecontrol.putsline Listing::itemToListingLine(store, item)
@@ -385,7 +367,6 @@ class Listing
                 store, 
                 NxTimes::listingItems(false),
                 DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
-                TxEngines::listingItems(),
                 Listing::burnersAndFires(),
                 Listing::items2()
             )

@@ -1,28 +1,28 @@
 
 class NxCores
 
-    # NxCores::infinityuuid()
-    def self.infinityuuid()
+    # NxCores::grid1uuid()
+    def self.grid1uuid()
         "df40842a-f439-40d2-a274-bb8526a40189"
     end
 
-    # NxCores::infinitycore()
-    def self.infinitycore()
-        core = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+    # NxCores::grid1()
+    def self.grid1()
+        core = DarkEnergy::itemOrNull(NxCores::grid1uuid())
         if core.nil? then
             raise "(error: f844acd4-b819-4442-9bdb-340befa1804c) could not find infinity core"
         end
         core
     end
 
-    # NxCores::reverseinfinityuuid()
-    def self.reverseinfinityuuid()
+    # NxCores::grid2uuid()
+    def self.grid2uuid()
         "f96cc544-06ef-4e30-b415-e57e78eb3d73"
     end
 
-    # NxCores::reverseinfinitycore()
-    def self.reverseinfinitycore()
-        core = DarkEnergy::itemOrNull(NxCores::reverseinfinityuuid())
+    # NxCores::grid2()
+    def self.grid2()
+        core = DarkEnergy::itemOrNull(NxCores::grid2uuid())
         if core.nil? then
             raise "(error: 7320289f-10c4-49c9-8f50-1f5fa22fcb5a) could not find reverse infinity core"
         end
@@ -130,24 +130,24 @@ class NxCores
 
     # NxCores::children_ordered(core)
     def self.children_ordered(core)
-        if core["uuid"] == NxCores::infinityuuid() then
+        if core["uuid"] == NxCores::grid1uuid() then
             return Memoize::evaluate(
                 "827d8bb1-1065-4727-b5d7-1db3cf9e5342", # infinity
                 lambda { 
                     DarkEnergy::mikuType("NxTask")
-                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::infinityuuid()) }
+                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid1uuid()) }
                         .sort_by{|task| task["unixtime"] }
                         .first(NxCores::infinityDepth())
                 },
                 86400
             )
         end
-        if core["uuid"] == NxCores::reverseinfinityuuid() then
+        if core["uuid"] == NxCores::grid2uuid() then
             return Memoize::evaluate(
                 "2f8cd125-6309-4e36-bef6-ea08580d824e",
                 lambda { 
                     DarkEnergy::mikuType("NxTask")
-                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::reverseinfinityuuid()) }
+                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid2uuid()) }
                         .sort_by{|task| task["unixtime"] }
                         .reverse
                         .first(NxCores::infinityDepth())
@@ -160,13 +160,13 @@ class NxCores
 
     # NxCores::infinity_uuids()
     def self.infinity_uuids()
-        core = NxCores::infinitycore()
+        core = NxCores::grid1()
         NxCores::children_ordered(core).map{|item| item["uuid"] }
     end
 
     # NxCores::reverseinfinity_uuids()
     def self.reverseinfinity_uuids()
-        core = NxCores::reverseinfinitycore()
+        core = NxCores::grid2()
         NxCores::children_ordered(core).map{|item| item["uuid"] }
     end
 
@@ -211,8 +211,8 @@ class NxCores
     # NxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         cores = DarkEnergy::mikuType("NxCore")
-                    .reject{|core| core["uuid"] == NxCores::infinityuuid() }
-                    .reject{|core| core["uuid"] == NxCores::reverseinfinityuuid() }
+                    .reject{|core| core["uuid"] == NxCores::grid1uuid() }
+                    .reject{|core| core["uuid"] == NxCores::grid2uuid() }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| item["description"] })
     end
 
@@ -241,7 +241,6 @@ class NxCores
                 store, 
                 [], # times
                 [], # cores display
-                [], # engines display
                 Listing::burnersAndFires().select{|item| Parenting::isParentChild(core, item)},
                 NxCores::children_ordered(core)
             )

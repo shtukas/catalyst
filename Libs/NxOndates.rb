@@ -64,7 +64,6 @@ class NxOndates
                 store, 
                 [], # times
                 [], # cores display
-                [], # engines display
                 [],
                 items
             )

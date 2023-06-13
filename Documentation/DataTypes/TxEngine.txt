@@ -1,7 +1,0 @@
-
-TxEngine: 
-    "uuid"     : String
-    "mikuType" : "TxEngine"
-    "start-unixtime"              : Integer
-    "estimated-duration-in-hours" : Float
-    "deadline-in-relative-days"   : Float
