@@ -1,8 +1,8 @@
 
 class PolyFunctions
 
-    # PolyFunctions::itemsToBankingAccounts(item) # Array[{description, number}]
-    def self.itemsToBankingAccounts(item)
+    # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
+    def self.itemToBankingAccounts(item)
 
         accounts = []
 
@@ -21,15 +21,15 @@ class PolyFunctions
         parent = Parenting::getParentOrNull(item)
 
         if parent then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
         end
 
-        if item["mikuType"] == "NxTask" and NxCores::grid1uuid().include?(item["uuid"]) then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::grid1())
+        if item["mikuType"] == "NxTask" and NxCores::item_belongs_to_grid1(item) then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(NxCores::grid1())
         end
 
-        if item["mikuType"] == "NxTask" and NxCores::grid2uuid().include?(item["uuid"]) then
-            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::grid2())
+        if item["mikuType"] == "NxTask" and NxCores::item_belongs_to_grid2(item) then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(NxCores::grid2())
         end
 
         accounts.reduce([]){|as, account|

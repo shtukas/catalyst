@@ -1,6 +1,8 @@
 
 class NxCores
 
+        # -------------------------
+
     # NxCores::grid1uuid()
     def self.grid1uuid()
         "df40842a-f439-40d2-a274-bb8526a40189"
@@ -15,6 +17,26 @@ class NxCores
         core
     end
 
+    # NxCores::grid1children_ordered()
+    def self.grid1children_ordered()
+        DarkEnergy::mikuType("NxTask")
+            .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid1uuid()) }
+            .sort_by{|task| task["unixtime"] }
+            .first(NxCores::infinityDepth())
+    end
+
+    # NxCores::grid1children_ordered_uuids()
+    def self.grid1children_ordered_uuids()
+        NxCores::grid1children_ordered().map{|item| item["uuid"] }
+    end
+
+    # NxCores::item_belongs_to_grid1(item)
+    def self.item_belongs_to_grid1(item)
+        NxCores::grid1children_ordered_uuids().include?(item["uuid"])
+    end
+
+    # -------------------------
+
     # NxCores::grid2uuid()
     def self.grid2uuid()
         "f96cc544-06ef-4e30-b415-e57e78eb3d73"
@@ -28,6 +50,27 @@ class NxCores
         end
         core
     end
+ 
+    # NxCores::grid2children_ordered()
+    def self.grid2children_ordered()
+        DarkEnergy::mikuType("NxTask")
+            .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid2uuid()) }
+            .sort_by{|task| task["unixtime"] }
+            .reverse
+            .first(NxCores::infinityDepth())
+    end
+
+    # NxCores::grid2children_ordered_uuids()
+    def self.grid2children_ordered_uuids()
+        NxCores::grid2children_ordered().map{|item| item["uuid"] }
+    end
+
+    # NxCores::item_belongs_to_grid2(item)
+    def self.item_belongs_to_grid2(item)
+        NxCores::grid2children_ordered_uuids().include?(item["uuid"])
+    end
+
+    # -------------------------
 
     # NxCores::infinityDepth()
     def self.infinityDepth()
@@ -131,17 +174,10 @@ class NxCores
     # NxCores::children_ordered(core)
     def self.children_ordered(core)
         if core["uuid"] == NxCores::grid1uuid() then
-            return DarkEnergy::mikuType("NxTask")
-                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid1uuid()) }
-                        .sort_by{|task| task["unixtime"] }
-                        .first(NxCores::infinityDepth())
+            return NxCores::grid1children_ordered()
         end
         if core["uuid"] == NxCores::grid2uuid() then
-            return DarkEnergy::mikuType("NxTask")
-                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid2uuid()) }
-                        .sort_by{|task| task["unixtime"] }
-                        .reverse
-                        .first(NxCores::infinityDepth())
+            return NxCores::grid2children_ordered()
         end
         Parenting::children_ordered(core)
     end

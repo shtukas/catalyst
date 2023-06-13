@@ -53,6 +53,7 @@ class Parenting
 
     # Parenting::isParentChild(px, cx)
     def self.isParentChild(px, cx)
+        return false if px["children"].nil?
         px["children"].any?{|tx8| tx8["childuuid"] == cx["uuid"] }
     end
 

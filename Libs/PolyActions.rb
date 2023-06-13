@@ -214,6 +214,7 @@ class PolyActions
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 DarkEnergy::destroy(item["uuid"])
             end
             return
@@ -404,7 +405,7 @@ class PolyActions
 
     # PolyActions::addTimeToItem(item, timeInSeconds)
     def self.addTimeToItem(item, timeInSeconds)
-        PolyFunctions::itemsToBankingAccounts(item).each{|account|
+        PolyFunctions::itemToBankingAccounts(item).each{|account|
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank::put(account["number"], timeInSeconds)
         }
