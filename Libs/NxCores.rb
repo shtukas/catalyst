@@ -131,43 +131,19 @@ class NxCores
     # NxCores::children_ordered(core)
     def self.children_ordered(core)
         if core["uuid"] == NxCores::grid1uuid() then
-            return Memoize::evaluate(
-                "827d8bb1-1065-4727-b5d7-1db3cf9e5342", # infinity
-                lambda { 
-                    DarkEnergy::mikuType("NxTask")
+            return DarkEnergy::mikuType("NxTask")
                         .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid1uuid()) }
                         .sort_by{|task| task["unixtime"] }
                         .first(NxCores::infinityDepth())
-                },
-                86400
-            )
         end
         if core["uuid"] == NxCores::grid2uuid() then
-            return Memoize::evaluate(
-                "2f8cd125-6309-4e36-bef6-ea08580d824e",
-                lambda { 
-                    DarkEnergy::mikuType("NxTask")
+            return DarkEnergy::mikuType("NxTask")
                         .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid2uuid()) }
                         .sort_by{|task| task["unixtime"] }
                         .reverse
                         .first(NxCores::infinityDepth())
-                },
-                86400
-            )
         end
         Parenting::children_ordered(core)
-    end
-
-    # NxCores::infinity_uuids()
-    def self.infinity_uuids()
-        core = NxCores::grid1()
-        NxCores::children_ordered(core).map{|item| item["uuid"] }
-    end
-
-    # NxCores::reverseinfinity_uuids()
-    def self.reverseinfinity_uuids()
-        core = NxCores::grid2()
-        NxCores::children_ordered(core).map{|item| item["uuid"] }
     end
 
     # -------------------------

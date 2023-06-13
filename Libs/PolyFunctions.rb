@@ -24,11 +24,11 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
         end
 
-        if item["mikuType"] == "NxTask" and NxCores::infinity_uuids().include?(item["uuid"]) then
+        if item["mikuType"] == "NxTask" and NxCores::grid1uuid().include?(item["uuid"]) then
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::grid1())
         end
 
-        if item["mikuType"] == "NxTask" and NxCores::reverseinfinity_uuids().include?(item["uuid"]) then
+        if item["mikuType"] == "NxTask" and NxCores::grid2uuid().include?(item["uuid"]) then
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::grid2())
         end
 
