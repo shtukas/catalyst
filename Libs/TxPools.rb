@@ -29,7 +29,7 @@ class TxPools
             store.register(pool, false)
             puts Listing::itemToListingLine(store, pool)
 
-            TxEdges::children(pool)
+            Parenting::children(pool)
                 .each{|item|
                     store.register(item, false)
                     Listing::itemToListingLine(store, item)
@@ -42,7 +42,7 @@ class TxPools
             return if input == ""
 
             if input == "child" then
-                TxEdges::interactivelyIssueChildOrNothing(pool)
+                Parenting::interactivelyIssueChildOrNothing(pool)
                 next
             end
 

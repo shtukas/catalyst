@@ -106,7 +106,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            TxEdges::liftAttempt(item)
+            Parenting::liftAttempt(item)
             return
         end
 
@@ -119,7 +119,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            TxEdges::liftAttempt(item)
+            Parenting::liftAttempt(item)
             return
         end
 
@@ -336,7 +336,7 @@ class ListingCommandsAndInterpreters
             core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?
             position = NxCores::interactivelySelectPositionAmongTop(core)
-            TxEdges::issueEdge(core, task, position)
+            Parenting::set_objects(core, task, position)
             return
         end
 

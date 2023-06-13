@@ -25,7 +25,7 @@ class PolyFunctions
             }
         end
 
-        parent = TxEdges::getParentOrNull(item)
+        parent = Parenting::getParentOrNull(item)
 
         if parent then
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)

@@ -135,7 +135,7 @@ class NxCores
                 "827d8bb1-1065-4727-b5d7-1db3cf9e5342", # infinity
                 lambda { 
                     DarkEnergy::mikuType("NxTask")
-                        .select{|task| (parent = TxEdges::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::infinityuuid()) }
+                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::infinityuuid()) }
                         .sort_by{|task| task["unixtime"] }
                         .first(NxCores::infinityDepth())
                 },
@@ -147,7 +147,7 @@ class NxCores
                 "2f8cd125-6309-4e36-bef6-ea08580d824e",
                 lambda { 
                     DarkEnergy::mikuType("NxTask")
-                        .select{|task| (parent = TxEdges::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::reverseinfinityuuid()) }
+                        .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::reverseinfinityuuid()) }
                         .sort_by{|task| task["unixtime"] }
                         .reverse
                         .first(NxCores::infinityDepth())
@@ -155,7 +155,7 @@ class NxCores
                 86400
             )
         end
-        TxEdges::children_ordered(core)
+        Parenting::children_ordered(core)
     end
 
     # NxCores::infinity_uuids()
@@ -242,7 +242,7 @@ class NxCores
                 [], # times
                 [], # cores display
                 [], # engines display
-                Listing::burnersAndFires().select{|item| TxEdges::parentChild(core, item)},
+                Listing::burnersAndFires().select{|item| Parenting::isParentChild(core, item)},
                 NxCores::children_ordered(core)
             )
 
@@ -253,7 +253,7 @@ class NxCores
             return if input == ""
 
             if input == "child" then
-                TxEdges::interactivelyIssueChildOrNothing(core)
+                Parenting::interactivelyIssueChildOrNothing(core)
                 next
             end
 
@@ -303,35 +303,33 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         position = NxCores::interactivelySelectPositionAmongTop(core)
-        TxEdges::issueEdge(core, item, position)
+        Parenting::set_objects(core, item, position)
     end
 
     # NxCores::interactivelySelectPositionAmongTop(core)
     def self.interactivelySelectPositionAmongTop(core)
-        TxEdges::children_ordered(core).first(30).each{|item|
+        Parenting::children_ordered(core).first(30).each{|item|
             puts NxTasks::toString(item)
         }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
         if position == "" then
-            (TxEdges::childrenPositions(core) + [0]).max + 1
+            (Parenting::childrenPositions(core) + [0]).max + 1
         else
             position.to_f
         end
     end
 
-    # NxCores::issueEdgeOrNothing(itemuuid)
-    def self.issueEdgeOrNothing(itemuuid)
+    # NxCores::interactivelyDecideCoreAndSetAsParent(itemuuid)
+    def self.interactivelyDecideCoreAndSetAsParent(itemuuid)
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         position = NxCores::interactivelySelectPositionAmongTop(core)
-        edge = TxEdges::make(core["uuid"], itemuuid, position)
-        puts JSON.pretty_generate(edge)
-        DarkEnergy::commit(edge)
+        Parenting::set_uuids(core["uuid"], itemuuid, position)
     end
 
     # NxCores::coreSuffix(item)
     def self.coreSuffix(item)
-        parent = TxEdges::getParentOrNull(item)
+        parent = Parenting::getParentOrNull(item)
         return nil if parent.nil?
         return nil if parent["mikuType"] != "NxCore"
         " (#{parent["description"]})".green

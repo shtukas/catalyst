@@ -74,9 +74,9 @@ class NxTasks
 
     # NxTasks::getItemPositionOrNull(item)
     def self.getItemPositionOrNull(item)
-        parent = TxEdges::getParentOrNull(item)
+        parent = Parenting::getParentOrNull(item)
         return nil if parent.nil?
-        TxEdges::getPositionOrNull(parent, item)
+        Parenting::getPositionOrNull(parent, item)
     end
 
     # NxTasks::toString(item)
