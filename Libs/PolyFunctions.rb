@@ -31,11 +31,12 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemsToBankingAccounts(parent)
         end
 
-        if item["mikuType"] == "NxTask" and parent.nil? then
-            core = DarkEnergy::itemOrNull(NxCores::recoveryuuid())
-            if core then
-                accounts = accounts + PolyFunctions::itemsToBankingAccounts(core)
-            end
+        if item["mikuType"] == "NxTask" and NxCores::infinity_uuids().include?(item["uuid"]) then
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::infinitycore())
+        end
+
+        if item["mikuType"] == "NxTask" and NxCores::reverseinfinity_uuids().include?(item["uuid"]) then
+            accounts = accounts + PolyFunctions::itemsToBankingAccounts(NxCores::reverseinfinitycore())
         end
 
         accounts.reduce([]){|as, account|

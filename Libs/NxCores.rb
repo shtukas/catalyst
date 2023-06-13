@@ -6,14 +6,32 @@ class NxCores
         "df40842a-f439-40d2-a274-bb8526a40189"
     end
 
-    # NxCores::recoveryuuid()
-    def self.recoveryuuid()
+    # NxCores::infinitycore()
+    def self.infinitycore()
+        core = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+        if core.nil? then
+            raise "(error: f844acd4-b819-4442-9bdb-340befa1804c) could not find infinity core"
+        end
+        core
+    end
+
+    # NxCores::reverseinfinityuuid()
+    def self.reverseinfinityuuid()
         "f96cc544-06ef-4e30-b415-e57e78eb3d73"
     end
 
-    # NxCores::recoveryDepth()
-    def self.recoveryDepth()
-        50
+    # NxCores::reverseinfinitycore()
+    def self.reverseinfinitycore()
+        core = DarkEnergy::itemOrNull(NxCores::reverseinfinityuuid())
+        if core.nil? then
+            raise "(error: 7320289f-10c4-49c9-8f50-1f5fa22fcb5a) could not find reverse infinity core"
+        end
+        core
+    end
+
+    # NxCores::infinityDepth()
+    def self.infinityDepth()
+        100
     end
 
     # -------------------------
@@ -110,6 +128,48 @@ class NxCores
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
     end
 
+    # NxCores::children_ordered(core)
+    def self.children_ordered(core)
+        if core["uuid"] == NxCores::infinityuuid() then
+            return Memoize::evaluate(
+                "827d8bb1-1065-4727-b5d7-1db3cf9e5342", # infinity
+                lambda { 
+                    DarkEnergy::mikuType("NxTask")
+                        .select{|task| (parent = TxEdges::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::infinityuuid()) }
+                        .sort_by{|task| task["unixtime"] }
+                        .first(NxCores::infinityDepth())
+                },
+                86400
+            )
+        end
+        if core["uuid"] == NxCores::reverseinfinityuuid() then
+            return Memoize::evaluate(
+                "2f8cd125-6309-4e36-bef6-ea08580d824e",
+                lambda { 
+                    DarkEnergy::mikuType("NxTask")
+                        .select{|task| (parent = TxEdges::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::reverseinfinityuuid()) }
+                        .sort_by{|task| task["unixtime"] }
+                        .reverse
+                        .first(NxCores::infinityDepth())
+                },
+                86400
+            )
+        end
+        TxEdges::children_ordered(core)
+    end
+
+    # NxCores::infinity_uuids()
+    def self.infinity_uuids()
+        core = NxCores::infinitycore()
+        NxCores::children_ordered(core).map{|item| item["uuid"] }
+    end
+
+    # NxCores::reverseinfinity_uuids()
+    def self.reverseinfinity_uuids()
+        core = NxCores::reverseinfinitycore()
+        NxCores::children_ordered(core).map{|item| item["uuid"] }
+    end
+
     # -------------------------
     # Ops
 
@@ -152,7 +212,7 @@ class NxCores
     def self.interactivelySelectOneOrNull()
         cores = DarkEnergy::mikuType("NxCore")
                     .reject{|core| core["uuid"] == NxCores::infinityuuid() }
-                    .reject{|core| core["uuid"] == NxCores::recoveryuuid() }
+                    .reject{|core| core["uuid"] == NxCores::reverseinfinityuuid() }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| item["description"] })
     end
 
@@ -161,36 +221,6 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return nil if core.nil?
         core
-    end
-
-    # NxCores::children_ordered(core)
-    def self.children_ordered(core)
-        if core["uuid"] == NxCores::infinityuuid() then
-            return Memoize::evaluate(
-                "827d8bb1-1065-4727-b5d7-1db3cf9e5342",
-                lambda { 
-                    DarkEnergy::mikuType("NxTask")
-                        .select{|task| TxEdges::getParentOrNull(task).nil? }
-                        .sort_by{|task| task["unixtime"] }
-                        .first(100)
-                },
-                86400
-            )
-        end
-        if core["uuid"] == NxCores::recoveryuuid() then
-            return Memoize::evaluate(
-                "2f8cd125-6309-4e36-bef6-ea08580d824e",
-                lambda { 
-                    DarkEnergy::mikuType("NxTask")
-                        .select{|task| TxEdges::getParentOrNull(task).nil? }
-                        .sort_by{|task| task["unixtime"] }
-                        .reverse
-                        .first(100)
-                },
-                86400
-            )
-        end
-        TxEdges::children_ordered(core)
     end
 
     # NxCores::program0(core)
@@ -278,15 +308,15 @@ class NxCores
 
     # NxCores::interactivelySelectPositionAmongTop(core)
     def self.interactivelySelectPositionAmongTop(core)
-        TxEdges::children_ordered(core).each{|item|
+        TxEdges::children_ordered(core).first(30).each{|item|
             puts NxTasks::toString(item)
         }
-        position = 0
-        loop {
-            position = LucilleCore::askQuestionAnswerAsString("position: ")
-            break if position != ""
-        }
-        position.to_f
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if position == "" then
+            (TxEdges::childrenPositions(core) + [0]).max + 1
+        else
+            position.to_f
+        end
     end
 
     # NxCores::issueEdgeOrNothing(itemuuid)

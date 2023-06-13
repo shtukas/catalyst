@@ -8,3 +8,5 @@ Cross types conventions:
     - "tmpskip1"       : TmpSkip1
 
 Some elementd can have an engine, mostly tasks and containers (pools and stacks)
+
+Elements can have a `parent` attribute that contain an item uuid, and a `children` attribute that is either null or is a Array[String]

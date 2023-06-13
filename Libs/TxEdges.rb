@@ -128,4 +128,12 @@ class TxEdges
         DarkEnergy::commit(item) # we put the item first because if we put the container first and the item commit fails, we lose the item
         DarkEnergy::commit(container)
     end
+
+    # TxEdges::childrenPositions(parent)
+    def self.childrenPositions(parent)
+        DarkEnergy::mikuType("TxEdge")
+            .select{|edge| edge["parentuuid"] == parent["uuid"] }
+            .map{|edge| edge["position"] }
+            .compact
+    end
 end

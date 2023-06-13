@@ -17,7 +17,6 @@ end
 
 class Speedometer
     def initialize()
-
     end
 
     def start_contest()
