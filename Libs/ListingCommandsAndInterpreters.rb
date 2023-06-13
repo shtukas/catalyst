@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "transmutation : recast (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
-            "divings       : anniversaries | ondates | waves | burners | desktop | time promises | sequences | cores",
+            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -201,11 +201,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
-            return
-        end
-
-        if Interpreting::match("time promises", input) then
-            NxTimePromises::show()
             return
         end
 

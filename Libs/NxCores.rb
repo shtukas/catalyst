@@ -177,16 +177,9 @@ class NxCores
     def self.maintenance_one_core(core)
         return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
         return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
-        if Bank::getValue(core["capsule"]).to_f/3600 > 1.5*core["hours"] then
-            overflow = 0.5*core["hours"]*3600
-            puts "I am about to smooth core #{NxCores::toString(core)}, overflow: #{(overflow.to_f/3600).round(2)} hours for core: #{core["description"]}"
-            LucilleCore::pressEnterToContinue()
-            NxTimePromises::issue_things(core, overflow, 20)
-            return nil
-        end
         puts "> I am about to reset core: #{NxCores::toString(core)}"
         LucilleCore::pressEnterToContinue()
-        Bank::put(core["capsule"], -core["hours"]*3600)
+        Bank::reset(core["capsule"])
         if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{core["hours"]} hours ? ") then
             hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
             if hours.size > 0 then
@@ -194,7 +187,7 @@ class NxCores
             end
         end
         core["lastResetTime"] = Time.new.to_i
-        core
+        DarkEnergy::commit(core)
     end
 
     # NxCores::maintenance_all_instances()

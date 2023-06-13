@@ -259,7 +259,6 @@ class Listing
     def self.maintenance()
         NxCores::maintenance_all_instances()
         if Config::isPrimaryInstance() then
-             NxTimePromises::operate()
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()

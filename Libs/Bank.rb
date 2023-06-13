@@ -42,6 +42,11 @@ class Bank
         db.close
     end
 
+    # Bank::reset(uuid)
+    def self.reset(uuid)
+        Bank::put(uuid, -Bank::getValue(uuid))
+    end
+
     # ----------------------------------
     # Private (0)
 
