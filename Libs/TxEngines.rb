@@ -79,7 +79,9 @@ class TxEngines
                         .first(10)
             },
             3600
-        ).map{|item| DarkEnergy::itemOrNull(item["uuid"]) }
+        )
+            .map{|item| DarkEnergy::itemOrNull(item["uuid"]) }
+            .compact
 
         items
             .sort{|item| 
