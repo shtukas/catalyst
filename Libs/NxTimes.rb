@@ -53,4 +53,14 @@ class NxTimes
                 DarkEnergy::patch(item["uuid"], "time", time)
             }
     end
+
+    # NxTimes::interactivelyIssueTimeOrNothing()
+    def self.interactivelyIssueTimeOrNothing()
+        entry = LucilleCore::askQuestionAnswerAsString("entry (HH:MM <text>) (empty to terminate): ")
+        return if entry == ""
+        time = entry[0, 5]
+        description = entry[5, entry.size].strip
+        item = NxTimes::issue(time, description)
+        item
+    end
 end

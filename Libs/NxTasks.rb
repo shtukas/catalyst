@@ -82,9 +82,9 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         if position = NxTasks::getItemPositionOrNull(item) then
-            "👨🏻‍💻 (#{"%5.2f" % position}) #{item["description"]}"
+            "⛳️ (#{"%5.2f" % position}) #{item["description"]}"
         else
-            "👨🏻‍💻 #{item["description"]}"
+            "⛳️ #{item["description"]}"
         end
         
     end

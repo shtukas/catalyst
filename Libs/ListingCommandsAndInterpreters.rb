@@ -187,11 +187,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("time", input) then
-            time = LucilleCore::askQuestionAnswerAsString("time HH:MM (empty for abort): ")
-            return if time == ""
-            description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
-            return if description == ""
-            item = NxTimes::issue(time, description)
+            item = NxTimes::interactivelyIssueTimeOrNothing()
             puts JSON.pretty_generate(item)
             return
         end
@@ -199,11 +195,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("times", input) then
             loop {
                 puts ""
-                time = LucilleCore::askQuestionAnswerAsString("time HH:MM (empty for abort): ")
-                return if time == ""
-                description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
-                return if description == ""
-                item = NxTimes::issue(time, description)
+                item = NxTimes::interactivelyIssueTimeOrNothing()
                 puts JSON.pretty_generate(item)
             }
             return
