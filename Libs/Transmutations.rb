@@ -52,7 +52,7 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            NxCores::interactivelyDecideCoreAndSetAsParent(item["uuid"])
+            NxCores::interactivelyDecideCoreAndSetAsParentIfNotAlreadySet(item)
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end

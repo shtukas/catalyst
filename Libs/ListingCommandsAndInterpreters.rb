@@ -44,7 +44,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">>", input) then
+        if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
@@ -453,14 +453,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("recast", input) then
+        if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
             Transmutations::transmute(item)
             return
         end
 
-        if Interpreting::match("recast *", input) then
+        if Interpreting::match(">> *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?

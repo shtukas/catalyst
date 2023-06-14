@@ -342,6 +342,15 @@ class NxCores
         end
     end
 
+    # NxCores::interactivelyDecideCoreAndSetAsParentIfNotAlreadySet(item)
+    def self.interactivelyDecideCoreAndSetAsParentIfNotAlreadySet(item)
+        return if Parenting::getParentOrNull(item)
+        core = NxCores::interactivelySelectOneOrNull()
+        return if core.nil?
+        position = NxCores::interactivelySelectPositionAmongTop(core)
+        Parenting::set_uuids(core["uuid"], item["uuid"], position)
+    end
+
     # NxCores::interactivelyDecideCoreAndSetAsParent(itemuuid)
     def self.interactivelyDecideCoreAndSetAsParent(itemuuid)
         core = NxCores::interactivelySelectOneOrNull()
