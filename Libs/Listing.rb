@@ -141,7 +141,6 @@ class Listing
             NxBackups::listingItems(),
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            NxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTimes::listingItems(false),
             Listing::burnersAndFires(),
