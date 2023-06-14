@@ -183,6 +183,13 @@ class Listing
         end
     end
 
+    # Listing::purePositionPrefix(item)
+    def self.purePositionPrefix(item)
+        priority = XCache::getOrNull("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}")
+        return "(#{"%4.2f" % priority.to_f}) " if priority
+        ""
+    end
+
     # Listing::itemToListingLine(store, item)
     def self.itemToListingLine(store, item)
         return nil if item.nil?
@@ -197,7 +204,7 @@ class Listing
                 ""
             end
 
-        line = "#{storePrefix} #{interruptionPreffix}#{str1}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{Listing::purePositionPrefix(item)}#{interruptionPreffix}#{str1}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

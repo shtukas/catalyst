@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
             "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -134,6 +134,14 @@ class ListingCommandsAndInterpreters
             end
             item["ackDay"] = CommonUtils::today()
             DarkEnergy::commit(item)
+            return
+        end
+
+        if Interpreting::match("jedi", input) then
+            core = DarkEnergy::itemOrNull("586d478d-0a04-40b7-aad3-fa5cbd2c45e4")
+            position = Parenting::childrenPositions(core).reduce(1){|max, i| [max, i].max }+1
+            item = NxTasks::interactivelyIssueNewOrNull()
+            Parenting::set_objects(core, item, position)
             return
         end
 
