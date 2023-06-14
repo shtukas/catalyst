@@ -152,7 +152,7 @@ class Listing
     # Listing::items()
     def self.items()
 
-        base = DarkEnergy::mikuType("NxBurner") + DarkEnergy::mikuType("NxDrop") + NxOndates::listingItems() + NxBackups::listingItems() + Waves::listingItems().select{|item| !item["interruption"] }
+        base = NxBurners::listingItems() + DarkEnergy::mikuType("NxDrop") + NxOndates::listingItems() + NxBackups::listingItems() + Waves::listingItems().select{|item| !item["interruption"] }
         dayRatio = (Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone("GMT")).to_f/86400
         pures = PolyFunctions::pure1()
 

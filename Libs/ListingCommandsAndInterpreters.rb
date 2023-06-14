@@ -10,6 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxTask  : stack (<n>)",
+            "    - NxBurner: ack",
             "transmutation : recast (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | new core | new sequence",
             "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores",
@@ -120,6 +121,19 @@ class ListingCommandsAndInterpreters
                 return
             end
             Parenting::liftAttempt(item)
+            return
+        end
+
+        if Interpreting::match("ack", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxBurner" then
+                puts "Only NxBurners can be ack"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            item["ackDay"] = CommonUtils::today()
+            DarkEnergy::commit(item)
             return
         end
 

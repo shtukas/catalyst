@@ -34,6 +34,12 @@ class NxBurners
         DarkEnergy::mikuType("NxBurner").select{|item| item["sequenceuuid"].nil? }
     end
 
+    # NxBurners::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("NxBurner")
+            .select{|item| item["ackDay"] != CommonUtils::today() }
+    end
+
     # ------------------------------------
     # Ops
     # ------------------------------------
