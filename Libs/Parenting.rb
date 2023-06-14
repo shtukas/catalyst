@@ -125,4 +125,10 @@ class Parenting
         end
         raise "(error: 1d91191d-be7e-42a9-bb9e-0894d545f60f - unsupported mikuType) #{item["mikuType"]} (item: #{item})"
     end
+
+    # Parenting::genealogySuffix(item)
+    def self.genealogySuffix(item)
+        genealogy = PolyFunctions::genealogy(item)
+        genealogy.empty? ? "" : " #{PolyFunctions::genealogy(item).reverse.join("/")}"
+    end
 end

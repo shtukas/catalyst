@@ -115,7 +115,7 @@ class PolyFunctions
                         .select{|child| ["NxTask", "TxPool", "TxStack"].include?(child["mikuType"]) }
                         .map{|child| PolyFunctions::pure2(child) }
                         .flatten
-            return collection + [item]
+            return collection
         end
         if item["mikuType"] == "TxStack" then
             collection = Parenting::childrenInPositionOrder(item)
@@ -141,5 +141,15 @@ class PolyFunctions
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
             .map{|core| PolyFunctions::pure2(core) }
             .flatten
+    end
+
+    # PolyFunctions::genealogy(item, known = [])
+    def self.genealogy(item, known = []) # Array[String]
+        parent = Parenting::getParentOrNull(item)
+        if parent then
+            PolyFunctions::genealogy(parent, known + [parent["description"]])
+        else
+            known
+        end
     end
 end
