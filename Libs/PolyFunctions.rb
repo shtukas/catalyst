@@ -111,25 +111,25 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxCore" then
             collection = Parenting::childrenInPositionOrder(item)
+                        .first(6)
                         .select{|child| ["NxTask", "TxPool", "TxStack"].include?(child["mikuType"]) }
                         .map{|child| PolyFunctions::pure2(child) }
                         .flatten
-            return collection if collection.size > 0
-            return [item]
+            return collection + [item]
         end
         if item["mikuType"] == "TxStack" then
             collection = Parenting::childrenInPositionOrder(item)
+                        .first(6)
                         .map{|child| PolyFunctions::pure2(child) }
                         .flatten
-            return collection if collection.size > 0
-            return [item]
+            return collection + [item]
         end
         if item["mikuType"] == "TxPool" then
             collection = Parenting::childrenInRecoveryTimeOrder(item)
+                        .first(6)
                         .map{|child| PolyFunctions::pure2(child) }
                         .flatten
-            return collection if collection.size > 0
-            return [item]
+            return collection + [item]
         end
         raise "(error: 56e8ed13-6f18-4bc1-a7be-ec9b218f43db) #{item}"
     end
