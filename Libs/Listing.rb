@@ -185,6 +185,7 @@ class Listing
 
     # Listing::purePositionPrefix(item)
     def self.purePositionPrefix(item)
+        return "" if item["mikuType"] == "NxCore"
         priority = XCache::getOrNull("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}")
         return "(#{"%4.2f" % priority.to_f}) " if priority
         ""
@@ -313,6 +314,15 @@ class Listing
 
     # Listing::printing(spacecontrol, store, items)
     def self.printing(spacecontrol, store, items)
+
+        spacecontrol.putsline ""
+        NxCores::listingItems()
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+
         spacecontrol.putsline ""
         items
             .each{|item|
