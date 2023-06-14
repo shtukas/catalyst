@@ -115,7 +115,7 @@ class Parenting
     # Parenting::interactivelyDecideRelevantPositionAtParent(parent)
     def self.interactivelyDecideRelevantPositionAtParent(parent)
         if parent["mikuType"] == "NxCore" then
-            return rand
+            return Parenting::childrenPositions(parent).reduce(1){|max, i| [max, i].max } + 1
         end
         if parent["mikuType"] == "TxPool" then
             return rand

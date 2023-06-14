@@ -5,13 +5,6 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
-    # NxTasks::coreFreePositions()
-    def self.coreFreePositions()
-        DarkEnergy::mikuType("NxTask")
-            .select{|task| task["sequenceuuid"].nil? }
-            .map{|task| task["position"] || 0 }
-    end
-
     # NxTasks::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
