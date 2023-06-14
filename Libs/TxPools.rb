@@ -38,7 +38,7 @@ class TxPools
                 }
 
             puts ""
-            puts ".. (<n>) | task | pool | stack"
+            puts ".. (<n>) | task | pool | stack | destroy"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -70,7 +70,17 @@ class TxPools
                 Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
                 next
             end
-
+            if input == "destroy" then
+                if items.empty? then
+                    if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
+                        DarkEnergy::destroy(pool["uuid"])
+                    end
+                else
+                    puts "Collection needs to be empty to be destroyed"
+                    LucilleCore::pressEnterToContinue()
+                end
+                next
+            end
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
     end
