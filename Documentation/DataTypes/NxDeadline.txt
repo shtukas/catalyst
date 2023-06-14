@@ -1,0 +1,22 @@
+
+NxDeadline
+    uuid            : String
+    type            : "NxDeadline"
+    "variant"       : "self"
+    "description"   : String
+    "field11"
+    "DeadlineCore"  : DeadlineCore
+
+NxDeadline
+    uuid            : String
+    type            : "NxDeadline"
+    "variant"       : "link"
+    "targetuuid"    : String
+    "DeadlineCore"  : DeadlineCore
+
+DeadlineCore {
+    "uuid"               : String
+    "start"              : Float
+    "end"                : Float
+    "requirementInHours" : Float
+}
