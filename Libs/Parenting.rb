@@ -118,7 +118,7 @@ class Parenting
             return Parenting::childrenPositions(parent).reduce(1){|max, i| [max, i].max } + 1
         end
         if parent["mikuType"] == "TxPool" then
-            return rand
+            return 0
         end
         if parent["mikuType"] == "TxStack" then
             return TxStacks::interactivelySelectPosition(stack)
