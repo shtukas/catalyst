@@ -231,6 +231,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxPool" then
+            puts "You cannot `done` a TxPool"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if item["mikuType"] == "TxStack" then
+            puts "You cannot `done` a TxStack"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{Waves::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
