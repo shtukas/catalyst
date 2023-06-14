@@ -160,12 +160,12 @@ class Listing
         end
     end
 
-    # Listing::itemToListingLine(store, item)
-    def self.itemToListingLine(store, item)
+    # Listing::itemToListingLine(store, item, positionDisplayStyle)
+    def self.itemToListingLine(store, item, positionDisplayStyle)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toString(item)
+        str1 = PolyFunctions::toString(item, positionDisplayStyle)
 
         interruptionPreffix = 
             if Listing::isInterruption(item) then
@@ -252,7 +252,8 @@ class Listing
             is1,
             is2,
             is4,
-            is5
+            is5,
+            "stack"
         )
         spot.end_unit()
 
@@ -287,15 +288,15 @@ class Listing
         }
     end
 
-    # Listing::printing(spacecontrol, store, times, coresd, burnersAndFires, items2)
-    def self.printing(spacecontrol, store, times, coresd, burnersAndFires, items2)
+    # Listing::printing(spacecontrol, store, times, coresd, burnersAndFires, items2, taskDisplayStyle)
+    def self.printing(spacecontrol, store, times, coresd, burnersAndFires, items2, taskDisplayStyle)
 
         if times.size > 0 then
             spacecontrol.putsline ""
             times
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
                     break if !status
                 }
         end
@@ -305,7 +306,7 @@ class Listing
             coresd
                 .each{|item|
                     store.register(item, false)
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
                     break if !status
                 }
         end
@@ -315,7 +316,7 @@ class Listing
             burnersAndFires
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
                     break if !status
                 }
         end
@@ -325,7 +326,7 @@ class Listing
             items2
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
                     break if !status
                 }
         end
@@ -371,7 +372,8 @@ class Listing
                 NxTimes::listingItems(false),
                 DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
                 Listing::burnersAndFires(),
-                Listing::items2()
+                Listing::items2(),
+                "pool"
             )
 
             puts ""

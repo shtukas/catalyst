@@ -65,7 +65,8 @@ class NxOndates
                 [], # times
                 [], # cores display
                 [],
-                items
+                items,
+                "pool"
             )
 
             puts ""

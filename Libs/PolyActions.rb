@@ -383,10 +383,12 @@ class PolyActions
 
         if item["mikuType"] == "TxPool" then
             TxPools::program(item)
+            return
         end
 
         if item["mikuType"] == "TxStack" then
             TxStacks::program(item)
+            return
         end
 
         puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"

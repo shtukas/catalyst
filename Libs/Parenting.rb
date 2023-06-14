@@ -92,4 +92,32 @@ class Parenting
         DarkEnergy::commit(container)
         Parenting::set_objects(container, item, position)
     end
+
+    # Parenting::positionSuffix(item, positionDisplayStyle)
+    def self.positionSuffix(item, positionDisplayStyle = "stack")
+        if positionDisplayStyle == "stack" then
+            position = NxTasks::getItemPositionOrNull(item)
+            if position then
+                " (#{"%5.2f" % position})"
+            else
+                "(missing position)"
+            end
+        else
+            ""
+        end
+    end
+
+    # Parenting::interactivelyDecideRelevantPositionAtParent(parent)
+    def self.interactivelyDecideRelevantPositionAtParent(parent)
+        if parent["mikuType"] == "NxCore" then
+            return rand
+        end
+        if parent["mikuType"] == "TxPool" then
+            return rand
+        end
+        if parent["mikuType"] == "TxStack" then
+            return TxStacks::interactivelySelectPosition(stack)
+        end
+        raise "(error: 1d91191d-be7e-42a9-bb9e-0894d545f60f - unsupported mikuType) #{item["mikuType"]} (item: #{item})"
+    end
 end

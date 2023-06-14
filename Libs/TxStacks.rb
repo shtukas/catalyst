@@ -6,20 +6,15 @@ class TxStacks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         {
-            "uuid"        => uuid,
+            "uuid"        => SecureRandom.uuid,
             "mikuType"    => "TxStack",
             "description" => description
         }
     end
 
-    # TxStacks::toString(item)
-    def self.toString(item)
-        position = NxTasks::getItemPositionOrNull(item)
-        if position then
-            "👨🏻‍💻 (#{"%5.2f" % position}) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
-        else
-            "👨🏻‍💻 (missing position) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
-        end
+    # TxStacks::toString(item, positionDisplayStyle = "stack")
+    def self.toString(item, positionDisplayStyle = "stack")
+         "👨🏻‍💻 (stack)#{Parenting::positionSuffix(item, positionDisplayStyle)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxStacks::interactivelySelectPosition(stack)
@@ -47,12 +42,13 @@ class TxStacks
 
             puts ""
             store.register(stack, false)
-            puts Listing::itemToListingLine(store, stack)
+            puts Listing::itemToListingLine(store, stack, "stack")
 
+            puts ""
             Parenting::children_ordered(stack)
                 .each{|item|
                     store.register(item, false)
-                    Listing::itemToListingLine(store, item)
+                    puts Listing::itemToListingLine(store, item, "stack")
                 }
 
             puts ""
@@ -64,22 +60,28 @@ class TxStacks
             if input == "task" then
                 child = NxTasks::interactivelyMakeOrNull()
                 next if child.nil?
-                position = TxStacks::interactivelySelectPosition(stack)
-                Parenting::set_objects(stack, child, position)
+                puts JSON.pretty_generate(child)
+                position = Parenting::interactivelyDecideRelevantPositionAtParent(stack)
+                DarkEnergy::commit(child) # commiting the child after deciding a position
+                Parenting::set_objects(stack, child, position) # setting relationship after (!) the two objects are written
                 next
             end
             if input == "pool" then
                 child = TxPools::interactivelyMakeOrNull()
                 next if child.nil?
-                position = TxStacks::interactivelySelectPosition(stack)
-                Parenting::set_objects(stack, child, position)
+                puts JSON.pretty_generate(child)
+                position = Parenting::interactivelyDecideRelevantPositionAtParent(stack)
+                DarkEnergy::commit(child) # commiting the child after deciding a position
+                Parenting::set_objects(stack, child, position) # setting relationship after (!) the two objects are written
                 next
             end
             if input == "stack" then
                 child = TxStacks::interactivelyMakeOrNull()
                 next if child.nil?
-                position = TxStacks::interactivelySelectPosition(stack)
-                Parenting::set_objects(stack, child, position)
+                puts JSON.pretty_generate(child)
+                position = Parenting::interactivelyDecideRelevantPositionAtParent(stack)
+                DarkEnergy::commit(child) # commiting the child after deciding a position
+                Parenting::set_objects(stack, child, position) # setting relationship after (!) the two objects are written
                 next
             end
 

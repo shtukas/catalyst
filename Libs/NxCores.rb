@@ -239,7 +239,7 @@ class NxCores
 
             puts ""
             store.register(core, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, core)
+            spacecontrol.putsline Listing::itemToListingLine(store, core, "pool")
 
             Listing::printing(
                 spacecontrol,
@@ -247,7 +247,8 @@ class NxCores
                 [], # times
                 [], # cores display
                 Listing::burnersAndFires().select{|item| Parenting::isParentChild(core, item)},
-                NxCores::children_ordered(core)
+                NxCores::children_ordered(core),
+                "pool"
             )
 
             puts ""
@@ -259,22 +260,28 @@ class NxCores
             if input == "task" then
                 child = NxTasks::interactivelyMakeOrNull()
                 next if child.nil?
-                position = TxStacks::interactivelySelectPosition(core)
-                Parenting::set_objects(core, child, position)
+                puts JSON.pretty_generate(child)
+                position = Parenting::interactivelyDecideRelevantPositionAtParent(core)
+                DarkEnergy::commit(child) # commiting the child after deciding a position
+                Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
                 next
             end
             if input == "pool" then
                 child = TxPools::interactivelyMakeOrNull()
                 next if child.nil?
-                position = TxStacks::interactivelySelectPosition(core)
-                Parenting::set_objects(core, child, position)
+                puts JSON.pretty_generate(child)
+                position = Parenting::interactivelyDecideRelevantPositionAtParent(core)
+                DarkEnergy::commit(child) # commiting the child after deciding a position
+                Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
                 next
             end
             if input == "stack" then
                 child = TxStacks::interactivelyMakeOrNull()
                 next if child.nil?
-                position = TxStacks::interactivelySelectPosition(core)
-                Parenting::set_objects(core, child, position)
+                puts JSON.pretty_generate(child)
+                position = Parenting::interactivelyDecideRelevantPositionAtParent(core)
+                DarkEnergy::commit(child) # commiting the child after deciding a position
+                Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
                 next
             end
 
@@ -323,7 +330,7 @@ class NxCores
         end
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        position = NxCores::interactivelySelectPositionAmongTop(core)
+        position = rand
         Parenting::set_objects(core, item, position)
     end
 

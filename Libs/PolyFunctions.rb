@@ -41,8 +41,8 @@ class PolyFunctions
         }
     end
 
-    # PolyFunctions::toString(item)
-    def self.toString(item)
+    # PolyFunctions::toString(item, positionDisplayStyle)
+    def self.toString(item, positionDisplayStyle = "stack")
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
@@ -80,7 +80,7 @@ class PolyFunctions
             return NxOndates::toString(item)
         end
         if item["mikuType"] == "NxTask" then
-            return NxTasks::toString(item)
+            return NxTasks::toString(item, positionDisplayStyle)
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
@@ -92,10 +92,10 @@ class PolyFunctions
             return item["announce"]
         end
         if item["mikuType"] == "TxPool" then
-            return TxPools::toString(item)
+            return TxPools::toString(item, positionDisplayStyle)
         end
         if item["mikuType"] == "TxStack" then
-            return TxStacks::toString(item)
+            return TxStacks::toString(item, positionDisplayStyle)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

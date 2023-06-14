@@ -79,14 +79,9 @@ class NxTasks
         Parenting::getPositionOrNull(parent, item)
     end
 
-    # NxTasks::toString(item)
-    def self.toString(item)
-        position = NxTasks::getItemPositionOrNull(item)
-        if position then
-            "⛳️ (#{"%5.2f" % position}) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
-        else
-            "⛳️ (missing position) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
-        end
+    # NxTasks::toString(item, positionDisplayStyle)
+    def self.toString(item, positionDisplayStyle = "stack")
+        "🔹#{Parenting::positionSuffix(item, positionDisplayStyle)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # --------------------------------------------------
