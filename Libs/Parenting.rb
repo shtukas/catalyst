@@ -102,15 +102,11 @@ class Parenting
         Parenting::set_objects(container, item, position)
     end
 
-    # Parenting::positionSuffix(item, positionDisplayStyle)
-    def self.positionSuffix(item, positionDisplayStyle = "stack")
-        if positionDisplayStyle == "stack" then
-            position = NxTasks::getItemPositionOrNull(item)
-            if position then
-                " (#{"%5.2f" % position})"
-            else
-                "(missing position)"
-            end
+    # Parenting::positionSuffix(item)
+    def self.positionSuffix(item)
+        position = NxTasks::getItemPositionOrNull(item)
+        if position and position != 0 then
+            " (#{"%5.2f" % position})"
         else
             ""
         end

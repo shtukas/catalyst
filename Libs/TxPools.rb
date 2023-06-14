@@ -12,9 +12,9 @@ class TxPools
         }
     end
 
-    # TxPools::toString(item, positionDisplayStyle)
-    def self.toString(item, positionDisplayStyle = "stack")
-        "👩‍💻 (pool)#{Parenting::positionSuffix(item, positionDisplayStyle)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+    # TxPools::toString(item)
+    def self.toString(item)
+        "👩‍💻 (pool)#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxPools::program(pool)

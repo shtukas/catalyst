@@ -79,9 +79,9 @@ class NxTasks
         Parenting::getPositionOrNull(parent, item)
     end
 
-    # NxTasks::toString(item, positionDisplayStyle)
-    def self.toString(item, positionDisplayStyle = "stack")
-        "🔹#{Parenting::positionSuffix(item, positionDisplayStyle)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+    # NxTasks::toString(item)
+    def self.toString(item)
+        "🔹#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # --------------------------------------------------

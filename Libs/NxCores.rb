@@ -241,7 +241,7 @@ class NxCores
             store.register(core, false)
             spacecontrol.putsline Listing::itemToListingLine(store, core)
 
-            items = Listing::items()
+            items = NxCores::childrenInPositionOrder(core)
 
             Listing::printing(spacecontrol, store, items)
 

@@ -12,9 +12,9 @@ class TxStacks
         }
     end
 
-    # TxStacks::toString(item, positionDisplayStyle = "stack")
-    def self.toString(item, positionDisplayStyle = "stack")
-         "👨🏻‍💻 (stack)#{Parenting::positionSuffix(item, positionDisplayStyle)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+    # TxStacks::toString(item)
+    def self.toString(item)
+         "👨🏻‍💻 (stack)#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxStacks::interactivelySelectPosition(stack)
