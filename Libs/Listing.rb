@@ -71,7 +71,6 @@ class Listing
 
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFire"
-        return false if item["mikuType"] == "NxBurner"
         
         if item["mikuType"] == "NxTime" then
             return item["canBeDefault"]
