@@ -131,19 +131,41 @@ class Listing
         items
     end
 
+    # Listing::getTodayUnitPriority(item)
+    def self.getTodayUnitPriority(item)
+        priority = XCache::getOrNull("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}")
+        return priority.to_f if priority
+        priority = rand
+        XCache::set("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}", priority)
+        priority
+    end
+
+    # Listing::makeIt(base, dayRatio, pures)
+    def self.makeIt(base, dayRatio, pures)
+        base = base.each{|item| Listing::getTodayUnitPriority(item) }
+        pures.each_with_index{|item, idx|
+            priority = (1-dayRatio) * (100-idx).to_f/100
+            XCache::set("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}", priority)
+        }
+        (base+pures).sort_by{|item| Listing::getTodayUnitPriority(item) }.reverse
+    end
+
     # Listing::items()
     def self.items()
+
+        base = DarkEnergy::mikuType("NxBurner") + DarkEnergy::mikuType("NxDrop") + NxOndates::listingItems() + NxBackups::listingItems() + Waves::listingItems().select{|item| !item["interruption"] }
+        dayRatio = (Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone("GMT")).to_f/86400
+        pures = PolyFunctions::pure1()
+
+        infinity = Listing::makeIt(base, dayRatio, pures)
+
         items = [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxBackups::listingItems(),
-            NxOndates::listingItems(),
-            DarkEnergy::mikuType("NxDrop"),
-            Waves::listingItems().select{|item| !item["interruption"] },
-            Listing::burnersAndFires(),
-            PolyFunctions::pure1()
+            DarkEnergy::mikuType("NxFire"),
+            infinity,
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -154,7 +176,6 @@ class Listing
                     selected + [item]
                 end
             }
-
 
         if NxTimes::hasPendingTime() then
             NxTimes::listingItems() + items

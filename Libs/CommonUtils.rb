@@ -217,11 +217,20 @@ class CommonUtils
         Time.new.to_s[0, 10]
     end
 
+    # CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone(timezone)
+    def self.unixtimeAtLastMidnightAtGivenTimeZone(timezone)
+        supportedTimeZones = ["BST", "GMT"]
+        if !supportedTimeZones.include?(timezone) then
+            raise "error: 9be45037-11ef-4dce-8a3c-81708f757d3d ; we are only supporting '#{supportedTimeZones}' and you provided #{timezone}"
+        end
+        DateTime.parse("#{(DateTime.now.to_date).to_s} 00:00:00 #{timezone}").to_time.to_i
+    end
+
     # CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtComingMidnightAtGivenTimeZone(timezone)
         supportedTimeZones = ["BST", "GMT"]
         if !supportedTimeZones.include?(timezone) then
-            raise "error: 7CB8000B-7896-4F61-89ED-89C12E009EE6 ; we are only supporting '#{supportedTimeZones}' and you provided #{timezone}"
+            raise "error: 8223a3d9-5ab4-4e13-b6fe-90b895e7f28d ; we are only supporting '#{supportedTimeZones}' and you provided #{timezone}"
         end
         DateTime.parse("#{(DateTime.now.to_date+1).to_s} 00:00:00 #{timezone}").to_time.to_i
     end
