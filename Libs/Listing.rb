@@ -130,41 +130,21 @@ class Listing
         items
     end
 
-    # Listing::getTodayUnitPriority(item)
-    def self.getTodayUnitPriority(item)
-        priority = XCache::getOrNull("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}")
-        return priority.to_f if priority
-        priority = rand
-        XCache::set("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}", priority)
-        priority
-    end
-
-    # Listing::makeIt(base, dayRatio, pures)
-    def self.makeIt(base, dayRatio, pures)
-        base = base.each{|item| Listing::getTodayUnitPriority(item) }
-        pures.each_with_index{|item, idx|
-            priority = (1-dayRatio) * (100-idx).to_f/100
-            XCache::set("9ec83de4-94e8-482f-9f30-bc63eed5a4d9:#{CommonUtils::today()}:#{item["uuid"]}", priority)
-        }
-        (base+pures).sort_by{|item| Listing::getTodayUnitPriority(item) }.reverse
-    end
-
     # Listing::items()
     def self.items()
-
-        base = NxBurners::listingItems() + DarkEnergy::mikuType("NxDrop") + NxOndates::listingItems() + NxBackups::listingItems() + Waves::listingItems().select{|item| !item["interruption"] }
-        dayRatio = (Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone("GMT")).to_f/86400
-        pures = PolyFunctions::pure1()
-
-        infinity = Listing::makeIt(base, dayRatio, pures)
 
         items = [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
+            NxBurners::listingItems(),
+            NxBackups::listingItems(),
             DarkEnergy::mikuType("NxFire"),
-            infinity,
+            NxOndates::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
+            DarkEnergy::mikuType("NxDrop"),
+            PolyFunctions::pure1(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -249,17 +229,8 @@ class Listing
 
         puts ""
 
-        spot.start_unit("base")
-        base = NxBurners::listingItems() + DarkEnergy::mikuType("NxDrop") + NxOndates::listingItems() + NxBackups::listingItems() + Waves::listingItems().select{|item| !item["interruption"] }
-        spot.end_unit()
-
         spot.start_unit("pures")
         pures = PolyFunctions::pure1()
-        spot.end_unit()
-
-        spot.start_unit("infinity")
-        dayRatio = (Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone("GMT")).to_f/86400
-        infinity = Listing::makeIt(base, dayRatio, pures)
         spot.end_unit()
 
         spot.start_unit("Listing::items()")
@@ -315,13 +286,13 @@ class Listing
     # Listing::printing(spacecontrol, store, items)
     def self.printing(spacecontrol, store, items)
 
-        spacecontrol.putsline ""
-        NxCores::listingItems()
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-                break if !status
-            }
+        #spacecontrol.putsline ""
+        #NxCores::listingItems()
+        #    .each{|item|
+        #        store.register(item, Listing::canBeDefault(item))
+        #        status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+        #        break if !status
+        #    }
 
         spacecontrol.putsline ""
         items
