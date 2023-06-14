@@ -71,7 +71,7 @@ class TxPools
                 next
             end
             if input == "destroy" then
-                if items.empty? then
+                if Parenting::childrenInPositionOrder(pool).empty? then
                     if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
                         DarkEnergy::destroy(pool["uuid"])
                     end

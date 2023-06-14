@@ -279,7 +279,7 @@ class NxCores
                 next
             end
             if input == "destroy" then
-                if items.empty? then
+                if Parenting::childrenInPositionOrder(core).empty? then
                     if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
                         DarkEnergy::destroy(core["uuid"])
                     end
