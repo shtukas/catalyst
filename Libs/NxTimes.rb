@@ -54,13 +54,13 @@ class NxTimes
             }
     end
 
-    # NxTimes::interactivelyIssueTimeOrNothing()
-    def self.interactivelyIssueTimeOrNothing()
+    # NxTimes::interactivelyIssueTimeOrNull()
+    def self.interactivelyIssueTimeOrNull()
         entry = LucilleCore::askQuestionAnswerAsString("entry (HH:MM <text>) (empty to terminate): ")
-        return if entry == ""
+        return nil if entry == ""
         time = entry[0, 5]
         description = entry[5, entry.size].strip
-        item = NxTimes::issue(time, description)
-        item
+        return nil if description == ""
+        NxTimes::issue(time, description)
     end
 end

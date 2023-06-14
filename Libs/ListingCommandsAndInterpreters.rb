@@ -172,7 +172,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("time", input) then
-            item = NxTimes::interactivelyIssueTimeOrNothing()
+            item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
             return
         end
@@ -180,7 +180,8 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("times", input) then
             loop {
                 puts ""
-                item = NxTimes::interactivelyIssueTimeOrNothing()
+                item = NxTimes::interactivelyIssueTimeOrNull()
+                return if item.nil?
                 puts JSON.pretty_generate(item)
             }
             return
