@@ -261,6 +261,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBurner" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
