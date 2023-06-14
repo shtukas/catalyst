@@ -142,7 +142,6 @@ class Listing
             NxOndates::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxTimes::listingItems(false),
             Listing::burnersAndFires(),
             PolyFunctions::pure1()
         ]
@@ -158,9 +157,9 @@ class Listing
 
 
         if NxTimes::hasPendingTime() then
-            NxTimes::listingItems(true) + items
+            NxTimes::listingItems() + items
         else
-            items.take(1) + NxTimes::listingItems(true) + items.drop(1)
+            items.take(1) + NxTimes::listingItems() + items.drop(1)
         end
     end
 
@@ -214,7 +213,7 @@ class Listing
         spot.contest_entry("NxCores::listingItems()", lambda{ NxCores::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
-        spot.contest_entry("NxTimes::listingItems(true)", lambda{ NxTimes::listingItems(true) })
+        spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })

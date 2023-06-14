@@ -17,14 +17,10 @@ class NxTimes
         "(time) [#{item["time"]}] #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
-    # NxTimes::listingItems(canBeDefault)
-    def self.listingItems(canBeDefault)
+    # NxTimes::listingItems()
+    def self.listingItems()
         DarkEnergy::mikuType("NxTime")
             .sort_by{|item| item["time"] }
-            .map{|item|
-                item["canBeDefault"] = canBeDefault
-                item
-            }
     end
 
     # NxTimes::hasPendingTime()
