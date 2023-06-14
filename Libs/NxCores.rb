@@ -17,8 +17,8 @@ class NxCores
         core
     end
 
-    # NxCores::grid1children_ordered()
-    def self.grid1children_ordered()
+    # NxCores::grid1childrenInPositionOrder()
+    def self.grid1childrenInPositionOrder()
         DarkEnergy::mikuType("NxTask")
             .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid1uuid()) }
             .sort_by{|task| task["unixtime"] }
@@ -27,7 +27,7 @@ class NxCores
 
     # NxCores::grid1children_ordered_uuids()
     def self.grid1children_ordered_uuids()
-        NxCores::grid1children_ordered().map{|item| item["uuid"] }
+        NxCores::grid1childrenInPositionOrder().map{|item| item["uuid"] }
     end
 
     # NxCores::item_belongs_to_grid1(item)
@@ -51,8 +51,8 @@ class NxCores
         core
     end
  
-    # NxCores::grid2children_ordered()
-    def self.grid2children_ordered()
+    # NxCores::grid2childrenInPositionOrder()
+    def self.grid2childrenInPositionOrder()
         DarkEnergy::mikuType("NxTask")
             .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid2uuid()) }
             .sort_by{|task| task["unixtime"] }
@@ -62,7 +62,7 @@ class NxCores
 
     # NxCores::grid2children_ordered_uuids()
     def self.grid2children_ordered_uuids()
-        NxCores::grid2children_ordered().map{|item| item["uuid"] }
+        NxCores::grid2childrenInPositionOrder().map{|item| item["uuid"] }
     end
 
     # NxCores::item_belongs_to_grid2(item)
@@ -171,15 +171,15 @@ class NxCores
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
     end
 
-    # NxCores::children_ordered(core)
-    def self.children_ordered(core)
+    # NxCores::childrenInPositionOrder(core)
+    def self.childrenInPositionOrder(core)
         if core["uuid"] == NxCores::grid1uuid() then
-            return NxCores::grid1children_ordered()
+            return NxCores::grid1childrenInPositionOrder()
         end
         if core["uuid"] == NxCores::grid2uuid() then
-            return NxCores::grid2children_ordered()
+            return NxCores::grid2childrenInPositionOrder()
         end
-        Parenting::children_ordered(core)
+        Parenting::childrenInPositionOrder(core)
     end
 
     # -------------------------
@@ -239,17 +239,11 @@ class NxCores
 
             puts ""
             store.register(core, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, core, "pool")
+            spacecontrol.putsline Listing::itemToListingLine(store, core)
 
-            Listing::printing(
-                spacecontrol,
-                store, 
-                [], # times
-                [], # cores display
-                Listing::burnersAndFires().select{|item| Parenting::isParentChild(core, item)},
-                NxCores::children_ordered(core),
-                "pool"
-            )
+            items = Listing::items()
+
+            Listing::printing(spacecontrol, store, items)
 
             puts ""
             puts ".. (<n>) | task | pool | stack"
@@ -315,7 +309,8 @@ class NxCores
     # NxCores::program()
     def self.program()
         loop {
-            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", DarkEnergy::mikuType("NxCore"), lambda{|core| NxCores::toString(core) })
+            cores = DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) }
+            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| NxCores::toString(core) })
             break if core.nil?
             NxCores::program1(core)
         }
@@ -336,7 +331,7 @@ class NxCores
 
     # NxCores::interactivelySelectPositionAmongTop(core)
     def self.interactivelySelectPositionAmongTop(core)
-        Parenting::children_ordered(core).first(30).each{|item|
+        Parenting::childrenInPositionOrder(core).first(30).each{|item|
             puts NxTasks::toString(item)
         }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")

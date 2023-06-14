@@ -20,7 +20,7 @@ class TxStacks
     # TxStacks::interactivelySelectPosition(stack)
     def self.interactivelySelectPosition(stack)
         puts TxStacks::toString(stack).green
-        Parenting::children_ordered(stack).each{|item|
+        Parenting::childrenInPositionOrder(stack).each{|item|
             position = Parenting::getPositionOrNull(stack, item)
             puts "    - (#{"%6.3f" % position}) #{PolyFunctions::toString(item)}"
         }
@@ -42,13 +42,13 @@ class TxStacks
 
             puts ""
             store.register(stack, false)
-            puts Listing::itemToListingLine(store, stack, "stack")
+            puts Listing::itemToListingLine(store, stack)
 
             puts ""
-            Parenting::children_ordered(stack)
+            Parenting::childrenInPositionOrder(stack)
                 .each{|item|
                     store.register(item, false)
-                    puts Listing::itemToListingLine(store, item, "stack")
+                    puts Listing::itemToListingLine(store, item)
                 }
 
             puts ""

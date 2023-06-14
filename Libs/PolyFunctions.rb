@@ -102,4 +102,36 @@ class PolyFunctions
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
+
+    # PolyFunctions::pure2(item)
+    def self.pure2(item)
+        children = Parenting::children(item)
+        if item["mikuType"] == "NxTask" then
+            return item
+        end
+        if item["mikuType"] == "NxCore" then
+            return Parenting::childrenInPositionOrder(item)
+                .map{|child| PolyFunctions::pure2(child) }
+                .flatten
+        end
+        if item["mikuType"] == "TxStack" then
+            return Parenting::childrenInPositionOrder(item)
+                .map{|child| PolyFunctions::pure2(child) }
+                .flatten
+        end
+        if item["mikuType"] == "TxPool" then
+            return Parenting::childrenInRecoveryTimeOrder(item)
+                .map{|child| PolyFunctions::pure2(child) }
+                .flatten
+        end
+    end
+
+    # PolyFunctions::pure1()
+    def self.pure1()
+        DarkEnergy::mikuType("NxCore")
+            .select{|core| NxCores::listingCompletionRatio(core) < 1 }
+            .sort_by{|core| NxCores::listingCompletionRatio(core) }
+            .map{|core| PolyFunctions::pure2(core) }
+            .flatten
+    end
 end

@@ -33,12 +33,21 @@ class Parenting
             .compact
     end
 
-    # Parenting::children_ordered(parent)
-    def self.children_ordered(parent)
+    # Parenting::childrenInPositionOrder(parent)
+    def self.childrenInPositionOrder(parent)
+        return [] if parent["childre"].nil?
         parent["children"]
             .sort_by{|tx8| tx8["position"] }
             .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
             .compact
+    end
+
+    # Parenting::childrenInRecoveryTimeOrder(parent)
+    def self.childrenInRecoveryTimeOrder(parent)
+        parent["children"]
+            .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
+            .compact
+            .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
     end
 
     # Parenting::getPositionOrNull(parent, child)

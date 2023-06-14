@@ -131,8 +131,8 @@ class Listing
         items
     end
 
-    # Listing::items2()
-    def self.items2()
+    # Listing::items()
+    def self.items()
         items = [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
@@ -143,6 +143,9 @@ class Listing
             DarkEnergy::mikuType("NxDrop"),
             NxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
+            NxTimes::listingItems(false),
+            Listing::burnersAndFires(),
+            PolyFunctions::pure1()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -162,12 +165,12 @@ class Listing
         end
     end
 
-    # Listing::itemToListingLine(store, item, positionDisplayStyle)
-    def self.itemToListingLine(store, item, positionDisplayStyle)
+    # Listing::itemToListingLine(store, item)
+    def self.itemToListingLine(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toString(item, positionDisplayStyle)
+        str1 = PolyFunctions::toString(item)
 
         interruptionPreffix = 
             if Listing::isInterruption(item) then
@@ -220,8 +223,8 @@ class Listing
 
         puts ""
 
-        spot.start_unit("Listing::items2()")
-        Listing::items2()
+        spot.start_unit("Listing::items()")
+        Listing::items()
         spot.end_unit()
 
         spot.start_unit("Listing::maintenance()")
@@ -231,32 +234,12 @@ class Listing
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
         store = ItemStore.new()
 
-        spot.start_unit("NxTimes::listingItems(false)")
-        is1 = NxTimes::listingItems(false)
-        spot.end_unit()
-
-        spot.start_unit("NxCores")
-        is2 = DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) }
-        spot.end_unit()
-
-        spot.start_unit("Listing::burnersAndFires()")
-        is4 = Listing::burnersAndFires()
-        spot.end_unit()
-
-        spot.start_unit("Listing::items2()")
-        is5 = Listing::items2()
+        spot.start_unit("Listing::items()")
+        items = Listing::items()
         spot.end_unit()
 
         spot.start_unit("Listing::printing")
-        Listing::printing(
-            spacecontrol,
-            store, 
-            is1,
-            is2,
-            is4,
-            is5,
-            "stack"
-        )
+        Listing::printing(spacecontrol, store, items)
         spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
@@ -290,48 +273,15 @@ class Listing
         }
     end
 
-    # Listing::printing(spacecontrol, store, times, coresd, burnersAndFires, items2, taskDisplayStyle)
-    def self.printing(spacecontrol, store, times, coresd, burnersAndFires, items2, taskDisplayStyle)
-
-        if times.size > 0 then
-            spacecontrol.putsline ""
-            times
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
-                    break if !status
-                }
-        end
-
-        if coresd.size > 0 then
-            spacecontrol.putsline ""
-            coresd
-                .each{|item|
-                    store.register(item, false)
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
-                    break if !status
-                }
-        end
-
-        if burnersAndFires.size > 0 then
-            spacecontrol.putsline ""
-            burnersAndFires
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
-                    break if !status
-                }
-        end
-
-        if items2.size > 0 then
-            spacecontrol.putsline ""
-            items2
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, taskDisplayStyle)
-                    break if !status
-                }
-        end
+    # Listing::printing(spacecontrol, store, items)
+    def self.printing(spacecontrol, store, items)
+        spacecontrol.putsline ""
+        items
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
     end
 
     # Listing::checkForCodeUpdates()
@@ -368,15 +318,7 @@ class Listing
 
             system("clear")
 
-            Listing::printing(
-                spacecontrol,
-                store, 
-                NxTimes::listingItems(false),
-                DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) },
-                Listing::burnersAndFires(),
-                Listing::items2(),
-                "pool"
-            )
+            Listing::printing(spacecontrol, store, Listing::items())
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

@@ -27,14 +27,14 @@ class TxPools
 
             puts ""
             store.register(pool, false)
-            puts Listing::itemToListingLine(store, pool, "stack")
+            puts Listing::itemToListingLine(store, pool)
 
             puts ""
             Parenting::children(pool)
                 .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
                 .each{|item|
                     store.register(item, false)
-                    puts Listing::itemToListingLine(store, item, "pool")
+                    puts Listing::itemToListingLine(store, item)
                 }
 
             puts ""
