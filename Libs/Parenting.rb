@@ -35,7 +35,7 @@ class Parenting
 
     # Parenting::childrenInPositionOrder(parent)
     def self.childrenInPositionOrder(parent)
-        return [] if parent["childre"].nil?
+        return [] if parent["children"].nil?
         parent["children"]
             .sort_by{|tx8| tx8["position"] }
             .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
