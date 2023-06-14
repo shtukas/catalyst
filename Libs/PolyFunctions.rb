@@ -111,6 +111,7 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxCore" then
             return Parenting::childrenInPositionOrder(item)
+                .select{|child| ["NxTask", "TxPool", "TxStack"].include?(child["mikuType"]) }
                 .map{|child| PolyFunctions::pure2(child) }
                 .flatten
         end
@@ -124,6 +125,7 @@ class PolyFunctions
                 .map{|child| PolyFunctions::pure2(child) }
                 .flatten
         end
+        raise "(error: 56e8ed13-6f18-4bc1-a7be-ec9b218f43db) #{item}"
     end
 
     # PolyFunctions::pure1()
