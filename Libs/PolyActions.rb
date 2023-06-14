@@ -356,10 +356,12 @@ class PolyActions
 
         if item["mikuType"] == "TxPool" then
             PolyActions::program(item)
+            return
         end
 
         if item["mikuType"] == "TxStack" then
             PolyActions::program(item)
+            return
         end
 
         if item["mikuType"] == "Wave" then
