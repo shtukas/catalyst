@@ -31,6 +31,7 @@ class TxPools
 
             puts ""
             Parenting::children(pool)
+                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
                 .each{|item|
                     store.register(item, false)
                     puts Listing::itemToListingLine(store, item, "pool")
