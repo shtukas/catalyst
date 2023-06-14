@@ -129,6 +129,6 @@ class Parenting
     # Parenting::genealogySuffix(item)
     def self.genealogySuffix(item)
         genealogy = PolyFunctions::genealogy(item)
-        genealogy.empty? ? "" : " #{PolyFunctions::genealogy(item).reverse.join("/")}"
+        (genealogy.size < 2) ? "" : " (#{PolyFunctions::genealogy(item).reverse.join(";")})"
     end
 end
