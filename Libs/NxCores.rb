@@ -282,6 +282,7 @@ class NxCores
                 if Parenting::childrenInPositionOrder(core).empty? then
                     if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
                         DarkEnergy::destroy(core["uuid"])
+                        return
                     end
                 else
                     puts "Collection needs to be empty to be destroyed"

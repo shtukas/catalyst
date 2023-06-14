@@ -88,6 +88,7 @@ class TxStacks
                 if Parenting::childrenInPositionOrder(stack).empty? then
                     if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
                         DarkEnergy::destroy(stack["uuid"])
+                        return
                     end
                 else
                     puts "Collection needs to be empty to be destroyed"

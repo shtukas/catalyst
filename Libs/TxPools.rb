@@ -74,6 +74,7 @@ class TxPools
                 if Parenting::childrenInPositionOrder(pool).empty? then
                     if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
                         DarkEnergy::destroy(pool["uuid"])
+                        return
                     end
                 else
                     puts "Collection needs to be empty to be destroyed"
