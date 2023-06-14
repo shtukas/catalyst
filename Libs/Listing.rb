@@ -252,11 +252,11 @@ class Listing
         base = NxBurners::listingItems() + DarkEnergy::mikuType("NxDrop") + NxOndates::listingItems() + NxBackups::listingItems() + Waves::listingItems().select{|item| !item["interruption"] }
         spot.end_unit()
 
-        spot.start_unit("base")
+        spot.start_unit("pures")
         pures = PolyFunctions::pure1()
         spot.end_unit()
 
-        spot.start_unit("base")
+        spot.start_unit("infinity")
         dayRatio = (Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone("GMT")).to_f/86400
         infinity = Listing::makeIt(base, dayRatio, pures)
         spot.end_unit()
