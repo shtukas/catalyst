@@ -67,7 +67,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{Parenting::positionSuffixOrNull(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔹#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # --------------------------------------------------

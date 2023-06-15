@@ -21,7 +21,7 @@ class TxStacks
 
     # TxStacks::toString(item)
     def self.toString(item)
-         "👨🏻‍💻 (stack)#{Parenting::positionSuffixOrNull(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+         "👨🏻‍💻 (stack)#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxStacks::interactivelySelectOneOrNull()

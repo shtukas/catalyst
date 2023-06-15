@@ -78,10 +78,10 @@ class Parenting
         parent["children"].map{|tx8| tx8["position"] }
     end
 
-    # Parenting::positionSuffixOrNull(item)
+    # Parenting::positionSuffix(item)
     def self.positionSuffix(item)
         parent = Parenting::getParentOrNull(item)
-        return nil if parent.nil?
+        return "" if parent.nil?
         position = Parenting::getPositionOrNull(parent, item)
         if position and position != 0 then
             " (#{"%5.2f" % position})"

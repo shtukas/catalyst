@@ -21,7 +21,7 @@ class TxPools
 
     # TxPools::toString(item)
     def self.toString(item)
-        "👩‍💻 (pool)#{Parenting::positionSuffixOrNull(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "👩‍💻 (pool)#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxPools::interactivelySelectOneOrNull()
