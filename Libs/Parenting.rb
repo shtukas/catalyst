@@ -15,9 +15,11 @@ class Parenting
 
     # Parenting::children(item)
     def self.children(item)
-        DarkEnergy::all()
-            .select{|i| i["parent"] }
-            .select{|i| i["parent"]["uuid"] == item["uuid"] }
+        Memoize::evaluate("3bb41fec-8653-4cda-910b-137bac25dd81:#{item["uuid"]}", lambda{
+            DarkEnergy::all()
+                .select{|i| i["parent"] }
+                .select{|i| i["parent"]["uuid"] == item["uuid"] }
+        }, 3600)
     end
 
     # Parenting::childrenInPositionOrder(item)
