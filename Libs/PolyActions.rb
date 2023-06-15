@@ -34,6 +34,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDeadline" then
+            NxDeadlines::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxDrop" then
             NxDrops::program(item)
             return
@@ -104,6 +109,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
             end
+            return
+        end
+
+        if item["mikuType"] == "NxDeadline" then
+            NxDeadlines::done(item)
             return
         end
 
@@ -295,6 +305,11 @@ class PolyActions
         if item["mikuType"] == "NxCore" then
             puts PolyFunctions::toString(item).green
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxDeadline" then
+            NxDeadlines::program1(item)
             return
         end
 

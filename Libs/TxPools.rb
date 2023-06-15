@@ -12,9 +12,22 @@ class TxPools
         }
     end
 
+    # TxPools::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
+        pool = TxPools::interactivelyMakeOrNull()
+        DarkEnergy::commit(pool)
+        pool
+    end
+
     # TxPools::toString(item)
     def self.toString(item)
-        "👩‍💻 (pool)#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "👩‍💻 (pool)#{Parenting::positionSuffixOrNull(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+    end
+
+    # TxPools::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        pools = DarkEnergy::mikuType("NxPool")
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("pool", pools, lambda{|item| item["description"] })
     end
 
     # TxPools::program(pool)
@@ -39,50 +52,6 @@ class TxPools
                 }
 
             puts ""
-            puts ".. (<n>) | task | pool | stack | destroy"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "task" then
-                child = NxTasks::interactivelyMakeOrNull()
-                next if child.nil?
-                puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtCollection(pool)
-                DarkEnergy::commit(child) # commiting the child after (!) deciding a position
-                Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
-                next
-            end
-            if input == "pool" then
-                child = TxPools::interactivelyMakeOrNull()
-                next if child.nil?
-                puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtCollection(pool)
-                DarkEnergy::commit(child) # commiting the child after deciding a position
-                Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
-                next
-            end
-            if input == "stack" then
-                child = TxStacks::interactivelyMakeOrNull()
-                next if child.nil?
-                puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtCollection(pool)
-                DarkEnergy::commit(child) # commiting the child after deciding a position
-                Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
-                next
-            end
-            if input == "destroy" then
-                if Parenting::childrenInPositionOrder(pool).empty? then
-                    if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
-                        DarkEnergy::destroy(pool["uuid"])
-                        return
-                    end
-                else
-                    puts "Collection needs to be empty to be destroyed"
-                    LucilleCore::pressEnterToContinue()
-                end
-                next
-            end
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
     end

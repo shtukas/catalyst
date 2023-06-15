@@ -11,6 +11,19 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        if item["deadline"] then
+            deadline = DarkEnergy::itemOrNull(item["deadline"])
+            if deadline then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(deadline)
+            end
+        end
+
+        parent = Parenting::getParentOrNull(item)
+
+        if parent then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+        end
+
         if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "NxCore capsule",
@@ -18,10 +31,12 @@ class PolyFunctions
             }
         end
 
-        parent = Parenting::getParentOrNull(item)
-
-        if parent then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+        if item["mikuType"] == "NxDeadline" then
+            core = item["deadlineCore"]
+            accounts << {
+                "description" => "deadline",
+                "number"      => core["uuid"]
+            }
         end
 
         if item["mikuType"] == "NxTask" and NxCores::item_belongs_to_grid1(item) then
@@ -101,55 +116,5 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
-    end
-
-    # PolyFunctions::pure2(item)
-    def self.pure2(item)
-        children = Parenting::children(item)
-        if item["mikuType"] == "NxTask" then
-            return item
-        end
-        if item["mikuType"] == "NxCore" then
-            collection = Parenting::childrenInPositionOrder(item)
-                        .first(6)
-                        .select{|child| ["NxTask", "TxPool", "TxStack"].include?(child["mikuType"]) }
-                        .map{|child| PolyFunctions::pure2(child) }
-                        .flatten
-            return collection
-        end
-        if item["mikuType"] == "TxStack" then
-            collection = Parenting::childrenInPositionOrder(item)
-                        .first(6)
-                        .map{|child| PolyFunctions::pure2(child) }
-                        .flatten
-            return collection + [item]
-        end
-        if item["mikuType"] == "TxPool" then
-            collection = Parenting::childrenInRecoveryTimeOrder(item)
-                        .first(6)
-                        .map{|child| PolyFunctions::pure2(child) }
-                        .flatten
-            return collection + [item]
-        end
-        raise "(error: 56e8ed13-6f18-4bc1-a7be-ec9b218f43db) #{item}"
-    end
-
-    # PolyFunctions::pure1()
-    def self.pure1()
-        DarkEnergy::mikuType("NxCore")
-            .select{|core| NxCores::listingCompletionRatio(core) < 1 }
-            .sort_by{|core| NxCores::listingCompletionRatio(core) }
-            .map{|core| PolyFunctions::pure2(core) }
-            .flatten
-    end
-
-    # PolyFunctions::genealogy(item, known = [])
-    def self.genealogy(item, known = []) # Array[String]
-        parent = Parenting::getParentOrNull(item)
-        if parent then
-            PolyFunctions::genealogy(parent, known + [parent["description"]])
-        else
-            known
-        end
     end
 end

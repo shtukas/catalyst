@@ -221,13 +221,6 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| item["description"] })
     end
 
-    # NxCores::interactivelySelectOneUUIDOrNull()
-    def self.interactivelySelectOneUUIDOrNull()
-        core = NxCores::interactivelySelectOneOrNull()
-        return nil if core.nil?
-        core
-    end
-
     # NxCores::program0(core)
     def self.program0(core)
         loop {
@@ -251,51 +244,6 @@ class NxCores
             Listing::printing(spacecontrol, store, items)
 
             puts ""
-            puts ".. (<n>) | task | pool | stack | destroy"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "task" then
-                child = NxTasks::interactivelyMakeOrNull()
-                next if child.nil?
-                puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtCollection(core)
-                DarkEnergy::commit(child) # commiting the child after deciding a position
-                Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
-                next
-            end
-            if input == "pool" then
-                child = TxPools::interactivelyMakeOrNull()
-                next if child.nil?
-                puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtCollection(core)
-                DarkEnergy::commit(child) # commiting the child after deciding a position
-                Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
-                next
-            end
-            if input == "stack" then
-                child = TxStacks::interactivelyMakeOrNull()
-                next if child.nil?
-                puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtCollection(core)
-                DarkEnergy::commit(child) # commiting the child after deciding a position
-                Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
-                next
-            end
-            if input == "destroy" then
-                if Parenting::childrenInPositionOrder(core).empty? then
-                    if LucilleCore::askQuestionAnswerAsBoolean("confirm destruction: ") then
-                        DarkEnergy::destroy(core["uuid"])
-                        return
-                    end
-                else
-                    puts "Collection needs to be empty to be destroyed"
-                    LucilleCore::pressEnterToContinue()
-                end
-                next
-            end
-
             ListingCommandsAndInterpreters::interpreter(input, store, nil)
         }
     end
@@ -344,6 +292,13 @@ class NxCores
         return if core.nil?
         position = rand
         Parenting::set_objects(core, item, position)
+    end
+
+    # NxCores::askAndThenGiveCoreToItemAttempt(item)
+    def self.askAndThenGiveCoreToItemAttempt(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("> Add core ? ", false) then
+            NxCores::giveCoreToItemAttempt(item)
+        end
     end
 
     # NxCores::interactivelySelectPosition(core)

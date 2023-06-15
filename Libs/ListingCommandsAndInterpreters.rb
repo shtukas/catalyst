@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -13,7 +13,7 @@ class ListingCommandsAndInterpreters
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
-            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores",
+            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -84,6 +84,46 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("deadlines", input) then
+            NxDeadlines::program0()
+            return
+        end
+
+        if Interpreting::match("deadline", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxDeadlines::attachDeadlineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("deadline *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxDeadlines::attachDeadlineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("engines", input) then
+            NxEngines::program0()
+            return
+        end
+
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxEngines::attachEngineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxEngines::attachEngineAttempt(item)
+            return
+        end
+
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
@@ -96,31 +136,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxCores::giveCoreToItemAttempt(item)
-            return
-        end
-
-        if Interpreting::match("lift", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "Only NxTasks can be lifted"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Parenting::liftAttempt(item)
-            return
-        end
-
-        if Interpreting::match("lift *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "Only NxTasks can be lifted"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Parenting::liftAttempt(item)
             return
         end
 
@@ -338,15 +353,52 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("parent", input) then
+            item = store.getDefault()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            Parenting::interactivelySetParentAttempt(item)
+            return
+        end
+
+        if Interpreting::match("parent *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Parenting::interactivelySetParentAttempt(item)
+            return
+        end
+
         if Interpreting::match("task", input) then
             # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            core = NxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            position = NxCores::interactivelySelectPosition(core)
-            Parenting::set_objects(core, task, position)
+            Parenting::askAndThenSetParentAttempt(DarkEnergy::itemOrNull(task["uuid"]))
+            NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
+            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
+            return
+        end
+
+        if Interpreting::match("pool", input) then
+            # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
+            pool = TxPools::interactivelyIssueNewOrNull()
+            return if pool.nil?
+            puts JSON.pretty_generate(pool)
+            Parenting::askAndThenSetParentAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            return
+        end
+
+        if Interpreting::match("stack", input) then
+            # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
+            pool = TxStacks::interactivelyIssueNewOrNull()
+            return if pool.nil?
+            puts JSON.pretty_generate(pool)
+            Parenting::askAndThenSetParentAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             return
         end
 

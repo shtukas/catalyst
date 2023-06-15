@@ -7,6 +7,14 @@ Cross types conventions:
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-Elements can have a `parent` attribute that contain an item uuid, and a `children` attribute that is either null or is a Array[Tx8]
+Policies:
 
-Elements can also have a `deadline` attribute that link to a NxDeadline object.
+    P1: Tasks can have a parent that is either a NxCore, or a NxStack or a NxPool.
+
+    P2: Tasks can have an engine or a deadline.
+
+    P3: NxStacks need to have either: an engine or a deadline or a parent that is a core.
+
+    P4: NxPools need to have either: an engine or a deadline or a parent that is a core.
+
+    P5: The NxTasks that do not have a parent or an engine or a deadline, will be handled by the two grids.

@@ -158,6 +158,8 @@ require_relative "NxBurners.rb"
 require_relative "NxTimes.rb"
 require_relative "NxDrops.rb"
 require_relative "NxCores.rb"
+require_relative "NxDeadlines.rb"
+require_relative "NxEngines.rb"
 
 require_relative "Memoize.rb"
 
@@ -166,6 +168,7 @@ require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 require_relative "PhysicalTargets.rb"
 require_relative "Parenting.rb"
+require_relative "Pure.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Stargate.rb"

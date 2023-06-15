@@ -140,8 +140,10 @@ class Listing
             DarkEnergy::mikuType("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
+            NxDeadlines::listingItems(),
+            NxEngines::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            PolyFunctions::pure1(),
+            Pure::pure1(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -167,7 +169,7 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        line = "#{storePrefix} #{str1}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{Parenting::genealogySuffix(item)}"
+        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{NxDeadlines::suffix(item)}#{NxEngines::suffix(item)}#{NxCores::coreSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -204,7 +206,8 @@ class Listing
         spot.contest_entry("Listing::burnersAndFires()", lambda{ Listing::burnersAndFires() })
         spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("NxCores::listingItems()", lambda{ NxCores::listingItems() })
+        spot.contest_entry("NxDeadlines::listingItems()", lambda{ NxDeadlines::listingItems() })
+        spot.contest_entry("NxEngines::listingItems()", lambda{ NxEngines::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
@@ -216,7 +219,7 @@ class Listing
         puts ""
 
         spot.start_unit("pures")
-        pures = PolyFunctions::pure1()
+        pures = Pure::pure1()
         spot.end_unit()
 
         spot.start_unit("Listing::items()")
@@ -271,15 +274,6 @@ class Listing
 
     # Listing::printing(spacecontrol, store, items)
     def self.printing(spacecontrol, store, items)
-
-        #spacecontrol.putsline ""
-        #NxCores::listingItems()
-        #    .each{|item|
-        #        store.register(item, Listing::canBeDefault(item))
-        #        status = spacecontrol.putsline Listing::itemToListingLine(store, item)
-        #        break if !status
-        #    }
-
         spacecontrol.putsline ""
         items
             .each{|item|

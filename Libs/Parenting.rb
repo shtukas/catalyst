@@ -72,39 +72,17 @@ class Parenting
         DarkEnergy::itemOrNull(item["parent"])
     end
 
-    # Parenting::interativelyMakeNewContainerOrNull()
-    def self.interativelyMakeNewContainerOrNull()
-        mikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["TxPool", "TxStack"])
-        return nil if mikuType
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
-        {
-            "uuid"        => SecureRandom.uuid,
-            "mikuType"    => mikuType,
-            "description" => description
-        }
-    end
-
     # Parenting::childrenPositions(parent)
     def self.childrenPositions(parent)
         return [] if parent["children"].nil?
         parent["children"].map{|tx8| tx8["position"] }
     end
 
-    # Parenting::liftAttempt(item)
-    def self.liftAttempt(item)
-        container = Parenting::interativelyMakeNewContainerOrNull()
-        return if container.nil?
-        container["uuid"] = item["uuid"]
-        item["uuid"] = SecureRandom.uuid
-        DarkEnergy::commit(item) # we put the item first because if we put the container first and the item commit fails, we lose the item
-        DarkEnergy::commit(container)
-        Parenting::set_objects(container, item, position)
-    end
-
-    # Parenting::positionSuffix(item)
+    # Parenting::positionSuffixOrNull(item)
     def self.positionSuffix(item)
-        position = NxTasks::getItemPositionOrNull(item)
+        parent = Parenting::getParentOrNull(item)
+        return nil if parent.nil?
+        position = Parenting::getPositionOrNull(parent, item)
         if position and position != 0 then
             " (#{"%5.2f" % position})"
         else
@@ -126,9 +104,50 @@ class Parenting
         raise "(error: 1d91191d-be7e-42a9-bb9e-0894d545f60f - unsupported mikuType) #{item["mikuType"]} (item: #{item})"
     end
 
-    # Parenting::genealogySuffix(item)
-    def self.genealogySuffix(item)
-        genealogy = PolyFunctions::genealogy(item)
-        (genealogy.size < 2) ? "" : " (#{PolyFunctions::genealogy(item).reverse.join(";")})"
+    # Parenting::interactivelySetParentAttempt(item)
+    def self.interactivelySetParentAttempt(item)
+        puts "> select parent type:"
+        if item["mikuType"] == "NxTask" then
+            parentMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["NxCore", "TxStack", "TxPool"])
+            return if parentMikuType.nil?
+        end
+
+        if item["mikuType"] == "TxStack" then
+            parentMikuType = "NxCore"
+        end
+
+        if item["mikuType"] == "TxPool" then
+            parentMikuType = "NxCore"
+        end
+
+        if parentMikuType.nil? then
+            raise "(error: b20e0624-5764-4575-ba69-df89b11b37b0) I don't know how to Parenting::interactivelySetParentAttemp with item #{item}"
+        end
+
+        parent = nil
+
+        if parentMikuType == "NxCore" then
+            parent = NxCores::interactivelySelectOneOrNull()
+        end
+
+        if parentMikuType == "TxStack" then
+            parent = TxStacks::interactivelySelectOneOrNull()
+        end
+        
+        if parentMikuType == "TxPool" then
+            parent = TxPools::interactivelySelectOneOrNull()
+        end
+
+        return if parent.nil?
+
+        position = Parenting::interactivelyDecideRelevantPositionAtCollection(item)
+        Parenting::set_objects(parent, item, position)
+    end
+
+    # Parenting::askAndThenSetParentAttempt(item)
+    def self.askAndThenSetParentAttempt(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("set parent ? ", false) then
+            Parenting::interactivelySetParentAttempt(item)
+        end
     end
 end

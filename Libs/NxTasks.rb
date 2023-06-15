@@ -65,16 +65,9 @@ class NxTasks
     # --------------------------------------------------
     # Data
 
-    # NxTasks::getItemPositionOrNull(item)
-    def self.getItemPositionOrNull(item)
-        parent = Parenting::getParentOrNull(item)
-        return nil if parent.nil?
-        Parenting::getPositionOrNull(parent, item)
-    end
-
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔹#{Parenting::positionSuffixOrNull(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # --------------------------------------------------
