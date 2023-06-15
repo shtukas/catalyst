@@ -65,8 +65,8 @@ class NxOndates
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == ""
             return if input == "exit"
-
-            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
 

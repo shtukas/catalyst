@@ -19,8 +19,8 @@ class ListingCommandsAndInterpreters
         ].join("\n")
     end
 
-    # ListingCommandsAndInterpreters::interpreter(input, store, board or nil)
-    def self.interpreter(input, store, board)
+    # ListingCommandsAndInterpreters::interpreter(input, store)
+    def self.interpreter(input, store)
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then

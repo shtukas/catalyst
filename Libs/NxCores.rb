@@ -244,30 +244,12 @@ class NxCores
             Listing::printing(spacecontrol, store, items)
 
             puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store, nil)
-        }
-    end
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
 
-    # NxCores::program1(core)
-    def self.program1(core)
-        loop {
-            core = DarkEnergy::itemOrNull(core["uuid"])
-            return if core.nil?
-            actions = ["program (default)", "add time", "rename"]
-            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", actions)
-            if action == "program (default)" or action.nil? then
-                NxCores::program0(core)
-                return
-            end
-            if action == "add time" then
-                timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
-                PolyActions::addTimeToItem(core, timeInHours*3600)
-            end
-            if action == "rename" then
-                description = LucilleCore::askQuestionAnswerAsString("description: ")
-                next if description == ""
-                DarkEnergy::patch(core["uuid"], "description", description)
-            end
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
 
@@ -277,7 +259,7 @@ class NxCores
             cores = DarkEnergy::mikuType("NxCore").sort_by{|core| NxCores::listingCompletionRatio(core) }
             core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| NxCores::toString(core) })
             break if core.nil?
-            NxCores::program1(core)
+            NxCores::program0(core)
         }
     end
 

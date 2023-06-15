@@ -324,7 +324,8 @@ class Listing
             return if input == "exit"
             next if input == ""
 
-            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
 end

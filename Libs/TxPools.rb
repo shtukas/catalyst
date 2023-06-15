@@ -52,7 +52,12 @@ class TxPools
                 }
 
             puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store, nil)
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
 end
