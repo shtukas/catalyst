@@ -22,6 +22,9 @@ class NxDeadlines
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "targetuuid", item["uuid"])
         DarkEnergy::patch(uuid, "deadlineCore", deadlineCore)
+
+        DarkEnergy::patch(item["uuid"], "deadline", uuid) # we need to mark the item with the deadline
+
         DarkEnergy::itemOrNull(uuid)
     end
 
@@ -42,7 +45,7 @@ class NxDeadlines
         timeDone = Bank::getValue(core["uuid"])
         timeNeeded = 86400*core["requirementInHours"]*(Time.new.to_f - core["start"]).to_f/(core["end"] - core["start"])
         isLate = timeNeeded > timeDone
-        "(done: #{(timeDone.to_f/86400).round(2)} hours, required: #{core["requirementInHours"]} hours, #{isLate ? "😓" : "😎"})"
+        "(done: #{(timeDone.to_f/86400).round(2)} hours, required: #{core["requirementInHours"]} hours, #{isLate ? "late 😓" : "😎"})"
     end
 
     # NxDeadlines::toString(item)

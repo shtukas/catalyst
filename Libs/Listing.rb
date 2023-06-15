@@ -143,7 +143,7 @@ class Listing
             NxDeadlines::listingItems(),
             NxEngines::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
-            Pure::pure1(),
+            Pure::pure(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -219,7 +219,7 @@ class Listing
         puts ""
 
         spot.start_unit("pures")
-        pures = Pure::pure1()
+        pures = Pure::pure()
         spot.end_unit()
 
         spot.start_unit("Listing::items()")

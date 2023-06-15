@@ -12,6 +12,9 @@ class NxEngines
         DarkEnergy::patch(uuid, "hours", hours)
         DarkEnergy::patch(uuid, "lastResetTime", 0)
         DarkEnergy::patch(uuid, "capsule", SecureRandom.hex)
+
+        DarkEnergy::patch(item["uuid"], "engine", uuid) # we need to mark the item with the engine
+
         DarkEnergy::itemOrNull(uuid)
     end
 

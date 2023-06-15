@@ -34,6 +34,26 @@ class Parenting
             .sort_by{|child| Bank::recoveredAverageHoursPerDay(child["uuid"]) }
     end
 
+    # Parenting::childrenInRelevantOrder(item)
+    def self.childrenInRelevantOrder(item)
+        if item["mikuType"] == "NxCore" then
+            return Parenting::children(item)
+                    .sort_by{|child| Parenting::getPositionOrNull(item, child) || 0 }
+        end
+        if item["mikuType"] == "NxTask" then
+            return []
+        end
+        if item["mikuType"] == "TxPools" then
+            return Parenting::children(item)
+                    .sort_by{|child| Bank::recoveredAverageHoursPerDay(child["uuid"]) }
+        end
+        if item["mikuType"] == "TxStack" then
+            return Parenting::children(item)
+                    .sort_by{|child| Parenting::getPositionOrNull(item, child) || 0 }
+        end
+        raise "(error: 2e1dfe12-ae93-491e-aa1a-b8656101471e) item: #{item}"
+    end
+
     # Parenting::getPositionOrNull(parent, child)
     def self.getPositionOrNull(parent, child)
         return nil if child["parent"].nil?
