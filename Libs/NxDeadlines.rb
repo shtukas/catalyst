@@ -49,9 +49,9 @@ class NxDeadlines
     def self.toString(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
-            "⏱️ link: #{PolyFunctions::toString(target)} #{NxDeadlines::coreToString(core)}"
+            "⏱️  (deadline) #{NxDeadlines::coreToString(item["deadlineCore"])} #{PolyFunctions::toString(target)}"
         else
-            "⏱️ link: not found 🤔"
+            "⏱️  (deadline) not found 🤔"
         end
     end
 

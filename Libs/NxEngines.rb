@@ -19,7 +19,7 @@ class NxEngines
     def self.toString(engine)
         strings = []
 
-        strings << "⚙️  (engine: today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << "⚙️  (engine) today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*NxCores::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
