@@ -73,10 +73,6 @@ class Listing
         return false if item["mikuType"] == "NxFire"
         return false if (item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item))
 
-        if item["mikuType"] == "NxTime" then
-            return item["canBeDefault"]
-        end
-
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
