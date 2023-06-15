@@ -26,6 +26,7 @@ class TxPools
             store = ItemStore.new()
 
             puts ""
+            spacecontrol.putsline "@pool:"
             store.register(pool, false)
             puts Listing::itemToListingLine(store, pool)
 

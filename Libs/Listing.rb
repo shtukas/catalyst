@@ -170,14 +170,14 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        interruptionPreffix = 
+        interruptionSuffix = 
             if Listing::isInterruption(item) then
-                "🧀 "
+                " 🧀"
             else
                 ""
             end
 
-        line = "#{storePrefix}#{interruptionPreffix} #{str1}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{Parenting::genealogySuffix(item)}"
+        line = "#{storePrefix}#{interruptionSuffix} #{str1}#{NxCores::coreSuffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{Parenting::genealogySuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

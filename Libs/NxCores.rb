@@ -238,10 +238,15 @@ class NxCores
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             puts ""
+            spacecontrol.putsline "@core:"
             store.register(core, false)
             spacecontrol.putsline Listing::itemToListingLine(store, core)
 
             items = NxCores::childrenInPositionOrder(core)
+            burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
+            ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
+            waves, items = items.partition{|item| item["mikuType"] == "Wave" }
+            items = burners + ondates + waves + items
 
             Listing::printing(spacecontrol, store, items)
 

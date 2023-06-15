@@ -41,6 +41,7 @@ class TxStacks
             store = ItemStore.new()
 
             puts ""
+            spacecontrol.putsline "@stack:"
             store.register(stack, false)
             puts Listing::itemToListingLine(store, stack)
 
