@@ -73,8 +73,14 @@ class PolyFunctions
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)
         end
+        if item["mikuType"] == "NxDeadline" then
+            return NxDeadlines::toString(item)
+        end
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
+        end
+        if item["mikuType"] == "NxEngine" then
+            return NxEngines::toString(item)
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)

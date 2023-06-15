@@ -19,7 +19,7 @@ class NxEngines
     def self.toString(engine)
         strings = []
 
-        strings << "⚙️ (engine: today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << "⚙️  (engine: today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*NxCores::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
@@ -43,6 +43,12 @@ class NxEngines
         end
 
         strings << ")"
+
+        target = DarkEnergy::itemOrNull(engine["targetuuid"])
+        if target then
+            strings << " #{PolyFunctions::toString(target)}"
+        end
+
         strings.join()
     end
 
@@ -56,8 +62,8 @@ class NxEngines
     # NxEngines::program0()
     def self.program0()
         loop {
-            items = DarkEnergy::mikuType("NxEngine")
-            if items.empty? then
+            engines = DarkEnergy::mikuType("NxEngine")
+            if engines.empty? then
                 puts "no deadline found"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -77,7 +83,7 @@ class NxEngines
 
     # NxEngines::askAndThenAttachEngineToItemAttempt(item)
     def self.askAndThenAttachEngineToItemAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("> Add deadline ? ", false) then
+        if LucilleCore::askQuestionAnswerAsBoolean("> add engine ? ", false) then
             NxEngines::attachEngineAttempt(item)
         end
     end

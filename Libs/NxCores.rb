@@ -97,7 +97,7 @@ class NxCores
         description = LucilleCore::askQuestionAnswerAsString("core description (empty for abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        hours = LucilleCore::askQuestionAnswerAsString("hours: ")
+        hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
         return nil if hours == ""
         hours = hours.to_f
         if hours == 0 then

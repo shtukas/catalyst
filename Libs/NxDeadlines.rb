@@ -126,7 +126,7 @@ class NxDeadlines
 
     # NxDeadlines::askAndThenAttachDeadlineToItemAttempt(item)
     def self.askAndThenAttachDeadlineToItemAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("> Add deadline ? ", false) then
+        if LucilleCore::askQuestionAnswerAsBoolean("> add deadline ? ", false) then
             NxDeadlines::attachDeadlineAttempt(item)
         end
     end
