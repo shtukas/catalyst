@@ -255,7 +255,7 @@ class NxCores
                 child = NxTasks::interactivelyMakeOrNull()
                 next if child.nil?
                 puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtParent(core)
+                position = Parenting::interactivelyDecideRelevantPositionAtCollection(core)
                 DarkEnergy::commit(child) # commiting the child after deciding a position
                 Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
                 next
@@ -264,7 +264,7 @@ class NxCores
                 child = TxPools::interactivelyMakeOrNull()
                 next if child.nil?
                 puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtParent(core)
+                position = Parenting::interactivelyDecideRelevantPositionAtCollection(core)
                 DarkEnergy::commit(child) # commiting the child after deciding a position
                 Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
                 next
@@ -273,7 +273,7 @@ class NxCores
                 child = TxStacks::interactivelyMakeOrNull()
                 next if child.nil?
                 puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtParent(core)
+                position = Parenting::interactivelyDecideRelevantPositionAtCollection(core)
                 DarkEnergy::commit(child) # commiting the child after deciding a position
                 Parenting::set_objects(core, child, position) # setting relationship after (!) the two objects are written
                 next
@@ -341,8 +341,8 @@ class NxCores
         Parenting::set_objects(core, item, position)
     end
 
-    # NxCores::interactivelySelectPositionAmongTop(core)
-    def self.interactivelySelectPositionAmongTop(core)
+    # NxCores::interactivelySelectPosition(core)
+    def self.interactivelySelectPosition(core)
         Parenting::childrenInPositionOrder(core).first(30).each{|item|
             puts NxTasks::toString(item)
         }
@@ -359,7 +359,7 @@ class NxCores
         return if Parenting::getParentOrNull(item)
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        position = NxCores::interactivelySelectPositionAmongTop(core)
+        position = NxCores::interactivelySelectPosition(core)
         Parenting::set_uuids(core["uuid"], item["uuid"], position)
     end
 
@@ -367,7 +367,7 @@ class NxCores
     def self.interactivelyDecideCoreAndSetAsParent(itemuuid)
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        position = NxCores::interactivelySelectPositionAmongTop(core)
+        position = NxCores::interactivelySelectPosition(core)
         Parenting::set_uuids(core["uuid"], itemuuid, position)
     end
 

@@ -47,7 +47,7 @@ class TxPools
                 child = NxTasks::interactivelyMakeOrNull()
                 next if child.nil?
                 puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtParent(pool)
+                position = Parenting::interactivelyDecideRelevantPositionAtCollection(pool)
                 DarkEnergy::commit(child) # commiting the child after (!) deciding a position
                 Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
                 next
@@ -56,7 +56,7 @@ class TxPools
                 child = TxPools::interactivelyMakeOrNull()
                 next if child.nil?
                 puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtParent(pool)
+                position = Parenting::interactivelyDecideRelevantPositionAtCollection(pool)
                 DarkEnergy::commit(child) # commiting the child after deciding a position
                 Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
                 next
@@ -65,7 +65,7 @@ class TxPools
                 child = TxStacks::interactivelyMakeOrNull()
                 next if child.nil?
                 puts JSON.pretty_generate(child)
-                position = Parenting::interactivelyDecideRelevantPositionAtParent(pool)
+                position = Parenting::interactivelyDecideRelevantPositionAtCollection(pool)
                 DarkEnergy::commit(child) # commiting the child after deciding a position
                 Parenting::set_objects(pool, child, position) # setting relationship after (!) the two objects are written
                 next

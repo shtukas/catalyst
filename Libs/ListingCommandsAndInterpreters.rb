@@ -345,7 +345,7 @@ class ListingCommandsAndInterpreters
             puts JSON.pretty_generate(task)
             core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            position = NxCores::interactivelySelectPositionAmongTop(core)
+            position = NxCores::interactivelySelectPosition(core)
             Parenting::set_objects(core, task, position)
             return
         end

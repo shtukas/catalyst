@@ -112,16 +112,16 @@ class Parenting
         end
     end
 
-    # Parenting::interactivelyDecideRelevantPositionAtParent(parent)
-    def self.interactivelyDecideRelevantPositionAtParent(parent)
-        if parent["mikuType"] == "NxCore" then
-            return Parenting::childrenPositions(parent).reduce(1){|max, i| [max, i].max } + 1
+    # Parenting::interactivelyDecideRelevantPositionAtCollection(item)
+    def self.interactivelyDecideRelevantPositionAtCollection(item)
+        if item["mikuType"] == "NxCore" then
+            return NxCores::interactivelySelectPosition(item)
         end
-        if parent["mikuType"] == "TxPool" then
+        if item["mikuType"] == "TxPool" then
             return 0
         end
-        if parent["mikuType"] == "TxStack" then
-            return TxStacks::interactivelySelectPosition(stack)
+        if item["mikuType"] == "TxStack" then
+            return TxStacks::interactivelySelectPosition(item)
         end
         raise "(error: 1d91191d-be7e-42a9-bb9e-0894d545f60f - unsupported mikuType) #{item["mikuType"]} (item: #{item})"
     end
