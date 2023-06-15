@@ -140,7 +140,7 @@ class Parenting
 
         return if parent.nil?
 
-        position = Parenting::interactivelyDecideRelevantPositionAtCollection(item)
+        position = Parenting::interactivelyDecideRelevantPositionAtCollection(parent)
         Parenting::set_objects(parent, item, position)
     end
 
