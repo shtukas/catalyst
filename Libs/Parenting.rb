@@ -1,93 +1,53 @@
 
 class Parenting
 
-    # Parenting::set_uuids(parentuuid, childuuid, position)
-    def self.set_uuids(parentuuid, childuuid, position)
+    # Parenting::setParentChild(parentuuid, childuuid, position)
+    def self.setParentChild(parentuuid, childuuid, position)
         parent = DarkEnergy::itemOrNull(parentuuid)
         child = DarkEnergy::itemOrNull(childuuid)
         return if parent.nil?
         return if child.nil?
-        Parenting::set_objects(parent, child, position)
+        DarkEnergy::patch(childuuid, "parent", {
+            "uuid"     => parentuuid,
+            "position" => position
+        })
     end
 
-    # Parenting::set_objects(parent, child, position)
-    def self.set_objects(parent, child, position)
-        if parent["children"].nil? then
-            parent["children"] = []
-        end
-        parent["children"] = parent["children"].select{|tx8| tx8["childuuid"] != child["uuid"] }
-        parent["children"] << {
-            "childuuid" => child["uuid"],
-            "position"  => position
-        }
-        child["parent"] = parent["uuid"]
-        DarkEnergy::commit(parent)
-        DarkEnergy::commit(child)
+    # Parenting::children(item)
+    def self.children(item)
+        DarkEnergy::all()
+            .select{|i| i["parent"] }
+            .select{|i| i["parent"]["uuid"] == item["uuid"] }
     end
 
-    # Parenting::children(parent)
-    def self.children(parent)
-        return [] if parent["children"].nil?
-        parent["children"]
-            .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
-            .compact
+    # Parenting::childrenInPositionOrder(item)
+    def self.childrenInPositionOrder(item)
+        Parenting::children(item)
+            .sort_by{|child| Parenting::getPositionOrNull(item, child) || 0 }
     end
 
-    # Parenting::childrenInPositionOrder(parent)
-    def self.childrenInPositionOrder(parent)
-        return [] if parent["children"].nil?
-        parent["children"]
-            .sort_by{|tx8| tx8["position"] }
-            .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
-            .compact
-    end
-
-    # Parenting::childrenInRecoveryTimeOrder(parent)
-    def self.childrenInRecoveryTimeOrder(parent)
-        parent["children"]
-            .map{|tx8| DarkEnergy::itemOrNull(tx8["childuuid"]) }
-            .compact
-            .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+    # Parenting::childrenInRecoveryTimeOrder(item)
+    def self.childrenInRecoveryTimeOrder(item)
+        Parenting::children(item)
+            .sort_by{|child| Bank::recoveredAverageHoursPerDay(child["uuid"]) }
     end
 
     # Parenting::getPositionOrNull(parent, child)
     def self.getPositionOrNull(parent, child)
-        return nil if parent["children"].nil?
-        tx8 = parent["children"]
-                    .select{|tx8| tx8["childuuid"] == child["uuid"] }
-                    .first
-        return nil if tx8.nil?
-        tx8["position"]
-    end
-
-    # Parenting::isParentChild(px, cx)
-    def self.isParentChild(px, cx)
-        return false if px["children"].nil?
-        px["children"].any?{|tx8| tx8["childuuid"] == cx["uuid"] }
+        return nil if child["parent"].nil?
+        return nil if (parent["uuid"] != child["parent"]["uuid"])
+        child["parent"]["position"]
     end
 
     # Parenting::getParentOrNull(item)
     def self.getParentOrNull(item)
         return nil if item["parent"].nil?
-        DarkEnergy::itemOrNull(item["parent"])
+        DarkEnergy::itemOrNull(item["parent"]["uuid"])
     end
 
-    # Parenting::childrenPositions(parent)
-    def self.childrenPositions(parent)
-        return [] if parent["children"].nil?
-        parent["children"].map{|tx8| tx8["position"] }
-    end
-
-    # Parenting::positionSuffix(item)
-    def self.positionSuffix(item)
-        parent = Parenting::getParentOrNull(item)
-        return "" if parent.nil?
-        position = Parenting::getPositionOrNull(parent, item)
-        if position and position != 0 then
-            " (#{"%5.2f" % position})"
-        else
-            ""
-        end
+    # Parenting::childrenPositions(item)
+    def self.childrenPositions(item)
+        Parenting::children(item).map{|child| child["parent"]["position"] }
     end
 
     # Parenting::interactivelyDecideRelevantPositionAtCollection(item)
@@ -141,7 +101,12 @@ class Parenting
         return if parent.nil?
 
         position = Parenting::interactivelyDecideRelevantPositionAtCollection(parent)
-        Parenting::set_objects(parent, item, position)
+        
+        item["parent"] = {
+            "uuid"     => parent["uuid"],
+            "position" => position
+        }
+        DarkEnergy::commit(item)
     end
 
     # Parenting::askAndThenSetParentAttempt(item)
@@ -149,5 +114,24 @@ class Parenting
         if LucilleCore::askQuestionAnswerAsBoolean("set parent ? ", false) then
             Parenting::interactivelySetParentAttempt(item)
         end
+    end
+
+    # Parenting::positionSuffix(item)
+    def self.positionSuffix(item)
+        parent = Parenting::getParentOrNull(item)
+        return "" if parent.nil?
+        position = Parenting::getPositionOrNull(parent, item)
+        if position and position != 0 then
+            " (#{"%5.2f" % position})"
+        else
+            ""
+        end
+    end
+
+    # Parenting::parentSuffix(item)
+    def self.parentSuffix(item)
+        parent = Parenting::getParentOrNull(item)
+        return "" if parent.nil?
+        " (parent: #{parent["description"]})".green
     end
 end

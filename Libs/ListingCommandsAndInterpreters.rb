@@ -156,7 +156,10 @@ class ListingCommandsAndInterpreters
             core = DarkEnergy::itemOrNull("586d478d-0a04-40b7-aad3-fa5cbd2c45e4")
             position = Parenting::childrenPositions(core).reduce(1){|max, i| [max, i].max }+1
             item = NxTasks::interactivelyIssueNewOrNull()
-            Parenting::set_objects(core, item, position)
+            DarkEnergy::patch(item["uuid"], "parent", {
+                "uuid"     => core["uuid"],
+                "position" => position
+            })
             return
         end
 

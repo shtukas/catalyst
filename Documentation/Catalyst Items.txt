@@ -6,6 +6,9 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
+    - deadline         : nil or uuid of a NxDeadline
+    - engine           : nil or uuid or a NxEngine
+    - parent           : nil or { "uuid": , "position": }
 
 Policies:
 

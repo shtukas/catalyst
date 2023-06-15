@@ -272,8 +272,11 @@ class NxCores
         end
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        position = rand
-        Parenting::set_objects(core, item, position)
+        position = NxCores::interactivelySelectPosition(core)
+        DarkEnergy::patch(item["uuid"], "parent", {
+            "uuid"     => core["uuid"],
+            "position" => position
+        })
     end
 
     # NxCores::askAndThenGiveCoreToItemAttempt(item)
@@ -302,7 +305,7 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         position = NxCores::interactivelySelectPosition(core)
-        Parenting::set_uuids(core["uuid"], item["uuid"], position)
+        Parenting::setParentChild(core["uuid"], item["uuid"], position)
     end
 
     # NxCores::interactivelyDecideCoreAndSetAsParent(itemuuid)
@@ -310,15 +313,7 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         position = NxCores::interactivelySelectPosition(core)
-        Parenting::set_uuids(core["uuid"], itemuuid, position)
-    end
-
-    # NxCores::coreSuffix(item)
-    def self.coreSuffix(item)
-        parent = Parenting::getParentOrNull(item)
-        return nil if parent.nil?
-        return nil if parent["mikuType"] != "NxCore"
-        " (#{parent["description"]})".green
+        Parenting::setParentChild(core["uuid"], itemuuid, position)
     end
 end
 

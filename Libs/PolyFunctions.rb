@@ -18,6 +18,13 @@ class PolyFunctions
             end
         end
 
+        if item["engine"] then
+            engine = DarkEnergy::itemOrNull(item["engine"])
+            if engine then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(engine)
+            end
+        end
+
         parent = Parenting::getParentOrNull(item)
 
         if parent then
@@ -36,6 +43,13 @@ class PolyFunctions
             accounts << {
                 "description" => "deadline",
                 "number"      => core["uuid"]
+            }
+        end
+
+        if item["mikuType"] == "NxEngine" then
+            accounts << {
+                "description" => "NxEngine capsule",
+                "number"      => item["capsule"]
             }
         end
 
