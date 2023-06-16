@@ -10,10 +10,12 @@ class Pure
         return [] if listing.empty?
         head = Parenting::childrenInRelevantOrder(listing.first)
                     .select{|item| DoNotShowUntil::isVisible(item) }
+                    .select{|item| Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600*2 }
                     .first(6)
         listing = head + listing
         head = Parenting::childrenInRelevantOrder(listing.first)
                     .select{|item| DoNotShowUntil::isVisible(item) }
+                    .select{|item| Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600*2 }
                     .first(6)
         listing = head + listing
         listing
