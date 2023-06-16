@@ -13,7 +13,7 @@ class ListingCommandsAndInterpreters
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
-            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines",
+            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines | stacks | pools",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -55,6 +55,16 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
+            return
+        end
+
+        if Interpreting::match("stacks", input) then
+            TxStacks::program0()
+            return
+        end
+
+        if Interpreting::match("pools", input) then
+            TxPools::program0()
             return
         end
 

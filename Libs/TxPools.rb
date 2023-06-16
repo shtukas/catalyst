@@ -37,6 +37,7 @@ class TxPools
             system("clear")
 
             store = ItemStore.new()
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             puts ""
             spacecontrol.putsline "@pool:"
@@ -58,6 +59,21 @@ class TxPools
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # TxPools::program0()
+    def self.program0()
+        loop {
+            pools = DarkEnergy::mikuType("TxPool")
+            if pools.empty? then
+                puts "no pool found"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            pool = LucilleCore::selectEntityFromListOfEntitiesOrNull("pool", pools, lambda{|pool| TxPools::toString(pool) })
+            return if pool.nil?
+            TxPools::program(pool)
         }
     end
 end

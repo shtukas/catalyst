@@ -52,6 +52,7 @@ class TxStacks
             system("clear")
 
             store = ItemStore.new()
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             puts ""
             spacecontrol.putsline "@stack:"
@@ -72,6 +73,21 @@ class TxStacks
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # TxStacks::program0()
+    def self.program0()
+        loop {
+            stacks = DarkEnergy::mikuType("TxStack")
+            if stacks.empty? then
+                puts "no stack found"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            stack = LucilleCore::selectEntityFromListOfEntitiesOrNull("stack", stacks, lambda{|stack| TxStacks::toString(stack) })
+            return if stack.nil?
+            TxStacks::program(stack)
         }
     end
 end
