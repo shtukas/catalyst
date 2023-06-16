@@ -156,4 +156,16 @@ class Parenting
         return "" if parent.nil?
         " (parent: #{parent["description"]})".green
     end
+
+    # Parenting::interactivelyResetPositionAtSameParent(item)
+    def self.interactivelyResetPositionAtSameParent(item)
+        if item["parent"].nil? then
+            puts "this item doesn't seem to have a parent"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        position = LucilleCore::askQuestionAnswerAsString("> position: ").to_f
+        item["parent"]["position"] = position
+        DarkEnergy::commit(item)
+    end
 end

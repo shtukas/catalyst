@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | position (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -121,6 +121,21 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxEngines::attachEngineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("position", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Parenting::interactivelyResetPositionAtSameParent(item)
+            return
+        end
+
+        if Interpreting::match("position *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+             Parenting::interactivelyResetPositionAtSameParent(item)
             return
         end
 
