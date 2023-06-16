@@ -131,7 +131,7 @@ class Parenting
 
     # Parenting::askAndThenSetParentAttempt(item)
     def self.askAndThenSetParentAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("set parent ? ", false) then
+        if LucilleCore::askQuestionAnswerAsBoolean("> set parent ? ", false) then
             Parenting::interactivelySetParentAttempt(item)
         end
     end
