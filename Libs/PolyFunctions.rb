@@ -25,10 +25,25 @@ class PolyFunctions
             end
         end
 
-        parent = Parenting::getParentOrNull(item)
+        if item["nscore1129"] then
+            core = DarkEnergy::itemOrNull(item["nscore1129"])
+            if core then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+            end
+        end
 
-        if parent then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+        if item["nspool1131"] then
+            pool = DarkEnergy::itemOrNull(item["nspool1131"])
+            if pool then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(pool)
+            end
+        end
+
+        if item["nsstack1130"]["uuid"] then
+            stack = DarkEnergy::itemOrNull(item["nsstack1130"]["uuid"])
+            if stack then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(stack)
+            end
         end
 
         if item["mikuType"] == "NxCore" then

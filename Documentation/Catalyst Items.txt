@@ -6,18 +6,12 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
+
     - deadline         : nil or uuid of a NxDeadline
     - engine           : nil or uuid or a NxEngine
-    - parent           : nil or { "uuid": , "position": }
 
-Policies:
+    - nscore1129       : nil or uuid of a NxCore
+    - nspool1131       : nil or uuid of a TxPool
 
-    P1: Tasks can have a parent that is either a NxCore, or a NxStack or a NxPool.
+    - nsstack1130      : nil or uuid of a Tx8
 
-    P2: Tasks can have an engine or a deadline.
-
-    P3: NxStacks need to have either: an engine or a deadline or a parent that is a core.
-
-    P4: NxPools need to have either: an engine or a deadline or a parent that is a core.
-
-    P5: The NxTasks that do not have a parent or an engine or a deadline, will be handled by the two grids.

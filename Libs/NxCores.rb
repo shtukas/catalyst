@@ -17,17 +17,17 @@ class NxCores
         core
     end
 
-    # NxCores::grid1childrenInPositionOrder()
-    def self.grid1childrenInPositionOrder()
+    # NxCores::grid1children()
+    def self.grid1children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid1uuid()) }
+            .select{|task| ["nscore1129", "nspool1131", "nspool1131"].all?{|att| item[att].nil? } }
             .sort_by{|task| task["unixtime"] }
             .first(NxCores::infinityDepth())
     end
 
     # NxCores::grid1children_ordered_uuids()
     def self.grid1children_ordered_uuids()
-        NxCores::grid1childrenInPositionOrder().map{|item| item["uuid"] }
+        NxCores::grid1children().map{|item| item["uuid"] }
     end
 
     # NxCores::item_belongs_to_grid1(item)
@@ -51,10 +51,10 @@ class NxCores
         core
     end
  
-    # NxCores::grid2childrenInPositionOrder()
-    def self.grid2childrenInPositionOrder()
+    # NxCores::grid2children()
+    def self.grid2children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| (parent = Parenting::getParentOrNull(task)).nil? or (parent["uuid"] == NxCores::grid2uuid()) }
+            .select{|task| ["nscore1129", "nspool1131", "nspool1131"].all?{|att| item[att].nil? } }
             .sort_by{|task| task["unixtime"] }
             .reverse
             .first(NxCores::infinityDepth())
@@ -62,7 +62,7 @@ class NxCores
 
     # NxCores::grid2children_ordered_uuids()
     def self.grid2children_ordered_uuids()
-        NxCores::grid2childrenInPositionOrder().map{|item| item["uuid"] }
+        NxCores::grid2children().map{|item| item["uuid"] }
     end
 
     # NxCores::item_belongs_to_grid2(item)
@@ -171,15 +171,28 @@ class NxCores
             .sort_by{|core| NxCores::listingCompletionRatio(core) }
     end
 
-    # NxCores::childrenInPositionOrder(core)
-    def self.childrenInPositionOrder(core)
+    # NxCores::children(core)
+    def self.children(core)
         if core["uuid"] == NxCores::grid1uuid() then
-            return NxCores::grid1childrenInPositionOrder()
+            return NxCores::grid1children()
         end
         if core["uuid"] == NxCores::grid2uuid() then
-            return NxCores::grid2childrenInPositionOrder()
+            return NxCores::grid2children()
         end
-        Parenting::childrenInPositionOrder(core)
+        DarkEnergy::all().select{|item| item["nscore1129"] and item["nscore1129"] == core["uuid"] }
+    end
+
+    # NxCores::getItemCoreOrNull(item)
+    def self.getItemCoreOrNull(item)
+        return nil if item["nscore1129"].nil?
+        DarkEnergy::itemOrNull(item["nscore1129"])
+    end
+
+    # NxCores::suffix(item)
+    def self.suffix(item)
+        core = NxCores::getItemCoreOrNull(item)
+        return "" if core.nil?
+        " (core: #{core["description"]})".green
     end
 
     # -------------------------
@@ -235,7 +248,7 @@ class NxCores
             store.register(core, false)
             spacecontrol.putsline Listing::itemToListingLine(store, core)
 
-            items = NxCores::childrenInPositionOrder(core)
+            items = NxCores::children(core)
             burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
             ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
             waves, items = items.partition{|item| item["mikuType"] == "Wave" }
@@ -263,8 +276,15 @@ class NxCores
         }
     end
 
-    # NxCores::giveCoreToItemAttempt(item)
-    def self.giveCoreToItemAttempt(item)
+    # NxCores::askAndThenGiveCoreToItemAttempt(item)
+    def self.askAndThenGiveCoreToItemAttempt(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("> Add core ? ", false) then
+            NxCores::interactivelySetCore(item)
+        end
+    end
+
+    # NxCores::interactivelySetCore(item)
+    def self.interactivelySetCore(item)
         if item["mikuType"] == "NxCore" then
             puts "You cannot give a core to a NxCore"
             LucilleCore::pressEnterToContinue()
@@ -272,48 +292,13 @@ class NxCores
         end
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        position = NxCores::interactivelySelectPosition(core)
-        DarkEnergy::patch(item["uuid"], "parent", {
-            "uuid"     => core["uuid"],
-            "position" => position
-        })
+        DarkEnergy::patch(item["uuid"], "nscore1129", core["uuid"])
     end
 
-    # NxCores::askAndThenGiveCoreToItemAttempt(item)
-    def self.askAndThenGiveCoreToItemAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("> Add core ? ", false) then
-            NxCores::giveCoreToItemAttempt(item)
-        end
-    end
-
-    # NxCores::interactivelySelectPosition(core)
-    def self.interactivelySelectPosition(core)
-        Parenting::childrenInPositionOrder(core).first(30).each{|item|
-            puts NxTasks::toString(item)
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
-        if position == "" then
-            (Parenting::childrenPositions(core) + [0]).max + 1
-        else
-            position.to_f
-        end
-    end
-
-    # NxCores::interactivelyDecideCoreAndSetAsParentIfNotAlreadySet(item)
-    def self.interactivelyDecideCoreAndSetAsParentIfNotAlreadySet(item)
-        return if Parenting::getParentOrNull(item)
-        core = NxCores::interactivelySelectOneOrNull()
-        return if core.nil?
-        position = NxCores::interactivelySelectPosition(core)
-        Parenting::setParentChild(core["uuid"], item["uuid"], position)
-    end
-
-    # NxCores::interactivelyDecideCoreAndSetAsParent(itemuuid)
-    def self.interactivelyDecideCoreAndSetAsParent(itemuuid)
-        core = NxCores::interactivelySelectOneOrNull()
-        return if core.nil?
-        position = NxCores::interactivelySelectPosition(core)
-        Parenting::setParentChild(core["uuid"], itemuuid, position)
+    # NxCores::askAndThenSetCoreAttempt(item)
+    def self.askAndThenSetCoreAttempt(item)
+        return if !LucilleCore::askQuestionAnswerAsBoolean("> set core ? ")
+        NxCores::interactivelySetCore(item)
     end
 end
 

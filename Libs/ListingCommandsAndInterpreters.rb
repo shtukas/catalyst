@@ -146,7 +146,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("position", input) then
             item = store.getDefault()
             return if item.nil?
-            Parenting::interactivelyResetPositionAtSameParent(item)
+            TxStacks::interactivelyUpdatePositionAtSameStack(item)
             return
         end
 
@@ -154,14 +154,14 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-             Parenting::interactivelyResetPositionAtSameParent(item)
+            TxStacks::interactivelyUpdatePositionAtSameStack(item)
             return
         end
 
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
-            NxCores::giveCoreToItemAttempt(item)
+            NxCores::interactivelySetCore(item)
             return
         end
 
@@ -169,22 +169,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxCores::giveCoreToItemAttempt(item)
-            return
-        end
-
-        if Interpreting::match("relocate", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Parenting::interactivelyRelocate(item)
-            return
-        end
-
-        if Interpreting::match("relocate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Parenting::interactivelyRelocate(item)
+            NxCores::interactivelySetCore(item)
             return
         end
 
@@ -202,13 +187,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("jedi", input) then
-            core = DarkEnergy::itemOrNull("586d478d-0a04-40b7-aad3-fa5cbd2c45e4")
-            position = Parenting::childrenPositions(core).reduce(1){|max, i| [max, i].max }+1
+            coreuuid = "586d478d-0a04-40b7-aad3-fa5cbd2c45e4"
             item = NxTasks::interactivelyIssueNewOrNull()
-            DarkEnergy::patch(item["uuid"], "parent", {
-                "uuid"     => core["uuid"],
-                "position" => position
-            })
+            DarkEnergy::patch(item["uuid"], "nscore1129", coreuuid)
             return
         end
 
@@ -405,28 +386,12 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("parent", input) then
-            item = store.getDefault()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            Parenting::interactivelySetParentAttempt(item)
-            return
-        end
-
-        if Interpreting::match("parent *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Parenting::interactivelySetParentAttempt(item)
-            return
-        end
-
         if Interpreting::match("task", input) then
             # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            Parenting::askAndThenSetParentAttempt(DarkEnergy::itemOrNull(task["uuid"]))
+            NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(task["uuid"]))
             NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
             NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
             return
@@ -437,7 +402,7 @@ class ListingCommandsAndInterpreters
             pool = TxPools::interactivelyIssueNewOrNull()
             return if pool.nil?
             puts JSON.pretty_generate(pool)
-            Parenting::askAndThenSetParentAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             return
@@ -448,7 +413,7 @@ class ListingCommandsAndInterpreters
             pool = TxStacks::interactivelyIssueNewOrNull()
             return if pool.nil?
             puts JSON.pretty_generate(pool)
-            Parenting::askAndThenSetParentAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
+            NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             return

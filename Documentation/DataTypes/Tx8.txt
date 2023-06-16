@@ -1,4 +1,4 @@
 
 Tx8: 
-    "childuuid" : String
-    "position"  : Float
+    "uuid"     : String
+    "position" : Float

@@ -8,6 +8,8 @@ class TxStacks
         {
             "uuid"        => SecureRandom.uuid,
             "mikuType"    => "TxStack",
+            "unixtime"    => Time.new.to_f,
+            "datetime"    => Time.new.utc.iso8601,
             "description" => description
         }
     end
@@ -21,7 +23,7 @@ class TxStacks
 
     # TxStacks::toString(item)
     def self.toString(item)
-         "👨🏻‍💻 (stack)#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+         "👨🏻‍💻 (stack)#{TxStacks::positionsuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxStacks::interactivelySelectOneOrNull()
@@ -33,9 +35,8 @@ class TxStacks
     # TxStacks::interactivelySelectPosition(stack)
     def self.interactivelySelectPosition(stack)
         puts TxStacks::toString(stack).green
-        Parenting::childrenInPositionOrder(stack).each{|item|
-            position = Parenting::getPositionOrNull(stack, item)
-            puts "    - (#{"%6.3f" % position}) #{PolyFunctions::toString(item)}"
+        TxStacks::children_ordered(stack).each{|item|
+            puts "    - #{TxStacks::toString(item)}"
         }
         position = 0
         loop {
@@ -60,7 +61,7 @@ class TxStacks
             puts Listing::itemToListingLine(store, stack)
 
             puts ""
-            Parenting::childrenInPositionOrder(stack)
+            TxStacks::children_ordered(stack)
                 .each{|item|
                     store.register(item, false)
                     puts Listing::itemToListingLine(store, item)
@@ -89,6 +90,42 @@ class TxStacks
             return if stack.nil?
             TxStacks::program(stack)
         }
+    end
+
+    # TxStacks::getItemStackOrNull(item)
+    def self.getItemStackOrNull(item)
+        return nil if item["nsstack1130"].nil?
+        DarkEnergy::itemOrNull(item["nsstack1130"]["uuid"])
+    end
+
+    # TxStacks::suffix(item)
+    def self.suffix(item)
+        stack = TxStacks::getItemStackOrNull(item)
+        return "" if stack.nil?
+        " (stack: #{stack["description"]})".green
+    end
+
+    # TxStacks::positionsuffix(item)
+    def self.positionsuffix(item)
+        return "" if item["nsstack1130"].nil?
+        " (#{item["nsstack1130"]["position"]})".green
+    end
+
+    # TxStacks::interactivelyUpdatePositionAtSameStack(item)
+    def self.interactivelyUpdatePositionAtSameStack(item)
+        return if item["nsstack1130"].nil?
+        stack = DarkEnergy::itemOrNull(item["nsstack1130"]["uuid"])
+        return if stack.nil?
+        position = TxStacks::interactivelySelectPosition(stack)
+        item["nsstack1130"]["position"] = position
+        DarkEnergy::commit(item)
+    end
+
+    # TxStacks::children_ordered(stack)
+    def self.children_ordered(stack)
+        DarkEnergy::all()
+            .select{|item| item["nsstack1130"]["uuid"] == stack["uuid"] }
+            .sort_by{|item| item["nsstack1130"]["position"] }
     end
 end
 

@@ -48,7 +48,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{Parenting::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}"
+        "🔹#{TxStacks::positionsuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}"
     end
 
     # --------------------------------------------------
