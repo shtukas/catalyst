@@ -4,7 +4,7 @@ class NxEngines
     # NxEngines::interactivelyIssueNewForItem(item)
     def self.interactivelyIssueNewForItem(item)
         uuid = SecureRandom.uuid
-        hours = LucilleCore::askQuestionAnswerAsString("hours: ")
+        hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
         DarkEnergy::init("NxEngine", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
@@ -49,7 +49,7 @@ class NxEngines
 
         target = DarkEnergy::itemOrNull(engine["targetuuid"])
         if target then
-            strings << " #{PolyFunctions::toString(target)}"
+            strings << " #{target["description"]}"
         end
 
         strings.join()
