@@ -198,23 +198,6 @@ class NxCores
     # -------------------------
     # Ops
 
-    # NxCores::maintenance_one_core(core)
-    def self.maintenance_one_core(core)
-        return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
-        return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
-        puts "> I am about to reset core: #{NxCores::toString(core)}"
-        LucilleCore::pressEnterToContinue()
-        Bank::reset(core["capsule"])
-        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{core["hours"]} hours ? ") then
-            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
-            if hours.size > 0 then
-                core["hours"] = hours.to_f
-            end
-        end
-        core["lastResetTime"] = Time.new.to_i
-        DarkEnergy::commit(core)
-    end
-
     # NxCores::maintenance_all_instances()
     def self.maintenance_all_instances()
         padding = DarkEnergy::mikuType("NxCore").map{|core| core["description"].size }.max
@@ -223,7 +206,7 @@ class NxCores
 
     # NxCores::maintenance_leader_instance()
     def self.maintenance_leader_instance()
-        DarkEnergy::mikuType("NxCore").each{|core| NxCores::maintenance_one_core(core) }
+        DarkEnergy::mikuType("NxCore").each{|core| Mechanics::engine_maintenance(core) }
     end
 
     # NxCores::interactivelySelectOneOrNull()

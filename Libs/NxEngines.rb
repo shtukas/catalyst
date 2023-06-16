@@ -1,4 +1,3 @@
-
 class NxEngines
 
     # NxEngines::interactivelyIssueNewForItem(item)
@@ -101,5 +100,10 @@ class NxEngines
         engine = DarkEnergy::itemOrNull(item["engine"])
         return "" if engine.nil?
         " (#{NxEngines::toString1(engine)})"
+    end
+
+    # NxEngines::maintenance()
+    def self.maintenance()
+        DarkEnergy::mikuType("NxEngine").each{|engine| Mechanics::engine_maintenance(engine) }
     end
 end

@@ -246,14 +246,15 @@ class Listing
 
     # Listing::maintenance()
     def self.maintenance()
-        NxCores::maintenance_all_instances()
         if Config::isPrimaryInstance() then
+             PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
-             PositiveSpace::maintenance()
              NxCores::maintenance_leader_instance()
+             NxEngines::maintenance()
         end
+        NxCores::maintenance_all_instances()
     end
 
     # Listing::launchNxBallMonitor()
