@@ -66,24 +66,13 @@ class NxDeadlines
 
     # NxDeadlines::done(item)
     def self.done(item)
-        o1 = "destroy the NxDeadline only"
-        o2 = "destroy the deadline and done the target"
-        puts "Would you like to #{o1} or #{o2} ?"
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", [o1, o2])
-        return if option.nil? 
-        if option == o1 then
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxDeadlines::toString(item)}': ") then
-                DarkEnergy::destroy(item["uuid"])
+        NxBalls::stop(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxDeadlines::toString(item).green}': ", true) then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::done(target)
             end
-        end
-        if option == o2 then
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm ? ") then
-                target = DarkEnergy::itemOrNull(item["targetuuid"])
-                if target then
-                    PolyActions::done(target)
-                    DarkEnergy::destroy(item["uuid"])
-                end
-            end
+            DarkEnergy::destroy(item["uuid"])
         end
     end
 
