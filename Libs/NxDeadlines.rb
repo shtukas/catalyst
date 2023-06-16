@@ -52,7 +52,7 @@ class NxDeadlines
     def self.toString(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
-            "#{NxDeadlines::coreToString(item["deadlineCore"])} #{target["description"]}"
+            "#{NxDeadlines::coreToString(item["deadlineCore"])} | #{target["description"]}"
         else
             "⏱️  not found 🤔"
         end

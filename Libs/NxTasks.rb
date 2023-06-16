@@ -5,25 +5,6 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
-    # NxTasks::interactivelyMakeOrNull()
-    def self.interactivelyMakeOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
-
-        uuid = SecureRandom.uuid
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
-
-        {
-            "uuid"        => uuid,
-            "mikuType"    => "NxTask",
-            "unixtime"    => Time.new.to_i,
-            "datetime"    => Time.new.utc.iso8601,
-            "description" => description,
-            "field11"     => coredataref
-
-        }
-    end
-
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")

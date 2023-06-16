@@ -54,7 +54,7 @@ class NxEngines
         strings << NxEngines::toString1(engine)
         target = DarkEnergy::itemOrNull(engine["targetuuid"])
         if target then
-            strings << " #{target["description"]}"
+            strings << " | #{target["description"]}"
         end
         strings.join()
     end
