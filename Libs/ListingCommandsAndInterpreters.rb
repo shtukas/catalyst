@@ -173,6 +173,21 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("relocate", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Parenting::interactivelyRelocate(item)
+            return
+        end
+
+        if Interpreting::match("relocate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Parenting::interactivelyRelocate(item)
+            return
+        end
+
         if Interpreting::match("ack", input) then
             item = store.getDefault()
             return if item.nil?

@@ -166,4 +166,9 @@ class Parenting
         item["parent"]["position"] = position
         DarkEnergy::commit(item)
     end
+
+    # Parenting::interactivelyRelocate(item)
+    def self.interactivelyRelocate(item)
+        Parenting::interactivelySetParentAttempt(item)
+    end
 end
