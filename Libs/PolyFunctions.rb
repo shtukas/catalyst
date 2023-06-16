@@ -39,7 +39,7 @@ class PolyFunctions
             end
         end
 
-        if item["nsstack1130"]["uuid"] then
+        if item["nsstack1130"] then
             stack = DarkEnergy::itemOrNull(item["nsstack1130"]["uuid"])
             if stack then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(stack)
