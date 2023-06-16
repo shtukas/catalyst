@@ -20,7 +20,7 @@ class NxCores
     # NxCores::grid1children()
     def self.grid1children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| ["nscore1129", "nspool1131", "nspool1131"].all?{|att| item[att].nil? } }
+            .select{|task| ["nscore1129", "nspool1131", "nspool1131"].all?{|att| task[att].nil? } }
             .sort_by{|task| task["unixtime"] }
             .first(NxCores::infinityDepth())
     end
@@ -54,7 +54,7 @@ class NxCores
     # NxCores::grid2children()
     def self.grid2children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| ["nscore1129", "nspool1131", "nspool1131"].all?{|att| item[att].nil? } }
+            .select{|task| ["nscore1129", "nspool1131", "nspool1131"].all?{|att| task[att].nil? } }
             .sort_by{|task| task["unixtime"] }
             .reverse
             .first(NxCores::infinityDepth())
