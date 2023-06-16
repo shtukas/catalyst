@@ -90,9 +90,18 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("deadline", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxDeadlines::attachDeadlineAttempt(item)
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["attach deadline to default listing item", "new deadline (task + attachement)"])
+            return if option.nil?
+            if option == "attach deadline to default listing item" then
+                item = store.getDefault()
+                return if item.nil?
+                NxDeadlines::attachDeadlineAttempt(item)
+            end
+            if option == "new deadline (task + attachement)" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                return if task.nil?
+                NxDeadlines::attachDeadlineAttempt(task)
+            end
             return
         end
 
