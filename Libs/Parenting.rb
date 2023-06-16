@@ -19,7 +19,7 @@ class Parenting
             DarkEnergy::all()
                 .select{|i| i["parent"] }
                 .select{|i| i["parent"]["uuid"] == item["uuid"] }
-        }, 3600)
+        }, 3600).map{|item| DarkEnergy::itemOrNull(item["uuid"]) }
     end
 
     # Parenting::childrenInPositionOrder(item)

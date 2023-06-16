@@ -18,11 +18,11 @@ class NxEngines
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxEngines::toString(engine)
-    def self.toString(engine)
+    # NxEngines::toString1(engine)
+    def self.toString1(engine)
         strings = []
 
-        strings << "⚙️  (engine) today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << "⚙️  today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*NxCores::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
@@ -45,13 +45,17 @@ class NxEngines
             strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
         end
 
-        strings << ")"
+        strings.join()
+    end
 
+    # NxEngines::toString(engine)
+    def self.toString(engine)
+        strings = []
+        strings << NxEngines::toString1(engine)
         target = DarkEnergy::itemOrNull(engine["targetuuid"])
         if target then
             strings << " #{target["description"]}"
         end
-
         strings.join()
     end
 
@@ -96,6 +100,6 @@ class NxEngines
         return "" if item["engine"].nil?
         engine = DarkEnergy::itemOrNull(item["engine"])
         return "" if engine.nil?
-        " #{NxEngines::toString(engine)}"
+        " (#{NxEngines::toString1(engine)})"
     end
 end

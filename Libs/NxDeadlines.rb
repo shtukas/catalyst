@@ -45,16 +45,16 @@ class NxDeadlines
         timeDone = Bank::getValue(core["uuid"])
         timeNeeded = 86400*core["requirementInHours"]*(Time.new.to_f - core["start"]).to_f/(core["end"] - core["start"])
         isLate = timeNeeded > timeDone
-        "(done: #{(timeDone.to_f/86400).round(2)} hours, required: #{core["requirementInHours"]} hours, #{isLate ? "late 😓" : "😎"})"
+        "⏱️  #{(timeDone.to_f/86400).round(2)} hours, required: #{core["requirementInHours"]} hours, #{isLate ? "late 😓" : "😎"}"
     end
 
     # NxDeadlines::toString(item)
     def self.toString(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
-            "⏱️  (deadline) #{NxDeadlines::coreToString(item["deadlineCore"])} #{target["description"]}"
+            "#{NxDeadlines::coreToString(item["deadlineCore"])} #{target["description"]}"
         else
-            "⏱️  (deadline) not found 🤔"
+            "⏱️  not found 🤔"
         end
     end
 
@@ -139,6 +139,6 @@ class NxDeadlines
         return "" if item["deadline"].nil?
         deadline = DarkEnergy::itemOrNull(item["deadline"])
         return "" if deadline.nil?
-        " #{NxDeadlines::toString(deadline)}"
+        " (⏱️  #{NxDeadlines::coreToString(deadline["deadlineCore"])})"
     end
 end
