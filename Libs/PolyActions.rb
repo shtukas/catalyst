@@ -153,6 +153,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxEngine" then
+            NxEngines::done(item)
+            return
+        end
+
         if item["mikuType"] == "NxCore" then
             puts "You cannot done a NxCore"
             LucilleCore::pressEnterToContinue()

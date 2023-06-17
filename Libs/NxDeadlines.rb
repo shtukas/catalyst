@@ -42,17 +42,17 @@ class NxDeadlines
 
     # NxDeadlines::itemToString(item)
     def self.itemToString(item)
-        timeDoneInHours = Bank::getValue(item["uuid"]).to_f/86400
-        timeIdealNow = item["requirementInHours"]*(Time.new.to_f - item["start"]).to_f/(item["end"] - item["start"])
+        timeDoneInHours = Bank::getValue(item["uuid"]).to_f/3600
+        timeIdealNow = item["requirementInHours"]*(CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - item["start"]).to_f/(item["end"] - item["start"])
         isLate = timeIdealNow > timeDoneInHours
-        "⏱️  done: #{"%5.2f" % timeDoneInHours} hours, ideal: #{"%5.2f" % timeIdealNow} hours, #{isLate ? "late 😓" : "😎"}"
+        "⏱️  (done: #{"%5.2f" % timeDoneInHours} of #{"%5.2f" % item["requirementInHours"]} hours, ideal: #{"%5.2f" % timeIdealNow} hours, #{isLate ? "late 😓" : "😎"})"
     end
 
     # NxDeadlines::toString(item)
     def self.toString(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
-            "#{NxDeadlines::itemToString(item["deadlineCore"])} | #{target["description"]}"
+            "#{NxDeadlines::itemToString(item["deadlineCore"])} #{target["description"]}"
         else
             "⏱️  target not found 🤔"
         end

@@ -105,4 +105,16 @@ class NxEngines
     def self.maintenance()
         DarkEnergy::mikuType("NxEngine").each{|engine| Mechanics::engine_maintenance(engine) }
     end
+
+    # NxEngines::done(item)
+    def self.done(item)
+        NxBalls::stop(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxEngines::toString(item).green}': ", true) then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::done(target)
+            end
+            DarkEnergy::destroy(item["uuid"])
+        end
+    end
 end
