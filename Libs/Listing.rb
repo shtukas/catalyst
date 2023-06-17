@@ -218,24 +218,20 @@ class Listing
 
         puts ""
 
+        spot.start_unit("Listing::maintenance()")
+        Listing::maintenance()
+        spot.end_unit()
+
         spot.start_unit("pures")
         pures = Pure::pure()
         spot.end_unit()
 
         spot.start_unit("Listing::items()")
-        Listing::items()
-        spot.end_unit()
-
-        spot.start_unit("Listing::maintenance()")
-        Listing::maintenance()
+        items = Listing::items()
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
         store = ItemStore.new()
-
-        spot.start_unit("Listing::items()")
-        items = Listing::items()
-        spot.end_unit()
 
         spot.start_unit("Listing::printing")
         Listing::printing(spacecontrol, store, items)
