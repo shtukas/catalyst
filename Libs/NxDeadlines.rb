@@ -45,7 +45,7 @@ class NxDeadlines
         timeDone = Bank::getValue(core["uuid"])
         timeNeeded = 86400*core["requirementInHours"]*(Time.new.to_f - core["start"]).to_f/(core["end"] - core["start"])
         isLate = timeNeeded > timeDone
-        "⏱️  #{(timeDone.to_f/86400).round(2)} hours, required: #{core["requirementInHours"]} hours, #{isLate ? "late 😓" : "😎"}"
+        "⏱️  #{"%5.2f" % (timeDone.to_f/86400)} hours, required: #{"%5.2f" % core["requirementInHours"]} hours, #{isLate ? "late 😓" : "😎"}"
     end
 
     # NxDeadlines::toString(item)
@@ -54,7 +54,7 @@ class NxDeadlines
         if target then
             "#{NxDeadlines::coreToString(item["deadlineCore"])} | #{target["description"]}"
         else
-            "⏱️  not found 🤔"
+            "⏱️  target not found 🤔"
         end
     end
 

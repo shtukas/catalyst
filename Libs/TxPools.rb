@@ -23,7 +23,7 @@ class TxPools
 
     # TxPools::toString(item)
     def self.toString(item)
-        "👩‍💻 (pool) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "👩‍💻 (pool)#{TxStacks::positionsuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # TxPools::interactivelySelectOneOrNull()
