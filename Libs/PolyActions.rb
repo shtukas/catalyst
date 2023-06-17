@@ -153,6 +153,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCore" then
+            puts "You cannot done a NxCore"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxLine" then
             if NxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it."
