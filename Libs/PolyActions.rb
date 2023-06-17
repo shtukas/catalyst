@@ -467,6 +467,12 @@ class PolyActions
             LucilleCore::pressEnterToContinue()
             return
         end
+        if item["mikuType"] == "NxDeadline" then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            return if target.nil?
+            PolyActions::editDescription(target)
+            return
+        end
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
