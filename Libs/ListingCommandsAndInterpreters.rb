@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | position (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -13,7 +13,7 @@ class ListingCommandsAndInterpreters
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
-            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines | stacks | pools",
+            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -55,16 +55,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
-            return
-        end
-
-        if Interpreting::match("stacks", input) then
-            TxStacks::program0()
-            return
-        end
-
-        if Interpreting::match("pools", input) then
-            TxPools::program0()
             return
         end
 
@@ -140,21 +130,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxEngines::attachEngineAttempt(item)
-            return
-        end
-
-        if Interpreting::match("position", input) then
-            item = store.getDefault()
-            return if item.nil?
-            TxStacks::interactivelyUpdatePositionAtSameStack(item)
-            return
-        end
-
-        if Interpreting::match("position *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            TxStacks::interactivelyUpdatePositionAtSameStack(item)
             return
         end
 
@@ -394,28 +369,6 @@ class ListingCommandsAndInterpreters
             NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(task["uuid"]))
             NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
             NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
-            return
-        end
-
-        if Interpreting::match("pool", input) then
-            # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
-            pool = TxPools::interactivelyIssueNewOrNull()
-            return if pool.nil?
-            puts JSON.pretty_generate(pool)
-            NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
-            NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
-            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
-            return
-        end
-
-        if Interpreting::match("stack", input) then
-            # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
-            pool = TxStacks::interactivelyIssueNewOrNull()
-            return if pool.nil?
-            puts JSON.pretty_generate(pool)
-            NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
-            NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
-            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(pool["uuid"]))
             return
         end
 

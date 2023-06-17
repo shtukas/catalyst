@@ -32,20 +32,6 @@ class PolyFunctions
             end
         end
 
-        if item["nspool1131"] then
-            pool = DarkEnergy::itemOrNull(item["nspool1131"])
-            if pool then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(pool)
-            end
-        end
-
-        if item["nsstack1130"] then
-            stack = DarkEnergy::itemOrNull(item["nsstack1130"]["uuid"])
-            if stack then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(stack)
-            end
-        end
-
         if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "NxCore capsule",
@@ -140,12 +126,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
-        end
-        if item["mikuType"] == "TxPool" then
-            return TxPools::toString(item)
-        end
-        if item["mikuType"] == "TxStack" then
-            return TxStacks::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

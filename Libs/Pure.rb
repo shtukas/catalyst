@@ -13,20 +13,6 @@ class Pure
                 .first(6)
         end
 
-        if item["mikuType"] == "TxPool" then
-            return TxPools::children(item)
-                .select{|item| DoNotShowUntil::isVisible(item) }
-                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-                .select{|item| Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600*2 }
-                .first(6)
-        end
-
-        if item["mikuType"] == "TxStack" then
-            return TxStacks::children_ordered(item)
-                .select{|item| DoNotShowUntil::isVisible(item) }
-                .select{|item| Bank::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600*2 }
-                .first(6)
-        end
         raise "don't know how to children item #{item}"
     end
 

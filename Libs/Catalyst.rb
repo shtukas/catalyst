@@ -11,8 +11,6 @@ class Catalyst
           "NxCore",
           "NxOndate",
           "NxTask",
-          "TxPool",
-          "TxStack",
           "PhysicalTarget",
           "Wave"
         ]

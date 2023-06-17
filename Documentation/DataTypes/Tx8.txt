@@ -1,4 +1,0 @@
-
-Tx8: 
-    "uuid"     : String
-    "position" : Float

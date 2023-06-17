@@ -9,9 +9,5 @@ Cross types conventions:
 
     - deadline         : nil or uuid of a NxDeadline
     - engine           : nil or uuid or a NxEngine
-
     - nscore1129       : nil or uuid of a NxCore
-    - nspool1131       : nil or uuid of a TxPool
-
-    - nsstack1130      : nil or uuid of a Tx8
 

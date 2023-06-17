@@ -78,14 +78,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxPool" then
-            PolyActions::program(item)
-        end
-
-        if item["mikuType"] == "TxStack" then
-            PolyActions::program(item)
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::access(item)
             return
@@ -252,18 +244,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxPool" then
-            puts "You cannot `done` a TxPool"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if item["mikuType"] == "TxStack" then
-            puts "You cannot `done` a TxStack"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{Waves::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -380,16 +360,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxPool" then
-            PolyActions::program(item)
-            return
-        end
-
-        if item["mikuType"] == "TxStack" then
-            PolyActions::program(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -425,16 +395,6 @@ class PolyActions
 
         if item["mikuType"] == "NxDrop" then
             NxDrops::program(item)
-            return
-        end
-
-        if item["mikuType"] == "TxPool" then
-            TxPools::program(item)
-            return
-        end
-
-        if item["mikuType"] == "TxStack" then
-            TxStacks::program(item)
             return
         end
 
