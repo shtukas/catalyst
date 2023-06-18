@@ -144,7 +144,6 @@ class Listing
             NxEngines::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
             Pure::pure(),
-            Pure::bottom(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -155,6 +154,10 @@ class Listing
                     selected + [item]
                 end
             }
+
+        if items.empty? then
+            items = Pure::bottom()
+        end
 
         if NxTimes::hasPendingTime() then
             NxTimes::listingItems() + items
