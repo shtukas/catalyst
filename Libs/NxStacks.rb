@@ -50,8 +50,20 @@ class NxStacks
             LucilleCore::pressEnterToContinue()
             return
         end
-        stack = NxStacks::stack(cursor)
-        NxStacks::interactivelyStackNextOrNothing(stack.first)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["one", "multiple"])
+        return if option.nil?
+        if option == "one" then
+            stack = NxStacks::stack(cursor)
+            NxStacks::interactivelyStackNextOrNothing(stack.first)
+        end
+        if option == "multiple" then
+            text = CommonUtils::editTextSynchronously(text).strip
+            return if text == ""
+            text.lines.to_a.reverse.each{|line|
+                stack = NxStacks::stack(cursor)
+                NxStacks::issueNext(line, stack.first)
+            }
+        end
     end
 
     # NxStacks::destroyStackItem(item)
