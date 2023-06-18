@@ -20,7 +20,7 @@ class NxCores
     # NxCores::grid1children()
     def self.grid1children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| task["nscore1129"].nil? }
+            .select{|task| task["core"].nil? }
             .sort_by{|task| task["unixtime"] }
             .first(NxCores::infinityDepth())
     end
@@ -54,7 +54,7 @@ class NxCores
     # NxCores::grid2children()
     def self.grid2children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| task["nscore1129"].nil? }
+            .select{|task| task["core"].nil? }
             .sort_by{|task| task["unixtime"] }
             .reverse
             .first(NxCores::infinityDepth())
@@ -179,13 +179,25 @@ class NxCores
         if core["uuid"] == NxCores::grid2uuid() then
             return NxCores::grid2children()
         end
-        DarkEnergy::all().select{|item| item["nscore1129"] and item["nscore1129"] == core["uuid"] }
-    end
+
+        items = DarkEnergy::all().select{|item| item["core"] == core["uuid"] }
+
+        burners,   items = items.partition{|item| item["mikuType"] == "NxBurner" }
+        ondates,   items = items.partition{|item| item["mikuType"] == "NxOndate" }
+        waves,     items = items.partition{|item| item["mikuType"] == "Wave" }
+        sequences, items = items.partition{|item| item["mikuType"] == "NxSequence" }
+        tasks,     things = items.partition{|item| item["mikuType"] == "NxTask" }
+
+        sequences = sequences.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        tasks = tasks.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+
+        things + burners + ondates + waves + sequences + tasks
+     end
 
     # NxCores::getItemCoreOrNull(item)
     def self.getItemCoreOrNull(item)
-        return nil if item["nscore1129"].nil?
-        DarkEnergy::itemOrNull(item["nscore1129"])
+        return nil if item["core"].nil?
+        DarkEnergy::itemOrNull(item["core"])
     end
 
     # NxCores::suffix(item)
@@ -232,10 +244,6 @@ class NxCores
             spacecontrol.putsline Listing::itemToListingLine(store, core)
 
             items = NxCores::children(core)
-            burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
-            ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
-            waves, items = items.partition{|item| item["mikuType"] == "Wave" }
-            items = burners + ondates + waves + items
 
             Listing::printing(spacecontrol, store, items)
 
@@ -275,7 +283,7 @@ class NxCores
         end
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        DarkEnergy::patch(item["uuid"], "nscore1129", core["uuid"])
+        DarkEnergy::patch(item["uuid"], "core", core["uuid"])
     end
 
     # NxCores::askAndThenSetCoreAttempt(item)

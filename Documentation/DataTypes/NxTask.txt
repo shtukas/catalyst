@@ -7,3 +7,8 @@ NxTask:
     "datetime"     : DateTime Iso 8601 UTC Zulu
     "description"  : String
     "field11"      : null or CoreData reference string
+
+    "tx8" : {
+        "uuid"     => String # sequence uuid
+        "position" => Float
+    }

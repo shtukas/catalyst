@@ -161,6 +161,7 @@ require_relative "NxCores.rb"
 require_relative "NxDeadlines.rb"
 require_relative "NxEngines.rb"
 require_relative "NxStacks.rb"
+require_relative "NxSequences.rb"
 
 require_relative "Memoize.rb"
 require_relative "Mechanics.rb"

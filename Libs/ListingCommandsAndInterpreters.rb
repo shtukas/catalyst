@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | new sequence",
             "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -55,6 +55,13 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
+            return
+        end
+
+        if Interpreting::match("new sequence", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxSequences::interactivelyIssueNewOrNull()
             return
         end
 
@@ -110,6 +117,21 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxDeadlines::attachDeadlineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("sequence", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxSequences::setSequenceAttempt(item)
+            return
+        end
+
+        if Interpreting::match("sequence *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxSequences::setSequenceAttempt(item)
             return
         end
 
@@ -179,7 +201,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("jedi", input) then
             coreuuid = "586d478d-0a04-40b7-aad3-fa5cbd2c45e4"
             item = NxTasks::interactivelyIssueNewOrNull()
-            DarkEnergy::patch(item["uuid"], "nscore1129", coreuuid)
+            DarkEnergy::patch(item["uuid"], "core", coreuuid)
             return
         end
 
@@ -381,9 +403,14 @@ class ListingCommandsAndInterpreters
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            NxCores::askAndThenSetCoreAttempt(DarkEnergy::itemOrNull(task["uuid"]))
-            NxEngines::askAndThenAttachEngineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
-            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(DarkEnergy::itemOrNull(task["uuid"]))
+            NxSequences::setSequenceAttempt(task)
+            task = DarkEnergy::itemOrNull(task["uuid"])
+            NxCores::askAndThenSetCoreAttempt(task)
+            task = DarkEnergy::itemOrNull(task["uuid"])
+            NxEngines::askAndThenAttachEngineToItemAttempt(task)
+            task = DarkEnergy::itemOrNull(task["uuid"])
+            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(task)
+
             return
         end
 

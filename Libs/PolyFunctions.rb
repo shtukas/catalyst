@@ -25,8 +25,15 @@ class PolyFunctions
             end
         end
 
-        if item["nscore1129"] then
-            core = DarkEnergy::itemOrNull(item["nscore1129"])
+        if item["core"] then
+            core = DarkEnergy::itemOrNull(item["core"])
+            if core then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+            end
+        end
+
+        if item["core"] then
+            core = DarkEnergy::itemOrNull(item["core"])
             if core then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
             end
@@ -125,6 +132,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
+        end
+        if item["mikuType"] == "NxSequence" then
+            return NxSequences::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

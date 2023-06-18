@@ -9,5 +9,5 @@ Cross types conventions:
 
     - deadline         : nil or uuid of a NxDeadline
     - engine           : nil or uuid or a NxEngine
-    - nscore1129       : nil or uuid of a NxCore
-
+    - core             : nil or uuid of a NxCore
+    - sequence         : nil or {uuid, position} 
