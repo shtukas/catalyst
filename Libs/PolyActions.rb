@@ -68,6 +68,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxSequence" then
+            NxSequences::program(item)
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             NxTasks::access(item)
             return
@@ -250,6 +255,12 @@ class PolyActions
             end
             return
         end
+
+        if item["mikuType"] == "NxSequence" then
+            NxSequences::done(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{Waves::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -284,6 +295,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxSequence" then
+            NxSequences::destroy(item)
             return
         end
 
@@ -357,6 +373,11 @@ class PolyActions
                     NxBalls::stop(item)
                 end
             end
+            return
+        end
+
+        if item["mikuType"] == "NxSequence" then
+            NxSequences::program(item)
             return
         end
 

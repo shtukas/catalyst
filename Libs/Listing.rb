@@ -144,7 +144,7 @@ class Listing
             NxEngines::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
             Pure::pure(),
-            NxSequences::orderedForListing(),
+            Pure::bottom(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }

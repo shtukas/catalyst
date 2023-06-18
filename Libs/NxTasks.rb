@@ -46,9 +46,15 @@ class NxTasks
     # --------------------------------------------------
     # Data
 
+    # NxTasks::positionSuffix(item)
+    def self.positionSuffix(item)
+        return "" if item["sequence"].nil?
+        " (#{"%5.2f" % item["sequence"]["position"]})"
+    end
+
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}"
+        "🔹#{NxTasks::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}"
     end
 
     # --------------------------------------------------

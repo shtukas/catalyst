@@ -93,4 +93,21 @@ class NxSequences
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # NxSequences::done(sequence)
+    def self.done(sequence)
+        if NxSequences::children_ordered(sequence).empty? then
+            if LucilleCore::askQuestionAnswerAsBoolean("> destroy '#{NxSequences::toString(sequence).green}' ") then
+                DarkEnergy::destroy(sequence["uuid"])
+            end
+        else
+            puts "You cannot done a non empty sequence"
+            LucilleCore::pressEnterToContinue()
+        end
+    end
+
+    # NxSequences::destroy(sequence)
+    def self.destroy(sequence)
+        NxSequences::done(sequence)
+    end
 end

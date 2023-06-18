@@ -180,7 +180,9 @@ class NxCores
             return NxCores::grid2children()
         end
 
-        items = DarkEnergy::all().select{|item| item["core"] == core["uuid"] }
+        items = DarkEnergy::all()
+                    .select{|item| item["mikuType"] != "NxDeadline" }
+                    .select{|item| item["core"] == core["uuid"] }
 
         burners,   items = items.partition{|item| item["mikuType"] == "NxBurner" }
         ondates,   items = items.partition{|item| item["mikuType"] == "NxOndate" }
@@ -204,7 +206,7 @@ class NxCores
     def self.suffix(item)
         core = NxCores::getItemCoreOrNull(item)
         return "" if core.nil?
-        " (core: #{core["description"]})".green
+        " (#{core["description"]})".green
     end
 
     # -------------------------
