@@ -249,13 +249,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStackItem" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{NxStacks::toString(item).green} ? '", true) then
-                NxStacks::destroyStackItem(item)
-            end
-            return
-        end
-
         if item["mikuType"] == "NxSequence" then
             NxSequences::done(item)
             return

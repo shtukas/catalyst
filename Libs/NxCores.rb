@@ -206,7 +206,7 @@ class NxCores
     def self.suffix(item)
         core = NxCores::getItemCoreOrNull(item)
         return "" if core.nil?
-        " (#{core["description"]})".green
+        " (☕️ #{core["description"]})".green
     end
 
     # -------------------------

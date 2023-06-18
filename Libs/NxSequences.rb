@@ -18,8 +18,8 @@ class NxSequences
         "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
-    # NxSequences::orderedForListing()
-    def self.orderedForListing()
+    # NxSequences::sequencesOrderedForListing()
+    def self.sequencesOrderedForListing()
         DarkEnergy::mikuType("NxSequence")
             .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
     end
@@ -38,8 +38,8 @@ class NxSequences
 
     # NxSequences::setSequenceAttempt(item)
     def self.setSequenceAttempt(item)
-        if item["mikuType"] != "NxTask" then
-            puts "At the moment we only put NxTasks into sequences"
+        if item["mikuType"] != "NxTask" and item["mikuType"] != "NxLine"  then
+            puts "At the moment we only put NxTasks and NxLines into sequences"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -58,9 +58,9 @@ class NxSequences
         })
     end
 
-    # NxSequences::children_ordered(sequence)
-    def self.children_ordered(sequence)
-        DarkEnergy::mikuType("NxTask")
+    # NxSequences::childrenOrderedForListing(sequence)
+    def self.childrenOrderedForListing(sequence)
+        (DarkEnergy::mikuType("NxTask") + DarkEnergy::mikuType("NxLine"))
             .select{|item| item["sequence"] }
             .select{|item| item["sequence"]["uuid"] == sequence["uuid"] }
             .sort_by{|item| item["sequence"]["position"] }
@@ -80,7 +80,7 @@ class NxSequences
             store.register(sequence, false)
             spacecontrol.putsline Listing::itemToListingLine(store, sequence)
 
-            items = NxSequences::children_ordered(sequence)
+            items = NxSequences::childrenOrderedForListing(sequence)
 
             Listing::printing(spacecontrol, store, items)
 
@@ -96,7 +96,7 @@ class NxSequences
 
     # NxSequences::done(sequence)
     def self.done(sequence)
-        if NxSequences::children_ordered(sequence).empty? then
+        if NxSequences::childrenOrderedForListing(sequence).empty? then
             if LucilleCore::askQuestionAnswerAsBoolean("> destroy '#{NxSequences::toString(sequence).green}' ") then
                 DarkEnergy::destroy(sequence["uuid"])
             end
@@ -109,5 +109,110 @@ class NxSequences
     # NxSequences::destroy(sequence)
     def self.destroy(sequence)
         NxSequences::done(sequence)
+    end
+
+    # NxSequences::pile(item)
+    def self.pile(item)
+
+        if item["mikuType"] != "NxTask" and item["mikuType"] != "NxSequence" then
+            puts "You can only pile NxTasks or NxSequences"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        sequence = nil
+
+        if item["mikuType"] == "NxSequence" then
+            sequence = item
+        end
+
+        if sequence.nil? and item["sequence"].nil? then
+            puts "You are trying to pile an item that is not in a sequence"
+            if LucilleCore::askQuestionAnswerAsBoolean("Would you like to create a sequence ? ") then
+                sequence = NxSequences::interactivelyIssueNewOrNull()
+                return if sequence.nil?
+                item["sequence"] = {
+                    "uuid" => sequence["uuid"],
+                    "position" => 1
+                }
+                DarkEnergy::commit(item)
+            else
+                return
+            end
+        end
+
+        if sequence.nil? and DarkEnergy::itemOrNull(item["sequence"]["uuid"]).nil? then
+            puts "You are trying to pile an item that is not in a sequence"
+            if LucilleCore::askQuestionAnswerAsBoolean("Would you like to create a sequence ? ") then
+                sequence = NxSequences::interactivelyIssueNewOrNull()
+                return if sequence.nil?
+                item["sequence"] = {
+                    "uuid" => sequence["uuid"],
+                    "position" => 1
+                }
+                DarkEnergy::commit(item)
+            else
+                return
+            end
+        end
+
+        if sequence.nil? then
+            sequence = DarkEnergy::itemOrNull(item["sequence"]["uuid"])
+        end
+
+        children = NxSequences::childrenOrderedForListing(sequence)
+        if !children.empty? then
+            if item["uuid"] != children.first["uuid"] then
+                puts "You cna only pile the first item of a sequence"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+        end
+
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["one", "multiple"])
+        return if option.nil?
+
+        if option == "one" then
+            children = NxSequences::childrenOrderedForListing(sequence)
+            if children.empty? then
+                position = 1
+            else
+                position = children.map{|child| child["sequence"]["position"] }.min - 1
+            end
+
+            i = NxTasks::interactivelyIssueNewOrNull()
+            i["sequence"] = {
+                "uuid" => sequence["uuid"],
+                "position" => position
+            }
+            DarkEnergy::commit(i)
+        end
+
+        if option == "multiple" then
+            text = CommonUtils::editTextSynchronously(text).strip
+            return if text == ""
+            text.lines.to_a.reverse.each{|line|
+                children = NxSequences::childrenOrderedForListing(sequence)
+                if children.empty? then
+                    position = 1
+                else
+                    position = children.map{|child| child["sequence"]["position"] }.min - 1
+                end
+                i = NxLines::issue(line)
+                i["sequence"] = {
+                    "uuid" => sequence["uuid"],
+                    "position" => position
+                }
+                DarkEnergy::commit(i)
+            }
+        end
+    end
+
+    # NxSequences::sequenceSuffix(item)
+    def self.sequenceSuffix(item)
+        return "" if item["sequence"].nil?
+        sequence = DarkEnergy::itemOrNull(item["sequence"]["uuid"])
+        return "" if sequence.nil?
+        " (⛵️ #{sequence["description"].green})#{NxCores::suffix(sequence)}"
     end
 end

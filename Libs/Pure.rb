@@ -3,7 +3,7 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
-        return (NxStacks::stack(item) + [item]) if item["mikuType"] == "NxTask"
+        return [] if item["mikuType"] == "NxTask"
 
         if item["mikuType"] == "NxCore" then
             return NxCores::children(item)
@@ -13,13 +13,11 @@ class Pure
         end
 
         if item["mikuType"] == "NxSequence" then
-            return NxSequences::children_ordered(item)
+            return NxSequences::childrenOrderedForListing(item)
                 .select{|item| DoNotShowUntil::isVisible(item) }
                 .select{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2 }
                 .first(6)
         end
-
-        return [] if item["mikuType"] == "NxStackItem"
 
         raise "I don't know how to Pure::childrenInitInRelevantOrder item #{item}"
     end
@@ -45,6 +43,7 @@ class Pure
     # Pure::bottom()
     def self.bottom()
         Memoize::evaluate("32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", lambda{
+            puts "Computing Pure::bottom() ..."
             sequences = DarkEnergy::mikuType("NxSequence")
                             .select{|sequence| sequence["core"].nil? }
             items = DarkEnergy::mikuType("NxTask")
