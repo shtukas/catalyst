@@ -19,7 +19,9 @@ class Pure
                 .first(6)
         end
 
-        raise "don't know how to children item #{item}"
+        return [] if item["mikuType"] == "NxStackItem"
+
+        raise "I don't know how to Pure::childrenInitInRelevantOrder item #{item}"
     end
 
     # Pure::pure()
@@ -28,12 +30,16 @@ class Pure
                     .select{|core| DoNotShowUntil::isVisible(core) }
                     .select{|core| NxCores::listingCompletionRatio(core) < 1 }
                     .sort_by{|core| NxCores::listingCompletionRatio(core) }
+
         return [] if listing.empty?
-        head = Pure::childrenInitInRelevantOrder(listing.first)
-        listing = head + listing
-        head = Pure::childrenInitInRelevantOrder(listing.first)
-        listing = head + listing
-        listing
+
+        loop {
+            head = listing.first
+            tail = listing.drop(1)
+            children = Pure::childrenInitInRelevantOrder(head)
+            return [head] + tail if children.empty?
+            listing = children + [head] + tail
+        }
     end
 
     # Pure::bottom()

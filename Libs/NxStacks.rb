@@ -12,10 +12,10 @@ class NxStacks
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxStacks::interactivelyStackNextOrNothing(item)
-    def self.interactivelyStackNextOrNothing(item)
+    # NxStacks::interactivelyIssueNextOrNull(item)
+    def self.interactivelyIssueNextOrNull(item)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         NxStacks::issueNext(description, item)
     end
 
@@ -54,14 +54,17 @@ class NxStacks
         return if option.nil?
         if option == "one" then
             stack = NxStacks::stack(cursor)
-            NxStacks::interactivelyStackNextOrNothing(stack.first)
+            x = NxStacks::interactivelyIssueNextOrNull(stack.first)
+            return if x.nil?
+            puts JSON.pretty_generate(x)
         end
         if option == "multiple" then
             text = CommonUtils::editTextSynchronously(text).strip
             return if text == ""
             text.lines.to_a.reverse.each{|line|
                 stack = NxStacks::stack(cursor)
-                NxStacks::issueNext(line, stack.first)
+                x = NxStacks::issueNext(line.strip, stack.first)
+                puts JSON.pretty_generate(x)
             }
         end
     end
