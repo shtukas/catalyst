@@ -28,6 +28,7 @@ class Pure
                     .select{|core| DoNotShowUntil::isVisible(core) }
                     .select{|core| NxCores::listingCompletionRatio(core) < 1 }
                     .sort_by{|core| NxCores::listingCompletionRatio(core) }
+        listing = CommonUtils::putFirst(listing, lambda{|core| NxBalls::itemIsRunning(core) })
 
         return [] if listing.empty?
 
