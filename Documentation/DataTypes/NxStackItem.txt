@@ -1,0 +1,10 @@
+
+NxStackItem: 
+    "uuid"         : String
+    "mikuType"     : "NxStackItem"
+    "unixtime"     : Float
+    "datetime"     : DateTime Iso 8601 UTC Zulu
+    "description"  : String
+    "previousuuid" : String # if bottom element, points at the task itself.
+
+

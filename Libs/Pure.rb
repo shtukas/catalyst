@@ -3,7 +3,7 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
-        return [item] if item["mikuType"] == "NxTask"
+        return (NxStacks::stack(item) + [item]) if item["mikuType"] == "NxTask"
 
         if item["mikuType"] == "NxCore" then
             return NxCores::children(item)

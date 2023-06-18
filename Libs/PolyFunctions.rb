@@ -62,6 +62,11 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemToBankingAccounts(NxCores::grid2())
         end
 
+        if item["mikuType"] == "NxStackItem" then
+            task = NxStacks::stackItemToTask(item)
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(task)
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -126,6 +131,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
+        end
+        if item["mikuType"] == "NxStackItem" then
+            return NxStacks::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

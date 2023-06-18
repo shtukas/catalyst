@@ -244,6 +244,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStackItem" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{NxStacks::toString(item).green} ? '", true) then
+                NxStacks::destroyStackItem(item)
+            end
+            return
+        end
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{Waves::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
