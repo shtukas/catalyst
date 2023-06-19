@@ -15,7 +15,7 @@ class NxSequences
 
     # NxSequences::toString(item)
     def self.toString(item)
-        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::suffix(item)}"
     end
 
     # NxSequences::sequencesOrderedForListing()
@@ -69,6 +69,9 @@ class NxSequences
     # NxSequences::program(sequence)
     def self.program(sequence)
         loop {
+
+            sequence = DarkEnergy::itemOrNull(sequence["uuid"])
+            return if sequence.nil? # could have been deleted in the previous run
 
             system("clear")
 
@@ -214,5 +217,15 @@ class NxSequences
         sequence = DarkEnergy::itemOrNull(item["sequence"]["uuid"])
         return "" if sequence.nil?
         " (⛵️ #{sequence["description"].green})#{NxCores::suffix(sequence)}"
+    end
+
+    # NxSequences::program2()
+    def self.program2()
+        loop {
+            sequences = DarkEnergy::mikuType("NxSequence")
+            sequence = LucilleCore::selectEntityFromListOfEntitiesOrNull("sequence", sequences, lambda{|sequence| NxSequences::toString(sequence) })
+            break if sequence.nil?
+            NxSequences::program(sequence)
+        }
     end
 end

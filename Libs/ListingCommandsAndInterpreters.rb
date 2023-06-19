@@ -5,14 +5,14 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | sequence (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | pile (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | coordinates (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | pile (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | new sequence",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | sequence",
             "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -58,10 +58,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("new sequence", input) then
+        if Interpreting::match("sequence", input) then
             item = store.getDefault()
             return if item.nil?
-            NxSequences::interactivelyIssueNewOrNull()
+            sequence = NxSequences::interactivelyIssueNewOrNull()
+            return if sequence.nil?
+            NxCores::askAndThenSetCoreAttempt(sequence)
+            return
+        end
+
+        if Interpreting::match("sequences", input) then
+            NxSequences::program2()
             return
         end
 
@@ -120,14 +127,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sequence", input) then
+        if Interpreting::match("coordinates", input) then
             item = store.getDefault()
             return if item.nil?
             NxSequences::setSequenceAttempt(item)
             return
         end
 
-        if Interpreting::match("sequence *", input) then
+        if Interpreting::match("coordinates *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
