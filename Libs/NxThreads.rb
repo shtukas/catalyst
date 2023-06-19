@@ -40,7 +40,18 @@ class NxThreads
 
     # NxThreads::interactivelyDecidePositionInSequence(thread)
     def self.interactivelyDecidePositionInSequence(thread)
-        position = LucilleCore::askQuestionAnswerAsString("> position: ").to_f
+        NxThreads::childrenOrderedForListing(thread)
+            .each{|item|
+                puts " - #{PolyFunctions::toString(item)}"
+            }
+        position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
+        if position == "" then
+            positions = NxThreads::childrenPositions(thread)
+            return 1 if positions.empty?
+            positions.max + 1
+        else
+            position = position.to_f
+        end
         position
     end
 
@@ -65,6 +76,14 @@ class NxThreads
             "position" => position
         })
     end
+
+    # NxThreads::childrenPositions(thread)
+    def self.childrenPositions(thread)
+        (DarkEnergy::mikuType("NxTask") + DarkEnergy::mikuType("NxLine"))
+            .select{|item| item["thread"] }
+            .select{|item| item["thread"]["uuid"] == thread["uuid"] }
+            .map{|item| item["thread"]["position"] }
+     end
 
     # NxThreads::childrenOrderedForListing(thread)
     def self.childrenOrderedForListing(thread)
