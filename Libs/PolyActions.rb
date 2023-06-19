@@ -277,6 +277,17 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDeadline" then
+            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxDeadlines::toString(item).green}': ", true) then
+                target = DarkEnergy::itemOrNull(item["targetuuid"])
+                if target then
+                    PolyActions::done(target)
+                end
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])

@@ -69,13 +69,6 @@ class NxDeadlines
     # NxDeadlines::done(item)
     def self.done(item)
         NxBalls::stop(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxDeadlines::toString(item).green}': ", true) then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target then
-                PolyActions::done(target)
-            end
-            DarkEnergy::destroy(item["uuid"])
-        end
     end
 
     # NxDeadlines::listingItems()
