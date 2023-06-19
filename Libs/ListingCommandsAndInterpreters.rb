@@ -430,14 +430,14 @@ class ListingCommandsAndInterpreters
                 DarkEnergy::patch(task["uuid"], "parent", tx8)
             else
                 NxCores::askAndThenSetCoreAttempt(task)
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("drive", ["engine", "deadline"])
-                if option then
-                    if option == "engine" then
-                        NxEngines::askAndThenAttachEngineToItemAttempt(task)
-                    end
-                    if option == "deadline" then
-                        NxDeadlines::askAndThenAttachDeadlineToItemAttempt(task)
-                    end
+            end
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("drive", ["engine", "deadline"])
+            if option then
+                if option == "engine" then
+                    NxEngines::askAndThenAttachEngineToItemAttempt(task)
+                end
+                if option == "deadline" then
+                    NxDeadlines::askAndThenAttachDeadlineToItemAttempt(task)
                 end
             end
             return
