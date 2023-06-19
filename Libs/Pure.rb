@@ -19,6 +19,10 @@ class Pure
                 .first(6)
         end
 
+        if item["mikuType"] == "NxBurner" then
+            return []
+        end
+
         raise "I don't know how to Pure::childrenInitInRelevantOrder item #{item}"
     end
 
