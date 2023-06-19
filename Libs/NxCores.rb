@@ -315,8 +315,24 @@ class NxCores
         end
         thread = NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
         return if thread.nil? 
-        position = NxThreads::interactivelyDecidePositionInSequence(thread)
+        position = NxThreads::interactivelyDecidePositionInThread(thread)
         DarkEnergy::patch(task["uuid"], "parent", Tx8s::make(thread["uuid"], position))
+    end
+
+    # NxCores::interactivelyDecidePositionInCore(core)
+    def self.interactivelyDecidePositionInCore(core)
+        NxCores::children(core)
+            .each{|item|
+                puts " - #{PolyFunctions::toString(item)}"
+            }
+        position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
+        if position == "" then
+            positions = Tx8s::childrenPositions(core)
+            return 1 if positions.empty?
+            return positions.max + 1
+        else
+            return position.to_f
+        end
     end
 end
 

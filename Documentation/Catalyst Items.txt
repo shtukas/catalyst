@@ -9,9 +9,6 @@ Cross types conventions:
 
     - deadline         : nil or uuid of a NxDeadline
     - engine           : nil or uuid or a NxEngine
-    - core             : nil or uuid of a NxCore
-    - thread           : nil or {uuid, position} 
-
-Sequences are typically made of lines and tasks
+    - parent           : nil or {uuid, position} 
 
 Tx8 {uuid, position}
