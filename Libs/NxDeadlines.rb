@@ -43,9 +43,11 @@ class NxDeadlines
     # NxDeadlines::itemToString(item)
     def self.itemToString(item)
         timeDoneInHours = Bank::getValue(item["uuid"]).to_f/3600
-        timeIdealNow = item["requirementInHours"]*(CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - item["start"]).to_f/(item["end"] - item["start"])
-        isLate = timeIdealNow > timeDoneInHours
-        "⏱️  (done: #{"%5.2f" % timeDoneInHours} of #{"%5.2f" % item["requirementInHours"]} hours, ideal: #{"%5.2f" % timeIdealNow} hours, #{isLate ? "late 😓" : "😎"})"
+        timeDoneRatio = timeDoneInHours.to_f/item["requirementInHours"]
+        timespanSinceStartInSeconds = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - item["start"]
+        timeSinceStartRatio = timespanSinceStartInSeconds.to_f/(item["end"] - item["start"])
+        isLate = timeDoneRatio < timeSinceStartRatio
+        "⏱️  (done: #{"%5.2f" % (timeDoneRatio*100)}% of #{"%5.2f" % item["requirementInHours"]} hours, ideal: #{"%5.2f" % (timeSinceStartRatio*100)}%, #{isLate ? "late 😓" : "😎"})"
     end
 
     # NxDeadlines::toString(item)
