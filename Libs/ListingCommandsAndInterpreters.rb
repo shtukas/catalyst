@@ -208,7 +208,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("jedi", input) then
             coreuuid = "586d478d-0a04-40b7-aad3-fa5cbd2c45e4"
             item = NxTasks::interactivelyIssueNewOrNull()
-            DarkEnergy::patch(item["uuid"], "core", coreuuid)
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(coreuuid, rand))
             return
         end
 

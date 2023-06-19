@@ -50,12 +50,11 @@ class Pure
         Memoize::evaluate("32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", lambda{
             puts "Computing Pure::bottom() ..."
             threads = DarkEnergy::mikuType("NxThread")
-                            .select{|thread| thread["core"].nil? }
+                            .select{|thread| thread["parent"].nil? }
             items = DarkEnergy::mikuType("NxTask")
-                            .select{|task| task["core"].nil? }
+                            .select{|task| task["parent"].nil? }
                             .select{|task| task["engine"].nil? }
                             .select{|task| task["deadline"].nil? }
-                            .select{|task| task["thread"].nil? }
                             .sort_by{|item| item["unixtime"] }
             (threads + items.take(100) + items.reverse.take(100)).shuffle
         }, 86400)

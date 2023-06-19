@@ -48,13 +48,13 @@ class NxTasks
 
     # NxTasks::positionSuffix(item)
     def self.positionSuffix(item)
-        return "" if item["thread"].nil?
-        " (#{"%5.2f" % item["thread"]["position"]})"
+        return "" if item["parent"].nil?
+        " (#{"%5.2f" % item["parent"]["position"]})"
     end
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{NxTasks::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}#{NxThreads::threadSuffix(item)}"
+        "🔹#{NxTasks::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}#{Tx8s::parentSuffix(item)}"
     end
 
     # --------------------------------------------------

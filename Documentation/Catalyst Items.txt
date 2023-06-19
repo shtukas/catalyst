@@ -13,3 +13,5 @@ Cross types conventions:
     - thread           : nil or {uuid, position} 
 
 Sequences are typically made of lines and tasks
+
+Tx8 {uuid, position}

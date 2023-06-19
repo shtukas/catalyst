@@ -13,9 +13,15 @@ class NxThreads
         DarkEnergy::itemOrNull(uuid)
     end
 
+    # NxThreads::positionSuffix(item)
+    def self.positionSuffix(item)
+        return "" if item["parent"].nil?
+        " (#{"%5.2f" % item["parent"]["position"]})"
+    end
+
     # NxThreads::toString(item)
     def self.toString(item)
-        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::suffix(item)}"
+        "⛵️#{NxThreads::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{Tx8s::parentSuffix(item)}"
     end
 
     # NxThreads::threadsOrderedForListing()
@@ -33,7 +39,8 @@ class NxThreads
     # NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
     def self.interactivelySelectOneThreadAtCoreOrNull(core)
         threads = DarkEnergy::mikuType("NxThread")
-                    .select{|item| item["core"] == core["uuid"] }
+                    .select{|item| item["parent"] }
+                    .select{|item| item["parent"]["uuid"] == core["uuid"] }
                     .sort_by{|item| item["description"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("threads", threads, lambda{|thread| NxThreads::toString(thread) })
     end
@@ -70,26 +77,23 @@ class NxThreads
             return
         end
         position = NxThreads::interactivelyDecidePositionInSequence(thread)
-        DarkEnergy::patch(item["uuid"], "thread", {
-            "uuid" => thread["uuid"],
-            "position" => position
-        })
+        DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(thread["uuid"], position))
     end
 
     # NxThreads::childrenPositions(thread)
     def self.childrenPositions(thread)
         (DarkEnergy::mikuType("NxTask") + DarkEnergy::mikuType("NxLine"))
-            .select{|item| item["thread"] }
-            .select{|item| item["thread"]["uuid"] == thread["uuid"] }
-            .map{|item| item["thread"]["position"] }
+            .select{|item| item["parent"] }
+            .select{|item| item["parent"]["uuid"] == thread["uuid"] }
+            .map{|item| item["parent"]["position"] }
      end
 
     # NxThreads::childrenOrderedForListing(thread)
     def self.childrenOrderedForListing(thread)
         (DarkEnergy::mikuType("NxTask") + DarkEnergy::mikuType("NxLine"))
-            .select{|item| item["thread"] }
-            .select{|item| item["thread"]["uuid"] == thread["uuid"] }
-            .sort_by{|item| item["thread"]["position"] }
+            .select{|item| item["parent"] }
+            .select{|item| item["parent"]["uuid"] == thread["uuid"] }
+            .sort_by{|item| item["parent"]["position"] }
      end
 
     # NxThreads::program(thread)
@@ -122,10 +126,7 @@ class NxThreads
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 position = NxThreads::interactivelyDecidePositionInSequence(thread)
-                DarkEnergy::patch(task["uuid"], "thread", {
-                    "uuid" => thread["uuid"],
-                    "position" => position
-                })
+                DarkEnergy::patch(task["uuid"], "parent", Tx8s::make(thread["uuid"], position))
                 next
             end
 
@@ -151,53 +152,13 @@ class NxThreads
         NxThreads::done(thread)
     end
 
-    # NxThreads::pile(item)
-    def self.pile(item)
+    # NxThreads::pile(thread)
+    def self.pile(thread)
 
-        if item["mikuType"] != "NxTask" and item["mikuType"] != "NxThread" then
-            puts "You can only pile NxTasks or NxThreads"
+        if thread["mikuType"] != "NxThread" then
+            puts "You can only pile NxThreads"
             LucilleCore::pressEnterToContinue()
             return
-        end
-
-        thread = nil
-
-        if item["mikuType"] == "NxThread" then
-            thread = item
-        end
-
-        if thread.nil? and item["thread"].nil? then
-            puts "You are trying to pile an item that is not in a thread"
-            if LucilleCore::askQuestionAnswerAsBoolean("Would you like to create a thread ? ") then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                return if thread.nil?
-                item["thread"] = {
-                    "uuid" => thread["uuid"],
-                    "position" => 1
-                }
-                DarkEnergy::commit(item)
-            else
-                return
-            end
-        end
-
-        if thread.nil? and DarkEnergy::itemOrNull(item["thread"]["uuid"]).nil? then
-            puts "You are trying to pile an item that is not in a thread"
-            if LucilleCore::askQuestionAnswerAsBoolean("Would you like to create a thread ? ") then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                return if thread.nil?
-                item["thread"] = {
-                    "uuid" => thread["uuid"],
-                    "position" => 1
-                }
-                DarkEnergy::commit(item)
-            else
-                return
-            end
-        end
-
-        if thread.nil? then
-            thread = DarkEnergy::itemOrNull(item["thread"]["uuid"])
         end
 
         children = NxThreads::childrenOrderedForListing(thread)
@@ -217,14 +178,11 @@ class NxThreads
             if children.empty? then
                 position = 1
             else
-                position = children.map{|child| child["thread"]["position"] }.min - 1
+                position = children.map{|child| child["parent"]["position"] }.min - 1
             end
 
             i = NxTasks::interactivelyIssueNewOrNull()
-            i["thread"] = {
-                "uuid" => thread["uuid"],
-                "position" => position
-            }
+            i["parent"] = Tx8s::make(thread["uuid"], position)
             DarkEnergy::commit(i)
         end
 
@@ -236,24 +194,13 @@ class NxThreads
                 if children.empty? then
                     position = 1
                 else
-                    position = children.map{|child| child["thread"]["position"] }.min - 1
+                    position = children.map{|child| child["parent"]["position"] }.min - 1
                 end
                 i = NxLines::issue(line)
-                i["thread"] = {
-                    "uuid" => thread["uuid"],
-                    "position" => position
-                }
+                i["parent"] = Tx8s::make(thread["uuid"], position)
                 DarkEnergy::commit(i)
             }
         end
-    end
-
-    # NxThreads::threadSuffix(item)
-    def self.threadSuffix(item)
-        return "" if item["thread"].nil?
-        thread = DarkEnergy::itemOrNull(item["thread"]["uuid"])
-        return "" if thread.nil?
-        " (⛵️ #{thread["description"].green})#{NxCores::suffix(thread)}"
     end
 
     # NxThreads::program2()

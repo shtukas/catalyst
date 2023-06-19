@@ -20,7 +20,7 @@ class NxCores
     # NxCores::grid1children()
     def self.grid1children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| task["core"].nil? }
+            .select{|task| task["parent"].nil? }
             .sort_by{|task| task["unixtime"] }
             .first(NxCores::infinityDepth())
     end
@@ -54,7 +54,7 @@ class NxCores
     # NxCores::grid2children()
     def self.grid2children()
         DarkEnergy::mikuType("NxTask")
-            .select{|task| task["core"].nil? }
+            .select{|task| task["parent"].nil? }
             .sort_by{|task| task["unixtime"] }
             .reverse
             .first(NxCores::infinityDepth())
@@ -182,7 +182,8 @@ class NxCores
 
         items = DarkEnergy::all()
                     .select{|item| item["mikuType"] != "NxDeadline" }
-                    .select{|item| item["core"] == core["uuid"] }
+                    .select{|item| item["parent"] }
+                    .select{|item| item["parent"]["uuid"] == core["uuid"] }
 
         burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
         ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
@@ -190,23 +191,17 @@ class NxCores
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
         tasks,  things = items.partition{|item| item["mikuType"] == "NxTask" }
 
-        threads = threads.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        tasks = tasks.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        todos = (threads+tasks).sort_by{|item| item["parent"]["position"] }
 
-        things + burners + ondates + waves + threads + tasks
+        things + burners + ondates + waves + todos
      end
 
     # NxCores::getItemCoreOrNull(item)
     def self.getItemCoreOrNull(item)
-        return nil if item["core"].nil?
-        DarkEnergy::itemOrNull(item["core"])
-    end
-
-    # NxCores::suffix(item)
-    def self.suffix(item)
-        core = NxCores::getItemCoreOrNull(item)
-        return "" if core.nil?
-        " (☕️ #{core["description"]})".green
+        return nil if item["parent"].nil?
+        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+        return nil if parent["mikuType"] != "NxCore"
+        parent
     end
 
     # -------------------------
@@ -257,7 +252,7 @@ class NxCores
             if input == "thread" then
                 thread = NxThreads::interactivelyIssueNewOrNull()
                 next if thread.nil?
-                thread["core"] = core["uuid"]
+                thread["parent"] = Tx8s::make(core["uuid"], rand)
                 DarkEnergy::commit(thread)
                 next
             end
@@ -265,7 +260,7 @@ class NxCores
             if input == "task" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
-                task["core"] = core["uuid"]
+                task["parent"] = Tx8s::make(core["uuid"], rand)
                 DarkEnergy::commit(task)
                 NxCores::addTaskToThreadAtCoreAttempt(task, core)
                 next
@@ -302,7 +297,7 @@ class NxCores
         end
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
-        DarkEnergy::patch(item["uuid"], "core", core["uuid"])
+        DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(core["uuid"], rand))
     end
 
     # NxCores::askAndThenSetCoreAttempt(item)
@@ -321,10 +316,7 @@ class NxCores
         thread = NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
         return if thread.nil? 
         position = NxThreads::interactivelyDecidePositionInSequence(thread)
-        DarkEnergy::patch(task["uuid"], "thread", {
-            "uuid" => thread["uuid"],
-            "position" => position
-        })
+        DarkEnergy::patch(task["uuid"], "parent", Tx8s::make(thread["uuid"], position))
     end
 end
 
