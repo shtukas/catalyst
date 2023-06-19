@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | coordinates (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | pile (<n>) | position (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | pile (<n>) | position (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -127,18 +127,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("coordinates", input) then
+        if Interpreting::match("tx8", input) then
             item = store.getDefault()
             return if item.nil?
-            NxThreads::setThreadAttempt(item)
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8(item))
             return
         end
 
-        if Interpreting::match("coordinates *", input) then
+        if Interpreting::match("tx8 *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxThreads::setThreadAttempt(item)
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8(item))
             return
         end
 
@@ -425,14 +425,21 @@ class ListingCommandsAndInterpreters
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            NxThreads::setThreadAttempt(task)
-            task = DarkEnergy::itemOrNull(task["uuid"])
-            NxCores::askAndThenSetCoreAttempt(task)
-            task = DarkEnergy::itemOrNull(task["uuid"])
-            NxEngines::askAndThenAttachEngineToItemAttempt(task)
-            task = DarkEnergy::itemOrNull(task["uuid"])
-            NxDeadlines::askAndThenAttachDeadlineToItemAttempt(task)
-
+            tx8 = Tx8s::interactivelyMakeNewTx8(task)
+            if tx8 then
+                DarkEnergy::patch(task["uuid"], "parent", tx8)
+            else
+                NxCores::askAndThenSetCoreAttempt(task)
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("drive", ["engine", "deadline"])
+                if option then
+                    if option == "engine" then
+                        NxEngines::askAndThenAttachEngineToItemAttempt(task)
+                    end
+                    if option == "deadline" then
+                        NxDeadlines::askAndThenAttachDeadlineToItemAttempt(task)
+                    end
+                end
+            end
             return
         end
 

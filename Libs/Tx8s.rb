@@ -52,4 +52,31 @@ class Tx8s
         end
         raise "I do not know how to Tx8s::repositionAtSameParent item: #{item}"
     end
+
+    # --------------------------------------------------------------------------
+
+    # Tx8s::interactivelyMakeNewTx8(item)
+    def self.interactivelyMakeNewTx8(item)
+        # This function returns a Tx8
+        core = NxCores::interactivelySelectOneOrNull()
+
+        if core then
+            thread = NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
+            if thread then
+                position = NxThreads::interactivelyDecidePositionInThread(thread)
+                return Tx8s::make(thread["uuid"], position)
+            else
+                position = NxCores::interactivelyDecidePositionInCore(core)
+                return Tx8s::make(core["uuid"], position)
+            end
+        else
+            thread = NxThreads::interactivelySelectOneOrphanThreadOrNull()
+            if thread then
+                position = NxThreads::interactivelyDecidePositionInThread(thread)
+                return Tx8s::make(thread["uuid"], position)
+            else
+                return nil
+            end
+        end
+    end
 end

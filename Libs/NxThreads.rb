@@ -36,6 +36,18 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("threads", threads, lambda{|thread| NxThreads::toString(thread) })
     end
 
+    # NxThreads::orphanThreads()
+    def self.orphanThreads()
+        DarkEnergy::mikuType("NxThread")
+            .select{|thread| thread["parent"].nil? }
+    end
+
+    # NxThreads::interactivelySelectOneOrphanThreadOrNull()
+    def self.interactivelySelectOneOrphanThreadOrNull()
+        threads = NxThreads::orphanThreads().sort_by{|item| item["description"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("threads", threads, lambda{|thread| NxThreads::toString(thread) })
+    end
+
     # NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
     def self.interactivelySelectOneThreadAtCoreOrNull(core)
         threads = DarkEnergy::mikuType("NxThread")
