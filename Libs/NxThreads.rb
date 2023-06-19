@@ -48,11 +48,10 @@ class NxThreads
         if position == "" then
             positions = NxThreads::childrenPositions(thread)
             return 1 if positions.empty?
-            positions.max + 1
+            return positions.max + 1
         else
-            position = position.to_f
+            return position.to_f
         end
-        position
     end
 
     # NxThreads::setSequenceAttempt(item)
@@ -90,7 +89,7 @@ class NxThreads
         (DarkEnergy::mikuType("NxTask") + DarkEnergy::mikuType("NxLine"))
             .select{|item| item["thread"] }
             .select{|item| item["thread"]["uuid"] == thread["uuid"] }
-            .sort_by{|item| item["thread"]["position"] }
+            .sort_by{|item| item["thread"]["position"].to_f }
      end
 
     # NxThreads::program(thread)
