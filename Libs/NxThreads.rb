@@ -30,6 +30,14 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("threads", threads, lambda{|thread| NxThreads::toString(thread) })
     end
 
+    # NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
+    def self.interactivelySelectOneThreadAtCoreOrNull(core)
+        threads = DarkEnergy::mikuType("NxThread")
+                    .select{|item| item["core"] == core["uuid"] }
+                    .sort_by{|item| item["description"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("threads", threads, lambda{|thread| NxThreads::toString(thread) })
+    end
+
     # NxThreads::interactivelyDecidePositionInSequence(thread)
     def self.interactivelyDecidePositionInSequence(thread)
         position = LucilleCore::askQuestionAnswerAsString("> position: ").to_f
@@ -79,7 +87,7 @@ class NxThreads
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             puts ""
-            spacecontrol.putsline "@thread:"
+            spacecontrol.putsline "thread:"
             store.register(thread, false)
             spacecontrol.putsline Listing::itemToListingLine(store, thread)
 
@@ -91,6 +99,17 @@ class NxThreads
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                position = NxThreads::interactivelyDecidePositionInSequence(thread)
+                DarkEnergy::patch(task["uuid"], "thread", {
+                    "uuid" => thread["uuid"],
+                    "position" => position
+                })
+                next
+            end
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)

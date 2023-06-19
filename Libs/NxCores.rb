@@ -241,7 +241,7 @@ class NxCores
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             puts ""
-            spacecontrol.putsline "@core:"
+            spacecontrol.putsline "core:"
             store.register(core, false)
             spacecontrol.putsline Listing::itemToListingLine(store, core)
 
@@ -253,6 +253,21 @@ class NxCores
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "thread" then
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                next if thread.nil?
+                thread["core"] = core["uuid"]
+                DarkEnergy::commit(thread)
+                next
+            end
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                NxCores::addTaskToThreadAtCoreAttempt(task, core)
+                next
+            end
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
@@ -292,6 +307,22 @@ class NxCores
     def self.askAndThenSetCoreAttempt(item)
         return if !LucilleCore::askQuestionAnswerAsBoolean("> set core ? ")
         NxCores::interactivelySetCore(item)
+    end
+
+    # NxCores::addTaskToThreadAtCoreAttempt(task, core)
+    def self.addTaskToThreadAtCoreAttempt(task, core)
+        if task["mikuType"] != "NxTask" then
+            puts "At the moment we only run NxCores::addTaskToThreadAtCoreAttempt on NxTasks"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        thread = NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
+        return if thread.nil? 
+        position = NxThreads::interactivelyDecidePositionInSequence(thread)
+        DarkEnergy::patch(task["uuid"], "thread", {
+            "uuid" => thread["uuid"],
+            "position" => position
+        })
     end
 end
 
