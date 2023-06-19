@@ -184,16 +184,16 @@ class NxCores
                     .select{|item| item["mikuType"] != "NxDeadline" }
                     .select{|item| item["core"] == core["uuid"] }
 
-        burners,   items = items.partition{|item| item["mikuType"] == "NxBurner" }
-        ondates,   items = items.partition{|item| item["mikuType"] == "NxOndate" }
-        waves,     items = items.partition{|item| item["mikuType"] == "Wave" }
-        sequences, items = items.partition{|item| item["mikuType"] == "NxSequence" }
-        tasks,     things = items.partition{|item| item["mikuType"] == "NxTask" }
+        burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
+        ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
+        waves,   items = items.partition{|item| item["mikuType"] == "Wave" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        tasks,  things = items.partition{|item| item["mikuType"] == "NxTask" }
 
-        sequences = sequences.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        threads = threads.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         tasks = tasks.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
 
-        things + burners + ondates + waves + sequences + tasks
+        things + burners + ondates + waves + threads + tasks
      end
 
     # NxCores::getItemCoreOrNull(item)

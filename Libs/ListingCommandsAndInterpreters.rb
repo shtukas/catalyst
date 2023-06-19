@@ -12,8 +12,8 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : recast (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | sequence",
-            "divings       : anniversaries | ondates | waves | burners | desktop | sequences | cores | deadlines | engines",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | thread",
+            "divings       : anniversaries | ondates | waves | burners | desktop | threads | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -58,17 +58,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sequence", input) then
+        if Interpreting::match("thread", input) then
             item = store.getDefault()
             return if item.nil?
-            sequence = NxSequences::interactivelyIssueNewOrNull()
-            return if sequence.nil?
-            NxCores::askAndThenSetCoreAttempt(sequence)
+            thread = NxThreads::interactivelyIssueNewOrNull()
+            return if thread.nil?
+            NxCores::askAndThenSetCoreAttempt(thread)
             return
         end
 
-        if Interpreting::match("sequences", input) then
-            NxSequences::program2()
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
@@ -130,7 +130,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("coordinates", input) then
             item = store.getDefault()
             return if item.nil?
-            NxSequences::setSequenceAttempt(item)
+            NxThreads::setSequenceAttempt(item)
             return
         end
 
@@ -138,14 +138,14 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxSequences::setSequenceAttempt(item)
+            NxThreads::setSequenceAttempt(item)
             return
         end
 
         if Interpreting::match("pile", input) then
             item = store.getDefault()
             return if item.nil?
-            NxSequences::pile(item)
+            NxThreads::pile(item)
             return
         end
 
@@ -153,7 +153,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxSequences::pile(item)
+            NxThreads::pile(item)
             return
         end
 
@@ -410,7 +410,7 @@ class ListingCommandsAndInterpreters
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            NxSequences::setSequenceAttempt(task)
+            NxThreads::setSequenceAttempt(task)
             task = DarkEnergy::itemOrNull(task["uuid"])
             NxCores::askAndThenSetCoreAttempt(task)
             task = DarkEnergy::itemOrNull(task["uuid"])

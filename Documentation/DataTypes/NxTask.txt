@@ -8,7 +8,7 @@ NxTask:
     "description"  : String
     "field11"      : null or CoreData reference string
 
-    "tx8" : {
-        "uuid"     => String # sequence uuid
+    "thread"       : null or {
+        "uuid"     => String # thread uuid
         "position" => Float
     }

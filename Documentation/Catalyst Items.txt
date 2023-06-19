@@ -10,6 +10,6 @@ Cross types conventions:
     - deadline         : nil or uuid of a NxDeadline
     - engine           : nil or uuid or a NxEngine
     - core             : nil or uuid of a NxCore
-    - sequence         : nil or {uuid, position} 
+    - thread           : nil or {uuid, position} 
 
 Sequences are typically made of lines and tasks

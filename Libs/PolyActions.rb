@@ -68,8 +68,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequence" then
-            NxSequences::program(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program(item)
             return
         end
 
@@ -249,8 +249,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequence" then
-            NxSequences::done(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::done(item)
             return
         end
 
@@ -291,8 +291,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequence" then
-            NxSequences::destroy(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::destroy(item)
             return
         end
 
@@ -369,8 +369,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSequence" then
-            NxSequences::program(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program(item)
             return
         end
 
