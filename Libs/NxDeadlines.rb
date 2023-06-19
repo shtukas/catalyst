@@ -40,8 +40,8 @@ class NxDeadlines
         NxDeadlines::coreIsLate(item["deadlineCore"])
     end
 
-    # NxDeadlines::itemToString(item)
-    def self.itemToString(item)
+    # NxDeadlines::coreToString(item)
+    def self.coreToString(item)
         timeDoneInHours = Bank::getValue(item["uuid"]).to_f/3600
         timeDoneRatio = timeDoneInHours.to_f/item["requirementInHours"]
         timespanSinceStartInSeconds = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - item["start"]
@@ -54,7 +54,7 @@ class NxDeadlines
     def self.toString(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
-            "#{NxDeadlines::itemToString(item["deadlineCore"])} #{target["description"]}"
+            "#{NxDeadlines::coreToString(item["deadlineCore"])} #{target["description"]}"
         else
             "⏱️  target not found 🤔"
         end
@@ -123,6 +123,6 @@ class NxDeadlines
         return "" if item["deadline"].nil?
         deadline = DarkEnergy::itemOrNull(item["deadline"])
         return "" if deadline.nil?
-        " (⏱️  #{NxDeadlines::itemToString(deadline["deadlineCore"])})"
+        " (⏱️  #{NxDeadlines::coreToString(deadline["deadlineCore"])})"
     end
 end

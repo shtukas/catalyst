@@ -51,7 +51,7 @@ class NxEngines
     def self.toString(engine)
         target = DarkEnergy::itemOrNull(engine["targetuuid"])
         if target then
-            "⚙️  #{NxEngines::toNumbersString(engine)} | #{target["description"]}"
+            "⚙️  (#{NxEngines::toNumbersString(engine)}) #{target["description"]}"
         else
             "⚙️  target not found"
         end

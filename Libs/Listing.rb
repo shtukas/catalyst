@@ -147,6 +147,23 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
+
+        if items.empty? then
+            items = Pure::bottom()
+        end
+
+        if NxTimes::hasPendingTime() then
+            items = NxTimes::listingItems() + items
+        else
+            items = items.take(1) + NxTimes::listingItems() + items.drop(1)
+        end
+
+        return [] if items.empty?
+
+        items = Pure::pureFromItem(items.first) + items.drop(1)
+
+        items
+            .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -154,16 +171,6 @@ class Listing
                     selected + [item]
                 end
             }
-
-        if items.empty? then
-            items = Pure::bottom()
-        end
-
-        if NxTimes::hasPendingTime() then
-            NxTimes::listingItems() + items
-        else
-            items.take(1) + NxTimes::listingItems() + items.drop(1)
-        end
     end
 
     # Listing::itemToListingLine(store, item)

@@ -23,6 +23,28 @@ class Pure
             return []
         end
 
+        if item["mikuType"] == "NxDrop" then
+            return []
+        end
+
+        if item["mikuType"] == "NxEngine" then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target then
+                return Pure::childrenInitInRelevantOrder(target)
+            else
+                return []
+            end
+        end
+
+        if item["mikuType"] == "NxDeadline" then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target then
+                return Pure::childrenInitInRelevantOrder(target)
+            else
+                return []
+            end
+        end
+
         raise "I don't know how to Pure::childrenInitInRelevantOrder item #{item}"
     end
 
@@ -36,6 +58,18 @@ class Pure
 
         return [] if listing.empty?
 
+        loop {
+            head = listing.first
+            tail = listing.drop(1)
+            children = Pure::childrenInitInRelevantOrder(head)
+            return [head] + tail if children.empty?
+            listing = children + [head] + tail
+        }
+    end
+
+    # Pure::pureFromItem(item)
+    def self.pureFromItem(item)
+        listing = [item]
         loop {
             head = listing.first
             tail = listing.drop(1)
