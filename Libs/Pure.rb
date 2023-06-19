@@ -8,14 +8,14 @@ class Pure
         if item["mikuType"] == "NxCore" then
             return NxCores::children(item)
                 .select{|item| DoNotShowUntil::isVisible(item) }
-                .select{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2 }
+                .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
                 .first(6)
         end
 
         if item["mikuType"] == "NxThread" then
             return NxThreads::childrenOrderedForListing(item)
                 .select{|item| DoNotShowUntil::isVisible(item) }
-                .select{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2 }
+                .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
                 .first(6)
         end
 
