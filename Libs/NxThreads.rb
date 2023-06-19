@@ -89,7 +89,7 @@ class NxThreads
         (DarkEnergy::mikuType("NxTask") + DarkEnergy::mikuType("NxLine"))
             .select{|item| item["thread"] }
             .select{|item| item["thread"]["uuid"] == thread["uuid"] }
-            .sort_by{|item| item["thread"]["position"].to_f }
+            .sort_by{|item| item["thread"]["position"] }
      end
 
     # NxThreads::program(thread)

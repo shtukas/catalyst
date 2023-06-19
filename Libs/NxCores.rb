@@ -265,6 +265,8 @@ class NxCores
             if input == "task" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
+                task["core"] = core["uuid"]
+                DarkEnergy::commit(task)
                 NxCores::addTaskToThreadAtCoreAttempt(task, core)
                 next
             end
