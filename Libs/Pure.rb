@@ -35,6 +35,10 @@ class Pure
             return []
         end
 
+        if item["mikuType"] == "NxTime" then
+            return []
+        end
+
         if item["mikuType"] == "NxEngine" then
             target = DarkEnergy::itemOrNull(item["targetuuid"])
             if target then
