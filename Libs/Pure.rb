@@ -31,7 +31,7 @@ class Pure
             return []
         end
 
-        if item["mikuType"] == "Ondate" then
+        if item["mikuType"] == "NxOndate" then
             return []
         end
 
