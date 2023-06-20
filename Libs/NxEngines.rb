@@ -86,13 +86,6 @@ class NxEngines
         NxEngines::interactivelyIssueNewForItem(item)
     end
 
-    # NxEngines::askAndThenAttachEngineToItemAttempt(item)
-    def self.askAndThenAttachEngineToItemAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("> add engine ? ", false) then
-            NxEngines::attachEngineAttempt(item)
-        end
-    end
-
     # NxEngines::suffix(item)
     def self.suffix(item)
         return "" if item["engine"].nil?

@@ -188,7 +188,7 @@ class NxCores
         burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
         ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
         waves,   items = items.partition{|item| item["mikuType"] == "Wave" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxNode" }
         tasks,  things = items.partition{|item| item["mikuType"] == "NxTask" }
 
         todos = (threads+tasks).sort_by{|item| item["parent"]["position"] }
@@ -249,20 +249,23 @@ class NxCores
             return if input == "exit"
             return if input == ""
 
-            if input == "thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                next if thread.nil?
-                thread["parent"] = Tx8s::make(core["uuid"], rand)
-                DarkEnergy::commit(thread)
+            if input == "node" then
+                node = NxNodes::interactivelyIssueNewOrNull()
+                next if node.nil?
+                tx8 = Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(core)
+                next if tx8.nil?
+                node["parent"] = tx8
+                DarkEnergy::commit(node)
                 next
             end
 
             if input == "task" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
-                task["parent"] = Tx8s::make(core["uuid"], rand)
+                tx8 = Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(core)
+                next if tx8.nil?
+                task["parent"] = tx8
                 DarkEnergy::commit(task)
-                NxCores::interactivelySelectThreadAtCoreAndSet(task, core)
                 next
             end
 
@@ -298,25 +301,6 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(core["uuid"], rand))
-    end
-
-    # NxCores::interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(item)
-    def self.interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(item)
-        return if !LucilleCore::askQuestionAnswerAsBoolean("> set core ? ")
-        NxCores::interactivelySetCoreAttempt(item)
-    end
-
-    # NxCores::interactivelySelectThreadAtCoreAndSet(task, core)
-    def self.interactivelySelectThreadAtCoreAndSet(task, core)
-        if task["mikuType"] != "NxTask" then
-            puts "At the moment we only run NxCores::interactivelySelectThreadAtCoreAndSet on NxTasks"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        thread = NxThreads::interactivelySelectOneThreadAtCoreOrNull(core)
-        return if thread.nil? 
-        position = NxThreads::interactivelyDecidePositionInThread(thread)
-        DarkEnergy::patch(task["uuid"], "parent", Tx8s::make(thread["uuid"], position))
     end
 
     # NxCores::interactivelyDecidePositionInCore(core)

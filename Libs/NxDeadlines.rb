@@ -111,13 +111,6 @@ class NxDeadlines
         NxDeadlines::interactivelyIssueNewForItem(item)
     end
 
-    # NxDeadlines::askAndThenAttachDeadlineToItemAttempt(item)
-    def self.askAndThenAttachDeadlineToItemAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("> add deadline ? ", false) then
-            NxDeadlines::attachDeadlineAttempt(item)
-        end
-    end
-
     # NxDeadlines::suffix(item)
     def self.suffix(item)
         return "" if item["deadline"].nil?

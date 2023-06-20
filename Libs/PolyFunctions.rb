@@ -121,8 +121,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
         end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
+        if item["mikuType"] == "NxNode" then
+            return NxNodes::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

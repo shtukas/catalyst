@@ -51,27 +51,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("skip", input) then
-            item = store.getDefault()
-            return if item.nil?
-            TmpSkip1::tmpskip1(item, 1)
-            return
-        end
-
-        if Interpreting::match("thread", input) then
-            item = store.getDefault()
-            return if item.nil?
-            thread = NxThreads::interactivelyIssueNewOrNull()
-            return if thread.nil?
-            NxCores::interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(thread)
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
-            return
-        end
-
         if Interpreting::match("mikutypes", input) then
             puts JSON.pretty_generate(DarkEnergy::all().map{|item| item["mikuType"] }.uniq.sort)
             LucilleCore::pressEnterToContinue()
@@ -127,25 +106,25 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tx8", input) then
+        if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8(item))
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8OrNull(item))
             return
         end
 
-        if Interpreting::match("tx8 *", input) then
+        if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8(item))
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8OrNull(item))
             return
         end
 
         if Interpreting::match("pile", input) then
             item = store.getDefault()
             return if item.nil?
-            NxThreads::pile(item)
+            NxNodes::pile(item)
             return
         end
 
@@ -153,7 +132,22 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxThreads::pile(item)
+            NxNodes::pile(item)
+            return
+        end
+
+        if Interpreting::match("context", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Tx8s::setContext(item)
+            return
+        end
+
+        if Interpreting::match("context *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Tx8s::setContext(item)
             return
         end
 
@@ -425,25 +419,19 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            # Ideally we should create a task at his intended parent program, but we allow issuing them from the main listing
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            tx8 = Tx8s::interactivelyMakeNewTx8(task)
-            if tx8 then
-                DarkEnergy::patch(task["uuid"], "parent", tx8)
-            else
-                NxCores::interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(task)
-            end
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("drive", ["engine", "deadline"])
-            if option then
-                if option == "engine" then
-                    NxEngines::askAndThenAttachEngineToItemAttempt(task)
-                end
-                if option == "deadline" then
-                    NxDeadlines::askAndThenAttachDeadlineToItemAttempt(task)
-                end
-            end
+            Tx8s::setContext(task)
+            return
+        end
+
+
+        if Interpreting::match("node", input) then
+            node = NxNodes::interactivelyIssueNewOrNull()
+            return if node.nil?
+            puts JSON.pretty_generate(node)
+            Tx8s::setContext(node)
             return
         end
 
