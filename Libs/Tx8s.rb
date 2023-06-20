@@ -39,13 +39,13 @@ class Tx8s
         parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
         return if parent.nil?
         if parent["mikuType"] == "NxThread" then
-            position = NxThreads::interactivelyDecidePositionInThread(thread)
+            position = NxThreads::interactivelyDecidePositionInThread(parent)
             item["parent"]["position"] = position
             DarkEnergy::commit(item)
             return
         end
         if parent["mikuType"] == "NxCore" then
-            position = NxThreads::interactivelyDecidePositionInThread(thread)
+            position = NxCores::interactivelyDecidePositionInCore(parent)
             item["parent"]["position"] = position
             DarkEnergy::commit(item)
             return
