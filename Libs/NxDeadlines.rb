@@ -71,10 +71,10 @@ class NxDeadlines
         NxBalls::stop(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of deadline: '#{NxDeadlines::coreToString(item).green}': ", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of deadline: '#{NxDeadlines::coreToString(item["deadlineCore"]).green}': ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm done of item: '#{PolyFunctions::toString(item).green}': ", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("Confirm done of item: '#{PolyFunctions::toString(target).green}': ", true) then
                 PolyActions::done(target)
             end
         else
