@@ -12,8 +12,8 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | thread",
-            "divings       : anniversaries | ondates | waves | burners | desktop | threads | cores | deadlines | engines",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | node",
+            "divings       : anniversaries | ondates | waves | burners | desktop | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
