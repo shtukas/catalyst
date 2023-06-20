@@ -102,11 +102,15 @@ class NxEngines
     # NxEngines::done(item)
     def self.done(item)
         NxBalls::stop(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxEngines::toString(item).green}': ", true) then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target then
+        target = DarkEnergy::itemOrNull(item["targetuuid"])
+        if target then
+            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of engine: '#{NxEngines::toString(item).green}': ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("Confirm done of item: '#{PolyFunctions::toString(item).green}': ", true) then
                 PolyActions::done(target)
             end
+        else
             DarkEnergy::destroy(item["uuid"])
         end
     end
