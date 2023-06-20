@@ -27,6 +27,10 @@ class Pure
             return []
         end
 
+        if item["mikuType"] == "Wave" then
+            return []
+        end
+
         if item["mikuType"] == "NxEngine" then
             target = DarkEnergy::itemOrNull(item["targetuuid"])
             if target then
@@ -43,6 +47,10 @@ class Pure
             else
                 return []
             end
+        end
+
+        if item["mikuType"] == "PhysicalTarget" then
+            return []
         end
 
         raise "I don't know how to Pure::childrenInitInRelevantOrder item #{item}"
