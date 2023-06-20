@@ -76,7 +76,7 @@ class NxDeadlines
             if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of deadline: '#{NxDeadlines::coreToString(item["deadlineCore"]).green}': ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm done of item: '#{PolyFunctions::toString(target).green}': ", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("Confirm done of item: '#{PolyFunctions::toString(target).green}': ") then
                 PolyActions::done(target)
             end
         else
