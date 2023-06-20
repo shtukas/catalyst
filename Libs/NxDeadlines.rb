@@ -43,11 +43,11 @@ class NxDeadlines
     # NxDeadlines::coreToString(item)
     def self.coreToString(item)
         timeDoneInHours = Bank::getValue(item["uuid"]).to_f/3600
-        timeDoneRatio = timeDoneInHours.to_f/item["requirementInHours"]
+        timeDoneRatio = timeDoneInHours.to_f/item["deadlineCore"]["requirementInHours"]
         timespanSinceStartInSeconds = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - item["start"]
         timeSinceStartRatio = timespanSinceStartInSeconds.to_f/(item["end"] - item["start"])
         isLate = timeDoneRatio < timeSinceStartRatio
-        "⏱️  (done: #{"%5.2f" % (timeDoneRatio*100)}% of #{"%5.2f" % item["requirementInHours"]} hours, ideal: #{"%5.2f" % (timeSinceStartRatio*100)}%, #{isLate ? "late 😓" : "😎"})"
+        "⏱️  (done: #{"%5.2f" % (timeDoneRatio*100)}% of #{"%5.2f" % item["deadlineCore"]["requirementInHours"]} hours, ideal: #{"%5.2f" % (timeSinceStartRatio*100)}%, #{isLate ? "late 😓" : "😎"})"
     end
 
     # NxDeadlines::toString(item)
@@ -68,6 +68,8 @@ class NxDeadlines
 
     # NxDeadlines::done(item)
     def self.done(item)
+        puts JSON.pretty_generate(item)
+        exit
         NxBalls::stop(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         if target then
