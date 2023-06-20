@@ -63,7 +63,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
-            NxCores::askAndThenSetCoreAttempt(thread)
+            NxCores::interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(thread)
             return
         end
 
@@ -180,7 +180,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
-            NxCores::interactivelySetCore(item)
+            NxCores::interactivelySetCoreAttempt(item)
             return
         end
 
@@ -188,7 +188,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxCores::interactivelySetCore(item)
+            NxCores::interactivelySetCoreAttempt(item)
             return
         end
 
@@ -263,6 +263,8 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("time", input) then
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
+            puts PolyFunctions::toString(item)
+            NxCores::interactivelySetCoreAttempt(item)
             return
         end
 
@@ -272,6 +274,8 @@ class ListingCommandsAndInterpreters
                 item = NxTimes::interactivelyIssueTimeOrNull()
                 return if item.nil?
                 puts JSON.pretty_generate(item)
+                puts PolyFunctions::toString(item)
+                NxCores::interactivelySetCoreAttempt(item)
             }
             return
         end
@@ -429,7 +433,7 @@ class ListingCommandsAndInterpreters
             if tx8 then
                 DarkEnergy::patch(task["uuid"], "parent", tx8)
             else
-                NxCores::askAndThenSetCoreAttempt(task)
+                NxCores::interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(task)
             end
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("drive", ["engine", "deadline"])
             if option then

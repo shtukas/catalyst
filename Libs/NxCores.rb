@@ -262,7 +262,7 @@ class NxCores
                 next if task.nil?
                 task["parent"] = Tx8s::make(core["uuid"], rand)
                 DarkEnergy::commit(task)
-                NxCores::addTaskToThreadAtCoreAttempt(task, core)
+                NxCores::interactivelySelectThreadAtCoreAndSet(task, core)
                 next
             end
 
@@ -284,12 +284,12 @@ class NxCores
     # NxCores::askAndThenGiveCoreToItemAttempt(item)
     def self.askAndThenGiveCoreToItemAttempt(item)
         if LucilleCore::askQuestionAnswerAsBoolean("> Add core ? ", false) then
-            NxCores::interactivelySetCore(item)
+            NxCores::interactivelySetCoreAttempt(item)
         end
     end
 
-    # NxCores::interactivelySetCore(item)
-    def self.interactivelySetCore(item)
+    # NxCores::interactivelySetCoreAttempt(item)
+    def self.interactivelySetCoreAttempt(item)
         if item["mikuType"] == "NxCore" then
             puts "You cannot give a core to a NxCore"
             LucilleCore::pressEnterToContinue()
@@ -300,16 +300,16 @@ class NxCores
         DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(core["uuid"], rand))
     end
 
-    # NxCores::askAndThenSetCoreAttempt(item)
-    def self.askAndThenSetCoreAttempt(item)
+    # NxCores::interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(item)
+    def self.interactivelySetCoreWithPreliminaryAskIfWeWantQuestion(item)
         return if !LucilleCore::askQuestionAnswerAsBoolean("> set core ? ")
-        NxCores::interactivelySetCore(item)
+        NxCores::interactivelySetCoreAttempt(item)
     end
 
-    # NxCores::addTaskToThreadAtCoreAttempt(task, core)
-    def self.addTaskToThreadAtCoreAttempt(task, core)
+    # NxCores::interactivelySelectThreadAtCoreAndSet(task, core)
+    def self.interactivelySelectThreadAtCoreAndSet(task, core)
         if task["mikuType"] != "NxTask" then
-            puts "At the moment we only run NxCores::addTaskToThreadAtCoreAttempt on NxTasks"
+            puts "At the moment we only run NxCores::interactivelySelectThreadAtCoreAndSet on NxTasks"
             LucilleCore::pressEnterToContinue()
             return
         end
