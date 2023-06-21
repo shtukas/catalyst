@@ -103,7 +103,7 @@ class PolyActions
         # order: alphabetical order
 
         if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{PolyFunctions::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
             end
             return
@@ -255,7 +255,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{Waves::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{Waves::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
             return
@@ -395,7 +395,7 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing:'#{Waves::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{Waves::toString(item).green} ? '", true) then
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
             end
