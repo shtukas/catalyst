@@ -133,6 +133,9 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
+        if item["mikuType"] == "NxPlate" then
+            return NxPlates::toString(item)
+        end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
 end

@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | node",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | node | plates | plate",
             "divings       : anniversaries | ondates | waves | burners | desktop | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -48,6 +48,20 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
+            return
+        end
+
+        if Interpreting::match("plate", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxPlates::plate(item)
+            return
+        end
+
+        if Interpreting::match("plates", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxPlates::plates(item)
             return
         end
 

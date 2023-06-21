@@ -3,6 +3,12 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
+
+        plate = NxPlates::plateOrNull(item)
+        return [plate] if plate
+
+        return [] if item["mikuType"] == "NxPlate"
+
         return [] if item["mikuType"] == "NxTask"
 
         if item["mikuType"] == "NxCore" then

@@ -1,0 +1,8 @@
+
+NxPlate: 
+    "uuid"        : String
+    "mikuType"    : "NxPlate"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "childuuid"   : String
