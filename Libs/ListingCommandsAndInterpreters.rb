@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate (<n>) | plates (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate (<n>) | plates (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -13,7 +13,7 @@ class ListingCommandsAndInterpreters
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
-            "divings       : anniversaries | ondates | waves | burners | desktop | cores | deadlines | engines",
+            "divings       : anniversaries | ondates | waves | burners | desktop | cores | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -77,35 +77,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("deadlines", input) then
-            NxDeadlines::program0()
-            return
-        end
-
-        if Interpreting::match("deadline", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["attach deadline to default listing item", "new deadline (task + attachement)"])
-            return if option.nil?
-            if option == "attach deadline to default listing item" then
-                item = store.getDefault()
-                return if item.nil?
-                NxDeadlines::attachDeadlineAttempt(item)
-            end
-            if option == "new deadline (task + attachement)" then
-                task = NxTasks::interactivelyIssueNewOrNull()
-                return if task.nil?
-                NxDeadlines::attachDeadlineAttempt(task)
-            end
-            return
-        end
-
-        if Interpreting::match("deadline *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxDeadlines::attachDeadlineAttempt(item)
-            return
-        end
-
         if Interpreting::match("reorganise *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -117,7 +88,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8OrNull(item))
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
             return
         end
 
@@ -125,7 +96,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8OrNull(item))
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
             return
         end
 
@@ -174,23 +145,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engines", input) then
-            NxEngines::program0()
-            return
-        end
-
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            NxEngines::attachEngineAttempt(item)
+            engine = NxEngines::interactivelyIssueNewOrNull()
+            return if engine.nil?
+            puts JSON.pretty_generate(engine)
+            NxCores::interactivelySetCoreAttempt(engine)
             return
         end
 
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxEngines::attachEngineAttempt(item)
+        if Interpreting::match("engines", input) then
+            NxEngines::program()
             return
         end
 

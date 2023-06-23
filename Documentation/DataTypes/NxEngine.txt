@@ -1,8 +1,8 @@
 
 NxEngine
     "uuid"          : String
-    "type"          : "NxEngine"
-    "targetuuid"    : String
+    "mikuType"      : "NxEngine"
+    "description"   : String
     "hours"         : Float
     "lastResetTime" : Unixtime
     "capsule"       : String

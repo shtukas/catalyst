@@ -140,7 +140,6 @@ class Listing
             DarkEnergy::mikuType("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxDeadlines::listingItems(),
             NxEngines::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
             Pure::pure(),
@@ -217,7 +216,6 @@ class Listing
         spot.contest_entry("Listing::burnersAndFires()", lambda{ Listing::burnersAndFires() })
         spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("NxDeadlines::listingItems()", lambda{ NxDeadlines::listingItems() })
         spot.contest_entry("NxEngines::listingItems()", lambda{ NxEngines::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })

@@ -42,26 +42,13 @@ class Tx8s
         end
     end
 
-    # Tx8s::interactivelyMakeNewTx8BelowThisElement(parent)
-    def self.interactivelyMakeNewTx8BelowThisElement(parent)
-        puts "element: #{PolyFunctions::toString(parent).green}"
-        puts "children node:"
-        Tx8s::childrenInOrder(parent).each{|node|
-            puts "    - #{PolyFunctions::toString(node)}"
-        }
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
-        Tx8s::make(parent["uuid"], position)
-    end
-
-    # Tx8s::interactivelyMakeNewTx8OrNull()
-    def self.interactivelyMakeNewTx8OrNull()
+    # Tx8s::selectCoreAndMakeTx8OrNull()
+    def self.selectCoreAndMakeTx8OrNull()
         # This function returns a Tx8
         core = NxCores::interactivelySelectOneOrNull()
-        if core then
-            Tx8s::interactivelyMakeNewTx8BelowThisElement(core)
-        else
-            nil
-        end
+        return nil if core.nil?
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
+        Tx8s::make(core["uuid"], position)
     end
 
     # Tx8s::interactivelyDecideAndSetParent(item)
@@ -69,13 +56,10 @@ class Tx8s
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine", "deadline"])
         return if option.nil?
         if option == "core" then
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8OrNull())
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
         end
         if option == "engine" then
             NxEngines::attachEngineAttempt(item)
-        end
-        if option == "deadline" then
-            NxDeadlines::attachDeadlineAttempt(item)
         end
     end
 

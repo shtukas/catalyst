@@ -1,19 +1,20 @@
 class NxEngines
 
-    # NxEngines::interactivelyIssueNewForItem(item)
-    def self.interactivelyIssueNewForItem(item)
+    # NxEngines::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
-        hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+        hours = LucilleCore::askQuestionAnswerAsString("hours (per week): ").to_f
         DarkEnergy::init("NxEngine", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "targetuuid", item["uuid"])
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "field11", coredataref)
         DarkEnergy::patch(uuid, "hours", hours)
         DarkEnergy::patch(uuid, "lastResetTime", 0)
         DarkEnergy::patch(uuid, "capsule", SecureRandom.hex)
-
-        DarkEnergy::patch(item["uuid"], "engine", uuid) # we need to mark the item with the engine
-
         DarkEnergy::itemOrNull(uuid)
     end
 
@@ -49,12 +50,7 @@ class NxEngines
 
     # NxEngines::toString(engine)
     def self.toString(engine)
-        target = DarkEnergy::itemOrNull(engine["targetuuid"])
-        if target then
-            "⚙️  (#{NxEngines::toNumbersString(engine)}) #{target["description"]}"
-        else
-            "⚙️  target not found"
-        end
+        "⚙️  (#{NxEngines::toNumbersString(engine)}) #{engine["description"]}#{CoreData::itemToSuffixString(engine)}"
     end
 
     # NxEngines::listingItems()
@@ -64,8 +60,27 @@ class NxEngines
             .sort_by{|engine| NxCores::listingCompletionRatio(engine) }
     end
 
-    # NxEngines::program0()
-    def self.program0()
+    # NxEngines::program2(engine)
+    def self.program2(engine)
+        loop {
+            system("clear")
+            puts NxEngines::toString(engine)
+            action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action", ["start", "destroy"])
+            return if action.nil?
+            if action == "start" then
+                NxBalls::start(item)
+            end
+            if action == "destroy" then
+                NxBalls::stop(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{NxEngines::toString(engine).green} ? '", true) then
+                    DarkEnergy::destroy(engine["uuid"])
+                end
+            end
+        }
+    end
+
+    # NxEngines::program()
+    def self.program()
         loop {
             engines = DarkEnergy::mikuType("NxEngine")
             if engines.empty? then
@@ -75,43 +90,12 @@ class NxEngines
             end
             engine = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", engines, lambda{|engine| NxEngines::toString(engine) })
             return if engine.nil?
-            target = DarkEnergy::itemOrNull(engine["targetuuid"])
-            next if target.nil?
-            PolyActions::program(target)
+            NxEngines::program2(engine)
         }
-    end
-
-    # NxEngines::attachEngineAttempt(item)
-    def self.attachEngineAttempt(item)
-        NxEngines::interactivelyIssueNewForItem(item)
-    end
-
-    # NxEngines::suffix(item)
-    def self.suffix(item)
-        return "" if item["engine"].nil?
-        engine = DarkEnergy::itemOrNull(item["engine"])
-        return "" if engine.nil?
-        " (#{NxEngines::toNumbersString(engine)})"
     end
 
     # NxEngines::maintenance()
     def self.maintenance()
         DarkEnergy::mikuType("NxEngine").each{|engine| Mechanics::engine_maintenance(engine) }
-    end
-
-    # NxEngines::done(item)
-    def self.done(item)
-        NxBalls::stop(item)
-        target = DarkEnergy::itemOrNull(item["targetuuid"])
-        if target then
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of engine: '#{NxEngines::toString(item).green}': ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm done of item: '#{PolyFunctions::toString(target).green}': ") then
-                PolyActions::done(target)
-            end
-        else
-            DarkEnergy::destroy(item["uuid"])
-        end
     end
 end

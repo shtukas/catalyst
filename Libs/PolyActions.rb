@@ -34,11 +34,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDeadline" then
-            NxDeadlines::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxDrop" then
             NxDrops::program(item)
             return
@@ -104,11 +99,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDeadline" then
-            NxDeadlines::done(item)
-            return
-        end
-
         if item["mikuType"] == "NxDrop" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{NxDrops::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
@@ -146,7 +136,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxEngine" then
-            NxEngines::done(item)
+            puts "Done is not implemented for engines, you can stop it"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -224,7 +215,34 @@ class PolyActions
                 puts "The item has a note, I am going to make you review it."
                 LucilleCore::pressEnterToContinue()
                 NxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
+            end
+            if NxNotes::hasNoteText(item) then
+                return
+            end
+            if Tx8s::childrenInOrder(item).size > 0 then
+                puts "The item has children"
+                Tx8s::childrenInOrder(item).each{|i|
+                    puts " - #{PolyFunctions::toString(item)}"
+                }
+                if LucilleCore::askQuestionAnswerAsBoolean("> destroy all of them ?") then
+                    Tx8s::childrenInOrder(item).each{|i|
+                        DarkEnergy::destroy(i["uuid"])
+                    }
+                end
+            end
+            if Tx8s::childrenInOrder(item).size > 0 then
+                if item["parent"] then
+                    puts "We still have children..."
+                    if LucilleCore::askQuestionAnswerAsBoolean("> would you like to promote them in place ?") then
+                        Tx8s::childrenInOrder(item).each_with_index{|i, indx|
+                            i["parent"] = Tx8s::make(item["parent"]["uuid"], item["parent"]["position"]+indx.to_f/1000)
+                            DarkEnergy::commit(i)
+                        }
+                    end
+                end
+            end
+            if Tx8s::childrenInOrder(item).size > 0 then
+                return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
@@ -267,17 +285,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDeadline" then
-            if LucilleCore::askQuestionAnswerAsBoolean("Confirm destruction of '#{NxDeadlines::toString(item).green}': ", true) then
-                target = DarkEnergy::itemOrNull(item["targetuuid"])
-                if target then
-                    PolyActions::done(target)
-                end
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
@@ -286,6 +293,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBurner" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxEngine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -307,11 +321,6 @@ class PolyActions
         if item["mikuType"] == "NxCore" then
             puts PolyFunctions::toString(item).green
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxDeadline" then
-            NxDeadlines::program1(item)
             return
         end
 
