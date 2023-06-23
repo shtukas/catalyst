@@ -143,7 +143,7 @@ class NxTasks
 
     # NxTasks::access(task)
     def self.access(task)
-        if Tx8s::childrenInOrder(item).empty? then
+        if Tx8s::childrenInOrder(task).empty? then
             CoreData::access(task["uuid"], task["field11"])
         else
             NxTasks::cloud(task)
