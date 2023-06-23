@@ -9,39 +9,12 @@ class Tx8s
         }
     end
 
-    # Tx8s::mikuTypeToEmoji(type)
-    def self.mikuTypeToEmoji(type)
-        return "☕️" if type == "NxCore"
-        if type == "NxTask" then
-            if Tx8s::childrenPositions(type).empty? then
-                return "🔺"
-            else
-                return "🔹"
-            end
-        end
-        "🤔"
-    end
-
-    # Tx8s::parentSuffix(item)
-    def self.parentSuffix(item)
-        return "" if item["parent"].nil?
-        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
-        return "" if parent.nil?
-        " (#{Tx8s::mikuTypeToEmoji(parent["mikuType"])} #{parent["description"].green})#{Tx8s::parentSuffix(parent)}"
-    end
-
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
         DarkEnergy::all()
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == parent["uuid"] }
             .sort_by{|item| item["parent"]["position"] }
-    end
-
-    # Tx8s::childrenPositions(parent)
-    def self.childrenPositions(parent)
-        Tx8s::childrenInOrder(parent)
-            .map{|item| item["parent"]["position"] }
     end
 
     # Tx8s::repositionItemAtSameParent(item)
@@ -56,13 +29,12 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        NxCores::children(parent)
-            .each{|item|
-                puts " - #{PolyFunctions::toString(item)}"
-            }
+        NxCores::children(parent).each{|item|
+            puts " - #{PolyFunctions::toString(item)}"
+        }
         position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
         if position == "" then
-            positions = Tx8s::childrenPositions(parent)
+            positions = Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }
             return 1 if positions.empty?
             return positions.max + 1
         else
@@ -148,6 +120,6 @@ class Tx8s
 
     # Tx8s::newFirstPositionAtThisParent(item)
     def self.newFirstPositionAtThisParent(item)
-        (Tx8s::childrenPositions(element) + [0]).min - 1
+        ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).min - 1
     end
 end
