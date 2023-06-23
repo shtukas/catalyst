@@ -234,16 +234,16 @@ class NxCores
             store = ItemStore.new()
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
-            puts ""
+            spacecontrol.putsline ""
             spacecontrol.putsline "core:"
             store.register(core, false)
             spacecontrol.putsline Listing::itemToListingLine(store, core)
 
+            spacecontrol.putsline ""
             items = NxCores::children(core)
-
             Listing::printing(spacecontrol, store, items)
 
-            puts ""
+            spacecontrol.putsline ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
