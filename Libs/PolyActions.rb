@@ -120,13 +120,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPlate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTime" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])

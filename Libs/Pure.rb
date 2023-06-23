@@ -4,9 +4,6 @@ class Pure
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
 
-        plate = NxPlates::plateOrNull(item)
-        return [plate] if plate
-
         if item["mikuType"] == "NxEngine" then
             target = DarkEnergy::itemOrNull(item["targetuuid"])
             if target then

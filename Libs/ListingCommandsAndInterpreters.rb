@@ -5,14 +5,14 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate <n> | plates <n> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | plates | plate",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
             "divings       : anniversaries | ondates | waves | burners | desktop | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -54,14 +54,30 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("plate", input) then
             item = store.getDefault()
             return if item.nil?
-            NxPlates::plate(item)
+
             return
         end
 
-        if Interpreting::match("plates", input) then
+        if Interpreting::match("plate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+
+            return
+        end
+
+        if Interpreting::match("plate *", input) then
             item = store.getDefault()
             return if item.nil?
-            NxPlates::plates(item)
+
+            return
+        end
+
+        if Interpreting::match("plates *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+
             return
         end
 
