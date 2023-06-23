@@ -11,6 +11,10 @@ class Tx8s
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
+        if parent["uuid"] == NxEngines::griduuid() then
+            return NxEngines::gridChildren()
+        end
+
         DarkEnergy::mikuType("NxTask")
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == parent["uuid"] }
@@ -29,7 +33,7 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        NxCores::children(parent).each{|item|
+        NxEngines::children(parent).each{|item|
             puts " - #{PolyFunctions::toString(item)}"
         }
         position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
@@ -45,7 +49,7 @@ class Tx8s
     # Tx8s::selectCoreAndMakeTx8OrNull()
     def self.selectCoreAndMakeTx8OrNull()
         # This function returns a Tx8
-        core = NxCores::interactivelySelectOneOrNull()
+        core = NxEngines::interactivelySelectOneOrNull()
         return nil if core.nil?
         position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
         Tx8s::make(core["uuid"], position)

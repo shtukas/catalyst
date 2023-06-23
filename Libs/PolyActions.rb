@@ -10,9 +10,9 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] == "NxCore" then
-            #NxCores::program0(item)
-            NxCores::program0(item)
+        if item["mikuType"] == "NxEngine" then
+            #NxEngines::program0(item)
+            NxEngines::program0(item)
             return
         end
 
@@ -141,8 +141,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            puts "You cannot done a NxCore"
+        if item["mikuType"] == "NxEngine" then
+            puts "You cannot done a NxEngine"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -318,7 +318,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxEngine" then
             puts PolyFunctions::toString(item).green
             PolyActions::access(item)
             return

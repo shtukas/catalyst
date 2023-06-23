@@ -157,7 +157,6 @@ require_relative "NxFires.rb"
 require_relative "NxBurners.rb"
 require_relative "NxTimes.rb"
 require_relative "NxDrops.rb"
-require_relative "NxCores.rb"
 require_relative "NxEngines.rb"
 
 require_relative "Memoize.rb"

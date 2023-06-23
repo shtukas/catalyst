@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate (<n>) | plates (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate (<n>) | plates (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -13,7 +13,7 @@ class ListingCommandsAndInterpreters
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
-            "divings       : anniversaries | ondates | waves | burners | desktop | cores | engines",
+            "divings       : anniversaries | ondates | waves | burners | desktop | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -72,8 +72,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
-            NxCores::program()
+        if Interpreting::match("engines", input) then
+            NxEngines::program()
             return
         end
 
@@ -151,7 +151,7 @@ class ListingCommandsAndInterpreters
             engine = NxEngines::interactivelyIssueNewOrNull()
             return if engine.nil?
             puts JSON.pretty_generate(engine)
-            NxCores::interactivelySetCoreAttempt(engine)
+            NxEngines::interactivelySetCoreAttempt(engine)
             return
         end
 
@@ -160,18 +160,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("core", input) then
+        if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            NxCores::interactivelySetCoreAttempt(item)
+            NxEngines::interactivelySetCoreAttempt(item)
             return
         end
 
-        if Interpreting::match("core *", input) then
+        if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxCores::interactivelySetCoreAttempt(item)
+            NxEngines::interactivelySetCoreAttempt(item)
             return
         end
 
@@ -189,9 +189,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("jedi", input) then
-            coreuuid = "586d478d-0a04-40b7-aad3-fa5cbd2c45e4"
+            engineuuid = "586d478d-0a04-40b7-aad3-fa5cbd2c45e4"
             item = NxTasks::interactivelyIssueNewOrNull()
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(coreuuid, rand))
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(engineuuid, rand))
             return
         end
 
@@ -247,7 +247,7 @@ class ListingCommandsAndInterpreters
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
             puts PolyFunctions::toString(item)
-            NxCores::interactivelySetCoreAttempt(item)
+            NxEngines::interactivelySetCoreAttempt(item)
             return
         end
 
@@ -258,7 +258,7 @@ class ListingCommandsAndInterpreters
                 return if item.nil?
                 puts JSON.pretty_generate(item)
                 puts PolyFunctions::toString(item)
-                NxCores::interactivelySetCoreAttempt(item)
+                NxEngines::interactivelySetCoreAttempt(item)
             }
             return
         end
@@ -325,13 +325,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
-            return
-        end
-
-        if Interpreting::match("new core", input) then
-            core = NxCores::interactivelyIssueNewOrNull()
-            return if core.nil?
-            puts JSON.pretty_generate(core)
             return
         end
 

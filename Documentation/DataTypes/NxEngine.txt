@@ -1,5 +1,5 @@
 
-NxEngine
+NxEngine:
     "uuid"          : String
     "mikuType"      : "NxEngine"
     "description"   : String

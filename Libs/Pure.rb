@@ -3,26 +3,20 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
-
-        if item["mikuType"] == "NxEngine" then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target then
-                return Pure::childrenInitInRelevantOrder(target)
-            else
-                return []
-            end
-        end
-
-        if item["mikuType"] == "NxDeadline" then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target then
-                return Pure::childrenInitInRelevantOrder(target)
-            else
-                return []
-            end
-        end
-
         Tx8s::childrenInOrder(item)
+            .reduce([]){|selected, item|
+                if selected.size >= 6 then
+                    selected
+                else
+                    b1 = DoNotShowUntil::isVisible(item) and (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2)
+                    b2 = NxBalls::itemIsRunning(item)
+                    if b1 or b2 then
+                        selected + [item]
+                    else
+                        selected
+                    end
+                end
+            }
             .select{|item| DoNotShowUntil::isVisible(item) }
             .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
             .first(6)
@@ -30,11 +24,11 @@ class Pure
 
     # Pure::pure()
     def self.pure()
-        listing = DarkEnergy::mikuType("NxCore")
-                    .select{|core| DoNotShowUntil::isVisible(core) }
-                    .select{|core| NxCores::listingCompletionRatio(core) < 1 }
-                    .sort_by{|core| NxCores::listingCompletionRatio(core) }
-        listing = CommonUtils::putFirst(listing, lambda{|core| NxBalls::itemIsRunning(core) })
+        listing = DarkEnergy::mikuType("NxEngine")
+                    .select{|engine| DoNotShowUntil::isVisible(engine) }
+                    .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
+                    .sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
+        listing = CommonUtils::putFirst(listing, lambda{|engine| NxBalls::itemIsRunning(engine) })
 
         return [] if listing.empty?
 

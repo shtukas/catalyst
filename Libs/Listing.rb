@@ -140,7 +140,6 @@ class Listing
             DarkEnergy::mikuType("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxEngines::listingItems(),
             DarkEnergy::mikuType("NxDrop"),
             Pure::pure(),
         ]
@@ -256,10 +255,10 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
-             NxCores::maintenance_leader_instance()
+             NxEngines::maintenance_leader_instance()
              NxEngines::maintenance()
         end
-        NxCores::maintenance_all_instances()
+        NxEngines::maintenance_all_instances()
     end
 
     # Listing::launchNxBallMonitor()

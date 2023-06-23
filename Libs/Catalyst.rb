@@ -8,7 +8,7 @@ class Catalyst
           "NxAnniversary",
           "NxBackup",
           "NxBurner",
-          "NxCore",
+          "NxEngine",
           "NxOndate",
           "NxTask",
           "PhysicalTarget",

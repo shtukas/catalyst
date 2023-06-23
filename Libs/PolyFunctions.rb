@@ -11,33 +11,11 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["deadline"] then
-            deadline = DarkEnergy::itemOrNull(item["deadline"])
-            if deadline then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(deadline)
-            end
-        end
-
-        if item["engine"] then
-            engine = DarkEnergy::itemOrNull(item["engine"])
-            if engine then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(engine)
-            end
-        end
-
         if item["parent"] then
             parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
-        end
-
-        if item["mikuType"] == "NxDeadline" then
-            core = item["deadlineCore"]
-            accounts << {
-                "description" => "deadline",
-                "number"      => core["uuid"]
-            }
         end
 
         if item["mikuType"] == "NxEngine" then
@@ -47,19 +25,8 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxCore" then
-            accounts << {
-                "description" => "NxCore capsule",
-                "number"      => item["capsule"]
-            }
-        end
-
-        if item["mikuType"] == "NxTask" and NxCores::item_belongs_to_grid1(item) then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(NxCores::grid1())
-        end
-
-        if item["mikuType"] == "NxTask" and NxCores::item_belongs_to_grid2(item) then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(NxCores::grid2())
+        if item["mikuType"] == "NxTask" and NxEngines::itemBelongsToEnergyGrid(item) then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(NxEngines::grid())
         end
 
         accounts.reduce([]){|as, account|
@@ -85,8 +52,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
+        if item["mikuType"] == "NxEngine" then
+            return NxEngines::toString(item)
         end
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
