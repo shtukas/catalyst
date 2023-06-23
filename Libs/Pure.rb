@@ -7,43 +7,6 @@ class Pure
         plate = NxPlates::plateOrNull(item)
         return [plate] if plate
 
-        return [] if item["mikuType"] == "NxPlate"
-
-        return [] if item["mikuType"] == "NxTask"
-
-        return [] if item["mikuType"] == "NxAnniversary"
-
-        if item["mikuType"] == "NxCore" then
-            return NxCores::children(item)
-                .select{|item| DoNotShowUntil::isVisible(item) }
-                .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
-                .first(6)
-        end
-
-        if item["mikuType"] == "NxBurner" then
-            return []
-        end
-
-        if item["mikuType"] == "NxDrop" then
-            return []
-        end
-
-        if item["mikuType"] == "Wave" then
-            return []
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            return []
-        end
-
-        if item["mikuType"] == "NxTime" then
-            return []
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            return []
-        end
-
         if item["mikuType"] == "NxEngine" then
             target = DarkEnergy::itemOrNull(item["targetuuid"])
             if target then
@@ -62,11 +25,10 @@ class Pure
             end
         end
 
-        if item["mikuType"] == "PhysicalTarget" then
-            return []
-        end
-
-        raise "I don't know how to Pure::childrenInitInRelevantOrder item #{item}"
+        Tx8s::childrenInOrder(item)
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
+            .first(6)
     end
 
     # Pure::pure()
