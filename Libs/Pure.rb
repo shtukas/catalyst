@@ -20,13 +20,6 @@ class Pure
                 .first(6)
         end
 
-        if item["mikuType"] == "NxNode" then
-            return NxNodes::childrenOrderedForListing(item)
-                .select{|item| DoNotShowUntil::isVisible(item) }
-                .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
-                .first(6)
-        end
-
         if item["mikuType"] == "NxBurner" then
             return []
         end
@@ -111,14 +104,12 @@ class Pure
     def self.bottom()
         Memoize::evaluate("32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", lambda{
             puts "Computing Pure::bottom() ..."
-            threads = DarkEnergy::mikuType("NxNode")
-                            .select{|thread| thread["parent"].nil? }
             items = DarkEnergy::mikuType("NxTask")
                             .select{|task| task["parent"].nil? }
                             .select{|task| task["engine"].nil? }
                             .select{|task| task["deadline"].nil? }
                             .sort_by{|item| item["unixtime"] }
-            (threads + items.take(100) + items.reverse.take(100)).shuffle
+            (items.take(100) + items.reverse.take(100)).shuffle
         }, 86400)
             .select{|item| DarkEnergy::itemOrNull(item["uuid"]) }
             .compact

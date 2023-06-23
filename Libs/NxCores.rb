@@ -188,12 +188,11 @@ class NxCores
         burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
         ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
         waves,   items = items.partition{|item| item["mikuType"] == "Wave" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxNode" }
         tasks,  things = items.partition{|item| item["mikuType"] == "NxTask" }
 
-        todos = (threads+tasks).sort_by{|item| item["parent"]["position"] }
+        tasks = tasks.sort_by{|item| item["parent"]["position"] }
 
-        things + burners + ondates + waves + todos
+        things + burners + ondates + waves + tasks
      end
 
     # NxCores::getItemCoreOrNull(item)
@@ -249,22 +248,11 @@ class NxCores
             return if input == "exit"
             return if input == ""
 
-            if input == "node" then
-                node = NxNodes::interactivelyIssueNewOrNull()
-                next if node.nil?
-                tx8 = Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(core)
-                next if tx8.nil?
-                node["parent"] = tx8
-                DarkEnergy::commit(node)
-                next
-            end
-
             if input == "task" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
-                tx8 = Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(core)
-                next if tx8.nil?
-                task["parent"] = tx8
+                position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
+                task["parent"] = Tx8s::make(core["uuid"], position)
                 DarkEnergy::commit(task)
                 next
             end
@@ -301,22 +289,6 @@ class NxCores
         core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(core["uuid"], rand))
-    end
-
-    # NxCores::interactivelyDecidePositionInCore(core)
-    def self.interactivelyDecidePositionInCore(core)
-        NxCores::children(core)
-            .each{|item|
-                puts " - #{PolyFunctions::toString(item)}"
-            }
-        position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
-        if position == "" then
-            positions = Tx8s::childrenPositions(core)
-            return 1 if positions.empty?
-            return positions.max + 1
-        else
-            return position.to_f
-        end
     end
 end
 

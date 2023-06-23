@@ -11,7 +11,6 @@ class Tx8s
 
     # Tx8s::mikuTypeToEmoji(type)
     def self.mikuTypeToEmoji(type)
-        return "⛵️" if type == "NxNode"
         return "☕️" if type == "NxCore"
         "🤔"
     end
@@ -21,12 +20,11 @@ class Tx8s
         return "" if item["parent"].nil?
         parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
         return "" if parent.nil?
-        suffix2 = (parent["mikuType"] == "NxNode" ? Tx8s::parentSuffix(parent) : "")
-        " (#{Tx8s::mikuTypeToEmoji(parent["mikuType"])} #{parent["description"].green})#{suffix2}"
+        " (#{Tx8s::mikuTypeToEmoji(parent["mikuType"])} #{parent["description"].green})#{Tx8s::parentSuffix(parent)}"
     end
 
-    # Tx8s::children_in_order(element)
-    def self.children_in_order(element)
+    # Tx8s::childrenInOrder(element)
+    def self.childrenInOrder(element)
         DarkEnergy::all()
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == element["uuid"] }
@@ -35,83 +33,42 @@ class Tx8s
 
     # Tx8s::childrenPositions(element)
     def self.childrenPositions(element)
-        Tx8s::children_in_order(element)
+        Tx8s::childrenInOrder(element)
             .map{|item| item["parent"]["position"] }
-    end
-
-    # Tx8s::childrenNodes(element)
-    def self.childrenNodes(element)
-        Tx8s::children_in_order(element)
-            .select{|item| item["mikuType"] == "NxNode" }
     end
 
     # Tx8s::repositionAtSameParent(item)
     def self.repositionAtSameParent(item)
-        return if item["parent"].nil?
-        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
-        return if parent.nil?
-        if parent["mikuType"] == "NxNode" then
-            position = NxNodes::interactivelyDecidePositionInNode(parent)
-            item["parent"]["position"] = position
-            DarkEnergy::commit(item)
-            return
-        end
-        if parent["mikuType"] == "NxCore" then
-            position = NxCores::interactivelyDecidePositionInCore(parent)
-            item["parent"]["position"] = position
-            DarkEnergy::commit(item)
-            return
-        end
-        raise "I do not know how to Tx8s::repositionAtSameParent item: #{item}"
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(container)
+        item["parent"]["position"] = position
+        DarkEnergy::commit(item)
     end
 
-    # Tx8s::determinePositionAtContainer(container)
-    def self.determinePositionAtContainer(container)
-        # A container is a NxCore or a NxNode
-        if container["mikuType"] == "NxCore" then
-            return NxCores::interactivelyDecidePositionInCore(container)
+    # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
+    def self.interactivelyDecidePositionUnderThisParent(parent)
+        NxCores::children(parent)
+            .each{|item|
+                puts " - #{PolyFunctions::toString(item)}"
+            }
+        position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
+        if position == "" then
+            positions = Tx8s::childrenPositions(parent)
+            return 1 if positions.empty?
+            return positions.max + 1
+        else
+            return position.to_f
         end
-        if container["mikuType"] == "NxNode" then
-            return NxNodes::interactivelyDecidePositionInNode(container)
-        end
-        raise "I cannot Tx8s::determinePositionAtContainer with container: #{container}"
     end
 
-    # Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(parent)
-    def self.interactivelyMakeNewTx8BelowThisElementOrNull(parent)
+    # Tx8s::interactivelyMakeNewTx8BelowThisElement(parent)
+    def self.interactivelyMakeNewTx8BelowThisElement(parent)
         puts "element: #{PolyFunctions::toString(parent).green}"
         puts "children node:"
-        Tx8s::children_in_order(parent).each{|node|
+        Tx8s::childrenInOrder(parent).each{|node|
             puts "    - #{PolyFunctions::toString(node)}"
         }
-        options = ["put here", "go deeper", "issue new child node", "exit"]
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        if option.nil? then
-            return Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(parent)
-        end
-        if option == "put here" then
-            position = Tx8s::determinePositionAtContainer(parent)
-            return Tx8s::make(parent["uuid"], position)
-        end
-        if option == "go deeper" then
-            nodes = Tx8s::childrenNodes(parent)
-            node = LucilleCore::selectEntityFromListOfEntitiesOrNull("node", nodes, lambda{|item| PolyFunctions::toString(item) })
-            if node.nil? then
-                return Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(parent)
-            else
-                return Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(node)
-            end
-        end
-        if option == "issue new child node" then
-            node = NxNodes::interactivelyIssueNewOrNull()
-            position = Tx8s::determinePositionAtContainer(parent)
-            node["parent"] = Tx8s::make(parent["uuid"], position)
-            DarkEnergy::commit(node)
-            Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(node)
-        end
-        if option == "exit" then
-            return nil
-        end
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
+        Tx8s::make(parent["uuid"], position)
     end
 
     # Tx8s::interactivelyMakeNewTx8OrNull()
@@ -119,17 +76,17 @@ class Tx8s
         # This function returns a Tx8
         core = NxCores::interactivelySelectOneOrNull()
         if core then
-            Tx8s::interactivelyMakeNewTx8BelowThisElementOrNull(core)
+            Tx8s::interactivelyMakeNewTx8BelowThisElement(core)
         else
             nil
         end
     end
 
-    # Tx8s::setContext(item)
-    def self.setContext(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["move", "engine", "deadline"])
+    # Tx8s::interactivelyDecideAndSetParent(item)
+    def self.interactivelyDecideAndSetParent(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine", "deadline"])
         return if option.nil?
-        if option == "move" then
+        if option == "core" then
             DarkEnergy::patch(item["uuid"], "parent", Tx8s::interactivelyMakeNewTx8OrNull())
         end
         if option == "engine" then
@@ -142,8 +99,8 @@ class Tx8s
 
     # Tx8s::reorganise(item)
     def self.reorganise(item)
-        children = Tx8s::children_in_order(item)
-                    .select{|i| ["NxTask", "NxNode"].include?(i["mikuType"]) }
+        children = Tx8s::childrenInOrder(item)
+                    .select{|i| i["mikuType"] == "NxTask" }
         if children.size < 2 then
             puts "item has #{children.size} children, nothing to organise"
             LucilleCore::pressEnterToContinue()

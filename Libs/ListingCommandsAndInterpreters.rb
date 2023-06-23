@@ -5,14 +5,14 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | pile (<n>) | position (<n>) | reorganise <n> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | node | plates | plate",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | plates | plate",
             "divings       : anniversaries | ondates | waves | burners | desktop | cores | deadlines | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -143,25 +143,25 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile", input) then
+        if Interpreting::match("cloud", input) then
             item = store.getDefault()
             return if item.nil?
-            NxNodes::pile(item)
+
             return
         end
 
-        if Interpreting::match("pile *", input) then
+        if Interpreting::match("cloud *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxNodes::pile(item)
+
             return
         end
 
         if Interpreting::match("context", input) then
             item = store.getDefault()
             return if item.nil?
-            Tx8s::setContext(item)
+            Tx8s::interactivelyDecideAndSetParent(item)
             return
         end
 
@@ -169,7 +169,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Tx8s::setContext(item)
+            Tx8s::interactivelyDecideAndSetParent(item)
             return
         end
 
@@ -444,16 +444,7 @@ class ListingCommandsAndInterpreters
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            Tx8s::setContext(task)
-            return
-        end
-
-
-        if Interpreting::match("node", input) then
-            node = NxNodes::interactivelyIssueNewOrNull()
-            return if node.nil?
-            puts JSON.pretty_generate(node)
-            Tx8s::setContext(node)
+            Tx8s::interactivelyDecideAndSetParent(task)
             return
         end
 
