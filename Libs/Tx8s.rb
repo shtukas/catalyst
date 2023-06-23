@@ -139,4 +139,43 @@ class Tx8s
             NxDeadlines::attachDeadlineAttempt(item)
         end
     end
+
+    # Tx8s::reorganise(item)
+    def self.reorganise(item)
+        children = Tx8s::children_in_order(item)
+                    .select{|i| ["NxTask", "NxNode"].include?(i["mikuType"]) }
+        if children.size < 2 then
+            puts "item has #{children.size} children, nothing to organise"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        sorted = []
+        unsorted = children
+
+        while unsorted.size > 0 do
+            system('clear')
+            puts "sorted:"
+            sorted.each{|i|
+                puts "    - #{PolyFunctions::toString(i)}"
+            }
+            puts "unsorted:"
+            i = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", unsorted, lambda{|i| PolyFunctions::toString(i) })
+            next if i.nil?
+            sorted << i
+            unsorted = unsorted.reject{|x| x["uuid"] == i["uuid"]}
+        end
+
+        puts "final:"
+        sorted.each{|i|
+            puts "    - #{PolyFunctions::toString(i)}"
+        }
+
+        LucilleCore::pressEnterToContinue()
+        sorted.each_with_index{|i, indx|
+            i["parent"]["position"] = indx+1
+            puts JSON.pretty_generate(i)
+            DarkEnergy::commit(i)
+        }
+    end
 end
