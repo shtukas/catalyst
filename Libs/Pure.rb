@@ -11,6 +11,8 @@ class Pure
 
         return [] if item["mikuType"] == "NxTask"
 
+        return [] if item["mikuType"] == "NxAnniversary"
+
         if item["mikuType"] == "NxCore" then
             return NxCores::children(item)
                 .select{|item| DoNotShowUntil::isVisible(item) }
