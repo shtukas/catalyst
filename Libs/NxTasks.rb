@@ -64,90 +64,34 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        emoji =
-            if Tx8s::childrenInOrder(item).empty? then
-                "🔹"
-            else
-                "🔺"
-            end
-        "#{emoji}#{NxTasks::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}"
+        "🔸#{NxTasks::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxEngines::suffix(item)}#{NxDeadlines::suffix(item)}"
     end
 
     # --------------------------------------------------
     # Operations
 
-    # NxTasks::cloud(task)
-    def self.cloud(task)
-        if task["mikuType"] != "NxTask" then
-            puts "At the moment we limit clouds to tasks"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
+    # NxTasks::plate(task)
+    def self.plate(task)
+        t1 = NxTasks::interactivelyIssueNewOrNull()
+        return if t1.nil?
+        t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
+        DarkEnergy::commit(t1)
+    end
 
-        loop {
-
-            system("clear")
-
-            store = ItemStore.new()
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-            puts ""
-            spacecontrol.putsline "cloud:"
-            items = Tx8s::childrenInOrder(task)
-            Listing::printing(spacecontrol, store, items)
-
-            puts ""
-            spacecontrol.putsline "task:"
-            store.register(task, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, task)
-
-            puts ""
-            puts "task | plate | plates | etc ..."
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "task" then
-                t1 = NxTasks::interactivelyIssueNewOrNull()
-                next if t1.nil?
-                position = Tx8s::interactivelyDecidePositionUnderThisParent(task)
-                t1["parent"] = Tx8s::make(task["uuid"], position)
-                DarkEnergy::commit(t1)
-                next
-            end
-
-            if input == "plate" then
-                description = LucilleCore::askQuestionAnswerAsString("description: ")
-                t1 = NxTasks::descriptionToTask(description)
-                next if t1.nil?
-                t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
-                DarkEnergy::commit(t1)
-                next
-            end
-
-            if input == "plates" then
-                text = CommonUtils::editTextSynchronously("").strip
-                next if text == ""
-                text.lines.to_a.reverse {|line|
-                    t1 = NxTasks::descriptionToTask(line)
-                    next if t1.nil?
-                    t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
-                    DarkEnergy::commit(t1)
-                }
-                next
-            end
-
-            puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
+    # NxTasks::plates(task)
+    def self.plates(task)
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text.lines.to_a.reverse {|line|
+            t1 = NxTasks::descriptionToTask(line)
+            return if t1.nil?
+            t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
+            DarkEnergy::commit(t1)
         }
     end
 
     # NxTasks::access(task)
     def self.access(task)
-        if Tx8s::childrenInOrder(task).empty? then
-            CoreData::access(task["uuid"], task["field11"])
-        else
-            NxTasks::cloud(task)
-        end
+        CoreData::access(task["uuid"], task["field11"])
     end
 end
