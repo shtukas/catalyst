@@ -282,7 +282,6 @@ class Listing
 
     # Listing::printing(spacecontrol, store, items)
     def self.printing(spacecontrol, store, items)
-        spacecontrol.putsline ""
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))

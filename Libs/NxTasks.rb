@@ -92,13 +92,14 @@ class NxTasks
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             puts ""
-            spacecontrol.putsline "task cloud:"
+            spacecontrol.putsline "cloud:"
+            items = Tx8s::childrenInOrder(task)
+            Listing::printing(spacecontrol, store, items)
+
+            puts ""
+            spacecontrol.putsline "task:"
             store.register(task, false)
             spacecontrol.putsline Listing::itemToListingLine(store, task)
-
-            items = Tx8s::childrenInOrder(task)
-
-            Listing::printing(spacecontrol, store, items)
 
             puts ""
             puts "task | plate | plates | etc ..."
