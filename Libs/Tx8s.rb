@@ -12,6 +12,13 @@ class Tx8s
     # Tx8s::mikuTypeToEmoji(type)
     def self.mikuTypeToEmoji(type)
         return "☕️" if type == "NxCore"
+        if type == "NxTask" then
+            if Tx8s::childrenPositions(type).empty? then
+                return "🔺"
+            else
+                return "🔹"
+            end
+        end
         "🤔"
     end
 
@@ -23,23 +30,26 @@ class Tx8s
         " (#{Tx8s::mikuTypeToEmoji(parent["mikuType"])} #{parent["description"].green})#{Tx8s::parentSuffix(parent)}"
     end
 
-    # Tx8s::childrenInOrder(element)
-    def self.childrenInOrder(element)
+    # Tx8s::childrenInOrder(parent)
+    def self.childrenInOrder(parent)
         DarkEnergy::all()
             .select{|item| item["parent"] }
-            .select{|item| item["parent"]["uuid"] == element["uuid"] }
+            .select{|item| item["parent"]["uuid"] == parent["uuid"] }
             .sort_by{|item| item["parent"]["position"] }
     end
 
-    # Tx8s::childrenPositions(element)
-    def self.childrenPositions(element)
-        Tx8s::childrenInOrder(element)
+    # Tx8s::childrenPositions(parent)
+    def self.childrenPositions(parent)
+        Tx8s::childrenInOrder(parent)
             .map{|item| item["parent"]["position"] }
     end
 
-    # Tx8s::repositionAtSameParent(item)
-    def self.repositionAtSameParent(item)
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(container)
+    # Tx8s::repositionItemAtSameParent(item)
+    def self.repositionItemAtSameParent(item)
+        return if item["parent"].nil?
+        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+        return if parent.nil?
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
         item["parent"]["position"] = position
         DarkEnergy::commit(item)
     end
@@ -134,5 +144,10 @@ class Tx8s
             puts JSON.pretty_generate(i)
             DarkEnergy::commit(i)
         }
+    end
+
+    # Tx8s::newFirstPositionAtThisParent(item)
+    def self.newFirstPositionAtThisParent(item)
+        (Tx8s::childrenPositions(element) + [0]).min - 1
     end
 end

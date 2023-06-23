@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate <n> | plates <n> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | core (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | deadline (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -48,36 +48,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
-            return
-        end
-
-        if Interpreting::match("plate", input) then
-            item = store.getDefault()
-            return if item.nil?
-
-            return
-        end
-
-        if Interpreting::match("plate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-
-            return
-        end
-
-        if Interpreting::match("plate *", input) then
-            item = store.getDefault()
-            return if item.nil?
-
-            return
-        end
-
-        if Interpreting::match("plates *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-
             return
         end
 
@@ -162,7 +132,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("cloud", input) then
             item = store.getDefault()
             return if item.nil?
-
+            NxTasks::cloud(item)
             return
         end
 
@@ -170,7 +140,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
+            NxTasks::cloud(item)
             return
         end
 
@@ -427,7 +397,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("position", input) then
             item = store.getDefault()
             return if item.nil?
-            Tx8s::repositionAtSameParent(item)
+            Tx8s::repositionItemAtSameParent(item)
             return
         end
 
@@ -435,7 +405,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Tx8s::repositionAtSameParent(item)
+            Tx8s::repositionItemAtSameParent(item)
             return
         end
 
