@@ -297,7 +297,9 @@ class Listing
                 break
             end
 
-            Listing::maintenance()
+            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
+                Listing::maintenance()
+            end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
