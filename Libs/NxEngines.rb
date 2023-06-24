@@ -19,7 +19,7 @@ class NxEngines
  
     # NxEngines::gridChildren()
     def self.gridChildren()
-        Memoize::evaluate(
+        items = Memoize::evaluate(
             "32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", 
             lambda{
                 puts "Computing Pure::bottom() ..."
@@ -30,6 +30,7 @@ class NxEngines
                                 .sort_by{|item| item["unixtime"] }
                 (items.take(100) + items.reverse.take(100)).shuffle
             })
+        items
             .select{|item| DarkEnergy::itemOrNull(item["uuid"]) }
             .compact
     end
