@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | plate (<n>) | plates (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -101,33 +101,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("plate", input) then
+        if Interpreting::match("pile", input) then
             item = store.getDefault()
             return if item.nil?
-            NxTasks::plate(item)
+            NxTasks::pile(item)
             return
         end
 
-        if Interpreting::match("plate *", input) then
+        if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxTasks::plate(item)
-            return
-        end
-
-        if Interpreting::match("plates", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxTasks::plates(item)
-            return
-        end
-
-        if Interpreting::match("plates *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxTasks::plates(item)
+            NxTasks::pile(item)
             return
         end
 

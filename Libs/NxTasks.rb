@@ -70,16 +70,8 @@ class NxTasks
     # --------------------------------------------------
     # Operations
 
-    # NxTasks::plate(task)
-    def self.plate(task)
-        t1 = NxTasks::interactivelyIssueNewOrNull()
-        return if t1.nil?
-        t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
-        DarkEnergy::commit(t1)
-    end
-
-    # NxTasks::plates(task)
-    def self.plates(task)
+    # NxTasks::pile(task)
+    def self.pile(task)
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text.lines.to_a.map{|line| line.strip }.select{|line| line != ""}.reverse.each {|line|
