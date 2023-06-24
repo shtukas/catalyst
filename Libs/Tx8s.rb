@@ -106,8 +106,8 @@ class Tx8s
         }
     end
 
-    # Tx8s::newFirstPositionAtThisParent(item)
-    def self.newFirstPositionAtThisParent(item)
+    # Tx8s::newFirstPositionAtThisParent(parent)
+    def self.newFirstPositionAtThisParent(parent)
         ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).min - 1
     end
 end
