@@ -344,7 +344,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("destroy *", input) then
+        if Interpreting::match("destroy", input) then
             item = store.getDefault()
             return if item.nil?
             PolyActions::destroy(item)
