@@ -341,14 +341,6 @@ class CommonUtils
         end
     end
 
-    # CommonUtils::locationTraceWithoutTopName(location)
-    def self.locationTraceWithoutTopName(location)
-        t1 = LucilleCore::locationsAtFolder(location)
-                .map{|loc1| CommonUtils::locationTrace(loc1) }
-                .join()
-        Digest::SHA256.hexdigest(t1)
-    end
-
     # CommonUtils::locationTraceCode(location)
     def self.locationTraceCode(location)
         raise "(error: 4d172723-3748-4f0b-a309-3944e4f352d9)" if !File.exist?(location)

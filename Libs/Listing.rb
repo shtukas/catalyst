@@ -290,7 +290,6 @@ class Listing
 
         loop {
 
-            puts "check code trace"
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
@@ -304,7 +303,6 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            puts "Listing::items()"
             items = Listing::items()
 
             system("clear")
