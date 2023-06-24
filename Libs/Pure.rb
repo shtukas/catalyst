@@ -3,25 +3,23 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
-        Memoize::evaluate("7b1a341a-cc10-4a66-a9bf-6658b1f587e4", lambda{
-            Tx8s::childrenInOrder(item)
-                .reduce([]){|selected, item|
-                    if selected.size >= 6 then
-                        selected
+        Tx8s::childrenInOrder(item)
+            .reduce([]){|selected, item|
+                if selected.size >= 6 then
+                    selected
+                else
+                    b1 = DoNotShowUntil::isVisible(item) and (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2)
+                    b2 = NxBalls::itemIsRunning(item)
+                    if b1 or b2 then
+                        selected + [item]
                     else
-                        b1 = DoNotShowUntil::isVisible(item) and (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2)
-                        b2 = NxBalls::itemIsRunning(item)
-                        if b1 or b2 then
-                            selected + [item]
-                        else
-                            selected
-                        end
+                        selected
                     end
-                }
-                .select{|item| DoNotShowUntil::isVisible(item) }
-                .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
-                .first(6)
-        })
+                end
+            }
+            .select{|item| DoNotShowUntil::isVisible(item) }
+            .select{|item| NxBalls::itemIsRunning(item) or (Bank::recoveredAverageHoursPerDay(item["uuid"]) < 3600*2) }
+            .first(6)
     end
 
     # Pure::pure()
