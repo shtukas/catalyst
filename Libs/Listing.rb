@@ -310,7 +310,9 @@ def self.canBeDefault(item)
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
+            puts "Listing::items() [start]"
             items = Listing::items()
+            puts "Listing::items() [end]"
 
             system("clear")
 
