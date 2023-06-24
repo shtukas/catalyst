@@ -4,8 +4,8 @@
 $InMemoryX1k23 = {}
 
 # packet:
-#     - unixtime: 
-#     - value   :
+#     - expiryTime :
+#     - value      :
 
 class Memoize
 
@@ -14,7 +14,7 @@ class Memoize
         packet = $InMemoryX1k23[computationId]
 
         if packet then
-            if (Time.new.to_i - packet["unixtime"]) < retentionTime then
+            if Time.new.to_i < packet["expiryTime"] then
                 return packet["value"]
             end
         end
@@ -22,7 +22,7 @@ class Memoize
         packet = XCache::getOrNull(computationId)
         if packet then
             packet = JSON.parse(packet)
-            if (Time.new.to_i - packet["unixtime"]) < retentionTime then
+            if Time.new.to_i < packet["expiryTime"] then
                 $InMemoryX1k23[computationId] = packet
                 return packet["value"].clone
             end
@@ -31,7 +31,7 @@ class Memoize
         value = l.call()
 
         packet = {
-            "unixtime" => Time.new.to_i,
+            "expiryTime" => Time.new.to_i + retentionTime,
             "value"    => value
         }
 
@@ -45,5 +45,10 @@ class Memoize
     def self.decache(computationId)
         XCache::destroy(computationId)
         $InMemoryX1k23[computationId].nil?
+    end
+
+    # Memoize::retentionTime(t1, t2)
+    def self.retentionTime(t1, t2)
+        t1 + rand*(t2 - t1)
     end
 end

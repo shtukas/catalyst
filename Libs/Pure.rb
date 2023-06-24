@@ -24,21 +24,23 @@ class Pure
 
     # Pure::pure()
     def self.pure()
-        listing = DarkEnergy::mikuType("NxEngine")
-                    .select{|engine| DoNotShowUntil::isVisible(engine) }
-                    .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
-                    .sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
-        listing = CommonUtils::putFirst(listing, lambda{|engine| NxBalls::itemIsRunning(engine) })
+        Memoize::evaluate("fa84b365-cf0e-419a-8324-04716a5cdef9", lambda{
+            listing = DarkEnergy::mikuType("NxEngine")
+                        .select{|engine| DoNotShowUntil::isVisible(engine) }
+                        .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
+                        .sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
+            listing = CommonUtils::putFirst(listing, lambda{|engine| NxBalls::itemIsRunning(engine) })
 
-        return [] if listing.empty?
+            return [] if listing.empty?
 
-        loop {
-            head = listing.first
-            tail = listing.drop(1)
-            children = Pure::childrenInitInRelevantOrder(head)
-            return [head] + tail if children.empty?
-            listing = children + [head] + tail
-        }
+            loop {
+                head = listing.first
+                tail = listing.drop(1)
+                children = Pure::childrenInitInRelevantOrder(head)
+                return [head] + tail if children.empty?
+                listing = children + [head] + tail
+            }
+        }, Memoize::retentionTime(300, 600))
     end
 
     # Pure::pureFromItem(item)

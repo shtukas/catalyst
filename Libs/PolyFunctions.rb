@@ -38,8 +38,8 @@ class PolyFunctions
         }
     end
 
-    # PolyFunctions::toString(item)
-    def self.toString(item)
+    # PolyFunctions::toString_core(item)
+    def self.toString_core(item)
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
@@ -95,5 +95,12 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
+    end
+
+    # PolyFunctions::toString(item)
+    def self.toString(item)
+        Memoize::evaluate("6530632f-3cb8-4d4c-98b6-16faa99d27a1:#{item["uuid"]}", lambda{
+            PolyFunctions::toString_core(item)
+        }, Memoize::retentionTime(300, 600))
     end
 end

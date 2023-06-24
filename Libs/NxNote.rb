@@ -23,8 +23,10 @@ class NxNotes
 
     # NxNotes::toStringSuffix(item)
     def self.toStringSuffix(item)
-        text = NxNotes::getTextOrNull(item)
-        ( text and text.strip.size > 0 ) ? " (note)".green : ""
+        Memoize::evaluate("215286a6-db0b-44ac-a52e-443808e44920:#{item["uuid"]}", lambda{
+            text = NxNotes::getTextOrNull(item)
+            ( text and text.strip.size > 0 ) ? " (note)".green : ""
+        }, Memoize::retentionTime(300, 600))
     end
 
     # NxNotes::edit(item)

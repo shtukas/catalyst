@@ -141,12 +141,14 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("Wave")
-            .select{|item| Listing::listable(item) }
-            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-            .select{|item|
-                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-            }
+        Memoize::evaluate("9d576425-9cd5-48d0-9f94-a870b845f379", lambda{
+            DarkEnergy::mikuType("Wave")
+                .select{|item| Listing::listable(item) }
+                .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+                .select{|item|
+                    item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+                }
+        }, 600)
     end
 
     # -------------------------------------------------------------------------
@@ -217,29 +219,3 @@ class Waves
         }
     end
 end
-
-
-# The WavesListingService is used to speed up the listing display and is only called from Listing::listable
-# It's actually not even initalised during start and is only initialised by Listing::listable
-class WavesListingService
-    def initialize()
-        puts "Initializing Waves Listing Service"
-        @waves = DarkEnergy::mikuType("Wave")
-        @data = @waves.map{|wave|
-            {
-                "wave" => wave,
-                "listable" => Listing::listable_core(wave)
-            }
-        }
-    end
-    def listable(wave)
-        @data.each{|packet|
-            if packet["wave"]["uuid"] == wave["uuid"] and packet["listable"] then
-                return true
-            end
-        }
-        false
-    end
-end
-
-$WavesListingService = nil

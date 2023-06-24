@@ -56,57 +56,52 @@ class Listing
     # -----------------------------------------
     # Data
 
-    # Listing::listable_core(item)
-    def self.listable_core(item)
-        return true if NxBalls::itemIsActive(item)
-        return false if !DoNotShowUntil::isVisible(item)
-        true
-    end
-
     # Listing::listable(item)
     def self.listable(item)
-        if $WavesListingService.nil? then
-            $WavesListingService = WavesListingService.new()
-        end
-        if item["mikuType"] == "Wave" then
-            return $WavesListingService.listable(item)
-        end
-        Listing::listable_core(item)
+        Memoize::evaluate("1581dbbb-4327-421a-a3c1-6a8684f6b579:#{item["uuid"]}", lambda{
+            return true if NxBalls::itemIsActive(item)
+            return false if !DoNotShowUntil::isVisible(item)
+            true
+        }, Memoize::retentionTime(300, 600))
     end
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
-        return true if NxBalls::itemIsRunning(item)
+        Memoize::evaluate("ca2ab745-5fdc-472e-bde6-b859b124d10d:#{item["uuid"]}", lambda{
 
-        return false if TmpSkip1::isSkipped(item)
+            return true if NxBalls::itemIsRunning(item)
 
-        return false if item["mikuType"] == "DesktopTx1"
-        return false if item["mikuType"] == "NxFire"
-        return false if (item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item))
+            return false if TmpSkip1::isSkipped(item)
 
-        return false if !DoNotShowUntil::isVisible(item)
-        return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
+            return false if item["mikuType"] == "DesktopTx1"
+            return false if item["mikuType"] == "NxFire"
+            return false if (item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item))
 
-        skipDirectiveOrNull = lambda {|item|
-            if item["tmpskip1"] then
-                return item["tmpskip1"]
-            end
-            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
-            if cachedDirective then
-                return JSON.parse(cachedDirective)
-            end
-        }
+            return false if !DoNotShowUntil::isVisible(item)
+            return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
-        skipTargetTimeOrNull = lambda {|item|
-            directive = skipDirectiveOrNull.call(item)
-            return nil if directive.nil?
-            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
-            (Time.new.to_f < targetTime) ? targetTime : nil
-        }
+            skipDirectiveOrNull = lambda {|item|
+                if item["tmpskip1"] then
+                    return item["tmpskip1"]
+                end
+                cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
+                if cachedDirective then
+                    return JSON.parse(cachedDirective)
+                end
+            }
 
-        return false if skipTargetTimeOrNull.call(item)
+            skipTargetTimeOrNull = lambda {|item|
+                directive = skipDirectiveOrNull.call(item)
+                return nil if directive.nil?
+                targetTime = directive["unixtime"] + directive["durationInHours"]*3600
+                (Time.new.to_f < targetTime) ? targetTime : nil
+            }
 
-        true
+            return false if skipTargetTimeOrNull.call(item)
+
+            true
+
+        }, Memoize::retentionTime(300, 600))
     end
 
     # Listing::isInterruption(item)
@@ -225,12 +220,17 @@ class Listing
         spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
         spot.contest_entry("Listing::burnersAndFires()", lambda{ Listing::burnersAndFires() })
         spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
+        spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
+        spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
+        spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
+        spot.contest_entry("DarkEnergy::mikuType(NxDrop)", lambda{ DarkEnergy::mikuType("NxDrop") })
         spot.contest_entry("NxEngines::listingItems()", lambda{ NxEngines::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
+        spot.contest_entry("Pure::pure()", lambda{ Pure::pure() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
         spot.end_contest()

@@ -24,9 +24,11 @@ class DoNotShowUntil
 
     # DoNotShowUntil::suffixString(item)
     def self.suffixString(item)
-        unixtime = (DoNotShowUntil::getUnixtimeOrNull(item) || 0)
-        return "" if unixtime.nil?
-        return "" if Time.new.to_i > unixtime
-        " (not shown until: #{Time.at(unixtime).to_s})"
+        Memoize::evaluate("e8c546fb-b0b0-4b07-a559-7a6d81f9b983:#{item["uuid"]}", lambda{
+            unixtime = (DoNotShowUntil::getUnixtimeOrNull(item) || 0)
+            return "" if unixtime.nil?
+            return "" if Time.new.to_i > unixtime
+            " (not shown until: #{Time.at(unixtime).to_s})"
+        }, Memoize::retentionTime(300, 600))
     end
 end

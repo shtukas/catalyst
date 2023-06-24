@@ -10,11 +10,11 @@ class NxEngines
 
     # NxEngines::grid()
     def self.grid()
-        core = DarkEnergy::itemOrNull(NxEngines::griduuid())
-        if core.nil? then
-            raise "(error: 7320289f-10c4-49c9-8f50-1f5fa22fcb5a) could not find reverse infinity core"
+        engine = DarkEnergy::itemOrNull(NxEngines::griduuid())
+        if engine.nil? then
+            raise "(error: 7320289f-10c4-49c9-8f50-1f5fa22fcb5a) could not find reverse infinity engine"
         end
-        core
+        engine
     end
  
     # NxEngines::gridChildren()
@@ -51,8 +51,8 @@ class NxEngines
     # -------------------------
     # IO
 
-    # NxEngines::makeCore(uuid, description, hours)
-    def self.makeCore(uuid, description, hours)
+    # NxEngines::make(uuid, description, hours)
+    def self.make(uuid, description, hours)
         {
             "uuid"          => uuid,
             "mikuType"      => "NxEngine",
@@ -65,7 +65,7 @@ class NxEngines
 
     # NxEngines::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("core description (empty for abort): ")
+        description = LucilleCore::askQuestionAnswerAsString("engine description (empty for abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
         hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
@@ -76,43 +76,45 @@ class NxEngines
             LucilleCore::pressEnterToContinue()
             return NxEngines::interactivelyIssueNewOrNull()
         end
-        core = NxEngines::makeCore(uuid, description, hours)
-        DarkEnergy::commit(core)
-        core
+        engine = NxEngines::make(uuid, description, hours)
+        DarkEnergy::commit(engine)
+        engine
     end
 
     # -------------------------
     # Data
 
-    # NxEngines::dayCompletionRatio(core)
-    def self.dayCompletionRatio(core)
-        Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/((core["hours"]*3600).to_f/5)
+    # NxEngines::dayCompletionRatio(engine)
+    def self.dayCompletionRatio(engine)
+        Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
     end
 
-    # NxEngines::periodCompletionRatio(core)
-    def self.periodCompletionRatio(core)
-        Bank::getValue(core["capsule"]).to_f/(core["hours"]*3600)
+    # NxEngines::periodCompletionRatio(engine)
+    def self.periodCompletionRatio(engine)
+        Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
     end
 
-    # NxEngines::listingCompletionRatio(core)
-    def self.listingCompletionRatio(core)
-        period = NxEngines::periodCompletionRatio(core)
-        return period if period >= 1
-        day = NxEngines::dayCompletionRatio(core)
-        return day if day >= 1
-        0.9*day + 0.1*period
+    # NxEngines::listingCompletionRatio(engine)
+    def self.listingCompletionRatio(engine)
+        Memoize::evaluate("f8dfa87e-75a2-4e49-86d8-634134727687:#{engine["uuid"]}", lambda{
+            period = NxEngines::periodCompletionRatio(engine)
+            return period if period >= 1
+            day = NxEngines::dayCompletionRatio(engine)
+            return day if day >= 1
+            0.9*day + 0.1*period
+        }, 600)
     end
 
-    # NxEngines::toString(core)
-    def self.toString(core)
+    # NxEngines::toString(engine)
+    def self.toString(engine)
         padding = XCache::getOrDefaultValue("0e067f3e-a954-4138-8336-876240b9b7dd", "0").to_i
         strings = []
 
-        strings << "⏱️  #{core["description"].ljust(padding)} (core: today: #{"#{"%6.2f" % (100*NxEngines::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
-        strings << ", period: #{"#{"%6.2f" % (100*NxEngines::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
+        strings << "⏱️  #{engine["description"].ljust(padding)} (engine: today: #{"#{"%6.2f" % (100*NxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << ", period: #{"#{"%6.2f" % (100*NxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
-        hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
-        timeSinceResetInDays = (Time.new.to_i - core["lastResetTime"]).to_f/86400
+        hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
+        timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
         itHassBeenAWeek = timeSinceResetInDays >= 7
 
         if hasReachedObjective and itHassBeenAWeek then
@@ -124,7 +126,7 @@ class NxEngines
         end
 
         if !hasReachedObjective and !itHassBeenAWeek then
-            strings << ", #{(core["hours"] - Bank::getValue(core["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
+            strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
         end
 
         if !hasReachedObjective and itHassBeenAWeek then
@@ -138,19 +140,19 @@ class NxEngines
     # NxEngines::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxEngine")
-            .select{|core| NxEngines::listingCompletionRatio(core) < 1 }
-            .sort_by{|core| NxEngines::listingCompletionRatio(core) }
+            .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
+            .sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
     end
 
-    # NxEngines::children(core)
-    def self.children(core)
-        if core["uuid"] == NxEngines::griduuid() then
+    # NxEngines::children(engine)
+    def self.children(engine)
+        if engine["uuid"] == NxEngines::griduuid() then
             return NxEngines::gridChildren()
         end
 
         items = DarkEnergy::all()
                     .select{|item| item["parent"] }
-                    .select{|item| item["parent"]["uuid"] == core["uuid"] }
+                    .select{|item| item["parent"]["uuid"] == engine["uuid"] }
 
         burners, items = items.partition{|item| item["mikuType"] == "NxBurner" }
         ondates, items = items.partition{|item| item["mikuType"] == "NxOndate" }
@@ -175,24 +177,24 @@ class NxEngines
 
     # NxEngines::maintenance_all_instances()
     def self.maintenance_all_instances()
-        padding = DarkEnergy::mikuType("NxEngine").map{|core| core["description"].size }.max
+        padding = DarkEnergy::mikuType("NxEngine").map{|engine| engine["description"].size }.max
         XCache::set("0e067f3e-a954-4138-8336-876240b9b7dd", padding)
     end
 
     # NxEngines::maintenance_leader_instance()
     def self.maintenance_leader_instance()
-        DarkEnergy::mikuType("NxEngine").each{|core| Mechanics::engine_maintenance(core) }
+        DarkEnergy::mikuType("NxEngine").each{|engine| Mechanics::engine_maintenance(engine) }
     end
 
     # NxEngines::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = DarkEnergy::mikuType("NxEngine")
-                    .reject{|core| core["uuid"] == NxEngines::griduuid() }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| item["description"] })
+        engines = DarkEnergy::mikuType("NxEngine")
+                    .reject{|engine| engine["uuid"] == NxEngines::griduuid() }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", engines, lambda{|item| item["description"] })
     end
 
-    # NxEngines::program0(core)
-    def self.program0(core)
+    # NxEngines::program0(engine)
+    def self.program0(engine)
         loop {
 
             system("clear")
@@ -201,12 +203,12 @@ class NxEngines
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             spacecontrol.putsline ""
-            spacecontrol.putsline "core:"
-            store.register(core, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, core)
+            spacecontrol.putsline "engine:"
+            store.register(engine, false)
+            spacecontrol.putsline Listing::itemToListingLine(store, engine)
 
             spacecontrol.putsline ""
-            items = NxEngines::children(core)
+            items = NxEngines::children(engine)
             Listing::printing(spacecontrol, store, items)
 
             spacecontrol.putsline ""
@@ -217,8 +219,8 @@ class NxEngines
             if input == "task" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
-                position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
-                task["parent"] = Tx8s::make(core["uuid"], position)
+                position = Tx8s::interactivelyDecidePositionUnderThisParent(engine)
+                task["parent"] = Tx8s::make(engine["uuid"], position)
                 DarkEnergy::commit(task)
                 next
             end
@@ -231,16 +233,16 @@ class NxEngines
     # NxEngines::program()
     def self.program()
         loop {
-            cores = DarkEnergy::mikuType("NxEngine").sort_by{|core| NxEngines::listingCompletionRatio(core) }
-            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| NxEngines::toString(core) })
-            break if core.nil?
-            NxEngines::program0(core)
+            engines = DarkEnergy::mikuType("NxEngine").sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
+            engine = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", engines, lambda{|engine| NxEngines::toString(engine) })
+            break if engine.nil?
+            NxEngines::program0(engine)
         }
     end
 
     # NxEngines::askAndThenGiveCoreToItemAttempt(item)
     def self.askAndThenGiveCoreToItemAttempt(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("> Add core ? ", false) then
+        if LucilleCore::askQuestionAnswerAsBoolean("> Add engine ? ", false) then
             NxEngines::interactivelySetCoreAttempt(item)
         end
     end
@@ -248,13 +250,13 @@ class NxEngines
     # NxEngines::interactivelySetCoreAttempt(item)
     def self.interactivelySetCoreAttempt(item)
         if item["mikuType"] == "NxEngine" then
-            puts "You cannot give a core to a NxEngine"
+            puts "You cannot give a engine to a NxEngine"
             LucilleCore::pressEnterToContinue()
             return
         end
-        core = NxEngines::interactivelySelectOneOrNull()
-        return if core.nil?
-        DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(core["uuid"], rand))
+        engine = NxEngines::interactivelySelectOneOrNull()
+        return if engine.nil?
+        DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(engine["uuid"], rand))
     end
 end
 

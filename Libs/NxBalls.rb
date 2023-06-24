@@ -175,9 +175,11 @@ class NxBalls
 
     # NxBalls::nxballSuffixStatusIfRelevant(item)
     def self.nxballSuffixStatusIfRelevant(item)
-        nxball = NxBalls::getNxBallOrNull(item)
-        return "" if nxball.nil?
-        " #{NxBalls::nxBallToString(nxball)}"
+        Memoize::evaluate("215286a6-db0b-44ac-a52e-443808e44920:#{item["uuid"]}", lambda{
+            nxball = NxBalls::getNxBallOrNull(item)
+            return "" if nxball.nil?
+            " #{NxBalls::nxBallToString(nxball)}"
+        }, Memoize::retentionTime(300, 600))
     end
 
     # NxBalls::runningItems()
