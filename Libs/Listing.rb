@@ -58,11 +58,9 @@ class Listing
 
     # Listing::listable(item)
     def self.listable(item)
-        Memoize::evaluate("1581dbbb-4327-421a-a3c1-6a8684f6b579:#{item["uuid"]}", lambda{
-            return true if NxBalls::itemIsActive(item)
-            return false if !DoNotShowUntil::isVisible(item)
-            true
-        })
+        return true if NxBalls::itemIsActive(item)
+        return false if !DoNotShowUntil::isVisible(item)
+        true
     end
 
     # Listing::canBeDefault(item)
@@ -292,6 +290,7 @@ class Listing
 
         loop {
 
+            puts "check code trace"
             if CommonUtils::stargateTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
@@ -305,9 +304,10 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            system("clear")
-
+            puts "Listing::items()"
             items = Listing::items()
+
+            system("clear")
 
             spacecontrol.putsline ""
             Listing::printing(spacecontrol, store, items)
