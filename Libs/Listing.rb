@@ -1,4 +1,4 @@
-# encoding: UTF-8
+
 
 class SpaceControl
 
@@ -56,11 +56,22 @@ class Listing
     # -----------------------------------------
     # Data
 
-    # Listing::listable(item)
-    def self.listable(item)
+    # Listing::listable_core(item)
+    def self.listable_core(item)
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil::isVisible(item)
         true
+    end
+
+    # Listing::listable(item)
+    def self.listable(item)
+        if $WavesListingService.nil? then
+            $WavesListingService = WavesListingService.new()
+        end
+        if item["mikuType"] == "Wave" then
+            return $WavesListingService.listable(item)
+        end
+        Listing::listable_core(item)
     end
 
     # Listing::canBeDefault(item)

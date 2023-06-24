@@ -217,3 +217,29 @@ class Waves
         }
     end
 end
+
+
+# The WavesListingService is used to speed up the listing display and is only called from Listing::listable
+# It's actually not even initalised during start and is only initialised by Listing::listable
+class WavesListingService
+    def initialize()
+        puts "Initializing Waves Listing Service"
+        @waves = DarkEnergy::mikuType("Wave")
+        @data = @waves.map{|wave|
+            {
+                "wave" => wave,
+                "listable" => Listing::listable_core(wave)
+            }
+        }
+    end
+    def listable(wave)
+        @data.each{|packet|
+            if packet["wave"]["uuid"] == wave["uuid"] and packet["listable"] then
+                return true
+            end
+        }
+        false
+    end
+end
+
+$WavesListingService = nil
