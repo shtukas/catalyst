@@ -74,8 +74,10 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxBackup")
-            .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
+        Memoize::evaluate("563da3ce-1e98-4798-b366-382cd3a9c1c1", lambda{
+            DarkEnergy::mikuType("NxBackup")
+                .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
+        })
     end
 
     # NxBackups::performDone(item)

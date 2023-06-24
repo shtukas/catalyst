@@ -40,9 +40,11 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxOndate")
-            .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
+        Memoize::evaluate("bc148d78-07f6-4ba2-aa2c-f5855d6fc7e5", lambda{
+            DarkEnergy::mikuType("NxOndate")
+                .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
+                .sort_by{|item| item["unixtime"] }
+        })
     end
 
     # ------------------
