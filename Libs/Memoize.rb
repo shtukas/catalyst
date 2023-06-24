@@ -4,7 +4,8 @@
 $InMemoryX1k23 = {}
 
 # packet:
-#     - value :
+#     - value     :
+#     - expiryTime:
 
 class Memoize
 
@@ -14,22 +15,27 @@ class Memoize
         packet = $InMemoryX1k23[computationId]
 
         if packet then
-            return packet["value"].clone
+            if Time.new.to_i < packet["expiryTime"] then
+                return packet["value"].clone
+            end
         end
 
-        packet = XCache::getOrNull(computationId)
+        packet = XCache::getOrNull("7bffca74-b01d-45c7-bc31-4c056062b722:#{computationId}")
         if packet then
             packet = JSON.parse(packet)
-            $InMemoryX1k23[computationId] = packet
-            return packet["value"]
+            if Time.new.to_i < packet["expiryTime"] then
+                $InMemoryX1k23[computationId] = packet
+                return packet["value"]
+            end
         end
 
         value = l.call()
 
         packet = {
-            "value" => value
+            "value" => value,
+            "expiryTime" => 3600 + rand*3600
         }
-        XCache::set(computationId, JSON.generate(packet))
+        XCache::set("7bffca74-b01d-45c7-bc31-4c056062b722:#{computationId}", JSON.generate(packet))
         $InMemoryX1k23[computationId] = packet
 
         value
