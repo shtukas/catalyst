@@ -82,10 +82,12 @@ class NxTasks
     def self.plates(task)
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
-        text.lines.to_a.reverse {|line|
+        text.lines.to_a.map{|line| line.strip }.select{|line| line != ""}.reverse.each {|line|
             t1 = NxTasks::descriptionToTask(line)
-            return if t1.nil?
+            next if t1.nil?
+            puts JSON.pretty_generate(t1)
             t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
+            puts JSON.pretty_generate(t1)
             DarkEnergy::commit(t1)
         }
     end

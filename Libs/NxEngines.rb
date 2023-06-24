@@ -181,6 +181,11 @@ class NxEngines
 
             spacecontrol.putsline ""
             items = NxEngines::children(engine)
+
+            if items.size > 0 then
+                items = Pure::pureFromItem(items.first) + items.drop(1)
+            end
+
             Listing::printing(spacecontrol, store, items)
 
             spacecontrol.putsline ""
