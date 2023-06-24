@@ -12,6 +12,12 @@ class Memoize
     # Memoize::evaluate(computationId, l)
     def self.evaluate(computationId, l)
 
+        prefix =  XCache::getOrNull("0D1265D6-2B54-4262-B470-DDB657E53DF5")
+        if prefix.nil? then
+            prefix = SecureRandom.hex
+            XCache::set("0D1265D6-2B54-4262-B470-DDB657E53DF5", prefix)
+        end
+
         packet = $InMemoryX1k23[computationId]
 
         if packet then
@@ -20,7 +26,7 @@ class Memoize
             end
         end
 
-        packet = XCache::getOrNull("7bffca74-b01d-45c7-bc31-4c056062b722:#{computationId}")
+        packet = XCache::getOrNull("#{prefix}:#{computationId}")
         if packet then
             packet = JSON.parse(packet)
             if Time.new.to_i < packet["expiryTime"] then
@@ -35,7 +41,7 @@ class Memoize
             "value" => value,
             "expiryTime" => 3600 + rand*3600
         }
-        XCache::set("7bffca74-b01d-45c7-bc31-4c056062b722:#{computationId}", JSON.generate(packet))
+        XCache::set("#{prefix}:#{computationId}", JSON.generate(packet))
         $InMemoryX1k23[computationId] = packet
 
         value
