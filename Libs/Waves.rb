@@ -148,7 +148,7 @@ class Waves
                 .select{|item|
                     item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
                 }
-        }, 600)
+        })
     end
 
     # -------------------------------------------------------------------------

@@ -29,6 +29,6 @@ class DoNotShowUntil
             return "" if unixtime.nil?
             return "" if Time.new.to_i > unixtime
             " (not shown until: #{Time.at(unixtime).to_s})"
-        }, Memoize::retentionTime(300, 600))
+        })
     end
 end

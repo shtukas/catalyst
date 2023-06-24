@@ -179,7 +179,7 @@ class NxBalls
             nxball = NxBalls::getNxBallOrNull(item)
             return "" if nxball.nil?
             " #{NxBalls::nxBallToString(nxball)}"
-        }, Memoize::retentionTime(300, 600))
+        })
     end
 
     # NxBalls::runningItems()

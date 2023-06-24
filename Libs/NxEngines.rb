@@ -29,9 +29,7 @@ class NxEngines
                                 .select{|task| task["deadline"].nil? }
                                 .sort_by{|item| item["unixtime"] }
                 (items.take(100) + items.reverse.take(100)).shuffle
-            },
-             86400
-        )
+            })
             .select{|item| DarkEnergy::itemOrNull(item["uuid"]) }
             .compact
     end
@@ -102,7 +100,7 @@ class NxEngines
             day = NxEngines::dayCompletionRatio(engine)
             return day if day >= 1
             0.9*day + 0.1*period
-        }, 600)
+        })
     end
 
     # NxEngines::toString(engine)

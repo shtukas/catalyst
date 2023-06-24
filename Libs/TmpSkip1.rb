@@ -6,6 +6,7 @@ class TmpSkip1
     def self.tmpskip1(item, hours)
         directive = {
             "unixtime"        => Time.new.to_f,
+            "datetime"        => Time.new.utc.iso8601,
             "durationInHours" => hours
         }
         puts JSON.pretty_generate(directive)
@@ -17,30 +18,28 @@ class TmpSkip1
 
     # TmpSkip1::skipSuffix(item)
     def self.skipSuffix(item)
-        Memoize::evaluate("eebc7d37-54e2-4902-b304-cab7b5bcb820:#{item["uuid"]}", lambda{
-            skipDirectiveOrNull = lambda {|item|
-                if item["tmpskip1"] then
-                    return item["tmpskip1"]
-                end
-                cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
-                if cachedDirective then
-                    return JSON.parse(cachedDirective)
-                end
-            }
-
-            skipTargetTimeOrNull = lambda {|item|
-                directive = skipDirectiveOrNull.call(item)
-                return nil if directive.nil?
-                targetTime = directive["unixtime"] + directive["durationInHours"]*3600
-                (Time.new.to_f < targetTime) ? targetTime : nil
-            }
-
-            if skipTargetTimeOrNull.call(item) then
-                " (tmpskip1'ed)".yellow
-            else
-                ""
+        skipDirectiveOrNull = lambda {|item|
+            if item["tmpskip1"] then
+                return item["tmpskip1"]
             end
-        }, Memoize::retentionTime(300, 600))
+            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
+            if cachedDirective then
+                return JSON.parse(cachedDirective)
+            end
+        }
+
+        skipTargetTimeOrNull = lambda {|item|
+            directive = skipDirectiveOrNull.call(item)
+            return nil if directive.nil?
+            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
+            (Time.new.to_f < targetTime) ? targetTime : nil
+        }
+
+        if skipTargetTimeOrNull.call(item) then
+            " (tmpskip1'ed)".yellow
+        else
+            ""
+        end
     end
 
     # TmpSkip1::isSkipped(item)

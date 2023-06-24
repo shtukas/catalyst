@@ -40,7 +40,7 @@ class Pure
                 return [head] + tail if children.empty?
                 listing = children + [head] + tail
             }
-        }, Memoize::retentionTime(300, 600))
+        })
     end
 
     # Pure::pureFromItem(item)

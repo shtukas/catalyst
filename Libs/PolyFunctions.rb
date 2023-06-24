@@ -101,6 +101,6 @@ class PolyFunctions
     def self.toString(item)
         Memoize::evaluate("6530632f-3cb8-4d4c-98b6-16faa99d27a1:#{item["uuid"]}", lambda{
             PolyFunctions::toString_core(item)
-        }, Memoize::retentionTime(300, 600))
+        })
     end
 end

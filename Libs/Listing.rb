@@ -62,13 +62,12 @@ class Listing
             return true if NxBalls::itemIsActive(item)
             return false if !DoNotShowUntil::isVisible(item)
             true
-        }, Memoize::retentionTime(300, 600))
+        })
     end
 
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         Memoize::evaluate("ca2ab745-5fdc-472e-bde6-b859b124d10d:#{item["uuid"]}", lambda{
-
             return true if NxBalls::itemIsRunning(item)
 
             return false if TmpSkip1::isSkipped(item)
@@ -100,37 +99,12 @@ class Listing
             return false if skipTargetTimeOrNull.call(item)
 
             true
-
-        }, Memoize::retentionTime(300, 600))
+        })
     end
 
     # Listing::isInterruption(item)
     def self.isInterruption(item)
         item["interruption"]
-    end
-
-    # Listing::burnersAndFires()
-    def self.burnersAndFires()
-
-        burners = DarkEnergy::mikuType("NxBurner")
-
-        fires = DarkEnergy::mikuType("NxFire")
-
-        items = [
-            Desktop::listingItems(),
-            (burners + fires).sort_by{|item| item["unixtime"] }
-        ]
-            .flatten
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if !selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected + [item]
-                else
-                    selected
-                end
-            }
-
-        items
     end
 
     # Listing::items()
@@ -218,7 +192,6 @@ class Listing
         spot.contest_entry("DarkEnergy::mikuType(NxBurner)", lambda{ DarkEnergy::mikuType("NxBurner") })
         spot.contest_entry("DarkEnergy::mikuType(NxDrop)", lambda{ DarkEnergy::mikuType("NxDrop") })
         spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
-        spot.contest_entry("Listing::burnersAndFires()", lambda{ Listing::burnersAndFires() })
         spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
@@ -332,6 +305,7 @@ class Listing
 
             system("clear")
 
+            spacecontrol.putsline ""
             Listing::printing(spacecontrol, store, Listing::items())
 
             puts ""

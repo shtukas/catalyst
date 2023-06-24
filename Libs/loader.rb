@@ -180,10 +180,6 @@ require_relative "Waves.rb"
 
 # ------------------------------------------------------------
 
-$bank_database_semaphore = Mutex.new
-$dnsu_database_semaphore = Mutex.new
-$owner_items_mapping_database_semaphore = Mutex.new
-$links_database_semaphore = Mutex.new
-$arrows_database_semaphore = Mutex.new
+$memoize_semaphore_1 = Mutex.new
 
 # ------------------------------------------------------------
