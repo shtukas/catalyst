@@ -22,8 +22,20 @@ class Pure
             .first(6)
     end
 
-    # Pure::pure()
-    def self.pure()
+    # Pure::pureFromItem(item)
+    def self.pureFromItem(item)
+        listing = [item]
+        loop {
+            head = listing.first
+            tail = listing.drop(1)
+            children = Pure::childrenInitInRelevantOrder(head)
+            return [head] + tail if children.empty?
+            listing = children + [head] + tail
+        }
+    end
+
+    # Pure::energy()
+    def self.energy()
         listing = DarkEnergy::mikuType("NxEngine")
                     .select{|engine| DoNotShowUntil::isVisible(engine) }
                     .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
@@ -41,29 +53,17 @@ class Pure
         }
     end
 
-    # Pure::pureFromItem(item)
-    def self.pureFromItem(item)
-        listing = [item]
-        loop {
-            head = listing.first
-            tail = listing.drop(1)
-            children = Pure::childrenInitInRelevantOrder(head)
-            return [head] + tail if children.empty?
-            listing = children + [head] + tail
-        }
-    end
-
-    # Pure::bottom()
-    def self.bottom()
+    # Pure::infinity()
+    def self.infinity()
         Memoize::evaluate("32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", lambda{
-            puts "Computing Pure::bottom() ..."
+            puts "Computing Pure::infinity() ..."
             items = DarkEnergy::mikuType("NxTask")
                             .select{|task| task["parent"].nil? }
                             .select{|task| task["engine"].nil? }
                             .select{|task| task["deadline"].nil? }
                             .sort_by{|item| item["unixtime"] }
             (items.take(100) + items.reverse.take(100)).shuffle
-        }, 86400)
+        })
             .select{|item| DarkEnergy::itemOrNull(item["uuid"]) }
             .compact
     end

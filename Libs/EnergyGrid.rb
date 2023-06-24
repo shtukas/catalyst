@@ -15,12 +15,12 @@ class EnergyGrid
         engine
     end
  
-    # EnergyGrid::gridChildren()
-    def self.gridChildren()
+    # EnergyGrid::items()
+    def self.items()
         items = Memoize::evaluate(
             "32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", 
             lambda{
-                puts "Computing Pure::bottom() ..."
+                puts "Computing EnergyGrid::items() ..."
                 items = DarkEnergy::mikuType("NxTask")
                                 .select{|task| task["parent"].nil? }
                                 .select{|task| task["engine"].nil? }
@@ -35,6 +35,6 @@ class EnergyGrid
 
     # EnergyGrid::itemBelongsToEnergyGrid(item)
     def self.itemBelongsToEnergyGrid(item)
-        EnergyGrid::gridChildren().map{|item| item["uuid"] }.include?(item["uuid"])
+        EnergyGrid::items().map{|item| item["uuid"] }.include?(item["uuid"])
     end
 end

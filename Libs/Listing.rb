@@ -117,13 +117,13 @@ def self.canBeDefault(item)
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
-            Pure::pure(),
+            Pure::energy(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
 
         if items.empty? then
-            items = Pure::bottom()
+            items = Pure::infinity()
         end
 
         if NxTimes::hasPendingTime() then
@@ -199,7 +199,7 @@ def self.canBeDefault(item)
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
-        spot.contest_entry("Pure::pure()", lambda{ Pure::pure() })
+        spot.contest_entry("Pure::energy()", lambda{ Pure::energy() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
         spot.end_contest()
@@ -211,7 +211,7 @@ def self.canBeDefault(item)
         spot.end_unit()
 
         spot.start_unit("pures")
-        pures = Pure::pure()
+        pures = Pure::energy()
         spot.end_unit()
 
         spot.start_unit("Listing::items()")

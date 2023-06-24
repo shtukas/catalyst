@@ -100,7 +100,7 @@ class NxEngines
     # NxEngines::children(engine)
     def self.children(engine)
         if engine["uuid"] == EnergyGrid::griduuid() then
-            return EnergyGrid::gridChildren()
+            return EnergyGrid::items()
         end
 
         items = DarkEnergy::all()
