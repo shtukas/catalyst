@@ -173,6 +173,25 @@ class NxEngines
     # -------------------------
     # Ops
 
+    # NxEngines::maintenance_single_engine(engine)
+    def self.maintenance_single_engine(engine)
+        # This serves engine and cores.
+
+        return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
+        return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
+        puts "> I am about to reset engine: #{PolyFunctions::toString(engine)}"
+        LucilleCore::pressEnterToContinue()
+        Bank::reset(engine["capsule"])
+        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
+            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
+            if hours.size > 0 then
+                engine["hours"] = hours.to_f
+            end
+        end
+        engine["lastResetTime"] = Time.new.to_i
+        DarkEnergy::commit(engine)
+    end
+
     # NxEngines::maintenance_all_instances()
     def self.maintenance_all_instances()
         padding = DarkEnergy::mikuType("NxEngine").map{|engine| engine["description"].size }.max
@@ -181,7 +200,7 @@ class NxEngines
 
     # NxEngines::maintenance_leader_instance()
     def self.maintenance_leader_instance()
-        DarkEnergy::mikuType("NxEngine").each{|engine| Mechanics::engine_maintenance(engine) }
+        DarkEnergy::mikuType("NxEngine").each{|engine| NxEngines::maintenance_single_engine(engine) }
     end
 
     # NxEngines::interactivelySelectOneOrNull()

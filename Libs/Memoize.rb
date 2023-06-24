@@ -62,7 +62,6 @@ Thread.new {
         $memoize_semaphore_1.synchronize {
             d2 = $Queue9CD2.shift
         }
-        puts "> computation"
         value = d2["lambda"].call()
         packet = {
             "value" => value

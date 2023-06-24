@@ -160,7 +160,6 @@ require_relative "NxDrops.rb"
 require_relative "NxEngines.rb"
 
 require_relative "Memoize.rb"
-require_relative "Mechanics.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

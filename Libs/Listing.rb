@@ -240,7 +240,6 @@ class Listing
              NxBackups::maintenance()
              NxBurners::maintenance()
              NxEngines::maintenance_leader_instance()
-             NxEngines::maintenance()
         end
         NxEngines::maintenance_all_instances()
     end
@@ -293,20 +292,34 @@ class Listing
 
         loop {
 
+            puts "4"
+
             if CommonUtils::stargateTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
             end
 
+            puts "5"
+
             Listing::maintenance()
+
+            puts "6"
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
+            puts "7"
+
             system("clear")
 
+            puts "8"
+
+            items = Listing::items()
+
+            puts "9"
+
             spacecontrol.putsline ""
-            Listing::printing(spacecontrol, store, Listing::items())
+            Listing::printing(spacecontrol, store, items)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
