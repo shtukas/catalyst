@@ -206,7 +206,7 @@ class NxEngines
     def self.program()
         loop {
             engines = DarkEnergy::mikuType("NxEngine").sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
-            engine = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", engines, lambda{|engine| NxEngines::toString(engine) })
+            engine = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", engines, lambda{|engine| "#{NxEngines::toString(engine)}#{DoNotShowUntil::suffixString(engine)}" })
             break if engine.nil?
             NxEngines::program0(engine)
         }

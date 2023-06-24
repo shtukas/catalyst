@@ -288,17 +288,9 @@ def self.canBeDefault(item)
             }
         }
 
-        Thread.new {
-            sleep 60
-            loop {
-                latestCodeTrace = CommonUtils::catalystTraceCode()
-                sleep 60
-            }
-        }
-
         loop {
 
-            if latestCodeTrace != initialCodeTrace then
+            if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
             end
