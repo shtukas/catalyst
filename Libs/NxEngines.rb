@@ -40,13 +40,6 @@ class NxEngines
     end
 
     # -------------------------
-
-    # NxEngines::infinityDepth()
-    def self.infinityDepth()
-        100
-    end
-
-    # -------------------------
     # IO
 
     # NxEngines::make(uuid, description, hours)
