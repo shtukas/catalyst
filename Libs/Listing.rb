@@ -279,7 +279,7 @@ class Listing
     # Listing::main()
     def self.main()
 
-        initialCodeTrace = CommonUtils::stargateTraceCode()
+        initialCodeTrace = CommonUtils::catalystTraceCode()
 
         Thread.new {
             loop {
@@ -291,7 +291,7 @@ class Listing
         loop {
 
             puts "check code trace"
-            if CommonUtils::stargateTraceCode() != initialCodeTrace then
+            if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
             end

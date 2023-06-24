@@ -371,11 +371,10 @@ class CommonUtils
         Digest::SHA1.hexdigest(rtraces.join(":"))
     end
 
-    # CommonUtils::stargateTraceCode()
-    def self.stargateTraceCode()
+    # CommonUtils::catalystTraceCode()
+    def self.catalystTraceCode()
         roots = [
-            "#{File.dirname(__FILE__)}/..",
-            "#{Config::userHomeDirectory()}/Galaxy/Software/Lucille-Ruby-Libraries"
+            "#{File.dirname(__FILE__)}/.."
         ]
         CommonUtils::locationTraceCodeWithMultipleRoots(roots)
     end
