@@ -64,40 +64,38 @@ class Listing
     end
 
     # Listing::canBeDefault(item)
-    def self.canBeDefault(item)
-        Memoize::evaluate("ca2ab745-5fdc-472e-bde6-b859b124d10d:#{item["uuid"]}", lambda{
-            return true if NxBalls::itemIsRunning(item)
+def self.canBeDefault(item)
+        return true if NxBalls::itemIsRunning(item)
 
-            return false if TmpSkip1::isSkipped(item)
+        return false if TmpSkip1::isSkipped(item)
 
-            return false if item["mikuType"] == "DesktopTx1"
-            return false if item["mikuType"] == "NxFire"
-            return false if (item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item))
+        return false if item["mikuType"] == "DesktopTx1"
+        return false if item["mikuType"] == "NxFire"
+        return false if (item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item))
 
-            return false if !DoNotShowUntil::isVisible(item)
-            return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
+        return false if !DoNotShowUntil::isVisible(item)
+        return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
-            skipDirectiveOrNull = lambda {|item|
-                if item["tmpskip1"] then
-                    return item["tmpskip1"]
-                end
-                cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
-                if cachedDirective then
-                    return JSON.parse(cachedDirective)
-                end
-            }
+        skipDirectiveOrNull = lambda {|item|
+            if item["tmpskip1"] then
+                return item["tmpskip1"]
+            end
+            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
+            if cachedDirective then
+                return JSON.parse(cachedDirective)
+            end
+        }
 
-            skipTargetTimeOrNull = lambda {|item|
-                directive = skipDirectiveOrNull.call(item)
-                return nil if directive.nil?
-                targetTime = directive["unixtime"] + directive["durationInHours"]*3600
-                (Time.new.to_f < targetTime) ? targetTime : nil
-            }
+        skipTargetTimeOrNull = lambda {|item|
+            directive = skipDirectiveOrNull.call(item)
+            return nil if directive.nil?
+            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
+            (Time.new.to_f < targetTime) ? targetTime : nil
+        }
 
-            return false if skipTargetTimeOrNull.call(item)
+        return false if skipTargetTimeOrNull.call(item)
 
-            true
-        })
+        true
     end
 
     # Listing::isInterruption(item)
