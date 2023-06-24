@@ -296,7 +296,6 @@ def self.canBeDefault(item)
             }
         }
 
-
         loop {
 
             if latestCodeTrace != initialCodeTrace then
