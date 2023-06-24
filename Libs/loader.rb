@@ -140,6 +140,8 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DarkSpace.rb"
 
+require_relative "EnergyGrid.rb"
+
 require_relative "Galaxy.rb"
 
 require_relative "Interpreting.rb"

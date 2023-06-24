@@ -11,8 +11,8 @@ class Tx8s
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        if parent["uuid"] == NxEngines::griduuid() then
-            return NxEngines::gridChildren()
+        if parent["uuid"] == EnergyGrid::griduuid() then
+            return EnergyGrid::gridChildren()
         end
 
         DarkEnergy::mikuType("NxTask")

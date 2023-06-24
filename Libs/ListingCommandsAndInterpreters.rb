@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | jedi | engine",
             "divings       : anniversaries | ondates | waves | burners | desktop | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -146,32 +146,32 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            engine = NxEngines::interactivelyIssueNewOrNull()
-            return if engine.nil?
-            puts JSON.pretty_generate(engine)
-            NxEngines::interactivelySetCoreAttempt(engine)
-            return
-        end
-
-        if Interpreting::match("engines", input) then
-            NxEngines::program()
-            return
-        end
-
-        if Interpreting::match("engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxEngines::interactivelySetCoreAttempt(item)
-            return
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set engine at default item", "create new engine"])
+            return if option.nil?
+            if option == "set engine at default item" then
+                item = store.getDefault()
+                return if item.nil?
+                NxEngines::interactivelySetEngineAttempt(item)
+                return
+            end
+            if option == "create new engine" then
+                engine = NxEngines::interactivelyIssueNewOrNull()
+                return if engine.nil?
+                puts JSON.pretty_generate(engine)
+                return
+            end
         end
 
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxEngines::interactivelySetCoreAttempt(item)
+            NxEngines::interactivelySetEngineAttempt(item)
+            return
+        end
+
+        if Interpreting::match("engines", input) then
+            NxEngines::program()
             return
         end
 
@@ -247,7 +247,7 @@ class ListingCommandsAndInterpreters
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
             puts PolyFunctions::toString(item)
-            NxEngines::interactivelySetCoreAttempt(item)
+            NxEngines::interactivelySetEngineAttempt(item)
             return
         end
 
@@ -258,7 +258,7 @@ class ListingCommandsAndInterpreters
                 return if item.nil?
                 puts JSON.pretty_generate(item)
                 puts PolyFunctions::toString(item)
-                NxEngines::interactivelySetCoreAttempt(item)
+                NxEngines::interactivelySetEngineAttempt(item)
             }
             return
         end

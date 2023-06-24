@@ -278,6 +278,12 @@ class PolyActions
 
         NxBalls::stop(item)
 
+        if Tx8s::childrenInOrder(item).size > 0 then
+            puts "Found Tx8 children for '#{PolyFunctions::toString(item).green}'. Cannot be destroyed"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])

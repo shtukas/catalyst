@@ -25,8 +25,8 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" and NxEngines::itemBelongsToEnergyGrid(item) then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(NxEngines::grid())
+        if item["mikuType"] == "NxTask" and EnergyGrid::itemBelongsToEnergyGrid(item) then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(EnergyGrid::grid())
         end
 
         accounts.reduce([]){|as, account|
