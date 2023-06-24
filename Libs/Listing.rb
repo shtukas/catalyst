@@ -279,6 +279,8 @@ def self.canBeDefault(item)
 
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
+        latestCodeTrace = initialCodeTrace
+
         Thread.new {
             loop {
                 Listing::checkForCodeUpdates()
@@ -286,15 +288,23 @@ def self.canBeDefault(item)
             }
         }
 
+        Thread.new {
+            sleep 60
+            loop {
+                latestCodeTrace = CommonUtils::catalystTraceCode()
+                sleep 60
+            }
+        }
+
+
         loop {
 
-            if CommonUtils::catalystTraceCode() != initialCodeTrace then
+            if latestCodeTrace != initialCodeTrace then
                 puts "Code change detected"
                 break
             end
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
-                puts "Listing::maintenance()"
                 Listing::maintenance()
             end
 
