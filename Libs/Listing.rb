@@ -108,6 +108,7 @@ class Listing
 
         items = [
             NxBalls::runningItems(),
+            NxTimes::listingItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -119,23 +120,10 @@ class Listing
             DarkEnergy::mikuType("NxDrop"),
             NxThreads::listingItems(),
             Pure::energy(),
+            Pure::infinity()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-
-        if items.empty? then
-            items = Pure::infinity()
-        end
-
-        if NxTimes::hasPendingTime() then
-            items = NxTimes::listingItems() + items
-        else
-            items = items.take(1) + NxTimes::listingItems() + items.drop(1)
-        end
-
-        return [] if items.empty?
-
-        items = Pure::pureFromItem(items.first) + items.drop(1)
 
         items
             .select{|item| Listing::listable(item) }

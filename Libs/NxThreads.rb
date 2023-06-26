@@ -1,6 +1,9 @@
 
 class NxThreads
 
+    # ----------------------------------------------
+    # Building
+
     # NxThreads::threadTypes()
     def self.threadTypes()
         [
@@ -27,6 +30,9 @@ class NxThreads
             return item["type"]
         }
     end
+
+    # ----------------------------------------------
+    # Building
 
     # NxThreads::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()

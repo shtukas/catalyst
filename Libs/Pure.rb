@@ -3,6 +3,10 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
+        if item["mikuType"] == "NxThread" then
+            return NxEngines::engineThreadsInRTOrder(engine)
+        end
+
         Tx8s::childrenInOrder(item)
             .reduce([]){|selected, item|
                 if selected.size >= 6 then
@@ -60,7 +64,6 @@ class Pure
             items = DarkEnergy::mikuType("NxTask")
                             .select{|task| task["parent"].nil? }
                             .select{|task| task["engine"].nil? }
-                            .select{|task| task["deadline"].nil? }
                             .sort_by{|item| item["unixtime"] }
             (items.take(100) + items.reverse.take(100)).shuffle
         })

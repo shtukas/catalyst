@@ -125,6 +125,15 @@ class NxEngines
         parent
     end
 
+    # NxEngines::engineThreadsInRTOrder(engine)
+    def self.engineThreadsInRTOrder(engine)
+        # the engine to threads genealogy is a bit different, because we are not linking a thread to an engine using 
+        # a Tx8, instead the thread carries a set of engineuuids
+        DarkEnergy::mikuType("NxThread")
+            .select{|thread| thread["engineuuids"] and thread["engineuuids"].include?(engine["uuid"]) }
+            .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
+    end
+
     # -------------------------
     # Ops
 

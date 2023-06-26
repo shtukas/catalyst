@@ -57,7 +57,19 @@ class Tx8s
 
     # Tx8s::interactivelyDecideAndSetParent(item)
     def self.interactivelyDecideAndSetParent(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine", "deadline"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine"])
+        return if option.nil?
+        if option == "core" then
+            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
+        end
+        if option == "engine" then
+            NxEngines::attachEngineAttempt(item)
+        end
+    end
+
+    # Tx8s::interactivelyDecideAndSetThreadParent(item)
+    def self.interactivelyDecideAndSetThreadParent(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine"])
         return if option.nil?
         if option == "core" then
             DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())

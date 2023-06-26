@@ -24,7 +24,6 @@ class EnergyGrid
                 items = DarkEnergy::mikuType("NxTask")
                                 .select{|task| task["parent"].nil? }
                                 .select{|task| task["engine"].nil? }
-                                .select{|task| task["deadline"].nil? }
                                 .sort_by{|item| item["unixtime"] }
                 (items.take(100) + items.reverse.take(100)).shuffle
             })
