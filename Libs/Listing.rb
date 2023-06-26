@@ -117,7 +117,6 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
-            NxThreads::listingItems(),
             Pure::energy()
         ]
             .flatten
@@ -141,7 +140,7 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxEngines::engineAsParentSuffixString(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

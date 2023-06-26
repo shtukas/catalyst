@@ -134,6 +134,16 @@ class NxEngines
             .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
     end
 
+    # NxEngines::engineAsParentSuffixString(item)
+    def self.engineAsParentSuffixString(item)
+        return "" if item["parent"].nil?
+        parentuuid = item["parent"]["uuid"]
+        parent = DarkEnergy::itemOrNull(parentuuid)
+        return "" if parent.nil?
+        return "" if parent["mikuType"] != "NxEngine"
+        " (#{parent["description"].green})"
+    end
+
     # -------------------------
     # Ops
 

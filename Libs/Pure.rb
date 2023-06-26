@@ -3,8 +3,8 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
-        if item["mikuType"] == "NxThread" then
-            return NxEngines::engineThreadsInRTOrder(engine)
+        if item["mikuType"] == "NxEngine" then
+            return NxEngines::engineThreadsInRTOrder(item)
         end
 
         Tx8s::childrenInOrder(item)
