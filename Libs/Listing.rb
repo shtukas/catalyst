@@ -64,7 +64,7 @@ class Listing
     end
 
     # Listing::canBeDefault(item)
-def self.canBeDefault(item)
+    def self.canBeDefault(item)
         return true if NxBalls::itemIsRunning(item)
 
         return false if TmpSkip1::isSkipped(item)
@@ -117,6 +117,7 @@ def self.canBeDefault(item)
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
+            NxThreads::listingItems(),
             Pure::energy(),
         ]
             .flatten

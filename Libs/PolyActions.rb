@@ -68,6 +68,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             return
@@ -257,6 +262,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxThread" then
+            if Tx8s::childrenInOrder(item).size > 0 then
+                puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxThreads::toString(item).green} ? '", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
             return
@@ -312,12 +329,29 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxThread" then
+            if Tx8s::childrenInOrder(item).size > 0 then
+                puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxThreads::toString(item).green} ? '", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
 
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
+
+        if item["mikuType"] == "NxThread" then
+            PolyActions::access(item)
+            return
+        end
 
         if item["mikuType"] == "NxBackup" then
             PolyActions::access(item)
@@ -424,6 +458,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxThread" then
+            PolyActions::access(item)
+            return
+        end
+
         puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"
         LucilleCore::pressEnterToContinue()
     end
@@ -451,12 +490,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "There is no description edit for NxBackups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
-            return
-        end
-        if item["mikuType"] == "NxDeadline" then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            return if target.nil?
-            PolyActions::editDescription(target)
             return
         end
         puts "edit description:"

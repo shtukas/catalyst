@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | engine",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | engine | thread",
             "makers (sc)   : jedi | netflix",
             "divings       : anniversaries | ondates | waves | burners | desktop | engines",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
@@ -70,6 +70,13 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("drop", input) then
             NxDrops::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("thread", input) then
+            thread = NxThreads::interactivelyIssueNewOrNull()
+            return if thread.nil?
+            puts JSON.pretty_generate(thread)
             return
         end
 
