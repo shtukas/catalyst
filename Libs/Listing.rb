@@ -105,7 +105,6 @@ class Listing
 
     # Listing::items()
     def self.items()
-
         items = [
             NxBalls::runningItems(),
             NxTimes::listingItems(),
@@ -119,8 +118,7 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
             NxThreads::listingItems(),
-            Pure::energy(),
-            Pure::infinity()
+            Pure::energy()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

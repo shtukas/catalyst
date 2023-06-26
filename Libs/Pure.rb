@@ -42,9 +42,17 @@ class Pure
     def self.energy()
         listing = DarkEnergy::mikuType("NxEngine")
                     .select{|engine| DoNotShowUntil::isVisible(engine) }
-                    .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
-                    .sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
+                    .select{|engine| NxEngines::engineCompletionRatio(engine) < 1 }
+                    .sort_by{|engine| NxEngines::engineCompletionRatio(engine) }
         listing = CommonUtils::putFirst(listing, lambda{|engine| NxBalls::itemIsRunning(engine) })
+
+        if listing.empty? then
+            listing = DarkEnergy::mikuType("NxThread")
+        end
+
+        if listing.empty? then
+            listing = Pure::infinity()
+        end
 
         return [] if listing.empty?
 

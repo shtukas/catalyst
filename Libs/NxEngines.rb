@@ -47,8 +47,8 @@ class NxEngines
         Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
     end
 
-    # NxEngines::listingCompletionRatio(engine)
-    def self.listingCompletionRatio(engine)
+    # NxEngines::engineCompletionRatio(engine)
+    def self.engineCompletionRatio(engine)
         Memoize::evaluate("f8dfa87e-75a2-4e49-86d8-634134727687:#{engine["uuid"]}", lambda{
             period = NxEngines::periodCompletionRatio(engine)
             return period if period >= 1
@@ -93,8 +93,8 @@ class NxEngines
     # NxEngines::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxEngine")
-            .select{|engine| NxEngines::listingCompletionRatio(engine) < 1 }
-            .sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
+            .select{|engine| NxEngines::engineCompletionRatio(engine) < 1 }
+            .sort_by{|engine| NxEngines::engineCompletionRatio(engine) }
     end
 
     # NxEngines::children(engine)
@@ -219,7 +219,7 @@ class NxEngines
     # NxEngines::program()
     def self.program()
         loop {
-            engines = DarkEnergy::mikuType("NxEngine").sort_by{|engine| NxEngines::listingCompletionRatio(engine) }
+            engines = DarkEnergy::mikuType("NxEngine").sort_by{|engine| NxEngines::engineCompletionRatio(engine) }
             engine = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine", engines, lambda{|engine| "#{NxEngines::toString(engine)}#{DoNotShowUntil::suffixString(engine)}" })
             break if engine.nil?
             NxEngines::program0(engine)
