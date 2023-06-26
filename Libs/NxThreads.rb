@@ -61,6 +61,14 @@ class NxThreads
             store = ItemStore.new()
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
+            if thread["engineuuids"] then
+                spacecontrol.putsline ""
+                thread["engineuuids"].each{|engineuuid|
+                    engine = DarkEnergy::itemOrNull(engineuuid)
+                    puts "- #{NxEngines::toString(engine)}"
+                }
+            end
+
             spacecontrol.putsline ""
             spacecontrol.putsline "thread:"
             store.register(thread, false)
@@ -76,6 +84,9 @@ class NxThreads
             Listing::printing(spacecontrol, store, items)
 
             spacecontrol.putsline ""
+            spacecontrol.putsline "task | engines"
+
+            spacecontrol.putsline ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -86,6 +97,21 @@ class NxThreads
                 position = Tx8s::interactivelyDecidePositionUnderThisParent(thread)
                 task["parent"] = Tx8s::make(thread["uuid"], position)
                 DarkEnergy::commit(task)
+                next
+            end
+
+            if input == "engines" then
+                eToE = lambda {|engineuuid|
+                    engine = DarkEnergy::itemOrNull(engineuuid)
+                    return "(engine not found for engineuuid: #{engineuuid})" if engine.nil?
+                    PolyFunctions::toString(engine)
+                }
+
+                selected = (thread["engineuuids"] || [])
+                notSelected = DarkEnergy::mikuType("NxEngine").map{|e| e["uuid"] } - selected
+                engineuuids, _ = LucilleCore::selectZeroOrMore("engines", selected, notSelected, lambda{|engineuuid| eToE.call(engineuuid) })
+                thread["engineuuids"] = engineuuids
+                DarkEnergy::commit(thread)
                 next
             end
 
