@@ -197,6 +197,9 @@ class DarkEnergy
 
     # DarkEnergy::commit(item)
     def self.commit(item)
+        if item.nil? then
+            raise "(error: 9263caa2-01d2-45d2-a179-d9bc848fbadc) DarkEnergy::commit, trying to commit a null item"
+        end
         folderpath = "#{ENV['HOME']}/Galaxy/DataHub/DeepSpace/DarkEnergy/02-journal"
         filename = "#{PositiveSpace::timeStringL22()}.item.json"
         filepath = "#{folderpath}/#{filename}"
