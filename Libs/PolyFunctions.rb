@@ -7,7 +7,7 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => item["mikuType"],
+            "description" => "#{item["mikuType"]}:#{item["description"]}",
             "number"      => item["uuid"]
         }
 
@@ -20,13 +20,24 @@ class PolyFunctions
 
         if item["mikuType"] == "NxEngine" then
             accounts << {
-                "description" => "NxEngine capsule",
+                "description" => "NxEngine:#{item["description"]}:capsule",
                 "number"      => item["capsule"]
             }
         end
 
         if item["mikuType"] == "NxTask" and EnergyGrid::itemBelongsToEnergyGrid(item) then
             accounts = accounts + PolyFunctions::itemToBankingAccounts(EnergyGrid::grid())
+        end
+
+        if item["mikuType"] == "NxThread" then
+            if item["engineuuids"] then
+                item["engineuuids"].each{|engineuuid|
+                    engine = DarkEnergy::itemOrNull(engineuuid)
+                    if engine then
+                        accounts = accounts + PolyFunctions::itemToBankingAccounts(engine)
+                    end
+                }
+            end
         end
 
         accounts.reduce([]){|as, account|
