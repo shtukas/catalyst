@@ -85,43 +85,58 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("box", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("options", ["send default task to box", "create new box"])
-            return if option.nil?
+            puts "This call creates a new box, if you want to box a task, call `box *`"
+            return if !LucilleCore::askQuestionAnswerAsBoolean("> proceed ? ")
+            box = NxBoxes::interactivelySelectOneOrNull()
+            return if box.nil?
+            puts JSON.pretty_generate(box)
+            return
+        end
 
-            if option == "send default task to box" then
-                item = store.getDefault()
-                return if item.nil?
-                NxBoxes::interactivelySelectParentAndAttachAttempt(item)
-            end
+        if Interpreting::match("box *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            box = NxBoxes::architectOrNull()
+            return if box.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, box)
+            return
+        end
 
-            if option == "create new box" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                return if thread.nil?
-                puts JSON.pretty_generate(thread)
-            end
+        if Interpreting::match("task", input) then
+            thread = NxThreads::architectOrNull() # We start by choosing the thread because tasks need to have a parent thread
+            return if thread.nil?
+            task = NxTasks::interactivelyIssueNewOrNull()
+            return if task.nil?
+            puts JSON.pretty_generate(task)
+            Tx8s::interactivelyPlaceItemAtParentAttempt(task, thread)
             return
         end
 
         if Interpreting::match("thread", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("options", ["send default task to thread", "create new thread"])
-            return if option.nil?
+            puts "This call creates a new thread, if you want to thread a task, call `thread *`"
+            return if !LucilleCore::askQuestionAnswerAsBoolean("> proceed ? ")
+            core = TxCores::interactivelySelectOneOrNull() # We start by choosing the core because threads need to have a parent core
+            return if core.nil?
+            thread = NxThreads::interactivelyIssueNewOrNull()
+            return if thread.nil?
+            puts JSON.pretty_generate(thread)
+            thread["parent"] = Tx8s::make(core["uuid"], 0)
+            DarkEnergy::commit(thread)
+            return
+        end
 
-            if option == "send default task to thread" then
-                item = store.getDefault()
-                return if item.nil?
-                thread = NxThreads::interactivelySelectOneOrNull()
-                return if thread.nil?
-                Tx8s::interactivelyPplaceItemAtParentAttempt(item, thread)
+        if Interpreting::match("thread *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "The function thread only applies to tasks as a way to relocate to another thread"
+                LucilleCore::pressEnterToContinue()
             end
-
-            if option == "create new thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                return if thread.nil?
-                puts JSON.pretty_generate(thread)
-                core = TxCores::interactivelySelectOneOrNull()
-                thread["parent"] = Tx8s::make(core["uuid"], 0)
-                DarkEnergy::commit(thread)
-            end
+            thread = NxThreads::architectOrNull()
+            return if thread.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
             return
         end
 
@@ -152,7 +167,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
             end
             core = TxCores::interactivelySelectOneOrNull()
-            Tx8s::interactivelyPplaceItemAtParentAttempt(item, core)
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
             return
         end
 

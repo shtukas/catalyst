@@ -35,6 +35,14 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxThreads::toString(thread) })
     end
 
+    # NxThreads::architectOrNull()
+    def self.architectOrNull()
+        thread = NxThreads::interactivelySelectOneOrNull()
+        return thread if thread
+        puts "No thread selected. Making a new one."
+        NxThreads::interactivelyIssueNewOrNull()
+    end
+
     # NxThreads::program1(thread)
     def self.program1(thread)
         loop {

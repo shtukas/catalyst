@@ -43,8 +43,8 @@ class NxBoxes
         LucilleCore::selectEntityFromListOfEntitiesOrNull("box", ships, lambda{|box| NxBoxes::toString(box) })
     end
 
-    # NxBoxes::architectThreadOrNull()
-    def self.architectThreadOrNull()
+    # NxBoxes::architectOrNull()
+    def self.architectOrNull()
         box = NxBoxes::interactivelySelectOneOrNull()
         return box if box
         puts "No box selected. Making a new one."
@@ -105,13 +105,6 @@ class NxBoxes
             return if box.nil?
             NxBoxes::program1(box)
         }
-    end
-
-    # NxBoxes::interactivelySelectParentAndAttachAttempt(item)
-    def self.interactivelySelectParentAndAttachAttempt(item)
-        box = NxBoxes::architectThreadOrNull()
-        return if box.nil?
-        Tx8s::interactivelyPutIntoParentAttempt(item, box)
     end
 end
 
