@@ -106,7 +106,6 @@ class Listing
     # Listing::items()
     def self.items()
         items = [
-            NxBalls::runningItems(),
             NxTimes::listingItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
