@@ -88,7 +88,7 @@ class NxThreads
     # NxThreads::toStringForListing(thread)
     def self.toStringForListing(thread)
         padding = XCache::getOrDefaultValue("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", "0").to_i
-        engineSuffix = thread["engine"] ? " ⏱️ #{"%5.2f" % (TxEngines::dayCompletionRatio(thread["engine"])*100)} %" : ""
+        engineSuffix = thread["engine"] ? " ⏱️  #{"%6.2f" % (TxEngines::dayCompletionRatio(thread["engine"])*100)} %" : ""
         "🪔 #{thread["description"].ljust(padding)}#{engineSuffix}"
     end
 
