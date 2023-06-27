@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | ship (<n>)  | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -84,10 +84,39 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("box", input) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("options", ["send default task to box", "create new box"])
+            return if option.nil?
+
+            if option == "send default task to box" then
+                item = store.getDefault()
+                return if item.nil?
+                NxBoxes::interactivelySelectParentAndAttachAttempt(item)
+            end
+
+            if option == "create new box" then
+                ship = NxShips::interactivelyIssueNewOrNull()
+                return if ship.nil?
+                puts JSON.pretty_generate(ship)
+            end
+            return
+        end
+
         if Interpreting::match("ship", input) then
-            ship = NxShips::interactivelyIssueNewOrNull()
-            return if ship.nil?
-            puts JSON.pretty_generate(ship)
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("options", ["send default task to ship", "create new ship"])
+            return if option.nil?
+
+            if option == "send default task to ship" then
+                item = store.getDefault()
+                return if item.nil?
+                NxShips::interactivelySelectParentAndAttachAttempt(item)
+            end
+
+            if option == "create new ship" then
+                ship = NxShips::interactivelyIssueNewOrNull()
+                return if ship.nil?
+                puts JSON.pretty_generate(ship)
+            end
             return
         end
 

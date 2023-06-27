@@ -26,6 +26,14 @@ class NxBoxes
         "🗄️  #{box["description"]}"
     end
 
+    # NxBoxes::boxSuffix(item)
+    def self.boxSuffix(item)
+        parent = Tx8s::getParentOrNull(item)
+        return "" if parent.nil?
+        return "" if parent["mikuType"] != "NxBox"
+        " (#{parent["description"].green})"
+    end
+
     # ----------------------------------------------
     # Ops
 
@@ -103,8 +111,8 @@ class NxBoxes
         }
     end
 
-    # NxBoxes::interactivelyPutSomewhereAttempt(item)
-    def self.interactivelyPutSomewhereAttempt(item)
+    # NxBoxes::interactivelySelectParentAndAttachAttempt(item)
+    def self.interactivelySelectParentAndAttachAttempt(item)
         box = NxBoxes::architectThreadOrNull()
         return if box.nil?
         Tx8s::interactivelyPutIntoParentAttempt(item, box)

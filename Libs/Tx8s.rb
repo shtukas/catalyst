@@ -100,4 +100,10 @@ class Tx8s
         return if tx8.nil?
         DarkEnergy::patch(item["uuid"], "parent", tx8)
     end
+
+    # Tx8s::getParentOrNull(item)
+    def self.getParentOrNull(item)
+        return nil if item["parent"].nil?
+        DarkEnergy::itemOrNull(item["parent"]["uuid"])
+    end
 end

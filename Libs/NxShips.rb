@@ -44,6 +44,14 @@ class NxShips
         "⛵️ #{ship["description"].ljust(padding)}#{engineSuffix}"
     end
 
+    # NxShips::shipSuffix(item)
+    def self.shipSuffix(item)
+        parent = Tx8s::getParentOrNull(item)
+        return "" if parent.nil?
+        return "" if parent["mikuType"] != "NxShip"
+        " (#{parent["description"].green})"
+    end
+
     # ----------------------------------------------
     # Ops
 
@@ -145,8 +153,8 @@ class NxShips
         }
     end
 
-    # NxShips::interactivelyPutSomewhereAttempt(item)
-    def self.interactivelyPutSomewhereAttempt(item)
+    # NxShips::interactivelySelectParentAndAttachAttempt(item)
+    def self.interactivelySelectParentAndAttachAttempt(item)
         ship = NxShips::architectThreadOrNull()
         return if ship.nil?
         Tx8s::interactivelyPutIntoParentAttempt(item, ship)
