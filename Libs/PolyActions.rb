@@ -67,8 +67,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
-            NxShips::program1(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 
@@ -249,15 +254,21 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
+        if item["mikuType"] == "NxThread" then
             if Tx8s::childrenInOrder(item).size > 0 then
-                puts "Thread '#{NxShips::toString(item).green}' cannot be done/deleted, still has items"
+                puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxShips::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxThreads::toString(item).green} ? '", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            puts "There is no provision to done a TxCore"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -321,13 +332,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
+        if item["mikuType"] == "NxThread" then
             if Tx8s::childrenInOrder(item).size > 0 then
-                puts "Thread '#{NxShips::toString(item).green}' cannot be done/deleted, still has items"
+                puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxShips::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxThreads::toString(item).green} ? '", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
             return
@@ -345,6 +356,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCore" then
+            puts "There is no provision to destroy a TxCore"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
@@ -352,7 +369,12 @@ class PolyActions
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
 
-        if item["mikuType"] == "NxShip" then
+        if item["mikuType"] == "TxCore" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end
@@ -461,7 +483,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end

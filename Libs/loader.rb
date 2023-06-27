@@ -158,7 +158,7 @@ require_relative "NxFires.rb"
 require_relative "NxBurners.rb"
 require_relative "NxTimes.rb"
 require_relative "NxDrops.rb"
-require_relative "NxShips.rb"
+require_relative "NxThreads.rb"
 
 require_relative "Memoize.rb"
 
@@ -175,7 +175,7 @@ require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
-require_relative "TxEngines.rb"
+require_relative "TxCores.rb"
 
 require_relative "Waves.rb"
 

@@ -55,7 +55,7 @@ class NxBoxes
     def self.maintenance()
         DarkEnergy::mikuType("NxBox").each{|box|
             next if box["engine"].nil?
-            engine = TxEngines::engine_maintenance(box, box["engine"])
+            engine = TxCores::core_maintenance(box, box["engine"])
             next if engine.nil?
             DarkEnergy::patch(box["uuid"], "engine", engine)
         }

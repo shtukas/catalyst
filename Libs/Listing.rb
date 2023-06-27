@@ -116,6 +116,8 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
+            Pure::energy(),
+            NxBalls::runningItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -129,7 +131,6 @@ class Listing
                     selected + [item]
                 end
             }
-        Pure::pureFromItem(items.first) + items.drop(1) + Pure::energy()
     end
 
     # Listing::itemToListingLine(store, item)
@@ -137,9 +138,9 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toStringForListing(item)
+        str1 = PolyFunctions::toString(item)
 
-        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxShips::shipSuffix(item)}#{NxBoxes::boxSuffix(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -219,9 +220,9 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
-             NxShips::maintenance()
+             TxCores::maintenance()
         end
-        NxShips::maintenance2()
+        TxCores::maintenance2()
     end
 
     # Listing::launchNxBallMonitor()

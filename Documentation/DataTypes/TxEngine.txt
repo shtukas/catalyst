@@ -1,5 +1,0 @@
-
-TxEngine
-    "hours"         : Float
-    "lastResetTime" : Unixtime
-    "capsule"       : String

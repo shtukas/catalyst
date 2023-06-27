@@ -11,7 +11,7 @@ class Tx8s
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        DarkEnergy::mikuType("NxTask")
+        DarkEnergy::all()
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == parent["uuid"] }
             .sort_by{|item| item["parent"]["position"] }

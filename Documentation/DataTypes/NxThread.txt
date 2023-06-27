@@ -1,8 +1,7 @@
 
-NxShip:
+NxThread:
     "uuid"        : String
-    "mikuType"    : "NxShip"
+    "mikuType"    : "NxThread"
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
-    "engine"      : TxEngine

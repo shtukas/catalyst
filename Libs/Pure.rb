@@ -36,18 +36,12 @@ class Pure
 
     # Pure::energy()
     def self.energy()
-        listing1a = DarkEnergy::mikuType("NxShip")
-                    .select{|thread| DoNotShowUntil::isVisible(thread) }
-                    .sort_by{|thread| TxEngines::dayCompletionRatio(thread["engine"]) }
-
-        listing1b = DarkEnergy::mikuType("NxShip")
-                    .select{|thread| !DoNotShowUntil::isVisible(thread) }
-                    .sort_by{|thread| TxEngines::dayCompletionRatio(thread["engine"]) }
+        listing = DarkEnergy::mikuType("TxCore")
+                    .select{|core| DoNotShowUntil::isVisible(core) }
+                    .sort_by{|core| TxCores::dayCompletionRatio(core) }
 
         listing2 = DarkEnergy::mikuType("NxBox")
                     .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-
-        listing = listing1a + listing1b + listing2
 
         return [] if listing.empty?
 

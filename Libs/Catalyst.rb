@@ -12,7 +12,7 @@ class Catalyst
           "NxTask",
           "PhysicalTarget",
           "Wave",
-          "NxShip"
+          "NxThread"
         ]
             .map{|mikuType|
                 DarkEnergy::mikuType(mikuType)

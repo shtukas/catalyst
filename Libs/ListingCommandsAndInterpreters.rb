@@ -5,15 +5,15 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | ship (<n>)  | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | thread (<n>)  | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | ship | box",
-            "divings       : anniversaries | ondates | waves | burners | desktop | ships | boxes",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread | box",
+            "divings       : anniversaries | ondates | waves | burners | desktop | threads | boxes | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -95,33 +95,43 @@ class ListingCommandsAndInterpreters
             end
 
             if option == "create new box" then
-                ship = NxShips::interactivelyIssueNewOrNull()
-                return if ship.nil?
-                puts JSON.pretty_generate(ship)
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                return if thread.nil?
+                puts JSON.pretty_generate(thread)
             end
             return
         end
 
-        if Interpreting::match("ship", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("options", ["send default task to ship", "create new ship"])
+        if Interpreting::match("thread", input) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("options", ["send default task to thread", "create new thread"])
             return if option.nil?
 
-            if option == "send default task to ship" then
+            if option == "send default task to thread" then
                 item = store.getDefault()
                 return if item.nil?
-                NxShips::interactivelySelectParentAndAttachAttempt(item)
+                thread = NxThreads::interactivelySelectOneOrNull()
+                return if thread.nil?
+                Tx8s::interactivelyPutIntoParentAttempt(item, thread)
             end
 
-            if option == "create new ship" then
-                ship = NxShips::interactivelyIssueNewOrNull()
-                return if ship.nil?
-                puts JSON.pretty_generate(ship)
+            if option == "create new thread" then
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                return if thread.nil?
+                puts JSON.pretty_generate(thread)
+                core = TxCores::interactivelySelectOneOrNull()
+                thread["parent"] = Tx8s::make(core["uuid"], 0)
+                DarkEnergy::commit(thread)
             end
             return
         end
 
-        if Interpreting::match("ships", input) then
-            NxShips::program2()
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
+            return
+        end
+
+        if Interpreting::match("cores", input) then
+            TxCores::program2()
             return
         end
 

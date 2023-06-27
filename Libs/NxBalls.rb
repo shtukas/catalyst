@@ -160,15 +160,14 @@ class NxBalls
 
     # NxBalls::nxBallToString(nxball)
     def self.nxBallToString(nxball)
-        accounts = nxball["accounts"].map{|a| a["description"]}.compact.join(", ")
         if nxball["type"] == "running" and nxball["sequencestart"] then
-            return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequencestart"]).to_f/3600).round(2)} hours ago, #{accounts})"
+            return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequencestart"]).to_f/3600).round(2)} hours ago)"
         end
         if nxball["type"] == "running" then
-            return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, #{accounts})"
+            return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours)"
         end
         if nxball["type"] == "paused" then
-            return "(nxball: paused) (#{accounts})"
+            return "(nxball: paused)"
         end
         raise "(error: 93abde39-fd9d-4aa5-8e56-d09cf47a0f46) nxball: #{nxball}"
     end
