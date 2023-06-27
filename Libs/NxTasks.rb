@@ -7,6 +7,13 @@ class NxTasks
 
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
+
+        thread = NxThreads::architectThreadOrNull()
+        return nil if thread.nil?
+
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(thread)
+        tx8 = Tx8s::make(thread["uuid"], position)
+
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
@@ -22,6 +29,7 @@ class NxTasks
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "parent", tx8)
 
         DarkEnergy::itemOrNull(uuid)
     end

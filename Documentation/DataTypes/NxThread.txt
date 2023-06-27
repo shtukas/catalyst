@@ -6,8 +6,8 @@ NxThread:
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
     "type"        : "ns1" | "ns2" | "ns3"
-    "engineuuids" : null or Array[String] # engine uuids
-
+    "parents"     : null or Array[String] # engine uuids
+    "engine"      : null or TxEngine
 
 ns1: ideally should end as soon as possible
 ns2: open, in progress, external dependencies

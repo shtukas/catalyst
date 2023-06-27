@@ -18,24 +18,21 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxEngine" then
-            accounts << {
-                "description" => "NxEngine:#{item["description"]}:capsule",
-                "number"      => item["capsule"]
-            }
-        end
-
-        if item["mikuType"] == "NxTask" and EnergyGrid::itemBelongsToEnergyGrid(item) then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(EnergyGrid::grid())
-        end
-
         if item["mikuType"] == "NxThread" then
-            if item["engineuuids"] then
-                item["engineuuids"].each{|engineuuid|
+            if item["parents"] then
+                item["parents"].each{|engineuuid|
                     engine = DarkEnergy::itemOrNull(engineuuid)
                     if engine then
                         accounts = accounts + PolyFunctions::itemToBankingAccounts(engine)
                     end
+                }
+            end
+
+            if item["engine"] then
+                engine = item["engine"]
+                accounts << {
+                    "description" => "thread(#{item["description"]}), engine, capsule",
+                    "number"      => engine["capsule"]
                 }
             end
         end
@@ -63,14 +60,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxEngine" then
-            return NxEngines::toString(item)
-        end
         if item["mikuType"] == "NxDrop" then
             return NxDrops::toString(item)
-        end
-        if item["mikuType"] == "NxEngine" then
-            return NxEngines::toString(item)
         end
         if item["mikuType"] == "NxFire" then
             return NxFires::toString(item)

@@ -11,10 +11,6 @@ class Tx8s
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        if parent["uuid"] == EnergyGrid::griduuid() then
-            return EnergyGrid::items()
-        end
-
         DarkEnergy::mikuType("NxTask")
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == parent["uuid"] }
@@ -33,7 +29,9 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        NxEngines::children(parent).each{|item|
+        children = Tx8s::childrenInOrder(parent)
+        return 1 if children.empty?
+        children.each{|item|
             puts " - #{PolyFunctions::toString(item)}"
         }
         position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
@@ -43,39 +41,6 @@ class Tx8s
             return positions.max + 1
         else
             return position.to_f
-        end
-    end
-
-    # Tx8s::selectCoreAndMakeTx8OrNull()
-    def self.selectCoreAndMakeTx8OrNull()
-        # This function returns a Tx8
-        core = NxEngines::interactivelySelectOneOrNull()
-        return nil if core.nil?
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
-        Tx8s::make(core["uuid"], position)
-    end
-
-    # Tx8s::interactivelyDecideAndSetParent(item)
-    def self.interactivelyDecideAndSetParent(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine"])
-        return if option.nil?
-        if option == "core" then
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
-        end
-        if option == "engine" then
-            NxEngines::attachEngineAttempt(item)
-        end
-    end
-
-    # Tx8s::interactivelyDecideAndSetThreadParent(item)
-    def self.interactivelyDecideAndSetThreadParent(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine"])
-        return if option.nil?
-        if option == "core" then
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
-        end
-        if option == "engine" then
-            NxEngines::attachEngineAttempt(item)
         end
     end
 

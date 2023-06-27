@@ -10,12 +10,6 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] == "NxEngine" then
-            #NxEngines::program0(item)
-            NxEngines::program0(item)
-            return
-        end
-
         if item["mikuType"] == "NxBackup" then
             puts item["description"]
             LucilleCore::pressEnterToContinue()
@@ -137,18 +131,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxEngine" then
-            puts "Done is not implemented for engines, you can stop it"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if item["mikuType"] == "NxEngine" then
-            puts "You cannot done a NxEngine"
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -322,13 +304,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxEngine" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxThread" then
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
@@ -354,12 +329,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxEngine" then
-            puts PolyFunctions::toString(item).green
             PolyActions::access(item)
             return
         end

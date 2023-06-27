@@ -8,11 +8,11 @@ class Catalyst
           "NxAnniversary",
           "NxBackup",
           "NxBurner",
-          "NxEngine",
           "NxOndate",
           "NxTask",
           "PhysicalTarget",
-          "Wave"
+          "Wave",
+          "NxThread"
         ]
             .map{|mikuType|
                 DarkEnergy::mikuType(mikuType)

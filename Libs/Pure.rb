@@ -3,10 +3,6 @@ class Pure
 
     # Pure::childrenInitInRelevantOrder(item)
     def self.childrenInitInRelevantOrder(item)
-        if item["mikuType"] == "NxEngine" then
-            return NxEngines::engineThreadsInRTOrder(item)
-        end
-
         Tx8s::childrenInOrder(item)
             .reduce([]){|selected, item|
                 if selected.size >= 6 then
@@ -40,21 +36,41 @@ class Pure
 
     # Pure::energy()
     def self.energy()
-        listing = DarkEnergy::mikuType("NxEngine")
-                    .select{|engine| DoNotShowUntil::isVisible(engine) }
-                    .select{|engine| NxEngines::engineCompletionRatio(engine) < 1 }
-                    .sort_by{|engine| NxEngines::engineCompletionRatio(engine) }
-        listing = CommonUtils::putFirst(listing, lambda{|engine| NxBalls::itemIsRunning(engine) })
+        listing1 = DarkEnergy::mikuType("NxThread")
+                    .select{|thread| DoNotShowUntil::isVisible(thread) }
+                    .select{|thread| thread["engine"] }
+                    .select{|thread| TxEngines::engineCompletionRatio(thread["engine"]) < 1 }
+                    .sort_by{|thread| TxEngines::engineCompletionRatio(thread["engine"]) }
 
-        if listing.empty? then
-            listing = DarkEnergy::mikuType("NxThread")
-        end
+        listing2 = DarkEnergy::mikuType("NxThread")
+                    .select{|thread| DoNotShowUntil::isVisible(thread) }
+                    .select{|thread| thread["engine"].nil? }
+                    .select{|thread| thread["type"] == "ns1" }
+                    .select{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) < 1 }
+                    .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
 
-        if listing.empty? then
-            listing = Pure::infinity()
-        end
+        listing3 = DarkEnergy::mikuType("NxTask")
+                    .sort_by{|item| item["unixtime"] }
+                    .reduce([]){|selected, item|
+                        if selected.size >= 6 then
+                            selected
+                        else
+                            if Bank::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
+                                selected + [item]
+                            else
+                                selected
+                            end
+                        end
+                    }
+
+        listing4 = DarkEnergy::mikuType("NxThread")
+                    .sort_by{|thread| thread["description"] }
+
+        listing = listing1 + listing2 + listing3 + listing4
 
         return [] if listing.empty?
+
+        listing = CommonUtils::putFirst(listing, lambda{|thread| NxBalls::itemIsRunning(thread) })
 
         loop {
             head = listing.first
@@ -63,19 +79,5 @@ class Pure
             return [head] + tail if children.empty?
             listing = children + [head] + tail
         }
-    end
-
-    # Pure::infinity()
-    def self.infinity()
-        Memoize::evaluate("32ab7fb3-f85c-4fdf-aafe-9465d7db2f5f", lambda{
-            puts "Computing Pure::infinity() ..."
-            items = DarkEnergy::mikuType("NxTask")
-                            .select{|task| task["parent"].nil? }
-                            .select{|task| task["engine"].nil? }
-                            .sort_by{|item| item["unixtime"] }
-            (items.take(100) + items.reverse.take(100)).shuffle
-        })
-            .select{|item| DarkEnergy::itemOrNull(item["uuid"]) }
-            .compact
     end
 end

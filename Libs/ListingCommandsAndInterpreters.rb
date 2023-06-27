@@ -5,16 +5,15 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | engine (<n>) | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | engine (<n>) | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | engine | thread",
-            "makers (sc)   : jedi | netflix",
-            "divings       : anniversaries | ondates | waves | burners | desktop | engines",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread",
+            "divings       : anniversaries | ondates | waves | burners | desktop | threads",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -80,8 +79,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engines", input) then
-            NxEngines::program()
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
@@ -90,21 +89,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Tx8s::reorganise(item)
-            return
-        end
-
-        if Interpreting::match("move", input) then
-            item = store.getDefault()
-            return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::selectCoreAndMakeTx8OrNull())
             return
         end
 
@@ -123,49 +107,21 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("context", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Tx8s::interactivelyDecideAndSetParent(item)
-            return
-        end
-
-        if Interpreting::match("context *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Tx8s::interactivelyDecideAndSetParent(item)
-            return
-        end
-
-        if Interpreting::match("engine", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set engine at default item", "create new engine"])
+        if Interpreting::match("thread", input) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set thread at default item", "create new thread"])
             return if option.nil?
-            if option == "set engine at default item" then
+            if option == "set thread at default item" then
                 item = store.getDefault()
                 return if item.nil?
-                NxEngines::interactivelySetEngineAttempt(item)
+                NxThreads::interactivelySetIntoThreadAttempt(item)
                 return
             end
-            if option == "create new engine" then
-                engine = NxEngines::interactivelyIssueNewOrNull()
-                return if engine.nil?
-                puts JSON.pretty_generate(engine)
+            if option == "create new thread" then
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                return if thread.nil?
+                puts JSON.pretty_generate(thread)
                 return
             end
-        end
-
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxEngines::interactivelySetEngineAttempt(item)
-            return
-        end
-
-        if Interpreting::match("engines", input) then
-            NxEngines::program()
-            return
         end
 
         if Interpreting::match("ack", input) then
@@ -178,13 +134,6 @@ class ListingCommandsAndInterpreters
             end
             item["ackDay"] = CommonUtils::today()
             DarkEnergy::commit(item)
-            return
-        end
-
-        if Interpreting::match("jedi", input) then
-            engineuuid = "586d478d-0a04-40b7-aad3-fa5cbd2c45e4"
-            item = NxTasks::interactivelyIssueNewOrNull()
-            DarkEnergy::patch(item["uuid"], "parent", Tx8s::make(engineuuid, rand))
             return
         end
 
@@ -240,7 +189,7 @@ class ListingCommandsAndInterpreters
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
             puts PolyFunctions::toString(item)
-            NxEngines::interactivelySetEngineAttempt(item)
+            NxThreads::interactivelySetIntoThreadAttempt(item)
             return
         end
 
@@ -251,7 +200,7 @@ class ListingCommandsAndInterpreters
                 return if item.nil?
                 puts JSON.pretty_generate(item)
                 puts PolyFunctions::toString(item)
-                NxEngines::interactivelySetEngineAttempt(item)
+                NxThreads::interactivelySetIntoThreadAttempt(item)
             }
             return
         end
@@ -397,7 +346,6 @@ class ListingCommandsAndInterpreters
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            Tx8s::interactivelyDecideAndSetParent(task)
             return
         end
 

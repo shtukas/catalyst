@@ -7,6 +7,13 @@ Cross types conventions:
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-    - parent           : nil or {uuid, position} 
+    - parent           : nil or Tx8
 
 Tx8 {uuid, position}
+
+Note that there can be a Tx8 child / parent relationship between any two elements. 
+
+We have, for instance, wave with thread parents, for the timespans.
+We have items with thread parents.
+
+Note that threads have a specific `parents` attribute, for cross polinisation.
