@@ -23,7 +23,7 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "⛵️ #{thread["description"]} #{TxCores::coreSuffix(thread)}"
+        "⛵️ #{thread["description"]}#{TxCores::coreSuffix(thread)}"
     end
 
     # ----------------------------------------------

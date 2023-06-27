@@ -5,12 +5,12 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | thread (<n>)  | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | thread (<n>) | disavow <n> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
+            "    - NxThread: core <n>",
             "transmutation : >> (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread | box",
             "divings       : anniversaries | ondates | waves | burners | desktop | threads | boxes | cores",
@@ -111,7 +111,7 @@ class ListingCommandsAndInterpreters
                 return if item.nil?
                 thread = NxThreads::interactivelySelectOneOrNull()
                 return if thread.nil?
-                Tx8s::interactivelyPutIntoParentAttempt(item, thread)
+                Tx8s::interactivelyPplaceItemAtParentAttempt(item, thread)
             end
 
             if option == "create new thread" then
@@ -140,6 +140,27 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Tx8s::reorganise(item)
+            return
+        end
+
+        if Interpreting::match("core *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxThread" then
+                puts "The function core only applies to threads as a way to relocate to another core"
+                LucilleCore::pressEnterToContinue()
+            end
+            core = TxCores::interactivelySelectOneOrNull()
+            Tx8s::interactivelyPplaceItemAtParentAttempt(item, core)
+            return
+        end
+
+        if Interpreting::match("disavow *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            DarkEnergy::patch(item["uuid"], "parent", nil)
             return
         end
 

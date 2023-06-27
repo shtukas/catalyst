@@ -94,8 +94,8 @@ class Tx8s
         Tx8s::make(parent["uuid"], position)
     end
 
-    # Tx8s::interactivelyPutIntoParentAttempt(item, parent)
-    def self.interactivelyPutIntoParentAttempt(item, parent)
+    # Tx8s::interactivelyPplaceItemAtParentAttempt(item, parent)
+    def self.interactivelyPplaceItemAtParentAttempt(item, parent)
         tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
         return if tx8.nil?
         DarkEnergy::patch(item["uuid"], "parent", tx8)
