@@ -12,8 +12,8 @@ class ListingCommandsAndInterpreters
             "    - NxTask  : stack (<n>)",
             "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread",
-            "divings       : anniversaries | ondates | waves | burners | desktop | threads",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | ship | box",
+            "divings       : anniversaries | ondates | waves | burners | desktop | ships | boxes",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -72,15 +72,27 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("thread", input) then
-            thread = NxDirectories::interactivelyIssueNewOrNull()
-            return if thread.nil?
-            puts JSON.pretty_generate(thread)
+        if Interpreting::match("box", input) then
+            box = NxBoxes::interactivelyIssueNewOrNull()
+            return if box.nil?
+            puts JSON.pretty_generate(box)
             return
         end
 
-        if Interpreting::match("threads", input) then
-            NxDirectories::program2()
+        if Interpreting::match("boxes", input) then
+            NxBoxes::program2()
+            return
+        end
+
+        if Interpreting::match("ship", input) then
+            ship = NxShips::interactivelyIssueNewOrNull()
+            return if ship.nil?
+            puts JSON.pretty_generate(ship)
+            return
+        end
+
+        if Interpreting::match("ships", input) then
+            NxShips::program2()
             return
         end
 
@@ -105,23 +117,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             NxTasks::pile(item)
             return
-        end
-
-        if Interpreting::match("thread", input) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set thread at default item", "create new thread"])
-            return if option.nil?
-            if option == "set thread at default item" then
-                item = store.getDefault()
-                return if item.nil?
-                NxDirectories::interactivelySetIntoThreadAttempt(item)
-                return
-            end
-            if option == "create new thread" then
-                thread = NxDirectories::interactivelyIssueNewOrNull()
-                return if thread.nil?
-                puts JSON.pretty_generate(thread)
-                return
-            end
         end
 
         if Interpreting::match("ack", input) then
@@ -188,8 +183,6 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("time", input) then
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
-            puts PolyFunctions::toString(item)
-            NxDirectories::interactivelySetIntoThreadAttempt(item)
             return
         end
 
@@ -199,8 +192,6 @@ class ListingCommandsAndInterpreters
                 item = NxTimes::interactivelyIssueTimeOrNull()
                 return if item.nil?
                 puts JSON.pretty_generate(item)
-                puts PolyFunctions::toString(item)
-                NxDirectories::interactivelySetIntoThreadAttempt(item)
             }
             return
         end
@@ -339,13 +330,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(item)
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("task", input) then
-            task = NxTasks::interactivelyIssueNewOrNull()
-            return if task.nil?
-            puts JSON.pretty_generate(task)
             return
         end
 

@@ -87,4 +87,17 @@ class Tx8s
     def self.newFirstPositionAtThisParent(parent)
         ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).min - 1
     end
+
+    # Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
+    def self.interactivelyMakeTx8AtParentOrNull(parent)
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
+        Tx8s::make(parent["uuid"], position)
+    end
+
+    # Tx8s::interactivelyPutIntoParentAttempt(item, parent)
+    def self.interactivelyPutIntoParentAttempt(item, parent)
+        tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
+        return if tx8.nil?
+        DarkEnergy::patch(item["uuid"], "parent", tx8)
+    end
 end

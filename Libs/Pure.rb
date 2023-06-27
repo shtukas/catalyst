@@ -36,19 +36,18 @@ class Pure
 
     # Pure::energy()
     def self.energy()
-        listing1 = DarkEnergy::mikuType("NxDirectory")
+        listing1a = DarkEnergy::mikuType("NxShip")
                     .select{|thread| DoNotShowUntil::isVisible(thread) }
-                    .select{|thread| thread["engine"] }
-                    .select{|thread| TxEngines::dayCompletionRatio(thread["engine"]) < 1 }
                     .sort_by{|thread| TxEngines::dayCompletionRatio(thread["engine"]) }
 
-        listing2 = DarkEnergy::mikuType("NxDirectory")
-                    .select{|thread| DoNotShowUntil::isVisible(thread) }
-                    .select{|thread| thread["engine"].nil? }
-                    .select{|thread| thread["type"] == "ns1" }
+        listing1b = DarkEnergy::mikuType("NxShip")
+                    .select{|thread| !DoNotShowUntil::isVisible(thread) }
+                    .sort_by{|thread| TxEngines::dayCompletionRatio(thread["engine"]) }
+
+        listing2 = DarkEnergy::mikuType("NxBox")
                     .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
 
-        listing = listing1 + listing2
+        listing = listing1a + listing1b + listing2
 
         return [] if listing.empty?
 

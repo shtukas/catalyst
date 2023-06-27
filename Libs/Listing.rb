@@ -117,7 +117,6 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
-            Pure::energy()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -131,7 +130,7 @@ class Listing
                     selected + [item]
                 end
             }
-        Pure::pureFromItem(items.first) + items.drop(1)
+        Pure::pureFromItem(items.first) + items.drop(1) + Pure::energy()
     end
 
     # Listing::itemToListingLine(store, item)
@@ -221,9 +220,9 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
-             NxDirectories::maintenance()
+             NxShips::maintenance()
         end
-        NxDirectories::maintenance2()
+        NxShips::maintenance2()
     end
 
     # Listing::launchNxBallMonitor()

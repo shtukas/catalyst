@@ -18,16 +18,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxDirectory" then
-            if item["parents"] then
-                item["parents"].each{|engineuuid|
-                    engine = DarkEnergy::itemOrNull(engineuuid)
-                    if engine then
-                        accounts = accounts + PolyFunctions::itemToBankingAccounts(engine)
-                    end
-                }
-            end
-
+        if item["mikuType"] == "NxShip" then
             if item["engine"] then
                 engine = item["engine"]
                 accounts << {
@@ -60,6 +51,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
+        end
+        if item["mikuType"] == "NxBox" then
+            return NxBoxes::toString(item)
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
@@ -97,8 +91,8 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxDirectory" then
-            return NxDirectories::toString(item)
+        if item["mikuType"] == "NxShip" then
+            return NxShips::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
@@ -108,8 +102,8 @@ class PolyFunctions
 
     # PolyFunctions::toStringForListing(item)
     def self.toStringForListing(item)
-        if item["mikuType"] == "NxDirectory" then
-            return NxDirectories::toStringForListing(item)
+        if item["mikuType"] == "NxShip" then
+            return NxShips::toStringForListing(item)
         end
         PolyFunctions::toString(item)
     end

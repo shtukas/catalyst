@@ -406,7 +406,7 @@ class CommonUtils
                 return "difference: both files do not have the same content; file1: '#{location1}'; file2: '#{location2}'"
             end
         end
-        # By this point both should be directories
+        # By this point both should be ships
         content1 = Dir.entries(location1) - [".", "..", ".DS_Store"]
         content2 = Dir.entries(location2) - [".", "..", ".DS_Store"]
         difference = content1 - content2
@@ -417,7 +417,7 @@ class CommonUtils
         if difference.size > 0 then
             return "difference: here is an element in directory2, but not in directory1: '#{difference.first}'; directory1: '#{location1}'; directory2: '#{location2}'"
         end
-        # By now, both directories have the same element names
+        # By now, both ships have the same element names
         content1
             .each{|filename|
                 locx1 = "#{location1}/#{filename}"
