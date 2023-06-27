@@ -7,6 +7,7 @@ class TxEngines
         return nil if hours == ""
         return nil if hours == "0"
         {
+            "uuid"          => SecureRandom.uuid,
             "hours"         => hours.to_f,
             "lastResetTime" => Time.new.to_f,
             "capsule"       => SecureRandom.hex

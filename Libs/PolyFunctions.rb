@@ -31,7 +31,11 @@ class PolyFunctions
             if item["engine"] then
                 engine = item["engine"]
                 accounts << {
-                    "description" => "thread(#{item["description"]}), engine, capsule",
+                    "description" => "thread(#{item["description"]}), engine(#{engine["uuid"]})",
+                    "number"      => engine["uuid"]
+                }
+                accounts << {
+                    "description" => "thread(#{item["description"]}), engine, capsule(#{engine["capsule"]})",
                     "number"      => engine["capsule"]
                 }
             end
