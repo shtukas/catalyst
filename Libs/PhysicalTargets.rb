@@ -30,21 +30,19 @@ class PhysicalTargets
 
     # PhysicalTargets::listingItems()
     def self.listingItems()
-        Memoize::evaluate("e5df7550-b9f0-412b-abc4-2fb5905e37ff", lambda{
-            DarkEnergy::mikuType("PhysicalTarget").each{|item|
-                if item["date"] != CommonUtils::today() then
-                    DarkEnergy::patch(item["uuid"], "date", CommonUtils::today())
-                    DarkEnergy::patch(item["uuid"], "counter", 0)
-                end
+        DarkEnergy::mikuType("PhysicalTarget").each{|item|
+            if item["date"] != CommonUtils::today() then
+                DarkEnergy::patch(item["uuid"], "date", CommonUtils::today())
+                DarkEnergy::patch(item["uuid"], "counter", 0)
+            end
+        }
+        DarkEnergy::mikuType("PhysicalTarget")
+            .select{|item| item["counter"] < item["dailyTarget"]}
+            .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
+            .map{|item|
+                item["interruption"] = true
+                item
             }
-            DarkEnergy::mikuType("PhysicalTarget")
-                .select{|item| item["counter"] < item["dailyTarget"]}
-                .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
-                .map{|item|
-                    item["interruption"] = true
-                    item
-                }
-        })
     end
 
     # --------------------------------------------------------

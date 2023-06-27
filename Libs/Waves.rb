@@ -141,14 +141,12 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        Memoize::evaluate("9d576425-9cd5-48d0-9f94-a870b845f379", lambda{
-            DarkEnergy::mikuType("Wave")
-                .select{|item| Listing::listable(item) }
-                .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-                .select{|item|
-                    item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-                }
-        })
+        DarkEnergy::mikuType("Wave")
+            .select{|item| Listing::listable(item) }
+            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+            .select{|item|
+                item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
+            }
     end
 
     # -------------------------------------------------------------------------

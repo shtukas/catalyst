@@ -41,10 +41,8 @@ class NxBurners
 
     # NxBurners::listingItems()
     def self.listingItems()
-        Memoize::evaluate("d0a590dc-e31a-46c5-921d-b804ea8639df", lambda{
-            DarkEnergy::mikuType("NxBurner")
-                .select{|item| item["ackDay"] != CommonUtils::today() }
-        })
+        DarkEnergy::mikuType("NxBurner")
+            .select{|item| item["ackDay"] != CommonUtils::today() }
     end
 
     # ------------------------------------

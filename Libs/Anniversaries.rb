@@ -136,10 +136,8 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        Memoize::evaluate("023cd74b-6a74-4257-b78d-c220eeec3a76", lambda{
-            DarkEnergy::mikuType("NxAnniversary")
-                .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
-        })
+        DarkEnergy::mikuType("NxAnniversary")
+            .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end
 
     # ----------------------------------------------------------------------------------

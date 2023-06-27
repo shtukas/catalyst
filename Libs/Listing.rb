@@ -131,6 +131,7 @@ class Listing
                     selected + [item]
                 end
             }
+        Pure::pureFromItem(items.first) + items.drop(1)
     end
 
     # Listing::itemToListingLine(store, item)
@@ -138,7 +139,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toString(item)
+        str1 = PolyFunctions::toStringForListing(item)
 
         line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 

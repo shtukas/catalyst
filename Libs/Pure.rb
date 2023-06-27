@@ -39,8 +39,8 @@ class Pure
         listing1 = DarkEnergy::mikuType("NxThread")
                     .select{|thread| DoNotShowUntil::isVisible(thread) }
                     .select{|thread| thread["engine"] }
-                    .select{|thread| TxEngines::engineCompletionRatio(thread["engine"]) < 1 }
-                    .sort_by{|thread| TxEngines::engineCompletionRatio(thread["engine"]) }
+                    .select{|thread| TxEngines::dayCompletionRatio(thread["engine"]) < 1 }
+                    .sort_by{|thread| TxEngines::dayCompletionRatio(thread["engine"]) }
 
         listing2 = DarkEnergy::mikuType("NxThread")
                     .select{|thread| DoNotShowUntil::isVisible(thread) }
@@ -49,24 +49,7 @@ class Pure
                     .select{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) < 1 }
                     .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
 
-        listing3 = DarkEnergy::mikuType("NxTask")
-                    .sort_by{|item| item["unixtime"] }
-                    .reduce([]){|selected, item|
-                        if selected.size >= 6 then
-                            selected
-                        else
-                            if Bank::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
-                                selected + [item]
-                            else
-                                selected
-                            end
-                        end
-                    }
-
-        listing4 = DarkEnergy::mikuType("NxThread")
-                    .sort_by{|thread| thread["description"] }
-
-        listing = listing1 + listing2 + listing3 + listing4
+        listing = listing1 + listing2
 
         return [] if listing.empty?
 
