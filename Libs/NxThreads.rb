@@ -97,7 +97,8 @@ class NxThreads
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", DarkEnergy::mikuType("NxThread"), lambda{|thread| NxThreads::toString(thread) })
+        threads = DarkEnergy::mikuType("NxThread").sort_by{|item| item["description"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxThreads::toString(thread) })
     end
 
     # NxThreads::architectThreadOrNull()
@@ -136,6 +137,11 @@ class NxThreads
             store = ItemStore.new()
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
+            spacecontrol.putsline ""
+            spacecontrol.putsline "thread:"
+            store.register(thread, false)
+            spacecontrol.putsline Listing::itemToListingLine(store, thread)
+
             if thread["parents"] then
                 spacecontrol.putsline ""
                 spacecontrol.putsline "parents:"
@@ -151,11 +157,6 @@ class NxThreads
                 spacecontrol.putsline "engine:"
                 spacecontrol.putsline "- #{TxEngines::toString(thread["engine"])}"
             end
-
-            spacecontrol.putsline ""
-            spacecontrol.putsline "thread:"
-            store.register(thread, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, thread)
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(thread)
@@ -218,7 +219,8 @@ class NxThreads
     # NxThreads::program2()
     def self.program2()
         loop {
-            thread = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", DarkEnergy::mikuType("NxThread"), lambda{|thread| NxThreads::toStringWithDetails(thread) })
+            threads = DarkEnergy::mikuType("NxThread").sort_by{|item| item["description"] }
+            thread = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxThreads::toStringWithDetails(thread) })
             return if thread.nil?
             NxThreads::program1(thread)
         }
