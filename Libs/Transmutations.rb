@@ -30,13 +30,13 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxDrop" and targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", NxThreads::interactivelyMakeTx8ForThreadParentingOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxDirectories::interactivelyMakeTx8ForThreadParentingOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
 
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", NxThreads::interactivelyMakeTx8ForThreadParentingOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxDirectories::interactivelyMakeTx8ForThreadParentingOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -52,7 +52,7 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", NxThreads::interactivelyMakeTx8ForThreadParentingOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxDirectories::interactivelyMakeTx8ForThreadParentingOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end

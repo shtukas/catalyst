@@ -18,7 +18,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "NxDirectory" then
             if item["parents"] then
                 item["parents"].each{|engineuuid|
                     engine = DarkEnergy::itemOrNull(engineuuid)
@@ -97,8 +97,8 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
+        if item["mikuType"] == "NxDirectory" then
+            return NxDirectories::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
@@ -108,8 +108,8 @@ class PolyFunctions
 
     # PolyFunctions::toStringForListing(item)
     def self.toStringForListing(item)
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toStringForListing(item)
+        if item["mikuType"] == "NxDirectory" then
+            return NxDirectories::toStringForListing(item)
         end
         PolyFunctions::toString(item)
     end

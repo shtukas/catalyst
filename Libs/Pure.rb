@@ -36,13 +36,13 @@ class Pure
 
     # Pure::energy()
     def self.energy()
-        listing1 = DarkEnergy::mikuType("NxThread")
+        listing1 = DarkEnergy::mikuType("NxDirectory")
                     .select{|thread| DoNotShowUntil::isVisible(thread) }
                     .select{|thread| thread["engine"] }
                     .select{|thread| TxEngines::dayCompletionRatio(thread["engine"]) < 1 }
                     .sort_by{|thread| TxEngines::dayCompletionRatio(thread["engine"]) }
 
-        listing2 = DarkEnergy::mikuType("NxThread")
+        listing2 = DarkEnergy::mikuType("NxDirectory")
                     .select{|thread| DoNotShowUntil::isVisible(thread) }
                     .select{|thread| thread["engine"].nil? }
                     .select{|thread| thread["type"] == "ns1" }

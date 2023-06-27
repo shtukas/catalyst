@@ -8,7 +8,7 @@ class NxTasks
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
 
-        thread = NxThreads::architectThreadOrNull()
+        thread = NxDirectories::architectThreadOrNull()
         return nil if thread.nil?
 
         position = Tx8s::interactivelyDecidePositionUnderThisParent(thread)

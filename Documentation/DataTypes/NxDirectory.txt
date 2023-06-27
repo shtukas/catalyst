@@ -1,7 +1,7 @@
 
-NxThread:
+NxDirectory:
     "uuid"        : String
-    "mikuType"    : "NxThread"
+    "mikuType"    : "NxDirectory"
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String

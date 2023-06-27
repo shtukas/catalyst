@@ -18,7 +18,7 @@ class TxEngines
     def self.engine_maintenance(thread, engine)
         return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
         return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
-        puts "> I am about to reset engine of #{NxThreads::toString(thread)}"
+        puts "> I am about to reset engine of #{NxDirectories::toString(thread)}"
         LucilleCore::pressEnterToContinue()
         Bank::reset(engine["capsule"])
         if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then

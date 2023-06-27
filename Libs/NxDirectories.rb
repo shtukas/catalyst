@@ -1,10 +1,10 @@
 
-class NxThreads
+class NxDirectories
 
     # ----------------------------------------------
     # Building
 
-    # NxThreads::threadTypes()
+    # NxDirectories::threadTypes()
     def self.threadTypes()
         [
             {
@@ -22,22 +22,22 @@ class NxThreads
         ]
     end
 
-    # NxThreads::interactivelySelectThreadType()
+    # NxDirectories::interactivelySelectThreadType()
     def self.interactivelySelectThreadType()
         loop {
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread thread:", NxThreads::threadTypes(), lambda{|tt| tt["description"] })
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread thread:", NxDirectories::threadTypes(), lambda{|tt| tt["description"] })
             next if item.nil?
             return item["type"]
         }
     end
 
-    # NxThreads::interactivelyIssueNewOrNull()
+    # NxDirectories::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        tt = NxThreads::interactivelySelectThreadType()
+        tt = NxDirectories::interactivelySelectThreadType()
 
         eToE = lambda {|threaduuid|
             engine = DarkEnergy::itemOrNull(threaduuid)
@@ -46,11 +46,11 @@ class NxThreads
         }
 
         selected = []
-        notSelected = DarkEnergy::mikuType("NxThread").map{|e| e["uuid"] } - selected
+        notSelected = DarkEnergy::mikuType("NxDirectory").map{|e| e["uuid"] } - selected
         parents, _ = LucilleCore::selectZeroOrMore(
             "threads",
             [],
-            DarkEnergy::mikuType("NxThread").map{|e| e["uuid"] },
+            DarkEnergy::mikuType("NxDirectory").map{|e| e["uuid"] },
             lambda{ |threaduuid| eToE.call(threaduuid) }
         )
 
@@ -60,7 +60,7 @@ class NxThreads
             engine = nil
         end
 
-        DarkEnergy::init("NxThread", uuid)
+        DarkEnergy::init("NxDirectory", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
@@ -73,19 +73,19 @@ class NxThreads
     # ----------------------------------------------
     # Data
 
-    # NxThreads::toString(thread)
+    # NxDirectories::toString(thread)
     def self.toString(thread)
         "⛵️ #{thread["description"]}"
     end
 
-    # NxThreads::toStringWithDetails(thread)
+    # NxDirectories::toStringWithDetails(thread)
     def self.toStringWithDetails(thread)
         padding = XCache::getOrDefaultValue("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", "0").to_i
         engineSuffix = thread["engine"] ? " #{TxEngines::toString(thread["engine"])}" : ""
         "⛵️ #{thread["description"].ljust(padding)}#{engineSuffix}"
     end
 
-    # NxThreads::toStringForListing(thread)
+    # NxDirectories::toStringForListing(thread)
     def self.toStringForListing(thread)
         padding = XCache::getOrDefaultValue("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", "0").to_i
         engineSuffix = thread["engine"] ? " ⏱️  #{"%6.2f" % (TxEngines::dayCompletionRatio(thread["engine"])*100)} %" : ""
@@ -95,23 +95,23 @@ class NxThreads
     # ----------------------------------------------
     # Ops
 
-    # NxThreads::interactivelySelectOneOrNull()
+    # NxDirectories::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        threads = DarkEnergy::mikuType("NxThread").sort_by{|item| item["description"] }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxThreads::toString(thread) })
+        threads = DarkEnergy::mikuType("NxDirectory").sort_by{|item| item["description"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxDirectories::toString(thread) })
     end
 
-    # NxThreads::architectThreadOrNull()
+    # NxDirectories::architectThreadOrNull()
     def self.architectThreadOrNull()
-        thread = NxThreads::interactivelySelectOneOrNull()
+        thread = NxDirectories::interactivelySelectOneOrNull()
         return thread if thread
         puts "No thread selected. Making a new one."
-        NxThreads::interactivelyIssueNewOrNull()
+        NxDirectories::interactivelyIssueNewOrNull()
     end
 
-    # NxThreads::maintenance()
+    # NxDirectories::maintenance()
     def self.maintenance()
-        DarkEnergy::mikuType("NxThread").each{|thread|
+        DarkEnergy::mikuType("NxDirectory").each{|thread|
             next if thread["engine"].nil?
             engine = TxEngines::engine_maintenance(thread, thread["engine"])
             next if engine.nil?
@@ -119,13 +119,13 @@ class NxThreads
         }
     end
 
-    # NxThreads::maintenance2()
+    # NxDirectories::maintenance2()
     def self.maintenance2()
-        padding = ([0] + DarkEnergy::mikuType("NxThread").map{|thread| thread["description"].size}).max
+        padding = ([0] + DarkEnergy::mikuType("NxDirectory").map{|thread| thread["description"].size}).max
         XCache::set("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", padding)
     end
 
-    # NxThreads::program1(thread)
+    # NxDirectories::program1(thread)
     def self.program1(thread)
         loop {
 
@@ -148,7 +148,7 @@ class NxThreads
                 thread["parents"].each{|threaduuid|
                     thread = DarkEnergy::itemOrNull(threaduuid)
                     next if thread.nil?
-                    puts "- #{NxThreads::toString(thread)}"
+                    puts "- #{NxDirectories::toString(thread)}"
                 }
             end
 
@@ -192,7 +192,7 @@ class NxThreads
                 }
 
                 selected = (thread["parents"] || [])
-                notSelected = DarkEnergy::mikuType("NxThread").map{|e| e["uuid"] } - (selected + [thread["uuid"]])
+                notSelected = DarkEnergy::mikuType("NxDirectory").map{|e| e["uuid"] } - (selected + [thread["uuid"]])
                 parents, _ = LucilleCore::selectZeroOrMore("engines", selected, notSelected, lambda{|engineuuid| eToE.call(engineuuid) })
                 thread["parents"] = parents
                 DarkEnergy::commit(thread)
@@ -216,27 +216,27 @@ class NxThreads
         }
     end
 
-    # NxThreads::program2()
+    # NxDirectories::program2()
     def self.program2()
         loop {
-            threads = DarkEnergy::mikuType("NxThread").sort_by{|item| item["description"] }
-            thread = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxThreads::toStringWithDetails(thread) })
+            threads = DarkEnergy::mikuType("NxDirectory").sort_by{|item| item["description"] }
+            thread = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| NxDirectories::toStringWithDetails(thread) })
             return if thread.nil?
-            NxThreads::program1(thread)
+            NxDirectories::program1(thread)
         }
     end
 
-    # NxThreads::interactivelyMakeTx8ForThreadParentingOrNull()
+    # NxDirectories::interactivelyMakeTx8ForThreadParentingOrNull()
     def self.interactivelyMakeTx8ForThreadParentingOrNull()
-        thread = NxThreads::interactivelySelectOneOrNull()
+        thread = NxDirectories::interactivelySelectOneOrNull()
         return nil if thread.nil?
         position = Tx8s::interactivelyDecidePositionUnderThisParent(thread)
         Tx8s::make(thread["uuid"], position)
     end
 
-    # NxThreads::interactivelySetIntoThreadAttempt(item)
+    # NxDirectories::interactivelySetIntoThreadAttempt(item)
     def self.interactivelySetIntoThreadAttempt(item)
-        tx8 = NxThreads::interactivelyMakeTx8ForThreadParentingOrNull()
+        tx8 = NxDirectories::interactivelyMakeTx8ForThreadParentingOrNull()
         DarkEnergy::patch(item["uuid"], "parent", tx8)
     end
 end

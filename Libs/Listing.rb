@@ -221,9 +221,9 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxBurners::maintenance()
-             NxThreads::maintenance()
+             NxDirectories::maintenance()
         end
-        NxThreads::maintenance2()
+        NxDirectories::maintenance2()
     end
 
     # Listing::launchNxBallMonitor()

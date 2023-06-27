@@ -73,14 +73,14 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("thread", input) then
-            thread = NxThreads::interactivelyIssueNewOrNull()
+            thread = NxDirectories::interactivelyIssueNewOrNull()
             return if thread.nil?
             puts JSON.pretty_generate(thread)
             return
         end
 
         if Interpreting::match("threads", input) then
-            NxThreads::program2()
+            NxDirectories::program2()
             return
         end
 
@@ -113,11 +113,11 @@ class ListingCommandsAndInterpreters
             if option == "set thread at default item" then
                 item = store.getDefault()
                 return if item.nil?
-                NxThreads::interactivelySetIntoThreadAttempt(item)
+                NxDirectories::interactivelySetIntoThreadAttempt(item)
                 return
             end
             if option == "create new thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
+                thread = NxDirectories::interactivelyIssueNewOrNull()
                 return if thread.nil?
                 puts JSON.pretty_generate(thread)
                 return
@@ -189,7 +189,7 @@ class ListingCommandsAndInterpreters
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
             puts PolyFunctions::toString(item)
-            NxThreads::interactivelySetIntoThreadAttempt(item)
+            NxDirectories::interactivelySetIntoThreadAttempt(item)
             return
         end
 
@@ -200,7 +200,7 @@ class ListingCommandsAndInterpreters
                 return if item.nil?
                 puts JSON.pretty_generate(item)
                 puts PolyFunctions::toString(item)
-                NxThreads::interactivelySetIntoThreadAttempt(item)
+                NxDirectories::interactivelySetIntoThreadAttempt(item)
             }
             return
         end

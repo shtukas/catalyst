@@ -62,8 +62,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            NxThreads::program1(item)
+        if item["mikuType"] == "NxDirectory" then
+            NxDirectories::program1(item)
             return
         end
 
@@ -244,13 +244,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "NxDirectory" then
             if Tx8s::childrenInOrder(item).size > 0 then
-                puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
+                puts "Thread '#{NxDirectories::toString(item).green}' cannot be done/deleted, still has items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxThreads::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxDirectories::toString(item).green} ? '", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
             return
@@ -304,13 +304,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "NxDirectory" then
             if Tx8s::childrenInOrder(item).size > 0 then
-                puts "Thread '#{NxThreads::toString(item).green}' cannot be done/deleted, still has items"
+                puts "Thread '#{NxDirectories::toString(item).green}' cannot be done/deleted, still has items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxThreads::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroying empty thread: '#{NxDirectories::toString(item).green} ? '", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
             return
@@ -323,7 +323,7 @@ class PolyActions
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
 
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "NxDirectory" then
             PolyActions::access(item)
             return
         end
@@ -427,7 +427,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "NxDirectory" then
             PolyActions::access(item)
             return
         end
