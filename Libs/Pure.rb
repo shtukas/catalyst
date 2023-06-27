@@ -46,7 +46,6 @@ class Pure
                     .select{|thread| DoNotShowUntil::isVisible(thread) }
                     .select{|thread| thread["engine"].nil? }
                     .select{|thread| thread["type"] == "ns1" }
-                    .select{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) < 1 }
                     .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
 
         listing = listing1 + listing2
