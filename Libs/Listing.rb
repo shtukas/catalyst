@@ -304,7 +304,9 @@ class Listing
 
             i1s, i2s = items.partition{|item| Ordinals::getOrNull(item).nil? }
             i1s = i1s.shuffle
+            i2s = i2s.sort_by{|item| Ordinals::getOrNull(item) }
             i2s, i3s = i2s.partition{|item| Ordinals::getOrNull(item) < 10 }
+
             energy = Pure::energy()
 
             system("clear")

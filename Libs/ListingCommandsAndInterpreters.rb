@@ -43,6 +43,56 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("unshow", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "Nxtask" then
+                puts "We only apply `unshow` to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            DarkEnergy::patch(item["uuid"], "show", false)
+            return
+        end
+
+        if Interpreting::match("unshow *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "Nxtask" then
+                puts "We only apply `unshow` to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            DarkEnergy::patch(item["uuid"], "show", false)
+            return
+        end
+
+        if Interpreting::match("show", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "Nxtask" then
+                puts "We only apply `show` to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            DarkEnergy::patch(item["uuid"], "show", true)
+            return
+        end
+
+        if Interpreting::match("show *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "Nxtask" then
+                puts "We only apply `show` to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            DarkEnergy::patch(item["uuid"], "show", true)
+            return
+        end
+
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
@@ -73,9 +123,12 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             if core then
                 Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
-            else
-                Ordinals::interactivelySetOrdinalAttempt(task)
             end
+            if LucilleCore::askQuestionAnswerAsBoolean("show on listing ? ") then
+                Ordinals::interactivelySetOrdinalAttempt(task)
+                DarkEnergy::patch(task["uuid"], "show", true)
+            end
+            
             return
         end
 

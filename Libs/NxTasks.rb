@@ -96,7 +96,8 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxTask").select{|item| item["parent"].nil? }
+        DarkEnergy::mikuType("NxTask")
+            .select{|item| item["parent"].nil? or item["show"] }
     end
 
     # --------------------------------------------------
