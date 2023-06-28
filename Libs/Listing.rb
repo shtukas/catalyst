@@ -115,8 +115,8 @@ class Listing
             DarkEnergy::mikuType("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            DarkEnergy::mikuType("NxDrop"),
             Pure::energy(),
+            DarkEnergy::mikuType("NxDrop"),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
