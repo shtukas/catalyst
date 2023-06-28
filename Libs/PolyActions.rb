@@ -28,11 +28,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDrop" then
-            NxDrops::program(item)
-            return
-        end
-
         if item["mikuType"] == "NxTime" then
             return
         end
@@ -94,13 +89,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{NxDrops::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
             end
             return
         end
@@ -314,11 +302,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDrop" then
-            NxDrops::program(item)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -400,11 +383,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" then
-            NxDrops::program(item)
             return
         end
 

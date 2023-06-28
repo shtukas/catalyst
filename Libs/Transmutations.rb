@@ -19,22 +19,6 @@ class Transmutations
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
 
-        if item["mikuType"] == "NxDrop" and targetMikuType == "NxBurner" then
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxBurner")
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" and targetMikuType == "NxFire" then
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxFire")
-            return
-        end
-
-        if item["mikuType"] == "NxDrop" and targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
-            return
-        end
-
         if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
             DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")

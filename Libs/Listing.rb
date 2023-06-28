@@ -115,7 +115,7 @@ class Listing
             DarkEnergy::mikuType("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            DarkEnergy::mikuType("NxDrop"),
+            NxTasks::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -162,15 +162,14 @@ class Listing
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
         spot.contest_entry("DarkEnergy::mikuType(NxBurner)", lambda{ DarkEnergy::mikuType("NxBurner") })
-        spot.contest_entry("DarkEnergy::mikuType(NxDrop)", lambda{ DarkEnergy::mikuType("NxDrop") })
         spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
         spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
         spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
-        spot.contest_entry("DarkEnergy::mikuType(NxDrop)", lambda{ DarkEnergy::mikuType("NxDrop") })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxTasks::listingItems()", lambda{ NxTasks::listingItems() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
@@ -304,22 +303,65 @@ class Listing
             items = Listing::items()
 
             i1s, i2s = items.partition{|item| Ordinals::getOrNull(item).nil? }
+            i1s = i1s.shuffle
             i2s, i3s = i2s.partition{|item| Ordinals::getOrNull(item) < 10 }
-
             energy = Pure::energy()
 
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printing(spacecontrol, store, i1s.shuffle, i2s, energy, i3s)
+            Listing::printing(spacecontrol, store, i1s, i2s, energy, i3s)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
-            next if input == ""
+            
+            if input != "" then
+                puts ""
+               ListingCommandsAndInterpreters::interpreter(input, store)
+            end
 
-            puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
+            next
+            # ------------------------------------------------------------------
+
+            special = Listing::items().select{|item| Ordinals::getOrNull(item).nil? }
+
+            if special.size > 0 then
+                system("clear")
+                item = special.first
+                puts ":: #{PolyFunctions::toString(item).green}"
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["done", "start + access + done", "position", "transmute", "do not show until, timecode"])
+                if option.nil? then
+                    return nil
+                end
+                if option == "done" then
+                    PolyActions::done(item)
+                    return nil
+                end
+                if option == "start + access + done" then
+                    NxBalls::start(item)
+                    PolyActions::access(item)
+                    LucilleCore::pressEnterToContinue()
+                    PolyActions::done(item)
+                    return nil
+                end
+                if option == "position" then
+                    position = LucilleCore::askQuestionAnswerAsString("> position : ").to_f
+                    ListingPositions::setPosition(item, position)
+                    return nil
+                end
+                if option == "transmute" then
+                    Transmutations::transmute(item)
+                    return nil
+                end
+                if option == "do not show until, timecode" then
+                    unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+                    return nil if unixtime.nil?
+                    DoNotShowUntil::setUnixtime(item, unixtime)
+                    return nil
+                end
+            end
+
         }
     end
 end

@@ -66,18 +66,16 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("drop", input) then
-            NxDrops::interactivelyIssueNewOrNull()
-            return
-        end
-
         if Interpreting::match("task", input) then
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
             core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
+            if core then
+                Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
+            else
+                Ordinals::interactivelySetOrdinalAttempt(task)
+            end
             return
         end
 

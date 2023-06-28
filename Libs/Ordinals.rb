@@ -12,4 +12,10 @@ class Ordinals
     def self.set(item, position)
         CatalystSharedCache::set("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}", position)
     end
+
+    # Ordinals::interactivelySetOrdinalAttempt(item)
+    def self.interactivelySetOrdinalAttempt(item)
+        ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
+        Ordinals::set(item, ordinal)
+    end
 end
