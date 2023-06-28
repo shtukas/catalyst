@@ -36,18 +36,11 @@ class Pure
 
     # Pure::energy()
     def self.energy()
-        listing1 = DarkEnergy::mikuType("TxCore")
+        listing = DarkEnergy::mikuType("TxCore")
                     .select{|core| DoNotShowUntil::isVisible(core) }
                     .sort_by{|core| TxCores::dayCompletionRatio(core) }
 
-        listing2 = DarkEnergy::mikuType("NxBox")
-                    .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-
-        listing = listing1 + listing2
-
         return [] if listing.empty?
-
-        listing = CommonUtils::putFirst(listing, lambda{|thread| NxBalls::itemIsRunning(thread) })
 
         loop {
             head = listing.first

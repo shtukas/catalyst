@@ -127,7 +127,7 @@ class PositiveSpace
 
     # PositiveSpace::isLeaderInstance()
     def self.isLeaderInstance()
-        JSON.parse(IO.read("/Users/pascal/Galaxy/DataBank/Stargate-Config.json"))["isLeaderInstance"]
+        JSON.parse(IO.read("#{ENV['HOME']}/Galaxy/DataBank/Stargate-Config.json"))["isLeaderInstance"]
     end
 
     # PositiveSpace::ageOrNull()

@@ -148,7 +148,6 @@ require_relative "ItemStore.rb"
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
 
-require_relative "NxBoxes.rb"
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
@@ -158,7 +157,6 @@ require_relative "NxFires.rb"
 require_relative "NxBurners.rb"
 require_relative "NxTimes.rb"
 require_relative "NxDrops.rb"
-require_relative "NxThreads.rb"
 
 require_relative "Memoize.rb"
 

@@ -45,9 +45,6 @@ class PolyFunctions
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
-        if item["mikuType"] == "NxBox" then
-            return NxBoxes::toString(item)
-        end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
@@ -86,9 +83,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "TxCore" then
             return TxCores::toString(item)
-        end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

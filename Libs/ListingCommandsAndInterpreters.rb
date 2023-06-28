@@ -5,15 +5,14 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | thread (<n>) | disavow <n> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "    - NxBurner: ack",
-            "    - NxThread: core <n>",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | thread | box",
-            "divings       : anniversaries | ondates | waves | burners | desktop | threads | boxes | cores",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | box",
+            "divings       : anniversaries | ondates | waves | burners | desktop | boxes | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -72,76 +71,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("box", input) then
-            box = NxBoxes::interactivelyIssueNewOrNull()
-            return if box.nil?
-            puts JSON.pretty_generate(box)
-            return
-        end
-
-        if Interpreting::match("boxes", input) then
-            NxBoxes::program2()
-            return
-        end
-
-        if Interpreting::match("box", input) then
-            puts "This call creates a new box, if you want to box a task, call `box *`"
-            return if !LucilleCore::askQuestionAnswerAsBoolean("> proceed ? ")
-            box = NxBoxes::interactivelySelectOneOrNull()
-            return if box.nil?
-            puts JSON.pretty_generate(box)
-            return
-        end
-
-        if Interpreting::match("box *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            box = NxBoxes::architectOrNull()
-            return if box.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, box)
-            return
-        end
-
         if Interpreting::match("task", input) then
-            thread = NxThreads::architectOrNull() # We start by choosing the thread because tasks need to have a parent thread
-            return if thread.nil?
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            Tx8s::interactivelyPlaceItemAtParentAttempt(task, thread)
-            return
-        end
-
-        if Interpreting::match("thread", input) then
-            puts "This call creates a new thread, if you want to thread a task, call `thread *`"
-            return if !LucilleCore::askQuestionAnswerAsBoolean("> proceed ? ")
-            core = TxCores::interactivelySelectOneOrNull() # We start by choosing the core because threads need to have a parent core
+            core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            thread = NxThreads::interactivelyIssueNewOrNull()
-            return if thread.nil?
-            puts JSON.pretty_generate(thread)
-            thread["parent"] = Tx8s::make(core["uuid"], 0)
-            DarkEnergy::commit(thread)
-            return
-        end
-
-        if Interpreting::match("thread *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "The function thread only applies to tasks as a way to relocate to another thread"
-                LucilleCore::pressEnterToContinue()
-            end
-            thread = NxThreads::architectOrNull()
-            return if thread.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
+            Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
             return
         end
 
@@ -162,11 +98,6 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxTask" then
-                puts "We do not apply the core function to tasks, use the thread function"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             core = TxCores::interactivelySelectOneOrNull()
             Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
             return
