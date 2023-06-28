@@ -145,6 +145,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("core", input) then
+            item = store.getDefault()
+            return if item.nil?
+            core = TxCores::interactivelySelectOneOrNull()
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            return
+        end
+
         if Interpreting::match("core *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
