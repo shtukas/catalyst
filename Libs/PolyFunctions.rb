@@ -48,11 +48,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxFire" then
-            return NxFires::toString(item)
-        end
-        if item["mikuType"] == "NxBurner" then
-            return NxBurners::toString(item)
+        if item["mikuType"] == "NxFront" then
+            return NxFronts::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

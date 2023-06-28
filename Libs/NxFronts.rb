@@ -1,12 +1,12 @@
 
-class NxFires
+class NxFronts
 
-    # NxFires::interactivelyIssueNewOrNull()
+    # NxFronts::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxFire", uuid)
+        DarkEnergy::init("NxFront", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
@@ -15,8 +15,8 @@ class NxFires
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxFires::toString(item)
+    # NxFronts::toString(item)
     def self.toString(item)
-        "🔥 #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🫧 #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 end

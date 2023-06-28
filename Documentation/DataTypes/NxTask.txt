@@ -9,4 +9,3 @@ NxTask:
     "field11"      : null or CoreData reference string
 
     "parent"       : null or Tx8
-    "show"         : boolean indicates whether to show on Listing, outside an empty parent or pure energy

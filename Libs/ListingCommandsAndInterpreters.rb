@@ -9,10 +9,9 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "    - NxBurner: ack",
             "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | fire | burner | time | times | box",
-            "divings       : anniversaries | ondates | waves | burners | desktop | boxes | cores",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | box",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -43,53 +42,59 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("unshow", input) then
+        if Interpreting::match(">task", input) then
             item = store.getDefault()
             return if item.nil?
-            if item["mikuType"] != "Nxtask" then
-                puts "We only apply `unshow` to NxTasks"
+            if item["mikuType"] != "NxFront" then
+                puts "We only apply `>task` to NxFront"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            DarkEnergy::patch(item["uuid"], "show", false)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
+            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
             return
         end
 
-        if Interpreting::match("unshow *", input) then
+        if Interpreting::match(">task *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "Nxtask" then
-                puts "We only apply `unshow` to NxTasks"
+            if item["mikuType"] != "NxFront" then
+                puts "We only apply `>task` to NxFront"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            DarkEnergy::patch(item["uuid"], "show", false)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
+            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
             return
         end
 
-        if Interpreting::match("show", input) then
+        if Interpreting::match(">front", input) then
             item = store.getDefault()
             return if item.nil?
-            if item["mikuType"] != "Nxtask" then
-                puts "We only apply `show` to NxTasks"
+            if item["mikuType"] != "NxTask" then
+                puts "We only apply `>front` to NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            DarkEnergy::patch(item["uuid"], "show", true)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
+            item = DarkEnergy::itemOrNull(item["uuid"])
+            Ordinals::interactivelySetOrdinalAttempt(item)
             return
         end
 
-        if Interpreting::match("show *", input) then
+        if Interpreting::match(">front *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "Nxtask" then
-                puts "We only apply `show` to NxTasks"
+            if item["mikuType"] != "NxTask" then
+                puts "We only apply `>front` to NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            DarkEnergy::patch(item["uuid"], "show", true)
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
+            item = DarkEnergy::itemOrNull(item["uuid"])
+            Ordinals::interactivelySetOrdinalAttempt(item)
             return
         end
 
@@ -111,11 +116,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("burners", input) then
-            NxBurners::program2()
-            return
-        end
-
         if Interpreting::match("task", input) then
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
@@ -124,11 +124,6 @@ class ListingCommandsAndInterpreters
             if core then
                 Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("show on listing ? ") then
-                Ordinals::interactivelySetOrdinalAttempt(task)
-                DarkEnergy::patch(task["uuid"], "show", true)
-            end
-            
             return
         end
 
@@ -199,19 +194,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxTasks::pile(item)
-            return
-        end
-
-        if Interpreting::match("ack", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxBurner" then
-                puts "Only NxBurners can be ack"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            item["ackDay"] = CommonUtils::today()
-            DarkEnergy::commit(item)
             return
         end
 
@@ -463,17 +445,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("fire", input) then
-            item = NxFires::interactivelyIssueNewOrNull()
+        if Interpreting::match("front", input) then
+            item = NxFronts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("burner", input) then
-            item = NxBurners::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
+            Ordinals::interactivelySetOrdinalAttempt(item)
             return
         end
 

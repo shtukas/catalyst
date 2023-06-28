@@ -3,7 +3,7 @@ class Transmutations
 
     # Transmutations::targetMikuTypes()
     def self.targetMikuTypes()
-        ["NxBurner", "NxFire", "NxTask"]
+        ["NxFront", "NxTask"]
     end
 
     # Transmutations::interactivelySelectMikuTypeOrNull()
@@ -19,19 +19,14 @@ class Transmutations
         targetMikuType = Transmutations::interactivelySelectMikuTypeOrNull()
         return if targetMikuType.nil?
 
-        if item["mikuType"] == "NxFire" and targetMikuType == "NxTask" then
+        if item["mikuType"] == "NxFront" and targetMikuType == "NxTask" then
             DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
 
-        if item["mikuType"] == "NxOndate" and targetMikuType == "NxBurner" then
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxBurner")
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" and targetMikuType == "NxFire" then
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxFire")
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxFront" then
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
             return
         end
 

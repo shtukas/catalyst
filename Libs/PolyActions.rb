@@ -37,17 +37,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBurner" then
-            CoreData::access(item["uuid"], item["field11"])
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
         end
 
-        if item["mikuType"] == "NxFire" then
+        if item["mikuType"] == "NxFront" then
             CoreData::access(item["uuid"], item["field11"])
             return
         end
@@ -109,12 +104,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBurner" then
-            item["ackDay"] = CommonUtils::today()
-            DarkEnergy::commit(item)
-            return
-        end
-
         if item["mikuType"] == "NxLine" then
             if NxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it."
@@ -152,7 +141,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFire" then
+        if item["mikuType"] == "NxFront" then
             if NxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it."
                 LucilleCore::pressEnterToContinue()
@@ -272,13 +261,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBurner" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "TxCore" then
             puts "There is no provision to destroy a TxCore"
             LucilleCore::pressEnterToContinue()
@@ -309,7 +291,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFire" then
+        if item["mikuType"] == "NxFront" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
@@ -318,13 +300,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTime" then
             DarkEnergy::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxBurner" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
             return
         end
 

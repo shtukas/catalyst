@@ -70,8 +70,6 @@ class Listing
         return false if TmpSkip1::isSkipped(item)
 
         return false if item["mikuType"] == "DesktopTx1"
-        return false if item["mikuType"] == "NxFire"
-        return false if (item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item))
 
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
@@ -110,9 +108,8 @@ class Listing
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxBurners::listingItems(),
             NxBackups::listingItems(),
-            DarkEnergy::mikuType("NxFire"),
+            DarkEnergy::mikuType("NxFront"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::listingItems(),
@@ -140,10 +137,6 @@ class Listing
             line = line.yellow
         end
 
-        if item["mikuType"] == "NxBurner" and !NxBurners::pendingAcknowledgement(item) then
-            line = line.yellow
-        end
-
         if NxBalls::itemIsActive(item) then
             line = line.green
         end
@@ -161,13 +154,11 @@ class Listing
 
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
-        spot.contest_entry("DarkEnergy::mikuType(NxBurner)", lambda{ DarkEnergy::mikuType("NxBurner") })
-        spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
+        spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
         spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
-        spot.contest_entry("DarkEnergy::mikuType(NxFire)", lambda{ DarkEnergy::mikuType("NxFire") })
+        spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTasks::listingItems()", lambda{ NxTasks::listingItems() })
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
@@ -209,7 +200,6 @@ class Listing
              PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
-             NxBurners::maintenance()
              TxCores::maintenance()
         end
         TxCores::maintenance2()
