@@ -165,6 +165,7 @@ class ListingCommandsAndInterpreters
             if item["mikuType"] == "NxTask" then
                 puts "We do not apply the core function to tasks, use the thread function"
                 LucilleCore::pressEnterToContinue()
+                return
             end
             core = TxCores::interactivelySelectOneOrNull()
             Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
