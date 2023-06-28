@@ -7,7 +7,7 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => PolyFunctions::toString(item),
+            "description" => item["description"],
             "number"      => item["uuid"]
         }
 
@@ -20,7 +20,7 @@ class PolyFunctions
 
         if item["mikuType"] == "TxCore" then
             accounts << {
-                "description" => "#{PolyFunctions::toString(item)} (capsule)",
+                "description" => "#{item["description"]} (capsule)",
                 "number"      => item["capsule"]
             }
         end
