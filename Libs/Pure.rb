@@ -22,15 +22,23 @@ class Pure
             .first(6)
     end
 
+    # Pure::pureFromItem(item)
+    def self.pureFromItem(item)
+        listing = [item]
+        loop {
+            head = listing.first
+            tail = listing.drop(1)
+            children = Pure::childrenInitInRelevantOrder(head)
+            return [head] + tail if children.empty?
+            listing = children + [head] + tail
+        }
+    end
+
     # Pure::energy()
     def self.energy()
         listing1 = DarkEnergy::mikuType("TxCore")
                     .select{|core| DoNotShowUntil::isVisible(core) }
                     .sort_by{|core| TxCores::dayCompletionRatio(core) }
-                    .map{|core|
-                        Tx8s::childrenInOrder(core).sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
-                    }
-                    .flatten
 
         listing2 = DarkEnergy::mikuType("NxBox")
                     .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }

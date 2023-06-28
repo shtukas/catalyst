@@ -117,20 +117,24 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             DarkEnergy::mikuType("NxDrop"),
             Pure::energy(),
-            NxBalls::runningItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
 
-        items
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
+        items = items
+                    .select{|item| Listing::listable(item) }
+                    .reduce([]){|selected, item|
+                        if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                            selected
+                        else
+                            selected + [item]
+                        end
+                    }
+
+        runningItemsNotShowing = NxBalls::runningItems().select{|ri| !items.map{|i| i["uuid"]}.include?(ri["uuid"])}
+        items = runningItemsNotShowing + items
+
+        Pure::pureFromItem(items.first) + items.drop(1)
     end
 
     # Listing::itemToListingLine(store, item)

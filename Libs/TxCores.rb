@@ -159,8 +159,3 @@ class TxCores
         }
     end
 end
-
-
-
-
-
