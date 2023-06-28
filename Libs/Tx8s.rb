@@ -56,30 +56,65 @@ class Tx8s
 
         sorted = []
         unsorted = children
+        garbageCollected = []
 
         while unsorted.size > 0 do
             system('clear')
+            puts ""
             puts "sorted:"
             sorted.each{|i|
                 puts "    - #{PolyFunctions::toString(i)}"
             }
+            puts ""
+            puts "garbage collected:"
+            garbageCollected.each{|i|
+                puts "    - #{PolyFunctions::toString(i)}"
+            }
+            puts ""
             puts "unsorted:"
             i = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", unsorted, lambda{|i| PolyFunctions::toString(i) })
             next if i.nil?
-            sorted << i
-            unsorted = unsorted.reject{|x| x["uuid"] == i["uuid"]}
+            command = LucilleCore::askQuestionAnswerAsString("> command (keep, destroy, run+destroy): ")
+            if command == "keep" then
+                sorted << i
+                unsorted = unsorted.reject{|x| x["uuid"] == i["uuid"]}
+            end
+            if command == "destroy" then
+                garbageCollected << i
+                unsorted = unsorted.reject{|x| x["uuid"] == i["uuid"]}
+            end
+            if command == "run+destroy" then
+                puts "starting and running"
+                NxBalls::start(item)
+                PolyActions::access(item)
+                LucilleCore::pressEnterToContinue("Press enter to garbage collect")
+                garbageCollected << i
+                unsorted = unsorted.reject{|x| x["uuid"] == i["uuid"]}
+            end
         end
 
+        puts ""
         puts "final:"
         sorted.each{|i|
             puts "    - #{PolyFunctions::toString(i)}"
         }
 
+        puts ""
+        puts "going to be destroyed:"
+        garbageCollected.each{|i|
+            puts "    - #{PolyFunctions::toString(i)}"
+        }
+
+        puts ""
         LucilleCore::pressEnterToContinue()
         sorted.each_with_index{|i, indx|
             i["parent"]["position"] = indx+1
             puts JSON.pretty_generate(i)
             DarkEnergy::commit(i)
+        }
+
+        garbageCollected.each{|i|
+            DarkEnergy::destroy(i["uuid"])
         }
     end
 
