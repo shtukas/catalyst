@@ -131,7 +131,7 @@ class Listing
                         end
                     }
 
-        runningItemsNotShowing = NxBalls::runningItems().select{|ri| !items.map{|i| i["uuid"]}.include?(ri["uuid"])}
+        runningItemsNotShowing = NxBalls::runningItems().select{|ri| !items.take(CommonUtils::screenHeight() - 4).map{|i| i["uuid"]}.include?(ri["uuid"])}
         items = runningItemsNotShowing + items
 
         Pure::pureFromItem(items.first) + items.drop(1)
