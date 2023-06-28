@@ -105,7 +105,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        items = [
+        [
             NxTimes::listingItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
@@ -115,26 +115,10 @@ class Listing
             DarkEnergy::mikuType("NxFire"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            Pure::energy(),
             DarkEnergy::mikuType("NxDrop"),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-
-        items = items
-                    .select{|item| Listing::listable(item) }
-                    .reduce([]){|selected, item|
-                        if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                            selected
-                        else
-                            selected + [item]
-                        end
-                    }
-
-        runningItemsNotShowing = NxBalls::runningItems().select{|ri| !items.take(CommonUtils::screenHeight() - 4).map{|i| i["uuid"]}.include?(ri["uuid"])}
-        items = runningItemsNotShowing + items
-
-        Pure::pureFromItem(items.first) + items.drop(1)
     end
 
     # Listing::itemToListingLine(store, item)
@@ -144,7 +128,9 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        positionSuffix = Ordinals::getOrNull(item) ? " (#{"%5.2f" % Ordinals::getOrNull(item)})" : ""
+
+        line = "#{storePrefix}#{positionSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -199,8 +185,8 @@ class Listing
         Listing::maintenance()
         spot.end_unit()
 
-        spot.start_unit("pures")
-        pures = Pure::energy()
+        spot.start_unit("energy")
+        energy = Pure::energy()
         spot.end_unit()
 
         spot.start_unit("Listing::items()")
@@ -211,7 +197,8 @@ class Listing
         store = ItemStore.new()
 
         spot.start_unit("Listing::printing")
-        Listing::printing(spacecontrol, store, items)
+        i1s, i2s = items.partition{|item| Ordinals::getOrNull(item).nil? }
+        Listing::printing(spacecontrol, store, i1s, i2s, energy)
         spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
@@ -245,9 +232,30 @@ class Listing
         }
     end
 
-    # Listing::printing(spacecontrol, store, items)
-    def self.printing(spacecontrol, store, items)
-        items
+    # Listing::printing(spacecontrol, store, i1s, i2s, energy, i3s)
+    def self.printing(spacecontrol, store, i1s, i2s, energy, i3s)
+        i1s
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+        spacecontrol.putsline ""
+        i2s
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+        spacecontrol.putsline ""
+        energy
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                break if !status
+            }
+        spacecontrol.putsline ""
+        i3s
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 status = spacecontrol.putsline Listing::itemToListingLine(store, item)
@@ -291,12 +299,19 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
+            items = []
+
             items = Listing::items()
+
+            i1s, i2s = items.partition{|item| Ordinals::getOrNull(item).nil? }
+            i2s, i3s = i2s.partition{|item| Ordinals::getOrNull(item) < 10 }
+
+            energy = Pure::energy()
 
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printing(spacecontrol, store, items)
+            Listing::printing(spacecontrol, store, i1s.shuffle, i2s, energy, i3s)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

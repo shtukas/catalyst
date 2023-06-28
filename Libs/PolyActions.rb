@@ -122,15 +122,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBurner" then
-            if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
-                LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
+            item["ackDay"] = CommonUtils::today()
+            DarkEnergy::commit(item)
             return
         end
 

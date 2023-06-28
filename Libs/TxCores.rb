@@ -158,4 +158,11 @@ class TxCores
             TxCores::program1(core)
         }
     end
+
+    # TxCores::interactivelyMakeTx8WithCoreParentOrNull()
+    def self.interactivelyMakeTx8WithCoreParentOrNull()
+        core = TxCores::interactivelySelectOneOrNull()
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
+        Tx8s::make(core["uuid"], position)
+    end
 end
