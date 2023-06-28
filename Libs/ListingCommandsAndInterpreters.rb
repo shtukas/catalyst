@@ -162,8 +162,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxThread" then
-                puts "The function core only applies to threads as a way to relocate to another core"
+            if item["mikuType"] == "NxTask" then
+                puts "We do not apply the core function to tasks, use the thread function"
                 LucilleCore::pressEnterToContinue()
             end
             core = TxCores::interactivelySelectOneOrNull()
