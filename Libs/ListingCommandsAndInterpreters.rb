@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata <n> | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | ordinal (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | ordinal (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -276,6 +276,15 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
+            return
+        end
+
+        if Interpreting::match("coredata", input) then
+            item = store.getDefault()
+            return if item.nil?
+            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull()
+            return if reference.nil?
+            DarkEnergy::patch(item["uuid"], "field11", reference)
             return
         end
 

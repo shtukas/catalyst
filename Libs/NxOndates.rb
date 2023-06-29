@@ -59,7 +59,7 @@ class NxOndates
             items = DarkEnergy::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
 
-            Listing::printing(spacecontrol, store, items)
+            Listing::printingItems(spacecontrol, store, items)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

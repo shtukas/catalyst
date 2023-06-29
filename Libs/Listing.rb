@@ -118,16 +118,16 @@ class Listing
             .select{|item| Listing::listable(item) }
     end
 
-    # Listing::itemToListingLine(store, item)
-    def self.itemToListingLine(store, item)
+    # Listing::itemToListingLine(store, item, showOrdinal)
+    def self.itemToListingLine(store, item, showOrdinal)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
         str1 = PolyFunctions::toString(item)
 
-        positionSuffix = Ordinals::getOrNull(item) ? " (#{"%5.2f" % Ordinals::getOrNull(item)})" : ""
+        ordinalSuffix = (showOrdinal and Ordinals::getOrNull(item)) ? " (#{"%5.2f" % Ordinals::getOrNull(item)})" : ""
 
-        line = "#{storePrefix}#{positionSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -187,8 +187,7 @@ class Listing
         store = ItemStore.new()
 
         spot.start_unit("Listing::printing")
-        i1s, i2s = items.partition{|item| Ordinals::getOrNull(item).nil? }
-        Listing::printing(spacecontrol, store, i1s, i2s, energy)
+        Listing::printingMainListing(spacecontrol, store, [], items, energy, [])
         spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
@@ -221,33 +220,43 @@ class Listing
         }
     end
 
-    # Listing::printing(spacecontrol, store, i1s, i2s, energy, i3s)
-    def self.printing(spacecontrol, store, i1s, i2s, energy, i3s)
+    # Listing::printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
+    def self.printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
         i1s
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
                 break if !status
             }
         spacecontrol.putsline ""
         i2s
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
                 break if !status
             }
         spacecontrol.putsline ""
         energy
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
                 break if !status
             }
         spacecontrol.putsline ""
         i3s
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item)
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                break if !status
+            }
+    end
+
+    # Listing::printingItems(spacecontrol, store, items)
+    def self.printingItems(spacecontrol, store, items)
+        items
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
                 break if !status
             }
     end
@@ -302,7 +311,7 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printing(spacecontrol, store, i1s, i2s, energy, i3s)
+            Listing::printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

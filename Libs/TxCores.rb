@@ -127,12 +127,12 @@ class TxCores
 
             spacecontrol.putsline ""
             store.register(core, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, core)
+            spacecontrol.putsline Listing::itemToListingLine(store, core, false)
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(core)
 
-            Listing::printing(spacecontrol, store, items)
+            Listing::printingItems(spacecontrol, store, items)
 
             spacecontrol.putsline ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
