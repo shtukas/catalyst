@@ -221,9 +221,19 @@ class Listing
         }
     end
 
-    # Listing::printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
-    def self.printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
+    # Listing::printingMainListing(spacecontrol, store, ordinaledNone, ordinaledLow, energy, ordinaledHigh)
+    def self.printingMainListing(spacecontrol, store, ordinaledNone, ordinaledLow, energy, ordinaledHigh)
         floats = DarkEnergy::mikuType("NxFloat")
+
+        if ordinaledNone.size > 0 then
+            ordinaledNone
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
 
         if floats.size > 0 then
             floats
@@ -235,18 +245,8 @@ class Listing
             spacecontrol.putsline ""
         end
 
-        if i1s.size > 0 then
-            i1s
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
-
-        if i2s.size > 0 then
-            i2s
+        if ordinaledLow.size > 0 then
+            ordinaledLow
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
@@ -265,8 +265,8 @@ class Listing
             spacecontrol.putsline ""
         end
 
-        if i3s.size > 0 then
-            i3s
+        if ordinaledHigh.size > 0 then
+            ordinaledHigh
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
@@ -326,25 +326,28 @@ class Listing
 
             items = Listing::items()
 
-            i1s, i2s = items.partition{|item| Ordinals::getOrNull(item).nil? }
-            i1s = i1s.shuffle
-            i2s = i2s.sort_by{|item| Ordinals::getOrNull(item) }
-            i2s, i3s = i2s.partition{|item| Ordinals::getOrNull(item) < 10 }
+            ordinaledNone, ordinaledLow = items.partition{|item| Ordinals::getOrNull(item).nil? }
+            ordinaledNone = ordinaledNone.shuffle
+            ordinaledLow = ordinaledLow.sort_by{|item| Ordinals::getOrNull(item) }
+            ordinaledLow, ordinaledHigh = ordinaledLow.partition{|item| Ordinals::getOrNull(item) < 10 }
 
             energy = Pure::energy()
 
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
+            Listing::printingMainListing(spacecontrol, store, ordinaledNone, ordinaledLow, energy, ordinaledHigh)
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             
-            if input != "" then
-                puts ""
-               ListingCommandsAndInterpreters::interpreter(input, store)
+            if Float(input, exception: false) and Ordinals::getOrNull(store.getDefault()).nil? then
+                Ordinals::set(store.getDefault(), input.to_f)
+                next
             end
+
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
 
             next
             # ------------------------------------------------------------------
