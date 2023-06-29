@@ -9,8 +9,8 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "transmutation : >> (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | box",
+            "transmutation : >> (<n>) | >task (<n>) | >float (<n>) | >front (<n>)",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | box | float",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start * | stop | stop * | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -39,6 +39,21 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
+            return
+        end
+
+        if Interpreting::match(">float", input) then
+            item = store.getDefault()
+            return if item.nil?
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFloat")
+            return
+        end
+
+        if Interpreting::match(">float *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFloat")
             return
         end
 
@@ -451,6 +466,13 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("ondates", input) then
             NxOndates::program()
+            return
+        end
+
+        if Interpreting::match("float", input) then
+            item = NxFloats::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 

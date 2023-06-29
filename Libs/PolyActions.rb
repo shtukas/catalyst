@@ -28,6 +28,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFloat" then
+            CoreData::access(item["uuid"], item["field11"])
+            return
+        end
+
         if item["mikuType"] == "NxTime" then
             return
         end
@@ -89,6 +94,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
             return
         end
 
@@ -248,6 +260,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end

@@ -70,6 +70,7 @@ class Listing
         return false if TmpSkip1::isSkipped(item)
 
         return false if item["mikuType"] == "DesktopTx1"
+        return false if item["mikuType"] == "NxFloat"
 
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
@@ -222,33 +223,57 @@ class Listing
 
     # Listing::printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
     def self.printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
-        i1s
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                break if !status
-            }
-        spacecontrol.putsline ""
-        i2s
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                break if !status
-            }
-        spacecontrol.putsline ""
-        energy
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
-                break if !status
-            }
-        spacecontrol.putsline ""
-        i3s
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                break if !status
-            }
+        floats = DarkEnergy::mikuType("NxFloat")
+
+        if floats.size > 0 then
+            floats
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
+
+        if i1s.size > 0 then
+            i1s
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
+
+        if i2s.size > 0 then
+            i2s
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
+
+        if energy.size > 0 then
+            energy
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
+
+        if i3s.size > 0 then
+            i3s
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
     end
 
     # Listing::printingItems(spacecontrol, store, items)
@@ -313,7 +338,6 @@ class Listing
             spacecontrol.putsline ""
             Listing::printingMainListing(spacecontrol, store, i1s, i2s, energy, i3s)
 
-            puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             
