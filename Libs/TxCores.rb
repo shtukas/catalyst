@@ -165,4 +165,18 @@ class TxCores
         position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
         Tx8s::make(core["uuid"], position)
     end
+
+    # TxCores::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("TxCore")
+            .select{|core| DoNotShowUntil::isVisible(core) }
+            .select{|core| TxCores::dayCompletionRatio(core) < 1 }
+            .map{|core|
+                ratio = TxCores::dayCompletionRatio(core)
+                position = Ordinals::completionRatioToPosition(ratio)
+                Ordinals::set(core, position)
+                core
+            }
+            .sort_by{|core| TxCores::dayCompletionRatio(core) }
+    end
 end

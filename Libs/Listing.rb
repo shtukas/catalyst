@@ -114,6 +114,7 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::listingItems(),
+            TxCores::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -127,6 +128,9 @@ class Listing
         str1 = PolyFunctions::toString(item)
 
         ordinalSuffix = (showOrdinal and Ordinals::getOrNull(item)) ? " (#{"%5.2f" % Ordinals::getOrNull(item)})" : ""
+        if item["mikuType"] == "TxCore" then
+            ordinalSuffix = "        "
+        end
 
         line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
@@ -165,7 +169,7 @@ class Listing
         spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
-        spot.contest_entry("Pure::energy()", lambda{ Pure::energy() })
+        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
         spot.end_contest()
@@ -176,10 +180,6 @@ class Listing
         Listing::maintenance()
         spot.end_unit()
 
-        spot.start_unit("energy")
-        energy = Pure::energy()
-        spot.end_unit()
-
         spot.start_unit("Listing::items()")
         items = Listing::items()
         spot.end_unit()
@@ -188,7 +188,7 @@ class Listing
         store = ItemStore.new()
 
         spot.start_unit("Listing::printing")
-        Listing::printingMainListing(spacecontrol, store, [], items, energy, [])
+        Listing::printingMainListing(spacecontrol, store, items)
         spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
@@ -221,19 +221,9 @@ class Listing
         }
     end
 
-    # Listing::printingMainListing(spacecontrol, store, ordinaledNone, ordinaledLow, energy, ordinaledHigh)
-    def self.printingMainListing(spacecontrol, store, ordinaledNone, ordinaledLow, energy, ordinaledHigh)
+    # Listing::printingMainListing(spacecontrol, store, items)
+    def self.printingMainListing(spacecontrol, store, items)
         floats = DarkEnergy::mikuType("NxFloat")
-
-        if ordinaledNone.size > 0 then
-            ordinaledNone
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
 
         if floats.size > 0 then
             floats
@@ -245,35 +235,12 @@ class Listing
             spacecontrol.putsline ""
         end
 
-        if ordinaledLow.size > 0 then
-            ordinaledLow
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
-
-        if energy.size > 0 then
-            energy
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
-
-        if ordinaledHigh.size > 0 then
-            ordinaledHigh
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
+        items
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                break if !status
+            }
     end
 
     # Listing::printingItems(spacecontrol, store, items)
@@ -325,18 +292,15 @@ class Listing
             items = []
 
             items = Listing::items()
+            Ordinals::extractRangeFromListingItems(items)
 
-            ordinaledNone, ordinaledLow = items.partition{|item| Ordinals::getOrNull(item).nil? }
-            ordinaledNone = ordinaledNone.shuffle
-            ordinaledLow = ordinaledLow.sort_by{|item| Ordinals::getOrNull(item) }
-            ordinaledLow, ordinaledHigh = ordinaledLow.partition{|item| Ordinals::getOrNull(item) < 10 }
-
-            energy = Pure::energy()
+            onone, ordinaled = items.partition{|item| Ordinals::getOrNull(item).nil? }
+            ordinaled = ordinaled.sort_by{|item| Ordinals::getOrNull(item) }
 
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printingMainListing(spacecontrol, store, ordinaledNone, ordinaledLow, energy, ordinaledHigh)
+            Listing::printingMainListing(spacecontrol, store, onone+ordinaled)
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
