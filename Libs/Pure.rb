@@ -38,6 +38,7 @@ class Pure
     def self.energy()
         listing = DarkEnergy::mikuType("TxCore")
                     .select{|core| DoNotShowUntil::isVisible(core) }
+                    .select{|core| TxCores::dayCompletionRatio(core) < 1 }
                     .sort_by{|core| TxCores::dayCompletionRatio(core) }
 
         return [] if listing.empty?
