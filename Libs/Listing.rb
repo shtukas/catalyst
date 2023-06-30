@@ -130,7 +130,7 @@ class Listing
 
         str1 = PolyFunctions::toString(item)
 
-        ordinalSuffix = (showOrdinal and Ordinals::getOrNull(item)) ? " (#{"%5.2f" % Ordinals::getOrNull(item)})" : ""
+        ordinalSuffix = (showOrdinal and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
         if item["mikuType"] == "TxCore" then
             ordinalSuffix = "        "
         end
@@ -305,10 +305,10 @@ class Listing
             items = []
 
             items = Listing::items()
-            Ordinals::extractRangeFromListingItems(items)
+            ListingPositions::extractRangeFromListingItems(items)
 
-            onone, ordinaled = items.partition{|item| Ordinals::getOrNull(item).nil? }
-            ordinaled = ordinaled.sort_by{|item| Ordinals::getOrNull(item) }
+            onone, ordinaled = items.partition{|item| ListingPositions::getOrNull(item).nil? }
+            ordinaled = ordinaled.sort_by{|item| ListingPositions::getOrNull(item) }
 
             system("clear")
 
@@ -319,8 +319,8 @@ class Listing
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             
-            if Float(input, exception: false) and Ordinals::getOrNull(store.getDefault()).nil? then
-                Ordinals::set(store.getDefault(), input.to_f)
+            if Float(input, exception: false) and ListingPositions::getOrNull(store.getDefault()).nil? then
+                ListingPositions::set(store.getDefault(), input.to_f)
                 next
             end
 
@@ -330,7 +330,7 @@ class Listing
             next
             # ------------------------------------------------------------------
 
-            special = Listing::items().select{|item| Ordinals::getOrNull(item).nil? }
+            special = Listing::items().select{|item| ListingPositions::getOrNull(item).nil? }
 
             if special.size > 0 then
                 system("clear")

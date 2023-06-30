@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | ordinal (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | ordinal (<n>) | next | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -94,7 +94,7 @@ class ListingCommandsAndInterpreters
             end
             DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
             item = DarkEnergy::itemOrNull(item["uuid"])
-            Ordinals::interactivelySetOrdinalAttempt(item)
+            ListingPositions::interactivelySetOrdinalAttempt(item)
             return
         end
 
@@ -109,7 +109,7 @@ class ListingCommandsAndInterpreters
             end
             DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
             item = DarkEnergy::itemOrNull(item["uuid"])
-            Ordinals::interactivelySetOrdinalAttempt(item)
+            ListingPositions::interactivelySetOrdinalAttempt(item)
             return
         end
 
@@ -184,7 +184,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-            Ordinals::set(item, ordinal)
+            ListingPositions::set(item, ordinal)
             return
         end
 
@@ -193,7 +193,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-            Ordinals::set(item, ordinal)
+            ListingPositions::set(item, ordinal)
             return
         end
 
@@ -442,6 +442,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("next", input) then
+            item = store.getDefault()
+            return if item.nil?
+            ListingPositions::set(item, ListingPositions::nextPosition())
+            return
+        end
+
         if Interpreting::match("note", input) then
             item = store.getDefault()
             return if item.nil?
@@ -480,7 +487,7 @@ class ListingCommandsAndInterpreters
             item = NxFronts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Ordinals::interactivelySetOrdinalAttempt(item)
+            ListingPositions::interactivelySetOrdinalAttempt(item)
             return
         end
 

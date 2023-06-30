@@ -148,7 +148,7 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
-require_relative "Ordinals.rb"
+require_relative "ListingPositions.rb"
 
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"

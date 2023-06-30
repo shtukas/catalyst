@@ -173,8 +173,8 @@ class TxCores
             .select{|core| TxCores::dayCompletionRatio(core) < 1 }
             .map{|core|
                 ratio = TxCores::dayCompletionRatio(core)
-                position = Ordinals::completionRatioToPosition(ratio)
-                Ordinals::set(core, position)
+                position = ListingPositions::completionRatioToPosition(ratio)
+                ListingPositions::set(core, position)
                 core
             }
             .sort_by{|core| TxCores::dayCompletionRatio(core) }
