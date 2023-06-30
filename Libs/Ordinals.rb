@@ -15,21 +15,28 @@ class Ordinals
 
     # Ordinals::interactivelySetOrdinalAttempt(item)
     def self.interactivelySetOrdinalAttempt(item)
-        ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-        Ordinals::set(item, ordinal)
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        position =
+            if position == "" then
+                range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
+                range[1] + 1
+            else
+                position.to_f
+            end
+        Ordinals::set(item, position)
     end
 
     # Ordinals::extractRangeFromListingItems(items)
     def self.extractRangeFromListingItems(items)
-        ordinals = items
+        positions = items
                         .select{|item| item["mikuType"] != "TxCore" }
                         .map{|item| Ordinals::getOrNull(item) }
                         .compact
         range = 
-            if ordinals.empty? then
+            if positions.empty? then
                 [1, 1]
             else
-                [ordinals.min, ordinals.max]
+                [positions.min, positions.max]
             end
         XCache::set("deeecc9c-2c6f-4880-be79-d0708a3caf72", JSON.generate(range))
     end
@@ -37,6 +44,6 @@ class Ordinals
     # Ordinals::completionRatioToPosition(ratio)
     def self.completionRatioToPosition(ratio)
         range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
-        range[0] + ratio*(range[1] - range[0])
+        ratio*range[1]
     end
 end

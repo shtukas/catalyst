@@ -302,6 +302,7 @@ class Listing
             spacecontrol.putsline ""
             Listing::printingMainListing(spacecontrol, store, onone+ordinaled)
 
+            puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             
