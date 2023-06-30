@@ -23,10 +23,14 @@ class NxTimes
             .sort_by{|item| item["time"] }
     end
 
-    # NxTimes::hasPendingTime()
-    def self.hasPendingTime()
-        currentTime = Time.new.strftime("%H:%M")
-        DarkEnergy::mikuType("NxTime").any?{|item| item["time"] <= currentTime }
+    # NxTimes::isPending(item)
+    def self.isPending(item)
+        item["time"] <= Time.new.strftime("%H:%M")
+    end
+
+    # NxTimes::itemsWithPendingTime()
+    def self.itemsWithPendingTime()
+        DarkEnergy::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
     end
 
     # NxTimes::reschedule()
