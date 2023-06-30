@@ -69,6 +69,10 @@ class Listing
 
         return false if TmpSkip1::isSkipped(item)
 
+        if item["mikuType"] == "NxTime" then
+            return NxTimes::isPending(item)
+        end
+
         return false if item["mikuType"] == "DesktopTx1"
         return false if item["mikuType"] == "NxFloat"
 
@@ -105,7 +109,6 @@ class Listing
     # Listing::items()
     def self.items()
         [
-            NxTimes::listingItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -166,7 +169,7 @@ class Listing
         spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTasks::listingItems()", lambda{ NxTasks::listingItems() })
-        spot.contest_entry("NxTimes::hasPendingTime()", lambda{ NxTimes::hasPendingTime() })
+        spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
@@ -223,13 +226,23 @@ class Listing
 
     # Listing::printingMainListing(spacecontrol, store, items)
     def self.printingMainListing(spacecontrol, store, items)
-        floats = DarkEnergy::mikuType("NxFloat")
+        times = NxTimes::listingItems()
+        if times.size > 0 then
+            times
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+        end
 
+        floats = DarkEnergy::mikuType("NxFloat")
         if floats.size > 0 then
             floats
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
+                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
                     break if !status
                 }
             spacecontrol.putsline ""
