@@ -123,7 +123,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("next", input) then
             item = store.getDefault()
             return if item.nil?
-            ListingPositions::set(item, ListingPositions::getNextPosition())
+            ListingPositions::set(item, ListingPositions::nextPosition())
             return
         end
 
