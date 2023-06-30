@@ -49,6 +49,12 @@ class ListingPositions
     # ListingPositions::completionRatioToPosition(ratio)
     def self.completionRatioToPosition(ratio)
         range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
-        ratio*range[1]
+        ratio * range[1]
+    end
+
+    # ListingPositions::randomPositionInRange()
+    def self.randomPositionInRange()
+        range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
+        range[0] + rand * (range[1]-range[0])
     end
 end

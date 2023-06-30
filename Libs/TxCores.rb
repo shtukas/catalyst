@@ -1,6 +1,9 @@
 
 class TxCores
 
+    # -----------------------------------------------
+    # Build
+
     # TxCores::interactivelyMakeCoreOrNull()
     def self.interactivelyMakeCoreOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
@@ -16,37 +19,8 @@ class TxCores
         }
     end
 
-    # TxCores::core_maintenance(core)
-    def self.core_maintenance(core)
-        return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
-        return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
-        puts "> I am about to reset core: #{core["description"]}"
-        LucilleCore::pressEnterToContinue()
-        Bank::reset(core["capsule"])
-        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{core["hours"]} hours ? ") then
-            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
-            if hours.size > 0 then
-                core["hours"] = hours.to_f
-            end
-        end
-        core["lastResetTime"] = Time.new.to_i
-        core
-    end
-
-    # TxCores::maintenance()
-    def self.maintenance()
-        DarkEnergy::mikuType("TxCore").each{|core|
-            core = TxCores::core_maintenance(core)
-            next if core.nil?
-            DarkEnergy::commit(core)
-        }
-    end
-
-    # TxCores::maintenance2()
-    def self.maintenance2()
-        padding = ([0] + DarkEnergy::mikuType("TxCore").map{|core| core["description"].size}).max
-        XCache::set("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", padding)
-    end
+    # -----------------------------------------------
+    # Data
 
     # TxCores::dayCompletionRatio(core)
     def self.dayCompletionRatio(core)
@@ -113,6 +87,83 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
+    # TxCores::interactivelyMakeTx8WithCoreParentOrNull()
+    def self.interactivelyMakeTx8WithCoreParentOrNull()
+        core = TxCores::interactivelySelectOneOrNull()
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
+        Tx8s::make(core["uuid"], position)
+    end
+
+    # TxCores::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("TxCore")
+            .select{|core| DoNotShowUntil::isVisible(core) }
+            .select{|core| TxCores::dayCompletionRatio(core) < 1 }
+            .map{|core|
+                ratio = TxCores::dayCompletionRatio(core)
+                position = ListingPositions::completionRatioToPosition(ratio)
+                ListingPositions::set(core, position)
+                core
+            }
+            .sort_by{|core| TxCores::dayCompletionRatio(core) }
+    end
+
+    # TxCores::todayNeedsInHours(core)
+    def self.todayNeedsInHours(core)
+        core["hours"].to_f/5 - Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
+    end
+
+    # -----------------------------------------------
+    # Ops
+
+    # TxCores::core_maintenance(core)
+    def self.core_maintenance(core)
+        return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
+        return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
+        puts "> I am about to reset core: #{core["description"]}"
+        LucilleCore::pressEnterToContinue()
+        Bank::put(core["capsule"], -core["hours"]*3600)
+        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{core["hours"]} hours ? ") then
+            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
+            if hours.size > 0 then
+                core["hours"] = hours.to_f
+            end
+        end
+        core["lastResetTime"] = Time.new.to_i
+        core
+    end
+
+    # TxCores::maintenance()
+    def self.maintenance()
+        DarkEnergy::mikuType("TxCore").each{|core|
+            core = TxCores::core_maintenance(core)
+            next if core.nil?
+            DarkEnergy::commit(core)
+        }
+    end
+
+    # TxCores::maintenance2()
+    def self.maintenance2()
+        padding = ([0] + DarkEnergy::mikuType("TxCore").map{|core| core["description"].size}).max
+        XCache::set("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", padding)
+    end
+
+    # TxCores::maintenance3()
+    def self.maintenance3()
+        DarkEnergy::mikuType("TxCore")
+            .each{|core|
+                next if !DoNotShowUntil::isVisible(core)
+                next if Bank::getValue(core["capsule"]).to_f > core["hours"]*3600
+                todayNeedsInHours = TxCores::todayNeedsInHours(core)
+                next if todayNeedsInHours < 0
+                puts "anti-matter creation: #{core["description"]}, #{todayNeedsInHours.round(2)} hours".green
+                PolyActions::addTimeToItem(core, 1.01*todayNeedsInHours*3600) # adding time to the core
+                antimatter = DxAntimatters::issue(core["uuid"], core["description"], -1.01*todayNeedsInHours*3600) # making an anti-matter with opposite value
+                puts JSON.pretty_generate(antimatter)
+                ListingPositions::set(antimatter, ListingPositions::randomPositionInRange())
+            }
+    end
+
     # TxCores::program1(core)
     def self.program1(core)
         loop {
@@ -157,26 +208,5 @@ class TxCores
             return if core.nil?
             TxCores::program1(core)
         }
-    end
-
-    # TxCores::interactivelyMakeTx8WithCoreParentOrNull()
-    def self.interactivelyMakeTx8WithCoreParentOrNull()
-        core = TxCores::interactivelySelectOneOrNull()
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
-        Tx8s::make(core["uuid"], position)
-    end
-
-    # TxCores::listingItems()
-    def self.listingItems()
-        DarkEnergy::mikuType("TxCore")
-            .select{|core| DoNotShowUntil::isVisible(core) }
-            .select{|core| TxCores::dayCompletionRatio(core) < 1 }
-            .map{|core|
-                ratio = TxCores::dayCompletionRatio(core)
-                position = ListingPositions::completionRatioToPosition(ratio)
-                ListingPositions::set(core, position)
-                core
-            }
-            .sort_by{|core| TxCores::dayCompletionRatio(core) }
     end
 end

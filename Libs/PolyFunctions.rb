@@ -42,6 +42,9 @@ class PolyFunctions
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
         end
+        if item["mikuType"] == "DxAntimatter" then
+            return DxAntimatters::toString(item)
+        end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end

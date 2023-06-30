@@ -114,6 +114,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxBackups::listingItems(),
             DarkEnergy::mikuType("NxFront"),
+            DarkEnergy::mikuType("DxAntimatter"),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::listingItems(),
@@ -203,9 +204,10 @@ class Listing
              PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
-             TxCores::maintenance()
+             TxCores::maintenance() # core maintenance
+             TxCores::maintenance3() # DxAntimatter issue
         end
-        TxCores::maintenance2()
+        TxCores::maintenance2() # padding
     end
 
     # Listing::launchNxBallMonitor()

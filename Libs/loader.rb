@@ -140,6 +140,7 @@ require_relative "DoNotShowUntil.rb"
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DarkSpace.rb"
+require_relative "DxAntimatter.rb"
 
 require_relative "Galaxy.rb"
 
