@@ -13,6 +13,11 @@ class Ordinals
         CatalystSharedCache::set("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}", position)
     end
 
+    # Ordinals::getNextPosition()
+    def self.getNextPosition()
+        JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))[1] + 1
+    end
+
     # Ordinals::interactivelySetOrdinalAttempt(item)
     def self.interactivelySetOrdinalAttempt(item)
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
