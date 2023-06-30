@@ -57,4 +57,9 @@ class ListingPositions
         range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
         range[0] + rand * (range[1]-range[0])
     end
+
+    # ListingPositions::revoke(item)
+    def self.revoke(item)
+        CatalystSharedCache::destroy("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}")
+    end
 end

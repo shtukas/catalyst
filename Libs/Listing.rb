@@ -309,6 +309,13 @@ class Listing
             items = Listing::items()
             ListingPositions::extractRangeFromListingItems(items)
 
+            # ---------------------------------------------------------------------
+            JSON.parse(XCache::getOrDefaultValue("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", "[]"))
+                .select{|i1| items.none?{|i2| i2["uuid"] == i1["uuid"] }}
+                .each{|item| ListingPositions::revoke(item) }
+            XCache::set("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", JSON.generate(items))
+            # ---------------------------------------------------------------------
+
             onone, ordinaled = items.partition{|item| ListingPositions::getOrNull(item).nil? }
             ordinaled = ordinaled.sort_by{|item| ListingPositions::getOrNull(item) }
 
