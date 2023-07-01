@@ -97,8 +97,8 @@ class TxCores
     # TxCores::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("TxCore")
-            .select{|core| DoNotShowUntil::isVisible(core) }
-            .select{|core| TxCores::dayCompletionRatio(core) < 1 }
+            .select{|core| NxBalls::itemIsActive(core) or DoNotShowUntil::isVisible(core) }
+            .select{|core| NxBalls::itemIsActive(core) or TxCores::dayCompletionRatio(core) < 1 }
             .map{|core|
                 ratio = TxCores::dayCompletionRatio(core)
                 position = ListingPositions::completionRatioToPosition(ratio)
