@@ -157,10 +157,13 @@ class TxCores
                 todayNeedsInHours = TxCores::todayNeedsInHours(core)
                 next if todayNeedsInHours < 0
                 puts "anti-matter creation: #{core["description"]}, #{todayNeedsInHours.round(2)} hours".green
-                PolyActions::addTimeToItem(core, 1.01*todayNeedsInHours*3600) # adding time to the core
-                antimatter = DxAntimatters::issue(core["uuid"], core["description"], -1.01*todayNeedsInHours*3600) # making an anti-matter with opposite value
-                puts JSON.pretty_generate(antimatter)
-                ListingPositions::set(antimatter, ListingPositions::randomPositionInRange())
+                4.times {
+                    PolyActions::addTimeToItem(core, 0.25*1.01*todayNeedsInHours*3600) # adding time to the core
+                    antimatter = DxAntimatters::issue(core["uuid"], core["description"], -0.25*1.01*todayNeedsInHours*3600) # making an anti-matter with opposite value
+                    puts JSON.pretty_generate(antimatter)
+                    ListingPositions::set(antimatter, ListingPositions::randomPositionInRange())
+                }
+
             }
     end
 
