@@ -13,9 +13,27 @@ class DxAntimatters
         DarkEnergy::itemOrNull(uuid)
     end
 
+    # DxAntimatters::value(item)
+    def self.value(item)
+        item["initialValue"] + Bank::getValue(item["uuid"])
+    end
+
     # DxAntimatters::toString(item)
     def self.toString(item)
-       valueInHours = (item["initialValue"] + Bank::getValue(item["uuid"])).to_f/3600
+       valueInHours = DxAntimatters::value(item).to_f/3600
         "🍄 #{item["description"]} #{valueInHours.round(2)} hours"
+    end
+
+    # DxAntimatters::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("DxAntimatter")
+            .select{|item|
+                DxAntimatters::value(item) < 0 or DoNotShowUntil::isVisible(item)
+            }
+    end
+
+    # DxAntimatters::maintenance()
+    def self.maintenance()
+
     end
 end
