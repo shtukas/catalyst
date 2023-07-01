@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | ordinal (<n>) | next | random | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | position (<n>) | next | random | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -194,20 +194,20 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("ordinal", input) then
+        if Interpreting::match("position", input) then
             item = store.getDefault()
             return if item.nil?
-            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-            ListingPositions::set(item, ordinal)
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            ListingPositions::set(item, position)
             return
         end
 
-        if Interpreting::match("ordinal *", input) then
+        if Interpreting::match("position *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
-            ListingPositions::set(item, ordinal)
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            ListingPositions::set(item, position)
             return
         end
 
