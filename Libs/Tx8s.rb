@@ -29,7 +29,7 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        children = Tx8s::childrenInOrder(parent)
+        children = Tx8s::childrenInOrder(parent).take(CommonUtils::screenHeight() - 4)
         return 1 if children.empty?
         children.each{|item|
             puts " - #{PolyFunctions::toString(item)}"

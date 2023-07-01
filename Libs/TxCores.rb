@@ -185,7 +185,6 @@ class TxCores
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(core)
-
             Listing::printingItems(spacecontrol, store, items)
 
             spacecontrol.putsline ""
