@@ -161,7 +161,7 @@ class TxCores
                     PolyActions::addTimeToItem(core, 0.25*1.01*todayNeedsInHours*3600) # adding time to the core
                     antimatter = DxAntimatters::issue(core["uuid"], core["description"], -0.25*1.01*todayNeedsInHours*3600) # making an anti-matter with opposite value
                     puts JSON.pretty_generate(antimatter)
-                    ListingPositions::set(antimatter, ListingPositions::randomPositionInRange())
+                    ListingPositions::set(antimatter, ListingPositions::randomPositionInLateRange())
                 }
 
             }

@@ -52,10 +52,10 @@ class ListingPositions
         ratio * range[1]
     end
 
-    # ListingPositions::randomPositionInRange()
-    def self.randomPositionInRange()
+    # ListingPositions::randomPositionInLateRange()
+    def self.randomPositionInLateRange()
         range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
-        range[0] + rand * (range[1]-range[0])
+        range[0] + (0.5 + 0.5*rand) * (range[1]-range[0])
     end
 
     # ListingPositions::revoke(item)
