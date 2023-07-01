@@ -126,7 +126,7 @@ class PolyActions
 
         if item["mikuType"] == "NxLine" then
             if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
+                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
                 NxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
@@ -150,7 +150,7 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
+                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
                 NxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
@@ -163,7 +163,7 @@ class PolyActions
 
         if item["mikuType"] == "NxFront" then
             if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
+                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
                 NxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
@@ -176,7 +176,7 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
+                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
                 NxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
@@ -189,7 +189,7 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             if NxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it."
+                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
                 NxNotes::edit(item)
             end
