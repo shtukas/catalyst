@@ -8,6 +8,16 @@ class ListingPositions
         CatalystSharedCache::getOrNull("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}") # Float
     end
 
+    # ListingPositions::getOrNullForListing(item)
+    def self.getOrNullForListing(item)
+        position = CatalystSharedCache::getOrNull("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}") # Float
+        if position.nil? and item["mikuType"] == "Wave" and !item["interruption"] then
+            position = ListingPositions::nextPosition()
+            ListingPositions::set(item, position)
+        end
+        position
+    end
+
     # ListingPositions::set(item, position)
     def self.set(item, position)
         CatalystSharedCache::set("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}", position)

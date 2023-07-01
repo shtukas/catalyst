@@ -317,13 +317,13 @@ class Listing
             XCache::set("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", JSON.generate(items))
             # ---------------------------------------------------------------------
 
-            onone, ordinaled = items.partition{|item| ListingPositions::getOrNull(item).nil? }
-            ordinaled = ordinaled.sort_by{|item| ListingPositions::getOrNull(item) }
+            iris, positioned = items.partition{|item| ListingPositions::getOrNullForListing(item).nil? }
+            positioned = positioned.sort_by{|item| ListingPositions::getOrNull(item) }
 
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printingMainListing(spacecontrol, store, onone+ordinaled)
+            Listing::printingMainListing(spacecontrol, store, iris+positioned)
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
