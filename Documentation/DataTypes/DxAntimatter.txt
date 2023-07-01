@@ -1,14 +1,13 @@
 
 DxAntimatter: 
-    "uuid"        : String
-    "mikuType"    : "DxAntimatter"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : String
-    "familyId"    : String
-    "charge"      : Float
+    "uuid"         : String
+    "mikuType"     : "DxAntimatter"
+    "unixtime"     : Float
+    "datetime"     : DateTime Iso 8601 UTC Zulu
+    "description"  : String
+    "familyId"     : String
+    "initialValue" : Float # in seconds
 
 DxAntimatters are issued by Cores.
-Negative charge means that we owe that time.
-We redraw time from the bank at the uuid account to update the charge.
-When the charge is positive then, we can merge two such items (one positive and one negative)
+The value is the initialValue + the bank value (the initial value is negatives)
+When the value is positive we can merge two items of the same family
