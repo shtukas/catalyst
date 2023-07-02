@@ -15,6 +15,14 @@ class ListingPositions
             position = ListingPositions::nextPosition()
             ListingPositions::set(item, position)
         end
+        if position.nil? and item["mikuType"] == "Wave" and item["interruption"] then
+            position = ListingPositions::positionMinus1()
+            ListingPositions::set(item, position)
+        end
+        if position.nil? and item["mikuType"] == "PhysicalTarget" then
+            position = ListingPositions::positionMinus1()
+            ListingPositions::set(item, position)
+        end
         if position.nil? and item["mikuType"] == "NxProject" then
             position = ListingPositions::nextPosition()
             ListingPositions::set(item, position)
@@ -25,6 +33,12 @@ class ListingPositions
     # ListingPositions::set(item, position)
     def self.set(item, position)
         CatalystSharedCache::set("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}", position)
+    end
+
+    # ListingPositions::positionMinus1()
+    def self.positionMinus1()
+        range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
+        range[0] - 1
     end
 
     # ListingPositions::nextPosition()
