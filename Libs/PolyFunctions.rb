@@ -96,12 +96,4 @@ class PolyFunctions
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
-
-    # PolyFunctions::toStringForListing(item)
-    def self.toStringForListing(item)
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::toStringForListing(item)
-        end
-        PolyFunctions::toString(item)
-    end
 end

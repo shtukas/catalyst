@@ -125,14 +125,22 @@ class Listing
             .select{|item| Listing::listable(item) }
     end
 
-    # Listing::itemToListingLine(store, item, showOrdinal)
-    def self.itemToListingLine(store, item, showOrdinal)
+    # Listing::itemToStringForListing(item)
+    def self.itemToStringForListing(item)
+        if item["mikuType"] == "NxTask" then
+            return NxTasks::toStringForMainListing(item)
+        end
+        PolyFunctions::toString(item)
+    end
+
+    # Listing::toString(store, item)
+    def self.toString(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toStringForListing(item)
+        str1 = Listing::itemToStringForListing(item)
 
-        ordinalSuffix = (showOrdinal and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
+        ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
 
         line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
@@ -189,10 +197,6 @@ class Listing
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
         store = ItemStore.new()
 
-        spot.start_unit("Listing::printing")
-        Listing::printingMainListing(spacecontrol, store, items)
-        spot.end_unit()
-
         LucilleCore::pressEnterToContinue()
     end
 
@@ -223,37 +227,6 @@ class Listing
                     }
             }
         }
-    end
-
-    # Listing::printingMainListing(spacecontrol, store, items)
-    def self.printingMainListing(spacecontrol, store, items)
-        times = NxTimes::listingItems()
-        if times.size > 0 then
-            times
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
-
-        items
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item, true)
-                break if !status
-            }
-    end
-
-    # Listing::printingItems(spacecontrol, store, items)
-    def self.printingItems(spacecontrol, store, items)
-        items
-            .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
-                break if !status
-            }
     end
 
     # Listing::checkForCodeUpdates()
@@ -321,7 +294,25 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-            Listing::printingMainListing(spacecontrol, store, iris+positioned)
+
+            times = NxTimes::listingItems()
+            if times.size > 0 then
+                times
+                    .each{|item|
+                        store.register(item, Listing::canBeDefault(item))
+                        status = spacecontrol.putsline Listing::toString(store, item)
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
+
+            (iris+positioned)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString(store, item)
+                    break if !status
+                }
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
@@ -334,48 +325,6 @@ class Listing
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
-
-            next
-            # ------------------------------------------------------------------
-
-            special = Listing::items().select{|item| ListingPositions::getOrNull(item).nil? }
-
-            if special.size > 0 then
-                system("clear")
-                item = special.first
-                puts ":: #{PolyFunctions::toString(item).green}"
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["done", "start + access + done", "position", "transmute", "do not show until, timecode"])
-                if option.nil? then
-                    return nil
-                end
-                if option == "done" then
-                    PolyActions::done(item)
-                    return nil
-                end
-                if option == "start + access + done" then
-                    NxBalls::start(item)
-                    PolyActions::access(item)
-                    LucilleCore::pressEnterToContinue()
-                    PolyActions::done(item)
-                    return nil
-                end
-                if option == "position" then
-                    position = LucilleCore::askQuestionAnswerAsString("> position : ").to_f
-                    ListingPositions::setPosition(item, position)
-                    return nil
-                end
-                if option == "transmute" then
-                    Transmutations::transmute(item)
-                    return nil
-                end
-                if option == "do not show until, timecode" then
-                    unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
-                    return nil if unixtime.nil?
-                    DoNotShowUntil::setUnixtime(item, unixtime)
-                    return nil
-                end
-            end
-
         }
     end
 end

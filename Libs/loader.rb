@@ -53,6 +53,8 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
+require_relative "#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries/Blades.rb"
+
 require_relative "Config.rb"
 
 require_relative "LucilleCore.rb"

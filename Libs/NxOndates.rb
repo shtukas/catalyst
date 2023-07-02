@@ -53,13 +53,16 @@ class NxOndates
         loop {
             system("clear")
             
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
             items = DarkEnergy::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
 
-            Listing::printingItems(spacecontrol, store, items)
+            items
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts Listing::toString(store, item)
+                }
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

@@ -88,8 +88,8 @@ class NxTasks
         "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
-    # NxTasks::toStringForListing(item)
-    def self.toStringForListing(item)
+    # NxTasks::toStringForMainListing(item)
+    def self.toStringForMainListing(item)
         "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)}"
     end
 

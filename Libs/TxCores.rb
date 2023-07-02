@@ -168,6 +168,32 @@ class TxCores
             }
     end
 
+    # TxCores::itemToStringListing(store, item)
+    def self.itemToStringListing(store, item)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
+
+        str1 = PolyFunctions::toString(item)
+
+        ordinalSuffix = (item["mikuType"] == "NxTask" and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
+
+        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+
+        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
     # TxCores::program1(core)
     def self.program1(core)
         loop {
@@ -182,17 +208,22 @@ class TxCores
 
             spacecontrol.putsline ""
             store.register(core, false)
-            spacecontrol.putsline Listing::itemToListingLine(store, core, false)
+            spacecontrol.putsline TxCores::itemToStringListing(store, core)
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(core)
             waves, items = items.partition{|item| item["mikuType"] == "Wave" }
             projects, items = items.partition{|item| item["mikuType"] == "NxProject" }
 
-            Listing::printingItems(spacecontrol, store, waves + projects + items)
+            (waves + projects + items)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline TxCores::itemToStringListing(store, item)
+                    break if !status
+                }
 
-            spacecontrol.putsline ""
-            spacecontrol.putsline "(task, pile)"
+            puts ""
+            puts "(task, pile)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
