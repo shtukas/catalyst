@@ -153,7 +153,9 @@ class TxCores
         DarkEnergy::mikuType("TxCore")
             .each{|core|
                 next if !DoNotShowUntil::isVisible(core)
-                next if Bank::getValue(core["capsule"]).to_f > core["hours"]*3600
+                next if Bank::getValue(core["capsule"]).to_f >= core["hours"]*3600
+                next if Time.new.wday == 0 # not on sundays
+                next if DxAntimatters::familySampleNegativeNonRunningOrNull(core["uuid"])
                 todayNeedsInHours = TxCores::todayNeedsInHours(core)
                 next if todayNeedsInHours < 0
                 puts "anti-matter creation: #{core["description"]}, #{todayNeedsInHours.round(2)} hours".green

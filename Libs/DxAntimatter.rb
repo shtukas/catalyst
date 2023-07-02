@@ -32,8 +32,44 @@ class DxAntimatters
             }
     end
 
+    # DxAntimatters::familySamplePositiveNonRunningOrNull(familyId)
+    def self.familySamplePositiveNonRunningOrNull(familyId)
+        DarkEnergy::mikuType("DxAntimatter")
+            .select{|item| item["familyId"] == familyId }
+            .select{|item| !NxBalls::itemIsRunning(item) }
+            .select{|item| DxAntimatters::value(item) >= 0 }
+            .sample
+    end
+
+    # DxAntimatters::familySampleNegativeNonRunningOrNull(familyId)
+    def self.familySampleNegativeNonRunningOrNull(familyId)
+        DarkEnergy::mikuType("DxAntimatter")
+            .select{|item| item["familyId"] == familyId }
+            .select{|item| !NxBalls::itemIsRunning(item) }
+            .select{|item| DxAntimatters::value(item) < 0 }
+            .sample
+    end
+
     # DxAntimatters::maintenance()
     def self.maintenance()
-
+        item = DarkEnergy::mikuType("DxAntimatter").sample
+        return if item.nil? # there was no antimatter item at this stage
+        familyId = item["familyId"]
+        positive = DxAntimatters::familySamplePositiveNonRunningOrNull(familyId)
+        return if positive.nil?
+        negative = DxAntimatters::familySampleNegativeNonRunningOrNull(familyId)
+        return if negative.nil?
+        puts "DxAntimatters::maintenance()"
+        puts "with:"
+        puts JSON.pretty_generate(positive)
+        puts "value: #{DxAntimatters::value(positive)}"
+        puts "with:"
+        puts JSON.pretty_generate(negative)
+        combinedValue = DxAntimatters::value(positive) + DxAntimatters::value(negative)
+        combinedItem = DxAntimatters::issue(familyId, positive["description"], combinedValue)
+        puts "value: #{DxAntimatters::value(negative)}"
+        puts "combined:"
+        puts JSON.pretty_generate(combinedItem)
+        LucilleCore::pressEnterToContinue()
     end
 end
