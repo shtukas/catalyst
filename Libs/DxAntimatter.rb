@@ -28,7 +28,7 @@ class DxAntimatters
     def self.listingItems()
         DarkEnergy::mikuType("DxAntimatter")
             .select{|item|
-                DxAntimatters::value(item) < 0 or DoNotShowUntil::isVisible(item)
+                DxAntimatters::value(item) < 0 or NxBalls::itemIsActive(item)
             }
     end
 
