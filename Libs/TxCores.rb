@@ -165,7 +165,6 @@ class TxCores
                     puts JSON.pretty_generate(antimatter)
                     ListingPositions::set(antimatter, ListingPositions::randomPositionInLateRange())
                 }
-
             }
     end
 
