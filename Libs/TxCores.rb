@@ -192,6 +192,7 @@ class TxCores
             Listing::printingItems(spacecontrol, store, waves + projects + items)
 
             spacecontrol.putsline ""
+            spacecontrol.putsline "(task, pile)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -199,6 +200,10 @@ class TxCores
             if input == "task" then
                 NxTasks::interactivelyIssueNewAtParentOrNull(core)
                 next
+            end
+
+            if input == "pile" then
+                Tx8s::pileAtThisParent(core)
             end
 
             puts ""

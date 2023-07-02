@@ -146,13 +146,12 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            core = TxCores::interactivelySelectOneOrNull()
-            if core then
-                Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
-            end
+            Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
             return
         end
 
@@ -212,18 +211,27 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxTasks::pile(item)
-            return
-        end
-
         if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxTasks::pile(item)
+            if item["mikuType"] != "NxTask" then
+                puts "You can only pile * a NxTask"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if item["parent"].nil? then
+                puts "Interestingly this item doesn't have a parent 🤔"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+            if parent.nil? then
+                puts "Interestingly the specified parent cannot be found 🤔"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Tx8s::pileAtThisParent(parent)
             return
         end
 

@@ -130,7 +130,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toString(item)
+        str1 = PolyFunctions::toStringForListing(item)
 
         ordinalSuffix = (showOrdinal and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
 

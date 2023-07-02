@@ -169,4 +169,17 @@ class Tx8s
         return "" if item["parent"].nil?
         " (#{"%5.2f" % item["parent"]["position"]})"
     end
+
+    # Tx8s::pileAtThisParent(parent)
+    def self.pileAtThisParent(parent)
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text.lines.to_a.map{|line| line.strip }.select{|line| line.size > 0 }.reverse.each {|line|
+            t1 = NxTasks::descriptionToTask(line)
+            next if t1.nil?
+            t1["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            puts JSON.pretty_generate(t1)
+            DarkEnergy::commit(t1)
+        }
+    end
 end

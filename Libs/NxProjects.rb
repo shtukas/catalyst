@@ -17,7 +17,7 @@ class NxProjects
 
     # NxProjects::toString(item)
     def self.toString(item)
-        "⛵️#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # NxProjects::projectManagerId()
