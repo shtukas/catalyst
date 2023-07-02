@@ -118,8 +118,7 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxProjects::listingItems(),
-            NxTasks::listingItems(),
-            TxCores::listingItems()
+            NxTasks::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -182,7 +181,6 @@ class Listing
         spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
-        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
         spot.end_contest()
@@ -327,7 +325,6 @@ class Listing
                 next
             end
 
-            puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end

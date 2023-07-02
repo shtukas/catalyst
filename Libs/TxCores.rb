@@ -96,20 +96,6 @@ class TxCores
         Tx8s::make(core["uuid"], position)
     end
 
-    # TxCores::listingItems()
-    def self.listingItems()
-        DarkEnergy::mikuType("TxCore")
-            .select{|core| NxBalls::itemIsActive(core) or DoNotShowUntil::isVisible(core) }
-            .select{|core| NxBalls::itemIsActive(core) or TxCores::dayCompletionRatio(core) < 1 }
-            .map{|core|
-                ratio = TxCores::dayCompletionRatio(core)
-                position = ListingPositions::completionRatioToPosition(ratio)
-                ListingPositions::set(core, position)
-                core
-            }
-            .sort_by{|core| TxCores::dayCompletionRatio(core) }
-    end
-
     # TxCores::todayNeedsInHours(core)
     def self.todayNeedsInHours(core)
         core["hours"].to_f/5 - Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
