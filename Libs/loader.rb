@@ -158,7 +158,7 @@ require_relative "NxTasks.rb"
 require_relative "NxNote.rb"
 require_relative "NxFronts.rb"
 require_relative "NxTimes.rb"
-require_relative "NxFloats.rb"
+require_relative "NxProjects.rb"
 
 require_relative "Memoize.rb"
 

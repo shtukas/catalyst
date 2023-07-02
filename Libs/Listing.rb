@@ -74,7 +74,7 @@ class Listing
         end
 
         return false if item["mikuType"] == "DesktopTx1"
-        return false if item["mikuType"] == "NxFloat"
+        return false if item["mikuType"] == "NxProject"
 
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
@@ -117,6 +117,7 @@ class Listing
             DxAntimatters::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
+            NxProjects::listingItems(),
             NxTasks::listingItems(),
             TxCores::listingItems()
         ]
@@ -132,9 +133,6 @@ class Listing
         str1 = PolyFunctions::toString(item)
 
         ordinalSuffix = (showOrdinal and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
-        if item["mikuType"] == "TxCore" then
-            ordinalSuffix = "        "
-        end
 
         line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
@@ -232,17 +230,6 @@ class Listing
         times = NxTimes::listingItems()
         if times.size > 0 then
             times
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-        end
-
-        floats = DarkEnergy::mikuType("NxFloat")
-        if floats.size > 0 then
-            floats
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::itemToListingLine(store, item, false)

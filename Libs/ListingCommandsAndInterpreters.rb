@@ -9,10 +9,10 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "transmutation : >> (<n>) | >task (<n>) | >float (<n>) | >front (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | box | float",
+            "transmutation : >> (<n>) | >task (<n>) | >project (<n>) | >front (<n>)",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | box | project",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
-            "NxBalls       : start | start * | stop | stop * | pause | pursue",
+            "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
     end
@@ -42,18 +42,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">float", input) then
+        if Interpreting::match(">project", input) then
             item = store.getDefault()
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxFloat")
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxProject")
             return
         end
 
-        if Interpreting::match(">float *", input) then
+        if Interpreting::match(">project *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxFloat")
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxProject")
             return
         end
 
@@ -173,7 +173,8 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             core = TxCores::interactivelySelectOneOrNull()
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            return if core.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, core)
             return
         end
 
@@ -182,7 +183,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             core = TxCores::interactivelySelectOneOrNull()
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, core)
             return
         end
 
@@ -490,8 +491,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNewOrNull()
+        if Interpreting::match("project", input) then
+            item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return

@@ -186,7 +186,10 @@ class TxCores
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(core)
-            Listing::printingItems(spacecontrol, store, items)
+            waves, items = items.partition{|item| item["mikuType"] == "Wave" }
+            projects, items = items.partition{|item| item["mikuType"] == "NxProject" }
+
+            Listing::printingItems(spacecontrol, store, waves + projects + items)
 
             spacecontrol.putsline ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

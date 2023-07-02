@@ -136,9 +136,37 @@ class Tx8s
         DarkEnergy::patch(item["uuid"], "parent", tx8)
     end
 
+    # Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, parent)
+    def self.interactivelyPlaceItemAtParentAttemptClever(item, parent)
+        tx8 = nil
+        if item["mikuType"] == "Wave" then
+            tx8 = {
+                "uuid"     => parent["uuid"],
+                "position" => 0
+            }
+        end
+        if item["mikuType"] == "NxProject" then
+            tx8 = {
+                "uuid"     => parent["uuid"],
+                "position" => 0
+            }
+        end
+        if tx8.nil? then
+            tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
+            return if tx8.nil?
+        end
+        DarkEnergy::patch(item["uuid"], "parent", tx8)
+    end
+
     # Tx8s::getParentOrNull(item)
     def self.getParentOrNull(item)
         return nil if item["parent"].nil?
         DarkEnergy::itemOrNull(item["parent"]["uuid"])
+    end
+
+    # Tx8s::positionInParentSuffix(item)
+    def self.positionInParentSuffix(item)
+        return "" if item["parent"].nil?
+        " (#{"%5.2f" % item["parent"]["position"]})"
     end
 end

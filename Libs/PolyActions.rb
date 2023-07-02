@@ -32,7 +32,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxProject" then
             CoreData::access(item["uuid"], item["field11"])
             return
         end
@@ -105,7 +105,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -281,7 +281,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end

@@ -83,15 +83,9 @@ class NxTasks
     # --------------------------------------------------
     # Data
 
-    # NxTasks::positionSuffix(item)
-    def self.positionSuffix(item)
-        return "" if item["parent"].nil?
-        " (#{"%5.2f" % item["parent"]["position"]})"
-    end
-
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{NxTasks::positionSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # NxTasks::listingItems()

@@ -25,6 +25,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxProject" then
+            accounts << {
+                "description" => "projects manager",
+                "number"      => NxProjects::projectManagerId()
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -51,8 +58,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toString(item)
         end
         if item["mikuType"] == "NxFront" then
             return NxFronts::toString(item)

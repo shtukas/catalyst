@@ -15,6 +15,10 @@ class ListingPositions
             position = ListingPositions::nextPosition()
             ListingPositions::set(item, position)
         end
+        if position.nil? and item["mikuType"] == "NxProject" then
+            position = ListingPositions::nextPosition()
+            ListingPositions::set(item, position)
+        end
         position
     end
 
