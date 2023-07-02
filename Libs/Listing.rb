@@ -130,6 +130,9 @@ class Listing
         if item["mikuType"] == "NxTask" then
             return NxTasks::toStringForMainListing(item)
         end
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toStringForMainListing(item)
+        end
         PolyFunctions::toString(item)
     end
 
@@ -209,6 +212,7 @@ class Listing
              TxCores::maintenance() # core maintenance
              TxCores::maintenance3() # DxAntimatter issue
              DxAntimatters::maintenance()
+             NxProjects::maintenance()
         end
         TxCores::maintenance2() # padding
     end

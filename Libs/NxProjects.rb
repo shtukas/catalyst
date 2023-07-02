@@ -8,29 +8,39 @@ class NxProjects
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxProject", uuid)
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+        engine = TxEngines::interactivelyMakeEngine()
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::itemOrNull(uuid)
     end
 
     # NxProjects::toString(item)
     def self.toString(item)
-        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxProjects::projectManagerId()
-    def self.projectManagerId()
-        "17d908fc-1c65-4c04-8e38-4dc20c8a4ffa"
+    # NxProjects::toStringForMainListing(item)
+    def self.toStringForMainListing(item)
+        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxProjects::listingItems()
     def self.listingItems()
-        # We give two hours per day to projects.
-        return [] if Bank::recoveredAverageHoursPerDay(NxProjects::projectManagerId()) >= 2
-        projects = DarkEnergy::mikuType("NxProject")
-        return [] if projects.empty?
-        [projects.sort_by{|project| Bank::recoveredAverageHoursPerDay(project["uuid"]) }.first]
+        DarkEnergy::mikuType("NxProject").select{|project|
+            TxEngines::compositeCompletionRatio(project["engine"]) < 1
+        }
+    end
+
+    # NxProjects::maintenance()
+    def self.maintenance()
+        DarkEnergy::mikuType("TxProject").each{|project|
+            engine = project["engine"]
+            engine = TxEngines::engine_maintenance(engine)
+            next if engine.nil?
+            DarkEnergy::patch(project["uuid"], "engine", engine)
+        }
     end
 end

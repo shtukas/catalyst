@@ -13,6 +13,8 @@ class TxCores
         return nil if hours == "0"
         {
             "uuid"          => SecureRandom.uuid,
+            "mikuType"      => "TxCore",
+            "description"   => description,
             "hours"         => hours.to_f,
             "lastResetTime" => Time.new.to_f,
             "capsule"       => SecureRandom.hex

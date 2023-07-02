@@ -1,0 +1,6 @@
+
+TxEngine
+    "uuid"          : Float
+    "hours"         : Float
+    "lastResetTime" : Unixtime
+    "capsule"       : String

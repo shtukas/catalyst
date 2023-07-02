@@ -27,8 +27,8 @@ class PolyFunctions
 
         if item["mikuType"] == "NxProject" then
             accounts << {
-                "description" => "projects manager",
-                "number"      => NxProjects::projectManagerId()
+                "description" => "#{item["description"]} (engine: capsule)",
+                "number"      => item["engine"]["capsule"]
             }
         end
 
