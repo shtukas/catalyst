@@ -8,7 +8,7 @@ class TxCores
     def self.interactivelyMakeCoreOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
         return nil if description == ""
-        hours = LucilleCore::askQuestionAnswerAsString("core: hours (empty for abort): ")
+        hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
         return nil if hours == ""
         return nil if hours == "0"
         {
@@ -207,6 +207,8 @@ class TxCores
     # TxCores::program2()
     def self.program2()
         loop {
+            hours = DarkEnergy::mikuType("TxCore").map{|core| core["hours"]}.inject(0, :+)
+            puts "total hours: #{hours}; #{(hours.to_f/7).round(2)} hours/day"
             cores = DarkEnergy::mikuType("TxCore").sort_by{|item| item["description"] }
             core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
             return if core.nil?
