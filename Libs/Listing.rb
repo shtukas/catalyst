@@ -298,6 +298,8 @@ class Listing
             ListingPositions::extractRangeFromListingItems(items)
 
             # ---------------------------------------------------------------------
+            # We have the items, we destroy the positions of items from the previous run that are not in this run 
+            # (in particular forgetting the position of waves)
             JSON.parse(XCache::getOrDefaultValue("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", "[]"))
                 .select{|i1| items.none?{|i2| i2["uuid"] == i1["uuid"] }}
                 .each{|item| ListingPositions::revoke(item) }
@@ -306,6 +308,15 @@ class Listing
 
             iris, positioned = items.partition{|item| ListingPositions::getOrNullForListing(item).nil? }
             positioned = positioned.sort_by{|item| ListingPositions::getOrNull(item) }
+
+            # ---------------------------------------------------------------------
+            # Shifting the position if too high
+            if ListingPositions::getOrNull(positioned[0]) >= 10 then
+                positioned.each{|item|
+                    ListingPositions::set(item, ListingPositions::getOrNull(item)-10)
+                }
+            end
+            # ---------------------------------------------------------------------
 
             system("clear")
 
