@@ -47,8 +47,8 @@ class ListingPositions
         range[1] + 1
     end
 
-    # ListingPositions::interactivelySetOrdinalAttempt(item)
-    def self.interactivelySetOrdinalAttempt(item)
+    # ListingPositions::interactivelySetPositionAttempt(item)
+    def self.interactivelySetPositionAttempt(item)
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
         position =
             if position == "" then

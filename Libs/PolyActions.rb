@@ -33,7 +33,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
-            CoreData::access(item["uuid"], item["field11"])
+            NxProjects::program1(item)
             return
         end
 
@@ -106,6 +106,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
+            if Tx8s::childrenInOrder(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -282,6 +287,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
+            if Tx8s::childrenInOrder(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -319,6 +329,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
             PolyActions::access(item)
             return
         end
@@ -397,6 +412,11 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
+            PolyActions::access(item)
             return
         end
 

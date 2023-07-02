@@ -3,7 +3,7 @@ class Transmutations
 
     # Transmutations::targetMikuTypes()
     def self.targetMikuTypes()
-        ["NxFront", "NxTask"]
+        ["NxFront", "NxTask", "NxProject"]
     end
 
     # Transmutations::interactivelySelectMikuTypeOrNull()
@@ -38,5 +38,25 @@ class Transmutations
 
         puts "I do not know how to transmute uuid: #{item["uuid"]}, sourceType: #{sourceType} to #{targetMikuType}"
         LucilleCore::pressEnterToContinue()
+    end
+
+    # Transmutations::transmuteTo(item, targetMikuType)
+    def self.transmuteTo(item, targetMikuType)
+        return if !LucilleCore::askQuestionAnswerAsBoolean("Confirm transmutation of '#{PolyFunctions::toString(item).green}' to #{targetMikuType.green}: ")
+        if targetMikuType == "NxFront" then
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
+            item = DarkEnergy::itemOrNull(item["uuid"])
+            ListingPositions::interactivelySetPositionAttempt(item)
+        end
+        if targetMikuType == "NxTask" then
+            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
+        end
+        if targetMikuType == "NxProject" then
+            engine = TxEngines::interactivelyMakeEngine()
+            DarkEnergy::patch(item["uuid"], "engine", engine)
+            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            DarkEnergy::patch(item["uuid"], "mikuType", "NxProject")
+        end
     end
 end

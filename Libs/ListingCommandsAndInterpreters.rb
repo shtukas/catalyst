@@ -45,7 +45,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">project", input) then
             item = store.getDefault()
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxProject")
+            Transmutations::transmuteTo(item, "NxProject")
             return
         end
 
@@ -53,20 +53,14 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxProject")
+            Transmutations::transmuteTo(item, "NxProject")
             return
         end
 
         if Interpreting::match(">task", input) then
             item = store.getDefault()
             return if item.nil?
-            if item["mikuType"] != "NxFront" then
-                puts "We only apply `>task` to NxFront"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            Transmutations::transmuteTo(item, "NxTask")
             return
         end
 
@@ -74,27 +68,14 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxFront" then
-                puts "We only apply `>task` to NxFront"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            Transmutations::transmuteTo(item, "NxTask")
             return
         end
 
         if Interpreting::match(">front", input) then
             item = store.getDefault()
             return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "We only apply `>front` to NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
-            item = DarkEnergy::itemOrNull(item["uuid"])
-            ListingPositions::interactivelySetOrdinalAttempt(item)
+            Transmutations::transmuteTo(item, "NxFront")
             return
         end
 
@@ -102,14 +83,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "We only apply `>front` to NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            DarkEnergy::patch(item["uuid"], "mikuType", "NxFront")
-            item = DarkEnergy::itemOrNull(item["uuid"])
-            ListingPositions::interactivelySetOrdinalAttempt(item)
+            Transmutations::transmuteTo(item, "NxFront")
             return
         end
 
@@ -510,7 +484,7 @@ class ListingCommandsAndInterpreters
             item = NxFronts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingPositions::interactivelySetOrdinalAttempt(item)
+            ListingPositions::interactivelySetPositionAttempt(item)
             return
         end
 
