@@ -44,6 +44,11 @@ class NxProjects
         "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
+    # NxProjects::toStringForCoreListing(item)
+    def self.toStringForCoreListing(item)
+        "⛵️#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+    end
+
     # NxProjects::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxProject").select{|project|

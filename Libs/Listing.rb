@@ -124,8 +124,8 @@ class Listing
             .select{|item| Listing::listable(item) }
     end
 
-    # Listing::itemToStringForListing(item)
-    def self.itemToStringForListing(item)
+    # Listing::itemToString1(item)
+    def self.itemToString1(item)
         if item["mikuType"] == "NxTask" then
             return NxTasks::toStringForMainListing(item)
         end
@@ -135,12 +135,12 @@ class Listing
         PolyFunctions::toString(item)
     end
 
-    # Listing::toString(store, item)
-    def self.toString(store, item)
+    # Listing::toString2(store, item)
+    def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = Listing::itemToStringForListing(item)
+        str1 = Listing::itemToString1(item)
 
         ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
 
@@ -211,6 +211,7 @@ class Listing
              TxCores::maintenance3() # DxAntimatter issue
              DxAntimatters::maintenance()
              NxProjects::maintenance()
+             NxTasks::maintenance()
         end
         TxCores::maintenance2() # padding
     end
@@ -293,6 +294,15 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
+            # ---------------------------------------------------------------------
+            # Shifting the position if too low
+            if ListingPositions::getOrNull(positioned[0]) <= -10 then
+                positioned.each{|item|
+                    ListingPositions::set(item, ListingPositions::getOrNull(item)+10)
+                }
+            end
+            # ---------------------------------------------------------------------
+
             system("clear")
 
             spacecontrol.putsline ""
@@ -302,7 +312,7 @@ class Listing
                 times
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
-                        status = spacecontrol.putsline Listing::toString(store, item)
+                        status = spacecontrol.putsline Listing::toString2(store, item)
                         break if !status
                     }
                 spacecontrol.putsline ""
@@ -312,7 +322,7 @@ class Listing
             (iris+positioned)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString(store, item)
+                    status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status
                 }
 

@@ -93,6 +93,11 @@ class NxTasks
         "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)}"
     end
 
+    # NxTasks::toStringForCoreListing(item)
+    def self.toStringForCoreListing(item)
+        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+    end
+
     # NxTasks::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxTask")
@@ -119,5 +124,17 @@ class NxTasks
     # NxTasks::access(task)
     def self.access(task)
         CoreData::access(task["uuid"], task["field11"])
+    end
+
+    # NxTasks::maintenance()
+    def self.maintenance()
+        if DarkEnergy::mikuType("NxTask").size < 100 then
+            DarkEnergy::mikuType("NxIce").take(10).each{|item|
+                item["mikuType"] == "NxTask"
+                parent = DarkEnergy::itemOrNull("bc3901ad-18ad-4354-b90b-63f7a611e64e")  # Infinity
+                item["parent"] = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(parent))
+                DarkEnergy::commit(item)
+            }
+        end
     end
 end

@@ -61,7 +61,7 @@ class NxOndates
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString(store, item)
+                    puts Listing::toString2(store, item)
                 }
 
             puts ""

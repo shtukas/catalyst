@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "transmutation : >> (<n>) | >task (<n>) | >project (<n>) | >front (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | box | project",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -122,10 +122,12 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("task", input) then
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
+            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
-            Tx8s::interactivelyPlaceItemAtParentAttempt(task, core)
+            task["parent"] = tx8
+            DarkEnergy::commit(task)
             return
         end
 

@@ -123,10 +123,22 @@ class Tx8s
         ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).min - 1
     end
 
+    # Tx8s::nextPositionAtThisParent(parent)
+    def self.nextPositionAtThisParent(parent)
+        ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).max + 1
+    end
+
     # Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
     def self.interactivelyMakeTx8AtParentOrNull(parent)
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
         Tx8s::make(parent["uuid"], position)
+    end
+
+    # Tx8s::interactivelyMakeTx8AtParent(parent)
+    def self.interactivelyMakeTx8AtParent(parent)
+        tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
+        return tx8 if tx8
+        Tx8s::interactivelyMakeTx8AtParent(parent)
     end
 
     # Tx8s::interactivelyPlaceItemAtParentAttempt(item, parent)

@@ -156,12 +156,23 @@ class TxCores
             }
     end
 
+    # TxCores::toStringCoreListing(item)
+    def self.toStringCoreListing(item)
+        if item["mikuType"] == "NxTask" then
+            return NxTasks::toStringForCoreListing(item)
+        end
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toStringForCoreListing(item)
+        end
+        PolyFunctions::toString(item)
+    end
+
     # TxCores::itemToStringListing(store, item)
     def self.itemToStringListing(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = PolyFunctions::toString(item)
+        str1 = TxCores::toStringCoreListing(item)
 
         ordinalSuffix = (item["mikuType"] == "NxTask" and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
 
@@ -200,10 +211,21 @@ class TxCores
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(core)
-            waves, items = items.partition{|item| item["mikuType"] == "Wave" }
-            projects, items = items.partition{|item| item["mikuType"] == "NxProject" }
 
-            (waves + projects + items)
+            # ------------------------------------------------------------------
+            # position corretion
+            if Config::isPrimaryInstance() and items.size > 0 and items[0]["parent"]["position"] <= -10 then
+                items = items.map{|item|
+                    item["parent"]["position"] = item["parent"]["position"] + 10
+                    DarkEnergy::commit(item)
+                    item
+                }
+            end
+            # ------------------------------------------------------------------
+
+            waves, items = items.partition{|item| item["mikuType"] == "Wave" }
+
+            (waves + items)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline TxCores::itemToStringListing(store, item)
