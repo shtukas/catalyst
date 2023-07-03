@@ -169,6 +169,9 @@ class NxCores
         if item["mikuType"] == "NxProject" then
             return NxProjects::toStringForCoreListing(item)
         end
+        if item["mikuType"] == "NxPage" then
+            return NxPages::toStringForCoreListing(item)
+        end
         PolyFunctions::toString(item)
     end
 
@@ -181,7 +184,7 @@ class NxCores
 
         ordinalSuffix = (item["mikuType"] == "NxTask" and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
 
-        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{NxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -229,8 +232,9 @@ class NxCores
             # ------------------------------------------------------------------
 
             waves, items = items.partition{|item| item["mikuType"] == "Wave" }
+            pages, items = items.partition{|item| item["mikuType"] == "NxPage" }
 
-            (waves + items)
+            (waves + pages + items)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline NxCores::itemToStringListing(store, item)

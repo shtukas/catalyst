@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "transmutation : >> (<n>) | >task (<n>) | >project (<n>) | >front (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -249,16 +249,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("project", input) then
-            NxLongs::interactivelyIssueNewOrNull()
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            NxLongs::program1()
-            return
-        end
-
         if Interpreting::match("time", input) then
             item = NxTimes::interactivelyIssueTimeOrNull()
             puts JSON.pretty_generate(item)
@@ -451,7 +441,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("note", input) then
             item = store.getDefault()
             return if item.nil?
-            NxNotes::edit(item)
+            DxNotes::edit(item)
             return
         end
 
@@ -459,7 +449,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxNotes::edit(item)
+            DxNotes::edit(item)
             return
         end
 
@@ -475,10 +465,37 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("page", input) then
+            core = NxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
+            item = NxPages::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            item["parent"] = tx8
+            DarkEnergy::commit(item)
+            return
+        end
+
+        if Interpreting::match("projects", input) then
+            NxPages::program2()
+            return
+        end
+
         if Interpreting::match("project", input) then
+            core = NxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            item["parent"] = tx8
+            DarkEnergy::commit(item)
+            return
+        end
+
+        if Interpreting::match("projects", input) then
+            NxProjects::program1()
             return
         end
 

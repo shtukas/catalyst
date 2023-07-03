@@ -1,36 +1,36 @@
 
-class NxNotes
+class DxNotes
 
-    # NxNotes::getTextOrNull(item)
+    # DxNotes::getTextOrNull(item)
     def self.getTextOrNull(item)
         DarkEnergy::read(item["uuid"], "note")
     end
 
-    # NxNotes::getText(item)
+    # DxNotes::getText(item)
     def self.getText(item)
-        NxNotes::getTextOrNull(item) || ""
+        DxNotes::getTextOrNull(item) || ""
     end
 
-    # NxNotes::hasNoteText(item)
+    # DxNotes::hasNoteText(item)
     def self.hasNoteText(item)
-        NxNotes::getText(item).strip.size > 0
+        DxNotes::getText(item).strip.size > 0
     end
 
-    # NxNotes::commit(item, text)
+    # DxNotes::commit(item, text)
     def self.commit(item, text)
         DarkEnergy::patch(item["uuid"], "note", text)
     end
 
-    # NxNotes::toStringSuffix(item)
+    # DxNotes::toStringSuffix(item)
     def self.toStringSuffix(item)
-        text = NxNotes::getTextOrNull(item)
+        text = DxNotes::getTextOrNull(item)
         ( text and text.strip.size > 0 ) ? " (note)".green : ""
     end
 
-    # NxNotes::edit(item)
+    # DxNotes::edit(item)
     def self.edit(item)
-        text = NxNotes::getText(item)
+        text = DxNotes::getText(item)
         text = CommonUtils::editTextSynchronously(text)
-        NxNotes::commit(item, text)
+        DxNotes::commit(item, text)
     end
 end

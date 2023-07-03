@@ -143,6 +143,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DarkSpace.rb"
 require_relative "DxAntimatter.rb"
+require_relative "DxNotes.rb"
 
 require_relative "Galaxy.rb"
 
@@ -157,10 +158,10 @@ require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
-require_relative "NxNote.rb"
 require_relative "NxFronts.rb"
 require_relative "NxTimes.rb"
 require_relative "NxProjects.rb"
+require_relative "NxPages.rb"
 
 require_relative "Memoize.rb"
 

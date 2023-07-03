@@ -70,14 +70,14 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
-        if item["mikuType"] == "NxLong" then
-            return NxLongs::toString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
+        end
+        if item["mikuType"] == "NxPage" then
+            return NxPages::toString(item)
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)

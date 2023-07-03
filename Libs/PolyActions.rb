@@ -32,6 +32,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPage" then
+            NxPages::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxProject" then
             NxProjects::program1(item)
             return
@@ -101,6 +106,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPage" then
+            puts "You can't done a NxPage, but you cna destroy it"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxLambda" then
             return
         end
@@ -130,10 +141,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLine" then
-            if NxNotes::hasNoteText(item) then
+            if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
+                DxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -154,10 +165,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if NxNotes::hasNoteText(item) then
+            if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
+                DxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -167,10 +178,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFront" then
-            if NxNotes::hasNoteText(item) then
+            if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
+                DxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -180,10 +191,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if NxNotes::hasNoteText(item) then
+            if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
+                DxNotes::edit(item)
                 return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -193,12 +204,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if NxNotes::hasNoteText(item) then
+            if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
-                NxNotes::edit(item)
+                DxNotes::edit(item)
             end
-            if NxNotes::hasNoteText(item) then
+            if DxNotes::hasNoteText(item) then
                 return
             end
             if Tx8s::childrenInOrder(item).size > 0 then
@@ -286,6 +297,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPage" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxProject" then
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
@@ -348,6 +366,11 @@ class PolyActions
         if item["mikuType"] == "NxFront" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxPage" then
             PolyActions::access(item)
             return
         end
@@ -416,6 +439,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxPage" then
             PolyActions::access(item)
             return
         end
