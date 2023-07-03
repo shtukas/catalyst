@@ -140,8 +140,8 @@ class NxTasks
         DarkEnergy::mikuType("NxTask").each{|task|
             next if task["parent"]
             parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
-            item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-            DarkEnergy::commit(item)
+            task["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            DarkEnergy::commit(task)
         }
 
         # Feed Infinity using NxIce

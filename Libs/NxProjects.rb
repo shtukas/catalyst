@@ -70,8 +70,8 @@ class NxProjects
         DarkEnergy::mikuType("NxProject").each{|project|
             next if project["parent"]
             parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
-            item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-            DarkEnergy::commit(item)
+            project["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            DarkEnergy::commit(project)
         }
 
         DarkEnergy::mikuType("TxProject").each{|project|
