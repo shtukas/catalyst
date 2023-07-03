@@ -118,6 +118,7 @@ class Listing
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxProjects::listingItems(),
+            NxCollections::listingItems(),
             NxTasks::listingItems()
         ]
             .flatten

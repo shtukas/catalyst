@@ -173,7 +173,11 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("position", input) then
             item = store.getDefault()
             return if item.nil?
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            position = LucilleCore::askQuestionAnswerAsString("position (next): ")
+            if position == "next" then
+                position = ListingPositions::nextPosition()
+            end
+            position = position.to_f
             ListingPositions::set(item, position)
             return
         end
@@ -182,7 +186,11 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            position = LucilleCore::askQuestionAnswerAsString("position (next): ")
+            if position == "next" then
+                position = ListingPositions::nextPosition()
+            end
+            position = position.to_f
             ListingPositions::set(item, position)
             return
         end

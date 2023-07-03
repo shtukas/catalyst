@@ -6,10 +6,12 @@ class NxCollections
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
+        engine = TxEngines::interactivelyMakeEngine()
         DarkEnergy::init("NxCollection", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::itemOrNull(uuid)
     end
 
@@ -22,45 +24,66 @@ class NxCollections
         return nil if description == ""
 
         uuid = SecureRandom.uuid
+        engine = TxEngines::interactivelyMakeEngine()
         DarkEnergy::init("NxCollection", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::patch(uuid, "parent", tx8)
         DarkEnergy::itemOrNull(uuid)
     end
 
     # NxCollections::toString(item)
     def self.toString(item)
-        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)}"
+        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxCollections::toStringForMainListing(item)
     def self.toStringForMainListing(item)
-        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)}"
+        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxCollections::toStringForCoreListing(item)
     def self.toStringForCoreListing(item)
-        "🫧#{Tx8s::positionInParentSuffix(item)} #{item["description"]}"
+        "🫧 #{item["description"]} #{TxEngines::toString(item["engine"])}"
+    end
+
+    # NxCollections::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("NxCollection")
+            .select{|project|
+                # We always show projects when they are time pending, because the title itself is relevant, but we only show collections if they have items
+                Tx8s::childrenInOrder(project).size > 0 
+            }
+            .select{|project|
+                TxEngines::compositeCompletionRatio(project["engine"]) < 1
+            }
     end
 
     # NxCollections::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxCollection").each{|project|
-            next if project["parent"].nil?
-            if DarkEnergy::itemOrNull(project["parent"]["uuid"]).nil? then
+        DarkEnergy::mikuType("NxCollection").each{|item|
+            next if item["parent"].nil?
+            if DarkEnergy::itemOrNull(item["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
             end
         }
 
         # Move orphan item to Infinity
-        DarkEnergy::mikuType("NxCollection").each{|project|
-            next if project["parent"]
+        DarkEnergy::mikuType("NxCollection").each{|item|
+            next if item["parent"]
             parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
-            project["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-            DarkEnergy::commit(project)
+            item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            DarkEnergy::commit(item)
+        }
+
+        DarkEnergy::mikuType("TxCollection").each{|item|
+            engine = item["engine"]
+            engine = TxEngines::engine_maintenance(engine)
+            next if engine.nil?
+            DarkEnergy::patch(item["uuid"], "engine", engine)
         }
     end
 
