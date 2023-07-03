@@ -17,8 +17,7 @@ class NxPages
 
     # NxPages::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
-        tx8 = Tx8s::make(parent["uuid"], position)
+        tx8 = Tx8s::make(parent["uuid"], 0)
 
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""

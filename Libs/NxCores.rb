@@ -261,7 +261,7 @@ class NxCores
                 Tx8s::pileAtThisParent(core)
             end
 
-            if input == "project" then
+            if input == "page" then
                 NxPages::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
