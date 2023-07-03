@@ -242,7 +242,7 @@ class NxCores
                 }
 
             puts ""
-            puts "(task, pile, project)"
+            puts "(task, pile, page, project)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -254,6 +254,11 @@ class NxCores
 
             if input == "pile" then
                 Tx8s::pileAtThisParent(core)
+            end
+
+            if input == "project" then
+                NxPages::interactivelyIssueNewAtParentOrNull(core)
+                next
             end
 
             if input == "project" then
