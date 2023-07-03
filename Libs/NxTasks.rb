@@ -136,7 +136,7 @@ class NxTasks
             end
         }
 
-        # More orphan tasks to Infinity
+        # Move orphan tasks to Infinity
         DarkEnergy::mikuType("NxTask").each{|task|
             next if task["parent"]
             parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())

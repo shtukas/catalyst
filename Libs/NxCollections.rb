@@ -1,21 +1,19 @@
 
-class NxProjects
+class NxCollections
 
-    # NxProjects::interactivelyIssueNewOrNull()
+    # NxCollections::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxProject", uuid)
-        engine = TxEngines::interactivelyMakeEngine()
+        DarkEnergy::init("NxCollection", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxProjects::interactivelyIssueNewAtParentOrNull(parent)
+    # NxCollections::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
         tx8 = Tx8s::make(parent["uuid"], position)
@@ -24,70 +22,54 @@ class NxProjects
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxProject", uuid)
-        engine = TxEngines::interactivelyMakeEngine()
+        DarkEnergy::init("NxCollection", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::patch(uuid, "parent", tx8)
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxProjects::toString(item)
+    # NxCollections::toString(item)
     def self.toString(item)
-        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)} #{TxEngines::toString(item["engine"])}"
+        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)}"
     end
 
-    # NxProjects::toStringForMainListing(item)
+    # NxCollections::toStringForMainListing(item)
     def self.toStringForMainListing(item)
-        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)}"
     end
 
-    # NxProjects::toStringForCoreListing(item)
+    # NxCollections::toStringForCoreListing(item)
     def self.toStringForCoreListing(item)
-        "⛵️#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+        "🫧#{Tx8s::positionInParentSuffix(item)} #{item["description"]}"
     end
 
-    # NxProjects::listingItems()
-    def self.listingItems()
-        DarkEnergy::mikuType("NxProject").select{|project|
-            TxEngines::compositeCompletionRatio(project["engine"]) < 1
-        }
-    end
-
-    # NxProjects::maintenance()
+    # NxCollections::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxProject").each{|project|
+        DarkEnergy::mikuType("NxCollection").each{|project|
             next if project["parent"].nil?
             if DarkEnergy::itemOrNull(project["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
             end
         }
 
-        # Move orphan projects to Infinity
-        DarkEnergy::mikuType("NxProject").each{|project|
+        # Move orphan item to Infinity
+        DarkEnergy::mikuType("NxCollection").each{|project|
             next if project["parent"]
             parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
             project["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(project)
         }
-
-        DarkEnergy::mikuType("TxProject").each{|project|
-            engine = project["engine"]
-            engine = TxEngines::engine_maintenance(engine)
-            next if engine.nil?
-            DarkEnergy::patch(project["uuid"], "engine", engine)
-        }
     end
 
-    # NxProjects::program1(project)
-    def self.program1(project)
+    # NxCollections::program1(collection)
+    def self.program1(collection)
         loop {
 
-            project = DarkEnergy::itemOrNull(project["uuid"])
-            return if project.nil?
+            collection = DarkEnergy::itemOrNull(collection["uuid"])
+            return if collection.nil?
 
             system("clear")
 
@@ -95,11 +77,11 @@ class NxProjects
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             spacecontrol.putsline ""
-            store.register(project, false)
-            spacecontrol.putsline NxCores::itemToStringListing(store, project)
+            store.register(collection, false)
+            spacecontrol.putsline NxCores::itemToStringListing(store, collection)
 
             spacecontrol.putsline ""
-            items = Tx8s::childrenInOrder(project)
+            items = Tx8s::childrenInOrder(collection)
 
             items
                 .each{|item|
@@ -115,12 +97,12 @@ class NxProjects
             return if input == ""
 
             if input == "task" then
-                NxTasks::interactivelyIssueNewAtParentOrNull(project)
+                NxTasks::interactivelyIssueNewAtParentOrNull(collection)
                 next
             end
 
             if input == "pile" then
-                Tx8s::pileAtThisParent(project)
+                Tx8s::pileAtThisParent(collection)
             end
 
             puts ""

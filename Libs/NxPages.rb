@@ -57,6 +57,25 @@ class NxPages
         DarkEnergy::patch(page["uuid"], "text", text)
     end
 
+    # NxPages::maintenance()
+    def self.maintenance()
+        # Ensuring consistency of parenting targets
+        DarkEnergy::mikuType("NxPage").each{|project|
+            next if project["parent"].nil?
+            if DarkEnergy::itemOrNull(project["parent"]["uuid"]).nil? then
+                DarkEnergy::patch(uuid, "parent", nil)
+            end
+        }
+
+        # Move orphan pages to Infinity
+        DarkEnergy::mikuType("NxPage").each{|project|
+            next if project["parent"]
+            parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+            project["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            DarkEnergy::commit(project)
+        }
+    end
+
     # NxPages::program2()
     def self.program2()
         loop {

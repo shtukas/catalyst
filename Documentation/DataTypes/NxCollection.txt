@@ -1,0 +1,8 @@
+
+NxCollection:
+    "uuid"        : String
+    "mikuType"    : "NxCollection"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "field11"     : CoreData Reference

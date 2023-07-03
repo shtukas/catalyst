@@ -37,6 +37,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCollection" then
+            NxCollections::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxProject" then
             NxProjects::program1(item)
             return
@@ -108,6 +113,12 @@ class PolyActions
 
         if item["mikuType"] == "NxPage" then
             puts "You can't done a NxPage, but you cna destroy it"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if item["mikuType"] == "NxCollection" then
+            puts "You can't done a NxCollection, but you cna destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -316,6 +327,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCollection" then
+            if Tx8s::childrenInOrder(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
@@ -352,6 +375,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCollection" then
             PolyActions::access(item)
             return
         end
@@ -439,6 +467,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCollection" then
             PolyActions::access(item)
             return
         end

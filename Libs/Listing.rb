@@ -212,6 +212,8 @@ class Listing
              DxAntimatters::maintenance()
              NxProjects::maintenance()
              NxTasks::maintenance()
+             NxPages::maintenance()
+             NxCollections::maintenance()
         end
         NxCores::maintenance2() # padding
     end

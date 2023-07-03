@@ -79,6 +79,9 @@ class PolyFunctions
         if item["mikuType"] == "NxPage" then
             return NxPages::toString(item)
         end
+        if item["mikuType"] == "NxCollection" then
+            return NxCollections::toString(item)
+        end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
         end

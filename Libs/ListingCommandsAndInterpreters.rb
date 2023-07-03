@@ -465,6 +465,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("collection", input) then
+            core = NxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
+            item = NxCollections::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            item["parent"] = tx8
+            DarkEnergy::commit(item)
+            return
+        end
+
         if Interpreting::match("page", input) then
             core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?

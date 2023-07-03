@@ -172,6 +172,9 @@ class NxCores
         if item["mikuType"] == "NxPage" then
             return NxPages::toStringForCoreListing(item)
         end
+        if item["mikuType"] == "NxCollection" then
+            return NxCollections::toStringForCoreListing(item)
+        end
         PolyFunctions::toString(item)
     end
 
@@ -233,8 +236,12 @@ class NxCores
 
             waves, items = items.partition{|item| item["mikuType"] == "Wave" }
             pages, items = items.partition{|item| item["mikuType"] == "NxPage" }
+            collections, items = items.partition{|item| item["mikuType"] == "NxCollection" }
 
-            (waves + pages + items)
+            pages = pages.sort_by{|item| item["unixtime"] }
+            collections = collections.sort_by{|item| item["unixtime"] }
+
+            (waves + pages + collections + items)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline NxCores::itemToStringListing(store, item)
@@ -242,7 +249,7 @@ class NxCores
                 }
 
             puts ""
-            puts "(task, pile, page, project)"
+            puts "(task, pile, page, project, collection)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -263,6 +270,11 @@ class NxCores
 
             if input == "project" then
                 NxProjects::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "collection" then
+                NxCollections::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 
