@@ -38,7 +38,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCollection" then
-            NxCollections::access(item)
+            NxCollections::program1(item)
             return
         end
 
