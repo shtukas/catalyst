@@ -120,7 +120,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            core = TxCores::interactivelySelectOneOrNull()
+            core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?
             tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
             task = NxTasks::interactivelyIssueNewOrNull()
@@ -132,7 +132,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("cores", input) then
-            TxCores::program2()
+            NxCores::program2()
             return
         end
 
@@ -147,7 +147,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
-            core = TxCores::interactivelySelectOneOrNull()
+            core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, core)
             return
@@ -157,7 +157,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            core = TxCores::interactivelySelectOneOrNull()
+            core = NxCores::interactivelySelectOneOrNull()
             Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, core)
             return
         end

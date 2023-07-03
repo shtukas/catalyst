@@ -61,8 +61,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
             return
         end
 
@@ -239,8 +239,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            puts "There is no provision to done a TxCore"
+        if item["mikuType"] == "NxCore" then
+            puts "There is no provision to done a NxCore"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -305,8 +305,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            puts "There is no provision to destroy a TxCore"
+        if item["mikuType"] == "NxCore" then
+            puts "There is no provision to destroy a NxCore"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -323,7 +323,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxCore" then
             PolyActions::access(item)
             return
         end

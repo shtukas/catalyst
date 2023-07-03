@@ -207,13 +207,13 @@ class Listing
              PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
-             TxCores::maintenance() # core maintenance
-             TxCores::maintenance3() # DxAntimatter issue
+             NxCores::maintenance() # core maintenance
+             NxCores::maintenance3() # DxAntimatter issue
              DxAntimatters::maintenance()
              NxProjects::maintenance()
              NxTasks::maintenance()
         end
-        TxCores::maintenance2() # padding
+        NxCores::maintenance2() # padding
     end
 
     # Listing::launchNxBallMonitor()

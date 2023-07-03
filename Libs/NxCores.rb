@@ -1,10 +1,10 @@
 
-class TxCores
+class NxCores
 
     # -----------------------------------------------
     # Build
 
-    # TxCores::interactivelyMakeCoreOrNull()
+    # NxCores::interactivelyMakeCoreOrNull()
     def self.interactivelyMakeCoreOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
         return nil if description == ""
@@ -13,7 +13,7 @@ class TxCores
         return nil if hours == "0"
         {
             "uuid"          => SecureRandom.uuid,
-            "mikuType"      => "TxCore",
+            "mikuType"      => "NxCore",
             "description"   => description,
             "hours"         => hours.to_f,
             "lastResetTime" => Time.new.to_f,
@@ -24,32 +24,32 @@ class TxCores
     # -----------------------------------------------
     # Data
 
-    # TxCores::dayCompletionRatio(core)
+    # NxCores::dayCompletionRatio(core)
     def self.dayCompletionRatio(core)
         Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/((core["hours"]*3600).to_f/5)
     end
 
-    # TxCores::periodCompletionRatio(core)
+    # NxCores::periodCompletionRatio(core)
     def self.periodCompletionRatio(core)
         Bank::getValue(core["capsule"]).to_f/(core["hours"]*3600)
     end
 
-    # TxCores::compositeCompletionRatio(core)
+    # NxCores::compositeCompletionRatio(core)
     def self.compositeCompletionRatio(core)
-        period = TxCores::periodCompletionRatio(core)
+        period = NxCores::periodCompletionRatio(core)
         return period if period >= 1
-        day = TxCores::dayCompletionRatio(core)
+        day = NxCores::dayCompletionRatio(core)
         return day if day >= 1
         0.9*day + 0.1*period
     end
 
-    # TxCores::toString(core)
+    # NxCores::toString(core)
     def self.toString(core)
         padding = XCache::getOrDefaultValue("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", "0").to_i
         strings = []
 
-        strings << "⏱️  #{core["description"].ljust(padding)} (core: today: #{"#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
-        strings << ", period: #{"#{"%6.2f" % (100*TxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
+        strings << "⏱️  #{core["description"].ljust(padding)} (core: today: #{"#{"%6.2f" % (100*NxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        strings << ", period: #{"#{"%6.2f" % (100*NxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
         timeSinceResetInDays = (Time.new.to_i - core["lastResetTime"]).to_f/86400
@@ -75,33 +75,33 @@ class TxCores
         strings.join()
     end
 
-    # TxCores::coreSuffix(item)
+    # NxCores::coreSuffix(item)
     def self.coreSuffix(item)
         parent = Tx8s::getParentOrNull(item)
         return "" if parent.nil?
-        return "" if parent["mikuType"] != "TxCore"
+        return "" if parent["mikuType"] != "NxCore"
         " (#{parent["description"].green})"
     end
 
-    # TxCores::interactivelySelectOneOrNull()
+    # NxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = DarkEnergy::mikuType("TxCore")
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
+        cores = DarkEnergy::mikuType("NxCore")
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| NxCores::toString(core) })
     end
 
-    # TxCores::interactivelyMakeTx8WithCoreParentOrNull()
+    # NxCores::interactivelyMakeTx8WithCoreParentOrNull()
     def self.interactivelyMakeTx8WithCoreParentOrNull()
-        core = TxCores::interactivelySelectOneOrNull()
+        core = NxCores::interactivelySelectOneOrNull()
         position = Tx8s::interactivelyDecidePositionUnderThisParent(core)
         Tx8s::make(core["uuid"], position)
     end
 
-    # TxCores::todayNeedsInHours(core)
+    # NxCores::todayNeedsInHours(core)
     def self.todayNeedsInHours(core)
         core["hours"].to_f/5 - Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
     end
 
-    # TxCores::infinityuuid()
+    # NxCores::infinityuuid()
     def self.infinityuuid()
         "bc3901ad-18ad-4354-b90b-63f7a611e64e"
     end
@@ -109,7 +109,7 @@ class TxCores
     # -----------------------------------------------
     # Ops
 
-    # TxCores::core_maintenance(core)
+    # NxCores::core_maintenance(core)
     def self.core_maintenance(core)
         return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
         return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
@@ -126,30 +126,30 @@ class TxCores
         core
     end
 
-    # TxCores::maintenance()
+    # NxCores::maintenance()
     def self.maintenance()
-        DarkEnergy::mikuType("TxCore").each{|core|
-            core = TxCores::core_maintenance(core)
+        DarkEnergy::mikuType("NxCore").each{|core|
+            core = NxCores::core_maintenance(core)
             next if core.nil?
             DarkEnergy::commit(core)
         }
     end
 
-    # TxCores::maintenance2()
+    # NxCores::maintenance2()
     def self.maintenance2()
-        padding = ([0] + DarkEnergy::mikuType("TxCore").map{|core| core["description"].size}).max
+        padding = ([0] + DarkEnergy::mikuType("NxCore").map{|core| core["description"].size}).max
         XCache::set("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", padding)
     end
 
-    # TxCores::maintenance3()
+    # NxCores::maintenance3()
     def self.maintenance3()
-        DarkEnergy::mikuType("TxCore")
+        DarkEnergy::mikuType("NxCore")
             .each{|core|
                 next if !DoNotShowUntil::isVisible(core)
                 next if Bank::getValue(core["capsule"]).to_f >= core["hours"]*3600
                 next if Time.new.wday == 0 # not on sundays
                 next if DxAntimatters::familySampleNegativeNonRunningOrNull(core["uuid"])
-                todayNeedsInHours = TxCores::todayNeedsInHours(core)
+                todayNeedsInHours = NxCores::todayNeedsInHours(core)
                 next if todayNeedsInHours < 0
                 puts "anti-matter creation: #{core["description"]}, #{todayNeedsInHours.round(2)} hours".green
                 4.times {
@@ -161,7 +161,7 @@ class TxCores
             }
     end
 
-    # TxCores::toStringCoreListing(item)
+    # NxCores::toStringCoreListing(item)
     def self.toStringCoreListing(item)
         if item["mikuType"] == "NxTask" then
             return NxTasks::toStringForCoreListing(item)
@@ -172,12 +172,12 @@ class TxCores
         PolyFunctions::toString(item)
     end
 
-    # TxCores::itemToStringListing(store, item)
+    # NxCores::itemToStringListing(store, item)
     def self.itemToStringListing(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = TxCores::toStringCoreListing(item)
+        str1 = NxCores::toStringCoreListing(item)
 
         ordinalSuffix = (item["mikuType"] == "NxTask" and ListingPositions::getOrNull(item)) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
 
@@ -198,7 +198,7 @@ class TxCores
         line
     end
 
-    # TxCores::program1(core)
+    # NxCores::program1(core)
     def self.program1(core)
         loop {
 
@@ -212,7 +212,7 @@ class TxCores
 
             spacecontrol.putsline ""
             store.register(core, false)
-            spacecontrol.putsline TxCores::itemToStringListing(store, core)
+            spacecontrol.putsline NxCores::itemToStringListing(store, core)
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(core)
@@ -233,7 +233,7 @@ class TxCores
             (waves + items)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline TxCores::itemToStringListing(store, item)
+                    status = spacecontrol.putsline NxCores::itemToStringListing(store, item)
                     break if !status
                 }
 
@@ -262,15 +262,15 @@ class TxCores
         }
     end
 
-    # TxCores::program2()
+    # NxCores::program2()
     def self.program2()
         loop {
-            hours = DarkEnergy::mikuType("TxCore").map{|core| core["hours"]}.inject(0, :+)
+            hours = DarkEnergy::mikuType("NxCore").map{|core| core["hours"]}.inject(0, :+)
             puts "total hours: #{hours}; #{(hours.to_f/7).round(2)} hours/day"
-            cores = DarkEnergy::mikuType("TxCore").sort_by{|item| item["description"] }
-            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
+            cores = DarkEnergy::mikuType("NxCore").sort_by{|item| item["description"] }
+            core = LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| NxCores::toString(core) })
             return if core.nil?
-            TxCores::program1(core)
+            NxCores::program1(core)
         }
     end
 end

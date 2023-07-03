@@ -1,7 +1,7 @@
 
-TxCore
+NxCore
     "uuid"          : Float
-    "mikuType"      : "TxCore"
+    "mikuType"      : "NxCore"
     "description"   : String
     "hours"         : Float
     "lastResetTime" : Unixtime

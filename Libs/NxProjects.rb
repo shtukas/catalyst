@@ -41,12 +41,12 @@ class NxProjects
 
     # NxProjects::toStringForMainListing(item)
     def self.toStringForMainListing(item)
-        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+        "⛵️ #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxProjects::toStringForCoreListing(item)
     def self.toStringForCoreListing(item)
-        "⛵️#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{TxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+        "⛵️#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
     # NxProjects::listingItems()
@@ -69,7 +69,7 @@ class NxProjects
         # More orphan tasks to Infinity
         DarkEnergy::mikuType("NxProject").each{|project|
             next if project["parent"]
-            parent = DarkEnergy::itemOrNull(TxCores::infinityuuid())
+            parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(item)
         }
@@ -96,7 +96,7 @@ class NxProjects
 
             spacecontrol.putsline ""
             store.register(project, false)
-            spacecontrol.putsline TxCores::itemToStringListing(store, project)
+            spacecontrol.putsline NxCores::itemToStringListing(store, project)
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(project)
@@ -104,7 +104,7 @@ class NxProjects
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline TxCores::itemToStringListing(store, item)
+                    status = spacecontrol.putsline NxCores::itemToStringListing(store, item)
                     break if !status
                 }
 

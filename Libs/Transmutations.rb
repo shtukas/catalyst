@@ -20,7 +20,7 @@ class Transmutations
         return if targetMikuType.nil?
 
         if item["mikuType"] == "NxFront" and targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxCores::interactivelyMakeTx8WithCoreParentOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -31,7 +31,7 @@ class Transmutations
         end
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxCores::interactivelyMakeTx8WithCoreParentOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -49,13 +49,13 @@ class Transmutations
             ListingPositions::interactivelySetPositionAttempt(item)
         end
         if targetMikuType == "NxTask" then
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxCores::interactivelyMakeTx8WithCoreParentOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxTask")
         end
         if targetMikuType == "NxProject" then
             engine = TxEngines::interactivelyMakeEngine()
             DarkEnergy::patch(item["uuid"], "engine", engine)
-            DarkEnergy::patch(item["uuid"], "parent", TxCores::interactivelyMakeTx8WithCoreParentOrNull())
+            DarkEnergy::patch(item["uuid"], "parent", NxCores::interactivelyMakeTx8WithCoreParentOrNull())
             DarkEnergy::patch(item["uuid"], "mikuType", "NxProject")
         end
     end

@@ -176,7 +176,7 @@ require_relative "TheLine.rb"
 require_relative "Transmutations.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
-require_relative "TxCores.rb"
+require_relative "NxCores.rb"
 require_relative "TxEngines.rb"
 
 require_relative "Waves.rb"

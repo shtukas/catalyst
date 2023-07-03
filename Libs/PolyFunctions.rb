@@ -18,7 +18,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxCore" then
             accounts << {
                 "description" => "#{item["description"]} (capsule)",
                 "number"      => item["capsule"]
@@ -88,8 +88,8 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::toString(item)
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
