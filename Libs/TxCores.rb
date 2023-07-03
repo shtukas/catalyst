@@ -101,6 +101,11 @@ class TxCores
         core["hours"].to_f/5 - Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
     end
 
+    # TxCores::infinityuuid()
+    def self.infinityuuid()
+        "bc3901ad-18ad-4354-b90b-63f7a611e64e"
+    end
+
     # -----------------------------------------------
     # Ops
 

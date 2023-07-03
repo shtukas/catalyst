@@ -70,6 +70,7 @@ class DxAntimatters
         puts "value: #{DxAntimatters::value(negative)}"
         puts "combined:"
         puts JSON.pretty_generate(combinedItem)
+        ListingPositions::set(combinedItem, ListingPositions::randomPositionInLateRange())
         LucilleCore::pressEnterToContinue()
     end
 end

@@ -128,10 +128,27 @@ class NxTasks
 
     # NxTasks::maintenance()
     def self.maintenance()
+        # Ensuring consistency of task parenting targets
+        DarkEnergy::mikuType("NxTask").each{|task|
+            next if task["parent"].nil?
+            if DarkEnergy::itemOrNull(task["parent"]["uuid"]).nil? then
+                DarkEnergy::patch(uuid, "parent", nil)
+            end
+        }
+
+        # More orphan tasks to Infinity
+        DarkEnergy::mikuType("NxTask").each{|task|
+            next if task["parent"]
+            parent = DarkEnergy::itemOrNull(TxCores::infinityuuid())
+            item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            DarkEnergy::commit(item)
+        }
+
+        # Feed Infinity using NxIce
         if DarkEnergy::mikuType("NxTask").size < 100 then
             DarkEnergy::mikuType("NxIce").take(10).each{|item|
                 item["mikuType"] == "NxTask"
-                parent = DarkEnergy::itemOrNull("bc3901ad-18ad-4354-b90b-63f7a611e64e")  # Infinity
+                parent = DarkEnergy::itemOrNull(TxCores::infinityuuid())
                 item["parent"] = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(parent))
                 DarkEnergy::commit(item)
             }

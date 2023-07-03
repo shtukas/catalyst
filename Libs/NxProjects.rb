@@ -58,6 +58,22 @@ class NxProjects
 
     # NxProjects::maintenance()
     def self.maintenance()
+        # Ensuring consistency of parenting targets
+        DarkEnergy::mikuType("NxProject").each{|project|
+            next if project["parent"].nil?
+            if DarkEnergy::itemOrNull(project["parent"]["uuid"]).nil? then
+                DarkEnergy::patch(uuid, "parent", nil)
+            end
+        }
+
+        # More orphan tasks to Infinity
+        DarkEnergy::mikuType("NxProject").each{|project|
+            next if project["parent"]
+            parent = DarkEnergy::itemOrNull(TxCores::infinityuuid())
+            item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+            DarkEnergy::commit(item)
+        }
+
         DarkEnergy::mikuType("TxProject").each{|project|
             engine = project["engine"]
             engine = TxEngines::engine_maintenance(engine)
