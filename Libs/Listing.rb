@@ -212,6 +212,7 @@ class Listing
              NxTasks::maintenance()
              NxPages::maintenance()
              NxCollections::maintenance()
+             NxFronts::maintenance()
         end
         NxCores::maintenance2() # padding
     end
