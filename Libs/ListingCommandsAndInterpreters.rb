@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "transmutation : >> (<n>) | >task (<n>) | >collection (<n>) | >front (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -500,6 +500,14 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("pages", input) then
             NxPages::program2()
+            return
+        end
+
+        if Interpreting::match("top", input) then
+            item = NxFronts::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            ListingPositions::set(item, ListingPositions::positionMinus1())
             return
         end
 
