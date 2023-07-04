@@ -157,7 +157,7 @@ class Tx8s
                 "position" => 0
             }
         end
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "NxCollection" then
             tx8 = {
                 "uuid"     => parent["uuid"],
                 "position" => 0

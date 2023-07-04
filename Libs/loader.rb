@@ -160,7 +160,6 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxFronts.rb"
 require_relative "NxTimes.rb"
-require_relative "NxProjects.rb"
 require_relative "NxPages.rb"
 require_relative "NxCollections.rb"
 

@@ -74,7 +74,9 @@ class Listing
         end
 
         return false if item["mikuType"] == "DesktopTx1"
-        return false if item["mikuType"] == "NxProject"
+        if item["mikuType"] == "NxCollection" then
+            return TxEngines::compositeCompletionRatio(item["engine"])
+        end
 
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
@@ -117,7 +119,6 @@ class Listing
             DxAntimatters::listingItems(),
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxProjects::listingItems(),
             NxCollections::listingItems(),
             NxTasks::listingItems()
         ]
@@ -129,9 +130,6 @@ class Listing
     def self.itemToString1(item)
         if item["mikuType"] == "NxTask" then
             return NxTasks::toStringForMainListing(item)
-        end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toStringForMainListing(item)
         end
         PolyFunctions::toString(item)
     end
@@ -211,7 +209,6 @@ class Listing
              NxCores::maintenance() # core maintenance
              NxCores::maintenance3() # DxAntimatter issue
              DxAntimatters::maintenance()
-             NxProjects::maintenance()
              NxTasks::maintenance()
              NxPages::maintenance()
              NxCollections::maintenance()

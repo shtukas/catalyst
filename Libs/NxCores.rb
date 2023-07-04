@@ -166,9 +166,6 @@ class NxCores
         if item["mikuType"] == "NxTask" then
             return NxTasks::toStringForCoreListing(item)
         end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toStringForCoreListing(item)
-        end
         if item["mikuType"] == "NxPage" then
             return NxPages::toStringForCoreListing(item)
         end
@@ -247,7 +244,7 @@ class NxCores
                 }
 
             puts ""
-            puts "(task, pile, page, project, collection)"
+            puts "(task, pile, page, collection)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -263,11 +260,6 @@ class NxCores
 
             if input == "page" then
                 NxPages::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
-            if input == "project" then
-                NxProjects::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 

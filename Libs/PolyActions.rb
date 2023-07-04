@@ -42,11 +42,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            NxProjects::program1(item)
-            return
-        end
-
         if item["mikuType"] == "NxTime" then
             return
         end
@@ -124,18 +119,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            if Tx8s::childrenInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
             return
         end
 
@@ -315,18 +298,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            if Tx8s::childrenInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxCollection" then
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
@@ -370,11 +341,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             PolyActions::access(item)
             return
         end
@@ -463,11 +429,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            PolyActions::access(item)
             return
         end
 

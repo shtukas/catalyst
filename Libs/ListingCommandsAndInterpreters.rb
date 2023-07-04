@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "transmutation : >> (<n>) | >task (<n>) | >project (<n>) | >front (<n>)",
+            "transmutation : >> (<n>) | >task (<n>) | >collection (<n>) | >front (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -42,18 +42,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">project", input) then
+        if Interpreting::match(">collection", input) then
             item = store.getDefault()
             return if item.nil?
-            Transmutations::transmuteTo(item, "NxProject")
+            Transmutations::transmuteTo(item, "NxCollection")
             return
         end
 
-        if Interpreting::match(">project *", input) then
+        if Interpreting::match(">collection *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Transmutations::transmuteTo(item, "NxProject")
+            Transmutations::transmuteTo(item, "NxCollection")
             return
         end
 
@@ -498,25 +498,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("projects", input) then
+        if Interpreting::match("pages", input) then
             NxPages::program2()
-            return
-        end
-
-        if Interpreting::match("project", input) then
-            core = NxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
-            item = NxProjects::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            item["parent"] = tx8
-            DarkEnergy::commit(item)
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            NxProjects::program1()
             return
         end
 
