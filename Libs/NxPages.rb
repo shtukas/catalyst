@@ -50,7 +50,7 @@ class NxPages
 
     # NxPages::access(page)
     def self.access(page)
-        puts "accessing page '#{NxPages::toString(page)}' in syncronous edition mode"
+        puts "accessing page '#{NxPages::toString(page)}' in synchronous edition mode"
         text = CommonUtils::editTextSynchronously(page["text"])
         return if text == page["text"]
         DarkEnergy::patch(page["uuid"], "text", text)
