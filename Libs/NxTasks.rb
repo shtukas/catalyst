@@ -53,6 +53,31 @@ class NxTasks
         DarkEnergy::itemOrNull(uuid)
     end
 
+    # NxTasks::interactivelyIssueNewAtTopAtParentOrNull(parent)
+    def self.interactivelyIssueNewAtTopAtParentOrNull(parent)
+
+        tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+
+        # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
+        # because the blade need to exist for aion points data blobs to have a place to go.
+
+        uuid = SecureRandom.uuid
+        DarkEnergy::init("NxTask", uuid)
+
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+
+        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
+        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
+        DarkEnergy::patch(uuid, "description", description)
+        DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "parent", tx8)
+
+        DarkEnergy::itemOrNull(uuid)
+    end
+
     # NxTasks::urlToTask(url)
     def self.urlToTask(url)
         description = "(vienna) #{url}"

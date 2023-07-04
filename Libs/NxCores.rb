@@ -244,10 +244,15 @@ class NxCores
                 }
 
             puts ""
-            puts "(task, pile, page, collection)"
+            puts "(top, task, pile, page, collection)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "top" then
+                NxTasks::interactivelyIssueNewAtTopAtParentOrNull(core)
+                next
+            end
 
             if input == "task" then
                 NxTasks::interactivelyIssueNewAtParentOrNull(core)

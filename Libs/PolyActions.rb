@@ -11,6 +11,13 @@ class PolyActions
         # types in alphabetical order
 
         if item["mikuType"] == "DxAntimatter" then
+            core = DarkEnergy::itemOrNull(item["familyId"])
+            if core.nil? then
+                puts "I could not find a core for DxAntimatter: #{item}"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            PolyActions::access(core)
             return
         end
 
