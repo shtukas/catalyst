@@ -37,10 +37,10 @@ class Pure
     def self.energy(items)
         [
             items
-                .take(3)
+                .take(1)
                 .map{|item| Pure::pure(item)}
                 .flatten,
-            items.drop(3)
+            items.drop(1)
         ].flatten
     end
 end
