@@ -244,7 +244,7 @@ class NxCores
                 }
 
             puts ""
-            puts "(top, task, pile, page, collection)"
+            puts "(top, task, pile, page, collection, position *, move * to *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -270,6 +270,27 @@ class NxCores
 
             if input == "collection" then
                 NxCollections::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input.start_with?("position") then
+                itemindex = input[8, input.length].strip.to_i
+                item = store.get(itemindex)
+                return if item.nil?
+                Tx8s::repositionItemAtSameParent(item)
+                next
+            end
+
+            if input.start_with?("move") then
+                input = input[4, input.length].strip
+                i1, i2 = input.split("to").map{|t| t.strip.to_i }
+                item = store.get(i1)
+                return if item.nil?
+                newparent = store.get(i2)
+                return if newparent.nil?
+                puts "moving: #{PolyFunctions::toString(item)}"
+                puts "to    : #{PolyFunctions::toString(newparent)}"
+                Tx8s::interactivelyPlaceItemAtParentAttempt(item, newparent)
                 next
             end
 

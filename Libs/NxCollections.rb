@@ -113,7 +113,7 @@ class NxCollections
                 }
 
             puts ""
-            puts "(task, pile)"
+            puts "(task, pile, position *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -125,6 +125,14 @@ class NxCollections
 
             if input == "pile" then
                 Tx8s::pileAtThisParent(collection)
+            end
+
+            if input.start_with?("position") then
+                itemindex = input[8, input.length].strip.to_i
+                item = store.get(itemindex)
+                return if item.nil?
+                Tx8s::repositionItemAtSameParent(item)
+                next
             end
 
             puts ""

@@ -29,8 +29,18 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        children = Tx8s::childrenInOrder(parent).take(CommonUtils::screenHeight() - 4)
+        children = nil
+        if parent["mikuType"] == "NxCore" then
+            children = Tx8s::childrenInOrder(parent)
+                            .select{|item| item["mikuType"] == "NxTask" }
+                            .take(CommonUtils::screenHeight() - 4)
+        end
+        if children.nil? then
+            children = Tx8s::childrenInOrder(parent)
+                            .take(CommonUtils::screenHeight() - 4)
+        end
         return 1 if children.empty?
+        puts "positioning:"
         children.each{|item|
             puts " - #{PolyFunctions::toString(item)}"
         }
@@ -143,13 +153,6 @@ class Tx8s
 
     # Tx8s::interactivelyPlaceItemAtParentAttempt(item, parent)
     def self.interactivelyPlaceItemAtParentAttempt(item, parent)
-        tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
-        return if tx8.nil?
-        DarkEnergy::patch(item["uuid"], "parent", tx8)
-    end
-
-    # Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, parent)
-    def self.interactivelyPlaceItemAtParentAttemptClever(item, parent)
         tx8 = nil
         if item["mikuType"] == "Wave" then
             tx8 = {
