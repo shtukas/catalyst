@@ -7,7 +7,7 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => item["description"],
+            "description" => item["description"] || "TxEngine", # TxEngine is the only type without a description
             "number"      => item["uuid"]
         }
 
@@ -25,11 +25,15 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "TxEngine" then
             accounts << {
-                "description" => "#{item["description"]} (engine: capsule)",
-                "number"      => item["engine"]["capsule"]
+                "description" => "#{item["description"]} (capsule)",
+                "number"      => item["capsule"]
             }
+        end
+
+        if item["mikuType"] == "NxCollection" then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["engine"])
         end
 
         accounts.reduce([]){|as, account|

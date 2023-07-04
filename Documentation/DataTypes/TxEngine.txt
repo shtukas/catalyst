@@ -1,6 +1,7 @@
 
 TxEngine
     "uuid"          : Float
+    "mikuType"      : "TxEngine"
     "hours"         : Float
     "lastResetTime" : Unixtime
     "capsule"       : String

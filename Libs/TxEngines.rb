@@ -11,6 +11,7 @@ class TxEngines
         return nil if hours == "0"
         {
             "uuid"          => SecureRandom.uuid,
+            "mikuType"      => "TxEngine",
             "hours"         => hours.to_f,
             "lastResetTime" => Time.new.to_f,
             "capsule"       => SecureRandom.hex
