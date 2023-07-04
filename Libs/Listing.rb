@@ -141,7 +141,7 @@ class Listing
 
         str1 = Listing::itemToString1(item)
 
-        ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : ""
+        ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : "        "
 
         line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
@@ -303,6 +303,9 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
+            items = iris+positioned
+            items = Pure::energy(items)
+
             system("clear")
 
             spacecontrol.putsline ""
@@ -318,8 +321,7 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-
-            (iris+positioned)
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item)

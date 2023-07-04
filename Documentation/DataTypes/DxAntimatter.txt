@@ -8,6 +8,9 @@ DxAntimatter:
     "familyId"     : String
     "initialValue" : Float # in seconds
 
-DxAntimatters are issued by Cores.
-The value is the initialValue + the bank value (the initial value is negatives)
+DxAntimatters are currently issued by Cores.
+
+    - the familyId is a NxCore's uuid
+
+    - The `value` is the `initialValue` + `the bank value` (the initial value is negatives)
 When the value is positive we can merge two items of the same family

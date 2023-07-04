@@ -131,4 +131,9 @@ class NxCollections
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # NxCollections::completionRatio(collection)
+    def self.completionRatio(collection)
+        TxEngines::compositeCompletionRatio(collection["engine"])
+    end
 end
