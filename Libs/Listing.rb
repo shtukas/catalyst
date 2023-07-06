@@ -172,7 +172,6 @@ class Listing
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
         spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
-        spot.contest_entry("Listing::maintenance()", lambda{ Listing::maintenance() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })

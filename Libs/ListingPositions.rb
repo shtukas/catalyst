@@ -23,6 +23,10 @@ class ListingPositions
             position = ListingPositions::positionMinus1()
             ListingPositions::set(item, position)
         end
+        if position.nil? and item["mikuType"] == "NxCollection" then
+            position = ListingPositions::randomPositionInLateRange()
+            ListingPositions::set(item, position)
+        end
         position
     end
 
