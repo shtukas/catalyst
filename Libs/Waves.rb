@@ -156,7 +156,7 @@ class Waves
     def self.performWaveDone(item)
 
         # Marking the item as being done 
-        puts "done-ing: #{Waves::toString(item)}"
+        puts "done-ing: '#{Waves::toString(item).green}'"
         DarkEnergy::patch(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         DarkEnergy::patch(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
         DarkEnergy::patch(item["uuid"], "parking", nil)
