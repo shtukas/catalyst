@@ -27,9 +27,9 @@ class DxAntimatters
     # DxAntimatters::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("DxAntimatter")
-            #.select{|item|
-            #    DxAntimatters::value(item) < 0 or NxBalls::itemIsActive(item)
-            #}
+            .select{|item|
+                DxAntimatters::value(item) < 0 or NxBalls::itemIsActive(item)
+            }
     end
 
     # DxAntimatters::familySamplePositiveNonRunningOrNull(familyId)
