@@ -49,14 +49,21 @@ class ListingPositions
 
     # ListingPositions::interactivelySetPositionAttempt(item)
     def self.interactivelySetPositionAttempt(item)
-        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
-        position =
-            if position == "" then
-                ListingPositions::nextPosition()
-            else
-                position.to_f
-            end
-        ListingPositions::set(item, position)
+        position = LucilleCore::askQuestionAnswerAsString("position (float) (top, random, next): ")
+        px = nil
+        if position == "top" then
+            px = ListingPositions::positionMinus1()
+        end
+        if position == "random" then
+            px = ListingPositions::randomPositionInLateRange()
+        end
+        if position == "next" then
+            px = ListingPositions::nextPosition()
+        end
+        if px.nil? then
+            px = position.to_f
+        end
+        ListingPositions::set(item, px)
     end
 
     # ListingPositions::extractRangeFromListingItems(items)
