@@ -166,6 +166,12 @@ class Tx8s
                 "position" => 0
             }
         end
+        if item["mikuType"] == "NxFront" then
+            tx8 = {
+                "uuid"     => parent["uuid"],
+                "position" => 0
+            }
+        end
         if tx8.nil? then
             tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
             return if tx8.nil?
