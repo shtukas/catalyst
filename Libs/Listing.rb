@@ -125,6 +125,13 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
     end
 
     # Listing::itemToString1(item)

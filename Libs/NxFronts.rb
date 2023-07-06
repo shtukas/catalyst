@@ -17,7 +17,7 @@ class NxFronts
 
     # NxFronts::toString(item)
     def self.toString(item)
-        "☀️  #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "☀️  #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}"
     end
 
     # NxFronts::maintenance()
