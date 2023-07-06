@@ -111,6 +111,7 @@ class Listing
     # Listing::items()
     def self.items()
         [
+            NxBalls::runningItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
