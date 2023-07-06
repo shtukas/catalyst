@@ -149,7 +149,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, core)
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
             return
         end
 
@@ -158,7 +158,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             core = NxCores::interactivelySelectOneOrNull()
-            Tx8s::interactivelyPlaceItemAtParentAttemptClever(item, core)
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
             return
         end
 
