@@ -52,7 +52,11 @@ class ListingPositions
 
     # ListingPositions::interactivelySetPositionAttempt(item)
     def self.interactivelySetPositionAttempt(item)
-        position = LucilleCore::askQuestionAnswerAsString("position (float) (top, random, next): ")
+        position = "" 
+        loop {
+            position = LucilleCore::askQuestionAnswerAsString("position (float) (top, random, next): ")
+            break if position != ""
+        }
         px = nil
         if position == "top" then
             px = ListingPositions::positionMinus1()
