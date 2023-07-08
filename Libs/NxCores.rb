@@ -75,28 +75,28 @@ class NxCores
         XCache::set("e8f9022e-3a5d-4e3b-87e0-809a3308b8ad", padding)
     end
 
-    # NxCores::toStringCoreListing(item)
-    def self.toStringCoreListing(item)
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::toStringForCoreListing(item)
-        end
-        if item["mikuType"] == "NxPage" then
-            return NxPages::toStringForCoreListing(item)
-        end
-        if item["mikuType"] == "NxCollection" then
-            return NxCollections::toStringForCoreListing(item)
-        end
-        PolyFunctions::toString(item)
-    end
-
     # NxCores::itemToStringListing(store, item)
     def self.itemToStringListing(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = NxCores::toStringCoreListing(item)
+        str1 = nil
+        if item["mikuType"] == "NxTask" then
+            str1 = NxTasks::toStringForCoreListing(item)
+        end
+        if item["mikuType"] == "NxPage" then
+            str1 = NxPages::toStringForCoreListing(item)
+        end
+        if item["mikuType"] == "NxCollection" then
+            str1 = NxCollections::toStringForCoreListing(item)
+        end
+        if str1.nil? then
+            str1 = PolyFunctions::toString(item)
+        end
 
-        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        engineSuffixForTasks = item["engine"] ? " #{TxEngines::toString(item["engine"])}" : ""
+
+        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{engineSuffixForTasks}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
