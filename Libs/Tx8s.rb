@@ -198,4 +198,12 @@ class Tx8s
             DarkEnergy::commit(t1)
         }
     end
+
+    # Tx8s::suffix(item)
+    def self.suffix(item)
+        return "" if item["parent"].nil?
+        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+        return "" if parent.nil?
+        " (#{parent["description"]})"
+    end
 end
