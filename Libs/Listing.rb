@@ -298,19 +298,34 @@ class Listing
 
             # ---------------------------------------------------------------------
             # Shifting the position if too high
-            if ListingPositions::getOrNull(positioned[0]) >= 10 then
-                positioned.each{|item|
-                    ListingPositions::set(item, ListingPositions::getOrNull(item)-10)
-                }
+            if positioned.size > 0 then
+                if ListingPositions::getOrNull(positioned[0]) >= 10 then
+                    positioned.each{|item|
+                        ListingPositions::set(item, ListingPositions::getOrNull(item)-10)
+                    }
+                end
             end
             # ---------------------------------------------------------------------
 
             # ---------------------------------------------------------------------
             # Shifting the position if too low
-            if ListingPositions::getOrNull(positioned[0]) <= -10 then
-                positioned.each{|item|
-                    ListingPositions::set(item, ListingPositions::getOrNull(item)+10)
-                }
+            if positioned.size > 0 then
+                if ListingPositions::getOrNull(positioned[0]) <= -10 then
+                    positioned.each{|item|
+                        ListingPositions::set(item, ListingPositions::getOrNull(item)+10)
+                    }
+                end
+            end
+            # ---------------------------------------------------------------------
+
+            # ---------------------------------------------------------------------
+            # Preventing position to get more than 100
+            if positioned.size > 0 then
+                if ListingPositions::getOrNull(positioned.last) >= 100 then
+                    positioned.each{|item|
+                        ListingPositions::set(item, ListingPositions::getOrNull(item).to_f/2)
+                    }
+                end
             end
             # ---------------------------------------------------------------------
 
