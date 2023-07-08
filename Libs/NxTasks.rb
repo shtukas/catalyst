@@ -115,16 +115,6 @@ class NxTasks
         "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
-    # NxTasks::toStringForMainListing(item)
-    def self.toStringForMainListing(item)
-        "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}"
-    end
-
-    # NxTasks::toStringForCoreListing(item)
-    def self.toStringForCoreListing(item)
-        "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
-    end
-
     # NxTasks::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxTask")
@@ -166,7 +156,7 @@ class NxTasks
         # Move orphan tasks to Infinity
         DarkEnergy::mikuType("NxTask").each{|task|
             next if task["parent"]
-            parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+            parent = DarkEnergy::itemOrNull(NxFeeders::infinityuuid())
             task["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(task)
         }
@@ -175,7 +165,7 @@ class NxTasks
         if DarkEnergy::mikuType("NxTask").size < 100 then
             DarkEnergy::mikuType("NxIce").take(10).each{|item|
                 item["mikuType"] == "NxTask"
-                parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+                parent = DarkEnergy::itemOrNull(NxFeeders::infinityuuid())
                 item["parent"] = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(parent))
                 DarkEnergy::commit(item)
             }

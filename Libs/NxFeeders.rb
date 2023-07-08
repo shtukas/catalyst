@@ -1,6 +1,9 @@
 
 class NxFeeders
 
+    # --------------------------------------------------------------------------
+    # Builders
+
     # NxFeeders::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
@@ -33,19 +36,12 @@ class NxFeeders
         DarkEnergy::itemOrNull(uuid)
     end
 
+    # --------------------------------------------------------------------------
+    # Data
+
     # NxFeeders::toString(item)
     def self.toString(item)
-        "🐬 #{item["description"]}#{NxCores::coreSuffix(item)}"
-    end
-
-    # NxFeeders::toStringForMainListing(item)
-    def self.toStringForMainListing(item)
-        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
-    end
-
-    # NxFeeders::toStringForCoreListing(item)
-    def self.toStringForCoreListing(item)
-        "🫧 #{item["description"]} #{TxEngines::toString(item["engine"])}"
+        "🐬 #{item["description"]}"
     end
 
     # NxFeeders::listingItems()
@@ -54,29 +50,42 @@ class NxFeeders
             #.select{|feeder| TxEngines::compositeCompletionRatio(feeder["engine"]) < 1 }
     end
 
+    # NxFeeders::completionRatio(feeder)
+    def self.completionRatio(feeder)
+        TxEngines::compositeCompletionRatio(feeder["engine"])
+    end
+
+    # NxFeeders::infinityuuid()
+    def self.infinityuuid()
+        "bc3901ad-18ad-4354-b90b-63f7a611e64e"
+    end
+
+    # NxFeeders::interactivelySelectOrNull()
+    def self.interactivelySelectOrNull()
+        feeders = DarkEnergy::mikuType("NxFeeder")
+        padding = feeders.map{|item| NxFeeders::toString(item).size }.max
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("feeder", feeders, lambda{|item| "#{NxFeeders::toString(item).ljust(padding)} #{TxDrivers::suffix(item)}" })
+    end
+
+    # --------------------------------------------------------------------------
+    # Ops
+
     # NxFeeders::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxFeeder").each{|item|
+        DarkEnergy::mikuType("NxTask").each{|item|
             next if item["parent"].nil?
             if DarkEnergy::itemOrNull(item["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
             end
         }
 
-        # Move orphan item to Infinity
-        DarkEnergy::mikuType("NxFeeder").each{|item|
+        # Move orphan items to Infinity
+        DarkEnergy::mikuType("NxTask").each{|item|
             next if item["parent"]
-            parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+            parent = DarkEnergy::itemOrNull(NxFeeders::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(item)
-        }
-
-        DarkEnergy::mikuType("TxCollection").each{|item|
-            engine = item["engine"]
-            engine = TxEngines::engine_maintenance(engine)
-            next if engine.nil?
-            DarkEnergy::patch(item["uuid"], "engine", engine)
         }
     end
 
@@ -94,7 +103,7 @@ class NxFeeders
 
             spacecontrol.putsline ""
             store.register(feeder, false)
-            spacecontrol.putsline NxCores::itemToStringListing(store, feeder)
+            spacecontrol.putsline Listing::toString2(store, feeder)
 
             spacecontrol.putsline ""
             items = Tx8s::childrenInOrder(feeder)
@@ -102,7 +111,7 @@ class NxFeeders
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline NxCores::itemToStringListing(store, item)
+                    status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status
                 }
 
@@ -134,8 +143,12 @@ class NxFeeders
         }
     end
 
-    # NxFeeders::completionRatio(feeder)
-    def self.completionRatio(feeder)
-        TxEngines::compositeCompletionRatio(feeder["engine"])
+    # NxFeeders::program2()
+    def self.program2()
+        loop {
+            feeder = NxFeeders::interactivelySelectOrNull()
+            break if feeder.nil?
+            NxFeeders::program1(feeder)
+        }
     end
 end

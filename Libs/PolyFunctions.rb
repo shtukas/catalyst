@@ -18,8 +18,8 @@ class PolyFunctions
             end
         end
 
-        if item["engine"] then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["engine"])
+        if item["drivers"] then
+            accounts = accounts + item["drivers"].map{|driver| PolyFunctions::itemToBankingAccounts(item) }.flatten
         end
 
         if item["mikuType"] == "TxEngine" then
@@ -81,9 +81,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
-        end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

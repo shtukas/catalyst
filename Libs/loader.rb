@@ -152,7 +152,6 @@ require_relative "ItemStore.rb"
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
 require_relative "ListingPositions.rb"
-require_relative "DxEngines.rb"
 
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
@@ -162,7 +161,6 @@ require_relative "NxFronts.rb"
 require_relative "NxTimes.rb"
 require_relative "NxPages.rb"
 require_relative "NxFeeders.rb"
-require_relative "NxCores.rb"
 
 require_relative "Memoize.rb"
 
@@ -175,7 +173,6 @@ require_relative "SectionsType0141.rb"
 require_relative "Stargate.rb"
 
 require_relative "TheLine.rb"
-require_relative "Transmutations.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
 require_relative "TxEngines.rb"

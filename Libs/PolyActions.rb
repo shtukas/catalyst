@@ -62,11 +62,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
-            return
-        end
-
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             return
@@ -236,12 +231,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            puts "There is no provision to done a NxCore"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
             return
@@ -302,23 +291,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            puts "There is no provision to destroy a NxCore"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
 
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
-
-        if item["mikuType"] == "NxCore" then
-            PolyActions::access(item)
-            return
-        end
 
         if item["mikuType"] == "NxBackup" then
             PolyActions::access(item)

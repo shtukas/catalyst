@@ -35,10 +35,8 @@ class TxDrivers
         drivers.map{|driver| TxDrivers::toString1(driver) }.join(" ")
     end
 
-    # TxDrivers::suffix(drivers)
-    def self.suffix(drivers)
-        return "" if drivers.nil?
-        return "" if drivers.empty?
-        " #{TxDrivers::toString2(drivers)}"
+    # TxDrivers::suffix(item)
+    def self.suffix(item)
+        " #{TxDrivers::toString2(item["drivers"])}"
     end
 end

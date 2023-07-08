@@ -111,7 +111,6 @@ class Listing
             # alphabetical order
             Anniversaries::listingItems(),
             DarkEnergy::mikuType("NxFront"),
-            DxEngines::listingItems(),
             NxBackups::listingItems(),
             NxBalls::runningItems(),
             NxFeeders::listingItems(),
@@ -131,24 +130,16 @@ class Listing
             }
     end
 
-    # Listing::toString1(item)
-    def self.toString1(item)
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::toStringForMainListing(item)
-        end
-        PolyFunctions::toString(item)
-    end
-
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = Listing::toString1(item)
+        str1 = PolyFunctions::toString(item)
 
         ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : "        "
 
-        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxDeadline::deadlineSuffix(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item["drivers"])}"
+        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxDeadline::deadlineSuffix(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -186,7 +177,6 @@ class Listing
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
-        spot.contest_entry("NxCores::listingItems()", lambda{ NxCores::listingItems() })
         spot.end_contest()
 
         puts ""
@@ -211,14 +201,12 @@ class Listing
              PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
-             NxCores::maintenance() # core maintenance
              NxTasks::maintenance()
              NxPages::maintenance()
              NxFeeders::maintenance()
              NxFronts::maintenance()
-             DxEngines::maintenance()
+             TxDeadline::maintenance()
         end
-        NxCores::maintenance2() # padding
     end
 
     # Listing::launchNxBallMonitor()
@@ -326,7 +314,7 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = iris+positioned+NxCores::listingItems()
+            items = iris+positioned
 
             system("clear")
 

@@ -9,7 +9,6 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "transmutation : >> (<n>) | >task (<n>) | >feeder (<n>) | >front (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top | deadline",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -42,51 +41,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">feeder", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Transmutations::transmuteTo(item, "NxFeeder")
-            return
-        end
-
-        if Interpreting::match(">feeder *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmuteTo(item, "NxFeeder")
-            return
-        end
-
-        if Interpreting::match(">task", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Transmutations::transmuteTo(item, "NxTask")
-            return
-        end
-
-        if Interpreting::match(">task *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmuteTo(item, "NxTask")
-            return
-        end
-
-        if Interpreting::match(">front", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Transmutations::transmuteTo(item, "NxFront")
-            return
-        end
-
-        if Interpreting::match(">front *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmuteTo(item, "NxFront")
-            return
-        end
-
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
@@ -113,9 +67,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            core = NxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
+            feeder = NxFeeders::interactivelySelectOrNull()
+            return if feeder.nil?
+            tx8 = Tx8s::interactivelyMakeTx8AtParent(feeder)
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             puts JSON.pretty_generate(task)
@@ -124,8 +78,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
-            NxCores::program2()
+        if Interpreting::match("feeders", input) then
+            NxFeeders::program2()
             return
         end
 
@@ -137,21 +91,21 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("core", input) then
+        if Interpreting::match("feeder", input) then
             item = store.getDefault()
             return if item.nil?
-            core = NxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            feeder = NxFeeders::interactivelySelectOrNull()
+            return if feeder.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
             return
         end
 
-        if Interpreting::match("core *", input) then
+        if Interpreting::match("feeder *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            core = NxCores::interactivelySelectOneOrNull()
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            feeder = NxFeeders::interactivelySelectOrNull()
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
             return
         end
 
@@ -514,27 +468,10 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("feeder", input) then
-            core = NxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
-            item = NxFeeders::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            item["parent"] = tx8
-            DarkEnergy::commit(item)
-            return
-        end
-
         if Interpreting::match("page", input) then
-            core = NxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
             item = NxPages::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            item["parent"] = tx8
-            DarkEnergy::commit(item)
             return
         end
 
@@ -598,21 +535,6 @@ class ListingCommandsAndInterpreters
                 return
             end
             NxOndates::redate(item)
-            return
-        end
-
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Transmutations::transmute(item)
-            return
-        end
-
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute(item)
             return
         end
 

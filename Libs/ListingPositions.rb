@@ -82,7 +82,6 @@ class ListingPositions
     # ListingPositions::extractRangeFromListingItems(items)
     def self.extractRangeFromListingItems(items)
         positions = items
-                        .select{|item| item["mikuType"] != "NxCore" }
                         .map{|item| ListingPositions::getOrNull(item) }
                         .compact
         range = 

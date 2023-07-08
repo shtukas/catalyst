@@ -1,9 +1,0 @@
-
-NxCore
-    "uuid"          : Float
-    "mikuType"      : "NxCore"
-    "description"   : String
-    "hours"         : Float
-    "lastResetTime" : Unixtime
-    "capsule"       : String
-    "engine"        : TxEngine

@@ -38,16 +38,6 @@ class NxPages
         "📃 #{item["description"]}"
     end
 
-    # NxPages::toStringForMainListing(item)
-    def self.toStringForMainListing(item)
-        "📃 #{item["description"]}#{NxCores::coreSuffix(item)}"
-    end
-
-    # NxPages::toStringForCoreListing(item)
-    def self.toStringForCoreListing(item)
-        "📃 #{item["description"]}#{CoreData::itemToSuffixString(item)}"
-    end
-
     # NxPages::access(page)
     def self.access(page)
         puts "accessing page '#{NxPages::toString(page)}' in synchronous edition mode"
@@ -69,7 +59,7 @@ class NxPages
         # Move orphan pages to Infinity
         DarkEnergy::mikuType("NxPage").each{|project|
             next if project["parent"]
-            parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
+            parent = DarkEnergy::itemOrNull(NxFeeders::infinityuuid())
             project["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(project)
         }

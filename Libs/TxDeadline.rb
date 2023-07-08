@@ -45,8 +45,22 @@ class TxDeadline
 
     # TxDeadline::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxTask")
-            .select{|item| item["deadline"] }
-            .sort_by{|item| item["unixtime"] }
+        CatalystSharedCache::getOrDefaultValue("81154794-6d4f-43d5-9711-35e03a3146d1", [])
+            .map{|uuid| DarkEnergy::itemOrNull(uuid) }
+            .compact
+            .sort_by{|item| item["drivers"].select{|driver| driver["mikuType"] == "TxDeadline" }.first["unixtime"] }
     end
+
+    # -----------------------------------------------
+    # Ops
+
+    # TxDeadline::maintenance()
+    def self.maintenance()
+        uuids = DarkEnergy::all()
+            .select{|item| item["drivers"] }
+            .select{|item| item["drivers"].any?{|driver| driver["mikuType"] == "TxDeadline" } }
+            .map{|item| item["uuid"] }
+        CatalystSharedCache::set("81154794-6d4f-43d5-9711-35e03a3146d1", uuids)
+    end
+
 end
