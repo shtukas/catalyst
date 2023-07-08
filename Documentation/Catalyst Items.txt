@@ -10,7 +10,8 @@ Cross types conventions:
     - parent           : nil or Tx8
     - engine           : TxEngine
     - deadline         : TxDeadline (only NxTasks for the moment)
+    - drivers          : null or Array[TxDriver]
 
 Tx8 {uuid, position}
 
-Note that there can be a Tx8 child / parent relationship between any two elements. 
+TxDriver: TxEngine | TxDeadline

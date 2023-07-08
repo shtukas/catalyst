@@ -35,7 +35,7 @@ class NxFeeders
 
     # NxFeeders::toString(item)
     def self.toString(item)
-        "🐬 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+        "🐬 #{item["description"]}#{NxCores::coreSuffix(item)}"
     end
 
     # NxFeeders::toStringForMainListing(item)

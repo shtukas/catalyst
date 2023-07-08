@@ -178,7 +178,6 @@ class ListingCommandsAndInterpreters
             if option == op2 then
                 item = store.getDefault()
                 return if item.nil?
-                return if item["mikuType"] != "NxTask"
                 deadline = TxDeadline::interactivelyMakeDeadline()
                 DarkEnergy::patch(item["uuid"], "deadline", deadline)
                 return
@@ -189,7 +188,6 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
             deadline = TxDeadline::interactivelyMakeDeadline()
             DarkEnergy::patch(item["uuid"], "deadline", deadline)
             return

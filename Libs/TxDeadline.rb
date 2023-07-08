@@ -34,13 +34,13 @@ class TxDeadline
     # TxDeadline::toString(deadline)
     def self.toString(deadline)
         timespan = deadline["unixtime"] - Time.new.to_f
-        "💣 deadline: #{Time.at(deadline["unixtime"]).to_s}, #{(timespan.to_f/86400).round(2)} days left"
+        "(💣 deadline: #{Time.at(deadline["unixtime"]).to_s}, #{(timespan.to_f/86400).round(2)} days left)"
     end
 
     # TxDeadline::deadlineSuffix(item)
     def self.deadlineSuffix(item)
         return "" if item["deadline"].nil?
-        " (#{TxDeadline::toString(item["deadline"])})"
+        " #{TxDeadline::toString(item["deadline"])}"
     end
 
     # TxDeadline::listingItems()

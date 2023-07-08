@@ -56,7 +56,7 @@ class TxEngines
     def self.toString(engine)
         strings = []
 
-        strings << "⏱️  (engine: today: #{"#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << "(⏱️  engine: today: #{"#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
@@ -83,10 +83,15 @@ class TxEngines
         strings.join()
     end
 
+    # TxEngine::shouldShow(engine)
+    def self.shouldShow(engine)
+        TxEngines::compositeCompletionRatio(engine) < 1
+    end
+
     # -----------------------------------------------
     # Ops
 
-    # TxEngines::engine_maintenance(description, engine)
+    # TxEngines::engine_maintenance(description, engine) # engine or null
     def self.engine_maintenance(description, engine)
         return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
         return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7

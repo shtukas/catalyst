@@ -30,4 +30,9 @@ class Catalyst
             Catalyst::fsckItem(item)
         }
     end
+
+    # Catalyst::driversUpdate(drivers)
+    def self.driversUpdate(drivers)
+        drivers
+    end
 end

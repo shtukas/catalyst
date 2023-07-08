@@ -1,0 +1,44 @@
+
+class TxDrivers
+
+    # TxDrivers::shouldShow1(driver)
+    def self.shouldShow1(driver)
+        if driver["mikuType"] == "TxEngine" then
+            return TxEngine::shouldShow(driver)
+        end
+        if driver["mikuType"] == "TxDeadline" then
+            return true
+        end
+        raise "unsupported driver: #{driver}"
+    end
+
+    # TxDrivers::toString1(driver)
+    def self.toString1(driver)
+        if driver["mikuType"] == "TxEngine" then
+            return TxEngines::toString(driver)
+        end
+        if driver["mikuType"] == "TxDeadline" then
+            return TxDeadline::toString(driver)
+        end
+    end
+
+    # TxDrivers::shouldShow2(item)
+    def self.shouldShow2(item)
+        return true if item["drivers"].nil?
+        item["drivers"].any?{|driver| TxDrivers::shouldShow1(driver) }
+    end
+
+    # TxDrivers::toString2(drivers)
+    def self.toString2(drivers)
+        return "" if drivers.nil?
+        return "" if drivers.empty?
+        drivers.map{|driver| TxDrivers::toString1(driver) }.join(" ")
+    end
+
+    # TxDrivers::suffix(drivers)
+    def self.suffix(drivers)
+        return "" if drivers.nil?
+        return "" if drivers.empty?
+        " #{TxDrivers::toString2(drivers)}"
+    end
+end

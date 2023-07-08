@@ -74,9 +74,6 @@ class Listing
         end
 
         return false if item["mikuType"] == "DesktopTx1"
-        if item["mikuType"] == "NxFeeder" then
-            return TxEngines::compositeCompletionRatio(item["engine"])
-        end
 
         return false if !DoNotShowUntil::isVisible(item)
         return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
@@ -150,9 +147,8 @@ class Listing
         str1 = Listing::toString1(item)
 
         ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : "        "
-        engineSuffixForTasks = (item["mikuType"] == "NxTask" and item["engine"]) ? " #{TxEngines::toString(item["engine"])}" : ""
 
-        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxDeadline::deadlineSuffix(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{engineSuffixForTasks}"
+        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxDeadline::deadlineSuffix(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item["drivers"])}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
