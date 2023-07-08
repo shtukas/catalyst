@@ -9,12 +9,10 @@ class NxFeeders
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        engine = TxWeeklyEngines::interactivelyMakeEngine()
         DarkEnergy::init("NxFeeder", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::itemOrNull(uuid)
     end
 
@@ -26,12 +24,10 @@ class NxFeeders
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        engine = TxWeeklyEngines::interactivelyMakeEngine()
         DarkEnergy::init("NxFeeder", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "engine", engine)
         DarkEnergy::patch(uuid, "parent", tx8)
         DarkEnergy::itemOrNull(uuid)
     end
@@ -47,7 +43,7 @@ class NxFeeders
     # NxFeeders::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxFeeder")
-            #.select{|feeder| TxWeeklyEngines::compositeCompletionRatio(feeder["engine"]) < 1 }
+            .select{|feeder| TxDrivers::shouldShow2(feeder) }
     end
 
     # NxFeeders::completionRatio(feeder)

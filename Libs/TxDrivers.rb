@@ -4,10 +4,10 @@ class TxDrivers
     # TxDrivers::shouldShow1(driver)
     def self.shouldShow1(driver)
         if driver["mikuType"] == "TxDailyEngine" then
-            return TxDailyEngine::shouldShow(driver)
+            return TxDailyEngines::shouldShow(driver)
         end
         if driver["mikuType"] == "TxWeeklyEngine" then
-            return TxWeeklyEngine::shouldShow(driver)
+            return TxWeeklyEngines::shouldShow(driver)
         end
         if driver["mikuType"] == "TxDeadline" then
             return true

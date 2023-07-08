@@ -137,7 +137,7 @@ class Listing
 
         ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : "        "
 
-        line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxDeadline::deadlineSuffix(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item)}"
+        line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

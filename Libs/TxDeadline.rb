@@ -37,12 +37,6 @@ class TxDeadline
         "(💣 deadline: #{Time.at(deadline["unixtime"]).to_s}, #{(timespan.to_f/86400).round(2)} days left)"
     end
 
-    # TxDeadline::deadlineSuffix(item)
-    def self.deadlineSuffix(item)
-        return "" if item["deadline"].nil?
-        " #{TxDeadline::toString(item["deadline"])}"
-    end
-
     # TxDeadline::listingItems()
     def self.listingItems()
         CatalystSharedCache::getOrDefaultValue("81154794-6d4f-43d5-9711-35e03a3146d1", [])

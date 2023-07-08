@@ -41,7 +41,7 @@ class TxDailyEngines
         "(⏱️  daily engine: #{"#{"%6.2f" % (100*TxDailyEngines::completionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"])} hours)"
     end
 
-    # TxDailyEngine::shouldShow(engine)
+    # TxDailyEngines::shouldShow(engine)
     def self.shouldShow(engine)
         TxDailyEngines::completionRatio(engine) < 1
     end

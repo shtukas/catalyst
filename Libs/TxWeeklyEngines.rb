@@ -83,7 +83,7 @@ class TxWeeklyEngines
         strings.join()
     end
 
-    # TxWeeklyEngine::shouldShow(engine)
+    # TxWeeklyEngines::shouldShow(engine)
     def self.shouldShow(engine)
         TxWeeklyEngines::compositeCompletionRatio(engine) < 1
     end
