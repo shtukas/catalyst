@@ -115,10 +115,10 @@ class Listing
             Anniversaries::listingItems(),
             DarkEnergy::mikuType("NxFront"),
             DxAntimatters::listingItems(),
+            DxEngines::listingItems(),
             NxBackups::listingItems(),
             NxBalls::runningItems(),
             NxCollections::listingItems(),
-            NxCores::listingItems(),
             NxOndates::listingItems(),
             NxTasks::listingItems(),
             PhysicalTargets::listingItems(),
@@ -191,6 +191,7 @@ class Listing
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
+        spot.contest_entry("NxCores::listingItems()", lambda{ NxCores::listingItems() })
         spot.end_contest()
 
         puts ""
@@ -221,6 +222,7 @@ class Listing
              NxPages::maintenance()
              NxCollections::maintenance()
              NxFronts::maintenance()
+             DxEngines::maintenance()
         end
         NxCores::maintenance2() # padding
     end
@@ -330,9 +332,7 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = iris+positioned
-
-            items = items.take(3) + DxAntimatters::listingItems() + NxCores::listingItems() + items.drop(3)
+            items = iris+positioned+NxCores::listingItems()
 
             system("clear")
 

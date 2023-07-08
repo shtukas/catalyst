@@ -32,6 +32,10 @@ class ListingPositions
             position = ListingPositions::nextPosition()
             ListingPositions::set(item, position)
         end
+        if item["mikuType"] == "NxTask" then
+            position = ListingPositions::nextPosition()
+            ListingPositions::set(item, position)
+        end
     end
 
     # ListingPositions::getOrNullForListing(item)

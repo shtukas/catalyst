@@ -53,6 +53,7 @@ class NxCores
 
     # NxCores::listingItems()
     def self.listingItems()
+        return []
         DarkEnergy::mikuType("NxCores")
             .select{|core| TxEngines::compositeCompletionRatio(core["engine"]) < 1}
     end
