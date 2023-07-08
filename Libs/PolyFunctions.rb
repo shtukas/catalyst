@@ -29,13 +29,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "DxAntimatter" then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -52,9 +45,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
-        end
-        if item["mikuType"] == "DxAntimatter" then
-            return DxAntimatters::toString(item)
         end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
@@ -80,8 +70,8 @@ class PolyFunctions
         if item["mikuType"] == "NxPage" then
             return NxPages::toString(item)
         end
-        if item["mikuType"] == "NxCollection" then
-            return NxCollections::toString(item)
+        if item["mikuType"] == "NxFeeder" then
+            return NxFeeders::toString(item)
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)

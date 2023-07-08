@@ -1,7 +1,7 @@
 
-NxCollection:
+NxFeeder:
     "uuid"        : String
-    "mikuType"    : "NxCollection"
+    "mikuType"    : "NxFeeder"
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String

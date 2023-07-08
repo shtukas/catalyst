@@ -88,8 +88,8 @@ class NxCores
         if item["mikuType"] == "NxPage" then
             str1 = NxPages::toStringForCoreListing(item)
         end
-        if item["mikuType"] == "NxCollection" then
-            str1 = NxCollections::toStringForCoreListing(item)
+        if item["mikuType"] == "NxFeeder" then
+            str1 = NxFeeders::toStringForCoreListing(item)
         end
         if str1.nil? then
             str1 = PolyFunctions::toString(item)
@@ -146,12 +146,12 @@ class NxCores
 
             waves, items = items.partition{|item| item["mikuType"] == "Wave" }
             pages, items = items.partition{|item| item["mikuType"] == "NxPage" }
-            collections, items = items.partition{|item| item["mikuType"] == "NxCollection" }
+            feeders, items = items.partition{|item| item["mikuType"] == "NxFeeder" }
 
             pages = pages.sort_by{|item| item["unixtime"] }
-            collections = collections.sort_by{|item| item["unixtime"] }
+            feeders = feeders.sort_by{|item| item["unixtime"] }
 
-            (waves + pages + collections + items)
+            (waves + pages + feeders + items)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline NxCores::itemToStringListing(store, item)
@@ -159,7 +159,7 @@ class NxCores
                 }
 
             puts ""
-            puts "(top, pile, task, page, collection, position *, move * to *, mush *)"
+            puts "(top, pile, task, page, feeder, position *, move * to *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -183,8 +183,8 @@ class NxCores
                 next
             end
 
-            if input == "collection" then
-                NxCollections::interactivelyIssueNewAtParentOrNull(core)
+            if input == "feeder" then
+                NxFeeders::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 
@@ -206,15 +206,6 @@ class NxCores
                 puts "moving: #{PolyFunctions::toString(item)}"
                 puts "to    : #{PolyFunctions::toString(newparent)}"
                 Tx8s::interactivelyPlaceItemAtParentAttempt(item, newparent)
-                next
-            end
-
-            if input.start_with?("mush") then
-                itemindex = input[4, input.length].strip.to_i
-                item = store.get(itemindex)
-                return if item.nil?
-                needs = LucilleCore::askQuestionAnswerAsString("needs in hours: ").to_f
-                DxAntimatters::issue(item["uuid"], needs*3600)
                 next
             end
 

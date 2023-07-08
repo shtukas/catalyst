@@ -10,17 +10,6 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] == "DxAntimatter" then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target.nil? then
-                puts "I could not find a target for DxAntimatter: #{item} (it should be garbage collected soon)"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            PolyActions::access(target)
-            return
-        end
-
         if item["mikuType"] == "NxBackup" then
             puts item["description"]
             LucilleCore::pressEnterToContinue()
@@ -44,8 +33,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            NxCollections::program1(item)
+        if item["mikuType"] == "NxFeeder" then
+            NxFeeders::program1(item)
             return
         end
 
@@ -102,17 +91,6 @@ class PolyActions
 
         # order: alphabetical order
 
-        if item["mikuType"] == "DxAntimatter" then
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target.nil? then
-                puts "I could not find a target for DxAntimatter: #{item} (it should be garbage collected soon)"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            PolyActions::done(target)
-            return
-        end
-
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
@@ -126,8 +104,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            puts "You can't done a NxCollection, but you cna destroy it"
+        if item["mikuType"] == "NxFeeder" then
+            puts "You can't done a NxFeeder, but you cna destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -291,13 +269,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "DxAntimatter" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
@@ -312,7 +283,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxFeeder" then
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
                 LucilleCore::pressEnterToContinue()
@@ -344,19 +315,6 @@ class PolyActions
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
 
-        if item["mikuType"] == "DxAntimatter" then
-            NxBalls::start(item)
-
-            target = DarkEnergy::itemOrNull(item["targetuuid"])
-            if target.nil? then
-                puts "I could not find a target for DxAntimatter: #{item} (it should be garbage collected soon)"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            PolyActions::access(target)
-            return
-        end
-
         if item["mikuType"] == "NxCore" then
             PolyActions::access(item)
             return
@@ -367,7 +325,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxFeeder" then
             PolyActions::access(item)
             return
         end
@@ -454,7 +412,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxFeeder" then
             PolyActions::access(item)
             return
         end

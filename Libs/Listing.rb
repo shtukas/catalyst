@@ -74,7 +74,7 @@ class Listing
         end
 
         return false if item["mikuType"] == "DesktopTx1"
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxFeeder" then
             return TxEngines::compositeCompletionRatio(item["engine"])
         end
 
@@ -114,11 +114,10 @@ class Listing
             # alphabetical order
             Anniversaries::listingItems(),
             DarkEnergy::mikuType("NxFront"),
-            DxAntimatters::listingItems(),
             DxEngines::listingItems(),
             NxBackups::listingItems(),
             NxBalls::runningItems(),
-            NxCollections::listingItems(),
+            NxFeeders::listingItems(),
             NxOndates::listingItems(),
             NxTasks::listingItems(),
             PhysicalTargets::listingItems(),
@@ -217,10 +216,9 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxCores::maintenance() # core maintenance
-             DxAntimatters::maintenance()
              NxTasks::maintenance()
              NxPages::maintenance()
-             NxCollections::maintenance()
+             NxFeeders::maintenance()
              NxFronts::maintenance()
              DxEngines::maintenance()
         end

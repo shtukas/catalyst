@@ -1,13 +1,13 @@
 
-class NxCollections
+class NxFeeders
 
-    # NxCollections::interactivelyIssueNewOrNull()
+    # NxFeeders::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
         engine = TxEngines::interactivelyMakeEngine()
-        DarkEnergy::init("NxCollection", uuid)
+        DarkEnergy::init("NxFeeder", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
@@ -15,7 +15,7 @@ class NxCollections
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxCollections::interactivelyIssueNewAtParentOrNull(parent)
+    # NxFeeders::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
         tx8 = Tx8s::make(parent["uuid"], 0)
 
@@ -24,7 +24,7 @@ class NxCollections
 
         uuid = SecureRandom.uuid
         engine = TxEngines::interactivelyMakeEngine()
-        DarkEnergy::init("NxCollection", uuid)
+        DarkEnergy::init("NxFeeder", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
@@ -33,31 +33,31 @@ class NxCollections
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxCollections::toString(item)
+    # NxFeeders::toString(item)
     def self.toString(item)
-        "🫧 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
+        "🐬 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxCollections::toStringForMainListing(item)
+    # NxFeeders::toStringForMainListing(item)
     def self.toStringForMainListing(item)
         "🫧 #{item["description"]}#{NxCores::coreSuffix(item)} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxCollections::toStringForCoreListing(item)
+    # NxFeeders::toStringForCoreListing(item)
     def self.toStringForCoreListing(item)
         "🫧 #{item["description"]} #{TxEngines::toString(item["engine"])}"
     end
 
-    # NxCollections::listingItems()
+    # NxFeeders::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxCollection")
-            .select{|project| TxEngines::compositeCompletionRatio(project["engine"]) < 1 }
+        DarkEnergy::mikuType("NxFeeder")
+            #.select{|feeder| TxEngines::compositeCompletionRatio(feeder["engine"]) < 1 }
     end
 
-    # NxCollections::maintenance()
+    # NxFeeders::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxCollection").each{|item|
+        DarkEnergy::mikuType("NxFeeder").each{|item|
             next if item["parent"].nil?
             if DarkEnergy::itemOrNull(item["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
@@ -65,7 +65,7 @@ class NxCollections
         }
 
         # Move orphan item to Infinity
-        DarkEnergy::mikuType("NxCollection").each{|item|
+        DarkEnergy::mikuType("NxFeeder").each{|item|
             next if item["parent"]
             parent = DarkEnergy::itemOrNull(NxCores::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
@@ -80,12 +80,12 @@ class NxCollections
         }
     end
 
-    # NxCollections::program1(collection)
-    def self.program1(collection)
+    # NxFeeders::program1(feeder)
+    def self.program1(feeder)
         loop {
 
-            collection = DarkEnergy::itemOrNull(collection["uuid"])
-            return if collection.nil?
+            feeder = DarkEnergy::itemOrNull(feeder["uuid"])
+            return if feeder.nil?
 
             system("clear")
 
@@ -93,11 +93,11 @@ class NxCollections
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             spacecontrol.putsline ""
-            store.register(collection, false)
-            spacecontrol.putsline NxCores::itemToStringListing(store, collection)
+            store.register(feeder, false)
+            spacecontrol.putsline NxCores::itemToStringListing(store, feeder)
 
             spacecontrol.putsline ""
-            items = Tx8s::childrenInOrder(collection)
+            items = Tx8s::childrenInOrder(feeder)
 
             items
                 .each{|item|
@@ -107,18 +107,18 @@ class NxCollections
                 }
 
             puts ""
-            puts "(task, pile, position *, mush *)"
+            puts "(task, pile, position *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "task" then
-                NxTasks::interactivelyIssueNewAtParentOrNull(collection)
+                NxTasks::interactivelyIssueNewAtParentOrNull(feeder)
                 next
             end
 
             if input == "pile" then
-                Tx8s::pileAtThisParent(collection)
+                Tx8s::pileAtThisParent(feeder)
             end
 
             if input.start_with?("position") then
@@ -129,22 +129,13 @@ class NxCollections
                 next
             end
 
-            if input.start_with?("mush") then
-                itemindex = input[4, input.length].strip.to_i
-                item = store.get(itemindex)
-                return if item.nil?
-                needs = LucilleCore::askQuestionAnswerAsString("needs in hours: ").to_f
-                DxAntimatters::issue(item["uuid"], needs*3600)
-                next
-            end
-
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
 
-    # NxCollections::completionRatio(collection)
-    def self.completionRatio(collection)
-        TxEngines::compositeCompletionRatio(collection["engine"])
+    # NxFeeders::completionRatio(feeder)
+    def self.completionRatio(feeder)
+        TxEngines::compositeCompletionRatio(feeder["engine"])
     end
 end

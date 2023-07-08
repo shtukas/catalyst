@@ -24,11 +24,7 @@ class ListingPositions
             position = ListingPositions::positionMinus1()
             ListingPositions::set(item, position)
         end
-        if item["mikuType"] == "NxCollection" then
-            position = ListingPositions::nextPosition()
-            ListingPositions::set(item, position)
-        end
-        if item["mikuType"] == "DxAntimatter" then
+        if item["mikuType"] == "NxFeeder" then
             position = ListingPositions::nextPosition()
             ListingPositions::set(item, position)
         end

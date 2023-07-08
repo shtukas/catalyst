@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "transmutation : >> (<n>) | >task (<n>) | >collection (<n>) | >front (<n>)",
+            "transmutation : >> (<n>) | >task (<n>) | >feeder (<n>) | >front (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top | deadline",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -42,18 +42,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">collection", input) then
+        if Interpreting::match(">feeder", input) then
             item = store.getDefault()
             return if item.nil?
-            Transmutations::transmuteTo(item, "NxCollection")
+            Transmutations::transmuteTo(item, "NxFeeder")
             return
         end
 
-        if Interpreting::match(">collection *", input) then
+        if Interpreting::match(">feeder *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Transmutations::transmuteTo(item, "NxCollection")
+            Transmutations::transmuteTo(item, "NxFeeder")
             return
         end
 
@@ -516,11 +516,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("collection", input) then
+        if Interpreting::match("feeder", input) then
             core = NxCores::interactivelySelectOneOrNull()
             return if core.nil?
             tx8 = Tx8s::interactivelyMakeTx8AtParent(core)
-            item = NxCollections::interactivelyIssueNewOrNull()
+            item = NxFeeders::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             item["parent"] = tx8
