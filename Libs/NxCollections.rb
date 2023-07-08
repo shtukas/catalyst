@@ -51,13 +51,7 @@ class NxCollections
     # NxCollections::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxCollection")
-            .select{|project|
-                # We always show projects when they are time pending, because the title itself is relevant, but we only show collections if they have items
-                Tx8s::childrenInOrder(project).size > 0 
-            }
-            .select{|project|
-                TxEngines::compositeCompletionRatio(project["engine"]) < 1
-            }
+            .select{|project| TxEngines::compositeCompletionRatio(project["engine"]) < 1 }
     end
 
     # NxCollections::maintenance()
