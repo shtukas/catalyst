@@ -21,7 +21,7 @@ class DxAntimatters
     def self.toString(item)
         target = DarkEnergy::itemOrNull(item["targetuuid"])
         valueInHours = DxAntimatters::value(item).to_f/3600
-        "🍄 #{target ? "(target:) #{target["description"]}" : "(no target found)"} (needs: #{-valueInHours.round(2)} hours)"
+        "🍄 #{target ? "(target:) #{PolyFunctions::toString(target)}" : "(no target found)"} (needs: #{-valueInHours.round(2)} hours)"
     end
 
     # DxAntimatters::listingItems()
