@@ -35,4 +35,14 @@ class Catalyst
     def self.driversUpdate(drivers)
         drivers
     end
+
+    # Catalyst::updateItemDriversWithDriver(item, driver)
+    def self.updateItemDriversWithDriver(item, driver)
+        if item["drivers"].nil? then
+            item["drivers"] = []
+        end
+        item["drivers"] = item["drivers"].select{|d| d["mikuType"] != driver["mikuType"] }
+        item["drivers"] << driver
+        DarkEnergy::commit(item)
+    end
 end

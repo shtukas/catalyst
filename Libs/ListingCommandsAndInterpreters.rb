@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | deadline (<n>) | position (<n>) | engine (<n>) | next | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | deadline (<n>) | position (<n>) | daily engine (<n>) | weekly engine (<n>) | next | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -126,14 +126,14 @@ class ListingCommandsAndInterpreters
                 deadline = TxDeadline::interactivelyMakeDeadline()
                 return if deadline.nil?
                 task = NxTasks::interactivelyIssueNewOrNull()
-                task["deadline"] = deadline
+                task["drivers"] = [deadline]
                 DarkEnergy::commit(task)
             end
             if option == op2 then
                 item = store.getDefault()
                 return if item.nil?
                 deadline = TxDeadline::interactivelyMakeDeadline()
-                DarkEnergy::patch(item["uuid"], "deadline", deadline)
+                Catalyst::updateItemDriversWithDriver(item, deadline)
                 return
             end
         end
@@ -143,24 +143,41 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             deadline = TxDeadline::interactivelyMakeDeadline()
-            DarkEnergy::patch(item["uuid"], "deadline", deadline)
+            Catalyst::updateItemDriversWithDriver(item, deadline)
             return
         end
 
-        if Interpreting::match("engine", input) then
+        if Interpreting::match("daily engine", input) then
             item = store.getDefault()
             return if item.nil?
-            engine = TxEngines::interactivelyMakeEngine()
-            DarkEnergy::patch(item["uuid"], "engine", engine)
+            engine = TxDailyEngines::interactivelyMakeEngine()
+            Catalyst::updateItemDriversWithDriver(item, engine)
             return
         end
 
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("daily engine *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            engine = TxEngines::interactivelyMakeEngine()
-            DarkEnergy::patch(item["uuid"], "engine", engine)
+            engine = TxDailyEngines::interactivelyMakeEngine()
+            Catalyst::updateItemDriversWithDriver(item, engine)
+            return
+        end
+
+        if Interpreting::match("weekly engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            engine = TxWeeklyEngines::interactivelyMakeEngine()
+            Catalyst::updateItemDriversWithDriver(item, engine)
+            return
+        end
+
+        if Interpreting::match("weekly engine *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            engine = TxWeeklyEngines::interactivelyMakeEngine()
+            Catalyst::updateItemDriversWithDriver(item, engine)
             return
         end
 

@@ -1,63 +1,63 @@
 
-class TxEngines
+class TxWeeklyEngines
 
     # -----------------------------------------------
     # Build
 
-    # TxEngines::make(uuid, hours, capsule)
+    # TxWeeklyEngines::make(uuid, hours, capsule)
     def self.make(uuid, hours, capsule)
         {
             "uuid"          => uuid,
-            "mikuType"      => "TxEngine",
+            "mikuType"      => "TxWeeklyEngine",
             "hours"         => hours.to_f,
             "lastResetTime" => Time.new.to_f,
             "capsule"       => capsule
         }
     end
 
-    # TxEngines::interactivelyMakeOrNull()
+    # TxWeeklyEngines::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
         hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
         return nil if hours == ""
         return nil if hours == "0"
-        TxEngines::make(SecureRandom.uuid, hours, SecureRandom.hex)
+        TxWeeklyEngines::make(SecureRandom.uuid, hours, SecureRandom.hex)
     end
 
-    # TxEngines::interactivelyMakeEngine()
+    # TxWeeklyEngines::interactivelyMakeEngine()
     def self.interactivelyMakeEngine()
-        engine = TxEngines::interactivelyMakeOrNull()
+        engine = TxWeeklyEngines::interactivelyMakeOrNull()
         return engine if engine
-        TxEngines::interactivelyMakeEngine()
+        TxWeeklyEngines::interactivelyMakeEngine()
     end
 
     # -----------------------------------------------
     # Data
 
-    # TxEngines::dayCompletionRatio(engine)
+    # TxWeeklyEngines::dayCompletionRatio(engine)
     def self.dayCompletionRatio(engine)
         Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/((engine["hours"]*3600).to_f/5)
     end
 
-    # TxEngines::periodCompletionRatio(engine)
+    # TxWeeklyEngines::periodCompletionRatio(engine)
     def self.periodCompletionRatio(engine)
         Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
     end
 
-    # TxEngines::compositeCompletionRatio(engine)
+    # TxWeeklyEngines::compositeCompletionRatio(engine)
     def self.compositeCompletionRatio(engine)
-        period = TxEngines::periodCompletionRatio(engine)
+        period = TxWeeklyEngines::periodCompletionRatio(engine)
         return period if period >= 1
-        day = TxEngines::dayCompletionRatio(engine)
+        day = TxWeeklyEngines::dayCompletionRatio(engine)
         return day if day >= 1
         0.9*day + 0.1*period
     end
 
-    # TxEngines::toString(engine)
+    # TxWeeklyEngines::toString(engine)
     def self.toString(engine)
         strings = []
 
-        strings << "(⏱️  engine: today: #{"#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
-        strings << ", period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
+        strings << "(⏱️  weekly engine: today: #{"#{"%6.2f" % (100*TxWeeklyEngines::dayCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
+        strings << ", period: #{"#{"%6.2f" % (100*TxWeeklyEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
         timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
@@ -83,15 +83,15 @@ class TxEngines
         strings.join()
     end
 
-    # TxEngine::shouldShow(engine)
+    # TxWeeklyEngine::shouldShow(engine)
     def self.shouldShow(engine)
-        TxEngines::compositeCompletionRatio(engine) < 1
+        TxWeeklyEngines::compositeCompletionRatio(engine) < 1
     end
 
     # -----------------------------------------------
     # Ops
 
-    # TxEngines::engine_maintenance(description, engine) # engine or null
+    # TxWeeklyEngines::engine_maintenance(description, engine) # engine or null
     def self.engine_maintenance(description, engine)
         return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
         return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7

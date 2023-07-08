@@ -8,10 +8,8 @@ Cross types conventions:
     - "tmpskip1"       : TmpSkip1
 
     - parent           : nil or Tx8
-    - engine           : TxEngine
-    - deadline         : TxDeadline (only NxTasks for the moment)
     - drivers          : null or Array[TxDriver]
 
 Tx8 {uuid, position}
 
-TxDriver: TxEngine | TxDeadline
+TxDriver: TxDailyEngine | TxWeeklyEngine | TxDeadline

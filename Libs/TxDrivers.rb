@@ -3,8 +3,11 @@ class TxDrivers
 
     # TxDrivers::shouldShow1(driver)
     def self.shouldShow1(driver)
-        if driver["mikuType"] == "TxEngine" then
-            return TxEngine::shouldShow(driver)
+        if driver["mikuType"] == "TxDailyEngine" then
+            return TxDailyEngine::shouldShow(driver)
+        end
+        if driver["mikuType"] == "TxWeeklyEngine" then
+            return TxWeeklyEngine::shouldShow(driver)
         end
         if driver["mikuType"] == "TxDeadline" then
             return true
@@ -12,20 +15,23 @@ class TxDrivers
         raise "unsupported driver: #{driver}"
     end
 
-    # TxDrivers::toString1(driver)
-    def self.toString1(driver)
-        if driver["mikuType"] == "TxEngine" then
-            return TxEngines::toString(driver)
-        end
-        if driver["mikuType"] == "TxDeadline" then
-            return TxDeadline::toString(driver)
-        end
-    end
-
     # TxDrivers::shouldShow2(item)
     def self.shouldShow2(item)
         return true if item["drivers"].nil?
         item["drivers"].any?{|driver| TxDrivers::shouldShow1(driver) }
+    end
+
+    # TxDrivers::toString1(driver)
+    def self.toString1(driver)
+        if driver["mikuType"] == "TxDailyEngine" then
+            return TxDailyEngines::toString(driver)
+        end
+        if driver["mikuType"] == "TxWeeklyEngine" then
+            return TxWeeklyEngines::toString(driver)
+        end
+        if driver["mikuType"] == "TxDeadline" then
+            return TxDeadline::toString(driver)
+        end
     end
 
     # TxDrivers::toString2(drivers)

@@ -22,7 +22,7 @@ class PolyFunctions
             accounts = accounts + item["drivers"].map{|driver| PolyFunctions::itemToBankingAccounts(item) }.flatten
         end
 
-        if item["mikuType"] == "TxEngine" then
+        if item["mikuType"] == "TxWeeklyEngine" then
             accounts << {
                 "description" => "#{item["description"]} (capsule)",
                 "number"      => item["capsule"]

@@ -1,7 +1,7 @@
 
-TxEngine
+TxWeeklyEngine
     "uuid"          : Float
-    "mikuType"      : "TxEngine"
+    "mikuType"      : "TxWeeklyEngine"
     "hours"         : Float
     "lastResetTime" : Unixtime
     "capsule"       : String
