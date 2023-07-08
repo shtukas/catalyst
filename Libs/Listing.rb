@@ -135,8 +135,8 @@ class Listing
             }
     end
 
-    # Listing::itemToString1(item)
-    def self.itemToString1(item)
+    # Listing::toString1(item)
+    def self.toString1(item)
         if item["mikuType"] == "NxTask" then
             return NxTasks::toStringForMainListing(item)
         end
@@ -148,12 +148,12 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        str1 = Listing::itemToString1(item)
+        str1 = Listing::toString1(item)
 
         ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : "        "
-        engineSuffixForTasks = item["mikuType"] == "NxTask" ? " #{TxEngines::toString(item["engine"])}" : ""
+        engineSuffixForTasks = (item["mikuType"] == "NxTask" and item["engine"]) ? " #{TxEngines::toString(item["engine"])}" : ""
 
-        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{engineSuffixForTasks}"
+        line = "#{storePrefix}#{ordinalSuffix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{TxDeadline::deadlineSuffix(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{engineSuffixForTasks}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -332,7 +332,7 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = iris+positioned+NxCores::listingItems()
+            items = iris+positioned+TxDeadline::listingItems()+NxCores::listingItems()
 
             system("clear")
 

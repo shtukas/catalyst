@@ -134,7 +134,7 @@ class NxCollections
                 item = store.get(itemindex)
                 return if item.nil?
                 needs = LucilleCore::askQuestionAnswerAsString("needs in hours: ").to_f
-                DxAntimatters::issue(item["uuid"], needs)
+                DxAntimatters::issue(item["uuid"], needs*3600)
                 next
             end
 

@@ -97,7 +97,7 @@ class NxCores
 
         engineSuffixForTasks = item["engine"] ? " #{TxEngines::toString(item["engine"])}" : ""
 
-        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{engineSuffixForTasks}"
+        line = "#{storePrefix} #{str1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{engineSuffixForTasks}#{TxDeadline::deadlineSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -214,7 +214,7 @@ class NxCores
                 item = store.get(itemindex)
                 return if item.nil?
                 needs = LucilleCore::askQuestionAnswerAsString("needs in hours: ").to_f
-                DxAntimatters::issue(item["uuid"], needs)
+                DxAntimatters::issue(item["uuid"], needs*3600)
                 next
             end
 

@@ -5,12 +5,12 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | position (<n>) | engine (<n>) | next | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | deadline (<n>) | position (<n>) | engine (<n>) | next | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "transmutation : >> (<n>) | >task (<n>) | >collection (<n>) | >front (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top | deadline",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -160,6 +160,38 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             DarkEnergy::patch(item["uuid"], "parent", nil)
+            return
+        end
+
+        if Interpreting::match("deadline", input) then
+            op1 = "new deadline"
+            op2 = "attach deadline to task default"
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", [op1, op2])
+            return if option.nil?
+            if option == op1 then
+                deadline = TxDeadline::interactivelyMakeDeadline()
+                return if deadline.nil?
+                task = NxTasks::interactivelyIssueNewOrNull()
+                task["deadline"] = deadline
+                DarkEnergy::commit(task)
+            end
+            if option == op2 then
+                item = store.getDefault()
+                return if item.nil?
+                return if item["mikuType"] != "NxTask"
+                deadline = TxDeadline::interactivelyMakeDeadline()
+                DarkEnergy::patch(item["uuid"], "deadline", deadline)
+                return
+            end
+        end
+
+        if Interpreting::match("deadline *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            deadline = TxDeadline::interactivelyMakeDeadline()
+            DarkEnergy::patch(item["uuid"], "deadline", deadline)
             return
         end
 
@@ -392,7 +424,7 @@ class ListingCommandsAndInterpreters
             _, _, _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
             return

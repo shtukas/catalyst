@@ -18,11 +18,13 @@ class NxTasks
         DarkEnergy::init("NxTask", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+        deadline = TxDeadline::interactivelyMakeOrNull()
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
+        DarkEnergy::patch(uuid, "deadline", deadline)
 
         DarkEnergy::itemOrNull(uuid)
     end
@@ -110,17 +112,17 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # NxTasks::toStringForMainListing(item)
     def self.toStringForMainListing(item)
-        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}"
+        "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}#{NxCores::coreSuffix(item)}"
     end
 
     # NxTasks::toStringForCoreListing(item)
     def self.toStringForCoreListing(item)
-        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # NxTasks::listingItems()

@@ -103,25 +103,25 @@ class CommonUtils
         ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][Time.new.wday]
     end
 
-    # CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
-    def self.interactivelySelectUnixtimeUsingDateCodeOrNull()
+    # CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+    def self.interactivelyMakeUnixtimeUsingDateCodeOrNull()
         datecode = LucilleCore::askQuestionAnswerAsString("date code: +today, +tomorrow, +<weekdayname>, +<integer>hours(s), +<integer>day(s), +<integer>@HH:MM, +YYYY-MM-DD (empty to abort): ")
         unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
         return nil if unixtime.nil?
         unixtime
     end
 
-    # CommonUtils::interactivelySelectADateOrNull()
-    def self.interactivelySelectADateOrNull()
-        unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+    # CommonUtils::interactivelyMakeADateOrNull()
+    def self.interactivelyMakeADateOrNull()
+        unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return nil if unixtime.nil?
         Time.at(unixtime).to_s[0, 10]
     end
 
-    # CommonUtils::interactivelySelectDateTimeIso8601UsingDateCode()
-    def self.interactivelySelectDateTimeIso8601UsingDateCode()
+    # CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+    def self.interactivelyMakeDateTimeIso8601UsingDateCode()
         loop {
-            unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             next if unixtime.nil?
             return Time.at(unixtime).utc.iso8601
         }

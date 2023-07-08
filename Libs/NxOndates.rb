@@ -3,7 +3,7 @@ class NxOndates
 
     # NxOndates::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
-        datetime = CommonUtils::interactivelySelectDateTimeIso8601UsingDateCode()
+        datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
@@ -80,7 +80,7 @@ class NxOndates
 
     # NxOndates::redate(item)
     def self.redate(item)
-        unixtime = CommonUtils::interactivelySelectUnixtimeUsingDateCodeOrNull()
+        unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         DarkEnergy::patch(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
         DarkEnergy::patch(item["uuid"], "parking", nil)
