@@ -5,12 +5,9 @@ DxAntimatter:
     "unixtime"     : Float
     "datetime"     : DateTime Iso 8601 UTC Zulu
     "description"  : String
-    "familyId"     : String
-    "initialValue" : Float # in seconds
+    "targetuuid"   : String # uuid of the target item
+    "needs"        : Float # timespan in seconds
 
-DxAntimatters are currently issued by Cores.
-
-    - the familyId is a NxCore's uuid
-
-    - The `value` is the `initialValue` + `the bank value` (the initial value is negatives)
-When the value is positive we can merge two items of the same family
+The item auto destroy if the target is null
+The item auto destroy if not running and the bank value - needs is positive.
+The running time is passed to the target item

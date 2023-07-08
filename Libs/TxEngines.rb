@@ -4,18 +4,23 @@ class TxEngines
     # -----------------------------------------------
     # Build
 
+    # TxEngines::make(uuid, hours, capsule)
+    def self.make(uuid, hours, capsule)
+        {
+            "uuid"          => uuid,
+            "mikuType"      => "TxEngine",
+            "hours"         => hours.to_f,
+            "lastResetTime" => Time.new.to_f,
+            "capsule"       => capsule
+        }
+    end
+
     # TxEngines::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
         hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
         return nil if hours == ""
         return nil if hours == "0"
-        {
-            "uuid"          => SecureRandom.uuid,
-            "mikuType"      => "TxEngine",
-            "hours"         => hours.to_f,
-            "lastResetTime" => Time.new.to_f,
-            "capsule"       => SecureRandom.hex
-        }
+        TxEngines::make(SecureRandom.uuid, hours, SecureRandom.hex)
     end
 
     # TxEngines::interactivelyMakeEngine()

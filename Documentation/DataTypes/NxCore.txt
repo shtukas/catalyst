@@ -6,3 +6,4 @@ NxCore
     "hours"         : Float
     "lastResetTime" : Unixtime
     "capsule"       : String
+    "engine"        : TxEngine

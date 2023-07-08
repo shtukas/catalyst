@@ -7,7 +7,7 @@ class PolyFunctions
         accounts = []
 
         accounts << {
-            "description" => item["description"] || "TxEngine", # TxEngine is the only type without a description
+            "description" => item["description"] || item["mikuType"],
             "number"      => item["uuid"]
         }
 
@@ -18,11 +18,8 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxCore" then
-            accounts << {
-                "description" => "#{item["description"]} (capsule)",
-                "number"      => item["capsule"]
-            }
+        if item["engine"] then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["engine"])
         end
 
         if item["mikuType"] == "TxEngine" then
@@ -32,8 +29,11 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxCollection" then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["engine"])
+        if item["mikuType"] == "DxAntimatter" then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
         end
 
         accounts.reduce([]){|as, account|

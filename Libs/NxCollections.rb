@@ -113,7 +113,7 @@ class NxCollections
                 }
 
             puts ""
-            puts "(task, pile, position *)"
+            puts "(task, pile, position *, mush *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -132,6 +132,15 @@ class NxCollections
                 item = store.get(itemindex)
                 return if item.nil?
                 Tx8s::repositionItemAtSameParent(item)
+                next
+            end
+
+            if input.start_with?("mush") then
+                itemindex = input[4, input.length].strip.to_i
+                item = store.get(itemindex)
+                return if item.nil?
+                needs = LucilleCore::askQuestionAnswerAsString("needs in hours: ").to_f
+                DxAntimatters::issue(item["uuid"], needs)
                 next
             end
 

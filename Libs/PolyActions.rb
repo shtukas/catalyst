@@ -11,13 +11,13 @@ class PolyActions
         # types in alphabetical order
 
         if item["mikuType"] == "DxAntimatter" then
-            core = DarkEnergy::itemOrNull(item["familyId"])
-            if core.nil? then
-                puts "I could not find a core for DxAntimatter: #{item}"
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target.nil? then
+                puts "I could not find a target for DxAntimatter: #{item} (it should be garbage collected soon)"
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            PolyActions::access(core)
+            PolyActions::access(target)
             return
         end
 
@@ -103,6 +103,13 @@ class PolyActions
         # order: alphabetical order
 
         if item["mikuType"] == "DxAntimatter" then
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target.nil? then
+                puts "I could not find a target for DxAntimatter: #{item} (it should be garbage collected soon)"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            PolyActions::done(target)
             return
         end
 
@@ -339,6 +346,14 @@ class PolyActions
 
         if item["mikuType"] == "DxAntimatter" then
             NxBalls::start(item)
+
+            target = DarkEnergy::itemOrNull(item["targetuuid"])
+            if target.nil? then
+                puts "I could not find a target for DxAntimatter: #{item} (it should be garbage collected soon)"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            PolyActions::access(target)
             return
         end
 

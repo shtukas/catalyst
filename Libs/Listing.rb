@@ -111,17 +111,18 @@ class Listing
     # Listing::items()
     def self.items()
         [
-            NxBalls::runningItems(),
+            # alphabetical order
             Anniversaries::listingItems(),
-            PhysicalTargets::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
-            NxBackups::listingItems(),
             DarkEnergy::mikuType("NxFront"),
             DxAntimatters::listingItems(),
-            NxOndates::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
+            NxBackups::listingItems(),
+            NxBalls::runningItems(),
             NxCollections::listingItems(),
-            NxTasks::listingItems()
+            NxCores::listingItems(),
+            NxOndates::listingItems(),
+            NxTasks::listingItems(),
+            PhysicalTargets::listingItems(),
+            Waves::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -214,7 +215,6 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxCores::maintenance() # core maintenance
-             NxCores::maintenance3() # DxAntimatter issue
              DxAntimatters::maintenance()
              NxTasks::maintenance()
              NxPages::maintenance()
@@ -279,6 +279,9 @@ class Listing
             items = []
 
             items = Listing::items()
+            items.each{|item|
+                ListingPositions::automaticPositioning(item)
+            }
             ListingPositions::extractRangeFromListingItems(items)
 
             # ---------------------------------------------------------------------
@@ -312,7 +315,8 @@ class Listing
             # ---------------------------------------------------------------------
 
             items = iris+positioned
-            items = Pure::energy(items)
+
+            items = items.take(3) + DxAntimatters::listingItems() + NxCores::listingItems() + items.drop(3)
 
             system("clear")
 

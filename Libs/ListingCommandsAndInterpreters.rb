@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | position (<n>) | next | random | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | position (<n>) | next | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -98,13 +98,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             ListingPositions::set(item, ListingPositions::nextPosition())
-            return
-        end
-
-        if Interpreting::match("random", input) then
-            item = store.getDefault()
-            return if item.nil?
-            ListingPositions::set(item, ListingPositions::randomPositionInLateRange())
             return
         end
 
