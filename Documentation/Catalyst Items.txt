@@ -9,6 +9,7 @@ Cross types conventions:
 
     - parent           : nil or Tx8
     - engine           : TxEngine
+    - deadline         : TxDeadline (only NxTasks for the moment)
 
 Tx8 {uuid, position}
 

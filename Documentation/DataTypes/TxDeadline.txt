@@ -2,4 +2,4 @@
 TxDeadline
     "uuid"          : Float
     "mikuType"      : "TxDeadline"
-    "deadline"      : Float # unixtime
+    "unixtime"      : Float # unixtime

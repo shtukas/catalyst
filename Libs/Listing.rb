@@ -332,7 +332,7 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = iris+positioned+TxDeadline::listingItems()+NxCores::listingItems()
+            items = iris+positioned+NxCores::listingItems()
 
             system("clear")
 
@@ -343,6 +343,17 @@ class Listing
                 times
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
+                        status = spacecontrol.putsline Listing::toString2(store, item)
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
+            deadlines = TxDeadline::listingItems()
+            if deadlines.size > 0 then
+                deadlines
+                    .each{|item|
+                        store.register(item, false)
                         status = spacecontrol.putsline Listing::toString2(store, item)
                         break if !status
                     }
