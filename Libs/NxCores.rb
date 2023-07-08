@@ -22,7 +22,7 @@ class NxCores
 
     # NxCores::toString(core)
     def self.toString(core)
-        "✨ #{core["description"].ljust(padding)} #{TxEngines::toString(core["engine"])}"
+        "✨ #{core["description"]} #{TxEngines::toString(core["engine"])}"
     end
 
     # NxCores::coreSuffix(item)
