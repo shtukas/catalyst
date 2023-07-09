@@ -40,10 +40,18 @@ class NxFeeders
         "🐬 #{item["description"]}"
     end
 
-    # NxFeeders::listingItems()
-    def self.listingItems()
+    # NxFeeders::listingItemsForFrontStandard()
+    def self.listingItemsForFrontStandard()
         DarkEnergy::mikuType("NxFeeder")
+            .select{|feeder| feeder["drivers"] and feeder["drivers"].size > 0 }
             .select{|feeder| TxDrivers::shouldShow2(feeder) }
+    end
+
+    # NxFeeders::listingItemsForFrontBottom()
+    def self.listingItemsForFrontBottom()
+        DarkEnergy::mikuType("NxFeeder")
+            .select{|feeder| feeder["drivers"].nil? or feeder["drivers"].empty? }
+            .sort_by{|feeder| Bank::recoveredAverageHoursPerDay(feeder["uuid"]) }
     end
 
     # NxFeeders::completionRatio(feeder)
@@ -61,6 +69,13 @@ class NxFeeders
         feeders = DarkEnergy::mikuType("NxFeeder")
         padding = feeders.map{|item| NxFeeders::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("feeder", feeders, lambda{|item| "#{NxFeeders::toString(item).ljust(padding)} #{TxDrivers::suffix(item)}" })
+    end
+
+    # NxFeeders::dailyLoad()
+    def self.dailyLoad()
+        DarkEnergy::mikuType("NxFeeder")
+            .map{|feeder| TxDrivers::dailyLoad2(feeder["drivers"]) }
+            .inject(0, :+)
     end
 
     # --------------------------------------------------------------------------

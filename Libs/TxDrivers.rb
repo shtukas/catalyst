@@ -45,4 +45,24 @@ class TxDrivers
     def self.suffix(item)
         " #{TxDrivers::toString2(item["drivers"])}"
     end
+
+    # TxDrivers::dailyLoad1(driver)
+    def self.dailyLoad1(driver)
+        if driver["mikuType"] == "TxDailyEngine" then
+            return driver["hours"]
+        end
+        if driver["mikuType"] == "TxWeeklyEngine" then
+            return driver["hours"].to_f/5
+        end
+        if driver["mikuType"] == "TxDeadline" then
+            return 0
+        end
+    end
+
+    # TxDrivers::dailyLoad2(drivers)
+    def self.dailyLoad2(drivers)
+        return 0 if drivers.nil?
+        return 0 if drivers.empty?
+        drivers.map{|driver| TxDrivers::dailyLoad1(driver) }.max
+    end
 end

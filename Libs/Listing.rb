@@ -113,10 +113,11 @@ class Listing
             DarkEnergy::mikuType("NxFront"),
             NxBackups::listingItems(),
             NxBalls::runningItems(),
-            NxFeeders::listingItems(),
+            NxFeeders::listingItemsForFrontStandard(),
             NxOndates::listingItems(),
             NxTasks::listingItems(),
             PhysicalTargets::listingItems(),
+            TxDeadline::listingItems(),
             Waves::listingItems(),
         ]
             .flatten
@@ -312,10 +313,12 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = iris+positioned
+            items = iris+positioned + NxFeeders::listingItemsForFrontBottom()
 
             system("clear")
 
+            spacecontrol.putsline ""
+            puts "feeders daily: #{NxFeeders::dailyLoad()} hours"
             spacecontrol.putsline ""
 
             times = NxTimes::listingItems()
@@ -323,17 +326,6 @@ class Listing
                 times
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
-                        status = spacecontrol.putsline Listing::toString2(store, item)
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
-            deadlines = TxDeadline::listingItems()
-            if deadlines.size > 0 then
-                deadlines
-                    .each{|item|
-                        store.register(item, false)
                         status = spacecontrol.putsline Listing::toString2(store, item)
                         break if !status
                     }
