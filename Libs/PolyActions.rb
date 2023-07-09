@@ -205,17 +205,6 @@ class PolyActions
                 end
             end
             if Tx8s::childrenInOrder(item).size > 0 then
-                if item["parent"] then
-                    puts "We still have children..."
-                    if LucilleCore::askQuestionAnswerAsBoolean("> would you like to promote them in place ?") then
-                        Tx8s::childrenInOrder(item).each_with_index{|i, indx|
-                            i["parent"] = Tx8s::make(item["parent"]["uuid"], item["parent"]["position"]+indx.to_f/1000)
-                            DarkEnergy::commit(i)
-                        }
-                    end
-                end
-            end
-            if Tx8s::childrenInOrder(item).size > 0 then
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then

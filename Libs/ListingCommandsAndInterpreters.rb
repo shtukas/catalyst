@@ -94,9 +94,18 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("feeder", input) then
             item = store.getDefault()
             return if item.nil?
-            feeder = NxFeeders::interactivelySelectOrNull()
-            return if feeder.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["create a new feeder", "attach feeder to default item"])
+            return if option.nil?
+            if option == "create a new feeder" then
+                feeder = NxFeeders::interactivelyIssueNewOrNull()
+                return if feeder.nil?
+                NxFeeders::program1(feeder)
+            end
+            if option == "attach feeder to default item" then
+                feeder = NxFeeders::interactivelySelectOrNull()
+                return if feeder.nil?
+                Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
+            end
             return
         end
 
