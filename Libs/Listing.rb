@@ -340,6 +340,17 @@ class Listing
                 spacecontrol.putsline ""
             end
 
+            desktopItems = Desktop::listingItems()
+            if desktopItems.size > 0 then
+                desktopItems
+                    .each{|item|
+                        store.register(item, false)
+                        status = spacecontrol.putsline Listing::toString2(store, item)
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
