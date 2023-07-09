@@ -5,11 +5,11 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | disavow <n> | deadline (<n>) | position (<n>) | daily engine (<n>) | weekly engine (<n>) | next | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | driver <n> | deadline (<n>) | position (<n>) | next | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top | deadline",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -67,14 +67,31 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            feeder = NxFeeders::interactivelySelectOrNull()
-            return if feeder.nil?
-            tx8 = Tx8s::interactivelyMakeTx8AtParent(feeder)
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
-            puts JSON.pretty_generate(task)
-            task["parent"] = tx8
-            DarkEnergy::commit(task)
+            feeder = NxFeeders::interactivelySelectOrNull()
+            if feeder then
+                tx8 = Tx8s::interactivelyMakeTx8AtParent(feeder)
+                task["parent"] = tx8
+                puts JSON.pretty_generate(task)
+                DarkEnergy::commit(task)
+            end
+            drivers = Catalyst::interactivelyMakeDrivers()
+            if drivers.size > 0 then
+                task["drivers"] = drivers
+                puts JSON.pretty_generate(task)
+                DarkEnergy::commit(task)
+            end
+            return
+        end
+
+        if Interpreting::match("driver *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            driver = Catalyst::interactivelyMakeDriverOrNull()
+            return if driver.nil?
+            Catalyst::updateItemDriversWithDriver(item, driver)
             return
         end
 
@@ -115,78 +132,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             feeder = NxFeeders::interactivelySelectOrNull()
             Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
-            return
-        end
-
-        if Interpreting::match("disavow *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            DarkEnergy::patch(item["uuid"], "parent", nil)
-            return
-        end
-
-        if Interpreting::match("deadline", input) then
-            op1 = "new deadline"
-            op2 = "attach deadline to task default"
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", [op1, op2])
-            return if option.nil?
-            if option == op1 then
-                deadline = TxDeadline::interactivelyMakeDeadline()
-                return if deadline.nil?
-                task = NxTasks::interactivelyIssueNewOrNull()
-                task["drivers"] = [deadline]
-                DarkEnergy::commit(task)
-            end
-            if option == op2 then
-                item = store.getDefault()
-                return if item.nil?
-                deadline = TxDeadline::interactivelyMakeDeadline()
-                Catalyst::updateItemDriversWithDriver(item, deadline)
-                return
-            end
-        end
-
-        if Interpreting::match("deadline *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            deadline = TxDeadline::interactivelyMakeDeadline()
-            Catalyst::updateItemDriversWithDriver(item, deadline)
-            return
-        end
-
-        if Interpreting::match("daily engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            engine = TxDailyEngines::interactivelyMakeEngine()
-            Catalyst::updateItemDriversWithDriver(item, engine)
-            return
-        end
-
-        if Interpreting::match("daily engine *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            engine = TxDailyEngines::interactivelyMakeEngine()
-            Catalyst::updateItemDriversWithDriver(item, engine)
-            return
-        end
-
-        if Interpreting::match("weekly engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            engine = TxWeeklyEngines::interactivelyMakeEngine()
-            Catalyst::updateItemDriversWithDriver(item, engine)
-            return
-        end
-
-        if Interpreting::match("weekly engine *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            engine = TxWeeklyEngines::interactivelyMakeEngine()
-            Catalyst::updateItemDriversWithDriver(item, engine)
             return
         end
 

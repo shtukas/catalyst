@@ -18,14 +18,11 @@ class NxTasks
         DarkEnergy::init("NxTask", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
-        deadline = TxDeadline::interactivelyMakeOrNull()
-        drivers = [deadline].compact
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::patch(uuid, "drivers", drivers)
 
         DarkEnergy::itemOrNull(uuid)
     end
