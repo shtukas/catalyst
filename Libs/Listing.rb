@@ -113,7 +113,6 @@ class Listing
             DarkEnergy::mikuType("NxFront"),
             NxBackups::listingItems(),
             NxBalls::runningItems(),
-            NxFeeders::listingItemsForFrontStandard(),
             NxOndates::listingItems(),
             NxTasks::listingItems(),
             PhysicalTargets::listingItems(),
@@ -136,7 +135,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        ordinalSuffix = ListingPositions::getOrNull(item) ? " (#{"%5.2f" % ListingPositions::getOrNull(item)})" : "        "
+        ordinalSuffix = ListingPositions::getNp01OrNull(item) ? " (#{"%5.2f" % ListingPositions::getNp01OrNull(item)})" : "        "
 
         line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item)}"
 
@@ -263,10 +262,7 @@ class Listing
             items = []
 
             items = Listing::items()
-            items.each{|item|
-                ListingPositions::automaticPositioning(item)
-            }
-            ListingPositions::extractRangeFromListingItems(items)
+            ListingPositions::extractAndStoreRangeFromListingItems(items)
 
             # ---------------------------------------------------------------------
             # We have the items, we destroy the positions of items from the previous run that are not in this run 
@@ -277,15 +273,19 @@ class Listing
             XCache::set("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", JSON.generate(items))
             # ---------------------------------------------------------------------
 
-            iris, positioned = items.partition{|item| ListingPositions::getOrNullForListing(item).nil? }
-            positioned = positioned.sort_by{|item| ListingPositions::getOrNull(item) }
+            iris, positioned = items.partition{|item| ListingPositions::getNp01OrNull(item).nil? }
+            zone1, zone2 = positioned.partition{|item| ListingPositions::getNp01OrNull(item)["zone"] == "1" }
+            zone1 = zone1.sort_by{|item| ListingPositions::getNp01OrNull(item)["position"] }
+            zone2 = zone2.sort_by{|item| ListingPositions::getNp01OrNull(item)["position"] }
 
             # ---------------------------------------------------------------------
             # Shifting the position if too high
-            if positioned.size > 0 then
-                if ListingPositions::getOrNull(positioned[0]) >= 10 then
-                    positioned.each{|item|
-                        ListingPositions::set(item, ListingPositions::getOrNull(item)-10)
+            if zone1.size > 0 then
+                if ListingPositions::getNp01OrNull(zone1[0])["position"] >= 10 then
+                    zone1.each{|item|
+                        np01 = ListingPositions::getNp01OrNull(item)
+                        np01["position"] = np01["position"] - 10
+                        ListingPositions::setNp01(item, np01)
                     }
                 end
             end
@@ -293,10 +293,12 @@ class Listing
 
             # ---------------------------------------------------------------------
             # Shifting the position if too low
-            if positioned.size > 0 then
-                if ListingPositions::getOrNull(positioned[0]) <= -10 then
-                    positioned.each{|item|
-                        ListingPositions::set(item, ListingPositions::getOrNull(item)+10)
+            if zone1.size > 0 then
+                if ListingPositions::getNp01OrNull(zone1[0])["position"] <= -10 then
+                    zone1.each{|item|
+                        np01 = ListingPositions::getNp01OrNull(item)
+                        np01["position"] = np01["position"] + 10
+                        ListingPositions::setNp01(item, np01)
                     }
                 end
             end
@@ -304,16 +306,18 @@ class Listing
 
             # ---------------------------------------------------------------------
             # Preventing position to get more than 100
-            if positioned.size > 0 then
-                if ListingPositions::getOrNull(positioned.last) >= 100 then
-                    positioned.each{|item|
-                        ListingPositions::set(item, ListingPositions::getOrNull(item).to_f/2)
+            if zone2.size > 0 then
+                if ListingPositions::getNp01OrNull(zone2[0])["position"] >= 100 then
+                    zone2.each{|item|
+                        np01 = ListingPositions::getNp01OrNull(item)
+                        np01["position"] = np01["position"].to_f/2
+                        ListingPositions::setNp01(item, np01)
                     }
                 end
             end
             # ---------------------------------------------------------------------
 
-            items = NxBalls::runningItems() + iris + positioned + NxFeeders::listingItemsForFrontBottom()
+            items = NxBalls::runningItems() + iris + zone1 + NxFeeders::listingItems() + zone2
 
             system("clear")
 
@@ -365,8 +369,8 @@ class Listing
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             
-            if Float(input, exception: false) and ListingPositions::getOrNull(store.getDefault()).nil? then
-                ListingPositions::set(store.getDefault(), input.to_f)
+            if Float(input, exception: false) and ListingPositions::getNp01OrNull(store.getDefault()).nil? then
+                ListingPositions::setNp01(store.getDefault(), input.to_f)
                 next
             end
 

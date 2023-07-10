@@ -51,7 +51,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("next", input) then
             item = store.getDefault()
             return if item.nil?
-            ListingPositions::set(item, ListingPositions::nextPosition())
+            ListingPositions::setNp01(item, ListingPositions::nextPosition())
             return
         end
 
@@ -143,7 +143,7 @@ class ListingCommandsAndInterpreters
                 position = ListingPositions::nextPosition()
             end
             position = position.to_f
-            ListingPositions::set(item, position)
+            ListingPositions::setNp01(item, position)
             return
         end
 
@@ -156,7 +156,7 @@ class ListingCommandsAndInterpreters
                 position = ListingPositions::nextPosition()
             end
             position = position.to_f
-            ListingPositions::set(item, position)
+            ListingPositions::setNp01(item, position)
             return
         end
 
@@ -415,7 +415,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("next", input) then
             item = store.getDefault()
             return if item.nil?
-            ListingPositions::set(item, ListingPositions::nextPosition())
+            ListingPositions::setNp01(item, ListingPositions::nextPosition())
             return
         end
 
@@ -462,7 +462,7 @@ class ListingCommandsAndInterpreters
             item = NxFronts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingPositions::set(item, ListingPositions::positionMinus1())
+            ListingPositions::setNp01(item, ListingPositions::positionMinus1())
             return
         end
 
@@ -470,7 +470,7 @@ class ListingCommandsAndInterpreters
             item = NxFronts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingPositions::interactivelySetPositionAttempt(item)
+            ListingPositions::interactivelySetNp01Attempt(item)
             return
         end
 

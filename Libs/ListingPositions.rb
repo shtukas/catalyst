@@ -1,106 +1,90 @@
 
 # encoding: UTF-8
 
+# A Np01 is either null, or [1, float] or [2]
+#     - null means no position found for today
+#     - { zone: "1", position: }
+#     - { zone: "2", position: }
+
 class ListingPositions
 
-    # ListingPositions::getOrNull(item)
-    def self.getOrNull(item)
-        CatalystSharedCache::getOrNull("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}") # Float
+    # ListingPositions::getNp01OrNull(item)
+    def self.getNp01OrNull(item)
+        CatalystSharedCache::getOrNull("09880513-4617-4a00-9495-333df8e6a57c:#{item["uuid"]}")
     end
 
-    # ListingPositions::automaticPositioning(item)
-    def self.automaticPositioning(item)
-        position = CatalystSharedCache::getOrNull("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}") # Float
-        return if !position.nil?
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            position = ListingPositions::nextPosition()
-            ListingPositions::set(item, position)
-        end
-        if item["mikuType"] == "Wave" and item["interruption"] then
-            position = ListingPositions::positionMinus1()
-            ListingPositions::set(item, position)
-        end
-        if item["mikuType"] == "PhysicalTarget" then
-            position = ListingPositions::positionMinus1()
-            ListingPositions::set(item, position)
-        end
-        if item["mikuType"] == "NxFeeder" then
-            position = ListingPositions::nextPosition()
-            ListingPositions::set(item, position)
-        end
-        if item["mikuType"] == "NxTask" then
-            position = ListingPositions::nextPosition()
-            ListingPositions::set(item, position)
-        end
-    end
-
-    # ListingPositions::getOrNullForListing(item)
-    def self.getOrNullForListing(item)
-        CatalystSharedCache::getOrNull("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}") # Float
-    end
-
-    # ListingPositions::set(item, position)
-    def self.set(item, position)
-        CatalystSharedCache::set("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}", position)
-        range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
-        range = [[range[0], position].min, [range[1], position].max]
-        XCache::set("deeecc9c-2c6f-4880-be79-d0708a3caf72", JSON.generate(range))
+    # ListingPositions::setNp01(item, np01)
+    def self.setNp01(item, np01)
+        raise "error 1426" if np01["zone"].nil?
+        raise "error 1427" if np01["position"].nil?
+        CatalystSharedCache::set("09880513-4617-4a00-9495-333df8e6a57c:#{item["uuid"]}",  np01)
     end
 
     # ListingPositions::positionMinus1()
     def self.positionMinus1()
-        range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
+        range = JSON.parse(XCache::getOrDefaultValue("range-86a4-fde7a736ef93", "[1, 1]"))
         range[0] - 1
     end
 
     # ListingPositions::nextPosition()
     def self.nextPosition()
-        range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
+        range = JSON.parse(XCache::getOrDefaultValue("range-86a4-fde7a736ef93", "[1, 1]"))
         range[1] + 1
     end
 
-    # ListingPositions::interactivelySetPositionAttempt(item)
-    def self.interactivelySetPositionAttempt(item)
-        position = "" 
+    # ListingPositions::interactivelyMakeNp01OrNull()
+    def self.interactivelyMakeNp01OrNull()
+        position = nil
         loop {
-            position = LucilleCore::askQuestionAnswerAsString("position (float) (top, next): ")
+            position = LucilleCore::askQuestionAnswerAsString("position (top, next, zone 1 <float>): ")
             break if position != ""
         }
-        px = nil
+        np01 = nil
         if position == "top" then
-            px = ListingPositions::positionMinus1()
+            np01 = {
+                "zone"     => "1",
+                "position" => ListingPositions::positionMinus1()
+            }
         end
         if position == "next" then
-            px = ListingPositions::nextPosition()
+            np01 = {
+                "zone"     => "2",
+                "position" => ListingPositions::positionMinus1()
+            }
         end
-        if px.nil? then
-            px = position.to_f
+        if np01.nil? then
+            np01 = {
+                "zone"     => "1",
+                "position" => position.to_f
+            }
         end
-        ListingPositions::set(item, px)
+        return if np01.nil?
     end
 
-    # ListingPositions::extractRangeFromListingItems(items)
-    def self.extractRangeFromListingItems(items)
+    # ListingPositions::interactivelySetNp01Attempt(item)
+    def self.interactivelySetNp01Attempt(item)
+        np01 = ListingPositions::interactivelyMakeNp01OrNull()
+        return if np01.nil?
+        ListingPositions::setNp01(item, np01)
+    end
+
+    # ListingPositions::extractAndStoreRangeFromListingItems(items)
+    def self.extractAndStoreRangeFromListingItems(items)
         positions = items
-                        .map{|item| ListingPositions::getOrNull(item) }
+                        .map{|item| ListingPositions::getNp01OrNull(item) }
                         .compact
+                        .map{|np01| np01["position"] }
         range = 
             if positions.empty? then
                 [1, 1]
             else
                 [positions.min, positions.max]
             end
-        XCache::set("deeecc9c-2c6f-4880-be79-d0708a3caf72", JSON.generate(range))
-    end
-
-    # ListingPositions::completionRatioToPosition(ratio)
-    def self.completionRatioToPosition(ratio)
-        range = JSON.parse(XCache::getOrDefaultValue("deeecc9c-2c6f-4880-be79-d0708a3caf72", "[1,1]"))
-        ratio * range[1]
+        XCache::set("range-86a4-fde7a736ef93", JSON.generate(range))
     end
 
     # ListingPositions::revoke(item)
     def self.revoke(item)
-        CatalystSharedCache::destroy("6229611a-b67b-4b0f-9303-d5e10f97428a:#{item["uuid"]}")
+        CatalystSharedCache::destroy("09880513-4617-4a00-9495-333df8e6a57c:#{item["uuid"]}")
     end
 end

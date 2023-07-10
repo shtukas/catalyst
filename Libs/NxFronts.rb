@@ -29,7 +29,7 @@ class NxFronts
             DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
             DarkEnergy::patch(uuid, "description", Time.new.to_s)
             item = DarkEnergy::itemOrNull(uuid)
-            ListingPositions::set(item, ListingPositions::nextPosition())
+            ListingPositions::setNp01(item, ListingPositions::nextPosition())
             XCache::setFlag("eea69539-f90d-4400-9d05-d806f97784a6:#{CommonUtils::today()}", true)
         end
     end

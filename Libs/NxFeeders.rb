@@ -40,18 +40,10 @@ class NxFeeders
         "🐬 #{item["description"]}"
     end
 
-    # NxFeeders::listingItemsForFrontStandard()
-    def self.listingItemsForFrontStandard()
+    # NxFeeders::listingItems()
+    def self.listingItems()
         DarkEnergy::mikuType("NxFeeder")
-            .select{|feeder| feeder["drivers"] and feeder["drivers"].size > 0 }
             .select{|feeder| TxDrivers::shouldShow2(feeder) }
-    end
-
-    # NxFeeders::listingItemsForFrontBottom()
-    def self.listingItemsForFrontBottom()
-        DarkEnergy::mikuType("NxFeeder")
-            .select{|feeder| feeder["drivers"].nil? or feeder["drivers"].empty? }
-            .sort_by{|feeder| Bank::recoveredAverageHoursPerDay(feeder["uuid"]) }
     end
 
     # NxFeeders::completionRatio(feeder)
