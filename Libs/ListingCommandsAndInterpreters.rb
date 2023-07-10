@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | driver <n> | deadline (<n>) | position (<n>) | next | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | driver <n> | deadline (<n>) | position (<n>) | zone 1 | zone 2 | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -48,10 +48,63 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("top", input) then
+            item = store.getDefault()
+            return if item.nil?
+            np01 = {
+                "zone"     => "1",
+                "position" => ListingPositions::positionMinus1()
+            }
+            puts JSON.pretty_generate(np01)
+            ListingPositions::setNp01(item, np01)
+            return
+        end
+
+        if Interpreting::match("zone 1", input) then
+            item = store.getDefault()
+            return if item.nil?
+            np01 = {
+                "zone"     => "1",
+                "position" => LucilleCore::askQuestionAnswerAsString("position: ").tof
+            }
+            puts JSON.pretty_generate(np01)
+            ListingPositions::setNp01(item, np01)
+            return
+        end
+
+        if Interpreting::match("zone 2", input) then
+            item = store.getDefault()
+            return if item.nil?
+            np01 = {
+                "zone"     => "2",
+                "position" => ListingPositions::nextPosition()
+            }
+            puts JSON.pretty_generate(np01)
+            ListingPositions::setNp01(item, np01)
+            return
+        end
+
+        if Interpreting::match("zone 2", input) then
+            item = store.getDefault()
+            return if item.nil?
+            np01 = {
+                "zone"     => "2",
+                "position" => ListingPositions::nextPosition()
+            }
+            puts JSON.pretty_generate(np01)
+            ListingPositions::setNp01(item, np01)
+            return
+        end
+
         if Interpreting::match("next", input) then
             item = store.getDefault()
             return if item.nil?
-            ListingPositions::setNp01(item, ListingPositions::nextPosition())
+            np01 = {
+                "zone"     => "2",
+                "position" => ListingPositions::nextPosition()
+            }
+            puts JSON.pretty_generate(np01)
+            ListingPositions::setNp01(item, np01)
             return
         end
 

@@ -49,7 +49,7 @@ class ListingPositions
         if position == "next" then
             np01 = {
                 "zone"     => "2",
-                "position" => ListingPositions::positionMinus1()
+                "position" => ListingPositions::nextPosition()
             }
         end
         if np01.nil? then
