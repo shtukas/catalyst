@@ -36,7 +36,7 @@ class ListingPositions
     def self.interactivelyMakeNp01OrNull()
         position = nil
         loop {
-            position = LucilleCore::askQuestionAnswerAsString("position (top, next, zone 1 <float>): ")
+            position = LucilleCore::askQuestionAnswerAsString("position (top, zone 1 <float>, next): ")
             break if position != ""
         }
         np01 = nil
