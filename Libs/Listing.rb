@@ -313,7 +313,7 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = iris+positioned + NxFeeders::listingItemsForFrontBottom()
+            items = NxBalls::runningItems() + iris + positioned + NxFeeders::listingItemsForFrontBottom()
 
             system("clear")
 
