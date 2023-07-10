@@ -135,7 +135,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        ordinalSuffix = ListingPositions::getNp01OrNull(item) ? " (#{"%5.2f" % ListingPositions::getNp01OrNull(item)})" : "        "
+        ordinalSuffix = ListingPositions::getNp01OrNull(item) ? " (#{"%5.2f" % ListingPositions::getNp01OrNull(item)["position"]})" : "        "
 
         line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item)}"
 
