@@ -316,7 +316,8 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + TxCores::listingItems()
+            items = (NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + TxCores::listingItems())
+                        .select{|item| Listing::listable(item) }
 
             system("clear")
 

@@ -59,7 +59,7 @@ class TxCores
     def self.toString(core)
         strings = []
 
-        strings << "(⏱️  core: today: #{"#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        strings << "⏱️  #{core["description"].ljust(20)}: today: #{"#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*TxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
@@ -82,13 +82,13 @@ class TxCores
             strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
         end
 
-        strings << ")"
+        strings << ""
         strings.join()
     end
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = DarkEnergy::mikuType("TxCores")
+        cores = DarkEnergy::mikuType("TxCore")
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
@@ -97,6 +97,7 @@ class TxCores
         core = TxCores::interactivelySelectOneOrNull()
         return if core.nil?
         item["core"] = core["uuid"]
+        puts JSON.pretty_generate(item)
         DarkEnergy::commit(item)
     end
 

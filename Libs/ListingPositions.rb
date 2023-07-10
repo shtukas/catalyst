@@ -41,24 +41,21 @@ class ListingPositions
         }
         np01 = nil
         if position == "top" then
-            np01 = {
+            return {
                 "zone"     => "1",
                 "position" => ListingPositions::positionMinus1()
             }
         end
         if position == "next" then
-            np01 = {
+            return {
                 "zone"     => "2",
                 "position" => ListingPositions::nextPosition()
             }
         end
-        if np01.nil? then
-            np01 = {
-                "zone"     => "1",
-                "position" => position.to_f
-            }
-        end
-        return if np01.nil?
+        {
+            "zone"     => "1",
+            "position" => position.to_f
+        }
     end
 
     # ListingPositions::interactivelySetNp01Attempt(item)

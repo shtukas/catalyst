@@ -35,14 +35,18 @@ class NxThreads
     # --------------------------------------------------------------------------
     # Data
 
-    # NxThreads::toString(item)
-    def self.toString(item)
-        "🔹 #{item["description"]}"
+    # NxThreads::toString(thread)
+    def self.toString(thread)
+        hours = thread["hours"] || 2
+        cr = NxThreads::completionRatio(thread)
+        "🔺 #{thread["description"].ljust(40)} (#{"%4.2f" % cr}% of #{hours} hours)"
     end
 
     # NxThreads::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxThread")
+            .select{|thread| NxThreads::completionRatio(thread) < 1 }
+            .sort_by{|thread| NxThreads::completionRatio(thread) }
     end
 
     # NxThreads::infinityuuid()
@@ -55,6 +59,12 @@ class NxThreads
         threads = DarkEnergy::mikuType("NxThread")
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
+    end
+
+    # NxThreads::completionRatio(thread)
+    def self.completionRatio(thread)
+        hours = thread["hours"] || 2
+        Bank::recoveredAverageHoursPerDay(thread["uuid"]).to_f/(hours.to_f/7)
     end
 
     # --------------------------------------------------------------------------

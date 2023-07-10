@@ -159,6 +159,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("core *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            TxCores::interactivelyAttempToAttachCore(item)
+            return
+        end
+
         if Interpreting::match("position *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
