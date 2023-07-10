@@ -14,6 +14,6 @@ class NxLines
 
     # NxLines::toString(item)
     def self.toString(item)
-        "(line) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "(line) #{item["description"]}"
     end
 end

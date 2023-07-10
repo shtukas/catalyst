@@ -161,6 +161,7 @@ require_relative "NxFronts.rb"
 require_relative "NxTimes.rb"
 require_relative "NxPages.rb"
 require_relative "NxFeeders.rb"
+require_relative "NxFloat.rb"
 
 require_relative "Memoize.rb"
 

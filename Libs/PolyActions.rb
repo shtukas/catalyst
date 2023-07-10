@@ -28,6 +28,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFloat" then
+            puts NxFloats::toString(item)
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxPage" then
             NxPages::access(item)
             return
@@ -106,6 +112,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
             return
         end
 
@@ -273,6 +286,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFloat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
@@ -301,6 +321,13 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
             return
         end
 

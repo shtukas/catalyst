@@ -343,6 +343,17 @@ class Listing
                 spacecontrol.putsline ""
             end
 
+            floats = DarkEnergy::mikuType("NxFloat")
+            if floats.size > 0 then
+                floats
+                    .each{|item|
+                        store.register(item, false)
+                        status = spacecontrol.putsline Listing::toString2(store, item)
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
