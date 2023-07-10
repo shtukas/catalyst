@@ -1,5 +1,0 @@
-
-TxDeadline
-    "uuid"          : Float
-    "mikuType"      : "TxDeadline"
-    "unixtime"      : Float # unixtime

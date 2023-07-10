@@ -59,7 +59,7 @@ class NxPages
         # Move orphan pages to Infinity
         DarkEnergy::mikuType("NxPage").each{|project|
             next if project["parent"]
-            parent = DarkEnergy::itemOrNull(NxFeeders::infinityuuid())
+            parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
             project["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(project)
         }

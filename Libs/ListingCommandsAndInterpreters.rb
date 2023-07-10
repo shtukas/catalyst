@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | driver <n> | deadline (<n>) | position (<n>) | zone 1 | zone 2 | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | position (<n>) | zone 1 | zone 2 | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -122,34 +122,18 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("task", input) then
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
-            feeder = NxFeeders::interactivelySelectOrNull()
-            if feeder then
-                tx8 = Tx8s::interactivelyMakeTx8AtParent(feeder)
+            thread = NxThreads::interactivelySelectOrNull()
+            if thread then
+                tx8 = Tx8s::interactivelyMakeTx8AtParent(thread)
                 task["parent"] = tx8
                 puts JSON.pretty_generate(task)
                 DarkEnergy::commit(task)
             end
-            drivers = Catalyst::interactivelyMakeDrivers()
-            if drivers.size > 0 then
-                task["drivers"] = drivers
-                puts JSON.pretty_generate(task)
-                DarkEnergy::commit(task)
-            end
             return
         end
 
-        if Interpreting::match("driver *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            driver = Catalyst::interactivelyMakeDriverOrNull()
-            return if driver.nil?
-            Catalyst::updateItemDriversWithDriver(item, driver)
-            return
-        end
-
-        if Interpreting::match("feeders", input) then
-            NxFeeders::program2()
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
@@ -161,30 +145,25 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("feeder", input) then
-            item = store.getDefault()
-            return if item.nil?
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["create a new feeder", "attach feeder to default item"])
-            return if option.nil?
-            if option == "create a new feeder" then
-                feeder = NxFeeders::interactivelyIssueNewOrNull()
-                return if feeder.nil?
-                NxFeeders::program1(feeder)
-            end
-            if option == "attach feeder to default item" then
-                feeder = NxFeeders::interactivelySelectOrNull()
-                return if feeder.nil?
-                Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
-            end
+        if Interpreting::match("thread", input) then
+            thread = NxThreads::interactivelyIssueNewOrNull()
+            return if thread.nil?
+            NxThreads::program1(thread)
             return
         end
 
-        if Interpreting::match("feeder *", input) then
+        if Interpreting::match("core", input) then
+            item = store.getDefault()
+            return if item.nil?
+            TxCores::interactivelyAttempToAttachCore(item)
+            return
+        end
+
+        if Interpreting::match("position *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            feeder = NxFeeders::interactivelySelectOrNull()
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, feeder)
+            TxCores::interactivelyAttempToAttachCore(item)
             return
         end
 

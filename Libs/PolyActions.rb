@@ -39,8 +39,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
-            NxFeeders::program1(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -105,8 +105,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
-            puts "You can't done a NxFeeder, but you cna destroy it"
+        if item["mikuType"] == "NxThread" then
+            puts "You can't done a NxThread, but you cna destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -274,7 +274,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxThread" then
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
                 LucilleCore::pressEnterToContinue()
@@ -312,7 +312,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end
@@ -403,7 +403,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end

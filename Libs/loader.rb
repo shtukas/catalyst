@@ -160,7 +160,7 @@ require_relative "NxTasks.rb"
 require_relative "NxFronts.rb"
 require_relative "NxTimes.rb"
 require_relative "NxPages.rb"
-require_relative "NxFeeders.rb"
+require_relative "NxThreads.rb"
 require_relative "NxFloat.rb"
 
 require_relative "Memoize.rb"
@@ -173,13 +173,10 @@ require_relative "PhysicalTargets.rb"
 require_relative "SectionsType0141.rb"
 require_relative "Stargate.rb"
 
+require_relative "TxCores.rb"
 require_relative "TheLine.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
-require_relative "TxWeeklyEngines.rb"
-require_relative "TxDeadline.rb"
-require_relative "TxDrivers.rb"
-require_relative "TxDailyEngines.rb"
 
 require_relative "Waves.rb"
 

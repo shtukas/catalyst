@@ -155,7 +155,7 @@ class Tx8s
                 "position" => 0
             }
         end
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxThread" then
             tx8 = {
                 "uuid"     => parent["uuid"],
                 "position" => 0

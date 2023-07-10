@@ -116,7 +116,6 @@ class Listing
             NxOndates::listingItems(),
             NxTasks::listingItems(),
             PhysicalTargets::listingItems(),
-            TxDeadline::listingItems(),
             Waves::listingItems(),
         ]
             .flatten
@@ -137,7 +136,7 @@ class Listing
 
         ordinalSuffix = ListingPositions::getNp01OrNull(item) ? " (#{"%5.2f" % ListingPositions::getNp01OrNull(item)["position"]})" : "        "
 
-        line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{TxDrivers::suffix(item)}"
+        line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{TxCores::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -201,9 +200,9 @@ class Listing
              NxBackups::maintenance()
              NxTasks::maintenance()
              NxPages::maintenance()
-             NxFeeders::maintenance()
+             NxThreads::maintenance()
              NxFronts::maintenance()
-             TxDeadline::maintenance()
+             TxCores::maintenance2()
         end
     end
 
@@ -317,12 +316,10 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = NxBalls::runningItems() + iris + zone1 + NxFeeders::listingItems() + zone2
+            items = NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + TxCores::listingItems()
 
             system("clear")
 
-            spacecontrol.putsline ""
-            puts "feeders daily: #{NxFeeders::dailyLoad()} hours"
             spacecontrol.putsline ""
 
             times = NxTimes::listingItems()

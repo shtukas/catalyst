@@ -18,13 +18,20 @@ class PolyFunctions
             end
         end
 
+        if item["core"] then
+            core = DarkEnergy::itemOrNull(item["core"])
+            if core then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+            end
+        end
+
         if item["drivers"] then
             accounts = accounts + item["drivers"].map{|driver| PolyFunctions::itemToBankingAccounts(driver) }.flatten
         end
 
-        if item["mikuType"] == "TxWeeklyEngine" then
+        if item["mikuType"] == "TxCore" then
             accounts << {
-                "description" => "TxWeeklyEngine",
+                "description" => item["description"],
                 "number"      => item["capsule"]
             }
         end
@@ -73,8 +80,8 @@ class PolyFunctions
         if item["mikuType"] == "NxPage" then
             return NxPages::toString(item)
         end
-        if item["mikuType"] == "NxFeeder" then
-            return NxFeeders::toString(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::toString(item)
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
@@ -84,6 +91,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
+        end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

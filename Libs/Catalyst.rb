@@ -45,30 +45,4 @@ class Catalyst
         item["drivers"] << driver
         DarkEnergy::commit(item)
     end
-
-    # Catalyst::interactivelyMakeDriverOrNull()
-    def self.interactivelyMakeDriverOrNull()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["TxWeeklyEngine",  "TxDailyEngine", "TxDeadline"])
-        return nil if type.nil?
-        if type == "TxWeeklyEngine" then
-            return TxWeeklyEngines::interactivelyMakeOrNull()
-        end
-        if type == "TxDailyEngine" then
-            return TxDailyEngines::interactivelyMakeOrNull()
-        end
-        if type == "TxDeadline" then
-            return TxDeadline::interactivelyMakeOrNull()
-        end
-    end
-
-    # Catalyst::interactivelyMakeDrivers()
-    def self.interactivelyMakeDrivers()
-        drivers = []
-        loop {
-            driver = Catalyst::interactivelyMakeDriverOrNull()
-            return drivers if driver.nil?
-            drivers << driver
-        }
-    end
-
 end

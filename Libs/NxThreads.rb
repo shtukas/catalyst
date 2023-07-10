@@ -1,22 +1,22 @@
 
-class NxFeeders
+class NxThreads
 
     # --------------------------------------------------------------------------
     # Builders
 
-    # NxFeeders::interactivelyIssueNewOrNull()
+    # NxThreads::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxFeeder", uuid)
+        DarkEnergy::init("NxThread", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxFeeders::interactivelyIssueNewAtParentOrNull(parent)
+    # NxThreads::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
         tx8 = Tx8s::make(parent["uuid"], 0)
 
@@ -24,7 +24,7 @@ class NxFeeders
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxFeeder", uuid)
+        DarkEnergy::init("NxThread", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
@@ -35,45 +35,32 @@ class NxFeeders
     # --------------------------------------------------------------------------
     # Data
 
-    # NxFeeders::toString(item)
+    # NxThreads::toString(item)
     def self.toString(item)
-        "🐬 #{item["description"]}"
+        "🔹 #{item["description"]}"
     end
 
-    # NxFeeders::listingItems()
+    # NxThreads::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxFeeder")
-            .select{|feeder| TxDrivers::shouldShow2(feeder) }
+        DarkEnergy::mikuType("NxThread")
     end
 
-    # NxFeeders::completionRatio(feeder)
-    def self.completionRatio(feeder)
-        TxWeeklyEngines::compositeCompletionRatio(feeder["engine"])
-    end
-
-    # NxFeeders::infinityuuid()
+    # NxThreads::infinityuuid()
     def self.infinityuuid()
         "bc3901ad-18ad-4354-b90b-63f7a611e64e"
     end
 
-    # NxFeeders::interactivelySelectOrNull()
+    # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        feeders = DarkEnergy::mikuType("NxFeeder")
-        padding = feeders.map{|item| NxFeeders::toString(item).size }.max
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("feeder", feeders, lambda{|item| "#{NxFeeders::toString(item).ljust(padding)} #{TxDrivers::suffix(item)}" })
-    end
-
-    # NxFeeders::dailyLoad()
-    def self.dailyLoad()
-        DarkEnergy::mikuType("NxFeeder")
-            .map{|feeder| TxDrivers::dailyLoad2(feeder["drivers"]) }
-            .inject(0, :+)
+        threads = DarkEnergy::mikuType("NxThread")
+        padding = threads.map{|item| NxThreads::toString(item).size }.max
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
     end
 
     # --------------------------------------------------------------------------
     # Ops
 
-    # NxFeeders::maintenance()
+    # NxThreads::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
         DarkEnergy::mikuType("NxTask").each{|item|
@@ -86,18 +73,18 @@ class NxFeeders
         # Move orphan items to Infinity
         DarkEnergy::mikuType("NxTask").each{|item|
             next if item["parent"]
-            parent = DarkEnergy::itemOrNull(NxFeeders::infinityuuid())
+            parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             DarkEnergy::commit(item)
         }
     end
 
-    # NxFeeders::program1(feeder)
-    def self.program1(feeder)
+    # NxThreads::program1(thread)
+    def self.program1(thread)
         loop {
 
-            feeder = DarkEnergy::itemOrNull(feeder["uuid"])
-            return if feeder.nil?
+            thread = DarkEnergy::itemOrNull(thread["uuid"])
+            return if thread.nil?
 
             system("clear")
 
@@ -105,11 +92,11 @@ class NxFeeders
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
             spacecontrol.putsline ""
-            store.register(feeder, false)
-            spacecontrol.putsline Listing::toString2(store, feeder)
+            store.register(thread, false)
+            spacecontrol.putsline Listing::toString2(store, thread)
 
             spacecontrol.putsline ""
-            items = Tx8s::childrenInOrder(feeder)
+            items = Tx8s::childrenInOrder(thread)
 
             items
                 .each{|item|
@@ -125,12 +112,12 @@ class NxFeeders
             return if input == ""
 
             if input == "task" then
-                NxTasks::interactivelyIssueNewAtParentOrNull(feeder)
+                NxTasks::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 
             if input == "pile" then
-                Tx8s::pileAtThisParent(feeder)
+                Tx8s::pileAtThisParent(thread)
             end
 
             if input.start_with?("position") then
@@ -146,12 +133,12 @@ class NxFeeders
         }
     end
 
-    # NxFeeders::program2()
+    # NxThreads::program2()
     def self.program2()
         loop {
-            feeder = NxFeeders::interactivelySelectOrNull()
-            break if feeder.nil?
-            NxFeeders::program1(feeder)
+            thread = NxThreads::interactivelySelectOrNull()
+            break if thread.nil?
+            NxThreads::program1(thread)
         }
     end
 end

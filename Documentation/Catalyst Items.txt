@@ -9,7 +9,6 @@ Cross types conventions:
 
     - parent           : nil or Tx8
     - drivers          : null or Array[TxDriver]
+    - core             : TxCore
 
 Tx8 {uuid, position}
-
-TxDriver: TxDailyEngine | TxWeeklyEngine | TxDeadline

@@ -1,5 +1,0 @@
-
-TxDailyEngine
-    "uuid"          : Float
-    "mikuType"      : "TxDailyEngine"
-    "hours"         : Float
