@@ -318,6 +318,13 @@ class Listing
 
             items = (NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + TxCores::listingItems())
                         .select{|item| Listing::listable(item) }
+                        .reduce([]){|selected, item|
+                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                                selected
+                            else
+                                selected + [item]
+                            end
+                        }
 
             system("clear")
 

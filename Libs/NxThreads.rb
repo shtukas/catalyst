@@ -39,7 +39,7 @@ class NxThreads
     def self.toString(thread)
         hours = thread["hours"] || 2
         cr = NxThreads::completionRatio(thread)
-        "🔺 #{thread["description"].ljust(40)} (#{"%4.2f" % cr}% of #{hours} hours)"
+        "🔺 #{thread["description"].ljust(40)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
     end
 
     # NxThreads::listingItems()
