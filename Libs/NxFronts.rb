@@ -19,18 +19,4 @@ class NxFronts
     def self.toString(item)
         "🔸 #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
-
-    # NxFronts::maintenance()
-    def self.maintenance()
-        if !XCache::getFlag("eea69539-f90d-4400-9d05-d806f97784a6:#{CommonUtils::today()}") then
-            uuid = SecureRandom.uuid
-            DarkEnergy::init("NxFront", uuid)
-            DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-            DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-            DarkEnergy::patch(uuid, "description", Time.new.to_s)
-            item = DarkEnergy::itemOrNull(uuid)
-            ListingPositions::setNp01(item, ListingPositions::nextPosition())
-            XCache::setFlag("eea69539-f90d-4400-9d05-d806f97784a6:#{CommonUtils::today()}", true)
-        end
-    end
 end

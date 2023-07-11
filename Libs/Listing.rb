@@ -201,7 +201,6 @@ class Listing
              NxTasks::maintenance()
              NxPages::maintenance()
              NxThreads::maintenance()
-             NxFronts::maintenance()
              TxCores::maintenance2()
         end
     end
