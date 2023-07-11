@@ -316,7 +316,7 @@ class Listing
             end
             # ---------------------------------------------------------------------
 
-            items = (NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + TxCores::listingItems())
+            items = (NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + NxThreads::listingItems2() + TxCores::listingItems())
                         .select{|item| Listing::listable(item) }
                         .reduce([]){|selected, item|
                             if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
