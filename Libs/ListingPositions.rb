@@ -18,6 +18,19 @@ class ListingPositions
         raise "error 1426" if np01["zone"].nil?
         raise "error 1427" if np01["position"].nil?
         CatalystSharedCache::set("09880513-4617-4a00-9495-333df8e6a57c:#{item["uuid"]}",  np01)
+        range = ListingPositions::getRange()
+        range = [ [range[0], np01["position"]].min, [range[1], np01["position"]].max ]
+        ListingPositions::setRange(range)
+    end
+
+    # ListingPositions::getRange()
+    def self.getRange()
+        JSON.parse(XCache::getOrDefaultValue("range-86a4-fde7a736ef93", "[1, 1]"))
+    end
+
+    # ListingPositions::setRange(range)
+    def self.setRange(range)
+        XCache::set("range-86a4-fde7a736ef93", JSON.generate(range))
     end
 
     # ListingPositions::positionMinus1()
@@ -77,7 +90,7 @@ class ListingPositions
             else
                 [positions.min, positions.max]
             end
-        XCache::set("range-86a4-fde7a736ef93", JSON.generate(range))
+        ListingPositions::setRange(range)
     end
 
     # ListingPositions::revoke(item)
