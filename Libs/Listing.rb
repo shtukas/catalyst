@@ -326,6 +326,10 @@ class Listing
                             end
                         }
 
+            if items.size > 0 and items[0]["mikuType"] == "NxThread" then
+                items = Tx8s::childrenInOrder(items[0]).select{|i| i["mikuType"] == "NxTask" }.take(6) + items
+            end
+
             system("clear")
 
             spacecontrol.putsline ""
