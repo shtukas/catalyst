@@ -41,6 +41,16 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+            return if unixtime.nil?
+            DoNotShowUntil::setUnixtime(item, unixtime)
+            return
+        end
+
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
