@@ -5,11 +5,11 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | position (<n>) | zone 1 | zone 2 | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | top | float",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | float | daily <n> <hours>",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -55,66 +55,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
-            return
-        end
-
-        if Interpreting::match("top", input) then
-            item = store.getDefault()
-            return if item.nil?
-            np01 = {
-                "zone"     => "1",
-                "position" => ListingPositions::positionMinus1()
-            }
-            puts JSON.pretty_generate(np01)
-            ListingPositions::setNp01(item, np01)
-            return
-        end
-
-        if Interpreting::match("zone 1", input) then
-            item = store.getDefault()
-            return if item.nil?
-            np01 = {
-                "zone"     => "1",
-                "position" => LucilleCore::askQuestionAnswerAsString("position: ").tof
-            }
-            puts JSON.pretty_generate(np01)
-            ListingPositions::setNp01(item, np01)
-            return
-        end
-
-        if Interpreting::match("zone 2", input) then
-            item = store.getDefault()
-            return if item.nil?
-            np01 = {
-                "zone"     => "2",
-                "position" => ListingPositions::nextPosition()
-            }
-            puts JSON.pretty_generate(np01)
-            ListingPositions::setNp01(item, np01)
-            return
-        end
-
-        if Interpreting::match("zone 2", input) then
-            item = store.getDefault()
-            return if item.nil?
-            np01 = {
-                "zone"     => "2",
-                "position" => ListingPositions::nextPosition()
-            }
-            puts JSON.pretty_generate(np01)
-            ListingPositions::setNp01(item, np01)
-            return
-        end
-
-        if Interpreting::match("next", input) then
-            item = store.getDefault()
-            return if item.nil?
-            np01 = {
-                "zone"     => "2",
-                "position" => ListingPositions::nextPosition()
-            }
-            puts JSON.pretty_generate(np01)
-            ListingPositions::setNp01(item, np01)
             return
         end
 
@@ -177,36 +117,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("position *", input) then
-            _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("daily * *", input) then
+            _, listord, hours = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxCores::interactivelyAttempToAttachCore(item)
-            return
-        end
-
-        if Interpreting::match("position", input) then
-            item = store.getDefault()
-            return if item.nil?
-            position = LucilleCore::askQuestionAnswerAsString("position (next): ")
-            if position == "next" then
-                position = ListingPositions::nextPosition()
-            end
-            position = position.to_f
-            ListingPositions::setNp01(item, position)
-            return
-        end
-
-        if Interpreting::match("position *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            position = LucilleCore::askQuestionAnswerAsString("position (next): ")
-            if position == "next" then
-                position = ListingPositions::nextPosition()
-            end
-            position = position.to_f
-            ListingPositions::setNp01(item, position)
+            Daily::adduuid(item["uuid"], hours.to_f)
             return
         end
 
@@ -462,13 +377,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("next", input) then
-            item = store.getDefault()
-            return if item.nil?
-            ListingPositions::setNp01(item, ListingPositions::nextPosition())
-            return
-        end
-
         if Interpreting::match("note", input) then
             item = store.getDefault()
             return if item.nil?
@@ -508,19 +416,10 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("top", input) then
-            item = NxFronts::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            ListingPositions::setNp01(item, ListingPositions::positionMinus1())
-            return
-        end
-
         if Interpreting::match("front", input) then
             item = NxFronts::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            ListingPositions::interactivelySetNp01Attempt(item)
             return
         end
 

@@ -108,15 +108,35 @@ class Listing
     # Listing::items()
     def self.items()
         [
-            # alphabetical order
-            Anniversaries::listingItems(),
-            DarkEnergy::mikuType("NxFront"),
-            NxBackups::listingItems(),
             NxBalls::runningItems(),
-            NxOndates::listingItems(),
-            NxTasks::listingItems(),
+            Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
-            Waves::listingItems(),
+            NxBackups::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
+            Waves::listingItems().select{|item| !item["interruption"] },
+            NxOndates::listingItems(),
+            Daily::todayOrNull()
+                .to_a
+                .map{|uuid, hours|
+                    item = DarkEnergy::itemOrNull(uuid)
+                    rt = Bank::recoveredAverageHoursPerDay(item["uuid"])
+                    if rt < hours then
+                        {
+                            "uuid"     => Digest::SHA1.hexdigest("Daily:aae9d799:#{CommonUtils::today()}:#{item["uuid"]}"),
+                            "mikuType" => "NxDailyItem",
+                            "hours"    => hours,
+                            "ratio"    => rt.to_f/hours,
+                            "item"     => item
+                        }
+                    else
+                        nil
+                    end
+                }
+                .compact
+                .sort_by{|item| item["ratio"] },
+            NxThreads::listingItems(),
+            DarkEnergy::mikuType("NxFront"),
+            TxCores::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -134,9 +154,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        ordinalSuffix = ListingPositions::getNp01OrNull(item) ? " (#{"%5.2f" % ListingPositions::getNp01OrNull(item)["position"]})" : "        "
-
-        line = "#{storePrefix}#{ordinalSuffix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{TxCores::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{TxCores::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -168,7 +186,6 @@ class Listing
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxTasks::listingItems()", lambda{ NxTasks::listingItems() })
         spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
@@ -257,77 +274,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = []
-
             items = Listing::items()
-            ListingPositions::extractAndStoreRangeFromListingItems(items)
-
-            # ---------------------------------------------------------------------
-            # We have the items, we destroy the positions of items from the previous run that are not in this run 
-            # (in particular forgetting the position of waves)
-            JSON.parse(XCache::getOrDefaultValue("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", "[]"))
-                .select{|i1| items.none?{|i2| i2["uuid"] == i1["uuid"] }}
-                .each{|item| ListingPositions::revoke(item) }
-            XCache::set("ce9a54b7-a32d-4f41-b315-f79baaa2bb08", JSON.generate(items))
-            # ---------------------------------------------------------------------
-
-            iris, positioned = items.partition{|item| ListingPositions::getNp01OrNull(item).nil? }
-            zone1, zone2 = positioned.partition{|item| ListingPositions::getNp01OrNull(item)["zone"] == "1" }
-            zone1 = zone1.sort_by{|item| ListingPositions::getNp01OrNull(item)["position"] }
-            zone2 = zone2.sort_by{|item| ListingPositions::getNp01OrNull(item)["position"] }
-
-            # ---------------------------------------------------------------------
-            # Shifting the position if too high
-            if zone1.size > 0 then
-                if ListingPositions::getNp01OrNull(zone1[0])["position"] >= 10 then
-                    zone1.each{|item|
-                        np01 = ListingPositions::getNp01OrNull(item)
-                        np01["position"] = np01["position"] - 10
-                        ListingPositions::setNp01(item, np01)
-                    }
-                end
-            end
-            # ---------------------------------------------------------------------
-
-            # ---------------------------------------------------------------------
-            # Shifting the position if too low
-            if zone1.size > 0 then
-                if ListingPositions::getNp01OrNull(zone1[0])["position"] <= -10 then
-                    zone1.each{|item|
-                        np01 = ListingPositions::getNp01OrNull(item)
-                        np01["position"] = np01["position"] + 10
-                        ListingPositions::setNp01(item, np01)
-                    }
-                end
-            end
-            # ---------------------------------------------------------------------
-
-            # ---------------------------------------------------------------------
-            # Preventing position to get more than 100
-            if zone2.size > 0 then
-                if ListingPositions::getNp01OrNull(zone2[0])["position"] >= 100 then
-                    zone2.each{|item|
-                        np01 = ListingPositions::getNp01OrNull(item)
-                        np01["position"] = np01["position"].to_f/2
-                        ListingPositions::setNp01(item, np01)
-                    }
-                end
-            end
-            # ---------------------------------------------------------------------
-
-            items = (NxBalls::runningItems() + iris + zone1 + NxThreads::listingItems() + zone2 + NxThreads::listingItems2() + TxCores::listingItems())
-                        .select{|item| Listing::listable(item) }
-                        .reduce([]){|selected, item|
-                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                                selected
-                            else
-                                selected + [item]
-                            end
-                        }
-
-            if items.size > 0 and items[0]["mikuType"] == "NxThread" then
-                items = Tx8s::childrenInOrder(items[0]).select{|i| i["mikuType"] == "NxTask" }.take(6) + items
-            end
 
             system("clear")
 
@@ -376,11 +323,6 @@ class Listing
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
-            
-            if Float(input, exception: false) and ListingPositions::getNp01OrNull(store.getDefault()).nil? then
-                ListingPositions::setNp01(store.getDefault(), input.to_f)
-                next
-            end
 
             ListingCommandsAndInterpreters::interpreter(input, store)
         }

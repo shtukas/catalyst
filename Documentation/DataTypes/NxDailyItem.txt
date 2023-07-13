@@ -1,0 +1,7 @@
+
+NxDailyItem: 
+    "uuid"     : String
+    "mikuType" : "NxDailyItem"
+    "hours"    : float
+    "ratio"    : Float
+    "item"     : 

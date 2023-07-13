@@ -143,6 +143,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DarkSpace.rb"
 require_relative "DxNotes.rb"
+require_relative "Daily.rb"
 
 require_relative "Galaxy.rb"
 
@@ -151,7 +152,6 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
-require_relative "ListingPositions.rb"
 
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
