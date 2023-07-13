@@ -115,6 +115,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Waves::listingItems().select{|item| !item["interruption"] },
             NxOndates::listingItems(),
+            DarkEnergy::mikuType("NxFront"),
             Daily::todayOrNull()
                 .to_a
                 .map{|uuid, hours|
@@ -135,7 +136,6 @@ class Listing
                 .compact
                 .sort_by{|item| item["ratio"] },
             NxThreads::listingItems(),
-            DarkEnergy::mikuType("NxFront"),
             TxCores::listingItems()
         ]
             .flatten
