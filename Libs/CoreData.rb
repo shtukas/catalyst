@@ -16,7 +16,7 @@ class CoreData
 
     # CoreData::locationToAionPointCoreDataReference(location)
     def self.locationToAionPointCoreDataReference(location)
-        if !File.exists?(location) then
+        if !File.exist?(location) then
             raise "(error: c1d975c5-8d18-4f28-abde-9a32869af017) CoreData::locationToAionPointCoreDataReference, location: '#{location}' does not exist."
         end
         nhash = AionCore::commitLocationReturnHash(DarkMatterElizabeth.new(), location)
