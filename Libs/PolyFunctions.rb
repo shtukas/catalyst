@@ -81,8 +81,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDailyItem" then
             return Daily::toString(item)
         end
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::toString(item)
+        if item["mikuType"] == "NxCase" then
+            return NxCases::toString(item)
         end
         if item["mikuType"] == "NxPage" then
             return NxPages::toString(item)

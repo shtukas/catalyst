@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | front | time | times | page | float | daily <n> <hours>",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | front | time | times | page | float | daily <n> <hours>",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -49,7 +49,7 @@ class ListingCommandsAndInterpreters
 
             if item["mikuType"] == "NxFront" then
                 puts PolyFunctions::toString(item).green
-                puts "Converting the item into a NxTask and moving to a thread"
+                puts "Converting the item into a NxCase and moving to a thread"
                 LucilleCore::pressEnterToContinue()
                 thread = NxThreads::interactivelySelectOrNull()
                 return if thread.nil?
@@ -57,7 +57,7 @@ class ListingCommandsAndInterpreters
                 item = DarkEnergy::itemOrNull(item["uuid"])
                 return if item["parent"].nil?
                 return if item["parent"]["uuid"] != thread["uuid"]
-                item["mikuType"] = "NxTask"
+                item["mikuType"] = "NxCase"
                 DarkEnergy::commit(item)
                 puts "Operation completed"
                 LucilleCore::pressEnterToContinue()
@@ -88,15 +88,15 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("task", input) then
-            task = NxTasks::interactivelyIssueNewOrNull()
-            return if task.nil?
+        if Interpreting::match("case", input) then
+            case_ = NxCases::interactivelyIssueNewOrNull()
+            return if case_.nil?
             thread = NxThreads::interactivelySelectOrNull()
             if thread then
                 tx8 = Tx8s::interactivelyMakeTx8AtParent(thread)
-                task["parent"] = tx8
-                puts JSON.pretty_generate(task)
-                DarkEnergy::commit(task)
+                case_["parent"] = tx8
+                puts JSON.pretty_generate(case_)
+                DarkEnergy::commit(case_)
             end
             return
         end
@@ -148,8 +148,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "You can only pile * a NxTask"
+            if item["mikuType"] != "NxCase" then
+                puts "You can only pile * a NxCase"
                 LucilleCore::pressEnterToContinue()
                 return
             end

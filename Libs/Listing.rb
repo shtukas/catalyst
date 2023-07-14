@@ -76,7 +76,6 @@ class Listing
         return false if item["mikuType"] == "DesktopTx1"
 
         return false if !DoNotShowUntil::isVisible(item)
-        return false if (item[:taskTimeOverflow] and !NxBalls::itemIsActive(item))
 
         skipDirectiveOrNull = lambda {|item|
             if item["tmpskip1"] then
@@ -223,7 +222,7 @@ class Listing
              PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
-             NxTasks::maintenance()
+             NxCases::maintenance()
              NxPages::maintenance()
              NxThreads::maintenance()
              TxCores::maintenance2()

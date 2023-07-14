@@ -52,7 +52,7 @@ class Tx8s
     # Tx8s::reorganise(item)
     def self.reorganise(item)
         children = Tx8s::childrenInOrder(item)
-                    .select{|i| i["mikuType"] == "NxTask" }
+                    .select{|i| i["mikuType"] == "NxCase" }
         if children.size < 2 then
             puts "item has #{children.size} children, nothing to organise"
             LucilleCore::pressEnterToContinue()
@@ -191,7 +191,7 @@ class Tx8s
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text.lines.to_a.map{|line| line.strip }.select{|line| line.size > 0 }.reverse.each {|line|
-            t1 = NxTasks::descriptionToTask(line)
+            t1 = NxCases::descriptionToTask(line)
             next if t1.nil?
             t1["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             puts JSON.pretty_generate(t1)

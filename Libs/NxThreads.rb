@@ -37,9 +37,10 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
+        padding = CatalystSharedCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", 0)
         hours = thread["hours"] || 2
         cr = NxThreads::completionRatio(thread)
-        "🔺 #{thread["description"].ljust(40)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
+        "🔺 #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
     end
 
     # NxThreads::listingItems()
@@ -79,7 +80,13 @@ class NxThreads
     # NxThreads::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxTask").each{|item|
+        padding = DarkEnergy::mikuType("NxThread")
+            .map{|item| item["description"].size }
+            .reduce(0){|x, a| [x,a].max }
+        CatalystSharedCache::set("9c81e889-f07f-4f70-9e91-9bae2c097ea6", padding)
+
+        # Ensuring consistency of parenting targets
+        DarkEnergy::mikuType("NxCase").each{|item|
             next if item["parent"].nil?
             if DarkEnergy::itemOrNull(item["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
@@ -87,7 +94,7 @@ class NxThreads
         }
 
         # Move orphan items to Infinity
-        DarkEnergy::mikuType("NxTask").each{|item|
+        DarkEnergy::mikuType("NxCase").each{|item|
             next if item["parent"]
             parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
@@ -122,13 +129,13 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, pile, position *)"
+            puts "(case, pile, position *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
-                NxTasks::interactivelyIssueNewAtParentOrNull(thread)
+            if input == "case" then
+                NxCases::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 

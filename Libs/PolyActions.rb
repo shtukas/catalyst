@@ -62,8 +62,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            NxTasks::access(item)
+        if item["mikuType"] == "NxCase" then
+            NxCases::access(item)
             return
         end
 
@@ -201,7 +201,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxCase" then
             if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
@@ -362,11 +362,11 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxCase" then
             puts PolyFunctions::toString(item).green
             first_time = (Bank::getValue(item["uuid"]) == 0)
             NxBalls::start(item)
-            NxTasks::access(item)
+            NxCases::access(item)
             if first_time then
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                     NxBalls::stop(item)

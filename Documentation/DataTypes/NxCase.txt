@@ -1,8 +1,8 @@
 
-NxTask: 
+NxCase: 
 
     "uuid"         : String
-    "mikuType"     : "NxTask"
+    "mikuType"     : "NxCase"
     "unixtime"     : Float
     "datetime"     : DateTime Iso 8601 UTC Zulu
     "description"  : String
