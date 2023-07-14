@@ -10,12 +10,6 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] == "NxBackup" then
-            puts item["description"]
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -25,6 +19,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxBackups::performDone(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "NxDailyItem" then
+            PolyActions::access(item["item"])
             return
         end
 
@@ -96,6 +95,11 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
             end
+            return
+        end
+
+        if item["mikuType"] == "NxDailyItem" then
+            PolyActions::done(item["item"])
             return
         end
 
@@ -260,6 +264,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDailyItem" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy daily envelop for: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Daily::unregister(item["item"]["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
@@ -308,6 +319,12 @@ class PolyActions
     def self.doubleDot(item)
 
         if item["mikuType"] == "NxBackup" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxDailyItem" then
+            NxBalls::start(item)
             PolyActions::access(item)
             return
         end

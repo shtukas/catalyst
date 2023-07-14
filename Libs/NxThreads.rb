@@ -49,11 +49,10 @@ class NxThreads
             .sort_by{|thread| NxThreads::completionRatio(thread) }
     end
 
-    # NxThreads::listingItems2()
-    def self.listingItems2()
-        DarkEnergy::mikuType("NxThread")
-            .select{|thread| NxThreads::completionRatio(thread) >= 1 }
-            .sort_by{|thread| NxThreads::completionRatio(thread) }
+    # NxThreads::listingItems2(dailiesuuids)
+    def self.listingItems2(dailiesuuids)
+        NxThreads::listingItems()
+            .select{|thread| !dailiesuuids.include?(thread["uuid"]) }
     end
 
     # NxThreads::infinityuuid()

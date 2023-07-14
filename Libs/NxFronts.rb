@@ -19,4 +19,10 @@ class NxFronts
     def self.toString(item)
         "🔸 #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
+
+    # NxFronts::listingItems()
+    def self.listingItems()
+        DarkEnergy::mikuType("NxFront")
+            .sort_by{|item| item["unixtime"] }
+    end
 end

@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | >> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -41,10 +41,29 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
             return if item.nil?
+
+            # This command has different interpretations depending on the mikuType
+
+            if item["mikuType"] == "NxFront" then
+                puts PolyFunctions::toString(item).green
+                puts "Converting the item into a NxTask and moving to a thread"
+                LucilleCore::pressEnterToContinue()
+                thread = NxThreads::interactivelySelectOrNull()
+                return if thread.nil?
+                Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
+                item = DarkEnergy::itemOrNull(item["uuid"])
+                return if item["parent"].nil?
+                return if item["parent"]["uuid"] != thread["uuid"]
+                item["mikuType"] = "NxTask"
+                DarkEnergy::commit(item)
+                puts "Operation completed"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)

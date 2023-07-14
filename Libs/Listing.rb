@@ -107,16 +107,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        [
-            NxBalls::runningItems(),
-            Anniversaries::listingItems(),
-            PhysicalTargets::listingItems(),
-            NxBackups::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
-            Waves::listingItems().select{|item| !item["interruption"] },
-            NxOndates::listingItems(),
-            DarkEnergy::mikuType("NxFront"),
-            Daily::todayOrNull()
+        dailies = Daily::todayOrNull()
                 .to_a
                 .map{|uuid, hours|
                     item = DarkEnergy::itemOrNull(uuid)
@@ -134,8 +125,22 @@ class Listing
                     end
                 }
                 .compact
-                .sort_by{|item| item["ratio"] },
-            NxThreads::listingItems(),
+                .select{|item| Listing::listable(item["item"]) }
+                .sort_by{|item| item["ratio"] }
+
+        dailiesuuids = dailies.map{|item| item["item"]["uuid"] }
+
+        [
+            NxBalls::runningItems(),
+            Anniversaries::listingItems(),
+            PhysicalTargets::listingItems(),
+            NxBackups::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
+            Waves::listingItems().select{|item| !item["interruption"] },
+            NxOndates::listingItems(),
+            NxFronts::listingItems(),
+            dailies,
+            NxThreads::listingItems2(dailiesuuids),
             TxCores::listingItems()
         ]
             .flatten
@@ -274,8 +279,6 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Listing::items()
-
             system("clear")
 
             spacecontrol.putsline ""
@@ -313,7 +316,7 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items
+            Listing::items()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item)

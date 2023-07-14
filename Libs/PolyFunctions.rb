@@ -36,6 +36,10 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxDailyItem" then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["item"])
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
