@@ -224,6 +224,7 @@ class Listing
              NxPages::maintenance()
              NxThreads::maintenance()
              TxCores::maintenance2()
+             NxFronts::importFromBuffer()
         end
     end
 
@@ -236,9 +237,7 @@ class Listing
                     .select{|ball| ball["type"] == "running" }
                     .select{|ball| (Time.new.to_f - ball["startunixtime"]) > 3600 }
                     .take(1)
-                    .each{
-                        CommonUtils::onScreenNotification("catalyst", "NxBall running for more than one hour")
-                    }
+                    .each{ CommonUtils::onScreenNotification("catalyst", "NxBall running for more than one hour") }
             }
         }
     end

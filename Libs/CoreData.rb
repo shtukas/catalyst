@@ -14,6 +14,15 @@ class CoreData
         LucilleCore::selectEntityFromListOfEntitiesOrNull("coredata reference type", types)
     end
 
+    # CoreData::locationToAionPointCoreDataReference(location)
+    def self.locationToAionPointCoreDataReference(location)
+        if !File.exists?(location) then
+            raise "(error: c1d975c5-8d18-4f28-abde-9a32869af017) CoreData::locationToAionPointCoreDataReference, location: '#{location}' does not exist."
+        end
+        nhash = AionCore::commitLocationReturnHash(DarkMatterElizabeth.new(), location)
+        "aion-point:#{nhash}"
+    end
+
     # CoreData::interactivelyMakeNewReferenceStringOrNull() # payload string
     def self.interactivelyMakeNewReferenceStringOrNull()
         # This function is called during the making of a new node (or when we are issuing a new payload of an existing node)
@@ -35,8 +44,7 @@ class CoreData
         if referencetype == "aion point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(DarkMatterElizabeth.new(), location)
-            return "aion-point:#{nhash}" 
+            return CoreData::locationToAionPointCoreDataReference(location)
         end
         if referencetype == "open cycle" then
             fname = LucilleCore::askQuestionAnswerAsString("OpenCycle directory name: ")

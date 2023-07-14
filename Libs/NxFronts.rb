@@ -25,4 +25,14 @@ class NxFronts
         DarkEnergy::mikuType("NxFront")
             .sort_by{|item| item["unixtime"] }
     end
+
+    # NxFronts::importFromBuffer()
+    def self.importFromBuffer()
+        folder = "#{Config::pathToGalaxy()}/DataHub/NxFronts-BufferIn"
+        LucilleCore::locationsAtFolder(folder)
+            .each{|location| 
+                NxTasks::locationToTask(location) 
+                LucilleCore::removeFileSystemLocation(location)
+            }
+    end
 end
