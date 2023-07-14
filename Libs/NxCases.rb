@@ -110,7 +110,7 @@ class NxCases
 
     # NxCases::toString(item)
     def self.toString(item)
-        "🔺#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
     # --------------------------------------------------

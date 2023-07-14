@@ -64,8 +64,16 @@ class NxThreads
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         threads = DarkEnergy::mikuType("NxThread")
+                    .sort_by{|item| item["description"] }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
+    end
+
+    # NxThreads::architectOrNull()
+    def self.architectOrNull()
+        thread = NxThreads::interactivelySelectOrNull()
+        return thread if thread
+        NxThreads::interactivelyIssueNewOrNull()
     end
 
     # NxThreads::completionRatio(thread)
