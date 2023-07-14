@@ -64,6 +64,14 @@ class ListingCommandsAndInterpreters
                 return
             end
 
+            if item["mikuType"] == "NxCase" then
+                puts PolyFunctions::toString(item).green
+                thread = NxThreads::interactivelySelectOrNull()
+                return if thread.nil?
+                Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
+                return
+            end
+
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
