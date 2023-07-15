@@ -31,4 +31,28 @@ class Daily
     def self.toString(item)
         "   (daily: #{"%5.2f" % (100*item["ratio"])} % of #{"%4.2f" % item["hours"]} hours) #{PolyFunctions::toString(item["item"])}"
     end
+
+    # Daily::generate()
+    def self.generate()
+        Daily::todayOrNull()
+            .to_a
+            .map{|uuid, hours|
+                item = DarkEnergy::itemOrNull(uuid)
+                dayDoneInHours = Bank::getValueAtDate(uuid, CommonUtils::today()).to_f/3600
+                if dayDoneInHours < hours then
+                    {
+                        "uuid"     => Digest::SHA1.hexdigest("Daily:aae9d799:#{CommonUtils::today()}:#{item["uuid"]}"),
+                        "mikuType" => "NxDailyItem",
+                        "hours"    => hours,
+                        "ratio"    => dayDoneInHours.to_f/hours,
+                        "item"     => item
+                    }
+                else
+                    nil
+                end
+            }
+            .compact
+            .select{|item| Listing::listable(item["item"]) }
+            .sort_by{|item| item["ratio"] }
+    end
 end

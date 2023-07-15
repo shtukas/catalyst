@@ -45,6 +45,7 @@ class NxThreads
     # NxThreads::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxThread")
+            .select{|thread| NxThreads::completionRatio(thread) < 1 }
             .sort_by{|thread| NxThreads::completionRatio(thread) }
     end
 
