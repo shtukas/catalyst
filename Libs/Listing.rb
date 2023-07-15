@@ -127,8 +127,6 @@ class Listing
                 .select{|item| Listing::listable(item["item"]) }
                 .sort_by{|item| item["ratio"] }
 
-        dailies1, dailies2 = dailies.partition{|item| item["ratio"] < 0.5 }
-
         dailiesuuids = dailies.map{|item| item["item"]["uuid"] }
 
         [
@@ -137,10 +135,9 @@ class Listing
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            dailies1,
             NxOndates::listingItems(),
             NxFronts::listingItems(),
-            dailies2,
+            dailies,
             Waves::listingItems().select{|item| !item["interruption"] },
             NxThreads::listingItems2(dailiesuuids),
             TxCores::listingItems()
