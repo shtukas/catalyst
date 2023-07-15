@@ -142,7 +142,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("daily * *", input) then
+        if Interpreting::match("daily", input) then
             thread = NxThreads::interactivelySelectOrNull()
             return if thread.nil?
             hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
