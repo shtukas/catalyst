@@ -50,7 +50,6 @@ class ListingCommandsAndInterpreters
             if item["mikuType"] == "NxFront" then
                 puts PolyFunctions::toString(item).green
                 puts "Converting the item into a NxCase and moving to a thread"
-                LucilleCore::pressEnterToContinue()
                 thread = NxThreads::interactivelySelectOrNull()
                 return if thread.nil?
                 Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
@@ -60,7 +59,6 @@ class ListingCommandsAndInterpreters
                 item["mikuType"] = "NxCase"
                 DarkEnergy::commit(item)
                 puts "Operation completed"
-                LucilleCore::pressEnterToContinue()
                 return
             end
 
