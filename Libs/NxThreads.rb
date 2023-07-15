@@ -1,4 +1,3 @@
-
 class NxThreads
 
     # --------------------------------------------------------------------------
@@ -137,7 +136,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(case, pile, position *)"
+            puts "(case, pile, position *, [>>])"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -157,6 +156,18 @@ class NxThreads
                 return if item.nil?
                 Tx8s::repositionItemAtSameParent(item)
                 next
+            end
+
+            if input == "[>>]" then
+                unselected = Tx8s::childrenInOrder(thread)
+                selected, _ = LucilleCore::selectZeroOrMore("case", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
+                puts "Select target thread"
+                t = NxThreads::interactivelySelectOrNull()
+                next if t.nil?
+                selected.each{|caz|
+                    tx8 = Tx8s::make(t["uuid"], Tx8s::nextPositionAtThisParent(t))
+                    DarkEnergy::patch(caz["uuid"], "parent", tx8)
+                }
             end
 
             puts ""
