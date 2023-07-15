@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | front | time | times | page | float | daily <n> <hours>",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | front | time | times | page | float | daily",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -143,10 +143,10 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("daily * *", input) then
-            _, listord, hours = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Daily::adduuid(item["uuid"], hours.to_f)
+            thread = NxThreads::interactivelySelectOrNull()
+            return if thread.nil?
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            Daily::adduuid(thread["uuid"], hours.to_f)
             return
         end
 
