@@ -1,0 +1,10 @@
+
+NxBoosterX is the listing version of NxBooster
+
+"uuid"     : String
+"mikuType" : "NxBoosterX"
+"date"     : YYYY-MM-DD
+"item"     : Item
+"hours"    : float
+"ratio"    : Float
+

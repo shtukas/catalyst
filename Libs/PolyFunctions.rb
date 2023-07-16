@@ -32,11 +32,11 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxDaily" then
+        if item["mikuType"] == "NxBoosterX" then
             accounts = accounts + PolyFunctions::itemToBankingAccounts(item["item"])
         end
 
-        daily = Daily::dailyForTargetItemOrNull(item)
+        daily = NxBoosters::dailyForTargetItemOrNull(item)
         if daily then
             # We can't call PolyFunctions::itemToBankingAccounts on the daily because
             # this would cycle.
@@ -84,8 +84,8 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxDaily" then
-            return Daily::toString(item)
+        if item["mikuType"] == "NxBoosterX" then
+            return NxBoosters::toString(item)
         end
         if item["mikuType"] == "NxCase" then
             return NxCases::toString(item)

@@ -1,0 +1,10 @@
+
+-- NxBooster (Blade) --
+
+"uuid"     : String
+"mikuType" : "NxBooster"
+"date"     : YYYY-MM-DD
+"item"     : Item
+"hours"    : float
+
+

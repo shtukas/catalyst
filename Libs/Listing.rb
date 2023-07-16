@@ -106,28 +106,9 @@ class Listing
 
     # Listing::items()
     def self.items()
-        dailies = Daily::todayOrNull()
-                .to_a
-                .map{|uuid, hours|
-                    item = DarkEnergy::itemOrNull(uuid)
-                    rt = Bank::recoveredAverageHoursPerDay(item["uuid"])
-                    if rt < hours then
-                        {
-                            "uuid"     => Digest::SHA1.hexdigest("Daily:aae9d799:#{CommonUtils::today()}:#{item["uuid"]}"),
-                            "mikuType" => "NxDaily",
-                            "hours"    => hours,
-                            "ratio"    => rt.to_f/hours,
-                            "item"     => item
-                        }
-                    else
-                        nil
-                    end
-                }
-                .compact
-                .select{|item| Listing::listable(item["item"]) }
-                .sort_by{|item| item["ratio"] }
+        boosters = NxBoosters::listingItems()
 
-        dailiesuuids = dailies.map{|item| item["item"]["uuid"] }
+        boosterstargetuuids = boosters.map{|item| item["item"]["uuid"] }
 
         [
             NxBalls::runningItems(),
@@ -137,9 +118,9 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxFronts::listingItems(),
-            dailies,
+            boosters,
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxThreads::listingItems2(dailiesuuids),
+            NxThreads::listingItems2(boosterstargetuuids),
             TxCores::listingItems()
         ]
             .flatten
@@ -225,6 +206,7 @@ class Listing
              TxCores::maintenance2()
              NxFronts::importFromBuffer()
              NxFloats::maintenance()
+             NxBoosters::maintenance()
         end
     end
 

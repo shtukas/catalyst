@@ -53,7 +53,10 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
-require_relative "#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries/Blades.rb"
+require_relative "#{ENV['HOME']}/Galaxy/DataHub/Kerrigan/Blades.rb"
+require_relative "#{ENV['HOME']}/Galaxy/DataHub/Kerrigan/Solingen.rb"
+
+# ------------------------------------------------------------
 
 require_relative "Config.rb"
 
@@ -124,16 +127,10 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 # ------------------------------------------------------------
 
-require_relative "Blades.rb"
-require_relative "Solingen.rb"
-
-# ------------------------------------------------------------
-
 require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
-require_relative "NxBackups.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CoreData.rb"
@@ -148,7 +145,6 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DarkSpace.rb"
 require_relative "DxNotes.rb"
-require_relative "Daily.rb"
 
 require_relative "Galaxy.rb"
 
@@ -158,6 +154,7 @@ require_relative "ItemStore.rb"
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
 
+require_relative "NxBackups.rb"
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
@@ -167,6 +164,7 @@ require_relative "NxTimes.rb"
 require_relative "NxPages.rb"
 require_relative "NxThreads.rb"
 require_relative "NxFloats.rb"
+require_relative "NxBoosters.rb"
 
 require_relative "Memoize.rb"
 

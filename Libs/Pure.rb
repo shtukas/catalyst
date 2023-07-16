@@ -2,7 +2,7 @@ class Pure
 
     # Pure::energy(item)
     def self.energy(item) # prefix + [item]
-        if item["mikuType"] == "NxDaily" then
+        if item["mikuType"] == "NxBoosterX" then
             return Pure::energy(item["item"]) + [item]
         end
         if item["mikuType"] == "NxThread" then
