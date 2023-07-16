@@ -124,6 +124,11 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 # ------------------------------------------------------------
 
+require_relative "Blades.rb"
+require_relative "Solingen.rb"
+
+# ------------------------------------------------------------
+
 require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
