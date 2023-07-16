@@ -298,6 +298,7 @@ class Listing
             end
 
             items = Listing::items()
+            items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
             items = Pure::energy(items.first) + items.drop(1)
             items
                 .each{|item|
