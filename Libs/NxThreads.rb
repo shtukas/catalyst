@@ -124,25 +124,41 @@ class NxThreads
             spacecontrol.putsline ""
             store.register(thread, false)
             spacecontrol.putsline Listing::toString2(store, thread)
-
             spacecontrol.putsline ""
-            items = Tx8s::childrenInOrder(thread)
 
+            floats = NxFloats::listingItemsForThread(thread)
+            if floats.size > 0 then
+                floats
+                    .each{|item|
+                        store.register(item, false)
+                        status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
+
+            items = Tx8s::childrenInOrder(thread).select{|item| item["mikuType"] == "NxCase" }
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
                     break if !status
                 }
 
             puts ""
-            puts "(case, pile, position *, [>>])"
+            puts "(case, pile, float, position *, [>>])"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "case" then
                 NxCases::interactivelyIssueNewAtParentOrNull(thread)
+                next
+            end
+
+            if input == "float" then
+                NxFloats::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 

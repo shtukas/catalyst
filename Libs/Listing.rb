@@ -224,6 +224,7 @@ class Listing
              NxThreads::maintenance()
              TxCores::maintenance2()
              NxFronts::importFromBuffer()
+             NxFloats::maintenance()
         end
     end
 
@@ -303,7 +304,7 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            floats = DarkEnergy::mikuType("NxFloat")
+            floats = NxFloats::listingItemsForMainListing()
             if floats.size > 0 then
                 floats
                     .each{|item|
