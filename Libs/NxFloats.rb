@@ -62,9 +62,10 @@ class NxFloats
             }
     end
 
+    # NxFloats::program1()
     def self.program1()
         loop {
-            float LucilleCore::selectEntityFromListOfEntitiesOrNull("float", DarkEnergy::mikuType("NxFloat"), lambda{|float| NxFloats::toString(float) })
+            float = LucilleCore::selectEntityFromListOfEntitiesOrNull("float", DarkEnergy::mikuType("NxFloat"), lambda{|float| NxFloats::toString(float) })
             return if float.nil?
             PolyActions::access(float)
         }

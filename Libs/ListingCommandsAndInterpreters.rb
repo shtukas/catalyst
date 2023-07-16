@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | front | time | times | page | float | daily",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -80,6 +80,11 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
+            return
+        end
+
+        if Interpreting::match("floats", input) then
+            NxFloats::program1()
             return
         end
 
