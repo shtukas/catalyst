@@ -114,7 +114,7 @@ class Listing
                     if rt < hours then
                         {
                             "uuid"     => Digest::SHA1.hexdigest("Daily:aae9d799:#{CommonUtils::today()}:#{item["uuid"]}"),
-                            "mikuType" => "NxDailyItem",
+                            "mikuType" => "NxDaily",
                             "hours"    => hours,
                             "ratio"    => rt.to_f/hours,
                             "item"     => item
@@ -314,7 +314,9 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            Listing::items()
+            items = Listing::items()
+            items = Pure::energy(items.first) + items.drop(1)
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item)

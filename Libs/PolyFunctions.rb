@@ -25,10 +25,6 @@ class PolyFunctions
             end
         end
 
-        if item["drivers"] then
-            accounts = accounts + item["drivers"].map{|driver| PolyFunctions::itemToBankingAccounts(driver) }.flatten
-        end
-
         if item["mikuType"] == "TxCore" then
             accounts << {
                 "description" => item["description"],
@@ -36,8 +32,18 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxDailyItem" then
+        if item["mikuType"] == "NxDaily" then
             accounts = accounts + PolyFunctions::itemToBankingAccounts(item["item"])
+        end
+
+        daily = Daily::dailyForTargetItemOrNull(item)
+        if daily then
+            # We can't call PolyFunctions::itemToBankingAccounts on the daily because
+            # this would cycle.
+            accounts << {
+                "description" => daily["mikuType"],
+                "number"      => daily["uuid"]
+            }
         end
 
         accounts.reduce([]){|as, account|
@@ -78,7 +84,7 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxDailyItem" then
+        if item["mikuType"] == "NxDaily" then
             return Daily::toString(item)
         end
         if item["mikuType"] == "NxCase" then

@@ -32,8 +32,8 @@ class Daily
         "   (daily: #{"%5.2f" % (100*item["ratio"])} % of #{"%4.2f" % item["hours"]} hours) #{PolyFunctions::toString(item["item"])}"
     end
 
-    # Daily::generate()
-    def self.generate()
+    # Daily::dailies()
+    def self.dailies()
         Daily::todayOrNull()
             .to_a
             .map{|uuid, hours|
@@ -42,7 +42,7 @@ class Daily
                 if dayDoneInHours < hours then
                     {
                         "uuid"     => Digest::SHA1.hexdigest("Daily:aae9d799:#{CommonUtils::today()}:#{item["uuid"]}"),
-                        "mikuType" => "NxDailyItem",
+                        "mikuType" => "NxDaily",
                         "hours"    => hours,
                         "ratio"    => dayDoneInHours.to_f/hours,
                         "item"     => item
@@ -52,7 +52,17 @@ class Daily
                 end
             }
             .compact
-            .select{|item| Listing::listable(item["item"]) }
             .sort_by{|item| item["ratio"] }
+    end
+
+    # Daily::listingItems()
+    def self.listingItems()
+        Daily::dailies()
+            .select{|item| Listing::listable(item["item"]) }
+    end
+
+    # Daily::dailyForTargetItemOrNull(item)
+    def self.dailyForTargetItemOrNull(item)
+        Daily::dailies().select{|daily| daily["item"]["uuid"] == item["uuid"] }.first
     end
 end

@@ -22,7 +22,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDailyItem" then
+        if item["mikuType"] == "NxDaily" then
             PolyActions::access(item["item"])
             return
         end
@@ -98,7 +98,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDailyItem" then
+        if item["mikuType"] == "NxDaily" then
             PolyActions::done(item["item"])
             return
         end
@@ -264,7 +264,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDailyItem" then
+        if item["mikuType"] == "NxDaily" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy daily envelop for: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Daily::unregister(item["item"]["uuid"])
             end
@@ -323,7 +323,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDailyItem" then
+        if item["mikuType"] == "NxDaily" then
             NxBalls::start(item)
             PolyActions::access(item)
             return
