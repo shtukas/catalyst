@@ -98,11 +98,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
-            PolyActions::done(item["item"])
-            return
-        end
-
         if item["mikuType"] == "NxPage" then
             puts "You cannot done a NxPage, but you can destroy it"
             LucilleCore::pressEnterToContinue()
@@ -243,7 +238,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBooster" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{Waves::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
             return
