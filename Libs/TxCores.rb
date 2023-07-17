@@ -92,19 +92,6 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
-    # TxCores::interactivelyAttempToAttachCore(item)
-    def self.interactivelyAttempToAttachCore(item)
-        core = TxCores::interactivelySelectOneOrNull()
-        return if core.nil?
-        if item["mikuType"] == "NxBooster" then
-            Blades::setAttribute2(item["uuid"], "core", core["uuid"])
-            return
-        end
-        item["core"] = core["uuid"]
-        puts JSON.pretty_generate(item)
-        DarkEnergy::commit(item)
-    end
-
     # TxCores::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("TxCore")
@@ -143,14 +130,6 @@ class TxCores
     # TxCores::maintenance2()
     def self.maintenance2()
         DarkEnergy::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
-    end
-
-    # TxCores::suffix(item)
-    def self.suffix(item)
-        return "" if item["core"].nil?
-        core = DarkEnergy::itemOrNull(item["core"])
-        return "" if core.nil?
-        " (#{core["description"].green})"
     end
 
     # TxCores::program1(core)
