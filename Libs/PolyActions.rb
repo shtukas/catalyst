@@ -287,7 +287,7 @@ class PolyActions
 
         if item["mikuType"] == "NxThread" then
             if Tx8s::childrenInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} items"
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} children items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
