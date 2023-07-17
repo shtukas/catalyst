@@ -39,4 +39,9 @@ class NxBoosters
                 }
             }
     end
+
+    # NxBoosters::destroy(uuid)
+    def self.destroy(uuid)
+        Blades::destroy(uuid)
+    end
 end
