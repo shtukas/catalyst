@@ -38,6 +38,12 @@ class NxPages
         "📃 #{item["description"]}#{Tx8s::suffix(item).green}"
     end
 
+    # NxPages::listingItemsForMainListing()
+    def self.listingItemsForMainListing()
+        DarkEnergy::mikuType("NxPage")
+            .select{|item| item["parent"].nil? }
+    end
+
     # NxPages::access(page)
     def self.access(page)
         puts "accessing page '#{NxPages::toString(page)}' in synchronous edition mode"

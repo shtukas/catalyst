@@ -118,6 +118,8 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Waves::listingItems().select{|item| !item["interruption"] },
             NxOndates::listingItems(),
+            NxPages::listingItemsForMainListing(),
+            NxFloats::listingItemsForMainListing(),
             NxTasks::listingItemsForMainListing(),
             boosters,
             NxThreads::listingItems2(boosterstargetuuids),
@@ -276,17 +278,6 @@ class Listing
             desktopItems = Desktop::listingItems()
             if desktopItems.size > 0 then
                 desktopItems
-                    .each{|item|
-                        store.register(item, false)
-                        status = spacecontrol.putsline Listing::toString2(store, item)
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
-            floats = NxFloats::listingItemsForMainListing()
-            if floats.size > 0 then
-                floats
                     .each{|item|
                         store.register(item, false)
                         status = spacecontrol.putsline Listing::toString2(store, item)
