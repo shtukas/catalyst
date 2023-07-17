@@ -32,20 +32,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxBoosterX" then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["item"])
-        end
-
-        daily = NxBoosters::dailyForTargetItemOrNull(item)
-        if daily then
-            # We can't call PolyFunctions::itemToBankingAccounts on the daily because
-            # this would cycle.
-            accounts << {
-                "description" => daily["mikuType"],
-                "number"      => daily["uuid"]
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -81,7 +67,7 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxBoosterX" then
+        if item["mikuType"] == "NxBooster" then
             return NxBoosters::toString(item)
         end
         if item["mikuType"] == "NxTask" then

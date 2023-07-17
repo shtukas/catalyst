@@ -143,10 +143,10 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("booster", input) then
-            thread = NxThreads::interactivelySelectOrNull()
-            return if thread.nil?
+            description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
+            return if description == ""
             hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            NxBoosters::issue(thread, hours.to_f)
+            NxBoosters::issue(description, hours)
             return
         end
 

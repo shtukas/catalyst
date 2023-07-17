@@ -10,10 +10,11 @@ class Pure
 
     # Pure::energy(item)
     def self.energy(item) # prefix + [item]
-        if item["mikuType"] == "NxBoosterX" then
-            return Pure::energy(item["item"]) + [item]
-        end
+
         if item["mikuType"] == "NxThread" then
+            return Pure::childrenInOrder(item).take(5) + [item]
+        end
+        if item["mikuType"] == "NxCore" then
             return Pure::childrenInOrder(item).take(5) + [item]
         end
         [item]

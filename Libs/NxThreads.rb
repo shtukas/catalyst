@@ -50,12 +50,6 @@ class NxThreads
             .sort_by{|thread| NxThreads::completionRatio(thread) }
     end
 
-    # NxThreads::listingItems2(dailiesuuids)
-    def self.listingItems2(dailiesuuids)
-        NxThreads::listingItems()
-            .select{|thread| !dailiesuuids.include?(thread["uuid"]) }
-    end
-
     # NxThreads::infinityuuid()
     def self.infinityuuid()
         "bc3901ad-18ad-4354-b90b-63f7a611e64e"

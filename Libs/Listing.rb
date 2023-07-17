@@ -106,23 +106,19 @@ class Listing
 
     # Listing::items()
     def self.items()
-        boosters = NxBoosters::listingItems()
-
-        boosterstargetuuids = boosters.map{|item| item["item"]["uuid"] }
-
         [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
+            NxBoosters::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxOndates::listingItems(),
             NxPages::listingItemsForMainListing(),
             NxFloats::listingItemsForMainListing(),
             NxTasks::listingItemsForMainListing(),
-            boosters,
-            NxThreads::listingItems2(boosterstargetuuids),
+            NxThreads::listingItems(),
             TxCores::listingItems()
         ]
             .flatten
@@ -206,7 +202,6 @@ class Listing
              NxThreads::maintenance()
              TxCores::maintenance2()
              NxFloats::maintenance()
-             NxBoosters::maintenance()
         end
     end
 
