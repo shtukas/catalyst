@@ -22,7 +22,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoosterX" then
+        if item["mikuType"] == "NxBooster" then
             PolyActions::access(item["item"])
             return
         end
@@ -98,7 +98,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoosterX" then
+        if item["mikuType"] == "NxBooster" then
             PolyActions::done(item["item"])
             return
         end
@@ -242,6 +242,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBooster" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{Waves::toString(item).green} ? '", true) then
+                Waves::performWaveDone(item)
+            end
+            return
+        end
+
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -257,7 +264,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoosterX" then
+        if item["mikuType"] == "NxBooster" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy booster: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::destroy(item["uuid"])
             end
@@ -322,7 +329,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBoosterX" then
+        if item["mikuType"] == "NxBooster" then
             NxBalls::start(item)
             PolyActions::access(item)
             return
