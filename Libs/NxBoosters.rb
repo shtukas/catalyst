@@ -6,7 +6,6 @@ class NxBoosters
     def self.issue(description, hours)
         uuid = SecureRandom.uuid
         Blades::init("NxBooster", uuid)
-        Blades::setAttribute2(uuid, "date", CommonUtils::today())
         Blades::setAttribute2(uuid, "description", description)
         Blades::setAttribute2(uuid, "hours", hours)
     end
@@ -28,13 +27,11 @@ class NxBoosters
         Solingen::mikuTypeUUIDs("NxBooster")
             .sort_by{|uuid| NxBoosters::ratio(uuid) }
             .map{|uuid|
-                date = Blades::getAttributeOrNull2(uuid, "date")
                 description = Blades::getAttributeOrNull2(uuid, "description")
                 hours = Blades::getAttributeOrNull2(uuid, "hours")
                 {
                     "uuid"        => uuid,
                     "mikuType"    => "NxBooster",
-                    "date"        => date,
                     "hours"       => hours,
                     "description" => description,
                 }

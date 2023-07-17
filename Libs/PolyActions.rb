@@ -98,11 +98,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
-            PolyActions::done(item["item"])
-            return
-        end
-
         if item["mikuType"] == "NxPage" then
             puts "You cannot done a NxPage, but you can destroy it"
             LucilleCore::pressEnterToContinue()
