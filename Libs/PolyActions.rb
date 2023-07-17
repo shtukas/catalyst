@@ -62,8 +62,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCase" then
-            NxCases::access(item)
+        if item["mikuType"] == "NxTask" then
+            NxTasks::access(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 
@@ -104,13 +109,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPage" then
-            puts "You can't done a NxPage, but you cna destroy it"
+            puts "You cannot done a NxPage, but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
 
         if item["mikuType"] == "NxThread" then
-            puts "You can't done a NxThread, but you cna destroy it"
+            puts "You cannot done a NxThread, but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -201,7 +206,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCase" then
+        if item["mikuType"] == "NxTask" then
             if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
@@ -239,6 +244,12 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            puts "You cannot done a TxCore"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -311,6 +322,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCore" then
+            puts "You cannot done a TxCore"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
@@ -362,11 +379,11 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCase" then
+        if item["mikuType"] == "NxTask" then
             puts PolyFunctions::toString(item).green
             first_time = (Bank::getValue(item["uuid"]) == 0)
             NxBalls::start(item)
-            NxCases::access(item)
+            NxTasks::access(item)
             if first_time then
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                     NxBalls::stop(item)
@@ -395,6 +412,11 @@ class PolyActions
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 

@@ -1,11 +1,11 @@
 
 
-class NxCases
+class NxTasks
 
     # --------------------------------------------------
     # Makers
 
-    # NxCases::interactivelyIssueNewOrNull()
+    # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
 
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
@@ -15,7 +15,7 @@ class NxCases
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxCase", uuid)
+        DarkEnergy::init("NxTask", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
 
@@ -27,7 +27,7 @@ class NxCases
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxCases::interactivelyIssueNewAtParentOrNull(parent)
+    # NxTasks::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
 
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
@@ -40,7 +40,7 @@ class NxCases
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxCase", uuid)
+        DarkEnergy::init("NxTask", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
 
@@ -53,7 +53,7 @@ class NxCases
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxCases::interactivelyIssueNewAtTopAtParentOrNull(parent)
+    # NxTasks::interactivelyIssueNewAtTopAtParentOrNull(parent)
     def self.interactivelyIssueNewAtTopAtParentOrNull(parent)
 
         tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
@@ -65,7 +65,7 @@ class NxCases
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxCase", uuid)
+        DarkEnergy::init("NxTask", uuid)
 
         coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
 
@@ -78,12 +78,12 @@ class NxCases
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxCases::urlToTask(url)
+    # NxTasks::urlToTask(url)
     def self.urlToTask(url)
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        DarkEnergy::init("NxCase", uuid)
+        DarkEnergy::init("NxTask", uuid)
 
         nhash = DarkMatter::putBlob(url)
         coredataref = "url:#{nhash}"
@@ -95,10 +95,10 @@ class NxCases
         DarkEnergy::itemOrNull(uuid)
     end
 
-    # NxCases::descriptionToTask(description)
+    # NxTasks::descriptionToTask(description)
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxCase", uuid)
+        DarkEnergy::init("NxTask", uuid)
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
         DarkEnergy::patch(uuid, "description", description)
@@ -108,7 +108,7 @@ class NxCases
     # --------------------------------------------------
     # Data
 
-    # NxCases::toString(item)
+    # NxTasks::toString(item)
     def self.toString(item)
         "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
@@ -116,12 +116,12 @@ class NxCases
     # --------------------------------------------------
     # Operations
 
-    # NxCases::pile(case_)
+    # NxTasks::pile(case_)
     def self.pile(case_)
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text.lines.to_a.map{|line| line.strip }.select{|line| line != ""}.reverse.each {|line|
-            t1 = NxCases::descriptionToTask(line)
+            t1 = NxTasks::descriptionToTask(line)
             next if t1.nil?
             puts JSON.pretty_generate(t1)
             t1["parent"] = Tx8s::make(case_["uuid"], Tx8s::newFirstPositionAtThisParent(case_))
@@ -130,15 +130,15 @@ class NxCases
         }
     end
 
-    # NxCases::access(case_)
+    # NxTasks::access(case_)
     def self.access(case_)
         CoreData::access(case_["uuid"], case_["field11"])
     end
 
-    # NxCases::maintenance()
+    # NxTasks::maintenance()
     def self.maintenance()
         # Ensuring consistency of case_ parenting targets
-        DarkEnergy::mikuType("NxCase").each{|case_|
+        DarkEnergy::mikuType("NxTask").each{|case_|
             next if case_["parent"].nil?
             if DarkEnergy::itemOrNull(case_["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
@@ -146,7 +146,7 @@ class NxCases
         }
 
         # Move orphan case_s to Infinity
-        DarkEnergy::mikuType("NxCase").each{|case_|
+        DarkEnergy::mikuType("NxTask").each{|case_|
             next if case_["parent"]
             parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
             case_["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
@@ -154,9 +154,9 @@ class NxCases
         }
 
         # Feed Infinity using NxIce
-        if DarkEnergy::mikuType("NxCase").size < 100 then
+        if DarkEnergy::mikuType("NxTask").size < 100 then
             DarkEnergy::mikuType("NxIce").take(10).each{|item|
-                item["mikuType"] == "NxCase"
+                item["mikuType"] == "NxTask"
                 parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
                 item["parent"] = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(parent))
                 DarkEnergy::commit(item)

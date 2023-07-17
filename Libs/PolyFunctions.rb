@@ -87,8 +87,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBoosterX" then
             return NxBoosters::toString(item)
         end
-        if item["mikuType"] == "NxCase" then
-            return NxCases::toString(item)
+        if item["mikuType"] == "NxTask" then
+            return NxTasks::toString(item)
         end
         if item["mikuType"] == "NxPage" then
             return NxPages::toString(item)

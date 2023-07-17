@@ -107,6 +107,15 @@ class TxCores
             .sort_by{|core| TxCores::compositeCompletionRatio(core) }
     end
 
+    # TxCores::childrenInOrder(core)
+    def self.childrenInOrder(core)
+        items  = Tx8s::childrenInOrder(core)
+        pages, items  = items.partition{|item| item["mikuType"] == "NxPage" }
+        floats, items = items.partition{|item| item["mikuType"] == "NxFloat" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        pages + floats + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+    end
+
     # -----------------------------------------------
     # Ops
 
@@ -138,5 +147,64 @@ class TxCores
         core = DarkEnergy::itemOrNull(item["core"])
         return "" if core.nil?
         " (#{core["description"].green})"
+    end
+
+    # TxCores::program1(core)
+    def self.program1(core)
+        loop {
+
+            thread = DarkEnergy::itemOrNull(core["uuid"])
+            return if core.nil?
+
+            system("clear")
+
+            store = ItemStore.new()
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            spacecontrol.putsline ""
+            store.register(core, false)
+            spacecontrol.putsline Listing::toString2(store, core)
+            spacecontrol.putsline ""
+
+            TxCores::childrenInOrder(core)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item).gsub(core["description"], "")
+                    break if !status
+                }
+
+            puts ""
+            puts "(task, pile, float, page, thread, position *)"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "task" then
+                NxTasks::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "pile" then
+                Tx8s::pileAtThisParent(core)
+            end
+
+            if input == "float" then
+                NxFloats::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "page" then
+                NxPages::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "thread" then
+                NxThreads::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
+        }
     end
 end

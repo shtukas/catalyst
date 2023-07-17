@@ -200,7 +200,7 @@ class Listing
              PositiveSpace::maintenance()
              Bank::fileManagement()
              NxBackups::maintenance()
-             NxCases::maintenance()
+             NxTasks::maintenance()
              NxPages::maintenance()
              NxThreads::maintenance()
              TxCores::maintenance2()

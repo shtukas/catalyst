@@ -49,20 +49,20 @@ class ListingCommandsAndInterpreters
 
             if item["mikuType"] == "NxFront" then
                 puts PolyFunctions::toString(item).green
-                puts "Converting the item into a NxCase and moving to a thread"
+                puts "Converting the item into a NxTask and moving to a thread"
                 thread = NxThreads::interactivelySelectOrNull()
                 return if thread.nil?
                 Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
                 item = DarkEnergy::itemOrNull(item["uuid"])
                 return if item["parent"].nil?
                 return if item["parent"]["uuid"] != thread["uuid"]
-                item["mikuType"] = "NxCase"
+                item["mikuType"] = "NxTask"
                 DarkEnergy::commit(item)
                 puts "Operation completed"
                 return
             end
 
-            if item["mikuType"] == "NxCase" then
+            if item["mikuType"] == "NxTask" then
                 puts PolyFunctions::toString(item).green
                 thread = NxThreads::interactivelySelectOrNull()
                 return if thread.nil?
@@ -100,7 +100,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("case", input) then
-            case_ = NxCases::interactivelyIssueNewOrNull()
+            case_ = NxTasks::interactivelyIssueNewOrNull()
             return if case_.nil?
             thread = NxThreads::interactivelySelectOrNull()
             if thread then
@@ -132,6 +132,16 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("thread *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            thread = NxThreads::interactivelySelectThreadAtMainListingOrNull()
+            return if thread.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
+            return
+        end
+
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
@@ -159,8 +169,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxCase" then
-                puts "You can only pile * a NxCase"
+            if item["mikuType"] != "NxTask" then
+                puts "You can only pile * a NxTask"
                 LucilleCore::pressEnterToContinue()
                 return
             end

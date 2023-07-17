@@ -45,6 +45,7 @@ class NxThreads
     # NxThreads::listingItems()
     def self.listingItems()
         DarkEnergy::mikuType("NxThread")
+            .select{|item| item["parent"].nil? }
             .select{|thread| NxThreads::completionRatio(thread) < 1 }
             .sort_by{|thread| NxThreads::completionRatio(thread) }
     end
@@ -68,6 +69,24 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
     end
 
+    # NxThreads::interactivelySelectThreadAtMainListingOrNull()
+    def self.interactivelySelectThreadAtMainListingOrNull()
+        threads = DarkEnergy::mikuType("NxThread")
+                    .select{|item| item["parent"].nil? }
+                    .sort_by{|thread| NxThreads::completionRatio(thread) }
+        padding = threads.map{|item| NxThreads::toString(item).size }.max
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
+    end
+
+    # NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
+    def self.interactivelySelectThreadChildOfThisThreadOrNull(thread)
+        threads = DarkEnergy::mikuType("NxThread")
+                    .select{|item| item["parent"] and item["parent"]["uuid"] == thread["uuid"] }
+                    .sort_by{|thread| NxThreads::completionRatio(thread) }
+        padding = threads.map{|item| NxThreads::toString(item).size }.max
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
+    end
+
     # NxThreads::architectOrNull()
     def self.architectOrNull()
         thread = NxThreads::interactivelySelectOrNull()
@@ -79,6 +98,15 @@ class NxThreads
     def self.completionRatio(thread)
         hours = thread["hours"] || 2
         Bank::recoveredAverageHoursPerDay(thread["uuid"]).to_f/(hours.to_f/7)
+    end
+
+    # NxThreads::childrenInOrder(thread)
+    def self.childrenInOrder(thread)
+        items  = Tx8s::childrenInOrder(thread)
+        pages, items  = items.partition{|item| item["mikuType"] == "NxPage" }
+        floats, items = items.partition{|item| item["mikuType"] == "NxFloat" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        pages + floats + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
 
     # --------------------------------------------------------------------------
@@ -93,7 +121,7 @@ class NxThreads
         CatalystSharedCache::set("9c81e889-f07f-4f70-9e91-9bae2c097ea6", padding)
 
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxCase").each{|item|
+        DarkEnergy::mikuType("NxTask").each{|item|
             next if item["parent"].nil?
             if DarkEnergy::itemOrNull(item["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
@@ -101,7 +129,7 @@ class NxThreads
         }
 
         # Move orphan items to Infinity
-        DarkEnergy::mikuType("NxCase").each{|item|
+        DarkEnergy::mikuType("NxTask").each{|item|
             next if item["parent"]
             parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
@@ -126,31 +154,7 @@ class NxThreads
             spacecontrol.putsline Listing::toString2(store, thread)
             spacecontrol.putsline ""
 
-            items  = Tx8s::childrenInOrder(thread)
-            floats, items = items.partition{|item| item["mikuType"] == "NxFloat" }
-            pages, items  = items.partition{|item| item["mikuType"] == "NxPage" }
-
-            if floats.size > 0 then
-                floats
-                    .each{|item|
-                        store.register(item, false)
-                        status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
-            if pages.size > 0 then
-                pages
-                    .each{|item|
-                        store.register(item, false)
-                        status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
-            items
+            NxThreads::childrenInOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
@@ -158,13 +162,13 @@ class NxThreads
                 }
 
             puts ""
-            puts "(case, pile, float, page, position *, [>>])"
+            puts "(task, pile, float, page, thread, position *, select tasks and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "case" then
-                NxCases::interactivelyIssueNewAtParentOrNull(thread)
+            if input == "task" then
+                NxTasks::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 
@@ -182,6 +186,11 @@ class NxThreads
                 next
             end
 
+            if input == "thread" then
+                NxThreads::interactivelyIssueNewAtParentOrNull(thread)
+                next
+            end
+
             if input.start_with?("position") then
                 itemindex = input[8, input.length].strip.to_i
                 item = store.get(itemindex)
@@ -190,15 +199,16 @@ class NxThreads
                 next
             end
 
-            if input == "[>>]" then
-                unselected = Tx8s::childrenInOrder(thread)
-                selected, _ = LucilleCore::selectZeroOrMore("case", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
+            if input == "select tasks and move down" then
+                unselected = NxThreads::childrenInOrder(thread)
+                                .select{|item| item["mikuType"] == "NxTask" }
+                selected, _ = LucilleCore::selectZeroOrMore("task", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 puts "Select target thread"
-                t = NxThreads::interactivelySelectOrNull()
+                t = NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
                 next if t.nil?
-                selected.each{|caz|
+                selected.each{|task|
                     tx8 = Tx8s::make(t["uuid"], Tx8s::nextPositionAtThisParent(t))
-                    DarkEnergy::patch(caz["uuid"], "parent", tx8)
+                    DarkEnergy::patch(task["uuid"], "parent", tx8)
                 }
             end
 

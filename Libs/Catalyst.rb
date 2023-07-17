@@ -8,7 +8,7 @@ class Catalyst
           "NxAnniversary",
           "NxBackup",
           "NxOndate",
-          "NxCase",
+          "NxTask",
           "PhysicalTarget",
           "Wave",
         ]
