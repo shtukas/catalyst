@@ -122,41 +122,33 @@ class NxTasks
     # --------------------------------------------------
     # Operations
 
-    # NxTasks::pile(case_)
-    def self.pile(case_)
+    # NxTasks::pile(task)
+    def self.pile(task)
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text.lines.to_a.map{|line| line.strip }.select{|line| line != ""}.reverse.each {|line|
             t1 = NxTasks::descriptionToTask(line)
             next if t1.nil?
             puts JSON.pretty_generate(t1)
-            t1["parent"] = Tx8s::make(case_["uuid"], Tx8s::newFirstPositionAtThisParent(case_))
+            t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
             puts JSON.pretty_generate(t1)
             DarkEnergy::commit(t1)
         }
     end
 
-    # NxTasks::access(case_)
-    def self.access(case_)
-        CoreData::access(case_["uuid"], case_["field11"])
+    # NxTasks::access(task)
+    def self.access(task)
+        CoreData::access(task["uuid"], task["field11"])
     end
 
     # NxTasks::maintenance()
     def self.maintenance()
-        # Ensuring consistency of case_ parenting targets
-        DarkEnergy::mikuType("NxTask").each{|case_|
-            next if case_["parent"].nil?
-            if DarkEnergy::itemOrNull(case_["parent"]["uuid"]).nil? then
+        # Ensuring consistency of task parenting targets
+        DarkEnergy::mikuType("NxTask").each{|task|
+            next if task["parent"].nil?
+            if DarkEnergy::itemOrNull(task["parent"]["uuid"]).nil? then
                 DarkEnergy::patch(uuid, "parent", nil)
             end
-        }
-
-        # Move orphan case_s to Infinity
-        DarkEnergy::mikuType("NxTask").each{|case_|
-            next if case_["parent"]
-            parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
-            case_["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-            DarkEnergy::commit(case_)
         }
 
         # Feed Infinity using NxIce
