@@ -238,7 +238,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBooster" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{Waves::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
             return
