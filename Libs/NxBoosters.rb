@@ -12,7 +12,7 @@ class NxBoosters
 
     # NxBoosters::toString(item)
     def self.toString(item)
-        "🚀 (#{"%6.2f" % (100*NxBoosters::ratio(item["uuid"]))} % of #{"%4.2f" % item["hours"]} hours) #{item["description"]}#{TxCores::suffix(item)}"
+        "🚀 (#{"%6.2f" % (100*NxBoosters::ratio(item["uuid"]))} % of #{"%4.2f" % item["hours"]} hours) #{item["description"]}"
     end
 
     # NxBoosters::ratio(uuid)
@@ -29,14 +29,19 @@ class NxBoosters
             .map{|uuid|
                 description = Blades::getAttributeOrNull2(uuid, "description")
                 hours = Blades::getAttributeOrNull2(uuid, "hours")
-                parent = Blades::getAttributeOrNull2(uuid, "parent")
+                core = Blades::getAttributeOrNull2(uuid, "core")
                 {
                     "uuid"        => uuid,
                     "mikuType"    => "NxBooster",
                     "hours"       => hours,
                     "description" => description,
-                    "parent"      => parent
+                    "core"        => core
                 }
             }
+    end
+
+    # NxBoosters::destroy(uuid)
+    def self.destroy(uuid)
+        Blades::destroy(uuid)
     end
 end

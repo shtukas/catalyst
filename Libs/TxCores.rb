@@ -96,6 +96,10 @@ class TxCores
     def self.interactivelyAttempToAttachCore(item)
         core = TxCores::interactivelySelectOneOrNull()
         return if core.nil?
+        if item["mikuType"] == "NxBooster" then
+            Blades::setAttribute2(item["uuid"], "core", core["uuid"])
+            return
+        end
         item["core"] = core["uuid"]
         puts JSON.pretty_generate(item)
         DarkEnergy::commit(item)
