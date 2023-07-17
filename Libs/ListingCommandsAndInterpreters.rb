@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | front | time | times | page | float | booster",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | time | times | page | float | booster",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -46,21 +46,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
 
             # This command has different interpretations depending on the mikuType
-
-            if item["mikuType"] == "NxFront" then
-                puts PolyFunctions::toString(item).green
-                puts "Converting the item into a NxTask and moving to a thread"
-                thread = NxThreads::interactivelySelectOrNull()
-                return if thread.nil?
-                Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
-                item = DarkEnergy::itemOrNull(item["uuid"])
-                return if item["parent"].nil?
-                return if item["parent"]["uuid"] != thread["uuid"]
-                item["mikuType"] = "NxTask"
-                DarkEnergy::commit(item)
-                puts "Operation completed"
-                return
-            end
 
             if item["mikuType"] == "NxTask" then
                 puts PolyFunctions::toString(item).green
@@ -453,13 +438,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("pages", input) then
             NxPages::program2()
-            return
-        end
-
-        if Interpreting::match("front", input) then
-            item = NxFronts::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
             return
         end
 

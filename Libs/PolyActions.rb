@@ -57,11 +57,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFront" then
-            CoreData::access(item["uuid"], item["field11"])
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             NxTasks::access(item)
             return
@@ -168,19 +163,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if DxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
-                LucilleCore::pressEnterToContinue()
-                DxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxFront" then
             if DxNotes::hasNoteText(item) then
                 puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
                 LucilleCore::pressEnterToContinue()
@@ -359,13 +341,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFloat" then
-            return
-        end
-
-        if item["mikuType"] == "NxFront" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
             return
         end
 

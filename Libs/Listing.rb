@@ -116,10 +116,10 @@ class Listing
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxOndates::listingItems(),
-            NxFronts::listingItems(),
-            boosters,
             Waves::listingItems().select{|item| !item["interruption"] },
+            NxOndates::listingItems(),
+            NxTasks::listingItemsForMainListing(),
+            boosters,
             NxThreads::listingItems2(boosterstargetuuids),
             TxCores::listingItems()
         ]
@@ -166,10 +166,9 @@ class Listing
 
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
-        spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
+        spot.contest_entry("NxTasks::listingItemsForMainListing()", lambda{ NxTasks::listingItemsForMainListing() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("DarkEnergy::mikuType(NxFront)", lambda{ DarkEnergy::mikuType("NxFront") })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
@@ -204,7 +203,6 @@ class Listing
              NxPages::maintenance()
              NxThreads::maintenance()
              TxCores::maintenance2()
-             NxFronts::importFromBuffer()
              NxFloats::maintenance()
              NxBoosters::maintenance()
         end

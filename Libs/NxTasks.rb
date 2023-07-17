@@ -113,6 +113,12 @@ class NxTasks
         "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
     end
 
+    # NxTasks::listingItemsForMainListing()
+    def self.listingItemsForMainListing()
+        DarkEnergy::mikuType("NxTask")
+            .select{|item| item["parent"].nil? }
+    end
+
     # --------------------------------------------------
     # Operations
 

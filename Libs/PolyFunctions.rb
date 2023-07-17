@@ -72,9 +72,6 @@ class PolyFunctions
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
-        if item["mikuType"] == "NxFront" then
-            return NxFronts::toString(item)
-        end
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
