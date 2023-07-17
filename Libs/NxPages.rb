@@ -35,7 +35,7 @@ class NxPages
 
     # NxPages::toString(item)
     def self.toString(item)
-        "📃 #{item["description"]}"
+        "📃 #{item["description"]}#{Tx8s::suffix(item).green}"
     end
 
     # NxPages::access(page)

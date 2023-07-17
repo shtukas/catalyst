@@ -126,7 +126,10 @@ class NxThreads
             spacecontrol.putsline Listing::toString2(store, thread)
             spacecontrol.putsline ""
 
-            floats = NxFloats::listingItemsForThread(thread)
+            items  = Tx8s::childrenInOrder(thread)
+            floats, items = items.partition{|item| item["mikuType"] == "NxFloat" }
+            pages, items  = items.partition{|item| item["mikuType"] == "NxPage" }
+
             if floats.size > 0 then
                 floats
                     .each{|item|
@@ -137,8 +140,16 @@ class NxThreads
                 spacecontrol.putsline ""
             end
 
+            if pages.size > 0 then
+                pages
+                    .each{|item|
+                        store.register(item, false)
+                        status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
 
-            items = Tx8s::childrenInOrder(thread).select{|item| item["mikuType"] == "NxCase" }
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -147,7 +158,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(case, pile, float, position *, [>>])"
+            puts "(case, pile, float, page, position *, [>>])"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -157,13 +168,18 @@ class NxThreads
                 next
             end
 
+            if input == "pile" then
+                Tx8s::pileAtThisParent(thread)
+            end
+
             if input == "float" then
                 NxFloats::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 
-            if input == "pile" then
-                Tx8s::pileAtThisParent(thread)
+            if input == "page" then
+                NxPages::interactivelyIssueNewAtParentOrNull(thread)
+                next
             end
 
             if input.start_with?("position") then
