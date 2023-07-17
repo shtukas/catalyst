@@ -137,7 +137,7 @@ class TxCores
             end
         end
         core["lastResetTime"] = Time.new.to_i
-        core
+        DarkEnergy::commit(core)
     end
 
     # TxCores::maintenance2()

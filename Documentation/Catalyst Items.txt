@@ -8,7 +8,6 @@ Cross types conventions:
     - "tmpskip1"       : TmpSkip1
 
     - parent           : nil or Tx8
-    - core             : TxCore
 
 Tx8 {uuid, position}
 

@@ -29,13 +29,13 @@ class NxBoosters
             .map{|uuid|
                 description = Blades::getAttributeOrNull2(uuid, "description")
                 hours = Blades::getAttributeOrNull2(uuid, "hours")
-                core = Blades::getAttributeOrNull2(uuid, "core")
+                parent = Blades::getAttributeOrNull2(uuid, "parent")
                 {
                     "uuid"        => uuid,
                     "mikuType"    => "NxBooster",
                     "hours"       => hours,
                     "description" => description,
-                    "core"        => core
+                    "parent"      => parent
                 }
             }
     end

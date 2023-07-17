@@ -18,13 +18,6 @@ class PolyFunctions
             end
         end
 
-        if item["core"] then
-            core = DarkEnergy::itemOrNull(item["core"])
-            if core then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
-            end
-        end
-
         if item["mikuType"] == "TxCore" then
             accounts << {
                 "description" => item["description"],
