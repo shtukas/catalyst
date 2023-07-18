@@ -102,6 +102,27 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("core", input) then
+            item = store.getDefault()
+            return if item.nil?
+            puts PolyFunctions::toString(item).green
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            return
+        end
+
+        if Interpreting::match("core *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            puts PolyFunctions::toString(item).green
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            return
+        end
+
         if Interpreting::match("reorganise *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
