@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | time | times | page | float | booster",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | time | times | page | float | promise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -127,11 +127,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("booster", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
-            return if description == ""
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            NxBoosters::issue(description, hours)
+        if Interpreting::match("promise", input) then
+            NxPromises::interactivelyNewOrNull()
             return
         end
 

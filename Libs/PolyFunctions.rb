@@ -60,8 +60,8 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxBooster" then
-            return NxBoosters::toString(item)
+        if item["mikuType"] == "NxPromise" then
+            return NxPromises::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)

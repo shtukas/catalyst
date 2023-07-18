@@ -112,7 +112,7 @@ class Listing
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxBoosters::listingItems(),
+            NxPromises::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxOndates::listingItems(),
             NxPages::listingItemsForMainListing(),

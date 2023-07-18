@@ -1,10 +1,17 @@
 
-NxPromise, is the promise to spend a certain number of hour in a certain time span
-
-NxPromise:
+NxPromise (Blade)
     "uuid"          : String
     "mikuType"      : "NxPromise"
     "description"   : String
     "datetimeStart" : Float
     "datetimeEnd"   : Float
     "loadInHours"   : Float
+
+NxPromise {
+    "uuid"          : String
+    "mikuType"      : "NxPromise"
+    "description"   : String
+    "datetimeStart" : Float
+    "datetimeEnd"   : Float
+    "loadInHours"   : Float
+}

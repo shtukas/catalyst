@@ -22,7 +22,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
+        if item["mikuType"] == "NxPromise" then
             PolyActions::access(item["item"])
             return
         end
@@ -237,9 +237,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
+        if item["mikuType"] == "NxPromise" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                NxBoosters::destroy(item["uuid"])
+                NxPromises::destroy(item["uuid"])
             end
             return
         end
@@ -259,7 +259,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
+        if item["mikuType"] == "NxPromise" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy booster: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Blades::destroy(item["uuid"])
             end
@@ -324,7 +324,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
+        if item["mikuType"] == "NxPromise" then
             NxBalls::start(item)
             PolyActions::access(item)
             return
