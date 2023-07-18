@@ -27,8 +27,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
-            puts NxFloats::toString(item)
+        if item["mikuType"] == "NxMonitor" then
+            puts NxMonitors::toString(item)
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -114,7 +114,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxMonitor" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -292,7 +292,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxMonitor" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -342,7 +342,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
+        if item["mikuType"] == "NxMonitor" then
             return
         end
 
@@ -456,6 +456,13 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "There is no description edit for NxBackups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
+            return
+        end
+        if item["mikuType"] == "NxPromise" then
+            puts "edit description:"
+            description = CommonUtils::editTextSynchronously(item["description"]).strip
+            return if description == ""
+            Blades::setAttribute2(item["uuid"], "description", description)
             return
         end
         puts "edit description:"
