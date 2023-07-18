@@ -97,10 +97,9 @@ class NxThreads
     # NxThreads::childrenInOrder(thread)
     def self.childrenInOrder(thread)
         items  = Tx8s::childrenInOrder(thread)
-        pages, items  = items.partition{|item| item["mikuType"] == "NxPage" }
-        floats, items = items.partition{|item| item["mikuType"] == "NxMonitor" }
+        monitors, items = items.partition{|item| item["mikuType"] == "NxMonitor" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        pages + floats + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+        monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
 
     # --------------------------------------------------------------------------
@@ -156,7 +155,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, pile, float, page, thread, position *, select tasks and move down)"
+            puts "(task, pile, float, monitor, thread, position *, select tasks and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -175,8 +174,8 @@ class NxThreads
                 next
             end
 
-            if input == "page" then
-                NxPages::interactivelyIssueNewAtParentOrNull(thread)
+            if input == "monitor" then
+                NxMonitors::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 

@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | page | monitor | promise",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | monitor | promise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | monitors",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -427,18 +427,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("ondates", input) then
             NxOndates::program()
-            return
-        end
-
-        if Interpreting::match("page", input) then
-            item = NxPages::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("pages", input) then
-            NxPages::program2()
             return
         end
 

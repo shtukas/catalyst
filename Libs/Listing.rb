@@ -116,7 +116,6 @@ class Listing
             NxOndates::listingItems(),
             NxMonitors::listingItemsForMainListing(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxPages::listingItemsForMainListing(),
             NxTasks::listingItemsForMainListing(),
             NxThreads::listingItems(),
             TxCores::listingItems(),
@@ -199,7 +198,6 @@ class Listing
              Bank::fileManagement()
              NxBackups::maintenance()
              NxTasks::maintenance()
-             NxPages::maintenance()
              NxThreads::maintenance()
              TxCores::maintenance2()
              NxMonitors::maintenance()

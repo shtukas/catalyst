@@ -33,11 +33,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPage" then
-            NxPages::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxThread" then
             NxThreads::program1(item)
             return
@@ -95,12 +90,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
             end
-            return
-        end
-
-        if item["mikuType"] == "NxPage" then
-            puts "You cannot done a NxPage, but you can destroy it"
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -273,13 +262,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPage" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxThread" then
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} children items"
@@ -343,11 +325,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxMonitor" then
-            return
-        end
-
-        if item["mikuType"] == "NxPage" then
-            PolyActions::access(item)
             return
         end
 
@@ -420,11 +397,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxPage" then
             PolyActions::access(item)
             return
         end
