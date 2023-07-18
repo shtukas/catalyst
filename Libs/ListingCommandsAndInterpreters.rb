@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | case | time | times | page | float | promise",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | page | float | promise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -84,7 +84,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("case", input) then
+        if Interpreting::match("task", input) then
             task = NxTasks::interactivelyIssueNewOrNull()
             return if task.nil?
             thread = NxThreads::interactivelySelectOrNull()

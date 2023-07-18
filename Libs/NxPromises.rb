@@ -57,7 +57,7 @@ class NxPromises
     def self.toString(item)
         cr = NxPromises::completionRatio(item)
         lr = NxPromises::loadIndex(item)
-        "🔅 (cr: #{"%6.2f" % (100*cr)} %) (li: #{"%5.3f" % lr}) #{item["description"]}"
+        "🔅 (load: #{item["loadInHours"]} hours) (cr: #{"%6.2f" % (100*cr)} %) (li: #{"%5.3f" % lr}) #{item["description"]}"
     end
 
     # NxPromises::listingItems()
