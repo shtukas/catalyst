@@ -61,9 +61,18 @@ class NxPromises
         "🔅 (left: #{hoursLeftToDo.round(2) } hours to #{item["datetimeEnd"]}) (cr: #{"%6.2f" % (100*cr)} %) (li: #{"%5.3f" % lr}) #{item["description"]}"
     end
 
-    # NxPromises::listingItems()
-    def self.listingItems()
+    # NxPromises::listingItems1()
+    def self.listingItems1()
         NxPromises::items()
+            .select{|item| NxPromises::loadIndex(item) >= 0.1 }
+            .sort_by{|item| NxPromises::loadIndex(item) }
+            .reverse
+    end
+
+    # NxPromises::listingItems2()
+    def self.listingItems2()
+        NxPromises::items()
+            .select{|item| NxPromises::loadIndex(item) < 0.1 }
             .sort_by{|item| NxPromises::loadIndex(item) }
             .reverse
     end
