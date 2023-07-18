@@ -85,15 +85,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            task = NxTasks::interactivelyIssueNewOrNull()
-            return if task.nil?
-            thread = NxThreads::interactivelySelectOrNull()
-            if thread then
-                tx8 = Tx8s::interactivelyMakeTx8AtParent(thread)
-                task["parent"] = tx8
-                puts JSON.pretty_generate(task)
-                DarkEnergy::commit(task)
-            end
+            NxTasks::interactivelyIssueNewOrNull()
             return
         end
 

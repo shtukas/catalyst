@@ -37,13 +37,15 @@ class NxPromises
         datetimeStart = Blades::getAttributeOrNull2(uuid, "datetimeStart")
         datetimeEnd   = Blades::getAttributeOrNull2(uuid, "datetimeEnd")
         loadInHours   = Blades::getAttributeOrNull2(uuid, "loadInHours")
+        parent        = Blades::getAttributeOrNull2(uuid, "parent")
         {
             "uuid"          => uuid,
             "mikuType"      => "NxPromise",
             "description"   => description,
             "datetimeStart" => datetimeStart,
             "datetimeEnd"   => datetimeEnd,
-            "loadInHours"   => loadInHours
+            "loadInHours"   => loadInHours,
+            "parent"        => parent
         }
     end
 
