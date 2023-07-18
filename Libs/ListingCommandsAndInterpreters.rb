@@ -302,6 +302,12 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
+            if item["mikuType"] == "NxPromise" then
+                item.to_a.each{|key, value|
+                    Blades::setAttribute2(item["uuid"], key, value)
+                }
+                return
+            end
             item.to_a.each{|key, value|
                 DarkEnergy::patch(item["uuid"], key, value)
             }
