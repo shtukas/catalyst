@@ -9,8 +9,8 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | page | float | promise",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | floats",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | page | monitor | promise",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | monitors",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -68,8 +68,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("floats", input) then
-            NxFloats::program1()
+        if Interpreting::match("monitors", input) then
+            NxMonitors::program1()
             return
         end
 
@@ -188,8 +188,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNewOrNull()
+        if Interpreting::match("monitor", input) then
+            item = NxMonitors::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return

@@ -1,7 +1,7 @@
 
-NxFloat: 
+NxMonitor: 
     "uuid"        : String
-    "mikuType"    : "NxFloat"
+    "mikuType"    : "NxMonitor"
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
