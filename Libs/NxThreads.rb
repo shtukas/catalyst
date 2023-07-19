@@ -102,6 +102,21 @@ class NxThreads
         monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
 
+    # NxThreads::childrenInOrderForPure(thread)
+    def self.childrenInOrderForPure(thread)
+        items  = Tx8s::childrenInOrder(thread)
+        if NxThreads::completionRatio(thread) < 0.5 then
+
+        else
+
+        end
+
+
+        monitors, items = items.partition{|item| item["mikuType"] == "NxMonitor" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+    end
+
     # --------------------------------------------------------------------------
     # Ops
 

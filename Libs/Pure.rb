@@ -3,7 +3,7 @@ class Pure
     # Pure::childrenInOrder(item)
     def self.childrenInOrder(item)
         if item["mikuType"] == "NxThread" then
-            return NxThreads::childrenInOrder(item)
+            return NxThreads::childrenInOrderForPure(item)
         end
         Tx8s::childrenInOrder(item)
     end
