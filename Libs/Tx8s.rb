@@ -140,10 +140,6 @@ class Tx8s
     def self.interactivelyPlaceItemAtParentAttempt(item, parent)
         tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
         return if tx8.nil?
-        if item["mikuType"] == "NxPromise" then
-            Blades::setAttribute2(item["uuid"], "parent", tx8)
-            return
-        end
         DarkEnergy::patch(item["uuid"], "parent", tx8)
     end
 

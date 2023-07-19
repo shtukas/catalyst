@@ -112,14 +112,12 @@ class Listing
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxPromises::listingItems1(),
             NxOndates::listingItems(),
             NxMonitors::listingItemsForMainListing(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::listingItemsForMainListing(),
             NxThreads::listingItems(),
-            TxCores::listingItems(),
-            NxPromises::listingItems2()
+            TxCores::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

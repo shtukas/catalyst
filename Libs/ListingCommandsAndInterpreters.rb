@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | monitor | promise",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | monitor",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | monitors",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
@@ -52,11 +52,6 @@ class ListingCommandsAndInterpreters
                 thread = NxThreads::interactivelySelectOrNull()
                 return if thread.nil?
                 Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
-                return
-            end
-
-            if item["mikuType"] == "NxPromise" then
-                NxPromises::naturalEvolution(item)
                 return
             end
 
@@ -147,11 +142,6 @@ class ListingCommandsAndInterpreters
             thread = NxThreads::interactivelySelectThreadAtMainListingOrNull()
             return if thread.nil?
             Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
-            return
-        end
-
-        if Interpreting::match("promise", input) then
-            NxPromises::interactivelyNewOrNull()
             return
         end
 
@@ -304,12 +294,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
-            if item["mikuType"] == "NxPromise" then
-                item.to_a.each{|key, value|
-                    Blades::setAttribute2(item["uuid"], key, value)
-                }
-                return
-            end
             item.to_a.each{|key, value|
                 DarkEnergy::patch(item["uuid"], key, value)
             }

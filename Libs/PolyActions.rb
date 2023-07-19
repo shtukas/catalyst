@@ -22,11 +22,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPromise" then
-            PolyActions::access(item["item"])
-            return
-        end
-
         if item["mikuType"] == "NxMonitor" then
             puts NxMonitors::toString(item)
             LucilleCore::pressEnterToContinue()
@@ -226,13 +221,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPromise" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                NxPromises::destroy(item["uuid"])
-            end
-            return
-        end
-
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -245,13 +233,6 @@ class PolyActions
         if Tx8s::childrenInOrder(item).size > 0 then
             puts "Found Tx8 children for '#{PolyFunctions::toString(item).green}'. Cannot be destroyed"
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if item["mikuType"] == "NxPromise" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy booster: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Blades::destroy(item["uuid"])
-            end
             return
         end
 
@@ -302,12 +283,6 @@ class PolyActions
     def self.doubleDot(item)
 
         if item["mikuType"] == "NxBackup" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxPromise" then
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end
@@ -428,13 +403,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "There is no description edit for NxBackups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
-            return
-        end
-        if item["mikuType"] == "NxPromise" then
-            puts "edit description:"
-            description = CommonUtils::editTextSynchronously(item["description"]).strip
-            return if description == ""
-            Blades::setAttribute2(item["uuid"], "description", description)
             return
         end
         puts "edit description:"

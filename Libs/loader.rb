@@ -162,7 +162,6 @@ require_relative "NxTasks.rb"
 require_relative "NxTimes.rb"
 require_relative "NxThreads.rb"
 require_relative "NxMonitors.rb"
-require_relative "NxPromises.rb"
 
 require_relative "Memoize.rb"
 
