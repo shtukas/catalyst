@@ -262,7 +262,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("coredata", input) then
             item = store.getDefault()
             return if item.nil?
-            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull()
+            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
             DarkEnergy::patch(item["uuid"], "field11", reference)
             return
@@ -272,7 +272,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull()
+            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
             DarkEnergy::patch(item["uuid"], "field11", reference)
             return
