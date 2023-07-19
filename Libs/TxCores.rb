@@ -111,6 +111,7 @@ class TxCores
 
     # TxCores::maintenance1(core) # core or null
     def self.maintenance1(core)
+        return if NxBalls::itemIsActive(item)
         return nil if Bank::getValue(core["capsule"]).to_f/3600 < core["hours"]
         return nil if (Time.new.to_i - core["lastResetTime"]) < 86400*7
         puts "> I am about to reset core for #{core["description"]}"
