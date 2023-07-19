@@ -17,7 +17,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxTask", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
@@ -42,7 +42,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxTask", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
@@ -67,7 +67,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         DarkEnergy::init("NxTask", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull()
+        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
 
         DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
         DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
