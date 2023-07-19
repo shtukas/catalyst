@@ -55,6 +55,11 @@ class ListingCommandsAndInterpreters
                 return
             end
 
+            if item["mikuType"] == "NxPromise" then
+                NxPromises::naturalEvolution(item)
+                return
+            end
+
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)

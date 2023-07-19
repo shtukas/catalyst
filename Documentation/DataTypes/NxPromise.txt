@@ -3,6 +3,7 @@ NxPromise (Blade)
     "uuid"          : String
     "mikuType"      : "NxPromise"
     "description"   : String
+    "endCondition"  : String
     "datetimeStart" : Float
     "datetimeEnd"   : Float
     "loadInHours"   : Float
@@ -11,6 +12,7 @@ NxPromise {
     "uuid"          : String
     "mikuType"      : "NxPromise"
     "description"   : String
+    "endCondition"  : String
     "datetimeStart" : Float
     "datetimeEnd"   : Float
     "loadInHours"   : Float
