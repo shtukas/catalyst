@@ -59,8 +59,11 @@ class NxPromises
     def self.toString(item)
         hoursLeftToDo = item["loadInHours"] - Bank::getValue(item["uuid"]).to_f/3600
         cr = NxPromises::completionRatio(item)
-        lr = NxPromises::loadIndex(item)
-        "🔅 (left: #{hoursLeftToDo.round(2) } hours to #{item["datetimeEnd"]}) (cr: #{"%6.2f" % (100*cr)} %) (li: #{"%5.3f" % lr}) #{item["description"]}"
+        li = NxPromises::loadIndex(item)
+        if li == 1 then
+            return "🔅 #{"[late !!]".green} #{item["description"]}"
+        end
+        "🔅 (left: #{hoursLeftToDo.round(2) } hours to #{item["datetimeEnd"]}) (cr: #{"%6.2f" % (100*cr)} %) (li: #{"%5.3f" % li}) #{item["description"]}"
     end
 
     # NxPromises::listingItems1()
@@ -89,6 +92,7 @@ class NxPromises
     def self.loadIndex(item)
         hoursLeftToDo = item["loadInHours"] - Bank::getValue(item["uuid"]).to_f/3600
         hoursToDeadline = (DateTime.parse(item["datetimeEnd"]).to_time.to_i - Time.new.to_i).to_f/3600
+        return 1 if hoursToDeadline < 0
         hoursLeftToDo.to_f/hoursToDeadline
     end
 
