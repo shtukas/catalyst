@@ -66,6 +66,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("cores", input) then
+            TxCores::program2()
+            return
+        end
+
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?

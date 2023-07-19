@@ -190,4 +190,13 @@ class TxCores
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # TxCores::program2()
+    def self.program2()
+        loop {
+            core = TxCores::interactivelySelectOneOrNull()
+            break if core.nil?
+            NxThreads::program1(core)
+        }
+    end
 end
