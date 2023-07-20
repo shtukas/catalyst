@@ -183,7 +183,7 @@ class Bank
     # Bank::recoveredAverageHoursPerDay2(items)
     def self.recoveredAverageHoursPerDay2(items)
         uuids = items.map{|item| item["uuid"] }
-        (0..6).map{|n| Bank::averageHoursPerDayOverThePastNDays(uuids, n) }.max
+        (0..6).map{|n| Bank::averageHoursPerDayOverThePastNDays2(uuids, n) }.max
     end
 
 end
