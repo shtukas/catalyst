@@ -98,6 +98,23 @@ class TxCores
             .sort_by{|core| TxCores::compositeCompletionRatio(core) }
     end
 
+    # TxCores::childrenInOrder(core)
+    def self.childrenInOrder(core)
+        items  = Tx8s::childrenInOrder(core)
+        waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
+        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
+        longtasks, items = items.partition{|item| item["mikuType"] == "NxLongTask" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        [
+            waves,
+            delegates,
+            items,
+            longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask) },
+            threads.sort_by{|th| NxThreads::completionRatio(th) }
+        ]
+            .flatten
+    end
+
     # -----------------------------------------------
     # Ops
 
