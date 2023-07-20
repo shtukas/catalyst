@@ -25,7 +25,7 @@ class NxDelegates
         if parent["mikuType"] == "NxThread" then
             position = 0
         end
-        if parent["mikuType"] == "NxCore" then
+        if parent["mikuType"] == "TxCore" then
             position = 0
         end
         if position.nil? then
@@ -40,7 +40,7 @@ class NxDelegates
 
     # NxDelegates::toString(item)
     def self.toString(item)
-        "📡 #{item["description"]}"
+        "🐞 #{item["description"]}"
     end
 
     # NxDelegates::listingItemsForMainListing()
