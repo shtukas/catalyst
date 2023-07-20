@@ -101,7 +101,7 @@ class TxCores
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
         items  = Tx8s::childrenInOrder(core)
-        monitors, items  = items.partition{|item| item["mikuType"] == "NxMonitor" }
+        monitors, items  = items.partition{|item| item["mikuType"] == "NxDelegate" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
         monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
@@ -172,12 +172,12 @@ class TxCores
             end
 
             if input == "float" then
-                NxMonitors::interactivelyIssueNewAtParentOrNull(core)
+                NxDelegates::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 
             if input == "monitor" then
-                NxMonitors::interactivelyIssueNewAtParentOrNull(core)
+                NxDelegates::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 

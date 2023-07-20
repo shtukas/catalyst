@@ -22,8 +22,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitor" then
-            puts NxMonitors::toString(item)
+        if item["mikuType"] == "NxDelegate" then
+            puts NxDelegates::toString(item)
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -98,7 +98,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitor" then
+        if item["mikuType"] == "NxDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -255,7 +255,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitor" then
+        if item["mikuType"] == "NxDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -299,7 +299,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMonitor" then
+        if item["mikuType"] == "NxDelegate" then
             return
         end
 

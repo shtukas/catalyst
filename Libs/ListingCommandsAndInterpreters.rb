@@ -74,7 +74,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("monitors", input) then
-            NxMonitors::program1()
+            NxDelegates::program1()
             return
         end
 
@@ -202,7 +202,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("monitor", input) then
-            item = NxMonitors::interactivelyIssueNewOrNull()
+            item = NxDelegates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return

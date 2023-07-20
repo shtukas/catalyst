@@ -97,7 +97,7 @@ class NxThreads
     # NxThreads::childrenInOrder(thread)
     def self.childrenInOrder(thread)
         items  = Tx8s::childrenInOrder(thread)
-        monitors, items = items.partition{|item| item["mikuType"] == "NxMonitor" }
+        monitors, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
         monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
@@ -112,7 +112,7 @@ class NxThreads
         end
 
 
-        monitors, items = items.partition{|item| item["mikuType"] == "NxMonitor" }
+        monitors, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
         monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
@@ -185,12 +185,12 @@ class NxThreads
             end
 
             if input == "float" then
-                NxMonitors::interactivelyIssueNewAtParentOrNull(thread)
+                NxDelegates::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 
             if input == "monitor" then
-                NxMonitors::interactivelyIssueNewAtParentOrNull(thread)
+                NxDelegates::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 

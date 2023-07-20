@@ -113,7 +113,7 @@ class Listing
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            NxMonitors::listingItemsForMainListing(),
+            NxDelegates::listingItemsForMainListing(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::listingItemsForMainListing(),
             NxThreads::listingItems(),
@@ -198,7 +198,7 @@ class Listing
              NxTasks::maintenance()
              NxThreads::maintenance()
              TxCores::maintenance2()
-             NxMonitors::maintenance()
+             NxDelegates::maintenance()
         end
     end
 
