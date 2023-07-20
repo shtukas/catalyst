@@ -9,8 +9,8 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | monitor",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | monitors",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
         ].join("\n")
@@ -73,7 +73,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("monitors", input) then
+        if Interpreting::match("delegates", input) then
             NxDelegates::program1()
             return
         end
@@ -201,7 +201,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("monitor", input) then
+        if Interpreting::match("delegate", input) then
             item = NxDelegates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)

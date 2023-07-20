@@ -97,9 +97,9 @@ class NxThreads
     # NxThreads::childrenInOrder(thread)
     def self.childrenInOrder(thread)
         items  = Tx8s::childrenInOrder(thread)
-        monitors, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
+        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+        delegates + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
 
     # NxThreads::childrenInOrderForPure(thread)
@@ -112,9 +112,9 @@ class NxThreads
         end
 
 
-        monitors, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
+        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+        delegates + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
 
     # --------------------------------------------------------------------------
@@ -170,7 +170,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, pile, float, monitor, thread, position *, select tasks and move down)"
+            puts "(task, pile, float, delegate, thread, position *, select tasks and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -189,7 +189,7 @@ class NxThreads
                 next
             end
 
-            if input == "monitor" then
+            if input == "delegate" then
                 NxDelegates::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end

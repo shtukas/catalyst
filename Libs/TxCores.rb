@@ -101,9 +101,9 @@ class TxCores
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
         items  = Tx8s::childrenInOrder(core)
-        monitors, items  = items.partition{|item| item["mikuType"] == "NxDelegate" }
+        delegates, items  = items.partition{|item| item["mikuType"] == "NxDelegate" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        monitors + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+        delegates + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
     end
 
     # -----------------------------------------------
@@ -157,7 +157,7 @@ class TxCores
                 }
 
             puts ""
-            puts "(task, pile, float, monitor, thread, position *)"
+            puts "(task, pile, float, delegate, thread, position *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -176,7 +176,7 @@ class TxCores
                 next
             end
 
-            if input == "monitor" then
+            if input == "delegate" then
                 NxDelegates::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
