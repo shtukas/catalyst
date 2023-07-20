@@ -169,4 +169,21 @@ class Bank
     def self.recoveredAverageHoursPerDay(uuid)
         (0..6).map{|n| Bank::averageHoursPerDayOverThePastNDays(uuid, n) }.max
     end
+
+    # Bank::averageHoursPerDayOverThePastNDays2(uuids, n)
+    # n = 0 corresponds to today
+    def self.averageHoursPerDayOverThePastNDays2(uuids, n)
+        range = (0..n)
+        totalInSeconds = range.map{|indx| uuids.map{|uuid| Bank::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx))}.inject(0, :+) }.inject(0, :+)
+        totalInHours = totalInSeconds.to_f/3600
+        average = totalInHours.to_f/(n+1)
+        average
+    end
+
+    # Bank::recoveredAverageHoursPerDay2(items)
+    def self.recoveredAverageHoursPerDay2(items)
+        uuids = items.map{|item| item["uuid"] }
+        (0..6).map{|n| Bank::averageHoursPerDayOverThePastNDays(uuids, n) }.max
+    end
+
 end

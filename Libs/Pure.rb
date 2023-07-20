@@ -1,20 +1,53 @@
 class Pure
 
+    # Pure::containerChildrenInOrder(container)
+    def self.containerChildrenInOrder(container)
+        items  = Tx8s::childrenInOrder(container)
+        waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
+        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
+        longtasks, items = items.partition{|item| item["mikuType"] == "NxLongTask" }
+        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
+        [
+            {
+                "items" => waves,
+                "rt" => Bank::recoveredAverageHoursPerDay2(waves)
+            },
+            {
+                "items" => delegates,
+                "rt" => Bank::recoveredAverageHoursPerDay2(delegates)
+            },
+            {
+                "items" => items,
+                "rt" => Bank::recoveredAverageHoursPerDay2(items)
+            },
+            {
+                "items" => longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask) },
+                "rt" => Bank::recoveredAverageHoursPerDay2(longtasks)
+            },
+            {
+                "items" => threads.sort_by{|th| NxThreads::completionRatio(th) },
+                "rt" => Bank::recoveredAverageHoursPerDay2(threads)
+            }
+        ].sort_by{|packet| packet["rt"] }.map{|packet| packet["items"] }.flatten
+    end
+
     # Pure::childrenInOrder(item)
     def self.childrenInOrder(item)
         if item["mikuType"] == "NxThread" then
-            return NxThreads::childrenInOrderForPure(item)
+            return Pure::containerChildrenInOrder(item)
+        end
+        if item["mikuType"] == "TxCore" then
+            return Pure::containerChildrenInOrder(item)
         end
         Tx8s::childrenInOrder(item)
     end
 
     # Pure::energy(item)
     def self.energy(item) # prefix + [item]
-
         if item["mikuType"] == "NxThread" then
             return Pure::childrenInOrder(item).take(5) + [item]
         end
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "TxCore" then
             return Pure::childrenInOrder(item).take(5) + [item]
         end
         [item]

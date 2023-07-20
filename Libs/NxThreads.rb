@@ -39,7 +39,7 @@ class NxThreads
         padding = CatalystSharedCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", 0)
         hours = thread["hours"] || 2
         cr = NxThreads::completionRatio(thread)
-        "🔺 #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
+        "🐙 #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
     end
 
     # NxThreads::listingItems()
@@ -97,24 +97,18 @@ class NxThreads
     # NxThreads::childrenInOrder(thread)
     def self.childrenInOrder(thread)
         items  = Tx8s::childrenInOrder(thread)
+        waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
         delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
+        longtasks, items = items.partition{|item| item["mikuType"] == "NxLongTask" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        delegates + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
-    end
-
-    # NxThreads::childrenInOrderForPure(thread)
-    def self.childrenInOrderForPure(thread)
-        items  = Tx8s::childrenInOrder(thread)
-        if NxThreads::completionRatio(thread) < 0.5 then
-
-        else
-
-        end
-
-
-        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        delegates + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
+        [
+            waves,
+            delegates,
+            items,
+            longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask) },
+            threads.sort_by{|th| NxThreads::completionRatio(th) }
+        ]
+            .flatten
     end
 
     # --------------------------------------------------------------------------
@@ -170,13 +164,18 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, pile, float, delegate, thread, position *, select tasks and move down)"
+            puts "(task, longtask, pile, float, delegate, thread, position *, select tasks and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "task" then
                 NxTasks::interactivelyIssueNewAtParentOrNull(thread)
+                next
+            end
+
+            if input == "longtask" then
+                NxLongTasks::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 

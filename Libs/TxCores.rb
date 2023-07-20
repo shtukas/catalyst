@@ -98,14 +98,6 @@ class TxCores
             .sort_by{|core| TxCores::compositeCompletionRatio(core) }
     end
 
-    # TxCores::childrenInOrder(core)
-    def self.childrenInOrder(core)
-        items  = Tx8s::childrenInOrder(core)
-        delegates, items  = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        delegates + items + threads.sort_by{|th| NxThreads::completionRatio(th) }
-    end
-
     # -----------------------------------------------
     # Ops
 
@@ -157,13 +149,18 @@ class TxCores
                 }
 
             puts ""
-            puts "(task, pile, float, delegate, thread, position *)"
+            puts "(task, longtask, pile, float, delegate, thread, position *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "task" then
                 NxTasks::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "longtask" then
+                NxLongTasks::interactivelyIssueNewAtParentOrNull(core)
                 next
             end
 
