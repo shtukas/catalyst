@@ -22,7 +22,7 @@ class Pure
                 "rt" => Bank::recoveredAverageHoursPerDay2(items)
             },
             {
-                "items" => longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask) },
+                "items" => longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask["uuid"]) },
                 "rt" => Bank::recoveredAverageHoursPerDay2(longtasks)
             },
             {

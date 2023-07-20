@@ -105,7 +105,7 @@ class NxThreads
             waves,
             delegates,
             items,
-            longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask) },
+            longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask["uuid"]) },
             threads.sort_by{|th| NxThreads::completionRatio(th) }
         ]
             .flatten
