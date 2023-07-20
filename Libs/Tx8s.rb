@@ -29,8 +29,16 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        children = Tx8s::childrenInOrder(parent)
-                        .take(CommonUtils::screenHeight() - 4)
+        children = nil
+        if parent["mikuType"] == "TxCore" or parent["mikuType"] == "NxThread" then
+            children = Tx8s::childrenInOrder(parent)
+                .select{|item| item["mikuType"] == "NxTask" }
+                .take(CommonUtils::screenHeight() - 4)
+        end
+        if children.nil? then
+            children = Tx8s::childrenInOrder(parent)
+                .take(CommonUtils::screenHeight() - 4)
+        end
         return 1 if children.empty?
         puts "positioning:"
         children.each{|item|

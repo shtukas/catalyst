@@ -175,7 +175,7 @@ class NxThreads
             end
 
             if input == "longtask" then
-                NxLongTasks::interactivelyIssueNewAtParentOrNull(core)
+                NxLongTasks::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 
