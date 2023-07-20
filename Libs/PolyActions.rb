@@ -52,6 +52,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxLongTask" then
+            CoreData::access(item["uuid"], item["field11"])
+            return
+        end
+
         if item["mikuType"] == "TxCore" then
             TxCores::program1(item)
             return
@@ -99,6 +104,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDelegate" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DarkEnergy::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxLongTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DarkEnergy::destroy(item["uuid"])
             end
@@ -293,6 +305,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
+            PolyFunctions::toString(item).green
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxLongTask" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
