@@ -2,11 +2,28 @@
 
 class Catalyst
 
+    # Catalyst::mikuTypes()
+    def self.mikuTypes()
+        [
+          "NxAnniversary",
+          "NxBackup",
+          "NxDelegate",
+          "NxIce",
+          "NxLongTask",
+          "NxOndate",
+          "NxPure",
+          "NxTask",
+          "NxThread",
+          "PhysicalTarget",
+          "TxCore",
+          "Wave"
+        ]
+    end
+
     # Catalyst::catalystItems()
     def self.catalystItems()
-        [
-            BladesItemised::mikuType("Wave")
-        ]
+        Catalyst::mikuTypes()
+            .map{|mikuType| BladesGI::mikuType(mikuType) }
             .flatten
     end
 
@@ -16,7 +33,7 @@ class Catalyst
         NxTasks::fsck()
         NxOndates::fsck()
         NxLongTasks::fsck()
-        BladesItemised::mikuType("NxIce").each{|item|
+        BladesGI::mikuType("NxIce").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

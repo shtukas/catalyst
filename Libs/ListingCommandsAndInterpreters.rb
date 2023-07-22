@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n> | reschedule",
+            "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
         ].join("\n")
     end
 
@@ -78,8 +78,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("mikutypes", input) then
-            puts JSON.pretty_generate(BladesItemised::all().map{|item| item["mikuType"] }.uniq.sort)
+        if Interpreting::match("blades:mikutypes", input) then
+            puts JSON.pretty_generate(BladesGI::all().map{|item| item["mikuType"] }.uniq.sort)
             LucilleCore::pressEnterToContinue()
             return
         end

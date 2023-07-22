@@ -11,7 +11,7 @@ class Tx8s
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        BladesItemised::all()
+        Catalyst::catalystItems()
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == parent["uuid"] }
             .sort_by{|item| item["parent"]["position"] }
@@ -124,7 +124,7 @@ class Tx8s
         }
 
         garbageCollected.each{|i|
-            BladesItemised::destroy(i["uuid"])
+            BladesGI::destroy(i["uuid"])
         }
     end
 

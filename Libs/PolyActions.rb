@@ -105,21 +105,21 @@ class PolyActions
 
         if item["mikuType"] == "NxDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLongTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTime" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
@@ -131,13 +131,13 @@ class PolyActions
 
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLong" then
-            BladesItemised::destroy(item["uuid"])
+            BladesGI::destroy(item["uuid"])
             return
         end
 
@@ -149,14 +149,14 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
@@ -169,7 +169,7 @@ class PolyActions
                 }
                 if LucilleCore::askQuestionAnswerAsBoolean("> destroy all of them ?") then
                     Tx8s::childrenInOrder(item).each{|i|
-                        BladesItemised::destroy(i["uuid"])
+                        BladesGI::destroy(i["uuid"])
                     }
                 end
             end
@@ -178,14 +178,14 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTime" then
             puts "done-ing: '#{NxTimes::toString(item).green}'"
-            BladesItemised::destroy(item["uuid"])
+            BladesGI::destroy(item["uuid"])
             return
         end
 
@@ -224,7 +224,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
@@ -236,21 +236,21 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesItemised::destroy(item["uuid"])
+                BladesGI::destroy(item["uuid"])
             end
             return
         end
@@ -297,7 +297,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTime" then
-            BladesItemised::destroy(item["uuid"])
+            BladesGI::destroy(item["uuid"])
             return
         end
 
@@ -309,7 +309,7 @@ class PolyActions
             if first_time then
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                     NxBalls::stop(item)
-                    BladesItemised::destroy(item["uuid"])
+                    BladesGI::destroy(item["uuid"])
                 end
             end
             if NxBalls::itemIsRunning(item) then

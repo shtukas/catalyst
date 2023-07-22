@@ -45,19 +45,19 @@ class NxDelegates
 
     # NxDelegates::listingItemsForMainListing()
     def self.listingItemsForMainListing()
-        BladesItemised::mikuType("NxDelegate")
+        BladesGI::mikuType("NxDelegate")
             .select{|delegate| delegate["parent"].nil? }
     end
 
     # NxDelegates::listingItemsForThread(thread)
     def self.listingItemsForThread(thread)
-        BladesItemised::mikuType("NxDelegate")
+        BladesGI::mikuType("NxDelegate")
             .select{|delegate| delegate["parent"] and delegate["parent"]["uuid"] == thread["uuid"] }
     end
 
     # NxDelegates::maintenance()
     def self.maintenance()
-        BladesItemised::mikuType("NxDelegate")
+        BladesGI::mikuType("NxDelegate")
             .each{|delegate| 
                 next if delegate["parent"].nil?
                 if BladesGI::itemOrNull(delegate["parent"]["uuid"]).nil? then
@@ -69,7 +69,7 @@ class NxDelegates
     # NxDelegates::program1()
     def self.program1()
         loop {
-            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesItemised::mikuType("NxDelegate"), lambda{|delegate| NxDelegates::toString(delegate) })
+            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesGI::mikuType("NxDelegate"), lambda{|delegate| NxDelegates::toString(delegate) })
             return if delegate.nil?
             PolyActions::access(delegate)
         }

@@ -12,7 +12,7 @@ class Waves
 
         return nil if scheduleType.nil?
 
-        if scheduleType=='sticky' then
+        if scheduleType == 'sticky' then
             fromHour = LucilleCore::askQuestionAnswerAsString("From hour (integer): ").to_i
             return {
                 "type"  => "sticky",
@@ -20,14 +20,14 @@ class Waves
             }
         end
 
-        if scheduleType=='repeat' then
+        if scheduleType == 'repeat' then
 
             repeat_types = ['every-n-hours','every-n-days','every-this-day-of-the-week','every-this-day-of-the-month']
             type = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("repeat type: ", repeat_types, lambda{|entity| entity })
 
             return nil if type.nil?
 
-            if type=='every-n-hours' then
+            if type == 'every-n-hours' then
                 print "period (in hours): "
                 value = STDIN.gets().strip.to_f
                 return {
@@ -35,7 +35,7 @@ class Waves
                     "value" => value
                 }
             end
-            if type=='every-n-days' then
+            if type == 'every-n-days' then
                 print "period (in days): "
                 value = STDIN.gets().strip.to_f
                 return {
@@ -43,7 +43,7 @@ class Waves
                     "value" => value
                 }
             end
-            if type=='every-this-day-of-the-month' then
+            if type == 'every-this-day-of-the-month' then
                 print "day number (String, length 2): "
                 value = STDIN.gets().strip
                 return {
@@ -51,7 +51,7 @@ class Waves
                     "value" => value
                 }
             end
-            if type=='every-this-day-of-the-week' then
+            if type == 'every-this-day-of-the-week' then
                 weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']
                 value = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("weekday: ", weekdays, lambda{|entity| entity })
                 return {
@@ -141,7 +141,7 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("Wave")
+        BladesGI::mikuType("Wave")
             .select{|item| Listing::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
@@ -210,7 +210,7 @@ class Waves
     # Waves::program1()
     def self.program1()
         loop {
-            items = BladesItemised::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
+            items = BladesGI::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
             return if wave.nil?
             Waves::program2(wave)
@@ -219,7 +219,7 @@ class Waves
 
     # Waves::fsck()
     def self.fsck()
-        BladesItemised::mikuType("Wave").each{|item|
+        BladesGI::mikuType("Wave").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

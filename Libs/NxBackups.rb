@@ -22,7 +22,7 @@ class NxBackups
 
     # NxBackups::getItemByOperationOrNull(operation)
     def self.getItemByOperationOrNull(operation)
-        BladesItemised::mikuType("NxBackup")
+        BladesGI::mikuType("NxBackup")
             .select{|item|
                 item["description"] == operation
             }
@@ -62,9 +62,9 @@ class NxBackups
             }
 
         # In the second stage we are checking that each item has a corresponsing instruction
-        BladesItemised::mikuType("NxBackup")
+        BladesGI::mikuType("NxBackup")
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
-            .each{|item| BladesItemised::destroy(item["uuid"]) }
+            .each{|item| BladesGI::destroy(item["uuid"]) }
     end
 
     # NxBackups::toString(item)
@@ -74,7 +74,7 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("NxBackup")
+        BladesGI::mikuType("NxBackup")
             .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
     end
 

@@ -44,7 +44,7 @@ class NxThreads
 
     # NxThreads::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("NxThread")
+        BladesGI::mikuType("NxThread")
             .select{|item| item["parent"].nil? }
             .select{|thread| NxThreads::completionRatio(thread) < 1 }
             .sort_by{|thread| NxThreads::completionRatio(thread) }
@@ -57,7 +57,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        threads = BladesItemised::mikuType("NxThread")
+        threads = BladesGI::mikuType("NxThread")
                     .sort_by{|thread| NxThreads::completionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
@@ -65,7 +65,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectThreadAtMainListingOrNull()
     def self.interactivelySelectThreadAtMainListingOrNull()
-        threads = BladesItemised::mikuType("NxThread")
+        threads = BladesGI::mikuType("NxThread")
                     .select{|item| item["parent"].nil? }
                     .sort_by{|thread| NxThreads::completionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
@@ -74,7 +74,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
     def self.interactivelySelectThreadChildOfThisThreadOrNull(thread)
-        threads = BladesItemised::mikuType("NxThread")
+        threads = BladesGI::mikuType("NxThread")
                     .select{|item| item["parent"] and item["parent"]["uuid"] == thread["uuid"] }
                     .sort_by{|thread| NxThreads::completionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
@@ -117,13 +117,13 @@ class NxThreads
     # NxThreads::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        padding = BladesItemised::mikuType("NxThread")
+        padding = BladesGI::mikuType("NxThread")
             .map{|item| item["description"].size }
             .reduce(0){|x, a| [x,a].max }
         CatalystSharedCache::set("9c81e889-f07f-4f70-9e91-9bae2c097ea6", padding)
 
         # Ensuring consistency of parenting targets
-        BladesItemised::mikuType("NxTask").each{|item|
+        BladesGI::mikuType("NxTask").each{|item|
             next if item["parent"].nil?
             if BladesGI::itemOrNull(item["parent"]["uuid"]).nil? then
                 BladesGI::setAttribute2(uuid, "parent", nil)
@@ -131,7 +131,7 @@ class NxThreads
         }
 
         # Move orphan items to Infinity
-        BladesItemised::mikuType("NxTask").each{|item|
+        BladesGI::mikuType("NxTask").each{|item|
             next if item["parent"]
             parent = BladesGI::itemOrNull(NxThreads::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))

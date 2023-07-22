@@ -136,7 +136,7 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("NxAnniversary")
+        BladesGI::mikuType("NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end
 
@@ -178,7 +178,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = BladesItemised::mikuType("NxAnniversary")
+            anniversaries = BladesGI::mikuType("NxAnniversary")
                               .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?

@@ -19,7 +19,7 @@ class NxTimes
 
     # NxTimes::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("NxTime")
+        BladesGI::mikuType("NxTime")
             .sort_by{|item| item["time"] }
     end
 
@@ -30,24 +30,24 @@ class NxTimes
 
     # NxTimes::itemsWithPendingTime()
     def self.itemsWithPendingTime()
-        BladesItemised::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
+        BladesGI::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
     end
 
     # NxTimes::reschedule()
     def self.reschedule()
         puts "@reschedule:"
-        BladesItemised::mikuType("NxTime")
+        BladesGI::mikuType("NxTime")
             .sort_by{|item| item["time"] }
             .each{|item|
                 puts "    - #{NxTimes::toString(item)}"
             }
         puts "@reschedule:"
-        BladesItemised::mikuType("NxTime")
+        BladesGI::mikuType("NxTime")
             .sort_by{|item| item["time"] }
             .each{|item|
                 time = LucilleCore::askQuestionAnswerAsString("time for '#{NxTimes::toString(item).green}' (or remove) : ")
                 if time == "remove" then
-                    BladesItemised::destroy(item["uuid"])
+                    BladesGI::destroy(item["uuid"])
                     next
                 end
                 BladesGI::setAttribute2(item["uuid"], "time", time)

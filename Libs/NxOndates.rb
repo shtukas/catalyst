@@ -40,7 +40,7 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("NxOndate")
+        BladesGI::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end
@@ -55,7 +55,7 @@ class NxOndates
             
             store = ItemStore.new()
 
-            items = BladesItemised::mikuType("NxOndate")
+            items = BladesGI::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
 
             items
@@ -89,7 +89,7 @@ class NxOndates
 
     # NxOndates::fsck()
     def self.fsck()
-        BladesItemised::mikuType("NxOndate").each{|item|
+        BladesGI::mikuType("NxOndate").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

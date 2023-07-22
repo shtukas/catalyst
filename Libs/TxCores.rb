@@ -88,13 +88,13 @@ class TxCores
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = BladesItemised::mikuType("TxCore")
+        cores = BladesGI::mikuType("TxCore")
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
     # TxCores::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("TxCore")
+        BladesGI::mikuType("TxCore")
             .sort_by{|core| TxCores::compositeCompletionRatio(core) }
     end
 
@@ -139,7 +139,7 @@ class TxCores
 
     # TxCores::maintenance2()
     def self.maintenance2()
-        BladesItemised::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
+        BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
     end
 
     # TxCores::program1(core)

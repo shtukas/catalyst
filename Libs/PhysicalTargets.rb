@@ -30,13 +30,13 @@ class PhysicalTargets
 
     # PhysicalTargets::listingItems()
     def self.listingItems()
-        BladesItemised::mikuType("PhysicalTarget").each{|item|
+        BladesGI::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
                 BladesGI::setAttribute2(item["uuid"], "date", CommonUtils::today())
                 BladesGI::setAttribute2(item["uuid"], "counter", 0)
             end
         }
-        BladesItemised::mikuType("PhysicalTarget")
+        BladesGI::mikuType("PhysicalTarget")
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
             .map{|item|

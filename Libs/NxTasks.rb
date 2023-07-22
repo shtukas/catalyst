@@ -85,7 +85,7 @@ class NxTasks
 
         BladesGI::init("NxTask", uuid)
 
-        nhash = Blades::putDatablob2(uuid, url)
+        nhash = BladesGI::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
 
         BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
@@ -115,7 +115,7 @@ class NxTasks
 
     # NxTasks::listingItemsForMainListing()
     def self.listingItemsForMainListing()
-        BladesItemised::mikuType("NxTask")
+        BladesGI::mikuType("NxTask")
             .select{|item| item["parent"].nil? }
     end
 
@@ -144,7 +144,7 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
         # Ensuring consistency of task parenting targets
-        BladesItemised::mikuType("NxTask").each{|task|
+        BladesGI::mikuType("NxTask").each{|task|
             next if task["parent"].nil?
             if BladesGI::itemOrNull(task["parent"]["uuid"]).nil? then
                 BladesGI::setAttribute2(uuid, "parent", nil)
@@ -152,8 +152,8 @@ class NxTasks
         }
 
         # Feed Infinity using NxIce
-        if BladesItemised::mikuType("NxTask").size < 100 then
-            BladesItemised::mikuType("NxIce").take(10).each{|item|
+        if BladesGI::mikuType("NxTask").size < 100 then
+            BladesGI::mikuType("NxIce").take(10).each{|item|
                 item["mikuType"] == "NxTask"
                 BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
                 parent = BladesGI::itemOrNull(NxThreads::infinityuuid())
@@ -165,7 +165,7 @@ class NxTasks
 
     # NxTasks::fsck()
     def self.fsck()
-        BladesItemised::mikuType("NxTask").each{|item|
+        BladesGI::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

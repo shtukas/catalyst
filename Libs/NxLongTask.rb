@@ -45,19 +45,19 @@ class NxLongTasks
 
     # NxLongTasks::listingItemsForMainListing()
     def self.listingItemsForMainListing()
-        BladesItemised::mikuType("NxLongTask")
+        BladesGI::mikuType("NxLongTask")
             .select{|delegate| delegate["parent"].nil? }
     end
 
     # NxLongTasks::listingItemsForThread(thread)
     def self.listingItemsForThread(thread)
-        BladesItemised::mikuType("NxLongTask")
+        BladesGI::mikuType("NxLongTask")
             .select{|delegate| delegate["parent"] and delegate["parent"]["uuid"] == thread["uuid"] }
     end
 
     # NxLongTasks::maintenance()
     def self.maintenance()
-        BladesItemised::mikuType("NxLongTask")
+        BladesGI::mikuType("NxLongTask")
             .each{|delegate| 
                 next if delegate["parent"].nil?
                 if BladesGI::itemOrNull(delegate["parent"]["uuid"]).nil? then
@@ -69,7 +69,7 @@ class NxLongTasks
     # NxLongTasks::program1()
     def self.program1()
         loop {
-            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesItemised::mikuType("NxLongTask"), lambda{|delegate| NxLongTasks::toString(delegate) })
+            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesGI::mikuType("NxLongTask"), lambda{|delegate| NxLongTasks::toString(delegate) })
             return if delegate.nil?
             PolyActions::access(delegate)
         }
@@ -77,7 +77,7 @@ class NxLongTasks
 
     # NxLongTasks::fsck()
     def self.fsck()
-        BladesItemised::mikuType("NxLongTask").each{|item|
+        BladesGI::mikuType("NxLongTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end
