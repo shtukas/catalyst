@@ -197,6 +197,7 @@ class Listing
             NxThreads::maintenance2()
             TxCores::maintenance2()
             NxDelegates::maintenance()
+            BladesGx::scan_merge()
         end
         NxThreads::maintenance1()
     end
