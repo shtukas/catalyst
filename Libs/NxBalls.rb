@@ -183,7 +183,19 @@ class NxBalls
     def self.runningItems()
         NxBalls::all()
             .map{|ball| ball["itemuuid"] }
-            .map{|uuid| BladesGI::itemOrNull(uuid) }
+            .map{|itemuuid| 
+                ix = BladesGI::itemOrNull(itemuuid)
+                if ix.nil? then
+                    filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
+                    if File.exist?(filepath) then
+                        puts "garbage collecting NxBall: #{filepath}".green
+                        FileUtils.rm(filepath)
+                    end
+                    nil
+                else
+                    ix
+                end
+            }
             .compact
     end
 end

@@ -194,10 +194,11 @@ class Listing
             Bank::fileManagement()
             NxBackups::maintenance()
             NxTasks::maintenance()
-            NxThreads::maintenance()
+            NxThreads::maintenance2()
             TxCores::maintenance2()
             NxDelegates::maintenance()
         end
+        NxThreads::maintenance1()
     end
 
     # Listing::launchNxBallMonitor()

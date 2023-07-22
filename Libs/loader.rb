@@ -135,7 +135,6 @@ require_relative "Bank.rb"
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
-require_relative "CatalystSharedCache.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::setUnixtime(item, unixtime)

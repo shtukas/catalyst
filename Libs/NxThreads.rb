@@ -36,7 +36,7 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        padding = CatalystSharedCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", 0)
+        padding = XCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", 0)
         hours = thread["hours"] || 2
         cr = NxThreads::completionRatio(thread)
         "🐙 #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
@@ -114,14 +114,17 @@ class NxThreads
     # --------------------------------------------------------------------------
     # Ops
 
-    # NxThreads::maintenance()
-    def self.maintenance()
+    # NxThreads::maintenance1()
+    def self.maintenance1()
         # Ensuring consistency of parenting targets
         padding = BladesGI::mikuType("NxThread")
             .map{|item| item["description"].size }
             .reduce(0){|x, a| [x,a].max }
-        CatalystSharedCache::set("9c81e889-f07f-4f70-9e91-9bae2c097ea6", padding)
+        XCache::set("9c81e889-f07f-4f70-9e91-9bae2c097ea6", padding)
+    end
 
+    # NxThreads::maintenance2()
+    def self.maintenance2()
         # Ensuring consistency of parenting targets
         BladesGI::mikuType("NxTask").each{|item|
             next if item["parent"].nil?
