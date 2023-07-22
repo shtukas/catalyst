@@ -53,9 +53,8 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
-require_relative "#{ENV['HOME']}/Galaxy/DataHub/Kerrigan/Blades.rb"
-require_relative "#{ENV['HOME']}/Galaxy/DataHub/Kerrigan/Solingen.rb"
-require_relative "#{ENV['HOME']}/Galaxy/DataHub/Kerrigan/DarkSpace.rb"
+require_relative "#{ENV['HOME']}/Galaxy/DataHub/Blades/Libraries/Ruby/BladesGI.rb"
+require_relative "#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries/CoreDataRefStrings.rb"
 
 # ------------------------------------------------------------
 
@@ -134,7 +133,6 @@ require_relative "Atlas.rb"
 require_relative "Bank.rb"
 
 require_relative "Catalyst.rb"
-require_relative "CoreData.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
 require_relative "CatalystSharedCache.rb"
@@ -144,7 +142,6 @@ require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
-require_relative "DxNotes.rb"
 
 require_relative "Galaxy.rb"
 
@@ -173,10 +170,8 @@ require_relative "PhysicalTargets.rb"
 require_relative "Pure.rb"
 
 require_relative "SectionsType0141.rb"
-require_relative "Stargate.rb"
 
 require_relative "TxCores.rb"
-require_relative "TheLine.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
 

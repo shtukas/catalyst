@@ -107,15 +107,15 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        DarkEnergy::init("NxAnniversary", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "startdate", startdate)
-        DarkEnergy::patch(uuid, "repeatType", repeatType)
-        DarkEnergy::patch(uuid, "lastCelebrationDate", lastCelebrationDate)
+        BladesGI::init("NxAnniversary", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "startdate", startdate)
+        BladesGI::setAttribute2(uuid, "repeatType", repeatType)
+        BladesGI::setAttribute2(uuid, "lastCelebrationDate", lastCelebrationDate)
 
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::itemOrNull(uuid)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]
@@ -136,7 +136,7 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxAnniversary")
+        BladesItemised::mikuType("NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end
 
@@ -145,14 +145,14 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        DarkEnergy::patch(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
+        BladesGI::setAttribute2(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::accessAndDone(anniversary)
     def self.accessAndDone(anniversary)
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            DarkEnergy::patch(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
+            BladesGI::setAttribute2(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
         end
     end
 
@@ -165,12 +165,12 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                DarkEnergy::patch(item["uuid"], "description", description)
+                BladesGI::setAttribute2(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                DarkEnergy::patch(item["uuid"], "startdate", startdate)
+                BladesGI::setAttribute2(item["uuid"], "startdate", startdate)
             end
         }
     end
@@ -178,7 +178,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = DarkEnergy::mikuType("NxAnniversary")
+            anniversaries = BladesItemised::mikuType("NxAnniversary")
                               .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?

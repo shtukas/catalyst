@@ -4,22 +4,22 @@ class NxTimes
     # NxTimes::issue(time, description)
     def self.issue(time, description)
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxTime", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "time", time)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxTime", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "time", time)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxTimes::toString(item)
     def self.toString(item)
-        "(time) [#{item["time"]}] #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "(time) [#{item["time"]}] #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTimes::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxTime")
+        BladesItemised::mikuType("NxTime")
             .sort_by{|item| item["time"] }
     end
 
@@ -30,27 +30,27 @@ class NxTimes
 
     # NxTimes::itemsWithPendingTime()
     def self.itemsWithPendingTime()
-        DarkEnergy::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
+        BladesItemised::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
     end
 
     # NxTimes::reschedule()
     def self.reschedule()
         puts "@reschedule:"
-        DarkEnergy::mikuType("NxTime")
+        BladesItemised::mikuType("NxTime")
             .sort_by{|item| item["time"] }
             .each{|item|
                 puts "    - #{NxTimes::toString(item)}"
             }
         puts "@reschedule:"
-        DarkEnergy::mikuType("NxTime")
+        BladesItemised::mikuType("NxTime")
             .sort_by{|item| item["time"] }
             .each{|item|
                 time = LucilleCore::askQuestionAnswerAsString("time for '#{NxTimes::toString(item).green}' (or remove) : ")
                 if time == "remove" then
-                    DarkEnergy::destroy(item["uuid"])
+                    BladesItemised::destroy(item["uuid"])
                     next
                 end
-                DarkEnergy::patch(item["uuid"], "time", time)
+                BladesGI::setAttribute2(item["uuid"], "time", time)
             }
     end
 

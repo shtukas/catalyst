@@ -135,7 +135,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DxNotes::toStringSuffix(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -170,7 +170,6 @@ class Listing
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
-        spot.contest_entry("TheLine::line()", lambda{ TheLine::line() })
         spot.end_contest()
 
         puts ""
@@ -192,13 +191,12 @@ class Listing
     # Listing::maintenance()
     def self.maintenance()
         if Config::isPrimaryInstance() then
-             PositiveSpace::maintenance()
-             Bank::fileManagement()
-             NxBackups::maintenance()
-             NxTasks::maintenance()
-             NxThreads::maintenance()
-             TxCores::maintenance2()
-             NxDelegates::maintenance()
+            Bank::fileManagement()
+            NxBackups::maintenance()
+            NxTasks::maintenance()
+            NxThreads::maintenance()
+            TxCores::maintenance2()
+            NxDelegates::maintenance()
         end
     end
 

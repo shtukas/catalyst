@@ -8,11 +8,11 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxThread", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxThread", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxThreads::interactivelyIssueNewAtParentOrNull(parent)
@@ -23,12 +23,12 @@ class NxThreads
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxThread", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "parent", tx8)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxThread", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "parent", tx8)
+        BladesGI::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------------------------
@@ -44,7 +44,7 @@ class NxThreads
 
     # NxThreads::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxThread")
+        BladesItemised::mikuType("NxThread")
             .select{|item| item["parent"].nil? }
             .select{|thread| NxThreads::completionRatio(thread) < 1 }
             .sort_by{|thread| NxThreads::completionRatio(thread) }
@@ -57,7 +57,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        threads = DarkEnergy::mikuType("NxThread")
+        threads = BladesItemised::mikuType("NxThread")
                     .sort_by{|thread| NxThreads::completionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
@@ -65,7 +65,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectThreadAtMainListingOrNull()
     def self.interactivelySelectThreadAtMainListingOrNull()
-        threads = DarkEnergy::mikuType("NxThread")
+        threads = BladesItemised::mikuType("NxThread")
                     .select{|item| item["parent"].nil? }
                     .sort_by{|thread| NxThreads::completionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
@@ -74,7 +74,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
     def self.interactivelySelectThreadChildOfThisThreadOrNull(thread)
-        threads = DarkEnergy::mikuType("NxThread")
+        threads = BladesItemised::mikuType("NxThread")
                     .select{|item| item["parent"] and item["parent"]["uuid"] == thread["uuid"] }
                     .sort_by{|thread| NxThreads::completionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
@@ -117,25 +117,25 @@ class NxThreads
     # NxThreads::maintenance()
     def self.maintenance()
         # Ensuring consistency of parenting targets
-        padding = DarkEnergy::mikuType("NxThread")
+        padding = BladesItemised::mikuType("NxThread")
             .map{|item| item["description"].size }
             .reduce(0){|x, a| [x,a].max }
         CatalystSharedCache::set("9c81e889-f07f-4f70-9e91-9bae2c097ea6", padding)
 
         # Ensuring consistency of parenting targets
-        DarkEnergy::mikuType("NxTask").each{|item|
+        BladesItemised::mikuType("NxTask").each{|item|
             next if item["parent"].nil?
-            if DarkEnergy::itemOrNull(item["parent"]["uuid"]).nil? then
-                DarkEnergy::patch(uuid, "parent", nil)
+            if BladesGI::itemOrNull(item["parent"]["uuid"]).nil? then
+                BladesGI::setAttribute2(uuid, "parent", nil)
             end
         }
 
         # Move orphan items to Infinity
-        DarkEnergy::mikuType("NxTask").each{|item|
+        BladesItemised::mikuType("NxTask").each{|item|
             next if item["parent"]
-            parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
+            parent = BladesGI::itemOrNull(NxThreads::infinityuuid())
             item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-            DarkEnergy::commit(item)
+            BladesGI::setAttribute2(item["uuid"], "parent", item["parent"])
         }
     end
 
@@ -143,7 +143,7 @@ class NxThreads
     def self.program1(thread)
         loop {
 
-            thread = DarkEnergy::itemOrNull(thread["uuid"])
+            thread = BladesGI::itemOrNull(thread["uuid"])
             return if thread.nil?
 
             system("clear")
@@ -215,7 +215,7 @@ class NxThreads
                 next if t.nil?
                 selected.each{|task|
                     tx8 = Tx8s::make(t["uuid"], Tx8s::nextPositionAtThisParent(t))
-                    DarkEnergy::patch(task["uuid"], "parent", tx8)
+                    BladesGI::setAttribute2(task["uuid"], "parent", tx8)
                 }
             end
 

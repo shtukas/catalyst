@@ -5,11 +5,11 @@ class NxLines
     def self.issue(line)
         description = line
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxLine", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxLine", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxLines::toString(item)

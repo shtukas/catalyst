@@ -88,13 +88,13 @@ class TxCores
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = DarkEnergy::mikuType("TxCore")
+        cores = BladesItemised::mikuType("TxCore")
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
     # TxCores::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("TxCore")
+        BladesItemised::mikuType("TxCore")
             .sort_by{|core| TxCores::compositeCompletionRatio(core) }
     end
 
@@ -133,19 +133,20 @@ class TxCores
             end
         end
         core["lastResetTime"] = Time.new.to_i
-        DarkEnergy::commit(core)
+        BladesGI::setAttribute2(core["uuid"], "hours", core["hours"])
+        BladesGI::setAttribute2(core["uuid"], "lastResetTime", core["lastResetTime"])
     end
 
     # TxCores::maintenance2()
     def self.maintenance2()
-        DarkEnergy::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
+        BladesItemised::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
     end
 
     # TxCores::program1(core)
     def self.program1(core)
         loop {
 
-            thread = DarkEnergy::itemOrNull(core["uuid"])
+            thread = BladesGI::itemOrNull(core["uuid"])
             return if core.nil?
 
             system("clear")

@@ -114,17 +114,17 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        DarkEnergy::init("Wave", uuid)
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        BladesGI::init("Wave", uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "nx46", nx46)
-        DarkEnergy::patch(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::patch(uuid, "interruption", interruption)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "nx46", nx46)
+        BladesGI::setAttribute2(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::setAttribute2(uuid, "interruption", interruption)
+        BladesGI::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -133,7 +133,7 @@ class Waves
     # Waves::toString(item)
     def self.toString(item)
         ago = "done: #{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
-        "♻️  #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreData::itemToSuffixString(item)} (#{ago})"
+        "♻️  #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreDataRefStrings::itemToSuffixString(item)} (#{ago})"
     end
 
     # -------------------------------------------------------------------------
@@ -141,7 +141,7 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("Wave")
+        BladesItemised::mikuType("Wave")
             .select{|item| Listing::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
@@ -157,9 +157,9 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
-        DarkEnergy::patch(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        DarkEnergy::patch(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-        DarkEnergy::patch(item["uuid"], "parking", nil)
+        BladesGI::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        BladesGI::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        BladesGI::setAttribute2(item["uuid"], "parking", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -170,7 +170,7 @@ class Waves
     # Waves::access(item)
     def self.access(item)
         puts Waves::toString(item).green
-        CoreData::access(item["uuid"], item["field11"])
+        CoreDataRefStrings::access(item["uuid"], item["field11"])
     end
 
     # Waves::program2(item)
@@ -183,12 +183,12 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                DarkEnergy::patch(item["uuid"], "description", description)
+                BladesGI::setAttribute2(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                DarkEnergy::patch(item["uuid"], "nx46", nx46)
+                BladesGI::setAttribute2(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveDone(item)
@@ -196,11 +196,11 @@ class Waves
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                DarkEnergy::patch(item["uuid"], "onlyOnDays", days)
+                BladesGI::setAttribute2(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
-                    DarkEnergy::destroy(item["uuid"])
+                    BladesGI::destroy(item["uuid"])
                     return
                 end
             end
@@ -210,10 +210,17 @@ class Waves
     # Waves::program1()
     def self.program1()
         loop {
-            items = DarkEnergy::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
+            items = BladesItemised::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
             return if wave.nil?
             Waves::program2(wave)
+        }
+    end
+
+    # Waves::fsck()
+    def self.fsck()
+        BladesItemised::mikuType("Wave").each{|item|
+            CoreDataRefStrings::fsck(item)
         }
     end
 end

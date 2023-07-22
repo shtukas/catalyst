@@ -5,11 +5,11 @@ class NxLongTasks
     def self.issue(line)
         description = line
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxLongTask", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxLongTask", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxLongTasks::interactivelyIssueNewOrNull()
@@ -35,7 +35,7 @@ class NxLongTasks
         delegate = NxLongTasks::interactivelyIssueNewOrNull()
         return nil if delegate.nil?
 
-        DarkEnergy::patch(delegate["uuid"], "parent", tx8)
+        BladesGI::setAttribute2(delegate["uuid"], "parent", tx8)
     end
 
     # NxLongTasks::toString(item)
@@ -45,23 +45,23 @@ class NxLongTasks
 
     # NxLongTasks::listingItemsForMainListing()
     def self.listingItemsForMainListing()
-        DarkEnergy::mikuType("NxLongTask")
+        BladesItemised::mikuType("NxLongTask")
             .select{|delegate| delegate["parent"].nil? }
     end
 
     # NxLongTasks::listingItemsForThread(thread)
     def self.listingItemsForThread(thread)
-        DarkEnergy::mikuType("NxLongTask")
+        BladesItemised::mikuType("NxLongTask")
             .select{|delegate| delegate["parent"] and delegate["parent"]["uuid"] == thread["uuid"] }
     end
 
     # NxLongTasks::maintenance()
     def self.maintenance()
-        DarkEnergy::mikuType("NxLongTask")
+        BladesItemised::mikuType("NxLongTask")
             .each{|delegate| 
                 next if delegate["parent"].nil?
-                if DarkEnergy::itemOrNull(delegate["parent"]["uuid"]).nil? then
-                    DarkEnergy::patch(delegate["uuid"], "parent", nil)
+                if BladesGI::itemOrNull(delegate["parent"]["uuid"]).nil? then
+                    BladesGI::setAttribute2(delegate["uuid"], "parent", nil)
                 end
             }
     end
@@ -69,9 +69,16 @@ class NxLongTasks
     # NxLongTasks::program1()
     def self.program1()
         loop {
-            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", DarkEnergy::mikuType("NxLongTask"), lambda{|delegate| NxLongTasks::toString(delegate) })
+            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesItemised::mikuType("NxLongTask"), lambda{|delegate| NxLongTasks::toString(delegate) })
             return if delegate.nil?
             PolyActions::access(delegate)
+        }
+    end
+
+    # NxLongTasks::fsck()
+    def self.fsck()
+        BladesItemised::mikuType("NxLongTask").each{|item|
+            CoreDataRefStrings::fsck(item)
         }
     end
 end

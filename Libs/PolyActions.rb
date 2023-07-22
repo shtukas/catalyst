@@ -53,7 +53,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLongTask" then
-            CoreData::access(item["uuid"], item["field11"])
+            CoreDataRefStrings::access(item["uuid"], item["field11"])
             return
         end
 
@@ -105,21 +105,21 @@ class PolyActions
 
         if item["mikuType"] == "NxDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLongTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTime" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
@@ -130,20 +130,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLine" then
-            if DxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
-                LucilleCore::pressEnterToContinue()
-                DxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLong" then
-            DarkEnergy::destroy(item["uuid"])
+            BladesItemised::destroy(item["uuid"])
             return
         end
 
@@ -154,40 +148,20 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if DxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
-                LucilleCore::pressEnterToContinue()
-                DxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
-            if DxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
-                LucilleCore::pressEnterToContinue()
-                DxNotes::edit(item)
-                return if !LucilleCore::askQuestionAnswerAsBoolean("Still want to destroy '#{PolyFunctions::toString(item).green}' ? ", true)
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTask" then
-            if DxNotes::hasNoteText(item) then
-                puts "The item has a note, I am going to make you review it. (You need to empty it before moving on.)"
-                LucilleCore::pressEnterToContinue()
-                DxNotes::edit(item)
-            end
-            if DxNotes::hasNoteText(item) then
-                return
-            end
             if Tx8s::childrenInOrder(item).size > 0 then
                 puts "The item has children"
                 Tx8s::childrenInOrder(item).each{|i|
@@ -195,7 +169,7 @@ class PolyActions
                 }
                 if LucilleCore::askQuestionAnswerAsBoolean("> destroy all of them ?") then
                     Tx8s::childrenInOrder(item).each{|i|
-                        DarkEnergy::destroy(i["uuid"])
+                        BladesItemised::destroy(i["uuid"])
                     }
                 end
             end
@@ -204,14 +178,14 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTime" then
             puts "done-ing: '#{NxTimes::toString(item).green}'"
-            DarkEnergy::destroy(item["uuid"])
+            BladesItemised::destroy(item["uuid"])
             return
         end
 
@@ -250,7 +224,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
@@ -262,21 +236,21 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxDelegate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DarkEnergy::destroy(item["uuid"])
+                BladesItemised::destroy(item["uuid"])
             end
             return
         end
@@ -323,7 +297,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTime" then
-            DarkEnergy::destroy(item["uuid"])
+            BladesItemised::destroy(item["uuid"])
             return
         end
 
@@ -335,7 +309,7 @@ class PolyActions
             if first_time then
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
                     NxBalls::stop(item)
-                    DarkEnergy::destroy(item["uuid"])
+                    BladesItemised::destroy(item["uuid"])
                 end
             end
             if NxBalls::itemIsRunning(item) then
@@ -427,6 +401,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        DarkEnergy::patch(item["uuid"], "description", description)
+        BladesGI::setAttribute2(item["uuid"], "description", description)
     end
 end

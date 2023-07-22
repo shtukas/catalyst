@@ -11,20 +11,20 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
+        # We need to create the blade before we call CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxTask", uuid)
+        BladesGI::init("NxTask", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "field11", coredataref)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
 
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxTasks::interactivelyIssueNewAtParentOrNull(parent)
@@ -36,21 +36,21 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
+        # We need to create the blade before we call CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxTask", uuid)
+        BladesGI::init("NxTask", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::patch(uuid, "parent", tx8)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::setAttribute2(uuid, "parent", tx8)
 
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxTasks::interactivelyIssueNewAtTopAtParentOrNull(parent)
@@ -61,21 +61,21 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        # We need to create the blade before we call CoreData::interactivelyMakeNewReferenceStringOrNull
+        # We need to create the blade before we call CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxTask", uuid)
+        BladesGI::init("NxTask", uuid)
 
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::patch(uuid, "parent", tx8)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::setAttribute2(uuid, "parent", tx8)
 
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxTasks::urlToTask(url)
@@ -83,26 +83,26 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        DarkEnergy::init("NxTask", uuid)
+        BladesGI::init("NxTask", uuid)
 
-        nhash = DarkMatter::putBlob(url)
+        nhash = Blades::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
 
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask(description)
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxTask", uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxTask", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -110,12 +110,12 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::listingItemsForMainListing()
     def self.listingItemsForMainListing()
-        DarkEnergy::mikuType("NxTask")
+        BladesItemised::mikuType("NxTask")
             .select{|item| item["parent"].nil? }
     end
 
@@ -132,33 +132,41 @@ class NxTasks
             puts JSON.pretty_generate(t1)
             t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
             puts JSON.pretty_generate(t1)
-            DarkEnergy::commit(t1)
+            BladesGI::setAttribute2(t1["uuid"], "parent", t1["parent"])
         }
     end
 
     # NxTasks::access(task)
     def self.access(task)
-        CoreData::access(task["uuid"], task["field11"])
+        CoreDataRefStrings::access(task["uuid"], task["field11"])
     end
 
     # NxTasks::maintenance()
     def self.maintenance()
         # Ensuring consistency of task parenting targets
-        DarkEnergy::mikuType("NxTask").each{|task|
+        BladesItemised::mikuType("NxTask").each{|task|
             next if task["parent"].nil?
-            if DarkEnergy::itemOrNull(task["parent"]["uuid"]).nil? then
-                DarkEnergy::patch(uuid, "parent", nil)
+            if BladesGI::itemOrNull(task["parent"]["uuid"]).nil? then
+                BladesGI::setAttribute2(uuid, "parent", nil)
             end
         }
 
         # Feed Infinity using NxIce
-        if DarkEnergy::mikuType("NxTask").size < 100 then
-            DarkEnergy::mikuType("NxIce").take(10).each{|item|
+        if BladesItemised::mikuType("NxTask").size < 100 then
+            BladesItemised::mikuType("NxIce").take(10).each{|item|
                 item["mikuType"] == "NxTask"
-                parent = DarkEnergy::itemOrNull(NxThreads::infinityuuid())
+                BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
+                parent = BladesGI::itemOrNull(NxThreads::infinityuuid())
                 item["parent"] = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(parent))
-                DarkEnergy::commit(item)
+                BladesGI::setAttribute2(item["uuid"], "parent", item["parent"])
             }
         end
+    end
+
+    # NxTasks::fsck()
+    def self.fsck()
+        BladesItemised::mikuType("NxTask").each{|item|
+            CoreDataRefStrings::fsck(item)
+        }
     end
 end

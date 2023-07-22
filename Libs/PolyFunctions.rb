@@ -12,7 +12,7 @@ class PolyFunctions
         }
 
         if item["parent"] then
-            parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+            parent = BladesGI::itemOrNull(item["parent"]["uuid"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end

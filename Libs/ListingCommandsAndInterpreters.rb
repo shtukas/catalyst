@@ -5,14 +5,14 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | note (<n>) | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | >> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | >> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | mikuTypes | edit <n> | inventory | reschedule",
+            "misc          : search | speed | commands | mikuTypes | edit <n> | reschedule",
         ].join("\n")
     end
 
@@ -79,7 +79,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("mikutypes", input) then
-            puts JSON.pretty_generate(DarkEnergy::all().map{|item| item["mikuType"] }.uniq.sort)
+            puts JSON.pretty_generate(BladesItemised::all().map{|item| item["mikuType"] }.uniq.sort)
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -159,7 +159,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+            parent = BladesGI::itemOrNull(item["parent"]["uuid"])
             if parent.nil? then
                 puts "Interestingly the specified parent cannot be found 🤔"
                 LucilleCore::pressEnterToContinue()
@@ -193,12 +193,6 @@ class ListingCommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
-        end
-
-        if Interpreting::match("inventory", input) then
-            puts TheLine::line()
-            LucilleCore::pressEnterToContinue()
-            return
         end
 
         if Interpreting::match("delegate", input) then
@@ -252,9 +246,9 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("coredata", input) then
             item = store.getDefault()
             return if item.nil?
-            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
+            reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            DarkEnergy::patch(item["uuid"], "field11", reference)
+            BladesGI::setAttribute2(item["uuid"], "field11", reference)
             return
         end
 
@@ -262,9 +256,9 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            reference =  CoreData::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
+            reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            DarkEnergy::patch(item["uuid"], "field11", reference)
+            BladesGI::setAttribute2(item["uuid"], "field11", reference)
             return
         end
 
@@ -295,7 +289,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
             item.to_a.each{|key, value|
-                DarkEnergy::patch(item["uuid"], key, value)
+                BladesGI::setAttribute2(item["uuid"], key, value)
             }
             return
         end
@@ -394,21 +388,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("manual countdown", input) then
             PhysicalTargets::issueNewOrNull()
-            return
-        end
-
-        if Interpreting::match("note", input) then
-            item = store.getDefault()
-            return if item.nil?
-            DxNotes::edit(item)
-            return
-        end
-
-        if Interpreting::match("note *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            DxNotes::edit(item)
             return
         end
 
@@ -516,7 +495,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            DarkEnergy::patch(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            BladesGI::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

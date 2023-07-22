@@ -7,13 +7,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        DarkEnergy::init("NxOndate", uuid)
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", datetime)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxOndate", uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", datetime)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::itemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueNewTodayOrNull()
@@ -21,13 +21,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        DarkEnergy::init("NxOndate", uuid)
-        coredataref = CoreData::interactivelyMakeNewReferenceStringOrNull(uuid)
-        DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-        DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-        DarkEnergy::patch(uuid, "description", description)
-        DarkEnergy::patch(uuid, "field11", coredataref)
-        DarkEnergy::itemOrNull(uuid)
+        BladesGI::init("NxOndate", uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::itemOrNull(uuid)
     end
 
     # ------------------
@@ -35,12 +35,12 @@ class NxOndates
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreData::itemToSuffixString(item)}"
+        "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxOndates::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxOndate")
+        BladesItemised::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end
@@ -55,7 +55,7 @@ class NxOndates
             
             store = ItemStore.new()
 
-            items = DarkEnergy::mikuType("NxOndate")
+            items = BladesItemised::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
 
             items
@@ -75,15 +75,22 @@ class NxOndates
 
     # NxOndates::access(item)
     def self.access(item)
-        CoreData::access(item["uuid"], item["field11"])
+        CoreDataRefStrings::access(item["uuid"], item["field11"])
     end
 
     # NxOndates::redate(item)
     def self.redate(item)
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
-        DarkEnergy::patch(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
-        DarkEnergy::patch(item["uuid"], "parking", nil)
+        BladesGI::setAttribute2(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
+        BladesGI::setAttribute2(item["uuid"], "parking", nil)
         DoNotShowUntil::setUnixtime(item, unixtime)
+    end
+
+    # NxOndates::fsck()
+    def self.fsck()
+        BladesItemised::mikuType("NxOndate").each{|item|
+            CoreDataRefStrings::fsck(item)
+        }
     end
 end

@@ -11,7 +11,7 @@ class Tx8s
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        DarkEnergy::all()
+        BladesItemised::all()
             .select{|item| item["parent"] }
             .select{|item| item["parent"]["uuid"] == parent["uuid"] }
             .sort_by{|item| item["parent"]["position"] }
@@ -20,11 +20,11 @@ class Tx8s
     # Tx8s::repositionItemAtSameParent(item)
     def self.repositionItemAtSameParent(item)
         return if item["parent"].nil?
-        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+        parent = BladesGI::itemOrNull(item["parent"]["uuid"])
         return if parent.nil?
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
         item["parent"]["position"] = position
-        DarkEnergy::commit(item)
+        BladesGI::setAttribute2(item["uuid"], "parent", item["parent"])
     end
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
@@ -120,11 +120,11 @@ class Tx8s
         sorted.each_with_index{|i, indx|
             i["parent"]["position"] = indx+1
             puts JSON.pretty_generate(i)
-            DarkEnergy::commit(i)
+            BladesGI::setAttribute2(i["uuid"], "parent", i["parent"])
         }
 
         garbageCollected.each{|i|
-            DarkEnergy::destroy(i["uuid"])
+            BladesItemised::destroy(i["uuid"])
         }
     end
 
@@ -148,13 +148,13 @@ class Tx8s
     def self.interactivelyPlaceItemAtParentAttempt(item, parent)
         tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
         return if tx8.nil?
-        DarkEnergy::patch(item["uuid"], "parent", tx8)
+        BladesGI::setAttribute2(item["uuid"], "parent", tx8)
     end
 
     # Tx8s::getParentOrNull(item)
     def self.getParentOrNull(item)
         return nil if item["parent"].nil?
-        DarkEnergy::itemOrNull(item["parent"]["uuid"])
+        BladesGI::itemOrNull(item["parent"]["uuid"])
     end
 
     # Tx8s::positionInParentSuffix(item)
@@ -172,14 +172,14 @@ class Tx8s
             next if t1.nil?
             t1["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             puts JSON.pretty_generate(t1)
-            DarkEnergy::commit(t1)
+            BladesGI::setAttribute2(t1["uuid"], "parent", t1["parent"])
         }
     end
 
     # Tx8s::suffix(item)
     def self.suffix(item)
         return "" if item["parent"].nil?
-        parent = DarkEnergy::itemOrNull(item["parent"]["uuid"])
+        parent = BladesGI::itemOrNull(item["parent"]["uuid"])
         return "" if parent.nil?
         " (#{parent["description"]})"
     end

@@ -22,7 +22,7 @@ class NxBackups
 
     # NxBackups::getItemByOperationOrNull(operation)
     def self.getItemByOperationOrNull(operation)
-        DarkEnergy::mikuType("NxBackup")
+        BladesItemised::mikuType("NxBackup")
             .select{|item|
                 item["description"] == operation
             }
@@ -48,23 +48,23 @@ class NxBackups
                 item = NxBackups::getItemByOperationOrNull(instruction["operation"])
                 if item then
                     if item["periodInDays"] != instruction["periodInDays"] then
-                        DarkEnergy::patch(item["uuid"], "periodInDays", instruction["periodInDays"])
+                        BladesGI::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
                     end
                 else
                     uuid  = SecureRandom.uuid
-                    DarkEnergy::init("NxBackup", uuid)
-                    DarkEnergy::patch(uuid, "unixtime", Time.new.to_i)
-                    DarkEnergy::patch(uuid, "datetime", Time.new.utc.iso8601)
-                    DarkEnergy::patch(uuid, "description", instruction["operation"])
-                    DarkEnergy::patch(uuid, "periodInDays", instruction["periodInDays"])
-                    DarkEnergy::patch(uuid, "lastDoneUnixtime", 0)
+                    BladesGI::init("NxBackup", uuid)
+                    BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+                    BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+                    BladesGI::setAttribute2(uuid, "description", instruction["operation"])
+                    BladesGI::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
+                    BladesGI::setAttribute2(uuid, "lastDoneUnixtime", 0)
                 end
             }
 
         # In the second stage we are checking that each item has a corresponsing instruction
-        DarkEnergy::mikuType("NxBackup")
+        BladesItemised::mikuType("NxBackup")
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
-            .each{|item| DarkEnergy::destroy(item["uuid"]) }
+            .each{|item| BladesItemised::destroy(item["uuid"]) }
     end
 
     # NxBackups::toString(item)
@@ -74,13 +74,13 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        DarkEnergy::mikuType("NxBackup")
+        BladesItemised::mikuType("NxBackup")
             .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
     end
 
     # NxBackups::performDone(item)
     def self.performDone(item)
-        DarkEnergy::patch(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        BladesGI::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
     end
 
     # NxBackups::program(item)
