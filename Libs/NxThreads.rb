@@ -50,11 +50,6 @@ class NxThreads
             .sort_by{|thread| NxThreads::completionRatio(thread) }
     end
 
-    # NxThreads::infinityuuid()
-    def self.infinityuuid()
-        "bc3901ad-18ad-4354-b90b-63f7a611e64e"
-    end
-
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         threads = BladesGI::mikuType("NxThread")
@@ -131,14 +126,6 @@ class NxThreads
             if BladesGI::itemOrNull(item["parent"]["uuid"]).nil? then
                 BladesGI::setAttribute2(uuid, "parent", nil)
             end
-        }
-
-        # Move orphan items to Infinity
-        BladesGI::mikuType("NxTask").each{|item|
-            next if item["parent"]
-            parent = BladesGI::itemOrNull(NxThreads::infinityuuid())
-            item["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-            BladesGI::setAttribute2(item["uuid"], "parent", item["parent"])
         }
     end
 

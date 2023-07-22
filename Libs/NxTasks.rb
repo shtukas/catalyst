@@ -95,6 +95,22 @@ class NxTasks
         BladesGI::itemOrNull(uuid)
     end
 
+    # NxTasks::locationToTask(location)
+    def self.locationToTask(location)
+        description = "(buffer-in) #{File.basename(location)}"
+        uuid = SecureRandom.uuid
+
+        BladesGI::init("NxTask", uuid)
+
+        coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
+
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        BladesGI::itemOrNull(uuid)
+    end
+
     # NxTasks::descriptionToTask(description)
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
@@ -151,14 +167,19 @@ class NxTasks
             end
         }
 
+        LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
+            NxTasks::locationToTask(location)
+            LucilleCore::removeFileSystemLocation(location)
+        }
+
         # Feed Infinity using NxIce
         if BladesGI::mikuType("NxTask").size < 100 then
             BladesGI::mikuType("NxIce").take(10).each{|item|
                 item["mikuType"] == "NxTask"
                 BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
-                parent = BladesGI::itemOrNull(NxThreads::infinityuuid())
-                item["parent"] = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(parent))
-                BladesGI::setAttribute2(item["uuid"], "parent", item["parent"])
+                core = BladesGI::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22") # Infinity Core
+                tx8 = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(core))
+                BladesGI::setAttribute2(item["uuid"], "parent", tx8)
             }
         end
     end
