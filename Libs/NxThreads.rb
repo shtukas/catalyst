@@ -36,7 +36,7 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        padding = XCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", 0)
+        padding = XCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", "0").to_i
         hours = thread["hours"] || 2
         cr = NxThreads::completionRatio(thread)
         "🐙 #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"

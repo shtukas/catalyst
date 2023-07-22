@@ -26,6 +26,15 @@ class TxCores
         TxCores::make(SecureRandom.uuid, description, hours, SecureRandom.hex)
     end
 
+    # TxCores::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
+        core = TxCores::interactivelyMakeOrNull()
+        BladesGI::init(core["mikuType"], core["uuid"])
+        core.to_a.each{|key, value|
+            BladesGI::setAttribute2(core["uuid"], key, value)
+        }
+    end
+
     # TxCores::interactivelyMakeEngine()
     def self.interactivelyMakeEngine()
         core = TxCores::interactivelyMakeOrNull()

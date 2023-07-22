@@ -2,6 +2,11 @@ class Pure
 
     # Pure::containerChildrenInOrder(container)
     def self.containerChildrenInOrder(container)
+        if container["mikuType"] == "TxCore" and container["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
+            # L & P to P
+            items  = Tx8s::childrenInOrder(container)
+            return items.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        end
         items  = Tx8s::childrenInOrder(container)
         waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
         waves = waves.select{|item| Listing::listable(item) }
