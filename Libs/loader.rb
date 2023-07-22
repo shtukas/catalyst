@@ -48,21 +48,17 @@ checkLocation = lambda{|location|
 
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataBank/Stargate-Config.json")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/catalyst")
-checkLocation.call("#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries")
+checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries")
 checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
-require_relative "#{ENV['HOME']}/Galaxy/DataHub/Blades/Libraries/Ruby/BladesGI.rb"
-require_relative "#{ENV['HOME']}/Galaxy/Software/Lucille-Ruby-Libraries/CoreDataRefStrings.rb"
+require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/BladesGI.rb"
+require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/CoreDataRefStrings.rb"
 
-# ------------------------------------------------------------
+require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/LucilleCore.rb"
 
-require_relative "Config.rb"
-
-require_relative "LucilleCore.rb"
-
-require_relative "XCache.rb"
+require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/XCache.rb"
 =begin
     XCache::set(key, value)
     XCache::getOrNull(key)
@@ -74,6 +70,10 @@ require_relative "XCache.rb"
 
     XCache::filepath(key)
 =end
+
+# ------------------------------------------------------------
+
+require_relative "Config.rb"
 
 require_relative "AionCore.rb"
 =begin
