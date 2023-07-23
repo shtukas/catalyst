@@ -176,7 +176,7 @@ class TxCores
                 }
 
             puts ""
-            puts "(task, longtask, pile, float, delegate, thread, position *)"
+            puts "(task, longtask, pile, delegate, delegate, thread, position *)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -195,7 +195,7 @@ class TxCores
                 Tx8s::pileAtThisParent(core)
             end
 
-            if input == "float" then
+            if input == "delegate" then
                 NxDelegates::interactivelyIssueNewAtParentOrNull(core)
                 next
             end

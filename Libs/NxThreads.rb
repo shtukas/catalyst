@@ -154,7 +154,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, longtask, pile, float, delegate, thread, position *, select tasks and move down)"
+            puts "(task, longtask, pile, delegate, delegate, thread, position *, select tasks and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -173,7 +173,7 @@ class NxThreads
                 Tx8s::pileAtThisParent(thread)
             end
 
-            if input == "float" then
+            if input == "delegate" then
                 NxDelegates::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
