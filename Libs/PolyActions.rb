@@ -42,6 +42,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPrimeDirective" then
+            puts NxPrimeDirectives::toString(item)
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -95,6 +101,12 @@ class PolyActions
 
         if item["mikuType"] == "NxThread" then
             puts "You cannot done a NxThread, but you can destroy it"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if item["mikuType"] == "NxPrimeDirective" then
+            puts "You cannot done a NxPrimeDirective, but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -255,6 +267,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPrimeDirective" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                BladesGI::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "TxCore" then
             puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
@@ -289,6 +308,12 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxPrimeDirective" then
+            puts NxPrimeDirectives::toString(item)
+            LucilleCore::pressEnterToContinue()
             return
         end
 

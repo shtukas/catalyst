@@ -73,6 +73,8 @@ class Listing
             return NxTimes::isPending(item)
         end
 
+        return false if item["mikuType"] == "NxPrimeDirective"
+
         return false if item["mikuType"] == "DesktopTx1"
 
         return false if !DoNotShowUntil::isVisible(item)
@@ -255,6 +257,17 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
+
+            directives = BladesGI::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
+            if directives.size > 0 then
+                directives
+                    .each{|item|
+                        store.register(item, Listing::canBeDefault(item))
+                        status = spacecontrol.putsline Listing::toString2(store, item).yellow
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
 
             times = NxTimes::listingItems()
             if times.size > 0 then

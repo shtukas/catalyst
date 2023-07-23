@@ -1,0 +1,7 @@
+
+NxPrimeDirective: 
+    "uuid"        : String
+    "mikuType"    : "NxPrimeDirective"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
