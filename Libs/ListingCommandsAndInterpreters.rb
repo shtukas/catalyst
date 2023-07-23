@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | core (<n>) | >> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | >> | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
@@ -117,6 +117,14 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            return
+        end
+
+        if Interpreting::match("orphan *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            BladesGI::setAttribute2(item["uuid"], "parent", nil)
             return
         end
 
