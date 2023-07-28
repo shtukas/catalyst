@@ -258,6 +258,16 @@ class Listing
 
             spacecontrol.putsline ""
 
+            stack = Stack::items()
+            if stack.size > 0 then
+                spacecontrol.putsline "stack:".green
+                stack
+                    .each{|item|
+                        spacecontrol.putsline PolyFunctions::toString(item)
+                    }
+                spacecontrol.putsline ""
+            end
+
             directives = BladesGI::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
             if directives.size > 0 then
                 directives

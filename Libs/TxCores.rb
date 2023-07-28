@@ -168,6 +168,16 @@ class TxCores
             spacecontrol.putsline Listing::toString2(store, core)
             spacecontrol.putsline ""
 
+            stack = Stack::items()
+            if stack.size > 0 then
+                spacecontrol.putsline "stack:".green
+                stack
+                    .each{|item|
+                        spacecontrol.putsline PolyFunctions::toString(item)
+                    }
+                spacecontrol.putsline ""
+            end
+
             TxCores::childrenInOrder(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -176,7 +186,7 @@ class TxCores
                 }
 
             puts ""
-            puts "(task, longtask, pile, delegate, thread, position *)"
+            puts "(task, longtask, pile, delegate, thread, position *, unstack)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -207,6 +217,11 @@ class TxCores
 
             if input == "thread" then
                 NxThreads::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "unstack" then
+                Stack::unstackOntoParentAttempt(core)
                 next
             end
 

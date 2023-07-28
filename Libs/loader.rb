@@ -149,6 +149,7 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
+require_relative "Stack.rb"
 
 require_relative "NxBackups.rb"
 require_relative "NxLines.rb"

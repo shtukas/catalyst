@@ -146,6 +146,16 @@ class NxThreads
             spacecontrol.putsline Listing::toString2(store, thread)
             spacecontrol.putsline ""
 
+            stack = Stack::items()
+            if stack.size > 0 then
+                spacecontrol.putsline "stack:".green
+                stack
+                    .each{|item|
+                        spacecontrol.putsline PolyFunctions::toString(item)
+                    }
+                spacecontrol.putsline ""
+            end
+
             NxThreads::childrenInOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -207,6 +217,11 @@ class NxThreads
                     tx8 = Tx8s::make(t["uuid"], Tx8s::nextPositionAtThisParent(t))
                     BladesGI::setAttribute2(task["uuid"], "parent", tx8)
                 }
+            end
+
+            if input == "unstack" then
+                Stack::unstackOntoParentAttempt(thread)
+                next
             end
 
             puts ""
