@@ -306,7 +306,20 @@ class Listing
 
             items = Listing::items()
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
-            items = Pure::energy(items.first) + items.drop(1)
+            head = []
+            tail = items
+            loop {
+                break if tail.empty?
+                if Listing::canBeDefault(tail.first) then
+                    i1 = i1 + Pure::energy(tail.first)
+                    tail = tail.drop(1)
+                    break
+                else
+                    i1 = i1 + tail.take(1)
+                    tail = tail.drop(1)
+                end
+            }
+            items = head + tail
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
