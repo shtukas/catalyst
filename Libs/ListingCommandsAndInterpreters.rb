@@ -5,11 +5,11 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | stack (<n>) | >> | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | stack (<n>) | >> (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
@@ -44,20 +44,15 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
+            PolyActions::doubleArrow(item)
+            return
+        end
 
-            # This command has different interpretations depending on the mikuType
-
-            if item["mikuType"] == "NxTask" then
-                puts PolyFunctions::toString(item).green
-                thread = NxThreads::interactivelySelectOrNull()
-                return if thread.nil?
-                Tx8s::interactivelyPlaceItemAtParentAttempt(item, thread)
-                return
-            end
-
-            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            return if unixtime.nil?
-            DoNotShowUntil::setUnixtime(item, unixtime)
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            PolyActions::doubleArrow(item)
             return
         end
 
@@ -81,6 +76,16 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("blades:mikutypes", input) then
             puts JSON.pretty_generate(BladesGI::all().map{|item| item["mikuType"] }.uniq.sort)
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("netflix", input) then
+            title = LucilleCore::askQuestionAnswerAsString("title: ")
+            task = NxTasks::descriptionToTask("netflix: #{title}")
+            parentuuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
+            parent = BladesGI::itemOrNull(parentuuid)
+            tx8 = Tx8s::make(parentuuid, Tx8s::nextPositionAtThisParent(parent))
+            BladesGI::setAttribute2(task["uuid"], "parent", tx8)
             return
         end
 

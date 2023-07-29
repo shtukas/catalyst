@@ -371,6 +371,29 @@ class PolyActions
         LucilleCore::pressEnterToContinue()
     end
 
+    # PolyActions::doubleArrow(item)
+    def self.doubleArrow(item)
+        if item["mikuType"] == "NxTask" then
+            puts PolyFunctions::toString(item)
+            parent = Catalyst::selectParentOrNull()
+            return if parent.nil?
+            tx8 = Tx8s::make(parent["uuid"], Tx8s::_10_20_position(parent))
+            BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+            return
+        end
+        if item["mikuType"] == "NxOndate" then
+            puts PolyFunctions::toString(item)
+            parent = Catalyst::selectParentOrNull()
+            return if parent.nil?
+            tx8 = Tx8s::make(parent["uuid"], Tx8s::_10_20_position(parent))
+            BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+            BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
+            return
+        end
+        puts "I do not know how to double arrow"
+        exit
+    end
+
     # PolyActions::program(item)
     def self.program(item)
 

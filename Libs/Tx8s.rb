@@ -138,6 +138,18 @@ class Tx8s
         ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).max + 1
     end
 
+    # Tx8s::_10_20_position(parent)
+    def self._10_20_position(parent)
+        positions = Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }
+        return 1 if positions.empty?
+        return positions.max + 1 if positions.size < 12
+        positions = positions.drop(10)
+        positions = positions.take(10)
+        p1 = positions.first
+        p2 = positions.last
+        p1 + rand * (p2 - p1)
+    end
+
     # Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
     def self.interactivelyMakeTx8AtParentOrNull(parent)
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
