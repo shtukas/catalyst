@@ -77,6 +77,8 @@ class Listing
 
         return false if item["mikuType"] == "DesktopTx1"
 
+        return false if item["mikuType"] == "NxDelegate"
+
         return false if !DoNotShowUntil::isVisible(item)
 
         skipDirectiveOrNull = lambda {|item|
