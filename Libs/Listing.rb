@@ -113,6 +113,7 @@ class Listing
         [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
+            DropBox::items(),
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
