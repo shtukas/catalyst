@@ -22,9 +22,10 @@ class Tx8s
         return if item["parent"].nil?
         parent = BladesGI::itemOrNull(item["parent"]["uuid"])
         return if parent.nil?
+        tx8 = item["parent"]
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
-        item["parent"]["position"] = position
-        BladesGI::setAttribute2(item["uuid"], "parent", item["parent"])
+        tx8["position"] = position
+        BladesGI::setAttribute2(item["uuid"], "parent", tx8)
     end
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
