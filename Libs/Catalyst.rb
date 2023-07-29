@@ -53,8 +53,8 @@ class Catalyst
     # Catalyst::maintenance()
     def self.maintenance()
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/OpenCycles").each{|location|
-            next if location[0, 1] == "."
             locationname = File.basename(location)
+            next if locationname[0, 1] == "."
             itemUUIDLocation = "#{location}/.catalystItemUUID8ba92694"
             if File.exist?(itemUUIDLocation) then
                 itemuuid = IO.read(itemUUIDLocation).strip
