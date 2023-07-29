@@ -113,6 +113,7 @@ class Listing
         [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
+            DropBox::items(),
             PhysicalTargets::listingItems(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -311,11 +312,11 @@ class Listing
             loop {
                 break if tail.empty?
                 if Listing::canBeDefault(tail.first) then
-                    i1 = i1 + Pure::energy(tail.first)
+                    head = head + Pure::energy(tail.first)
                     tail = tail.drop(1)
                     break
                 else
-                    i1 = i1 + tail.take(1)
+                    head = head + tail.take(1)
                     tail = tail.drop(1)
                 end
             }

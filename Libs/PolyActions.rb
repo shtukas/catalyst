@@ -92,6 +92,13 @@ class PolyActions
 
         # order: alphabetical order
 
+        if item["mikuType"] == "DropBox" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+                DropBox::done(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
