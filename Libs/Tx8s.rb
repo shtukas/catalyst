@@ -196,4 +196,12 @@ class Tx8s
         return "" if parent.nil?
         " (#{parent["description"]})"
     end
+
+    # Tx8s::move(item)
+    def self.move(item)
+        parent = Catalyst::selectParentOrNull()
+        return if parent.nil?
+        tx8 = Tx8s::make(parent["uuid"], Tx8s::_10_20_position(parent))
+        BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+    end
 end
