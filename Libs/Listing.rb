@@ -119,10 +119,10 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxDelegates::listingItemsForMainListing(),
-            Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::listingItemsForMainListing(),
             NxThreads::listingItems(),
-            TxCores::listingItems()
+            TxCores::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
         ]
             .flatten
             .select{|item| Listing::listable(item) }

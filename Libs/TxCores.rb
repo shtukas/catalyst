@@ -117,7 +117,7 @@ class TxCores
         [
             waves,
             delegates,
-            items,
+            items.take(10),
             longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask["uuid"]) },
             threads.sort_by{|th| NxThreads::completionRatio(th) }
         ]
