@@ -244,6 +244,14 @@ class Listing
             }
         }
 
+        Thread.new {
+            loop {
+                sleep 60
+                BladesGx::loadInMemoryData()
+                sleep 240
+            }
+        }
+
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
