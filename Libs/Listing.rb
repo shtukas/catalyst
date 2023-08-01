@@ -108,8 +108,24 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::items()
-    def self.items()
+    # Listing::coreChildrenTaskOrThreadsListingItems(core)
+    def self.coreChildrenTaskOrThreadsListingItems(core)
+        items = Tx8s::childrenInOrder(core)
+                    .select{|item| item["mikuType"] == "NxTask" or item["mikuType"] == "NxThread" }
+    end
+
+    # Listing::tasksAndThreadsListingItemsInOrder(cores)
+    def self.tasksAndThreadsListingItemsInOrder(cores)
+        cores
+            .map{|core|
+                Listing::coreChildrenTaskOrThreadsListingItems(core)
+            }
+            .flatten
+            .sort_by{|item| item["parent"]["position"] }
+    end
+
+    # Listing::items(cores)
+    def self.items(cores)
         [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
@@ -119,10 +135,10 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxDelegates::listingItemsForMainListing(),
-            NxTasks::listingItemsForMainListing(),
-            NxThreads::listingItems(),
-            TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
+            NxTasks::orphanItems().sort_by{|item| item["unixtime"] },
+            NxThreads::orphanItems().sort_by{|item| item["unixtime"] },
+            Listing::tasksAndThreadsListingItemsInOrder(cores)
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -167,7 +183,7 @@ class Listing
 
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
-        spot.contest_entry("NxTasks::listingItemsForMainListing()", lambda{ NxTasks::listingItemsForMainListing() })
+        spot.contest_entry("NxTasks::orphanItems()", lambda{ NxTasks::orphanItems() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
@@ -183,8 +199,9 @@ class Listing
         Listing::maintenance()
         spot.end_unit()
 
-        spot.start_unit("Listing::items()")
-        items = Listing::items()
+        cores = BladesGI::mikuType("TxCore")
+        spot.start_unit("Listing::items(cores)")
+        items = Listing::items(cores)
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -313,7 +330,11 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items = Listing::items()
+
+            cores = BladesGI::mikuType("TxCore")
+                        .select{|core| TxCores::compositeCompletionRatio(core) < 1 }
+                        .sort_by{|core| TxCores::compositeCompletionRatio(core) }
+            items = Listing::items(cores)
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
             head = []
             tail = items

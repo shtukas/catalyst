@@ -53,31 +53,6 @@ class NxTasks
         BladesGI::itemOrNull(uuid)
     end
 
-    # NxTasks::interactivelyIssueNewAtTopAtParentOrNull(parent)
-    def self.interactivelyIssueNewAtTopAtParentOrNull(parent)
-
-        tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
-
-        # We need to create the blade before we call CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull
-        # because the blade need to exist for aion points data blobs to have a place to go.
-
-        uuid = SecureRandom.uuid
-        BladesGI::init("NxTask", uuid)
-
-        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "field11", coredataref)
-        BladesGI::setAttribute2(uuid, "parent", tx8)
-
-        BladesGI::itemOrNull(uuid)
-    end
-
     # NxTasks::urlToTask(url)
     def self.urlToTask(url)
         description = "(vienna) #{url}"
@@ -129,8 +104,8 @@ class NxTasks
         "🔹#{Tx8s::positionInParentSuffix(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxTasks::listingItemsForMainListing()
-    def self.listingItemsForMainListing()
+    # NxTasks::orphanItems()
+    def self.orphanItems()
         BladesGI::mikuType("NxTask")
             .select{|item| item["parent"].nil? }
     end
@@ -167,6 +142,7 @@ class NxTasks
             end
         }
 
+        # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
             NxTasks::locationToTask(location)
             LucilleCore::removeFileSystemLocation(location)

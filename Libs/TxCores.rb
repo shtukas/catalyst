@@ -101,29 +101,6 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
-    # TxCores::listingItems()
-    def self.listingItems()
-        BladesGI::mikuType("TxCore")
-            .sort_by{|core| TxCores::compositeCompletionRatio(core) }
-    end
-
-    # TxCores::childrenInOrder(core)
-    def self.childrenInOrder(core)
-        items  = Tx8s::childrenInOrder(core)
-        waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
-        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        longtasks, items = items.partition{|item| item["mikuType"] == "NxLongTask" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        [
-            waves,
-            delegates,
-            items.take(10),
-            longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask["uuid"]) },
-            threads.sort_by{|th| NxThreads::completionRatio(th) }
-        ]
-            .flatten
-    end
-
     # -----------------------------------------------
     # Ops
 
@@ -178,7 +155,7 @@ class TxCores
                 spacecontrol.putsline ""
             end
 
-            TxCores::childrenInOrder(core)
+            Listing::items([core])
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item).gsub(core["description"], "")
@@ -196,18 +173,8 @@ class TxCores
                 next
             end
 
-            if input == "longtask" then
-                NxLongTasks::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
             if input == "pile" then
                 Tx8s::pileAtThisParent(core)
-            end
-
-            if input == "delegate" then
-                NxDelegates::interactivelyIssueNewAtParentOrNull(core)
-                next
             end
 
             if input == "delegate" then

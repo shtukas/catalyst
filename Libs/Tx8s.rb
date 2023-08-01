@@ -30,28 +30,23 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
     def self.interactivelyDecidePositionUnderThisParent(parent)
-        children = nil
-        if parent["mikuType"] == "TxCore" or parent["mikuType"] == "NxThread" then
-            children = Tx8s::childrenInOrder(parent)
-                .select{|item| item["mikuType"] == "NxTask" }
-                .take(CommonUtils::screenHeight() - 4)
+        option = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("mode", ["careful positioning", "next"])
+        if option == "careful positioning" then
+            children = Tx8s::childrenInOrder(parent).take(20)
+            return 1 if children.empty?
+            puts "positioning:"
+            children.each{|item|
+                puts " - #{PolyFunctions::toString(item)}"
+            }
+            position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
+            if position == "" then
+                return Tx8s::nextPositionAtThisParent(parent)
+            else
+                return position.to_f
+            end
         end
-        if children.nil? then
-            children = Tx8s::childrenInOrder(parent)
-                .take(CommonUtils::screenHeight() - 4)
-        end
-        return 1 if children.empty?
-        puts "positioning:"
-        children.each{|item|
-            puts " - #{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("> position (empty for next): ")
-        if position == "" then
-            positions = Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }
-            return 1 if positions.empty?
-            return positions.max + 1
-        else
-            return position.to_f
+        if option == "next" then
+            return Tx8s::nextPositionAtThisParent(parent)
         end
     end
 
@@ -153,6 +148,7 @@ class Tx8s
 
     # Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
     def self.interactivelyMakeTx8AtParentOrNull(parent)
+        puts "parent: #{PolyFunctions::toString(parent)}"
         position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
         Tx8s::make(parent["uuid"], position)
     end

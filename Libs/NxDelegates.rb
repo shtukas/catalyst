@@ -21,16 +21,7 @@ class NxDelegates
 
     # NxDelegates::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
-        position = nil
-        if parent["mikuType"] == "NxThread" then
-            position = 0
-        end
-        if parent["mikuType"] == "TxCore" then
-            position = 0
-        end
-        if position.nil? then
-            position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
-        end
+        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
         tx8 = Tx8s::make(parent["uuid"], position)
         delegate = NxDelegates::interactivelyIssueNewOrNull()
         return nil if delegate.nil?

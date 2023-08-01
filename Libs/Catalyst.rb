@@ -9,7 +9,6 @@ class Catalyst
           "NxBackup",
           "NxDelegate",
           "NxIce",
-          "NxLongTask",
           "NxOndate",
           "NxPure",
           "NxTask",
@@ -32,7 +31,6 @@ class Catalyst
         Waves::fsck()
         NxTasks::fsck()
         NxOndates::fsck()
-        NxLongTasks::fsck()
         BladesGI::mikuType("NxIce").each{|item|
             CoreDataRefStrings::fsck(item)
         }

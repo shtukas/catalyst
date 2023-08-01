@@ -11,7 +11,6 @@ class Pure
         waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
         waves = waves.select{|item| Listing::listable(item) }
         delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        longtasks, items = items.partition{|item| item["mikuType"] == "NxLongTask" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
         [
             {
@@ -25,10 +24,6 @@ class Pure
             {
                 "items" => items,
                 "rt" => Bank::recoveredAverageHoursPerDay2(items)
-            },
-            {
-                "items" => longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask["uuid"]) },
-                "rt" => Bank::recoveredAverageHoursPerDay2(longtasks)
             },
             {
                 "items" => threads.sort_by{|th| NxThreads::completionRatio(th) },

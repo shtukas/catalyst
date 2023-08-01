@@ -42,14 +42,6 @@ class NxThreads
         "🐙 #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
     end
 
-    # NxThreads::listingItems()
-    def self.listingItems()
-        BladesGI::mikuType("NxThread")
-            .select{|item| item["parent"].nil? }
-            .select{|thread| NxThreads::completionRatio(thread) < 1 }
-            .sort_by{|thread| NxThreads::completionRatio(thread) }
-    end
-
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         threads = BladesGI::mikuType("NxThread")
@@ -94,16 +86,20 @@ class NxThreads
         items  = Tx8s::childrenInOrder(thread)
         waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
         delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        longtasks, items = items.partition{|item| item["mikuType"] == "NxLongTask" }
         threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
         [
             waves,
             delegates,
             items,
-            longtasks.sort_by{|longtask| Bank::recoveredAverageHoursPerDay(longtask["uuid"]) },
             threads.sort_by{|th| NxThreads::completionRatio(th) }
         ]
             .flatten
+    end
+
+    # NxThreads::orphanItems()
+    def self.orphanItems()
+        BladesGI::mikuType("NxThread")
+            .select{|item| item["parent"].nil? }
     end
 
     # --------------------------------------------------------------------------
@@ -111,7 +107,6 @@ class NxThreads
 
     # NxThreads::maintenance1()
     def self.maintenance1()
-        # Ensuring consistency of parenting targets
         padding = BladesGI::mikuType("NxThread")
             .map{|item| item["description"].size }
             .reduce(0){|x, a| [x,a].max }
@@ -171,11 +166,6 @@ class NxThreads
 
             if input == "task" then
                 NxTasks::interactivelyIssueNewAtParentOrNull(thread)
-                next
-            end
-
-            if input == "longtask" then
-                NxLongTasks::interactivelyIssueNewAtParentOrNull(thread)
                 next
             end
 
