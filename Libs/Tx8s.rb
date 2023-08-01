@@ -23,14 +23,16 @@ class Tx8s
         parent = BladesGI::itemOrNull(item["parent"]["uuid"])
         return if parent.nil?
         tx8 = item["parent"]
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
+        position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+        return if position.nil?
         tx8["position"] = position
         BladesGI::setAttribute2(item["uuid"], "parent", tx8)
     end
 
-    # Tx8s::interactivelyDecidePositionUnderThisParent(parent)
-    def self.interactivelyDecidePositionUnderThisParent(parent)
-        option = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("mode", ["careful positioning", "next"])
+    # Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+    def self.interactivelyDecidePositionUnderThisParentOrNull(parent)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["careful positioning", "next"])
+        return nil if option.nil?
         if option == "careful positioning" then
             children = Tx8s::childrenInOrder(parent).take(20)
             return 1 if children.empty?
@@ -137,7 +139,8 @@ class Tx8s
     # Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
     def self.interactivelyMakeTx8AtParentOrNull(parent)
         puts "parent: #{PolyFunctions::toString(parent)}"
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
+        position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+        return nil if position.nil?
         Tx8s::make(parent["uuid"], position)
     end
 
@@ -185,7 +188,9 @@ class Tx8s
     def self.move(item)
         parent = Catalyst::selectParentOrNull()
         return if parent.nil?
-        tx8 = Tx8s::make(parent["uuid"], Tx8s::interactivelyDecidePositionUnderThisParent(parent))
+        position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+        return if position.nil?
+        tx8 = Tx8s::make(parent["uuid"], position)
         BladesGI::setAttribute2(item["uuid"], "parent", tx8)
     end
 end

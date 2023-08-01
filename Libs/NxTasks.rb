@@ -30,7 +30,8 @@ class NxTasks
     # NxTasks::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
 
-        position = Tx8s::interactivelyDecidePositionUnderThisParent(parent)
+        position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+        return nil if position.nil?
         tx8 = Tx8s::make(parent["uuid"], position)
 
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
