@@ -382,6 +382,10 @@ class PolyActions
     def self.doubleArrow(item)
         if item["mikuType"] == "NxTask" then
             puts PolyFunctions::toString(item)
+            if item["description"].start_with?("(buffer-in)") then
+                BladesGI::setAttribute2(item["uuid"], "description", item["description"][11, item["description"].size].strip)
+                item = BladesGI::itemOrNull(item["uuid"])
+            end
             Tx8s::move(item)
             return
         end
