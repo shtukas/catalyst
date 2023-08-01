@@ -12,5 +12,3 @@ Cross types conventions:
 Tx8 {uuid, position}
 
 Tx8 is a general child parent relationship declaration system. At the moment we conventionaly only allow cases and floats to belong to threads
-
-Each catalyst item can have `d2031` attribute that point to a core
