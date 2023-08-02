@@ -122,7 +122,8 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            NxTasks::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
+            Tx8s::move(item)
             return
         end
 
