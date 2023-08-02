@@ -36,16 +36,43 @@ class Catalyst
         }
     end
 
-    # Catalyst::selectParentOrNull()
-    def self.selectParentOrNull()
-        core = TxCores::interactivelySelectOneOrNull()
-        return nil if core.nil?
-        threads = Tx8s::childrenInOrder(core)
-                    .select{|item| item["mikuType"] == "NxThread" }
-        return core if threads.empty?
-        thread = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|thread| PolyFunctions::toString(thread) })
-        return core if thread.nil?
-        thread
+    # Catalyst::determineParentOrNull_identityOrChild(reference = nil)
+    def self.determineParentOrNull_identityOrChild(reference = nil)
+
+        if reference.nil? then
+            core = TxCores::interactivelySelectOneOrNull()
+            return nil if core.nil?
+            return Catalyst::determineParentOrNull_identityOrChild(core)
+        end
+
+        puts "cursor:"
+        puts PolyFunctions::toString(reference)
+
+        cursorChildren = Tx8s::childrenInOrder(reference)
+        cursorChildrenThreads = cursorChildren.select{|item| item["mikuType"] == "NxThread" }
+        return reference if cursorChildrenThreads.empty?
+
+        puts "children threads:"
+        cursorChildrenThreads.each{|child|
+            puts "- #{PolyFunctions::toString(child)}"
+        }
+
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["place at cursor ^", "put inside a child thread"])
+
+        if option == "place at cursor ^" then
+            return reference
+        end
+
+        if option == "put inside a child thread" then
+            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("children", cursorChildrenThreads, lambda{|i| PolyFunctions::toString(i) })
+            if child then
+                return Catalyst::determineParentOrNull_identityOrChild(child)
+            else
+                return reference
+            end
+        end
+
+        raise "(error: 6a405195-84e2-4eb0-b818-24f8996f5615)"
     end
 
     # Catalyst::maintenance()

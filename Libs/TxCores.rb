@@ -123,9 +123,33 @@ class TxCores
         BladesGI::setAttribute2(core["uuid"], "lastResetTime", core["lastResetTime"])
     end
 
+    # TxCores::maintenance3(core)
+    def self.maintenance3(core)
+        elements = Tx8s::childrenInOrder(core)
+        return if elements.empty?
+        min = elements.first["parent"]["position"]
+        if min < 0 then
+            elements.each{|element|
+                tx8 = element["parent"]
+                tx8["position"] = tx8["position"] + (-min)
+                BladesGI::setAttribute2(element["uuid"], "parent", tx8)
+            }
+            return
+        end
+        if min >= 10 then
+            elements.each{|element|
+                tx8 = element["parent"]
+                tx8["position"] = tx8["position"] - min
+                BladesGI::setAttribute2(element["uuid"], "parent", tx8)
+            }
+            return
+        end
+    end
+
     # TxCores::maintenance2()
     def self.maintenance2()
         BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
+        BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
     end
 
     # TxCores::program1(core)
