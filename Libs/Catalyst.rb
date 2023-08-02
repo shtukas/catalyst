@@ -59,6 +59,8 @@ class Catalyst
 
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["place at cursor ^", "put inside a child thread"])
 
+        return nil if option.nil?
+
         if option == "place at cursor ^" then
             return reference
         end
