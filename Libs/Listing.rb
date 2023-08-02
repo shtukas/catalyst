@@ -100,6 +100,8 @@ class Listing
 
         return false if skipTargetTimeOrNull.call(item)
 
+        return false if Bank::recoveredAverageHoursPerDay(item["uuid"]) >= 1
+
         true
     end
 
@@ -161,6 +163,10 @@ class Listing
         end
 
         if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if Bank::recoveredAverageHoursPerDay(item["uuid"]) >= 1 then
             line = line.yellow
         end
 
@@ -328,10 +334,10 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-
             cores = BladesGI::mikuType("TxCore")
                         .select{|core| TxCores::compositeCompletionRatio(core) < 1 }
                         .sort_by{|core| TxCores::compositeCompletionRatio(core) }
+
             items = Listing::items(cores)
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
             head = []
