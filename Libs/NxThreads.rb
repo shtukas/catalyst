@@ -81,21 +81,6 @@ class NxThreads
         Bank::recoveredAverageHoursPerDay(thread["uuid"]).to_f/(hours.to_f/7)
     end
 
-    # NxThreads::childrenInOrder(thread)
-    def self.childrenInOrder(thread)
-        items  = Tx8s::childrenInOrder(thread)
-        waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
-        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        [
-            waves,
-            delegates,
-            items,
-            threads.sort_by{|th| NxThreads::completionRatio(th) }
-        ]
-            .flatten
-    end
-
     # NxThreads::orphanItems()
     def self.orphanItems()
         BladesGI::mikuType("NxThread")
@@ -151,7 +136,7 @@ class NxThreads
                 spacecontrol.putsline ""
             end
 
-            NxThreads::childrenInOrder(thread)
+            Listing::items([thread])
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
@@ -159,7 +144,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, longtask, pile, delegate, thread, position *, select tasks and move down)"
+            puts "(task, longtask, pile, delegate, thread, position *, select children and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -196,9 +181,8 @@ class NxThreads
                 next
             end
 
-            if input == "select tasks and move down" then
-                unselected = NxThreads::childrenInOrder(thread)
-                                .select{|item| item["mikuType"] == "NxTask" }
+            if input == "select children and move down" then
+                unselected = Tx8s::childrenInOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("task", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 puts "Select target thread"
                 t = NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)

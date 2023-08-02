@@ -108,24 +108,22 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::coreChildrenTaskOrThreadsListingItems(core)
-    def self.coreChildrenTaskOrThreadsListingItems(core)
-        items = Tx8s::childrenInOrder(core)
+    # Listing::taskOrThreadsChildren(parent)
+    def self.taskOrThreadsChildren(parent)
+        items = Tx8s::childrenInOrder(parent)
                     .select{|item| item["mikuType"] == "NxTask" or item["mikuType"] == "NxThread" }
     end
 
-    # Listing::tasksAndThreadsListingItemsInOrder(cores)
-    def self.tasksAndThreadsListingItemsInOrder(cores)
-        cores
-            .map{|core|
-                Listing::coreChildrenTaskOrThreadsListingItems(core)
-            }
+    # Listing::tasksAndThreadsListingItemsInOrder(parents)
+    def self.tasksAndThreadsListingItemsInOrder(parents)
+        parents
+            .map{|parent| Listing::taskOrThreadsChildren(parent) }
             .flatten
             .sort_by{|item| item["parent"]["position"] }
     end
 
-    # Listing::items(cores)
-    def self.items(cores)
+    # Listing::items(parents)
+    def self.items(parents)
         [
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
@@ -138,7 +136,7 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::orphanItems().sort_by{|item| item["unixtime"] },
             NxThreads::orphanItems().sort_by{|item| item["unixtime"] },
-            Listing::tasksAndThreadsListingItemsInOrder(cores)
+            Listing::tasksAndThreadsListingItemsInOrder(parents)
         ]
             .flatten
             .select{|item| Listing::listable(item) }
