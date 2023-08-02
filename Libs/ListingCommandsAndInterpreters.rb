@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
@@ -84,7 +84,19 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("delegates", input) then
-            NxDelegates::program1()
+            item = NxProjectStatuses::interactivelyIssueNewOrNull()
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("project status", input) then
+            item = NxProjectStatuses::interactivelyIssueNewOrNull()
+            puts JSON.pretty_generate(item)
+            core = TxCores::interactivelySelectOneOrNull()
+            if core then
+                tx8 = Tx8s::make(core["uuid"], 0)
+                BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+            end
             return
         end
 

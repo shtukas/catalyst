@@ -1,0 +1,8 @@
+
+NxProjectStatus:
+    "uuid"        : String
+    "mikuType"    : "NxProjectStatus"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "description" : String
+    "text"        : String

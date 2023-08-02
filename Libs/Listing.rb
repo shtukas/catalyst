@@ -79,6 +79,8 @@ class Listing
 
         return false if item["mikuType"] == "NxDelegate"
 
+        return false if item["mikuType"] == "NxProjectStatus"
+
         return false if !DoNotShowUntil::isVisible(item)
 
         skipDirectiveOrNull = lambda {|item|
@@ -134,6 +136,7 @@ class Listing
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
+            NxProjectStatuses::listingItems(parents),
             NxDelegates::listingItems(parents),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::orphanItems().sort_by{|item| item["unixtime"] },

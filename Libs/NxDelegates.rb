@@ -36,8 +36,9 @@ class NxDelegates
 
     # NxDelegates::listingItems(parents)
     def self.listingItems(parents)
+        parentsuuids = parents.map{|px| px["uuid"]}
         BladesGI::mikuType("NxDelegate")
-            .select{|delegate| delegate["parent"].nil? or parents.map{|px| px["uuid"]}.include?(delegate["parent"]["uuid"])}
+            .select{|delegate| delegate["parent"].nil? or parentsuuids.include?(delegate["parent"]["uuid"])}
     end
 
     # NxDelegates::maintenance()

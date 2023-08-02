@@ -24,13 +24,21 @@ class PolyActions
 
         if item["mikuType"] == "NxDelegate" then
             puts NxDelegates::toString(item)
-            LucilleCore::pressEnterToContinue()
+            CoreDataRefStrings::access(item["uuid"], item["field11"])
             return
         end
 
         if item["mikuType"] == "NxThread" then
             NxThreads::program1(item)
             return
+        end
+
+        if item["mikuType"] == "NxProjectStatus" then
+            puts "-------------------------------------------"
+            puts item["text"].strip.green
+            puts "-------------------------------------------"
+            puts "(run `program` for edition)"
+            LucilleCore::pressEnterToContinue()
         end
 
         if item["mikuType"] == "NxTime" then
@@ -108,6 +116,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxPrimeDirective" then
+            puts "You cannot done a NxPrimeDirective, but you can destroy it"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if item["mikuType"] == "NxProjectStatus" then
             puts "You cannot done a NxPrimeDirective, but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
@@ -269,6 +283,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProjectStatus" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                BladesGI::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "TxCore" then
             puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
@@ -311,6 +332,11 @@ class PolyActions
 
         if item["mikuType"] == "NxTime" then
             BladesGI::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxProjectStatus" then
+            PolyActions::access(item)
             return
         end
 
@@ -376,8 +402,8 @@ class PolyActions
             BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
             return
         end
-        puts "I do not know how to double arrow"
-        exit
+        puts "I do not know how to double arrow a #{item["mikuType"]}"
+        LucilleCore::pressEnterToContinue()
     end
 
     # PolyActions::program(item)
@@ -400,6 +426,12 @@ class PolyActions
 
         if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxProjectStatus" then
+            text = CommonUtils::editTextSynchronously(item["text"])
+            BladesGI::setAttribute2(item["uuid"], "text", text)
             return
         end
 
