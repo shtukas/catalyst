@@ -44,7 +44,7 @@ class PolyActions
 
         if item["mikuType"] == "NxPrimeDirective" then
             puts NxPrimeDirectives::toString(item)
-            LucilleCore::pressEnterToContinue()
+            CoreDataRefStrings::access(item["uuid"], item["field11"])
             return
         end
 

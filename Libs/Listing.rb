@@ -134,7 +134,7 @@ class Listing
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            NxDelegates::listingItemsForMainListing(),
+            NxDelegates::listingItems(parents),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::orphanItems().sort_by{|item| item["unixtime"] },
             NxThreads::orphanItems().sort_by{|item| item["unixtime"] },

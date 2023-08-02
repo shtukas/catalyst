@@ -31,19 +31,13 @@ class NxDelegates
 
     # NxDelegates::toString(item)
     def self.toString(item)
-        "🐞 #{item["description"]}"
+        "🐞 #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxDelegates::listingItemsForMainListing()
-    def self.listingItemsForMainListing()
+    # NxDelegates::listingItems(parents)
+    def self.listingItems(parents)
         BladesGI::mikuType("NxDelegate")
-            .select{|delegate| delegate["parent"].nil? }
-    end
-
-    # NxDelegates::listingItemsForThread(thread)
-    def self.listingItemsForThread(thread)
-        BladesGI::mikuType("NxDelegate")
-            .select{|delegate| delegate["parent"] and delegate["parent"]["uuid"] == thread["uuid"] }
+            .select{|delegate| delegate["parent"].nil? or parents.map{|px| px["uuid"]}.include?(delegate["parent"]["uuid"])}
     end
 
     # NxDelegates::maintenance()
@@ -62,6 +56,7 @@ class NxDelegates
         loop {
             delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesGI::mikuType("NxDelegate"), lambda{|delegate| NxDelegates::toString(delegate) })
             return if delegate.nil?
+            puts JSON.pretty_generate(delegate)
             PolyActions::access(delegate)
         }
     end
