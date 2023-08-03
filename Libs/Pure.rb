@@ -3,7 +3,6 @@ class Pure
     # Pure::childrenInOrder3(container)
     def self.childrenInOrder3(container)
         if container["mikuType"] == "TxCore" and container["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
-            # L & P to P
             items  = Tx8s::childrenInOrder(container)
             return items.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         end
