@@ -36,45 +36,27 @@ class Catalyst
         }
     end
 
-    # Catalyst::determineParentOrNull_identityOrChild(reference = nil)
-    def self.determineParentOrNull_identityOrChild(reference = nil)
+    # Catalyst::determineTargetParentUnderneathArgument(reference = nil)
+    def self.determineTargetParentUnderneathArgument(reference = nil)
 
         if reference.nil? then
             core = TxCores::interactivelySelectOneOrNull()
             return nil if core.nil?
-            return Catalyst::determineParentOrNull_identityOrChild(core)
+            return Catalyst::determineTargetParentUnderneathArgument(core)
         end
 
-        puts "cursor:"
-        puts PolyFunctions::toString(reference)
+        child = LucilleCore::selectEntityFromListOfEntitiesOrNull("children", [reference] + Tx8s::childrenInOrder(reference).first(20), lambda{|i| PolyFunctions::toString(i) })
+        return nil if child.nil?
 
-        cursorChildren = Tx8s::childrenInOrder(reference)
-        cursorChildrenThreads = cursorChildren.select{|item| item["mikuType"] == "NxThread" }
-        return reference if cursorChildrenThreads.empty?
-
-        puts "children threads:"
-        cursorChildrenThreads.each{|child|
-            puts "- #{PolyFunctions::toString(child)}"
-        }
-
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["place at cursor ^", "put inside a child thread"])
-
-        return nil if option.nil?
-
-        if option == "place at cursor ^" then
+        if child["uuid"] == reference["uuid"] then
             return reference
         end
 
-        if option == "put inside a child thread" then
-            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("children", cursorChildrenThreads, lambda{|i| PolyFunctions::toString(i) })
-            if child then
-                return Catalyst::determineParentOrNull_identityOrChild(child)
-            else
-                return reference
-            end
+        if child["mikuType"] == "NxThread" or child["mikuType"] == "NxCore" then
+            return Catalyst::determineTargetParentUnderneathArgument(child)
         end
 
-        raise "(error: 6a405195-84e2-4eb0-b818-24f8996f5615)"
+        Catalyst::determineTargetParentUnderneathArgument(reference) # redoing the same operation because we didn't select the reference or a container
     end
 
     # Catalyst::maintenance()

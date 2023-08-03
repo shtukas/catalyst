@@ -84,6 +84,7 @@ class TxCores
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         cores = BladesGI::mikuType("TxCore")
+                    .sort_by {|core| Catalyst::listingCompletionRatio(core) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
@@ -165,7 +166,14 @@ class TxCores
                 spacecontrol.putsline ""
             end
 
-            Listing::items([core])
+            items = Listing::items([core])
+
+            # We override the natural standard listing ordering with rt measurement
+            if core["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
+                items = items.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+            end
+
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item).gsub(core["description"], "")
@@ -212,7 +220,7 @@ class TxCores
         loop {
             core = TxCores::interactivelySelectOneOrNull()
             break if core.nil?
-            NxThreads::program1(core)
+            TxCores::program1(core)
         }
     end
 end

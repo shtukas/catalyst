@@ -185,7 +185,7 @@ class Tx8s
 
     # Tx8s::move(item)
     def self.move(item)
-        parent = Catalyst::determineParentOrNull_identityOrChild(nil)
+        parent = Catalyst::determineTargetParentUnderneathArgument(nil)
         return if parent.nil?
 
         position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
