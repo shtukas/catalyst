@@ -332,6 +332,21 @@ class Listing
                 spacecontrol.putsline ""
             end
 
+            cores = BladesGI::mikuType("TxCore")
+                        .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
+                        .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+
+            statuses = NxProjectStatuses::listingItems(cores)
+            if statuses.size > 0 then
+                statuses
+                    .each{|item|
+                        store.register(item, Listing::canBeDefault(item))
+                        status = spacecontrol.putsline Listing::toString2(store, item)
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
             times = NxTimes::listingItems()
             if times.size > 0 then
                 times
@@ -354,12 +369,10 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            cores = BladesGI::mikuType("TxCore")
-                        .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
-                        .sort_by{|core| Catalyst::listingCompletionRatio(core) }
-
             items = Listing::items(cores)
+                    .select{|item| item["mikuType"] != "NxProjectStatus" }
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
+
             head = []
             tail = items
             loop {
