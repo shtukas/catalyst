@@ -45,30 +45,16 @@ class TxCores
     # -----------------------------------------------
     # Data
 
-    # TxCores::dayCompletionRatio(core)
-    def self.dayCompletionRatio(core)
-        Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/((core["hours"]*3600).to_f/5)
-    end
-
     # TxCores::periodCompletionRatio(core)
     def self.periodCompletionRatio(core)
         Bank::getValue(core["capsule"]).to_f/(core["hours"]*3600)
-    end
-
-    # TxCores::compositeCompletionRatio(core)
-    def self.compositeCompletionRatio(core)
-        period = TxCores::periodCompletionRatio(core)
-        return period if period >= 1
-        day = TxCores::dayCompletionRatio(core)
-        return day if day >= 1
-        0.9*day + 0.1*period
     end
 
     # TxCores::toString(core)
     def self.toString(core)
         strings = []
 
-        strings << "⏱️  #{core["description"].ljust(20)}: today: #{"#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        strings << "⏱️  #{core["description"].ljust(20)}: today: #{"#{"%6.2f" % (100*Catalyst::listingCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*TxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600

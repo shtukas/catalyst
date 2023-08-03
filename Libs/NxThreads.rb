@@ -38,14 +38,14 @@ class NxThreads
     def self.toString(thread)
         padding = XCache::getOrDefaultValue("9c81e889-f07f-4f70-9e91-9bae2c097ea6", "0").to_i
         hours = thread["hours"] || 2
-        cr = NxThreads::completionRatio(thread)
+        cr = Catalyst::listingCompletionRatio(thread)
         "🐙#{Tx8s::positionInParentSuffix(thread)} #{thread["description"].ljust(padding)} (#{"%6.2f" % (100*cr)}% of #{"%5.2f" % hours} hours)"
     end
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         threads = BladesGI::mikuType("NxThread")
-                    .sort_by{|thread| NxThreads::completionRatio(thread) }
+                    .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
     end
@@ -54,7 +54,7 @@ class NxThreads
     def self.interactivelySelectThreadAtMainListingOrNull()
         threads = BladesGI::mikuType("NxThread")
                     .select{|item| item["parent"].nil? }
-                    .sort_by{|thread| NxThreads::completionRatio(thread) }
+                    .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
     end
@@ -63,7 +63,7 @@ class NxThreads
     def self.interactivelySelectThreadChildOfThisThreadOrNull(thread)
         threads = BladesGI::mikuType("NxThread")
                     .select{|item| item["parent"] and item["parent"]["uuid"] == thread["uuid"] }
-                    .sort_by{|thread| NxThreads::completionRatio(thread) }
+                    .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
     end
@@ -73,12 +73,6 @@ class NxThreads
         thread = NxThreads::interactivelySelectOrNull()
         return thread if thread
         NxThreads::interactivelyIssueNewOrNull()
-    end
-
-    # NxThreads::completionRatio(thread)
-    def self.completionRatio(thread)
-        hours = thread["hours"] || 2
-        Bank::recoveredAverageHoursPerDay(thread["uuid"]).to_f/(hours.to_f/7)
     end
 
     # NxThreads::orphanItems()
