@@ -28,13 +28,18 @@ class NxProjectStatuses
             .select{|item| item["parent"].nil? or parentsuuids.include?(item["parent"]["uuid"])}
     end
 
+    # NxProjectStatuses::program2(item)
+    def self.program2(item)
+        text = CommonUtils::editTextSynchronously(item["text"])
+        BladesGI::setAttribute2(item["uuid"], "text", text)
+    end
+
     # NxProjectStatuses::program1()
     def self.program1()
         loop {
             item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", BladesGI::mikuType("NxProjectStatus"), lambda{|item| NxProjectStatuses::toString(item) })
             return if item.nil?
-            puts JSON.pretty_generate(item)
-            PolyActions::access(item)
+            NxProjectStatuses::program2(item)
         }
     end
 end

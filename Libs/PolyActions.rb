@@ -34,8 +34,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            text = CommonUtils::editTextSynchronously(item["text"])
-            BladesGI::setAttribute2(item["uuid"], "text", text)
+            NxProjectStatuses::program2(item)
             return
         end
 
@@ -120,7 +119,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            puts "You cannot done a NxPrimeDirective, but you can destroy it"
+            puts "You cannot done a NxProjectStatus but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -334,7 +333,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            PolyActions::access(item)
+            NxProjectStatuses::program2(item)
             return
         end
 
@@ -428,8 +427,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            text = CommonUtils::editTextSynchronously(item["text"])
-            BladesGI::setAttribute2(item["uuid"], "text", text)
+            NxProjectStatuses::program2(item)
             return
         end
 

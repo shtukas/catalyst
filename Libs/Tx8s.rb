@@ -31,8 +31,7 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
     def self.interactivelyDecidePositionUnderThisParentOrNull(parent)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["careful positioning", "next"])
-        return nil if option.nil?
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["careful positioning", "next (default)"])
         if option == "careful positioning" then
             children = Tx8s::childrenInOrder(parent).take(20)
             return 1 if children.empty?
@@ -47,7 +46,7 @@ class Tx8s
                 return position.to_f
             end
         end
-        if option == "next" then
+        if option == "next (default)" or option.nil? then
             return Tx8s::nextPositionAtThisParent(parent)
         end
     end
