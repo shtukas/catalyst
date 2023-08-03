@@ -382,27 +382,6 @@ class PolyActions
         LucilleCore::pressEnterToContinue()
     end
 
-    # PolyActions::doubleArrow(item)
-    def self.doubleArrow(item)
-        if item["mikuType"] == "NxTask" then
-            puts PolyFunctions::toString(item)
-            if item["description"].start_with?("(buffer-in)") then
-                BladesGI::setAttribute2(item["uuid"], "description", item["description"][11, item["description"].size].strip)
-                item = BladesGI::itemOrNull(item["uuid"])
-            end
-            Tx8s::move(item)
-            return
-        end
-        if item["mikuType"] == "NxOndate" then
-            puts PolyFunctions::toString(item)
-            Tx8s::move(item)
-            BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            return
-        end
-        puts "I do not know how to double arrow a #{item["mikuType"]}"
-        LucilleCore::pressEnterToContinue()
-    end
-
     # PolyActions::program(item)
     def self.program(item)
 

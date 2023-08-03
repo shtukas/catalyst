@@ -187,9 +187,25 @@ class Tx8s
     def self.move(item)
         parent = Catalyst::determineParentOrNull_identityOrChild(nil)
         return if parent.nil?
+
         position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
         return if position.nil?
+
+        itemuuid = item["uuid"]
+
+        if item["mikuType"] == "NxTask" then
+            puts PolyFunctions::toString(item)
+            if item["description"].start_with?("(buffer-in)") then
+                BladesGI::setAttribute2(itemuuid, "description", item["description"][11, item["description"].size].strip)
+            end
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            puts PolyFunctions::toString(item)
+            BladesGI::setAttribute2(itemuuid, "mikuType", "NxTask")
+        end
+
         tx8 = Tx8s::make(parent["uuid"], position)
-        BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+        BladesGI::setAttribute2(itemuuid, "parent", tx8)
     end
 end

@@ -128,21 +128,38 @@ class Listing
 
     # Listing::items(parents)
     def self.items(parents)
-        [
-            NxBalls::runningItems(),
-            Anniversaries::listingItems(),
-            DropBox::items(),
-            PhysicalTargets::listingItems(),
-            NxBackups::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
-            NxOndates::listingItems(),
-            NxProjectStatuses::listingItems(parents),
-            NxDelegates::listingItems(parents),
-            Waves::listingItems().select{|item| !item["interruption"] },
-            NxTasks::orphanItems().sort_by{|item| item["unixtime"] },
-            NxThreads::orphanItems().sort_by{|item| item["unixtime"] },
-            Listing::tasksAndThreadsListingItemsInOrder(parents)
-        ]
+        items = nil
+
+        if parents.size == 1 then
+            items = [
+                NxBalls::runningItems(),
+                Anniversaries::listingItems(),
+                NxOndates::listingItems(parents),
+                NxProjectStatuses::listingItems(parents),
+                NxDelegates::listingItems(parents),
+                Listing::tasksAndThreadsListingItemsInOrder(parents)
+            ]
+        end 
+
+        if parents.size != 1 then
+            items = [
+                NxBalls::runningItems(),
+                Anniversaries::listingItems(),
+                DropBox::items(),
+                PhysicalTargets::listingItems(),
+                NxBackups::listingItems(),
+                Waves::listingItems().select{|item| item["interruption"] },
+                NxOndates::listingItems(parents),
+                NxProjectStatuses::listingItems(parents),
+                NxDelegates::listingItems(parents),
+                Waves::listingItems().select{|item| !item["interruption"] },
+                NxTasks::orphanItems().sort_by{|item| item["unixtime"] },
+                NxThreads::orphanItems().sort_by{|item| item["unixtime"] },
+                Listing::tasksAndThreadsListingItemsInOrder(parents)
+            ]
+        end 
+
+        items
             .flatten
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
@@ -193,7 +210,7 @@ class Listing
         spot.contest_entry("NxTasks::orphanItems()", lambda{ NxTasks::orphanItems() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxOndates::listingItems([])", lambda{ NxOndates::listingItems([]) })
         spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
