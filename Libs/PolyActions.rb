@@ -34,11 +34,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            puts "-------------------------------------------"
-            puts item["text"].strip.green
-            puts "-------------------------------------------"
-            puts "(run `program` for edition)"
-            LucilleCore::pressEnterToContinue()
+            text = CommonUtils::editTextSynchronously(item["text"])
+            BladesGI::setAttribute2(item["uuid"], "text", text)
+            return
         end
 
         if item["mikuType"] == "NxTime" then

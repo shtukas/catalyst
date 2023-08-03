@@ -338,8 +338,8 @@ class Listing
             end
 
             cores = BladesGI::mikuType("TxCore")
-                        .select{|core| TxCores::compositeCompletionRatio(core) < 1 }
-                        .sort_by{|core| TxCores::compositeCompletionRatio(core) }
+                        .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
+                        .sort_by{|core| Catalyst::listingCompletionRatio(core) }
 
             items = Listing::items(cores)
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })

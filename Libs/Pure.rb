@@ -7,29 +7,20 @@ class Pure
             items  = Tx8s::childrenInOrder(container)
             return items.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         end
-        items  = Tx8s::childrenInOrder(container)
-        waves, items  = items.partition{|item| item["mikuType"] == "Wave" }
-        waves = waves.select{|item| Listing::listable(item) }
-        delegates, items = items.partition{|item| item["mikuType"] == "NxDelegate" }
-        threads, items = items.partition{|item| item["mikuType"] == "NxThread" }
-        [
-            {
-                "items" => waves,
-                "rt" => Bank::recoveredAverageHoursPerDay2(waves)
-            },
-            {
-                "items" => delegates,
-                "rt" => Bank::recoveredAverageHoursPerDay2(delegates)
-            },
-            {
-                "items" => items,
-                "rt" => Bank::recoveredAverageHoursPerDay2(items)
-            },
-            {
-                "items" => threads.sort_by{|th| NxThreads::completionRatio(th) },
-                "rt" => Bank::recoveredAverageHoursPerDay2(threads)
+        Tx8s::childrenInOrder(container)
+            .select {|item| item["mikuType"] == "NxTask" or item["mikuType"] == "NxThread" }
+            .reduce([]){|selected, item|
+                if selected.size >= 3 then
+                    selected
+                else
+                    if Catalyst::listingCompletionRatio(item) < 1 then
+                        selected + [item]
+                    else
+                        selected
+                    end
+                end
             }
-        ].sort_by{|packet| packet["rt"] }.map{|packet| packet["items"] }.flatten
+
     end
 
     # Pure::childrenInOrder2(item)
