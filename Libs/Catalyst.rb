@@ -87,7 +87,8 @@ class Catalyst
             return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/7)
         end
         if item["mikuType"] == "TxCore" then
-            return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/((item["hours"]*3600).to_f/6)
+            hours = item["hours"]
+            return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
         end
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
