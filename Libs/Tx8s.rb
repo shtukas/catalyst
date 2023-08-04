@@ -1,6 +1,9 @@
 
 class Tx8s
 
+    # ------------------------------------
+    # IO
+
     # Tx8s::make(uuid, position)
     def self.make(uuid, position)
         {
@@ -8,6 +11,9 @@ class Tx8s
             "position" => position
         }
     end
+
+    # ------------------------------------
+    # Data
 
     # Tx8s::childrenInOrder(parent)
     def self.childrenInOrder(parent)
@@ -135,6 +141,17 @@ class Tx8s
         ([0] + Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }).max + 1
     end
 
+    # Tx8s::decide1020position(parent)
+    def self.decide1020position(parent)
+        positions = Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }
+        return 1 if position.empty?
+        if positions.size < 20 then
+            return positions.max + 1
+        end
+        positions = positions.drop(10).take(10)
+        positions.min + rand * ( positions.max - positions.min )
+    end
+
     # Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
     def self.interactivelyMakeTx8AtParentOrNull(parent)
         puts "parent: #{PolyFunctions::toString(parent)}"
@@ -188,8 +205,17 @@ class Tx8s
         parent = Catalyst::determineTargetParentUnderneathArgument(nil)
         return if parent.nil?
 
-        position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
-        return if position.nil?
+        position = (lambda {|parent|
+            if parent["uuid"] == "7cf30bc6-d791-4c0c-b03f-16c728396f22" then # I
+                return Tx8s::decide1020position(parent)
+            end
+            if parent["uuid"] == "45b79dcd-6c7d-411c-a2c3-9ef1c38c7743" then # TJ
+                return Tx8s::decide1020position(parent)
+            end
+            Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+        }).call(parent)
+
+        return nil if position.nil?
 
         itemuuid = item["uuid"]
 
