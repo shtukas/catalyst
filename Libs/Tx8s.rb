@@ -37,6 +37,11 @@ class Tx8s
 
     # Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
     def self.interactivelyDecidePositionUnderThisParentOrNull(parent)
+
+        if parent["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then # CoP
+            return rand
+        end
+
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["careful positioning", "next (default)"])
         if option == "careful positioning" then
             children = Tx8s::childrenInOrder(parent).take(20)
@@ -144,7 +149,7 @@ class Tx8s
     # Tx8s::decide1020position(parent)
     def self.decide1020position(parent)
         positions = Tx8s::childrenInOrder(parent).map{|item| item["parent"]["position"] }
-        return 1 if position.empty?
+        return 1 if positions.empty?
         if positions.size < 20 then
             return positions.max + 1
         end
