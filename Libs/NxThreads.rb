@@ -17,8 +17,6 @@ class NxThreads
 
     # NxThreads::interactivelyIssueNewAtParentOrNull(parent)
     def self.interactivelyIssueNewAtParentOrNull(parent)
-        tx8 = Tx8s::make(parent["uuid"], 0)
-
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
@@ -27,7 +25,13 @@ class NxThreads
         BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
         BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "parent", tx8)
+
+        position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
+        if position then
+            tx8 = Tx8s::make(parent["uuid"], position)
+            BladesGI::setAttribute2(uuid, "parent", tx8)
+        end
+
         BladesGI::itemOrNull(uuid)
     end
 
