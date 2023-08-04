@@ -114,7 +114,7 @@ class Listing
 
     # Listing::taskOrThreadsChildren(parent)
     def self.taskOrThreadsChildren(parent)
-        items = Tx8s::childrenInOrder(parent).first(10)
+        items = Tx8s::childrenInOrder(parent)
 
         # cycle to perfection
         if parent["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
