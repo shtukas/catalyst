@@ -145,7 +145,7 @@ class Listing
                 NxDelegates::listingItems(parents),
                 Listing::tasksAndThreadsListingItemsInOrder(parents)
             ]
-        end 
+        end
 
         if parents.size != 1 then
             items = [
@@ -163,7 +163,7 @@ class Listing
                 NxThreads::orphanItems().sort_by{|item| item["unixtime"] },
                 Listing::tasksAndThreadsListingItemsInOrder(parents)
             ]
-        end 
+        end
 
         items
             .flatten
