@@ -181,7 +181,7 @@ class TxCores
                 }
 
             puts ""
-            puts "(task, longtask, pile, delegate, thread, position *, unstack)"
+            puts "(task, pile, delegate, thread, position *, unstack)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""

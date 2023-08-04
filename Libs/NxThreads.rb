@@ -138,7 +138,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, longtask, pile, delegate, thread, position *, select children and move down)"
+            puts "(task, pile, delegate, thread, position *, select children and move down)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
