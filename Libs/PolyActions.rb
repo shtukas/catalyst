@@ -34,8 +34,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            text = CommonUtils::editTextSynchronously(item["text"])
-            BladesGI::setAttribute2(item["uuid"], "text", text)
+            NxProjectStatuses::program2(item)
             return
         end
 
@@ -120,7 +119,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            puts "You cannot done a NxPrimeDirective, but you can destroy it"
+            puts "You cannot done a NxProjectStatus but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -334,7 +333,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            PolyActions::access(item)
+            NxProjectStatuses::program2(item)
             return
         end
 
@@ -383,27 +382,6 @@ class PolyActions
         LucilleCore::pressEnterToContinue()
     end
 
-    # PolyActions::doubleArrow(item)
-    def self.doubleArrow(item)
-        if item["mikuType"] == "NxTask" then
-            puts PolyFunctions::toString(item)
-            if item["description"].start_with?("(buffer-in)") then
-                BladesGI::setAttribute2(item["uuid"], "description", item["description"][11, item["description"].size].strip)
-                item = BladesGI::itemOrNull(item["uuid"])
-            end
-            Tx8s::move(item)
-            return
-        end
-        if item["mikuType"] == "NxOndate" then
-            puts PolyFunctions::toString(item)
-            Tx8s::move(item)
-            BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            return
-        end
-        puts "I do not know how to double arrow a #{item["mikuType"]}"
-        LucilleCore::pressEnterToContinue()
-    end
-
     # PolyActions::program(item)
     def self.program(item)
 
@@ -428,8 +406,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProjectStatus" then
-            text = CommonUtils::editTextSynchronously(item["text"])
-            BladesGI::setAttribute2(item["uuid"], "text", text)
+            NxProjectStatuses::program2(item)
             return
         end
 
