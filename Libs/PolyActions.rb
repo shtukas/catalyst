@@ -64,7 +64,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
             return
         end
 
@@ -374,7 +373,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
             return
         end
 

@@ -112,60 +112,27 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::taskOrThreadsChildren(parent)
-    def self.taskOrThreadsChildren(parent)
-        items = Tx8s::childrenInOrder(parent)
+    # Listing::items()
+    def self.items()
+        cores = BladesGI::mikuType("TxCore")
+                    .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
+                    .sort_by{|core| Catalyst::listingCompletionRatio(core) }
 
-        # cycle to perfection
-        if parent["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
-            items = items.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        items
-            .select{|item| item["mikuType"] == "NxTask" or item["mikuType"] == "NxThread" }
-    end
-
-    # Listing::tasksAndThreadsListingItemsInOrder(parents)
-    def self.tasksAndThreadsListingItemsInOrder(parents)
-        parents
-            .map{|parent| Listing::taskOrThreadsChildren(parent) }
-            .flatten
-    end
-
-    # Listing::items(parents)
-    def self.items(parents)
-        items = nil
-
-        if parents.size == 1 then
-            items = [
-                NxBalls::runningItems(),
-                Anniversaries::listingItems(),
-                NxOndates::listingItems(parents),
-                NxProjectStatuses::listingItems(parents),
-                NxDelegates::listingItems(parents),
-                Listing::tasksAndThreadsListingItemsInOrder(parents)
-            ]
-        end
-
-        if parents.size != 1 then
-            items = [
-                NxBalls::runningItems(),
-                Anniversaries::listingItems(),
-                DropBox::items(),
-                PhysicalTargets::listingItems(),
-                NxBackups::listingItems(),
-                Waves::listingItems().select{|item| item["interruption"] },
-                NxOndates::listingItems(parents),
-                NxProjectStatuses::listingItems(parents),
-                NxDelegates::listingItems(parents),
-                Waves::listingItems().select{|item| !item["interruption"] },
-                NxTasks::orphanItems().sort_by{|item| item["unixtime"] },
-                NxThreads::orphanItems().sort_by{|item| item["unixtime"] },
-                Listing::tasksAndThreadsListingItemsInOrder(parents)
-            ]
-        end
-
-        items
+        [
+            NxBalls::runningItems(),
+            Anniversaries::listingItems(),
+            DropBox::items(),
+            PhysicalTargets::listingItems(),
+            #Waves::listingItems().select{|item| item["interruption"] },
+            NxProjectStatuses::listingItems(),
+            NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            #Waves::listingItems().select{|item| !item["interruption"] },
+            BladesGI::mikuType("NxDelegate").select{|item| item["parent"].nil? },
+            BladesGI::mikuType("NxTask").select{|item| item["parent"].nil? }.first(10),
+            BladesGI::mikuType("NxThread").select{|item| item["parent"].nil? },
+            cores.map{|core| TxCores::listingItemsForCore(core) }
+        ]
             .flatten
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
@@ -216,7 +183,7 @@ class Listing
         spot.contest_entry("NxTasks::orphanItems()", lambda{ NxTasks::orphanItems() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("NxOndates::listingItems([])", lambda{ NxOndates::listingItems([]) })
+        spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
         spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
@@ -230,8 +197,8 @@ class Listing
         spot.end_unit()
 
         cores = BladesGI::mikuType("TxCore")
-        spot.start_unit("Listing::items(cores)")
-        items = Listing::items(cores)
+        spot.start_unit("Listing::items()")
+        items = Listing::items()
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -338,21 +305,6 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            cores = BladesGI::mikuType("TxCore")
-                        .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
-                        .sort_by{|core| Catalyst::listingCompletionRatio(core) }
-
-            statuses = NxProjectStatuses::listingItems(cores)
-            if statuses.size > 0 then
-                statuses
-                    .each{|item|
-                        store.register(item, Listing::canBeDefault(item))
-                        status = spacecontrol.putsline Listing::toString2(store, item)
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
             times = NxTimes::listingItems()
             if times.size > 0 then
                 times
@@ -375,8 +327,7 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items = Listing::items(cores)
-                    .select{|item| item["mikuType"] != "NxProjectStatus" }
+            items = Listing::items()
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
 
             head = []

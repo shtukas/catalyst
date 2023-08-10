@@ -21,11 +21,9 @@ class NxProjectStatuses
         "🚁 #{item["description"]} [ #{announce.green} ]"
     end
 
-    # NxProjectStatuses::listingItems(parents)
-    def self.listingItems(parents)
-        parentsuuids = parents.map{|px| px["uuid"]}
+    # NxProjectStatuses::listingItems()
+    def self.listingItems()
         BladesGI::mikuType("NxProjectStatus")
-            .select{|item| item["parent"].nil? or parentsuuids.include?(item["parent"]["uuid"])}
     end
 
     # NxProjectStatuses::program2(item)

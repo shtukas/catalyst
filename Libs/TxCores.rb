@@ -88,6 +88,16 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
+    # TxCores::listingItemsForCore(core)
+    def self.listingItemsForCore(core)
+        children = Tx8s::childrenInOrder(core)
+        delegates = children.select{|item| item["mikuType"] == "NxDelegate" }
+        tasks = children.select{|item| item["mikuType"] == "NxTask" }
+        threads = children.select{|item| item["mikuType"] == "NxThread" }
+        others = children.select{|item| !["NxDelegate", "NxThread", "NxTask"].include?(item["mikuType"]) }
+        others + delegates + tasks.first(10) + threads
+    end
+
     # -----------------------------------------------
     # Ops
 
@@ -139,88 +149,11 @@ class TxCores
         BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
     end
 
-    # TxCores::program1(core)
-    def self.program1(core)
-        loop {
-
-            thread = BladesGI::itemOrNull(core["uuid"])
-            return if core.nil?
-
-            system("clear")
-
-            store = ItemStore.new()
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-
-            spacecontrol.putsline ""
-            store.register(core, false)
-            spacecontrol.putsline Listing::toString2(store, core)
-            spacecontrol.putsline ""
-
-            stack = Stack::items()
-            if stack.size > 0 then
-                spacecontrol.putsline "stack:".green
-                stack
-                    .each{|item|
-                        spacecontrol.putsline PolyFunctions::toString(item)
-                    }
-                spacecontrol.putsline ""
-            end
-
-            items = Listing::items([core])
-
-            # We override the natural standard listing ordering with rt measurement
-            if core["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
-                items = items.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-            end
-
-            items
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item).gsub(core["description"], "")
-                    break if !status
-                }
-
-            puts ""
-            puts "(task, pile, delegate, thread, position *, unstack)"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "task" then
-                NxTasks::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
-            if input == "pile" then
-                Tx8s::pileAtThisParent(core)
-            end
-
-            if input == "delegate" then
-                NxDelegates::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
-            if input == "thread" then
-                NxThreads::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
-            if input == "unstack" then
-                Stack::unstackOntoParentAttempt(core)
-                next
-            end
-
-            puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
     # TxCores::program2()
     def self.program2()
-        loop {
-            core = TxCores::interactivelySelectOneOrNull()
-            break if core.nil?
-            TxCores::program1(core)
-        }
+        BladesGI::mikuType("TxCore")
+            .sort_by {|core| Catalyst::listingCompletionRatio(core) }
+            .each{|item| TxCores::toString(core) }
+        LucilleCore::pressEnterToContinue()
     end
 end

@@ -38,9 +38,8 @@ class NxOndates
         "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxOndates::listingItems(parents)
-    def self.listingItems(parents)
-        parentsuuids = parents.map{|px| px["uuid"]}
+    # NxOndates::listingItems()
+    def self.listingItems()
         BladesGI::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }

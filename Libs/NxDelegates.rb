@@ -31,14 +31,12 @@ class NxDelegates
 
     # NxDelegates::toString(item)
     def self.toString(item)
-        "🐞 #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "🐞 #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{Tx8s::suffix(item)}"
     end
 
-    # NxDelegates::listingItems(parents)
-    def self.listingItems(parents)
-        parentsuuids = parents.map{|px| px["uuid"]}
+    # NxDelegates::listingItems()
+    def self.listingItems()
         BladesGI::mikuType("NxDelegate")
-            .select{|delegate| delegate["parent"].nil? or parentsuuids.include?(delegate["parent"]["uuid"])}
     end
 
     # NxDelegates::maintenance()
