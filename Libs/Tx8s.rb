@@ -225,6 +225,7 @@ class Tx8s
         else
             position = Tx8s::decide1020position(parent)
             tx8 = Tx8s::make(parent["uuid"], position)
+            puts JSON.pretty_generate(tx8)
             BladesGI::setAttribute2(item["uuid"], "parent", tx8)
         end
     end
