@@ -205,38 +205,27 @@ class Tx8s
         " (#{parent["description"]})"
     end
 
-    # Tx8s::move(item)
-    def self.move(item)
-        parent = Catalyst::determineTargetParentUnderneathArgument(nil)
-        return if parent.nil?
-
-        position = (lambda {|parent|
-            if parent["uuid"] == "7cf30bc6-d791-4c0c-b03f-16c728396f22" then # I
-                return Tx8s::decide1020position(parent)
-            end
-            if parent["uuid"] == "45b79dcd-6c7d-411c-a2c3-9ef1c38c7743" then # TJ
-                return Tx8s::decide1020position(parent)
-            end
-            Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
-        }).call(parent)
-
-        return if position.nil?
-
-        itemuuid = item["uuid"]
-
-        if item["mikuType"] == "NxTask" then
-            puts PolyFunctions::toString(item)
-            if item["description"].start_with?("(buffer-in)") then
-                BladesGI::setAttribute2(itemuuid, "description", item["description"][11, item["description"].size].strip)
+    # Tx8s::move(item, parent = nil)
+    def self.move(item, parent = nil)
+        if parent.nil? then
+            core = TxCores::interactivelySelectOneOrNull()
+            if core then
+                Tx8s::move(item, core)
+                return
+            else
+                return
             end
         end
 
-        if item["mikuType"] == "NxOndate" then
-            puts PolyFunctions::toString(item)
-            BladesGI::setAttribute2(itemuuid, "mikuType", "NxTask")
-        end
+        child = Catalyst::determineTargetParentUnderneathArgument(parent)
 
-        tx8 = Tx8s::make(parent["uuid"], position)
-        BladesGI::setAttribute2(itemuuid, "parent", tx8)
+        if child and child["mikuType"] == "NxThread" then
+            Tx8s::move(item, child)
+            return
+        else
+            position = Tx8s::decide1020position(parent)
+            tx8 = Tx8s::make(parent["uuid"], position)
+            BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+        end
     end
 end
