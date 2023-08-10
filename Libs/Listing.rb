@@ -119,15 +119,15 @@ class Listing
                     .sort_by{|core| Catalyst::listingCompletionRatio(core) }
 
         [
+            NxProjectStatuses::listingItems(),
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
-            #Waves::listingItems().select{|item| item["interruption"] },
-            NxProjectStatuses::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            #Waves::listingItems().select{|item| !item["interruption"] },
+            Waves::listingItems().select{|item| !item["interruption"] },
             BladesGI::mikuType("NxDelegate").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             BladesGI::mikuType("NxTask").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             BladesGI::mikuType("NxThread").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
