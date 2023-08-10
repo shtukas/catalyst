@@ -220,7 +220,7 @@ class Tx8s
             Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
         }).call(parent)
 
-        return nil if position.nil?
+        return if position.nil?
 
         itemuuid = item["uuid"]
 
