@@ -153,7 +153,7 @@ class TxCores
     def self.program2()
         BladesGI::mikuType("TxCore")
             .sort_by {|core| Catalyst::listingCompletionRatio(core) }
-            .each{|item| TxCores::toString(core) }
+            .each{|core| puts TxCores::toString(core) }
         LucilleCore::pressEnterToContinue()
     end
 end

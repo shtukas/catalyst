@@ -48,19 +48,21 @@ class NxThreads
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        threads = BladesGI::mikuType("NxThread")
-                    .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
-        padding = threads.map{|item| NxThreads::toString(item).size }.max
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
-    end
+        threads1 = BladesGI::mikuType("NxThread").select{|thread| thread["parent"].nil? }
 
-    # NxThreads::interactivelySelectThreadAtMainListingOrNull()
-    def self.interactivelySelectThreadAtMainListingOrNull()
-        threads = BladesGI::mikuType("NxThread")
-                    .select{|item| item["parent"].nil? }
-                    .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
+        threads2 = BladesGI::mikuType("TxCore")
+                    .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+                    .map{|core|
+                        BladesGI::mikuType("NxThread")
+                            .select{|thread| thread["parent"] and thread["parent"]["uuid"] == core["uuid"] }
+                            .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
+                    }
+                    .flatten
+
+
+        threads = threads1 + threads2
         padding = threads.map{|item| NxThreads::toString(item).size }.max
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}" })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}#{Tx8s::suffix(item)}" })
     end
 
     # NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
