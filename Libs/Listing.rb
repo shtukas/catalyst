@@ -119,7 +119,6 @@ class Listing
                     .sort_by{|core| Catalyst::listingCompletionRatio(core) }
 
         [
-            NxProjectStatuses::listingItems(),
             NxBalls::runningItems(),
             Anniversaries::listingItems(),
             DropBox::items(),
@@ -297,6 +296,17 @@ class Listing
             directives = BladesGI::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
             if directives.size > 0 then
                 directives
+                    .each{|item|
+                        store.register(item, Listing::canBeDefault(item))
+                        status = spacecontrol.putsline Listing::toString2(store, item).yellow
+                        break if !status
+                    }
+                spacecontrol.putsline ""
+            end
+
+            statuses = NxProjectStatuses::listingItems().sort_by{|item| item["unixtime"] }
+            if statuses.size > 0 then
+                statuses
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
                         status = spacecontrol.putsline Listing::toString2(store, item).yellow
