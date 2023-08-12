@@ -207,6 +207,11 @@ class Tx8s
 
     # Tx8s::move(item, parent = nil)
     def self.move(item, parent = nil)
+        
+        if item["mikuType"] == "NxOndate" then
+            BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
+        end
+
         if parent.nil? then
             core = TxCores::interactivelySelectOneOrNull()
             if core then
