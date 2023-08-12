@@ -26,7 +26,7 @@ class NxBoosters
         "🔥 #{item["description"]} (#{(100*ratio).round(2)} % of #{item["rt"]} hours)"
     end
 
-    # NxBoosters::maintenance()
+    # NxBoosters::listingItems()
     def self.listingItems()
         BladesGI::mikuType("NxBooster").select{|item|
             ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["rt"]

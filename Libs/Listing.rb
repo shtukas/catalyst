@@ -126,7 +126,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxBackups::listingItems(),
-            NxBoosters::maintenance(),
+            NxBoosters::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             BladesGI::mikuType("NxDelegate").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             BladesGI::mikuType("NxTask").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
