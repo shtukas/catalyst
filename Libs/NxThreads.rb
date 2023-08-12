@@ -61,7 +61,7 @@ class NxThreads
 
         threads = threads1 + threads2
         padding = threads.map{|item| NxThreads::toString(item).size }.max
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}#{Tx8s::suffix(item)}" })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item).ljust(padding)}#{Tx8s::suffix(item).green}" })
     end
 
     # NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
