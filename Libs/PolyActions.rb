@@ -286,6 +286,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxAnniversary" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                BladesGI::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "TxCore" then
             puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
