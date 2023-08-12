@@ -143,7 +143,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, pile, delegate, thread, position *, select children and move them)"
+            puts "(task, pile, delegate, thread, position *, sort, select children and move them)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -162,11 +162,6 @@ class NxThreads
                 next
             end
 
-            if input == "delegate" then
-                NxDelegates::interactivelyIssueNewAtParentOrNull(thread)
-                next
-            end
-
             if input == "thread" then
                 NxThreads::interactivelyIssueNewAtParentOrNull(thread)
                 next
@@ -178,6 +173,15 @@ class NxThreads
                 next if item.nil?
                 Tx8s::repositionItemAtSameParent(item)
                 next
+            end
+
+            if input == "sort" then
+                unselected = Tx8s::childrenInOrder(core)
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    tx8 = Tx8s::make(core["uuid"], Tx8s::newFirstPositionAtThisParent(core))
+                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                }
             end
 
             if input == "select children and move them" then

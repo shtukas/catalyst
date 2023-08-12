@@ -90,12 +90,32 @@ class TxCores
 
     # TxCores::listingItemsForCore(core)
     def self.listingItemsForCore(core)
-        children = Tx8s::childrenInOrder(core)
-        delegates = children.select{|item| item["mikuType"] == "NxDelegate" }
-        tasks = children.select{|item| item["mikuType"] == "NxTask" }
-        threads = children.select{|item| item["mikuType"] == "NxThread" }
-        others = children.select{|item| !["NxDelegate", "NxThread", "NxTask"].include?(item["mikuType"]) }
-        others + delegates + tasks.first(10) + threads
+        items = Tx8s::childrenInOrder(core)
+
+        threads = items.select{|item| item["mikuType"] == "NxThread" }
+        nonThreads = items.select{|item| item["mikuType"] != "NxThread" }
+
+        x1 = threads.map{|thread|
+            {
+                "items" => [thread]
+            }
+        }
+
+        x2 = [
+            {
+                "items" => nonThreads
+            }
+        ]
+
+        (x1+x2)
+            .map{|packet|
+                crt = packet["items"].map{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }.inject(0, :+)
+                packet["crt"] = crt
+                packet
+            }
+            .sort_by{|packet| packet["crt"] }
+            .map{|packet| packet["items"] }
+            .flatten
     end
 
     # -----------------------------------------------
@@ -149,14 +169,110 @@ class TxCores
         BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
     end
 
+    # TxCores::program1(core)
+    def self.program1(core)
+        loop {
+
+            core = BladesGI::itemOrNull(core["uuid"])
+            return if core.nil?
+
+            system("clear")
+
+            store = ItemStore.new()
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+
+            spacecontrol.putsline ""
+            store.register(core, false)
+            spacecontrol.putsline Listing::toString2(store, core)
+            spacecontrol.putsline ""
+
+            stack = Stack::items()
+            if stack.size > 0 then
+                spacecontrol.putsline "stack:".green
+                stack
+                    .each{|item|
+                        spacecontrol.putsline PolyFunctions::toString(item)
+                    }
+                spacecontrol.putsline ""
+            end
+
+            Tx8s::childrenInOrder(core)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item).gsub(core["description"], "")
+                    break if !status
+                }
+
+            puts ""
+            puts "(task, pile, delegate, thread, position *, sort, select children and move them)"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "task" then
+                NxTasks::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "pile" then
+                Tx8s::pileAtThisParent(core)
+            end
+
+            if input == "delegate" then
+                NxDelegates::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input == "thread" then
+                NxThreads::interactivelyIssueNewAtParentOrNull(core)
+                next
+            end
+
+            if input.start_with?("position") then
+                itemindex = input[8, input.length].strip.to_i
+                item = store.get(itemindex)
+                next if item.nil?
+                Tx8s::repositionItemAtSameParent(item)
+                next
+            end
+
+            if input == "sort" then
+                unselected = Tx8s::childrenInOrder(core)
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    tx8 = Tx8s::make(core["uuid"], Tx8s::newFirstPositionAtThisParent(core))
+                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                }
+            end
+
+            if input == "select children and move them" then
+                unselected = Tx8s::childrenInOrder(core)
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
+                puts "Select new parent"
+                parent = Tx8s::interactivelySelectParentOrNull(nil)
+                next if parent.nil?
+                selected.reverse.each{|item|
+                    tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                }
+            end
+
+            if input == "unstack" then
+                Stack::unstackOntoParentAttempt(core)
+                next
+            end
+
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
     # TxCores::program2()
     def self.program2()
         loop {
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", Tx8s::childrenInOrder(core), lambda{|item| PolyFunctions::toString(item) })
-            next if item.nil?
-            PolyActions::program(item)
+            TxCores::program1(core)
         }
     end
 end
