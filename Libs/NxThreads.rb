@@ -135,8 +135,7 @@ class NxThreads
                 spacecontrol.putsline ""
             end
 
-            (BladesGI::mikuType("NxDelegate") + BladesGI::mikuType("NxTask"))
-                .select{|item| item["parent"] and item["parent"]["uuid"] == thread["uuid"] }
+            Tx8s::childrenInOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")
