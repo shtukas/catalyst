@@ -53,6 +53,8 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
+require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/Cubes.rb"
+
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/BladesGI.rb"
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/CoreDataRefStrings.rb"
 
