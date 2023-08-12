@@ -133,6 +133,7 @@ require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
+require_relative "NxBooster.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"

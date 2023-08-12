@@ -1,0 +1,11 @@
+
+A booster is an extra time core with a deadline. I introduced them for dedalined work during August 2023
+
+NxBooster: 
+    "uuid"         : String
+    "mikuType"     : "NxBooster"
+    "unixtime"     : Float
+    "datetime"     : DateTime Iso 8601 UTC Zulu
+    "description"  : String
+    "deadline"     : Unixtime
+    "rt"           : Float

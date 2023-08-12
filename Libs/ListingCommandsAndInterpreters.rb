@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
@@ -175,6 +175,11 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             NxPrimeDirectives::issue(description)
+            return
+        end
+
+        if Interpreting::match("booster", input) then
+            NxBoosters::interactivelyIssueNewOrNull()
             return
         end
 
