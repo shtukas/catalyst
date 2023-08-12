@@ -27,6 +27,11 @@ class NxBoosters
     end
 
     # NxBoosters::maintenance()
+    def self.listingItems()
+        BladesGI::mikuType("NxBooster").select{|item| NxBalls::itemIsActive(item) or Time.new.to_f < item["deadline"] }
+    end
+
+    # NxBoosters::maintenance()
     def self.maintenance()
         BladesGI::mikuType("NxBooster").each{|item|
             next if NxBalls::itemIsActive(item)
