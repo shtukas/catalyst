@@ -28,7 +28,10 @@ class NxBoosters
 
     # NxBoosters::maintenance()
     def self.listingItems()
-        BladesGI::mikuType("NxBooster").select{|item| NxBalls::itemIsActive(item) or Time.new.to_f < item["deadline"] }
+        BladesGI::mikuType("NxBooster").select{|item|
+            ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["rt"]
+            NxBalls::itemIsActive(item) or (Time.new.to_f < item["deadline"] and ratio < 1)
+        }
     end
 
     # NxBoosters::maintenance()
