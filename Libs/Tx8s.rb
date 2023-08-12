@@ -217,7 +217,7 @@ class Tx8s
             end
         end
 
-        child = Catalyst::determineTargetParentUnderneathArgument(parent)
+        child = Catalyst::selectChildUnderneathParentOrNull(parent)
 
         if child and child["mikuType"] == "NxThread" then
             Tx8s::move(item, child)

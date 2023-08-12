@@ -36,27 +36,14 @@ class Catalyst
         }
     end
 
-    # Catalyst::determineTargetParentUnderneathArgument(reference = nil)
-    def self.determineTargetParentUnderneathArgument(reference = nil)
+    # Catalyst::selectChildUnderneathParentOrNull(parent = nil)
+    def self.selectChildUnderneathParentOrNull(parent = nil)
 
-        if reference.nil? then
-            core = TxCores::interactivelySelectOneOrNull()
-            return nil if core.nil?
-            return Catalyst::determineTargetParentUnderneathArgument(core)
+        if parent.nil? then
+            return TxCores::interactivelySelectOneOrNull()
         end
 
-        child = LucilleCore::selectEntityFromListOfEntitiesOrNull("children", [reference] + Tx8s::childrenInOrder(reference).first(20), lambda{|i| PolyFunctions::toString(i) })
-        return nil if child.nil?
-
-        if child["uuid"] == reference["uuid"] then
-            return reference
-        end
-
-        if child["mikuType"] == "NxThread" or child["mikuType"] == "NxCore" then
-            return Catalyst::determineTargetParentUnderneathArgument(child)
-        end
-
-        Catalyst::determineTargetParentUnderneathArgument(reference) # redoing the same operation because we didn't select the reference or a container
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("children", Tx8s::childrenInOrder(parent).first(20), lambda{|i| PolyFunctions::toString(i) })
     end
 
     # Catalyst::maintenance()
