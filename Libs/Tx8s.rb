@@ -42,7 +42,10 @@ class Tx8s
             return rand
         end
 
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["careful positioning", "next (default)"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["new first position", "careful positioning", "next (default)"])
+        if option == "new first position" then
+            return Tx8s::newFirstPositionAtThisParent(parent)
+        end
         if option == "careful positioning" then
             children = Tx8s::childrenInOrder(parent).take(20)
             return 1 if children.empty?
