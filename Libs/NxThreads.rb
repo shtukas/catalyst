@@ -143,7 +143,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "(task, pile, delegate, thread, position *, select children and move down)"
+            puts "(task, pile, delegate, thread, position *, select children and move them)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -175,20 +175,20 @@ class NxThreads
             if input.start_with?("position") then
                 itemindex = input[8, input.length].strip.to_i
                 item = store.get(itemindex)
-                return if item.nil?
+                next if item.nil?
                 Tx8s::repositionItemAtSameParent(item)
                 next
             end
 
-            if input == "select children and move down" then
+            if input == "select children and move them" then
                 unselected = Tx8s::childrenInOrder(thread)
-                selected, _ = LucilleCore::selectZeroOrMore("task", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
-                puts "Select target thread"
-                t = NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
-                next if t.nil?
-                selected.each{|task|
-                    tx8 = Tx8s::make(t["uuid"], Tx8s::nextPositionAtThisParent(t))
-                    BladesGI::setAttribute2(task["uuid"], "parent", tx8)
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
+                puts "Select new parent"
+                parent = Tx8s::interactivelySelectParentOrNull(nil)
+                next if parent.nil?
+                selected.reverse.each{|item|
+                    tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
+                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
                 }
             end
 

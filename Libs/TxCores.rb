@@ -151,9 +151,12 @@ class TxCores
 
     # TxCores::program2()
     def self.program2()
-        BladesGI::mikuType("TxCore")
-            .sort_by {|core| Catalyst::listingCompletionRatio(core) }
-            .each{|core| puts TxCores::toString(core) }
-        LucilleCore::pressEnterToContinue()
+        loop {
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", Tx8s::childrenInOrder(core), lambda{|item| PolyFunctions::toString(item) })
+            next if item.nil?
+            PolyActions::program(item)
+        }
     end
 end

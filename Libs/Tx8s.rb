@@ -205,6 +205,17 @@ class Tx8s
         " (#{parent["description"]})"
     end
 
+    # Tx8s::interactivelySelectParentOrNull(cursor = nil)
+    def self.interactivelySelectParentOrNull(cursor = nil)
+        if cursor.nil? then
+            core = TxCores::interactivelySelectOneOrNull()
+            return Tx8s::interactivelySelectParentOrNull(core)
+        end
+        child = Catalyst::selectChildUnderneathParentOrNull(cursor)
+        return child if child["mikuType"] == "NxThread"
+        cursor
+    end
+
     # Tx8s::move(item, parent = nil)
     def self.move(item, parent = nil)
         
