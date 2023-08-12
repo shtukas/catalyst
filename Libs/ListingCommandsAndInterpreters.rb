@@ -44,6 +44,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
+            puts PolyFunctions::toString(item)
             Tx8s::move(item)
             return
         end
@@ -52,6 +53,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            puts PolyFunctions::toString(item)
             Tx8s::move(item)
             return
         end
