@@ -88,8 +88,13 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
-    # TxCores::listingItemsForCore(core)
-    def self.listingItemsForCore(core)
+    # TxCores::listingItems1(core)
+    def self.listingItems1(core)
+
+        if core["uuid"] == "62fc8f96-3f5b-4166-aa21-2919e20c3fdd" then
+            return Tx8s::childrenInOrder(core).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        end
+
         items = Tx8s::childrenInOrder(core)
 
         threads = items.select{|item| item["mikuType"] == "NxThread" }
