@@ -51,16 +51,27 @@ class Catalyst
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/OpenCycles").each{|location|
             locationname = File.basename(location)
             next if locationname[0, 1] == "."
-            itemUUIDLocation = "#{location}/.catalystItemUUID8ba92694"
-            if File.exist?(itemUUIDLocation) then
-                itemuuid = IO.read(itemUUIDLocation).strip
-                next if BladesGI::itemOrNull(itemuuid)
+
+            if File.directory?(location) then
+                itemUUIDLocation = "#{location}/.catalystItemUUID8ba92694"
+                if File.exist?(itemUUIDLocation) then
+                    itemuuid = IO.read(itemUUIDLocation).strip
+                    next if BladesGI::itemOrNull(itemuuid)
+                end
+                items = BladesGI::mikuType("NxTask") + BladesGI::mikuType("NxOndate") + BladesGI::mikuType("Wave")
+                next if items.any?{|item| (item["description"] || "").include?(locationname) }
+                item = NxTasks::descriptionToTask("(open cycle) #{locationname}")
+                puts JSON.pretty_generate(item)
+                File.open(itemUUIDLocation, "w"){|f| f.write(item["uuid"]) }
             end
-            items = BladesGI::mikuType("NxTask") + BladesGI::mikuType("NxOndate") + BladesGI::mikuType("Wave")
-            next if items.any?{|item| (item["description"] || "").include?(locationname) }
-            item = NxTasks::descriptionToTask("(open cycle) #{locationname}")
-            puts JSON.pretty_generate(item)
-            File.open(itemUUIDLocation, "w"){|f| f.write(item["uuid"]) }
+
+            if File.file?(location) then
+                itemuuid = Digest::SHA1.hexdigest("#{locationname}:c54c9b05-c914-4df5-b77a-6e72f2d43cf7")
+                next if BladesGI::itemOrNull(itemuuid)
+                item = NxTasks::descriptionToTask("(open cycle: file) #{locationname}")
+                puts JSON.pretty_generate(item)
+            end
+
         }
     end
 
