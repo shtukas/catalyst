@@ -107,7 +107,7 @@ class TxCores
             }
         ]
 
-        (x1+x2)
+        items = (x1+x2)
             .map{|packet|
                 crt = packet["items"].map{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }.inject(0, :+)
                 packet["crt"] = crt
@@ -116,6 +116,7 @@ class TxCores
             .sort_by{|packet| packet["crt"] }
             .map{|packet| packet["items"] }
             .flatten
+        items + [core]
     end
 
     # -----------------------------------------------

@@ -102,8 +102,6 @@ class Listing
 
         return false if skipTargetTimeOrNull.call(item)
 
-        return false if Bank::recoveredAverageHoursPerDay(item["uuid"]) >= 1
-
         true
     end
 
@@ -156,10 +154,6 @@ class Listing
         end
 
         if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if Bank::recoveredAverageHoursPerDay(item["uuid"]) >= 1 then
             line = line.yellow
         end
 
