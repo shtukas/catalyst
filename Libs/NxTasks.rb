@@ -97,6 +97,15 @@ class NxTasks
         BladesGI::itemOrNull(uuid)
     end
 
+    # NxTasks::descriptionToTask_vX(uuid, description)
+    def self.descriptionToTask_vX(uuid, description)
+        BladesGI::init("NxTask", uuid)
+        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        BladesGI::setAttribute2(uuid, "description", description)
+        BladesGI::itemOrNull(uuid)
+    end
+
     # --------------------------------------------------
     # Data
 

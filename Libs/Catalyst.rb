@@ -53,22 +53,22 @@ class Catalyst
             next if locationname[0, 1] == "."
 
             if File.directory?(location) then
-                itemUUIDLocation = "#{location}/.catalystItemUUID8ba92694"
-                if File.exist?(itemUUIDLocation) then
-                    itemuuid = IO.read(itemUUIDLocation).strip
-                    next if BladesGI::itemOrNull(itemuuid)
+                markerfilepath = "#{location}/.catalystItemUUID8ba92694"
+                if File.exist?(markerfilepath) then
+                    itemuuid = IO.read(markerfilepath).strip
+                else
+                    itemuuid = SecureRandom.uuid
+                    File.open(markerfilepath, "w"){|f| f.write(itemuuid) }
                 end
-                items = BladesGI::mikuType("NxTask") + BladesGI::mikuType("NxOndate") + BladesGI::mikuType("Wave")
-                next if items.any?{|item| (item["description"] || "").include?(locationname) }
-                item = NxTasks::descriptionToTask("(open cycle) #{locationname}")
+                next if BladesGI::itemOrNull(itemuuid)
+                item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: dir) #{locationname}")
                 puts JSON.pretty_generate(item)
-                File.open(itemUUIDLocation, "w"){|f| f.write(item["uuid"]) }
             end
 
             if File.file?(location) then
                 itemuuid = Digest::SHA1.hexdigest("#{locationname}:c54c9b05-c914-4df5-b77a-6e72f2d43cf7")
                 next if BladesGI::itemOrNull(itemuuid)
-                item = NxTasks::descriptionToTask("(open cycle: file) #{locationname}")
+                item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: file) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
 
