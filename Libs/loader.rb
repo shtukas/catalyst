@@ -172,7 +172,6 @@ require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 require_relative "PhysicalTargets.rb"
-require_relative "Pure.rb"
 
 require_relative "SectionsType0141.rb"
 
