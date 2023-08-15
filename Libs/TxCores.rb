@@ -100,11 +100,18 @@ class TxCores
         end
     end
 
+    # TxCores::coreHasPriorityChildren(core)
+    def self.coreHasPriorityChildren(core)
+        Tx8s::childrenInOrder(core)
+            .any?{|item| item["priority"] }
+    end
+
     # TxCores::coresForListing()
     def self.coresForListing()
-        cores = BladesGI::mikuType("TxCore")
-        if cores.any?{|core| core["priority"] } then
-            cores = cores.select{|core| core["priority"] }
+        if BladesGI::mikuType("TxCore").any?{|core| TxCores::coreHasPriorityChildren(core) } then
+            cores = BladesGI::mikuType("TxCore").select{|core| TxCores::coreHasPriorityChildren(core) }
+        else
+            cores = BladesGI::mikuType("TxCore")
         end
         cores
             .select{|core| Catalyst::listingCompletionRatio(core) < 1 }

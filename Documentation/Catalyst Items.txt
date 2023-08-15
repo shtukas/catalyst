@@ -14,8 +14,4 @@ Tx8 {uuid, position}
 
 Tx8 is a general child parent relationship declaration system. At the moment we conventionaly only allow cases and floats to belong to threads
 
-The `priority` boolean can be carried by any catalyst item, but is effective only for cores, children of cores and top threads. It decides whether the element shows up as listing item or not. More exactly, if the parent has at least one priority child, then all priority children are shown in recovery time order, otherwise the children are shown in the position order (see exception below). 
-
-nb: Cores are always ordered in recovery time (or more exactly completion time) order.
-
-nb: Children of cores, unless some are priority, are shown in that fancy method we are using.
+The `priority` boolean can be carried by any catalyst item, but it is effective only when carried by a direct child of a core. If there is one such item, then all the cores with such items are selected and all such items are selected.

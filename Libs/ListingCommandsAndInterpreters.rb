@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates | priorities",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
         ].join("\n")
@@ -244,6 +244,12 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             BladesGI::setAttribute2(item["uuid"], "priority", false)
+            return
+        end
+
+        if Interpreting::match("priorities", input) then
+            BladesGI::mikuType("TxCore")
+                .select{|core| core["priority"] }
             return
         end
 
