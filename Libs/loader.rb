@@ -155,6 +155,8 @@ require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
 require_relative "Stack.rb"
 
+require_relative "Memoize.rb"
+
 require_relative "NxBackups.rb"
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
@@ -166,7 +168,7 @@ require_relative "NxDelegates.rb"
 require_relative "NxPrimeDirectives.rb"
 require_relative "NxProjectStatuses.rb"
 
-require_relative "Memoize.rb"
+require_relative "Olivia.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
