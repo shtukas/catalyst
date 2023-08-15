@@ -212,7 +212,6 @@ class Listing
             Catalyst::maintenance()
             NxBoosters::maintenance()
         end
-        NxThreads::maintenance1()
     end
 
     # Listing::launchNxBallMonitor()
