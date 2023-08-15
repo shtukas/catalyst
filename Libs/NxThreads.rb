@@ -184,10 +184,10 @@ class NxThreads
             end
 
             if input == "sort" then
-                unselected = Tx8s::childrenInOrder(core)
+                unselected = Tx8s::childrenInOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    tx8 = Tx8s::make(core["uuid"], Tx8s::newFirstPositionAtThisParent(core))
+                    tx8 = Tx8s::make(thread["uuid"], Tx8s::newFirstPositionAtThisParent(thread))
                     BladesGI::setAttribute2(item["uuid"], "parent", tx8)
                 }
             end
