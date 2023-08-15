@@ -249,7 +249,17 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("priorities", input) then
             BladesGI::mikuType("TxCore")
-                .select{|core| core["priority"] }
+                .select{|core| TxCores::coreHasPriorityChildren(core) }
+                .each{|core|
+                    puts ""
+                    puts PolyFunctions::toString(core)
+                    Tx8s::childrenInOrder(core)
+                        .select{|item| item["priority"] }
+                        .each{|item|
+                            puts "    - #{PolyFunctions::toString(item)}"
+                        }
+                }
+            LucilleCore::pressEnterToContinue()
             return
         end
 
