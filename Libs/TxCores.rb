@@ -90,38 +90,25 @@ class TxCores
 
     # TxCores::listingItems1(core)
     def self.listingItems1(core)
-
-        if core["uuid"] == "62fc8f96-3f5b-4166-aa21-2919e20c3fdd" then
-            return Tx8s::childrenInOrder(core).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
         items = Tx8s::childrenInOrder(core)
+        if items.any?{|item| item["priority"] } then
+            return items
+                .select{|item| item["priority"] }
+                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        else
+            return items # already sorted by unixtime
+        end
+    end
 
-        threads = items.select{|item| item["mikuType"] == "NxThread" }
-        nonThreads = items.select{|item| item["mikuType"] != "NxThread" }
-
-        x1 = threads.map{|thread|
-            {
-                "items" => [thread]
-            }
-        }
-
-        x2 = [
-            {
-                "items" => nonThreads
-            }
-        ]
-
-        items = (x1+x2)
-            .map{|packet|
-                crt = packet["items"].map{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }.inject(0, :+)
-                packet["crt"] = crt
-                packet
-            }
-            .sort_by{|packet| packet["crt"] }
-            .map{|packet| packet["items"] }
-            .flatten
-        items + [core]
+    # TxCores::coresForListing()
+    def self.coresForListing()
+        cores = BladesGI::mikuType("TxCore")
+        if cores.any?{|core| core["priority"] } then
+            cores = cores.select{|core| core["priority"] }
+        end
+        cores
+            .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
+            .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
     # -----------------------------------------------

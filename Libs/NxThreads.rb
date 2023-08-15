@@ -135,7 +135,15 @@ class NxThreads
                 spacecontrol.putsline ""
             end
 
-            Tx8s::childrenInOrder(thread)
+            items = Tx8s::childrenInOrder(thread)
+
+            if items.any?{|item| item["priority"] } then
+                items = items
+                    .select{|item| item["priority"] }
+                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+            end
+
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item).gsub(thread["description"], "")

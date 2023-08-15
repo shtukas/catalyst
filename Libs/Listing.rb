@@ -112,9 +112,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        cores = BladesGI::mikuType("TxCore")
-                    .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
-                    .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+        cores = TxCores::coresForListing()
 
         [
             NxBalls::runningItems(),
