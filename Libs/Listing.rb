@@ -128,7 +128,6 @@ class Listing
             BladesGI::mikuType("NxTask").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             BladesGI::mikuType("NxThread").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             cores.map{|core| TxCores::listingItems1(core) },
-            cores
         ]
             .flatten
             .select{|item| Listing::listable(item) }
