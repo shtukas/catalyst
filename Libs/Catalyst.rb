@@ -95,7 +95,9 @@ class Catalyst
     def self.priorityRatioOrNull(item)
         return nil if item["priority"].nil?
         return nil if !item["priority"]
-        Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
+        ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
+        return nil if ratio >= 1
+        ratio
     end
 
     # Catalyst::editItem(item)
