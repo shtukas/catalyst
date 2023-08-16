@@ -25,9 +25,10 @@ class Olivia
     def self.processItem(item)
         system('clear')
         puts PolyFunctions::toString(item)
-        options = ["done", "add to stack (default)"]
+        options = ["acess + done", "add to stack (default)"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        if option == "done" then
+        if option == "acess + done" then
+            PolyActions::access(item)
             PolyActions::done(item)
             return nil
         end
@@ -59,5 +60,4 @@ class Olivia
         items = items.select{|i| i["uuid"] != i1["uuid"] }       # updated items
         Olivia::magic1(stack, items, final + [i2].compact)
     end
-
 end
