@@ -168,6 +168,8 @@ require_relative "NxDelegates.rb"
 require_relative "NxPrimeDirectives.rb"
 require_relative "NxProjectStatuses.rb"
 
+require_relative "Olivia.rb"
+
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"

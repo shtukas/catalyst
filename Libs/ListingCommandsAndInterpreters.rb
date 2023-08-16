@@ -9,6 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
+            "              : sort",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates | priorities",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -84,6 +85,14 @@ class ListingCommandsAndInterpreters
                 tx8 = Tx8s::make(core["uuid"], 0)
                 BladesGI::setAttribute2(item["uuid"], "parent", tx8)
             end
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            stack = Olivia::getStack()
+            selected, unselected = LucilleCore::selectZeroOrMore("items", [], stack, lambda{|item| PolyFunctions::toString(item) })
+            stack = selected + unselected
+            Olivia::putStack(stack)
             return
         end
 

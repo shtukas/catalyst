@@ -331,6 +331,8 @@ class Listing
             end
 
             items = Listing::items()
+            items = Olivia::magic1(Olivia::getStack(), items, [])
+            Olivia::putStack(items)
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
             items
                 .each{|item|
