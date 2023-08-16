@@ -145,7 +145,14 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        prioritySuffix = lambda{|item|
+            return "" if !item["priority"]
+            ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]
+            percentage = 100*ratio
+            " (priority: #{"%6.2f" % percentage}% of #{item["priority"]} hours)"
+        }
+
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{prioritySuffix.call(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

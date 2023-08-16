@@ -8,10 +8,10 @@ Cross types conventions:
     - "tmpskip1"       : TmpSkip1
 
     - parent           : nil or Tx8
-    - priority         : boolean
+    - priority         : Float
 
 Tx8 {uuid, position}
 
 Tx8 is a general child parent relationship declaration system. At the moment we conventionaly only allow cases and floats to belong to threads
 
-The `priority` boolean can be carried by any catalyst item, but it is effective only when carried by a direct child of a core. If there is one such item, then all the cores with such items are selected and all such items are selected.
+The `priority` field can be carried by any catalyst item, but it is effective only when carried by a direct child of a core. If there is one such item, then all the cores with such items are selected and all such items are selected.
