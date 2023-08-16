@@ -25,11 +25,10 @@ class Olivia
     def self.processItem(item)
         system('clear')
         puts PolyFunctions::toString(item)
-        options = ["acess + done", "add to stack (default)"]
+        options = ["access + done", "add to stack (default)"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        if option == "acess + done" then
-            PolyActions::access(item)
-            PolyActions::done(item)
+        if option == "access + done" then
+            PolyActions::accessAndHopefullyDone(item)
             return nil
         end
         if option.nil? or option == "add to stack (default)" then

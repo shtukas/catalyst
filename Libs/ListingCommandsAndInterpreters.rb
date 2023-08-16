@@ -30,7 +30,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::doubleDot(item)
+            PolyActions::accessAndHopefullyDone(item)
             return
         end
 
@@ -38,7 +38,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::doubleDot(item)
+            PolyActions::accessAndHopefullyDone(item)
             return
         end
 
