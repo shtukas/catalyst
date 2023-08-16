@@ -93,7 +93,16 @@ class Catalyst
 
     # Catalyst::priorityRatioOrNull(item)
     def self.priorityRatioOrNull(item)
+        return nil if item["priority"].nil?
         return nil if !item["priority"]
         Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
+    end
+
+    # Catalyst::editItem(item)
+    def self.editItem(item)
+        item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
+        item.to_a.each{|key, value|
+            BladesGI::setAttribute2(item["uuid"], key, value)
+        }
     end
 end

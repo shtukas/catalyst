@@ -382,10 +382,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
-            item.to_a.each{|key, value|
-                BladesGI::setAttribute2(item["uuid"], key, value)
-            }
+            Catalyst::editItem(item)
             return
         end
 
