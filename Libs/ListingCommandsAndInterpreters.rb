@@ -272,7 +272,7 @@ class ListingCommandsAndInterpreters
                     puts ""
                     puts PolyFunctions::toString(core)
                     Tx8s::childrenInOrder(core)
-                        .select{|item| Catalyst::priorityRatioOrNull(item) }
+                        .select{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) }
                         .each{|item|
                             puts "    - #{PolyFunctions::toString(item)}"
                         }

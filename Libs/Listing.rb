@@ -146,7 +146,7 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
         prioritySuffix = lambda{|item|
-            ratio = Catalyst::priorityRatioOrNull(item)
+            ratio = Catalyst::lessThanOnePriorityRatioOrNull(item)
             return nil if ratio.nil?
             percentage = 100*ratio
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"

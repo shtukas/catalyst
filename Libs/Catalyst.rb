@@ -91,8 +91,8 @@ class Catalyst
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
 
-    # Catalyst::priorityRatioOrNull(item)
-    def self.priorityRatioOrNull(item)
+    # Catalyst::lessThanOnePriorityRatioOrNull(item)
+    def self.lessThanOnePriorityRatioOrNull(item)
         return nil if item["priority"].nil?
         return nil if !item["priority"]
         ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
