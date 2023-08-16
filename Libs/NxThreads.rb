@@ -126,9 +126,9 @@ class NxThreads
 
             items = Tx8s::childrenInOrder(thread)
 
-            if items.any?{|item| item["priority"] } then
+            if items.any?{|item| Catalyst::priorityRatioOrNull(item) } then
                 items = items
-                    .select{|item| item["priority"] }
+                    .select{|item| Catalyst::priorityRatioOrNull(item) }
                     .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
             end
 

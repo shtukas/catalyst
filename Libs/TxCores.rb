@@ -91,9 +91,9 @@ class TxCores
     # TxCores::listingItems1(core)
     def self.listingItems1(core)
         items = Tx8s::childrenInOrder(core)
-        if items.any?{|item| item["priority"] } then
+        if items.any?{|item| Catalyst::priorityRatioOrNull(item) } then
             return items
-                .select{|item| item["priority"] }
+                .select{|item| Catalyst::priorityRatioOrNull(item) }
                 .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         else
             return items # already sorted by unixtime
@@ -103,7 +103,7 @@ class TxCores
     # TxCores::coreHasPriorityChildren(core)
     def self.coreHasPriorityChildren(core)
         Tx8s::childrenInOrder(core)
-            .any?{|item| item["priority"] }
+            .any?{|item| Catalyst::priorityRatioOrNull(item) }
     end
 
     # TxCores::coresForListing()

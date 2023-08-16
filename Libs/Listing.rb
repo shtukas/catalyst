@@ -146,8 +146,8 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
         prioritySuffix = lambda{|item|
-            return "" if !item["priority"]
-            ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
+            ratio = Catalyst::priorityRatioOrNull(item)
+            return nil if ratio.nil?
             percentage = 100*ratio
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"
         }

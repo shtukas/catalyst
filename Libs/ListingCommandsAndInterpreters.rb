@@ -244,7 +244,16 @@ class ListingCommandsAndInterpreters
             _,  _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            BladesGI::setAttribute2(item["uuid"], "priority", true)
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            return if hours == 0
+            date = CommonUtils::interactivelyMakeADateOrNull()
+            return if date.nil?
+            priority = {
+                "hours" => hours,
+                "type"  => "deadline",
+                "date"  => date
+            }
+            BladesGI::setAttribute2(item["uuid"], "priority", priority)
             return
         end
 
@@ -263,7 +272,7 @@ class ListingCommandsAndInterpreters
                     puts ""
                     puts PolyFunctions::toString(core)
                     Tx8s::childrenInOrder(core)
-                        .select{|item| item["priority"] }
+                        .select{|item| Catalyst::priorityRatioOrNull(item) }
                         .each{|item|
                             puts "    - #{PolyFunctions::toString(item)}"
                         }
