@@ -5,11 +5,11 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | stack (<n>) | move (<n>) | set priority on (<n>) | set priority off (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | stack (<n>) | move (<n>) | priority (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
@@ -163,11 +163,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("booster", input) then
-            NxBoosters::interactivelyIssueNewOrNull()
-            return
-        end
-
         if Interpreting::match("thread", input) then
             thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
@@ -207,28 +202,28 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("set priority on *", input) then
-            _,  _, _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("priority *", input) then
+            _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            return if hours == 0
-            date = CommonUtils::interactivelyMakeADateOrNull()
-            return if date.nil?
-            priority = {
-                "hours" => hours,
-                "type"  => "deadline",
-                "date"  => date
-            }
-            BladesGI::setAttribute2(item["uuid"], "priority", priority)
-            return
-        end
-
-        if Interpreting::match("set priority off *", input) then
-            _,  _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            BladesGI::setAttribute2(item["uuid"], "priority", false)
+            puts PolyFunctions::toString(item)
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set priority", "remove priority"])
+            return if option.nil?
+            if option == "set priority" then
+                hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+                return if hours == 0
+                date = CommonUtils::interactivelyMakeADateOrNull()
+                return if date.nil?
+                priority = {
+                    "hours" => hours,
+                    "type"  => "deadline",
+                    "date"  => date
+                }
+                BladesGI::setAttribute2(item["uuid"], "priority", priority)
+            end
+            if option == "remove priority" then
+                BladesGI::setAttribute2(item["uuid"], "priority", nil)
+            end
             return
         end
 

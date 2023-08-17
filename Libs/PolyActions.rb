@@ -250,13 +250,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBooster" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                BladesGI::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 BladesGI::destroy(item["uuid"])
