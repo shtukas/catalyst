@@ -25,6 +25,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxStrat" then
+            b = BladesGI::itemOrNull(item["bottom"])
+            if b then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(b)
+            end
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -86,6 +93,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
+        end
+        if item["mikuType"] == "NxStrat" then
+            return Stratification::toString(item)
         end
         if item["mikuType"] == "TxCore" then
             return TxCores::toString(item)

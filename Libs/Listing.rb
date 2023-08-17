@@ -283,16 +283,6 @@ class Listing
 
             spacecontrol.putsline ""
 
-            stack = Stack::items()
-            if stack.size > 0 then
-                spacecontrol.putsline "stack:".green
-                stack
-                    .each{|item|
-                        spacecontrol.putsline PolyFunctions::toString(item)
-                    }
-                spacecontrol.putsline ""
-            end
-
             directives = BladesGI::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
             if directives.size > 0 then
                 directives
@@ -338,9 +328,9 @@ class Listing
             end
 
             items = Listing::items()
-            items = Olivia::magic1(Olivia::getStack(), items, [])
-            Olivia::putStack(items)
+            items = Olivia::magic2(items)
             items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
+            items = Stratification::prefixWithStratification(items)
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))

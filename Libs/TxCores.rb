@@ -186,16 +186,6 @@ class TxCores
             spacecontrol.putsline Listing::toString2(store, core)
             spacecontrol.putsline ""
 
-            stack = Stack::items()
-            if stack.size > 0 then
-                spacecontrol.putsline "stack:".green
-                stack
-                    .each{|item|
-                        spacecontrol.putsline PolyFunctions::toString(item)
-                    }
-                spacecontrol.putsline ""
-            end
-
             Tx8s::childrenInOrder(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -216,6 +206,7 @@ class TxCores
 
             if input == "pile" then
                 Tx8s::pileAtThisParent(core)
+                next
             end
 
             if input == "delegate" then
@@ -255,11 +246,6 @@ class TxCores
                     tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
                     BladesGI::setAttribute2(item["uuid"], "parent", tx8)
                 }
-            end
-
-            if input == "unstack" then
-                Stack::unstackOntoParentAttempt(core)
-                next
             end
 
             puts ""

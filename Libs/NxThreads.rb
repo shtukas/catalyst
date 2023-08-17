@@ -114,16 +114,6 @@ class NxThreads
             spacecontrol.putsline Listing::toString2(store, thread)
             spacecontrol.putsline ""
 
-            stack = Stack::items()
-            if stack.size > 0 then
-                spacecontrol.putsline "stack:".green
-                stack
-                    .each{|item|
-                        spacecontrol.putsline PolyFunctions::toString(item)
-                    }
-                spacecontrol.putsline ""
-            end
-
             items = Tx8s::childrenInOrder(thread)
 
             if items.any?{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) } then
@@ -152,6 +142,7 @@ class NxThreads
 
             if input == "pile" then
                 Tx8s::pileAtThisParent(thread)
+                next
             end
 
             if input == "delegate" then
@@ -191,11 +182,6 @@ class NxThreads
                     tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
                     BladesGI::setAttribute2(item["uuid"], "parent", tx8)
                 }
-            end
-
-            if input == "unstack" then
-                Stack::unstackOntoParentAttempt(thread)
-                next
             end
 
             puts ""

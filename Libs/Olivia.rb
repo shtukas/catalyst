@@ -1,16 +1,16 @@
 
 class Olivia
 
-    # Olivia::getStack()
-    def self.getStack()
+    # Olivia::getListing()
+    def self.getListing()
         folder = "#{ENV['HOME']}/Galaxy/DataHub/catalyst/Olivia"
         filepaths = LucilleCore::locationsAtFolder(folder).select{|filepath| filepath[-5, 5] == ".json" }
         return [] if filepaths.empty?
         JSON.parse(IO.read(filepaths.last))
     end
 
-    # Olivia::putStack(stack)
-    def self.putStack(stack)
+    # Olivia::putListing(stack)
+    def self.putListing(stack)
         folder = "#{ENV['HOME']}/Galaxy/DataHub/catalyst/Olivia"
         LucilleCore::locationsAtFolder(folder)
             .select{|filepath| filepath[-5, 5] == ".json" }
@@ -23,6 +23,7 @@ class Olivia
     # We call that function on new items
     # return null if the item was instantly processed or the item if we put it in the stack
     def self.processItem(item)
+        return item if item["mikuType"] == "NxStrat" 
         system('clear')
         puts PolyFunctions::toString(item)
         options = ["access + done", "add to stack (default)"]
@@ -38,9 +39,16 @@ class Olivia
 
     # Olivia::removeItem(item)
     def self.removeItem(item)
-        stack = Olivia::getStack()
+        stack = Olivia::getListing()
         stack = stack.select{|i| i["uuid"] != item["uuid"] }
-        Olivia::putStack(stack)
+        Olivia::putListing(stack)
+    end
+
+    # Olivia::addItem(item)
+    def self.addItem(item)
+        stack = Olivia::getListing()
+        stack = stack + [item]
+        Olivia::putListing(stack)
     end
 
     # Olivia::magic1(stack, items, final)
@@ -58,5 +66,12 @@ class Olivia
         i2    = items.select{|i| i["uuid"] == i1["uuid"] }.first # item from items with the same uuid as i1
         items = items.select{|i| i["uuid"] != i1["uuid"] }       # updated items
         Olivia::magic1(stack, items, final + [i2].compact)
+    end
+
+    # Olivia::magic2(items)
+    def self.magic2(items)
+        items = Olivia::magic1(Olivia::getListing(), items, [])
+        Olivia::putListing(items.select{|i| i["mikuType"] != "NxStrat" })
+        items
     end
 end

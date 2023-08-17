@@ -153,7 +153,6 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
-require_relative "Stack.rb"
 
 require_relative "Memoize.rb"
 
@@ -176,6 +175,7 @@ require_relative "PolyFunctions.rb"
 require_relative "PhysicalTargets.rb"
 
 require_relative "SectionsType0141.rb"
+require_relative "Stratification.rb"
 
 require_relative "TxCores.rb"
 require_relative "TmpSkip1.rb"

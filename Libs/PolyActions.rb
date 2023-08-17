@@ -72,6 +72,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             Waves::access(item)
             return
@@ -225,6 +229,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                BladesGI::destroy(item["uuid"])
+            end
+            return
+        end
+
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -305,6 +316,13 @@ class PolyActions
         if item["mikuType"] == "TxCore" then
             puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                BladesGI::destroy(item["uuid"])
+            end
             return
         end
 
@@ -394,6 +412,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
             return
         end
 

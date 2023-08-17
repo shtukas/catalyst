@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "specific types commands:",
             "    - OnDate  : redate",
             "              : sort",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates | priorities",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
@@ -128,21 +128,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Stack::add(item)
-            return
-        end
-
-        if Interpreting::match("stack *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Stack::add(item)
-            return
-        end
-
         if Interpreting::match("core", input) then
             item = store.getDefault()
             return if item.nil?
@@ -199,27 +184,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("pile", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Stratification::pile3(item)
+            return
+        end
+
         if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "You can only pile * a NxTask"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if item["parent"].nil? then
-                puts "Interestingly this item doesn't have a parent 🤔"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            parent = BladesGI::itemOrNull(item["parent"]["uuid"])
-            if parent.nil? then
-                puts "Interestingly the specified parent cannot be found 🤔"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Tx8s::pileAtThisParent(parent)
+            Stratification::pile3(item)
             return
         end
 
@@ -583,6 +559,7 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            Olivia::addItem(item)
             return
         end
 
