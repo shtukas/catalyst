@@ -315,6 +315,11 @@ class PolyActions
     # PolyActions::accessAndHopefullyDone(item)
     def self.accessAndHopefullyDone(item)
 
+        if item["mikuType"] == "NxAnniversary" then
+            PolyActions::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             PolyActions::access(item)
             return
@@ -392,7 +397,7 @@ class PolyActions
             return
         end
 
-        puts "I don't know how to double dot '#{item["mikuType"]}'"
+        puts "I don't know how to accessAndHopefullyDone '#{item["mikuType"]}'"
         LucilleCore::pressEnterToContinue()
     end
 
