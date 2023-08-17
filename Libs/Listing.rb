@@ -154,7 +154,7 @@ class Listing
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"
         }
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}#{prioritySuffix.call(item)}"
+        line = "#{storePrefix}#{prioritySuffix.call(item)} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -330,7 +330,6 @@ class Listing
             end
 
             items = Listing::items()
-            items = items.take(50)
             items = Stratification::prefixWithStratification(items)
             items
                 .each{|item|
