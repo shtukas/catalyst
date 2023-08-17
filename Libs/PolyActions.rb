@@ -88,7 +88,6 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        Olivia::removeItem(item)
 
         # Removing park, if any.
         item["parking"] = nil
@@ -244,7 +243,6 @@ class PolyActions
     def self.destroy(item)
 
         NxBalls::stop(item)
-        Olivia::removeItem(item)
 
         if Tx8s::childrenInOrder(item).size > 0 then
             puts "Found Tx8 children for '#{PolyFunctions::toString(item).green}'. Cannot be destroyed"

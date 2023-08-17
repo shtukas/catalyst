@@ -116,6 +116,7 @@ class Listing
 
         [
             NxBalls::runningItems(),
+            TxCores::activePriorityItemsInOrder(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
@@ -146,7 +147,8 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
         prioritySuffix = lambda{|item|
-            ratio = Catalyst::lessThanOnePriorityRatioOrNull(item)
+            return "" if !Catalyst::isActivePriorityItem(item)
+            ratio = Catalyst::priorityRatio(item)
             return nil if ratio.nil?
             percentage = 100*ratio
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"
@@ -328,8 +330,7 @@ class Listing
             end
 
             items = Listing::items()
-            items = Olivia::magic2(items)
-            items = CommonUtils::putFirst(items, lambda{|item| NxBalls::itemIsRunning(item) })
+            items = items.take(50)
             items = Stratification::prefixWithStratification(items)
             items
                 .each{|item|

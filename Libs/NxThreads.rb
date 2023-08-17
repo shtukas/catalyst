@@ -115,13 +115,6 @@ class NxThreads
             spacecontrol.putsline ""
 
             items = Tx8s::childrenInOrder(thread)
-
-            if items.any?{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) } then
-                items = items
-                    .select{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) }
-                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-            end
-
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))

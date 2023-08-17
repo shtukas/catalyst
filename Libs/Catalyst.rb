@@ -91,13 +91,16 @@ class Catalyst
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
 
-    # Catalyst::lessThanOnePriorityRatioOrNull(item)
-    def self.lessThanOnePriorityRatioOrNull(item)
-        return nil if item["priority"].nil?
-        return nil if !item["priority"]
+    # Catalyst::isActivePriorityItem(item)
+    def self.isActivePriorityItem(item)
+        return false if item["priority"].nil?
         ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
-        return nil if ratio >= 1
-        ratio
+        ratio < 1
+    end
+
+    # Catalyst::priorityRatio(item)
+    def self.priorityRatio(item)
+        Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
     end
 
     # Catalyst::editItem(item)

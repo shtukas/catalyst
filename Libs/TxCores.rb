@@ -90,32 +90,24 @@ class TxCores
 
     # TxCores::listingItems1(core)
     def self.listingItems1(core)
-        items = Tx8s::childrenInOrder(core)
-        if items.any?{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) } then
-            return items
-                .select{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) }
-                .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        else
-            return items # already sorted by unixtime
-        end
-    end
-
-    # TxCores::coreHasPriorityChildren(core)
-    def self.coreHasPriorityChildren(core)
         Tx8s::childrenInOrder(core)
-            .any?{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) }
     end
 
     # TxCores::coresForListing()
     def self.coresForListing()
-        if BladesGI::mikuType("TxCore").any?{|core| TxCores::coreHasPriorityChildren(core) } then
-            cores = BladesGI::mikuType("TxCore").select{|core| TxCores::coreHasPriorityChildren(core) }
-        else
-            cores = BladesGI::mikuType("TxCore")
-        end
-        cores
+        BladesGI::mikuType("TxCore")
             .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+    end
+
+    # TxCores::activePriorityItemsInOrder()
+    def self.activePriorityItemsInOrder()
+        BladesGI::mikuType("TxCore").map{|core|
+            Tx8s::childrenInOrder(core)
+                .select{|item| Catalyst::isActivePriorityItem(item) }
+        }
+        .flatten
+        .sort_by{|item| Catalyst::priorityRatio(item) }
     end
 
     # -----------------------------------------------

@@ -9,9 +9,8 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate",
-            "              : sort",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | booster | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates | priorities",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
         ].join("\n")
@@ -85,14 +84,6 @@ class ListingCommandsAndInterpreters
                 tx8 = Tx8s::make(core["uuid"], 0)
                 BladesGI::setAttribute2(item["uuid"], "parent", tx8)
             end
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            stack = Olivia::getStack()
-            selected, unselected = LucilleCore::selectZeroOrMore("items", [], stack, lambda{|item| PolyFunctions::toString(item) })
-            stack = selected + unselected
-            Olivia::putStack(stack)
             return
         end
 
@@ -238,22 +229,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             BladesGI::setAttribute2(item["uuid"], "priority", false)
-            return
-        end
-
-        if Interpreting::match("priorities", input) then
-            BladesGI::mikuType("TxCore")
-                .select{|core| TxCores::coreHasPriorityChildren(core) }
-                .each{|core|
-                    puts ""
-                    puts PolyFunctions::toString(core)
-                    Tx8s::childrenInOrder(core)
-                        .select{|item| Catalyst::lessThanOnePriorityRatioOrNull(item) }
-                        .each{|item|
-                            puts "    - #{PolyFunctions::toString(item)}"
-                        }
-                }
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -532,7 +507,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::stop(item)
-            Olivia::removeItem(item)
             return
         end
 
@@ -541,7 +515,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::stop(item)
-            Olivia::removeItem(item)
             return
         end
 
@@ -559,7 +532,6 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Olivia::addItem(item)
             return
         end
 
