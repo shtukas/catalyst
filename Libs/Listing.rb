@@ -116,12 +116,12 @@ class Listing
 
         [
             NxBalls::runningItems(),
-            TxCores::activePriorityItemsInOrder(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
+            TxCores::activePriorityItemsInOrder(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             BladesGI::mikuType("NxDelegate").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
