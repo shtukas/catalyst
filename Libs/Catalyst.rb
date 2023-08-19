@@ -26,16 +26,6 @@ class Catalyst
             .flatten
     end
 
-    # Catalyst::fsck()
-    def self.fsck()
-        Waves::fsck()
-        NxTasks::fsck()
-        NxOndates::fsck()
-        Cubes::mikuType("NxIce").each{|item|
-            CoreDataRefStrings::fsck(item)
-        }
-    end
-
     # Catalyst::selectChildUnderneathParentOrNull(parent = nil)
     def self.selectChildUnderneathParentOrNull(parent = nil)
 
