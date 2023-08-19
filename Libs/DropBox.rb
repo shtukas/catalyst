@@ -5,8 +5,8 @@ class DropBox
     def self.locationToItem(location)
         uuid = File.basename(location)
         {
-            "uuid" => uuid,
-            "mikuType" => "DropBox",
+            "uuid"        => uuid,
+            "mikuType"    => "DropBox",
             "description" => "(DropBox) #{IO.read(location).strip}"
         }
     end
@@ -14,7 +14,7 @@ class DropBox
     # DropBox::items()
     def self.items()
         LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/DropBox")
-            .select{|location| File.basename(location)[-9, 9] == ".drop.txt" }
+            .select{|location| File.basename(location)[-9, 9] == ".txt" }
             .map{|location| DropBox::locationToItem(location)}
     end
 
