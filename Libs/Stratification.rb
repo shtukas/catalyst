@@ -7,11 +7,11 @@ class Stratification
     def self.issue(line, bottom)
         description = line
         uuid = SecureRandom.uuid
-        BladesGI::init("NxStrat", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "bottom", bottom)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxStrat", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "bottom", bottom)
+        Cubes::itemOrNull(uuid)
     end
 
     # Stratification::toString(item)
@@ -21,7 +21,7 @@ class Stratification
 
     # Stratification::getParentOrNull(item)
     def self.getParentOrNull(item)
-        BladesGI::mikuType("NxStrat")
+        Cubes::mikuType("NxStrat")
             .select{|i| i["bottom"] == item["uuid"] }
             .first
     end

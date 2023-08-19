@@ -22,7 +22,7 @@ class NxBackups
 
     # NxBackups::getItemByOperationOrNull(operation)
     def self.getItemByOperationOrNull(operation)
-        BladesGI::mikuType("NxBackup")
+        Cubes::mikuType("NxBackup")
             .select{|item|
                 item["description"] == operation
             }
@@ -48,23 +48,23 @@ class NxBackups
                 item = NxBackups::getItemByOperationOrNull(instruction["operation"])
                 if item then
                     if item["periodInDays"] != instruction["periodInDays"] then
-                        BladesGI::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
+                        Cubes::setAttribute2(item["uuid"], "periodInDays", instruction["periodInDays"])
                     end
                 else
                     uuid  = SecureRandom.uuid
-                    BladesGI::init("NxBackup", uuid)
-                    BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-                    BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-                    BladesGI::setAttribute2(uuid, "description", instruction["operation"])
-                    BladesGI::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
-                    BladesGI::setAttribute2(uuid, "lastDoneUnixtime", 0)
+                    Cubes::init("NxBackup", uuid)
+                    Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+                    Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+                    Cubes::setAttribute2(uuid, "description", instruction["operation"])
+                    Cubes::setAttribute2(uuid, "periodInDays", instruction["periodInDays"])
+                    Cubes::setAttribute2(uuid, "lastDoneUnixtime", 0)
                 end
             }
 
         # In the second stage we are checking that each item has a corresponsing instruction
-        BladesGI::mikuType("NxBackup")
+        Cubes::mikuType("NxBackup")
             .select{|item| NxBackups::getInstructionByOperationOrNull(item["description"]).nil? }
-            .each{|item| BladesGI::destroy(item["uuid"]) }
+            .each{|item| Cubes::destroy(item["uuid"]) }
     end
 
     # NxBackups::toString(item)
@@ -74,13 +74,13 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        BladesGI::mikuType("NxBackup")
+        Cubes::mikuType("NxBackup")
             .select{|item| Time.new.to_i >= (item["lastDoneUnixtime"] + item["periodInDays"]*86400) }
     end
 
     # NxBackups::performDone(item)
     def self.performDone(item)
-        BladesGI::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Cubes::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
     end
 
     # NxBackups::program(item)

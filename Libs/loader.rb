@@ -55,7 +55,6 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/Cubes.rb"
 
-require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/BladesGI.rb"
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/CoreDataRefStrings.rb"
 
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/LucilleCore.rb"
@@ -179,9 +178,5 @@ require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
 
 require_relative "Waves.rb"
-
-# ------------------------------------------------------------
-
-$memoize_semaphore_1 = Mutex.new
 
 # ------------------------------------------------------------

@@ -5,11 +5,11 @@ class NxLines
     def self.issue(line)
         description = line
         uuid = SecureRandom.uuid
-        BladesGI::init("NxLine", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxLine", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxLines::toString(item)

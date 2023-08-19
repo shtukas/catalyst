@@ -22,7 +22,7 @@ class Catalyst
     # Catalyst::catalystItems()
     def self.catalystItems()
         Catalyst::mikuTypes()
-            .map{|mikuType| BladesGI::mikuType(mikuType) }
+            .map{|mikuType| Cubes::mikuType(mikuType) }
             .flatten
     end
 
@@ -31,7 +31,7 @@ class Catalyst
         Waves::fsck()
         NxTasks::fsck()
         NxOndates::fsck()
-        BladesGI::mikuType("NxIce").each{|item|
+        Cubes::mikuType("NxIce").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end
@@ -60,14 +60,14 @@ class Catalyst
                     itemuuid = SecureRandom.uuid
                     File.open(markerfilepath, "w"){|f| f.write(itemuuid) }
                 end
-                next if BladesGI::itemOrNull(itemuuid)
+                next if Cubes::itemOrNull(itemuuid)
                 item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: dir) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
 
             if File.file?(location) then
                 itemuuid = Digest::SHA1.hexdigest("#{locationname}:c54c9b05-c914-4df5-b77a-6e72f2d43cf7")
-                next if BladesGI::itemOrNull(itemuuid)
+                next if Cubes::itemOrNull(itemuuid)
                 item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: file) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
@@ -107,7 +107,7 @@ class Catalyst
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
-            BladesGI::setAttribute2(item["uuid"], key, value)
+            Cubes::setAttribute2(item["uuid"], key, value)
         }
     end
 end

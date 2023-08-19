@@ -26,13 +26,13 @@ class Tx8s
     # Tx8s::repositionItemAtSameParent(item)
     def self.repositionItemAtSameParent(item)
         return if item["parent"].nil?
-        parent = BladesGI::itemOrNull(item["parent"]["uuid"])
+        parent = Cubes::itemOrNull(item["parent"]["uuid"])
         return if parent.nil?
         tx8 = item["parent"]
         position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
         return if position.nil?
         tx8["position"] = position
-        BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+        Cubes::setAttribute2(item["uuid"], "parent", tx8)
     end
 
     # Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
@@ -131,11 +131,11 @@ class Tx8s
         sorted.each_with_index{|i, indx|
             i["parent"]["position"] = indx+1
             puts JSON.pretty_generate(i)
-            BladesGI::setAttribute2(i["uuid"], "parent", i["parent"])
+            Cubes::setAttribute2(i["uuid"], "parent", i["parent"])
         }
 
         garbageCollected.each{|i|
-            BladesGI::destroy(i["uuid"])
+            Cubes::destroy(i["uuid"])
         }
     end
 
@@ -172,13 +172,13 @@ class Tx8s
     def self.interactivelyPlaceItemAtParentAttempt(item, parent)
         tx8 = Tx8s::interactivelyMakeTx8AtParentOrNull(parent)
         return if tx8.nil?
-        BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+        Cubes::setAttribute2(item["uuid"], "parent", tx8)
     end
 
     # Tx8s::getParentOrNull(item)
     def self.getParentOrNull(item)
         return nil if item["parent"].nil?
-        BladesGI::itemOrNull(item["parent"]["uuid"])
+        Cubes::itemOrNull(item["parent"]["uuid"])
     end
 
     # Tx8s::positionInParentSuffix(item)
@@ -196,14 +196,14 @@ class Tx8s
             next if t1.nil?
             t1["parent"] = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
             puts JSON.pretty_generate(t1)
-            BladesGI::setAttribute2(t1["uuid"], "parent", t1["parent"])
+            Cubes::setAttribute2(t1["uuid"], "parent", t1["parent"])
         }
     end
 
     # Tx8s::suffix(item)
     def self.suffix(item)
         return "" if item["parent"].nil?
-        parent = BladesGI::itemOrNull(item["parent"]["uuid"])
+        parent = Cubes::itemOrNull(item["parent"]["uuid"])
         return "" if parent.nil?
         " (#{parent["description"]})"
     end
@@ -223,7 +223,7 @@ class Tx8s
     def self.move(item, parent = nil)
         
         if item["mikuType"] == "NxOndate" then
-            BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
+            Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
         end
 
         if parent.nil? then
@@ -245,7 +245,7 @@ class Tx8s
             position = Tx8s::decide1020position(parent)
             tx8 = Tx8s::make(parent["uuid"], position)
             puts JSON.pretty_generate(tx8)
-            BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+            Cubes::setAttribute2(item["uuid"], "parent", tx8)
         end
     end
 end

@@ -124,9 +124,9 @@ class Listing
             TxCores::activePriorityItemsInOrder(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            BladesGI::mikuType("NxDelegate").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
-            BladesGI::mikuType("NxTask").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
-            BladesGI::mikuType("NxThread").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
+            Cubes::mikuType("NxDelegate").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
+            Cubes::mikuType("NxTask").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
+            Cubes::mikuType("NxThread").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             cores.map{|core| TxCores::listingItems1(core) },
         ]
             .flatten
@@ -196,7 +196,7 @@ class Listing
         Listing::maintenance()
         spot.end_unit()
 
-        cores = BladesGI::mikuType("TxCore")
+        cores = Cubes::mikuType("TxCore")
         spot.start_unit("Listing::items()")
         items = Listing::items()
         spot.end_unit()
@@ -216,7 +216,7 @@ class Listing
             NxThreads::maintenance2()
             TxCores::maintenance2()
             NxDelegates::maintenance()
-            BladesGx::scan_merge()
+            CUtils3X::scan_merge()
             Catalyst::maintenance()
         end
     end
@@ -257,14 +257,6 @@ class Listing
             }
         }
 
-        Thread.new {
-            loop {
-                sleep 60
-                BladesGx::loadInMemoryData()
-                sleep 240
-            }
-        }
-
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -283,7 +275,7 @@ class Listing
 
             spacecontrol.putsline ""
 
-            directives = BladesGI::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
+            directives = Cubes::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
             if directives.size > 0 then
                 directives
                     .each{|item|

@@ -12,7 +12,7 @@ class PolyFunctions
         }
 
         if item["parent"] then
-            parent = BladesGI::itemOrNull(item["parent"]["uuid"])
+            parent = Cubes::itemOrNull(item["parent"]["uuid"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
@@ -26,7 +26,7 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxStrat" then
-            b = BladesGI::itemOrNull(item["bottom"])
+            b = Cubes::itemOrNull(item["bottom"])
             if b then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(b)
             end

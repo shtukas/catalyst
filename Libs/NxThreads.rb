@@ -8,11 +8,11 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        BladesGI::init("NxThread", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxThread", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxThreads::interactivelyIssueNewAtParentOrNull(parent)
@@ -21,18 +21,18 @@ class NxThreads
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        BladesGI::init("NxThread", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
+        Cubes::init("NxThread", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
 
         position = Tx8s::interactivelyDecidePositionUnderThisParentOrNull(parent)
         if position then
             tx8 = Tx8s::make(parent["uuid"], position)
-            BladesGI::setAttribute2(uuid, "parent", tx8)
+            Cubes::setAttribute2(uuid, "parent", tx8)
         end
 
-        BladesGI::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------------------------
@@ -45,12 +45,12 @@ class NxThreads
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        threads1 = BladesGI::mikuType("NxThread").select{|thread| thread["parent"].nil? }
+        threads1 = Cubes::mikuType("NxThread").select{|thread| thread["parent"].nil? }
 
-        threads2 = BladesGI::mikuType("TxCore")
+        threads2 = Cubes::mikuType("TxCore")
                     .sort_by{|core| Catalyst::listingCompletionRatio(core) }
                     .map{|core|
-                        BladesGI::mikuType("NxThread")
+                        Cubes::mikuType("NxThread")
                             .select{|thread| thread["parent"] and thread["parent"]["uuid"] == core["uuid"] }
                             .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
                     }
@@ -63,7 +63,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectThreadChildOfThisThreadOrNull(thread)
     def self.interactivelySelectThreadChildOfThisThreadOrNull(thread)
-        threads = BladesGI::mikuType("NxThread")
+        threads = Cubes::mikuType("NxThread")
                     .select{|item| item["parent"] and item["parent"]["uuid"] == thread["uuid"] }
                     .sort_by{|thread| Catalyst::listingCompletionRatio(thread) }
         padding = threads.map{|item| NxThreads::toString(item).size }.max
@@ -79,7 +79,7 @@ class NxThreads
 
     # NxThreads::orphanItems()
     def self.orphanItems()
-        BladesGI::mikuType("NxThread")
+        Cubes::mikuType("NxThread")
             .select{|item| item["parent"].nil? }
     end
 
@@ -89,10 +89,10 @@ class NxThreads
     # NxThreads::maintenance2()
     def self.maintenance2()
         # Ensuring consistency of parenting targets
-        BladesGI::mikuType("NxTask").each{|item|
+        Cubes::mikuType("NxTask").each{|item|
             next if item["parent"].nil?
-            if BladesGI::itemOrNull(item["parent"]["uuid"]).nil? then
-                BladesGI::setAttribute2(uuid, "parent", nil)
+            if Cubes::itemOrNull(item["parent"]["uuid"]).nil? then
+                Cubes::setAttribute2(uuid, "parent", nil)
             end
         }
     end
@@ -101,7 +101,7 @@ class NxThreads
     def self.program1(thread)
         loop {
 
-            thread = BladesGI::itemOrNull(thread["uuid"])
+            thread = Cubes::itemOrNull(thread["uuid"])
             return if thread.nil?
 
             system("clear")
@@ -161,7 +161,7 @@ class NxThreads
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     tx8 = Tx8s::make(thread["uuid"], Tx8s::newFirstPositionAtThisParent(thread))
-                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                    Cubes::setAttribute2(item["uuid"], "parent", tx8)
                 }
             end
 
@@ -173,7 +173,7 @@ class NxThreads
                 next if parent.nil?
                 selected.reverse.each{|item|
                     tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                    Cubes::setAttribute2(item["uuid"], "parent", tx8)
                 }
             end
 

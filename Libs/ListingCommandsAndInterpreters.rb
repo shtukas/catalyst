@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | blades:mikuTypes | edit <n> | reschedule",
+            "misc          : search | speed | commands | edit <n> | reschedule",
         ].join("\n")
     end
 
@@ -82,14 +82,8 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             if core then
                 tx8 = Tx8s::make(core["uuid"], 0)
-                BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                Cubes::setAttribute2(item["uuid"], "parent", tx8)
             end
-            return
-        end
-
-        if Interpreting::match("blades:mikutypes", input) then
-            puts JSON.pretty_generate(BladesGI::all().map{|item| item["mikuType"] }.uniq.sort)
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -97,9 +91,9 @@ class ListingCommandsAndInterpreters
             title = LucilleCore::askQuestionAnswerAsString("title: ")
             task = NxTasks::descriptionToTask("netflix: #{title}")
             parentuuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
-            parent = BladesGI::itemOrNull(parentuuid)
+            parent = Cubes::itemOrNull(parentuuid)
             tx8 = Tx8s::make(parentuuid, Tx8s::nextPositionAtThisParent(parent))
-            BladesGI::setAttribute2(task["uuid"], "parent", tx8)
+            Cubes::setAttribute2(task["uuid"], "parent", tx8)
             return
         end
 
@@ -144,7 +138,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            BladesGI::setAttribute2(item["uuid"], "parent", nil)
+            Cubes::setAttribute2(item["uuid"], "parent", nil)
             return
         end
 
@@ -219,10 +213,10 @@ class ListingCommandsAndInterpreters
                     "type"  => "deadline",
                     "date"  => date
                 }
-                BladesGI::setAttribute2(item["uuid"], "priority", priority)
+                Cubes::setAttribute2(item["uuid"], "priority", priority)
             end
             if option == "remove priority" then
-                BladesGI::setAttribute2(item["uuid"], "priority", nil)
+                Cubes::setAttribute2(item["uuid"], "priority", nil)
             end
             return
         end
@@ -289,7 +283,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            BladesGI::setAttribute2(item["uuid"], "field11", reference)
+            Cubes::setAttribute2(item["uuid"], "field11", reference)
             return
         end
 
@@ -299,7 +293,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            BladesGI::setAttribute2(item["uuid"], "field11", reference)
+            Cubes::setAttribute2(item["uuid"], "field11", reference)
             return
         end
 
@@ -533,7 +527,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            BladesGI::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            Cubes::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

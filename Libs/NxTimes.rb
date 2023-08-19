@@ -4,12 +4,12 @@ class NxTimes
     # NxTimes::issue(time, description)
     def self.issue(time, description)
         uuid = SecureRandom.uuid
-        BladesGI::init("NxTime", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "time", time)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxTime", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "time", time)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTimes::toString(item)
@@ -19,7 +19,7 @@ class NxTimes
 
     # NxTimes::listingItems()
     def self.listingItems()
-        BladesGI::mikuType("NxTime")
+        Cubes::mikuType("NxTime")
             .sort_by{|item| item["time"] }
     end
 
@@ -30,27 +30,27 @@ class NxTimes
 
     # NxTimes::itemsWithPendingTime()
     def self.itemsWithPendingTime()
-        BladesGI::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
+        Cubes::mikuType("NxTime").any?{|item| NxTimes::isPending(item) }
     end
 
     # NxTimes::reschedule()
     def self.reschedule()
         puts "@reschedule:"
-        BladesGI::mikuType("NxTime")
+        Cubes::mikuType("NxTime")
             .sort_by{|item| item["time"] }
             .each{|item|
                 puts "    - #{NxTimes::toString(item)}"
             }
         puts "@reschedule:"
-        BladesGI::mikuType("NxTime")
+        Cubes::mikuType("NxTime")
             .sort_by{|item| item["time"] }
             .each{|item|
                 time = LucilleCore::askQuestionAnswerAsString("time for '#{NxTimes::toString(item).green}' (or remove) : ")
                 if time == "remove" then
-                    BladesGI::destroy(item["uuid"])
+                    Cubes::destroy(item["uuid"])
                     next
                 end
-                BladesGI::setAttribute2(item["uuid"], "time", time)
+                Cubes::setAttribute2(item["uuid"], "time", time)
             }
     end
 

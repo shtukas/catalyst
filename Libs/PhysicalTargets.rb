@@ -11,13 +11,13 @@ class PhysicalTargets
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
-        BladesGI::init("PhysicalTarget", uuid)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "dailyTarget", dailyTarget)
-        BladesGI::setAttribute2(uuid, "date", CommonUtils::today())
-        BladesGI::setAttribute2(uuid, "counter", 0)
-        BladesGI::setAttribute2(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("PhysicalTarget", uuid)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "dailyTarget", dailyTarget)
+        Cubes::setAttribute2(uuid, "date", CommonUtils::today())
+        Cubes::setAttribute2(uuid, "counter", 0)
+        Cubes::setAttribute2(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
+        Cubes::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------
@@ -30,13 +30,13 @@ class PhysicalTargets
 
     # PhysicalTargets::listingItems()
     def self.listingItems()
-        BladesGI::mikuType("PhysicalTarget").each{|item|
+        Cubes::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
-                BladesGI::setAttribute2(item["uuid"], "date", CommonUtils::today())
-                BladesGI::setAttribute2(item["uuid"], "counter", 0)
+                Cubes::setAttribute2(item["uuid"], "date", CommonUtils::today())
+                Cubes::setAttribute2(item["uuid"], "counter", 0)
             end
         }
-        BladesGI::mikuType("PhysicalTarget")
+        Cubes::mikuType("PhysicalTarget")
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
             .map{|item|
@@ -52,8 +52,8 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        BladesGI::setAttribute2(item["uuid"], "counter", count + item["counter"])
-        BladesGI::setAttribute2(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
+        Cubes::setAttribute2(item["uuid"], "counter", count + item["counter"])
+        Cubes::setAttribute2(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
     # PhysicalTargets::access(item)

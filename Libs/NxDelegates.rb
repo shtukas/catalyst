@@ -5,11 +5,11 @@ class NxDelegates
     def self.issue(line)
         description = line
         uuid = SecureRandom.uuid
-        BladesGI::init("NxDelegate", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxDelegate", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxDelegates::interactivelyIssueNewOrNull()
@@ -26,7 +26,7 @@ class NxDelegates
         tx8 = Tx8s::make(parent["uuid"], position)
         delegate = NxDelegates::interactivelyIssueNewOrNull()
         return nil if delegate.nil?
-        BladesGI::setAttribute2(delegate["uuid"], "parent", tx8)
+        Cubes::setAttribute2(delegate["uuid"], "parent", tx8)
     end
 
     # NxDelegates::toString(item)
@@ -36,16 +36,16 @@ class NxDelegates
 
     # NxDelegates::listingItems()
     def self.listingItems()
-        BladesGI::mikuType("NxDelegate")
+        Cubes::mikuType("NxDelegate")
     end
 
     # NxDelegates::maintenance()
     def self.maintenance()
-        BladesGI::mikuType("NxDelegate")
+        Cubes::mikuType("NxDelegate")
             .each{|delegate| 
                 next if delegate["parent"].nil?
-                if BladesGI::itemOrNull(delegate["parent"]["uuid"]).nil? then
-                    BladesGI::setAttribute2(delegate["uuid"], "parent", nil)
+                if Cubes::itemOrNull(delegate["parent"]["uuid"]).nil? then
+                    Cubes::setAttribute2(delegate["uuid"], "parent", nil)
                 end
             }
     end
@@ -53,7 +53,7 @@ class NxDelegates
     # NxDelegates::program1()
     def self.program1()
         loop {
-            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", BladesGI::mikuType("NxDelegate"), lambda{|delegate| NxDelegates::toString(delegate) })
+            delegate = LucilleCore::selectEntityFromListOfEntitiesOrNull("delegate", Cubes::mikuType("NxDelegate"), lambda{|delegate| NxDelegates::toString(delegate) })
             return if delegate.nil?
             puts JSON.pretty_generate(delegate)
             PolyActions::access(delegate)

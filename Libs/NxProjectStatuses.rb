@@ -7,12 +7,12 @@ class NxProjectStatuses
         return nil if description == ""
         text = CommonUtils::editTextSynchronously("")
         uuid = SecureRandom.uuid
-        BladesGI::init("NxProjectStatus", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "text", text)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxProjectStatus", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "text", text)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxProjectStatuses::toString(item)
@@ -23,19 +23,19 @@ class NxProjectStatuses
 
     # NxProjectStatuses::listingItems()
     def self.listingItems()
-        BladesGI::mikuType("NxProjectStatus")
+        Cubes::mikuType("NxProjectStatus")
     end
 
     # NxProjectStatuses::program2(item)
     def self.program2(item)
         text = CommonUtils::editTextSynchronously(item["text"])
-        BladesGI::setAttribute2(item["uuid"], "text", text)
+        Cubes::setAttribute2(item["uuid"], "text", text)
     end
 
     # NxProjectStatuses::program1()
     def self.program1()
         loop {
-            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", BladesGI::mikuType("NxProjectStatus"), lambda{|item| NxProjectStatuses::toString(item) })
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", Cubes::mikuType("NxProjectStatus"), lambda{|item| NxProjectStatuses::toString(item) })
             return if item.nil?
             NxProjectStatuses::program2(item)
         }

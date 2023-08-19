@@ -15,16 +15,16 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        BladesGI::init("NxTask", uuid)
+        Cubes::init("NxTask", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "field11", coredataref)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "field11", coredataref)
 
-        BladesGI::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::interactivelyIssueNewAtParentOrNull(parent)
@@ -41,17 +41,17 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        BladesGI::init("NxTask", uuid)
+        Cubes::init("NxTask", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "field11", coredataref)
-        BladesGI::setAttribute2(uuid, "parent", tx8)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "field11", coredataref)
+        Cubes::setAttribute2(uuid, "parent", tx8)
 
-        BladesGI::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::urlToTask(url)
@@ -59,16 +59,16 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        BladesGI::init("NxTask", uuid)
+        Cubes::init("NxTask", uuid)
 
-        nhash = BladesGI::putDatablob2(uuid, url)
+        nhash = Cubes::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
 
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "field11", coredataref)
-        BladesGI::itemOrNull(uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "field11", coredataref)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::locationToTask(location)
@@ -76,34 +76,34 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        BladesGI::init("NxTask", uuid)
+        Cubes::init("NxTask", uuid)
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::setAttribute2(uuid, "field11", coredataref)
-        BladesGI::itemOrNull(uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "field11", coredataref)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask(description)
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
-        BladesGI::init("NxTask", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxTask", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask_vX(uuid, description)
     def self.descriptionToTask_vX(uuid, description)
-        BladesGI::init("NxTask", uuid)
-        BladesGI::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        BladesGI::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        BladesGI::setAttribute2(uuid, "description", description)
-        BladesGI::itemOrNull(uuid)
+        Cubes::init("NxTask", uuid)
+        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute2(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -116,7 +116,7 @@ class NxTasks
 
     # NxTasks::orphanItems()
     def self.orphanItems()
-        BladesGI::mikuType("NxTask")
+        Cubes::mikuType("NxTask")
             .select{|item| item["parent"].nil? }
     end
 
@@ -133,7 +133,7 @@ class NxTasks
             puts JSON.pretty_generate(t1)
             t1["parent"] = Tx8s::make(task["uuid"], Tx8s::newFirstPositionAtThisParent(task))
             puts JSON.pretty_generate(t1)
-            BladesGI::setAttribute2(t1["uuid"], "parent", t1["parent"])
+            Cubes::setAttribute2(t1["uuid"], "parent", t1["parent"])
         }
     end
 
@@ -145,10 +145,10 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
         # Ensuring consistency of task parenting targets
-        BladesGI::mikuType("NxTask").each{|task|
+        Cubes::mikuType("NxTask").each{|task|
             next if task["parent"].nil?
-            if BladesGI::itemOrNull(task["parent"]["uuid"]).nil? then
-                BladesGI::setAttribute2(uuid, "parent", nil)
+            if Cubes::itemOrNull(task["parent"]["uuid"]).nil? then
+                Cubes::setAttribute2(uuid, "parent", nil)
             end
         }
 
@@ -159,20 +159,20 @@ class NxTasks
         }
 
         # Feed Infinity using NxIce
-        if BladesGI::mikuType("NxTask").size < 100 then
-            BladesGI::mikuType("NxIce").take(10).each{|item|
+        if Cubes::mikuType("NxTask").size < 100 then
+            Cubes::mikuType("NxIce").take(10).each{|item|
                 item["mikuType"] == "NxTask"
-                BladesGI::setAttribute2(item["uuid"], "mikuType", "NxTask")
-                core = BladesGI::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22") # Infinity Core
+                Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
+                core = Cubes::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22") # Infinity Core
                 tx8 = Tx8s::make(parent["uuid"], Tx8s::nextPositionAtThisParent(core))
-                BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                Cubes::setAttribute2(item["uuid"], "parent", tx8)
             }
         end
     end
 
     # NxTasks::fsck()
     def self.fsck()
-        BladesGI::mikuType("NxTask").each{|item|
+        Cubes::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

@@ -29,9 +29,9 @@ class TxCores
     # TxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         core = TxCores::interactivelyMakeOrNull()
-        BladesGI::init(core["mikuType"], core["uuid"])
+        Cubes::init(core["mikuType"], core["uuid"])
         core.to_a.each{|key, value|
-            BladesGI::setAttribute2(core["uuid"], key, value)
+            Cubes::setAttribute2(core["uuid"], key, value)
         }
     end
 
@@ -83,7 +83,7 @@ class TxCores
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = BladesGI::mikuType("TxCore")
+        cores = Cubes::mikuType("TxCore")
                     .sort_by {|core| Catalyst::listingCompletionRatio(core) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
@@ -95,14 +95,14 @@ class TxCores
 
     # TxCores::coresForListing()
     def self.coresForListing()
-        BladesGI::mikuType("TxCore")
+        Cubes::mikuType("TxCore")
             .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
     # TxCores::activePriorityItemsInOrder()
     def self.activePriorityItemsInOrder()
-        BladesGI::mikuType("TxCore").map{|core|
+        Cubes::mikuType("TxCore").map{|core|
             Tx8s::childrenInOrder(core)
                 .select{|item| Catalyst::isActivePriorityItem(item) }
         }
@@ -128,8 +128,8 @@ class TxCores
             end
         end
         core["lastResetTime"] = Time.new.to_i
-        BladesGI::setAttribute2(core["uuid"], "hours", core["hours"])
-        BladesGI::setAttribute2(core["uuid"], "lastResetTime", core["lastResetTime"])
+        Cubes::setAttribute2(core["uuid"], "hours", core["hours"])
+        Cubes::setAttribute2(core["uuid"], "lastResetTime", core["lastResetTime"])
     end
 
     # TxCores::maintenance3(core)
@@ -141,7 +141,7 @@ class TxCores
             elements.each{|element|
                 tx8 = element["parent"]
                 tx8["position"] = tx8["position"] + (-min)
-                BladesGI::setAttribute2(element["uuid"], "parent", tx8)
+                Cubes::setAttribute2(element["uuid"], "parent", tx8)
             }
             return
         end
@@ -149,7 +149,7 @@ class TxCores
             elements.each{|element|
                 tx8 = element["parent"]
                 tx8["position"] = tx8["position"] - min
-                BladesGI::setAttribute2(element["uuid"], "parent", tx8)
+                Cubes::setAttribute2(element["uuid"], "parent", tx8)
             }
             return
         end
@@ -157,15 +157,15 @@ class TxCores
 
     # TxCores::maintenance2()
     def self.maintenance2()
-        BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
-        BladesGI::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
+        Cubes::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
+        Cubes::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
     end
 
     # TxCores::program1(core)
     def self.program1(core)
         loop {
 
-            core = BladesGI::itemOrNull(core["uuid"])
+            core = Cubes::itemOrNull(core["uuid"])
             return if core.nil?
 
             system("clear")
@@ -224,7 +224,7 @@ class TxCores
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     tx8 = Tx8s::make(core["uuid"], Tx8s::newFirstPositionAtThisParent(core))
-                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                    Cubes::setAttribute2(item["uuid"], "parent", tx8)
                 }
             end
 
@@ -236,7 +236,7 @@ class TxCores
                 next if parent.nil?
                 selected.reverse.each{|item|
                     tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-                    BladesGI::setAttribute2(item["uuid"], "parent", tx8)
+                    Cubes::setAttribute2(item["uuid"], "parent", tx8)
                 }
             end
 
