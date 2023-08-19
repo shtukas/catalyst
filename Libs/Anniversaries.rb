@@ -107,7 +107,7 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Cubes::init("NxAnniversary", uuid)
+        Cubes::init(nil, "NxAnniversary", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)

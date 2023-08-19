@@ -7,7 +7,7 @@ class NxProjectStatuses
         return nil if description == ""
         text = CommonUtils::editTextSynchronously("")
         uuid = SecureRandom.uuid
-        Cubes::init("NxProjectStatus", uuid)
+        Cubes::init(nil, "NxProjectStatus", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)

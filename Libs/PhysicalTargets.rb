@@ -11,7 +11,7 @@ class PhysicalTargets
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
-        Cubes::init("PhysicalTarget", uuid)
+        Cubes::init(nil, "PhysicalTarget", uuid)
         Cubes::setAttribute2(uuid, "description", description)
         Cubes::setAttribute2(uuid, "dailyTarget", dailyTarget)
         Cubes::setAttribute2(uuid, "date", CommonUtils::today())

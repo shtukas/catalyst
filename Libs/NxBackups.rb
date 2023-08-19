@@ -52,7 +52,7 @@ class NxBackups
                     end
                 else
                     uuid  = SecureRandom.uuid
-                    Cubes::init("NxBackup", uuid)
+                    Cubes::init(nil, "NxBackup", uuid)
                     Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
                     Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
                     Cubes::setAttribute2(uuid, "description", instruction["operation"])

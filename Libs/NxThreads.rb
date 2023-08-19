@@ -8,7 +8,7 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Cubes::init("NxThread", uuid)
+        Cubes::init(nil, "NxThread", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)
@@ -21,7 +21,7 @@ class NxThreads
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        Cubes::init("NxThread", uuid)
+        Cubes::init(nil, "NxThread", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)

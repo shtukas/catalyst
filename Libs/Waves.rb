@@ -114,7 +114,7 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        Cubes::init("Wave", uuid)
+        Cubes::init(nil, "Wave", uuid)
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)

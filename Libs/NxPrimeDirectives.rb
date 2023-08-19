@@ -4,7 +4,7 @@ class NxPrimeDirectives
     # NxPrimeDirectives::issue(description)
     def self.issue(description)
         uuid = SecureRandom.uuid
-        Cubes::init("NxPrimeDirective", uuid)
+        Cubes::init(nil, "NxPrimeDirective", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)

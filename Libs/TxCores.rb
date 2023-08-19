@@ -29,7 +29,7 @@ class TxCores
     # TxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         core = TxCores::interactivelyMakeOrNull()
-        Cubes::init(core["mikuType"], core["uuid"])
+        Cubes::init(nil, core["mikuType"], core["uuid"])
         core.to_a.each{|key, value|
             Cubes::setAttribute2(core["uuid"], key, value)
         }

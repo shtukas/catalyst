@@ -15,7 +15,7 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        Cubes::init("NxTask", uuid)
+        Cubes::init(nil, "NxTask", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
@@ -41,7 +41,7 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        Cubes::init("NxTask", uuid)
+        Cubes::init(nil, "NxTask", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
@@ -59,7 +59,7 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Cubes::init("NxTask", uuid)
+        Cubes::init(nil, "NxTask", uuid)
 
         nhash = Cubes::putDatablob2(uuid, url)
         coredataref = "url:#{nhash}"
@@ -76,7 +76,7 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Cubes::init("NxTask", uuid)
+        Cubes::init(nil, "NxTask", uuid)
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
@@ -90,7 +90,7 @@ class NxTasks
     # NxTasks::descriptionToTask(description)
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
-        Cubes::init("NxTask", uuid)
+        Cubes::init(nil, "NxTask", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)
@@ -99,7 +99,7 @@ class NxTasks
 
     # NxTasks::descriptionToTask_vX(uuid, description)
     def self.descriptionToTask_vX(uuid, description)
-        Cubes::init("NxTask", uuid)
+        Cubes::init(nil, "NxTask", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)

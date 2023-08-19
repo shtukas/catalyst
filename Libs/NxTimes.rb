@@ -4,7 +4,7 @@ class NxTimes
     # NxTimes::issue(time, description)
     def self.issue(time, description)
         uuid = SecureRandom.uuid
-        Cubes::init("NxTime", uuid)
+        Cubes::init(nil, "NxTime", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "time", time)

@@ -7,7 +7,7 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Cubes::init("NxOndate", uuid)
+        Cubes::init(nil, "NxOndate", uuid)
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", datetime)
@@ -21,7 +21,7 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        Cubes::init("NxOndate", uuid)
+        Cubes::init(nil, "NxOndate", uuid)
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)

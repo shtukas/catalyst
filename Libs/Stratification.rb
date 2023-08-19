@@ -7,7 +7,7 @@ class Stratification
     def self.issue(line, bottom)
         description = line
         uuid = SecureRandom.uuid
-        Cubes::init("NxStrat", uuid)
+        Cubes::init(nil, "NxStrat", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "description", description)
         Cubes::setAttribute2(uuid, "bottom", bottom)
