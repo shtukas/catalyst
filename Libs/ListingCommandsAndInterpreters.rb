@@ -8,7 +8,7 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | stack (<n>) | move (<n>) | priority (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
-            "    - OnDate  : redate",
+            "    - OnDate  : redate (<n>)",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -467,6 +467,19 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("redate", input) then
             item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxOndate" then
+                puts "redate is reserved for NxOndates"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            NxOndates::redate(item)
+            return
+        end
+
+        if Interpreting::match("redate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxOndate" then
                 puts "redate is reserved for NxOndates"
