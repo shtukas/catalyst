@@ -115,6 +115,9 @@ class NxThreads
             spacecontrol.putsline ""
 
             items = Tx8s::childrenInOrder(thread)
+            items = items
+                        .map{|item| Stratification::getItemStratification(item).reverse }
+                        .flatten
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))

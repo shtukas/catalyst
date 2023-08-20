@@ -210,6 +210,7 @@ class Listing
     # Listing::maintenance()
     def self.maintenance()
         if Config::isPrimaryInstance() then
+            puts "> Listing::maintenance() on primary instance"
             Bank::fileManagement()
             NxBackups::maintenance()
             NxTasks::maintenance()

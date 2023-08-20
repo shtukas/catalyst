@@ -48,7 +48,7 @@ class Stratification
     def self.pile1(item, text)
         text = text.strip
         return if text == ""
-        lines = text.lines.map{|line| line.strip }
+        lines = text.lines.map{|line| line.strip }.select{|line| line.size > 0 }
         Stratification::pile2(item, lines.reverse)
     end
 

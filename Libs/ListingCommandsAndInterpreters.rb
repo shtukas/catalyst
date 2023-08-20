@@ -46,6 +46,10 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts PolyFunctions::toString(item)
             Tx8s::move(item)
+            item = Cubes::itemOrNull(item["uuid"])
+            if item["mikuType"] == "NxOndate" and item["parent"] then
+                Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
+            end
             return
         end
 
