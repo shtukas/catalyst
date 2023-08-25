@@ -321,7 +321,7 @@ class Listing
             end
 
             items = Listing::items()
-            items = Stratification::prefixWithStratification(items)
+            items = Prefix::prefix(items)
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))

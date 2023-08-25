@@ -27,7 +27,7 @@ class Stratification
     end
 
     # Stratification::getItemStratification(item)
-    # returns the item followed by the genealogy upwards
+    # returns the genealogy upwards
     def self.getItemStratification(item)
         stratification = [item]
         loop {
@@ -35,13 +35,7 @@ class Stratification
             break if parent.nil?
             stratification << parent
         }
-        stratification
-    end
-
-    # Stratification::prefixWithStratification(items)
-    def self.prefixWithStratification(items)
-        return [] if items.empty?
-        Stratification::getItemStratification(items.first).reverse + items.drop(1)
+        stratification.drop(1)
     end
 
     # Stratification::pile1(item, text)
