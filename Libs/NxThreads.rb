@@ -116,7 +116,7 @@ class NxThreads
 
             items = Tx8s::childrenInOrder(thread)
             items = items
-                        .map{|item| Stratification::getItemStratification(item).reverse }
+                        .map{|item| Stratification::getItemStratification(item).reverse + [item] }
                         .flatten
             items
                 .each{|item|
