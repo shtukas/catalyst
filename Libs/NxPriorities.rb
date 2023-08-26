@@ -17,6 +17,7 @@ class NxPriorities
 
     # NxPriorities::checkPriorityLiveness(item)
     def self.checkPriorityLiveness(item)
+        return item if !Config::isPrimaryInstance()
         return item if item["priority"].nil?
         return item if item["priority"]["date"] > CommonUtils::today()
         puts "The following item with priority has an expired priority"
