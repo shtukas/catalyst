@@ -104,10 +104,10 @@ class TxCores
     def self.activePriorityItemsInOrder()
         Cubes::mikuType("TxCore").map{|core|
             Tx8s::childrenInOrder(core)
-                .select{|item| Catalyst::isActivePriorityItem(item) }
+                .select{|item| NxPriorities::isActivePriorityItem(item) }
         }
         .flatten
-        .sort_by{|item| Catalyst::priorityRatio(item) }
+        .sort_by{|item| NxPriorities::priorityRatio(item) }
     end
 
     # -----------------------------------------------

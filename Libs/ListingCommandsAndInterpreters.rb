@@ -208,15 +208,8 @@ class ListingCommandsAndInterpreters
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set priority", "remove priority"])
             return if option.nil?
             if option == "set priority" then
-                hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-                return if hours == 0
-                date = CommonUtils::interactivelyMakeADateOrNull()
-                return if date.nil?
-                priority = {
-                    "hours" => hours,
-                    "type"  => "deadline",
-                    "date"  => date
-                }
+                priority = NxPriorities::interactivelyBuildPriorityOrNull()
+                return if priority.nil?
                 Cubes::setAttribute2(item["uuid"], "priority", priority)
             end
             if option == "remove priority" then

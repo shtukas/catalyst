@@ -138,6 +138,9 @@ class Listing
                     selected + [item]
                 end
             }
+            .map{|item|
+                NxPriorities::checkPriorityLiveness(item)
+            }
     end
 
     # Listing::toString2(store, item)
@@ -146,8 +149,8 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
         prioritySuffix = lambda{|item|
-            return "" if !Catalyst::isActivePriorityItem(item)
-            ratio = Catalyst::priorityRatio(item)
+            return "" if !NxPriorities::isActivePriorityItem(item)
+            ratio = NxPriorities::priorityRatio(item)
             return nil if ratio.nil?
             percentage = 100*ratio
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"

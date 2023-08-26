@@ -81,18 +81,6 @@ class Catalyst
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
 
-    # Catalyst::isActivePriorityItem(item)
-    def self.isActivePriorityItem(item)
-        return false if item["priority"].nil?
-        ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
-        ratio < 1
-    end
-
-    # Catalyst::priorityRatio(item)
-    def self.priorityRatio(item)
-        Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
-    end
-
     # Catalyst::editItem(item)
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
