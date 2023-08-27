@@ -28,11 +28,11 @@ class NxPriorities
             priority = NxPriorities::interactivelyBuildPriorityOrNull()
             return item if priority.nil?
             Cubes::setAttribute2(item["uuid"], "priority", priority)
-            return Cubes::getOrNull(item["uuid"])
+            return Cubes::itemOrNull(item["uuid"])
         end
         if option == "terminate" then
             Cubes::setAttribute2(item["uuid"], "priority", nil)
-            return Cubes::getOrNull(item["uuid"])
+            return Cubes::itemOrNull(item["uuid"])
         end
         raise "(error: 0947d4ad-1f5a-4a2a-91bd-ea40d3fb4099)"
     end
