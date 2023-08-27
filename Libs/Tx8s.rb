@@ -219,9 +219,9 @@ class Tx8s
         cursor
     end
 
-    # Tx8s::move(item, parent = nil)
-    def self.move(item, parent = nil)
-        
+    # Tx8s::moveItem(item, parent = nil)
+    def self.moveItem(item, parent = nil)
+
         if item["mikuType"] == "NxOndate" then
             Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
         end
@@ -229,7 +229,7 @@ class Tx8s
         if parent.nil? then
             core = TxCores::interactivelySelectOneOrNull()
             if core then
-                Tx8s::move(item, core)
+                Tx8s::moveItem(item, core)
                 return
             else
                 return
@@ -239,7 +239,7 @@ class Tx8s
         child = Catalyst::selectChildUnderneathParentOrNull(parent)
 
         if child and child["mikuType"] == "NxThread" then
-            Tx8s::move(item, child)
+            Tx8s::moveItem(item, child)
             return
         else
             position = Tx8s::decide1020position(parent)

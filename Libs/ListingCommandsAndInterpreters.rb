@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | stack (<n>) | move (<n>) | priority (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate (<n>)",
@@ -45,7 +45,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             puts PolyFunctions::toString(item)
-            Tx8s::move(item)
+            Tx8s::moveItem(item)
             item = Cubes::itemOrNull(item["uuid"])
             if item["mikuType"] == "NxOndate" and item["parent"] then
                 Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
@@ -58,7 +58,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts PolyFunctions::toString(item)
-            Tx8s::move(item)
+            Tx8s::moveItem(item)
             return
         end
 
@@ -108,7 +108,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
-            Tx8s::move(item)
+            Tx8s::moveItem(item)
             return
         end
 
