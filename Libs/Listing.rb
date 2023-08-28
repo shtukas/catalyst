@@ -148,15 +148,22 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
+        ordinalSuffix = lambda{|item|
+            return "" if item["ordinal-1325"] != CommonUtils::today()
+            return "" if item["ordinal-1324"].nil?
+            ordinal = item["ordinal-1324"]
+            " (ordinal: #{"%5.2f" % ordinal})"
+        }
+
         prioritySuffix = lambda{|item|
             return "" if !NxPriorities::isActivePriorityItem(item)
             ratio = NxPriorities::priorityRatio(item)
-            return nil if ratio.nil?
+            return "" if ratio.nil?
             percentage = 100*ratio
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"
         }
 
-        line = "#{storePrefix}#{prioritySuffix.call(item)} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix}#{ordinalSuffix.call(item)}#{prioritySuffix.call(item)} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -330,6 +337,8 @@ class Listing
             end
 
             items = Listing::items()
+            i1s, i2s = items.partition{|item| item["ordinal-1325"] == CommonUtils::today() }
+            items = i1s.sort_by{|item| item["ordinal-1324"] } + i2s
             items = Prefix::prefix(items)
             items
                 .each{|item|

@@ -54,7 +54,9 @@ class TxCores
     def self.toString(core)
         strings = []
 
-        strings << "⏱️  #{core["description"].ljust(20)}: today: #{"#{"%6.2f" % (100*Catalyst::listingCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
+        padding = XCache::getOrDefaultValue("bf986315-dfd7-44e2-8f00-ebea0271e2b2", "0").to_i
+
+        strings << "⏱️  #{core["description"].ljust(padding)}: today: #{"#{"%6.2f" % (100*Catalyst::listingCompletionRatio(core))}%".green} of #{"%5.2f" % (core["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*TxCores::periodCompletionRatio(core))}%".green} of #{"%5.2f" % core["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(core["capsule"]) >= core["hours"]*3600
@@ -159,6 +161,8 @@ class TxCores
     def self.maintenance2()
         Cubes::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
         Cubes::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
+        padding = (Cubes::mikuType("TxCore").map{|core| core["description"].size } + [0]).max
+        XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
     end
 
     # TxCores::program1(core)

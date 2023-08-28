@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | ordinal <n> <ordinal> | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate (<n>)",
@@ -114,6 +114,16 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("threads", input) then
             NxThreads::program2()
+            return
+        end
+
+        if Interpreting::match("ordinal * *", input) then
+            _, listord, ordinal = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            ordinal = ordinal.to_f
+            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
+            Cubes::setAttribute2(item["uuid"], "ordinal-1325", CommonUtils::today())
             return
         end
 
