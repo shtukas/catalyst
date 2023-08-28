@@ -186,7 +186,7 @@ class TxCores
                 }
 
             puts ""
-            puts "(task, pile, delegate, thread, position *, sort, select children and move them)"
+            puts "(task, pile, delegate, thread, position *, sort, move)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -228,16 +228,8 @@ class TxCores
                 }
             end
 
-            if input == "select children and move them" then
-                unselected = Tx8s::childrenInOrder(core)
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
-                puts "Select new parent"
-                parent = Tx8s::interactivelySelectParentOrNull(nil)
-                next if parent.nil?
-                selected.reverse.each{|item|
-                    tx8 = Tx8s::make(parent["uuid"], Tx8s::newFirstPositionAtThisParent(parent))
-                    Cubes::setAttribute2(item["uuid"], "parent", tx8)
-                }
+            if input == "move" then
+                Tx8s::selectChildrenAndMove(core)
             end
 
             puts ""

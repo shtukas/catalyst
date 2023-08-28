@@ -88,4 +88,13 @@ class Catalyst
             Cubes::setAttribute2(item["uuid"], key, value)
         }
     end
+
+    # Catalyst::postpone(item)
+    def self.postpone(item)
+        cursor = XCache::getOrDefaultValue("d74ae03d-24b7-4485-bf93-6c397ca4dc1c", "0").to_i
+        cursor = [cursor + 3600, Time.new.to_i + 3600].max
+        puts "Pushed to #{Time.at(cursor).to_s}"
+        DoNotShowUntil::setUnixtime(item, cursor)
+        XCache::set("d74ae03d-24b7-4485-bf93-6c397ca4dc1c", cursor)
+    end
 end

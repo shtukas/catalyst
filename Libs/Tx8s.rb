@@ -219,33 +219,42 @@ class Tx8s
         cursor
     end
 
-    # Tx8s::moveItem(item, parent = nil)
-    def self.moveItem(item, parent = nil)
+    # Tx8s::moveItem(item, envelop = nil)
+    def self.moveItem(item, envelop = nil)
+        Tx8s::moveItems([item], envelop)
+    end
 
-        if item["mikuType"] == "NxOndate" then
-            Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
-        end
-
-        if parent.nil? then
+    # Tx8s::moveItems(items, envelop = nil)
+    def self.moveItems(items, envelop = nil)
+        if envelop.nil? then
             core = TxCores::interactivelySelectOneOrNull()
             if core then
-                Tx8s::moveItem(item, core)
+                Tx8s::moveItems(items, core)
                 return
             else
                 return
             end
         end
 
-        child = Catalyst::selectChildUnderneathParentOrNull(parent)
+        child = Catalyst::selectChildUnderneathParentOrNull(envelop)
 
         if child and child["mikuType"] == "NxThread" then
-            Tx8s::moveItem(item, child)
+            Tx8s::moveItems(items, child)
             return
         else
-            position = Tx8s::decide1020position(parent)
-            tx8 = Tx8s::make(parent["uuid"], position)
-            puts JSON.pretty_generate(tx8)
-            Cubes::setAttribute2(item["uuid"], "parent", tx8)
+            items.each{|item|
+                position = Tx8s::decide1020position(envelop)
+                tx8 = Tx8s::make(envelop["uuid"], position)
+                puts JSON.pretty_generate(tx8)
+                Cubes::setAttribute2(item["uuid"], "parent", tx8)
+            }
         end
+    end
+
+    # Tx8s::selectChildrenAndMove(parent)
+    def self.selectChildrenAndMove(parent)
+        selected, _ = LucilleCore::selectZeroOrMore("elements", [], Tx8s::childrenInOrder(parent), lambda{|item| PolyFunctions::toString(item) })
+        return if selected.empty?
+        Tx8s::moveItems(items)
     end
 end

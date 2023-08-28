@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
             "",
             "specific types commands:",
             "    - OnDate  : redate (<n>)",
@@ -135,6 +135,21 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            return
+        end
+
+        if Interpreting::match("pp", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Catalyst::postpone(item)
+            return
+        end
+
+        if Interpreting::match("pp *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Catalyst::postpone(item)
             return
         end
 
