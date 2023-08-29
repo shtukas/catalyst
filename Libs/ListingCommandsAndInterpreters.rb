@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "specific types commands:",
             "    - OnDate  : redate (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | prime directive | netflix | thread | project status | pile | stack top | stack insert",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reschedule",
@@ -59,6 +59,26 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts PolyFunctions::toString(item)
             Tx8s::moveItem(item)
+            return
+        end
+
+        if Interpreting::match("stack top", input) then
+            line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
+            return if line == ""
+            item = NxLines::issue(line)
+            ordinal = XCache::getOrDefaultValue("42546732-27a9-4c67-bac4-4970e3acb833", "0").to_f
+            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
+            Cubes::setAttribute2(item["uuid"], "ordinal-1325", CommonUtils::today())
+            return
+        end
+
+        if Interpreting::match("stack insert", input) then
+            line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
+            return if line == ""
+            item = NxLines::issue(line)
+            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
+            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
+            Cubes::setAttribute2(item["uuid"], "ordinal-1325", CommonUtils::today())
             return
         end
 

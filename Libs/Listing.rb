@@ -119,6 +119,7 @@ class Listing
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
+            Cubes::mikuType("NxLine"),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             TxCores::activePriorityItemsInOrder(),
@@ -338,7 +339,8 @@ class Listing
 
             items = Listing::items()
             i1s, i2s = items.partition{|item| item["ordinal-1325"] == CommonUtils::today() }
-            items = i1s.sort_by{|item| item["ordinal-1324"] } + i2s
+            i1s = i1s.sort_by{|item| item["ordinal-1324"] }
+            items = i1s + i2s
             items = Prefix::prefix(items)
             items
                 .each{|item|
@@ -346,6 +348,12 @@ class Listing
                     status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status
                 }
+
+            if i1s.size > 0 then
+                XCache::set("42546732-27a9-4c67-bac4-4970e3acb833", i1s[0]["ordinal-1324"])
+            else
+                XCache::set("42546732-27a9-4c67-bac4-4970e3acb833", 0)
+            end
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
