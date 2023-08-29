@@ -18,7 +18,7 @@ class TxFloats
     # TxFloats::toString(item)
     def self.toString(item)
         announce = item["text"].strip.size > 0 ? item["text"].strip.lines.first.strip : "(empty text)"
-        "🚁 #{item["description"]} [ #{announce.green} ]"
+        "🔹 #{item["description"]} [ #{announce.green} ]"
     end
 
     # TxFloats::listingItems1()

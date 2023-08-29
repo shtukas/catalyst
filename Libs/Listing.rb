@@ -224,7 +224,6 @@ class Listing
         if Config::isPrimaryInstance() then
             puts "> Listing::maintenance() on primary instance"
             Bank::fileManagement()
-            NxBackups::maintenance()
             NxTasks::maintenance()
             NxThreads::maintenance2()
             TxCores::maintenance2()
