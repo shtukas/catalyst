@@ -73,13 +73,13 @@ class Listing
             return NxTimes::isPending(item)
         end
 
-        return false if item["mikuType"] == "NxPrimeDirective"
-
         return false if item["mikuType"] == "DesktopTx1"
 
         return false if item["mikuType"] == "NxDelegate"
 
-        return false if item["mikuType"] == "TxFloat"
+        if item["mikuType"] == "TxFloat" then
+            return (item["acknowledgement"] != CommonUtils::today())
+        end
 
         return false if !DoNotShowUntil::isVisible(item)
 
@@ -119,6 +119,7 @@ class Listing
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
+            TxFloats::listingItems2(),
             Cubes::mikuType("NxLine"),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
@@ -293,20 +294,9 @@ class Listing
 
             spacecontrol.putsline ""
 
-            directives = Cubes::mikuType("NxPrimeDirective").sort_by{|item| item["unixtime"] }
-            if directives.size > 0 then
-                directives
-                    .each{|item|
-                        store.register(item, Listing::canBeDefault(item))
-                        status = spacecontrol.putsline Listing::toString2(store, item).yellow
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
-            statuses = TxFloats::listingItems().sort_by{|item| item["unixtime"] }
-            if statuses.size > 0 then
-                statuses
+            floats = TxFloats::listingItems1()
+            if floats.size > 0 then
+                floats
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
                         status = spacecontrol.putsline Listing::toString2(store, item).yellow

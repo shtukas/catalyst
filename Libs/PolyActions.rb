@@ -47,12 +47,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPrimeDirective" then
-            puts NxPrimeDirectives::toString(item)
-            CoreDataRefStrings::access(item["uuid"], item["field11"])
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             NxOndates::access(item)
             return
@@ -115,15 +109,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPrimeDirective" then
-            puts "You cannot done a NxPrimeDirective, but you can destroy it"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "TxFloat" then
-            puts "You cannot done a TxFloat but you can destroy it"
-            LucilleCore::pressEnterToContinue()
+            TxFloats::program2(item)
             return
         end
 
@@ -283,13 +270,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPrimeDirective" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "TxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
@@ -343,12 +323,6 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxPrimeDirective" then
-            puts NxPrimeDirectives::toString(item)
-            LucilleCore::pressEnterToContinue()
             return
         end
 

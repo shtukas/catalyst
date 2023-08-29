@@ -70,9 +70,6 @@ class PolyFunctions
         if item["mikuType"] == "TxFloat" then
             return TxFloats::toString(item)
         end
-        if item["mikuType"] == "NxPrimeDirective" then
-            return NxPrimeDirectives::toString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end

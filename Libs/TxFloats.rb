@@ -21,15 +21,36 @@ class TxFloats
         "🚁 #{item["description"]} [ #{announce.green} ]"
     end
 
-    # TxFloats::listingItems()
-    def self.listingItems()
+    # TxFloats::listingItems1()
+    def self.listingItems1()
         Cubes::mikuType("TxFloat")
+            .select{|item| item["acknowledgement"] == CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
+    end
+
+    # TxFloats::listingItems2()
+    def self.listingItems2()
+        Cubes::mikuType("TxFloat")
+            .select{|item| item["acknowledgement"] != CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # TxFloats::program2(item)
     def self.program2(item)
-        text = CommonUtils::editTextSynchronously(item["text"])
-        Cubes::setAttribute2(item["uuid"], "text", text)
+        options = ["destroy", "ack for today", "edit + ack"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        return if option.nil?
+        if option == "destroy" then
+            Cubes::destroy(item["uuid"])
+        end
+        if option == "ack for today" then
+            Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
+        end
+        if option == "edit + ack" then
+            text = CommonUtils::editTextSynchronously(item["text"])
+            Cubes::setAttribute2(item["uuid"], "text", text)
+            Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
+        end
     end
 
     # TxFloats::program1()
