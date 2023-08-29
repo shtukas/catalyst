@@ -163,7 +163,6 @@ require_relative "NxTimes.rb"
 require_relative "NxThreads.rb"
 require_relative "NxDelegates.rb"
 require_relative "NxPrimeDirectives.rb"
-require_relative "NxProjectStatuses.rb"
 require_relative "NxPriorities.rb"
 
 require_relative "ProgrammableBooleans.rb"
@@ -178,6 +177,7 @@ require_relative "Stratification.rb"
 require_relative "TxCores.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Tx8s.rb"
+require_relative "TxFloats.rb"
 
 require_relative "Waves.rb"
 

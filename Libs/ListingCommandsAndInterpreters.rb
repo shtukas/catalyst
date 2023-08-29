@@ -75,13 +75,13 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("delegates", input) then
-            item = NxProjectStatuses::interactivelyIssueNewOrNull()
+            item = TxFloats::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("project status", input) then
-            item = NxProjectStatuses::interactivelyIssueNewOrNull()
+            item = TxFloats::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             core = TxCores::interactivelySelectOneOrNull()
             if core then

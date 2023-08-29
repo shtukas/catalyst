@@ -79,7 +79,7 @@ class Listing
 
         return false if item["mikuType"] == "NxDelegate"
 
-        return false if item["mikuType"] == "NxProjectStatus"
+        return false if item["mikuType"] == "TxFloat"
 
         return false if !DoNotShowUntil::isVisible(item)
 
@@ -303,7 +303,7 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            statuses = NxProjectStatuses::listingItems().sort_by{|item| item["unixtime"] }
+            statuses = TxFloats::listingItems().sort_by{|item| item["unixtime"] }
             if statuses.size > 0 then
                 statuses
                     .each{|item|

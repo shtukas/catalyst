@@ -33,8 +33,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProjectStatus" then
-            NxProjectStatuses::program2(item)
+        if item["mikuType"] == "TxFloat" then
+            TxFloats::program2(item)
             return
         end
 
@@ -121,8 +121,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProjectStatus" then
-            puts "You cannot done a NxProjectStatus but you can destroy it"
+        if item["mikuType"] == "TxFloat" then
+            puts "You cannot done a TxFloat but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -290,7 +290,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProjectStatus" then
+        if item["mikuType"] == "TxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
             end
@@ -361,8 +361,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProjectStatus" then
-            NxProjectStatuses::program2(item)
+        if item["mikuType"] == "TxFloat" then
+            TxFloats::program2(item)
             return
         end
 
@@ -437,8 +437,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProjectStatus" then
-            NxProjectStatuses::program2(item)
+        if item["mikuType"] == "TxFloat" then
+            TxFloats::program2(item)
             return
         end
 
