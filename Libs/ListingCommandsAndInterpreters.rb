@@ -62,6 +62,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("today", input) then
+            item = NxOndates::interactivelyIssueNewTodayOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            return
+        end
+ 
         if Interpreting::match("stack top", input) then
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
@@ -569,13 +576,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("speed", input) then
             Listing::speedTest()
-            return
-        end
-
-        if Interpreting::match("today", input) then
-            item = NxOndates::interactivelyIssueNewTodayOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
             return
         end
 
