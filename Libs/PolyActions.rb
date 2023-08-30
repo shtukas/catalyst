@@ -34,7 +34,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxFloat" then
-            TxFloats::program2(item)
+            CoreDataRefStrings::access(item["uuid"], item["field11"])
             return
         end
 

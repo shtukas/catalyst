@@ -36,25 +36,25 @@ class TxFloats
 
     # TxFloats::program2(item)
     def self.program2(item)
-        options = ["destroy", "ack for today", "edit description + ack", "access + ack"]
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        return if option.nil?
-        if option == "destroy" then
-            Cubes::destroy(item["uuid"])
-        end
-        if option == "ack for today" then
-            Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
-        end
-        if option == "edit description + ack" then
-            description = CommonUtils::editTextSynchronously(item["description"])
-            Cubes::setAttribute2(item["uuid"], "description", description)
-            Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
-        end
-        if option == "access + ack" then
-            CoreDataRefStrings::access(item["uuid"], item["field11"])
-            Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
-        end
-
+        loop {
+            options = ["destroy", "acknowledgement", "description", "access"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            return if option.nil?
+            if option == "destroy" then
+                Cubes::destroy(item["uuid"])
+                return
+            end
+            if option == "acknowledgement" then
+                Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
+            end
+            if option == "description" then
+                description = CommonUtils::editTextSynchronously(item["description"]).strip
+                Cubes::setAttribute2(item["uuid"], "description", description)
+            end
+            if option == "access" then
+                CoreDataRefStrings::access(item["uuid"], item["field11"])
+            end
+        }
     end
 
     # TxFloats::program1()
