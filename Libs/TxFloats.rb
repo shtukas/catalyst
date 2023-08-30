@@ -7,9 +7,11 @@ class TxFloats
         return nil if description == ""
         uuid = SecureRandom.uuid
         Cubes::init(nil, "TxFloat", uuid)
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "description", description)
+        Cubes::setAttribute2(uuid, "field11", coredataref)
         Cubes::itemOrNull(uuid)
     end
 
@@ -34,7 +36,7 @@ class TxFloats
 
     # TxFloats::program2(item)
     def self.program2(item)
-        options = ["destroy", "ack for today", "edit + ack"]
+        options = ["destroy", "ack for today", "edit description + ack", "access + ack"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return if option.nil?
         if option == "destroy" then
@@ -43,11 +45,16 @@ class TxFloats
         if option == "ack for today" then
             Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
         end
-        if option == "edit + ack" then
+        if option == "edit description + ack" then
             description = CommonUtils::editTextSynchronously(item["description"])
             Cubes::setAttribute2(item["uuid"], "description", description)
             Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
         end
+        if option == "access + ack" then
+            CoreDataRefStrings::access(item["uuid"], item["field11"])
+            Cubes::setAttribute2(item["uuid"], "acknowledgement", CommonUtils::today())
+        end
+
     end
 
     # TxFloats::program1()
