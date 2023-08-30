@@ -37,7 +37,7 @@ class TxFloats
     # TxFloats::program2(item)
     def self.program2(item)
         loop {
-            puts PolyFunctions::toString(item)
+            puts PolyFunctions::toString(item).green
             options = ["destroy", "acknowledgement", "description", "access"]
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return if option.nil?
