@@ -5,13 +5,13 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | ordinal <n> <ordinal> | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
             "",
-            "specific types commands:",
-            "    - OnDate  : redate (<n>)",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | netflix | thread | project status | pile | stack top | stack insert",
+            "queue         : #{Listing::queueCommands()}",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | netflix | thread | project status | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
+            "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | reschedule",
         ].join("\n")
     end
@@ -69,23 +69,49 @@ class ListingCommandsAndInterpreters
             return
         end
  
-        if Interpreting::match("stack top", input) then
+        if Interpreting::match("q: new top line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
             item = NxLines::issue(line)
             ordinal = XCache::getOrDefaultValue("42546732-27a9-4c67-bac4-4970e3acb833", "0").to_f
             Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
-            Cubes::setAttribute2(item["uuid"], "ordinal-1325", CommonUtils::today())
             return
         end
 
-        if Interpreting::match("stack insert", input) then
+        if Interpreting::match("q: insert line at *", input) then
+            _, _, _, _, ordinal = Interpreting::tokenizer(input)
+            ordinal = ordinal.to_f
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
             item = NxLines::issue(line)
-            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ").to_f
             Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
-            Cubes::setAttribute2(item["uuid"], "ordinal-1325", CommonUtils::today())
+            return
+        end
+
+        if Interpreting::match("q: insert item * *", input) then
+            _, _, _, listord, ordinal = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            ordinal = ordinal.to_f
+            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
+            return
+        end
+
+        if Interpreting::match("q: target: * hours of * at *", input) then
+            _, _, timeInHours, _, _, listord, _, ordinal,  = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            ordinal = ordinal.to_f
+            timespan = timeInHours.to_f * 3600
+            NxQs::issue(item["uuid"], timespan, ordinal)
+            return
+        end
+
+        if Interpreting::match("q: drop *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Cubes::setAttribute2(item["uuid"], "ordinal-1324", nil)
             return
         end
 
@@ -141,16 +167,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("threads", input) then
             NxThreads::program2()
-            return
-        end
-
-        if Interpreting::match("ordinal * *", input) then
-            _, listord, ordinal = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            ordinal = ordinal.to_f
-            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
-            Cubes::setAttribute2(item["uuid"], "ordinal-1325", CommonUtils::today())
             return
         end
 

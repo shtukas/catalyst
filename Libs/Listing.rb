@@ -121,6 +121,7 @@ class Listing
             PhysicalTargets::listingItems(),
             TxFloats::listingItems2(),
             Cubes::mikuType("NxLine"),
+            NxQs::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             TxCores::activePriorityItemsInOrder(),
@@ -150,11 +151,10 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        ordinalSuffix = lambda{|item|
-            return "" if item["ordinal-1325"] != CommonUtils::today()
+        queueSuffix = lambda{|item|
             return "" if item["ordinal-1324"].nil?
             ordinal = item["ordinal-1324"]
-            " (ordinal: #{"%5.2f" % ordinal})"
+            " (queue: #{"%5.2f" % ordinal})"
         }
 
         prioritySuffix = lambda{|item|
@@ -165,7 +165,7 @@ class Listing
             " (priority: #{"%6.2f" % percentage}% of #{item["priority"]["hours"]} hours)"
         }
 
-        line = "#{storePrefix}#{ordinalSuffix.call(item)}#{prioritySuffix.call(item)} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix}#{queueSuffix.call(item)}#{prioritySuffix.call(item)} #{PolyFunctions::toString(item)}#{Tx8s::suffix(item).green}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -255,6 +255,11 @@ class Listing
         end
     end
 
+    # Listing::queueCommands()
+    def self.queueCommands()
+        "q: insert item <n> <ordinal> | q: new top line | q: insert line at <ordinal> | q: target: <time in hours> hours of <n> at <ordinal> | q: drop <n>"
+    end
+
     # Listing::main()
     def self.main()
 
@@ -292,6 +297,8 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
+            spacecontrol.putsline Listing::queueCommands()
+            spacecontrol.putsline ""
 
             floats = TxFloats::listingItems1()
             if floats.size > 0 then
@@ -327,7 +334,7 @@ class Listing
             end
 
             items = Listing::items()
-            i1s, i2s = items.partition{|item| item["ordinal-1325"] == CommonUtils::today() }
+            i1s, i2s = items.partition{|item| item["ordinal-1324"] }
             i1s = i1s.sort_by{|item| item["ordinal-1324"] }
             items = i1s + i2s
             items = Prefix::prefix(items)

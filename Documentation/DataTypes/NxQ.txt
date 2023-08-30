@@ -1,0 +1,8 @@
+NxQ:
+    "uuid"         : String
+    "mikuType"     : "NxQ"
+    "unixtime"     : Float
+    "datetime"     : DateTime Iso 8601 UTC Zulu
+    "targetuuid"   : String
+    "timespan"     : Timespan in seconds
+

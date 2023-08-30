@@ -32,6 +32,13 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxQ" then
+            t = Cubes::itemOrNull(item["targetuuid"])
+            if t then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(t)
+            end
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -81,6 +88,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
+        end
+        if item["mikuType"] == "NxQ" then
+            return NxQs::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
