@@ -17,7 +17,7 @@ class TxFloats
 
     # TxFloats::toString(item)
     def self.toString(item)
-        "🔹 #{item["description"]}"
+        "🔹 #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # TxFloats::listingItems1()
