@@ -33,6 +33,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxQ" then
+            t = Cubes::itemOrNull(item["targetuuid"])
+            return if t.nil?
+            PolyActions::access(t)
+            return
+        end
+
         if item["mikuType"] == "TxFloat" then
             CoreDataRefStrings::access(item["uuid"], item["field11"])
             return
