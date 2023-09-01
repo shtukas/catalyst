@@ -21,6 +21,7 @@ class ListingCommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
+                Catalyst::deQueue(item)
                 DoNotShowUntil::setUnixtime(item, unixtime)
                 return
             end

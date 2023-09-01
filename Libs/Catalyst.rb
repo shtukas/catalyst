@@ -97,4 +97,10 @@ class Catalyst
         DoNotShowUntil::setUnixtime(item, cursor)
         XCache::set("d74ae03d-24b7-4485-bf93-6c397ca4dc1c", cursor)
     end
+
+    # Catalyst::deQueue(item)
+    def self.deQueue(item)
+        return if item["ordinal-1324"].nil?
+        Cubes::setAttribute2(item["uuid"], "ordinal-1324", nil)
+    end
 end
