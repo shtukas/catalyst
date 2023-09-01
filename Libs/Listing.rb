@@ -75,8 +75,6 @@ class Listing
 
         return false if item["mikuType"] == "DesktopTx1"
 
-        return false if item["mikuType"] == "NxDelegate"
-
         if item["mikuType"] == "TxFloat" then
             return (item["acknowledgement"] != CommonUtils::today())
         end
@@ -127,7 +125,6 @@ class Listing
             TxCores::activePriorityItemsInOrder(),
             NxBackups::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            Cubes::mikuType("NxDelegate").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             Cubes::mikuType("NxTask").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             Cubes::mikuType("NxThread").select{|item| item["parent"].nil? }.sort_by{|item| item["unixtime"] },
             cores.map{|core| TxCores::listingItems1(core) },
@@ -227,7 +224,6 @@ class Listing
             NxTasks::maintenance()
             NxThreads::maintenance2()
             TxCores::maintenance2()
-            NxDelegates::maintenance()
             CUtils3X::scan_merge()
             Catalyst::maintenance()
         end

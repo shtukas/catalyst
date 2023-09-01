@@ -161,7 +161,6 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxTimes.rb"
 require_relative "NxThreads.rb"
-require_relative "NxDelegates.rb"
 require_relative "NxPriorities.rb"
 require_relative "NxQs.rb"
 

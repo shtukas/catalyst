@@ -1,8 +1,0 @@
-
-NxDelegate: 
-    "uuid"        : String
-    "mikuType"    : "NxDelegate"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : String
-    "field11"     : null or CoreData reference string

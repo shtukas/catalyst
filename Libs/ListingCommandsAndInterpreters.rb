@@ -8,8 +8,8 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
             "",
             "queue         : #{Listing::queueCommands()}",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | delegate | netflix | thread | project status | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | delegates",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | netflix | thread | project status | pile",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | reschedule",
@@ -125,12 +125,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             TmpSkip1::tmpskip1(item, 1)
-            return
-        end
-
-        if Interpreting::match("delegates", input) then
-            item = TxFloats::interactivelyIssueNewOrNull()
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -287,13 +281,6 @@ class ListingCommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
-        end
-
-        if Interpreting::match("delegate", input) then
-            item = NxDelegates::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
         end
 
         if Interpreting::match("access", input) then

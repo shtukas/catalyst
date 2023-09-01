@@ -7,7 +7,6 @@ class Catalyst
         [
           "NxAnniversary",
           "NxBackup",
-          "NxDelegate",
           "NxIce",
           "NxOndate",
           "NxPure",

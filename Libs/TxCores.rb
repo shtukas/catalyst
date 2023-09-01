@@ -205,11 +205,6 @@ class TxCores
                 next
             end
 
-            if input == "delegate" then
-                NxDelegates::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
             if input == "thread" then
                 NxThreads::interactivelyIssueNewAtParentOrNull(core)
                 next

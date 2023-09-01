@@ -141,11 +141,6 @@ class NxThreads
                 next
             end
 
-            if input == "delegate" then
-                NxDelegates::interactivelyIssueNewAtParentOrNull(thread)
-                next
-            end
-
             if input == "thread" then
                 NxThreads::interactivelyIssueNewAtParentOrNull(thread)
                 next

@@ -22,12 +22,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDelegate" then
-            puts NxDelegates::toString(item)
-            CoreDataRefStrings::access(item["uuid"], item["field11"])
-            return
-        end
-
         if item["mikuType"] == "NxThread" then
             NxThreads::program1(item)
             return
@@ -82,6 +76,7 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
+        Catalyst::deQueue(item)
 
         # Removing park, if any.
         item["parking"] = nil
@@ -118,13 +113,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDelegate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTime" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
@@ -152,13 +140,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             puts "done-ing item: #{item["description"]}"
             NxBackups::performDone(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
-            end
             return
         end
 
@@ -256,13 +237,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDelegate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
@@ -323,10 +297,6 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxDelegate" then
             return
         end
 
