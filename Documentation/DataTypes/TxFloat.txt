@@ -1,9 +1,0 @@
-
-TxFloat:
-    "uuid"        : String
-    "mikuType"    : "TxFloat"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : String
-
-    "acknowledgement" : Date

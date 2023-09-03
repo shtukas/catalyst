@@ -5,10 +5,10 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | position (<n>) | reorganise <n> | pile (<n>) | deadline (<n>) | orphan <n> | core (<n>) | move (<n>) | priority (<n>) | pp (<n>) # postpone | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | engine <n> | pp (<n>) # postpone | destroy (<n>)",
             "",
             "queue         : #{Listing::queueCommands()}",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | netflix | thread | project status | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | netflix | thread | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -30,7 +30,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::accessAndHopefullyDone(item)
+            PolyActions::doubleDots(item)
             return
         end
 
@@ -38,28 +38,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::accessAndHopefullyDone(item)
-            return
-        end
-
-        if Interpreting::match("move", input) then
-            item = store.getDefault()
-            return if item.nil?
-            puts PolyFunctions::toString(item)
-            Tx8s::moveItem(item)
-            item = Cubes::itemOrNull(item["uuid"])
-            if item["mikuType"] == "NxOndate" and item["parent"] then
-                Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            end
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts PolyFunctions::toString(item)
-            Tx8s::moveItem(item)
+            PolyActions::doubleDots(item)
             return
         end
 
@@ -104,7 +83,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             ordinal = ordinal.to_f
             timespan = timeInHours.to_f * 3600
-            NxQs::issue(item["uuid"], timespan, ordinal)
+            NxTimeCounterDowns::issue(item["uuid"], timespan, ordinal)
             return
         end
 
@@ -128,24 +107,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("project status", input) then
-            item = TxFloats::interactivelyIssueNewOrNull()
-            puts JSON.pretty_generate(item)
-            core = TxCores::interactivelySelectOneOrNull()
-            if core then
-                tx8 = Tx8s::make(core["uuid"], 0)
-                Cubes::setAttribute2(item["uuid"], "parent", tx8)
-            end
-            return
-        end
-
         if Interpreting::match("netflix", input) then
             title = LucilleCore::askQuestionAnswerAsString("title: ")
             task = NxTasks::descriptionToTask("netflix: #{title}")
-            parentuuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
-            parent = Cubes::itemOrNull(parentuuid)
-            tx8 = Tx8s::make(parentuuid, Tx8s::nextPositionAtThisParent(parent))
-            Cubes::setAttribute2(task["uuid"], "parent", tx8)
+            threaduuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
+            Cubes::setAttribute2(task["uuid"], "lineage-nx128", threaduuid)
+            thread = Cubes::itemOrNull(threaduuid)
+            position = NxThreads::newNextPosition(thread)
+            Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
             return
         end
 
@@ -156,7 +125,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
-            Tx8s::moveItem(item)
+            NxThreads::moveTasks([item])
             return
         end
 
@@ -171,7 +140,7 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            Cubes::setAttribute2(item["uuid"], "lineage-nx128", core["uuid"])
             return
         end
 
@@ -182,7 +151,7 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Tx8s::interactivelyPlaceItemAtParentAttempt(item, core)
+            Cubes::setAttribute2(item["uuid"], "lineage-nx128", core["uuid"])
             return
         end
 
@@ -198,22 +167,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::postpone(item)
-            return
-        end
-
-        if Interpreting::match("orphan *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Cubes::setAttribute2(item["uuid"], "parent", nil)
-            return
-        end
-
-        if Interpreting::match("reorganise *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Tx8s::reorganise(item)
             return
         end
 
@@ -256,19 +209,19 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("priority *", input) then
+        if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             puts PolyFunctions::toString(item)
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set priority", "remove priority"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set engine", "remove engine"])
             return if option.nil?
-            if option == "set priority" then
-                priority = NxPriorities::interactivelyBuildPriorityOrNull()
-                return if priority.nil?
-                Cubes::setAttribute2(item["uuid"], "priority", priority)
+            if option == "set engine" then
+                engine = ThEngines::interactivelyBuildNewOrNull()
+                return if engine.nil?
+                Cubes::setAttribute2(item["uuid"], "priority", engine)
             end
-            if option == "remove priority" then
+            if option == "remove engine" then
                 Cubes::setAttribute2(item["uuid"], "priority", nil)
             end
             return
@@ -414,21 +367,6 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
-            return
-        end
-
-        if Interpreting::match("position", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Tx8s::repositionItemAtSameParent(item)
-            return
-        end
-
-        if Interpreting::match("position *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Tx8s::repositionItemAtSameParent(item)
             return
         end
 

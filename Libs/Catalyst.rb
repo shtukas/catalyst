@@ -8,10 +8,12 @@ class Catalyst
           "NxAnniversary",
           "NxBackup",
           "NxIce",
+          "NxLine",
           "NxOndate",
-          "NxPure",
           "NxTask",
           "NxThread",
+          "NxTime",
+          "NxTimeCounterDown",
           "PhysicalTarget",
           "TxCore",
           "Wave"
@@ -23,16 +25,6 @@ class Catalyst
         Catalyst::mikuTypes()
             .map{|mikuType| Cubes::mikuType(mikuType) }
             .flatten
-    end
-
-    # Catalyst::selectChildUnderneathParentOrNull(parent = nil)
-    def self.selectChildUnderneathParentOrNull(parent = nil)
-
-        if parent.nil? then
-            return TxCores::interactivelySelectOneOrNull()
-        end
-
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("children", Tx8s::childrenInOrder(parent).first(20), lambda{|i| PolyFunctions::toString(i) })
     end
 
     # Catalyst::maintenance()

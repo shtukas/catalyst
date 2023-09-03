@@ -1,9 +1,9 @@
-class NxQs
+class NxTimeCounterDowns
 
-    # NxQs::issue(targetuuid, timespan, ordinal)
+    # NxTimeCounterDowns::issue(targetuuid, timespan, ordinal)
     def self.issue(targetuuid, timespan, ordinal)
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxQ", uuid)
+        Cubes::init(nil, "NxTimeCounterDown", uuid)
         Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "targetuuid", targetuuid)
@@ -12,10 +12,10 @@ class NxQs
         Cubes::itemOrNull(uuid)
     end
 
-    # NxQs::toString(item)
+    # NxTimeCounterDowns::toString(item)
     def self.toString(item)
         target = Cubes::itemOrNull(item["targetuuid"])
-        str = target ? PolyFunctions::toString(target) : "(NxQ target not found)"
+        str = target ? PolyFunctions::toString(target) : "(NxTimeCounterDown target not found)"
 
         v1 = Bank::getValue(item["uuid"])
         v2 = item["timespan"]
@@ -23,14 +23,14 @@ class NxQs
         "(#{(v1.to_f/v2).round(2)}% of #{(item["timespan"].to_f/3600).round(2)} hours) #{str}"
     end
 
-    # NxQs::listingItems()
+    # NxTimeCounterDowns::listingItems()
     def self.listingItems()
-        Cubes::mikuType("NxQ")
+        Cubes::mikuType("NxTimeCounterDown")
             .each{|item|
                 if (Bank::getValue(item["uuid"]) > item["timespan"]) and !NxBalls::itemIsActive(item) then
                     Cubes::destroy(item["uuid"])
                 end
             }
-        Cubes::mikuType("NxQ")
+        Cubes::mikuType("NxTimeCounterDown")
     end
 end

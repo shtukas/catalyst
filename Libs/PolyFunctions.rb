@@ -11,10 +11,10 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["parent"] then
-            parent = Cubes::itemOrNull(item["parent"]["uuid"])
-            if parent then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+        if item["lineage-nx128"] then
+            lineage = Cubes::itemOrNull(item["lineage-nx128"])
+            if lineage then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(lineage)
             end
         end
 
@@ -32,7 +32,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxQ" then
+        if item["mikuType"] == "NxTimeCounterDown" then
             t = Cubes::itemOrNull(item["targetuuid"])
             if t then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(t)
@@ -71,9 +71,6 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
-        if item["mikuType"] == "TxFloat" then
-            return TxFloats::toString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
@@ -86,8 +83,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTime" then
             return NxTimes::toString(item)
         end
-        if item["mikuType"] == "NxQ" then
-            return NxQs::toString(item)
+        if item["mikuType"] == "NxTimeCounterDown" then
+            return NxTimeCounterDowns::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

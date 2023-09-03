@@ -1,0 +1,4 @@
+ThEngine:
+    "hours" => float,
+    "type"  => "deadline",
+    "date"  => YYYY-MM-DD

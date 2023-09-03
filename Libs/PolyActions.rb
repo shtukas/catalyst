@@ -27,15 +27,10 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxQ" then
+        if item["mikuType"] == "NxTimeCounterDown" then
             t = Cubes::itemOrNull(item["targetuuid"])
             return if t.nil?
             PolyActions::access(t)
-            return
-        end
-
-        if item["mikuType"] == "TxFloat" then
-            CoreDataRefStrings::access(item["uuid"], item["field11"])
             return
         end
 
@@ -59,6 +54,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 
@@ -111,11 +107,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxFloat" then
-            TxFloats::program2(item)
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             return
         end
@@ -158,20 +149,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if Tx8s::childrenInOrder(item).size > 0 then
-                puts "The item has children"
-                Tx8s::childrenInOrder(item).each{|i|
-                    puts " - #{PolyFunctions::toString(item)}"
-                }
-                if LucilleCore::askQuestionAnswerAsBoolean("> destroy all of them ?") then
-                    Tx8s::childrenInOrder(item).each{|i|
-                        Cubes::destroy(i["uuid"])
-                    }
-                end
-            end
-            if Tx8s::childrenInOrder(item).size > 0 then
+            if Stratification::getDirectTopOrNull(item) then
+                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification"
+                LucilleCore::pressEnterToContinue()
                 return
             end
+
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes::destroy(item["uuid"])
@@ -219,12 +202,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if Tx8s::childrenInOrder(item).size > 0 then
-            puts "Found Tx8 children for '#{PolyFunctions::toString(item).green}'. Cannot be destroyed"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
@@ -233,8 +210,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if Tx8s::childrenInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Tx8s::childrenInOrder(item).size} children items"
+            if NxThreads::elementsInOrder(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{NxThreads::elementsInOrder(item).size} children items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -245,13 +222,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "TxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
             end
@@ -282,8 +252,8 @@ class PolyActions
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
 
-    # PolyActions::accessAndHopefullyDone(item)
-    def self.accessAndHopefullyDone(item)
+    # PolyActions::doubleDots(item)
+    def self.doubleDots(item)
 
         if item["mikuType"] == "NxAnniversary" then
             PolyActions::access(item)
@@ -309,11 +279,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTime" then
             Cubes::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "TxFloat" then
-            TxFloats::program2(item)
             return
         end
 
@@ -354,6 +319,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
+            PolyActions::access(item)
             return
         end
 
@@ -361,7 +327,7 @@ class PolyActions
             return
         end
 
-        puts "I don't know how to accessAndHopefullyDone '#{item["mikuType"]}'"
+        puts "I don't know how to doubleDots '#{item["mikuType"]}'"
         LucilleCore::pressEnterToContinue()
     end
 
@@ -385,11 +351,6 @@ class PolyActions
 
         if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "TxFloat" then
-            TxFloats::program2(item)
             return
         end
 

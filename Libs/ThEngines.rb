@@ -1,9 +1,9 @@
 
 
-class NxPriorities
+class ThEngines
 
-    # NxPriorities::interactivelyBuildPriorityOrNull()
-    def self.interactivelyBuildPriorityOrNull()
+    # ThEngines::interactivelyBuildNewOrNull()
+    def self.interactivelyBuildNewOrNull()
         hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
         return nil if hours == 0
         date = CommonUtils::interactivelyMakeADateOrNull()
@@ -15,7 +15,7 @@ class NxPriorities
         }
     end
 
-    # NxPriorities::checkPriorityLiveness(item)
+    # ThEngines::checkPriorityLiveness(item)
     def self.checkPriorityLiveness(item)
         return item if !Config::isPrimaryInstance()
         return item if item["priority"].nil?
@@ -25,7 +25,7 @@ class NxPriorities
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["expand", "terminate"])
         return item if option.nil?
         if option == "expand" then
-            priority = NxPriorities::interactivelyBuildPriorityOrNull()
+            priority = ThEngines::interactivelyBuildNewOrNull()
             return item if priority.nil?
             Cubes::setAttribute2(item["uuid"], "priority", priority)
             return Cubes::itemOrNull(item["uuid"])
@@ -37,15 +37,16 @@ class NxPriorities
         raise "(error: 0947d4ad-1f5a-4a2a-91bd-ea40d3fb4099)"
     end
 
-    # NxPriorities::isActivePriorityItem(item)
-    def self.isActivePriorityItem(item)
+    # ThEngines::isActiveEngineItem(item)
+    def self.isActiveEngineItem(item)
+        return false if item["mikuType"] != "NxThread"
         return false if item["priority"].nil?
         ratio = Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
         ratio < 1
     end
 
-    # NxPriorities::priorityRatio(item)
-    def self.priorityRatio(item)
+    # ThEngines::ratio(item)
+    def self.ratio(item)
         Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
     end
 end

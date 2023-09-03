@@ -19,8 +19,8 @@ class Stratification
         "✨ #{item["description"]}"
     end
 
-    # Stratification::getParentOrNull(item)
-    def self.getParentOrNull(item)
+    # Stratification::getDirectTopOrNull(item)
+    def self.getDirectTopOrNull(item)
         Cubes::mikuType("NxStrat")
             .select{|i| i["bottom"] == item["uuid"] }
             .first
@@ -31,9 +31,9 @@ class Stratification
     def self.getItemStratification(item)
         stratification = [item]
         loop {
-            parent = Stratification::getParentOrNull(stratification.last)
-            break if parent.nil?
-            stratification << parent
+            top = Stratification::getDirectTopOrNull(stratification.last)
+            break if top.nil?
+            stratification << top
         }
         stratification.drop(1)
     end

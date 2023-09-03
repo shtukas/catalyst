@@ -90,11 +90,6 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
-    # TxCores::listingItems1(core)
-    def self.listingItems1(core)
-        Tx8s::childrenInOrder(core)
-    end
-
     # TxCores::coresForListing()
     def self.coresForListing()
         Cubes::mikuType("TxCore")
@@ -102,14 +97,27 @@ class TxCores
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
-    # TxCores::activePriorityItemsInOrder()
-    def self.activePriorityItemsInOrder()
-        Cubes::mikuType("TxCore").map{|core|
-            Tx8s::childrenInOrder(core)
-                .select{|item| NxPriorities::isActivePriorityItem(item) }
-        }
-        .flatten
-        .sort_by{|item| NxPriorities::priorityRatio(item) }
+    # TxCores::elementsInOrder(core)
+    def self.elementsInOrder(core)
+        Cubes::mikuType("NxThread")
+            .select{|item| item["lineage-nx128"] == core["uuid"] }
+            .sort_by{|item| item["coordinate-nx129"] || 0 }
+    end
+
+    # TxCores::newFirstPosition(core)
+    def self.newFirstPosition(core)
+        elements = TxCores::elementsInOrder(core)
+                        .select{|item| item["coordinate-nx129"] }
+        return 1 if elements.empty?
+        elements.map{|item| item["coordinate-nx129"] }.min - 1
+    end
+
+    # TxCores::newNextPosition(core)
+    def self.newNextPosition(core)
+        elements = NxThreads::elementsInOrder(core)
+                        .select{|item| item["coordinate-nx129"] }
+        return 1 if elements.empty?
+        elements.map{|item| item["coordinate-nx129"] }.max
     end
 
     # -----------------------------------------------
@@ -134,33 +142,9 @@ class TxCores
         Cubes::setAttribute2(core["uuid"], "lastResetTime", core["lastResetTime"])
     end
 
-    # TxCores::maintenance3(core)
-    def self.maintenance3(core)
-        elements = Tx8s::childrenInOrder(core)
-        return if elements.empty?
-        min = elements.first["parent"]["position"]
-        if min < 0 then
-            elements.each{|element|
-                tx8 = element["parent"]
-                tx8["position"] = tx8["position"] + (-min)
-                Cubes::setAttribute2(element["uuid"], "parent", tx8)
-            }
-            return
-        end
-        if min >= 10 then
-            elements.each{|element|
-                tx8 = element["parent"]
-                tx8["position"] = tx8["position"] - min
-                Cubes::setAttribute2(element["uuid"], "parent", tx8)
-            }
-            return
-        end
-    end
-
     # TxCores::maintenance2()
     def self.maintenance2()
         Cubes::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
-        Cubes::mikuType("TxCore").each{|core| TxCores::maintenance3(core) }
         padding = (Cubes::mikuType("TxCore").map{|core| core["description"].size } + [0]).max
         XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
     end
@@ -182,53 +166,42 @@ class TxCores
             spacecontrol.putsline Listing::toString2(store, core)
             spacecontrol.putsline ""
 
-            Tx8s::childrenInOrder(core)
+            TxCores::elementsInOrder(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item).gsub(core["description"], "")
+                    status = spacecontrol.putsline Listing::toString2(store, item).gsub("(#{core["description"]})", "")
                     break if !status
                 }
 
             puts ""
-            puts "(task, pile, delegate, thread, position *, sort, move)"
+            puts "(thread, position * *, sort)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
-                NxTasks::interactivelyIssueNewAtParentOrNull(core)
-                next
-            end
-
-            if input == "pile" then
-                Tx8s::pileAtThisParent(core)
-                next
-            end
-
             if input == "thread" then
-                NxThreads::interactivelyIssueNewAtParentOrNull(core)
+                position = TxCores::newNextPosition(core)
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                next if thread.nil?
+                Cubes::setAttribute2(thread["uuid"], "lineage-nx128", core["uuid"])
+                Cubes::setAttribute2(thread["uuid"], "coordinate-nx129", position)
                 next
             end
 
-            if input.start_with?("position") then
-                itemindex = input[8, input.length].strip.to_i
-                item = store.get(itemindex)
-                next if item.nil?
-                Tx8s::repositionItemAtSameParent(item)
-                next
+            if Interpreting::match("position * *", input) then
+                _, listord, position = Interpreting::tokenizer(input)
+                item = store.get(listord.to_i)
+                return if item.nil?
+                Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position.to_f)
+                return
             end
 
             if input == "sort" then
-                unselected = Tx8s::childrenInOrder(core)
+                unselected = TxCores::elementsInOrder(core)
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    tx8 = Tx8s::make(core["uuid"], Tx8s::newFirstPositionAtThisParent(core))
-                    Cubes::setAttribute2(item["uuid"], "parent", tx8)
+                    Cubes::setAttribute2(task["uuid"], "coordinate-nx129",  TxCores::newFirstPosition(core))
                 }
-            end
-
-            if input == "move" then
-                Tx8s::selectChildrenAndMove(core)
             end
 
             puts ""

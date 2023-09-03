@@ -3,7 +3,10 @@ class Prefix
 
     # Prefix::pureTopUp(item)
     def self.pureTopUp(item)
-        Tx8s::childrenInOrder(item).first(5)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::elementsInOrder(item).first(6)
+        end
+        []
     end
 
     # Prefix::prefix(items)
