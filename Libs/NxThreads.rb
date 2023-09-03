@@ -34,7 +34,15 @@ class NxThreads
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", Cubes::mikuType("NxThread"), lambda{|item| NxThreads::toString(item) })
+        threads = Cubes::mikuType("TxCore")
+                    .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+                    .map{|core| 
+                        Cubes::mikuType("NxThread")
+                            .select{|item| item["lineage-nx128"] == core["uuid"] }
+                            .sort_by{|item| item["coordinate-nx129"] || 0 }
+                    }
+                    .flatten
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{PolyFunctions::lineageSuffix(item).strip.yellow} #{NxThreads::toString(item)}" })
     end
 
     # NxThreads::architectOrNull()
@@ -65,6 +73,19 @@ class NxThreads
                         .select{|item| item["coordinate-nx129"] }
         return 1 if elements.empty?
         elements.map{|item| item["coordinate-nx129"] }.max + 1
+    end
+
+    # NxThreads::interactivelyDecidePositionAtThread(thread)
+    def self.interactivelyDecidePositionAtThread(thread)
+        elements = NxThreads::elementsInOrder(thread)
+        elements.each{|item|
+            puts PolyFunctions::toString(item)
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
+        if position == "" then
+            return NxThreads::newNextPosition(thread)
+        end
+        position.to_f
     end
 
     # --------------------------------------------------------------------------
@@ -192,6 +213,7 @@ class NxThreads
                 target = NxThreads::interactivelySelectOrNull()
                 next if target.nil?
                 selected.reverse.each{|item|
+                    Cubes::setAttribute2(item["uuid"], "lineage-nx128", target["uuid"])
                     Cubes::setAttribute2(item["uuid"], "coordinate-nx129", NxThreads::newFirstPosition(target))
                 }
             end
