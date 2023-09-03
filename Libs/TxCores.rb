@@ -99,6 +99,12 @@ class TxCores
 
     # TxCores::elementsInOrder(core)
     def self.elementsInOrder(core)
+        if core["uuid"] == "77a43c09-4642-45ff-b174-09898175919a" then
+            # cycles of perfection
+            return Cubes::mikuType("NxThread")
+                        .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        end
+
         Cubes::mikuType("NxThread")
             .select{|item| item["lineage-nx128"] == core["uuid"] }
             .sort_by{|item| item["coordinate-nx129"] || 0 }
