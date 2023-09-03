@@ -34,10 +34,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTime" then
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -111,13 +107,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTime" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
             return
@@ -159,12 +148,6 @@ class PolyActions
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes::destroy(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxTime" then
-            puts "done-ing: '#{NxTimes::toString(item).green}'"
-            Cubes::destroy(item["uuid"])
             return
         end
 
@@ -274,11 +257,6 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTime" then
-            Cubes::destroy(item["uuid"])
             return
         end
 

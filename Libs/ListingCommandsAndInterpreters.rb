@@ -8,11 +8,11 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | engine <n> | pp (<n>) # postpone | destroy (<n>)",
             "",
             "queue         : #{Listing::queueCommands()}",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | time | times | netflix | thread | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
-            "misc          : search | speed | commands | edit <n> | reschedule",
+            "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
 
@@ -115,11 +115,6 @@ class ListingCommandsAndInterpreters
             thread = Cubes::itemOrNull(threaduuid)
             position = NxThreads::newNextPosition(thread)
             Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
-            return
-        end
-
-        if Interpreting::match("reschedule", input) then
-            NxTimes::reschedule()
             return
         end
 
@@ -240,22 +235,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::access(item)
-            return
-        end
-
-        if Interpreting::match("time", input) then
-            item = NxTimes::interactivelyIssueTimeOrNull()
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("times", input) then
-            loop {
-                puts ""
-                item = NxTimes::interactivelyIssueTimeOrNull()
-                return if item.nil?
-                puts JSON.pretty_generate(item)
-            }
             return
         end
 

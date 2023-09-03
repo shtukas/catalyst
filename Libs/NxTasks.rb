@@ -125,8 +125,8 @@ class NxTasks
                 raise "error: C41FBB5C-518C-45A5-B45A-126C23282A05"
             end
             position = NxThreads::newFirstPosition(thread)
-            Cubes::setAttribute2(uuid, "lineage-nx128", thread["uuid"])
-            Cubes::setAttribute2(uuid, "coordinate-nx129", position)
+            Cubes::setAttribute2(task["uuid"], "lineage-nx128", thread["uuid"])
+            Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
         }
 
         Cubes::mikuType("NxTask").each{|task|
@@ -138,8 +138,8 @@ class NxTasks
                         raise "error: 51F2586F-E2BB-4F3D-954D-F859714F2267"
                     end
                     position = NxThreads::newFirstPosition(thread)
-                    Cubes::setAttribute2(uuid, "lineage-nx128", thread["uuid"])
-                    Cubes::setAttribute2(uuid, "coordinate-nx129", position)
+                    Cubes::setAttribute2(task["uuid"], "lineage-nx128", thread["uuid"])
+                    Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
                 end
             end
         }

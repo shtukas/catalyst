@@ -69,10 +69,6 @@ class Listing
 
         return false if TmpSkip1::isSkipped(item)
 
-        if item["mikuType"] == "NxTime" then
-            return NxTimes::isPending(item)
-        end
-
         return false if item["mikuType"] == "TxCore"
 
         return false if item["mikuType"] == "DesktopTx1"
@@ -207,8 +203,6 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxTimes::itemsWithPendingTime()", lambda{ NxTimes::itemsWithPendingTime() })
-        spot.contest_entry("NxTimes::listingItems()", lambda{ NxTimes::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()
@@ -329,17 +323,6 @@ class Listing
             cores = TxCores::coresForListing()
             if cores.size > 0 then
                 cores
-                    .each{|item|
-                        store.register(item, Listing::canBeDefault(item))
-                        status = spacecontrol.putsline Listing::toString2(store, item)
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
-
-            times = NxTimes::listingItems()
-            if times.size > 0 then
-                times
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
                         status = spacecontrol.putsline Listing::toString2(store, item)

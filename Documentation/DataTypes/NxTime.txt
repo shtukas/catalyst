@@ -1,8 +1,0 @@
-
-NxTime: 
-    "uuid"        : String
-    "mikuType"    : "NxTime"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "time"        : String "HH:MM"
-    "description" : String

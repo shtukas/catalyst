@@ -80,9 +80,6 @@ class PolyFunctions
         if item["mikuType"] == "NxThread" then
             return NxThreads::toString(item)
         end
-        if item["mikuType"] == "NxTime" then
-            return NxTimes::toString(item)
-        end
         if item["mikuType"] == "NxTimeCounterDown" then
             return NxTimeCounterDowns::toString(item)
         end

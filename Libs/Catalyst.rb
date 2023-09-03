@@ -12,7 +12,6 @@ class Catalyst
           "NxOndate",
           "NxTask",
           "NxThread",
-          "NxTime",
           "NxTimeCounterDown",
           "PhysicalTarget",
           "TxCore",
