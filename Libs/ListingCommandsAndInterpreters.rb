@@ -493,6 +493,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::stop(item)
+            Catalyst::deQueue(item)
             return
         end
 
@@ -501,6 +502,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::stop(item)
+            Catalyst::deQueue(item)
             return
         end
 

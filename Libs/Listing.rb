@@ -274,10 +274,6 @@ class Listing
     def self.queueSorting(items)
         i1s, i2s = items.partition{|item| item["ordinal-1324"] }
         i1s = i1s.sort_by{|item| item["ordinal-1324"] }
-        if i1s.size < 3 then
-            ordinal = ([0] + i1s.map{|item| item["ordinal-1324"] }).max + 1
-            Cubes::setAttribute2(i2s[0]["uuid"], "ordinal-1324", ordinal)
-        end
 
         if i1s.size > 0 then
             XCache::set("42546732-27a9-4c67-bac4-4970e3acb833", i1s[0]["ordinal-1324"])
