@@ -103,4 +103,12 @@ class PolyFunctions
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
     end
+
+    # PolyFunctions::lineageSuffix(thread)
+    def self.lineageSuffix(thread)
+        return "" if thread["lineage-nx128"].nil?
+        parent = Cubes::itemOrNull(thread["lineage-nx128"])
+        return "" if parent.nil?
+        " (#{parent["description"]})"
+    end
 end

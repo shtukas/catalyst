@@ -18,14 +18,6 @@ class NxThreads
     # --------------------------------------------------------------------------
     # Data
 
-    # NxThreads::lineageSuffixOrNull(thread)
-    def self.lineageSuffixOrNull(thread)
-        return nil if thread["lineage-nx128"].nil?
-        core = Cubes::itemOrNull(thread["lineage-nx128"])
-        return nil if core.nil?
-        " (#{core["description"]})".yellow
-    end
-
     # NxThreads::engineSuffixOrNull(thread)
     def self.engineSuffixOrNull(thread)
         return nil if !TxDrives::isActiveEngineItem(thread)
@@ -37,7 +29,7 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "⛵️ (#{"%5.2f" % thread["coordinate-nx129"]}) #{thread["description"]}#{NxThreads::lineageSuffixOrNull(thread)}#{NxThreads::engineSuffixOrNull(thread)}"
+        "⛵️ (#{"%5.2f" % thread["coordinate-nx129"]}) #{thread["description"]}#{NxThreads::engineSuffixOrNull(thread)}"
     end
 
     # NxThreads::interactivelySelectOrNull()

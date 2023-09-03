@@ -84,9 +84,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        thread = Cubes::itemOrNull(item["lineage-nx128"])
-        s1 = thread ? " (#{thread["description"]})".green : ""
-        "🔺 (#{"%5.2f" % item["coordinate-nx129"]}) #{item["description"]}#{s1}"
+        "🔺 (#{"%5.2f" % item["coordinate-nx129"]}) #{item["description"]}"
     end
 
     # --------------------------------------------------
