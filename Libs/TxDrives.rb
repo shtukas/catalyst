@@ -1,8 +1,8 @@
 
 
-class ThEngines
+class TxDrives
 
-    # ThEngines::interactivelyBuildNewOrNull()
+    # TxDrives::interactivelyBuildNewOrNull()
     def self.interactivelyBuildNewOrNull()
         hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
         return nil if hours == 0
@@ -15,7 +15,7 @@ class ThEngines
         }
     end
 
-    # ThEngines::checkPriorityLiveness(item)
+    # TxDrives::checkPriorityLiveness(item)
     def self.checkPriorityLiveness(item)
         return item if !Config::isPrimaryInstance()
         return item if item["priority"].nil?
@@ -25,7 +25,7 @@ class ThEngines
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["expand", "terminate"])
         return item if option.nil?
         if option == "expand" then
-            priority = ThEngines::interactivelyBuildNewOrNull()
+            priority = TxDrives::interactivelyBuildNewOrNull()
             return item if priority.nil?
             Cubes::setAttribute2(item["uuid"], "priority", priority)
             return Cubes::itemOrNull(item["uuid"])
@@ -37,7 +37,7 @@ class ThEngines
         raise "(error: 0947d4ad-1f5a-4a2a-91bd-ea40d3fb4099)"
     end
 
-    # ThEngines::isActiveEngineItem(item)
+    # TxDrives::isActiveEngineItem(item)
     def self.isActiveEngineItem(item)
         return false if item["mikuType"] != "NxThread"
         return false if item["priority"].nil?
@@ -45,7 +45,7 @@ class ThEngines
         ratio < 1
     end
 
-    # ThEngines::ratio(item)
+    # TxDrives::ratio(item)
     def self.ratio(item)
         Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["priority"]["hours"]
     end

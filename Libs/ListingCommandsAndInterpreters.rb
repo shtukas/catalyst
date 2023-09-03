@@ -217,7 +217,7 @@ class ListingCommandsAndInterpreters
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set engine", "remove engine"])
             return if option.nil?
             if option == "set engine" then
-                engine = ThEngines::interactivelyBuildNewOrNull()
+                engine = TxDrives::interactivelyBuildNewOrNull()
                 return if engine.nil?
                 Cubes::setAttribute2(item["uuid"], "priority", engine)
             end

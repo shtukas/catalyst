@@ -28,8 +28,8 @@ class NxThreads
 
     # NxThreads::engineSuffixOrNull(thread)
     def self.engineSuffixOrNull(thread)
-        return nil if !ThEngines::isActiveEngineItem(thread)
-        ratio = ThEngines::ratio(thread)
+        return nil if !TxDrives::isActiveEngineItem(thread)
+        ratio = TxDrives::ratio(thread)
         return nil if ratio.nil?
         percentage = 100*ratio
         " (priority: #{"%6.2f" % percentage}% of #{thread["priority"]["hours"]} hours)"

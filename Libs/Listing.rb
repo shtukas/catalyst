@@ -106,6 +106,33 @@ class Listing
         item["interruption"]
     end
 
+    # Listing::chasingTheDragon()
+    def self.chasingTheDragon()
+        threads1 = Cubes::mikuType("NxThread")
+            .select{|thread| thread["priority"]}
+            .select{|thread| TxDrives::ratio(thread) < 1 }
+            .sort_by{|thread| TxDrives::ratio(thread) }
+
+        threads2 = Cubes::mikuType("TxCore")
+            .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
+            .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+            .map{|core| 
+                TxCores::elementsInOrder(core).reduce([]){|selected, thread|
+                    if selected.size >= 6 then
+                        selected
+                    else
+                        if Bank::recoveredAverageHoursPerDay(thread["uuid"]) < 1 then
+                            selected + [thread]
+                        else
+                            selected
+                        end
+                    end
+                }
+            }
+            .flatten
+        threads1 + threads2
+    end
+
     # Listing::items()
     def self.items()
         cores = TxCores::coresForListing()
@@ -123,7 +150,7 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
             Cubes::mikuType("NxThread").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
-            Cubes::mikuType("NxThread").sort_by{|item| item["coordinate-nx129"] || 0 },
+            Listing::chasingTheDragon()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -135,7 +162,7 @@ class Listing
                 end
             }
             .map{|item|
-                ThEngines::checkPriorityLiveness(item)
+                TxDrives::checkPriorityLiveness(item)
             }
     end
 

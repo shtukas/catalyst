@@ -7,11 +7,11 @@ Cross types conventions:
     - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-    - priority         : ThEngine
+    - priority         : TxDrive
     - lineage-nx128    : string, uuid
     - coordinate-nx129 : float
 
-ThEngine {
+TxDrive {
     "hours" : Float,
     "type"  : "deadline",
     "date"  : "YYYY-MM-DD"
