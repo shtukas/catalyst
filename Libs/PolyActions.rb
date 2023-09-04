@@ -270,6 +270,7 @@ class PolyActions
                     Cubes::destroy(item["uuid"])
                     return
                 end
+                NxBalls::stop(item)
                 Catalyst::moveItemToInteractivelyDecidedThread1(item)
                 return
             end
