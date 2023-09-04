@@ -84,7 +84,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔺 (#{"%5.2f" % item["coordinate-nx129"]}) #{item["description"]}"
+        "🔺 (#{"%5.2f" % (item["coordinate-nx129"] || 0)}) #{item["description"]}"
     end
 
     # --------------------------------------------------

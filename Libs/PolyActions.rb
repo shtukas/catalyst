@@ -261,15 +261,24 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            puts PolyFunctions::toString(item).green
-            first_time = (Bank::getValue(item["uuid"]) == 0)
-            NxBalls::start(item)
-            NxTasks::access(item)
-            if first_time then
-                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if item["description"].start_with?("(buffer-in)") then
+                puts PolyFunctions::toString(item).green
+                NxBalls::start(item)
+                NxTasks::access(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
                     NxBalls::stop(item)
                     Cubes::destroy(item["uuid"])
+                    return
                 end
+                Catalyst::moveItemToInteractivelyDecidedThread1(item)
+                return
+            end
+
+            NxBalls::start(item)
+            NxTasks::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
+                NxBalls::stop(item)
+                Cubes::destroy(item["uuid"])
             end
             if NxBalls::itemIsRunning(item) then
                 if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
