@@ -2,14 +2,27 @@
 class Prefix
 
     # Prefix::pureTopUp(item)
+    # Function takes an item and returns a possible empty array of 
+    # prefix items
     def self.pureTopUp(item)
         if item["mikuType"] == "NxThread" then
             return NxThreads::elementsInOrder(item).first(6)
         end
+
+        if item["mikuType"] == "NxTimeCounterDown" then
+            target = Cubes::itemOrNull(item["targetuuid"])
+            if target then
+                return Prefix::pureTopUp(target)
+            else
+                return []
+            end
+        end
+
         []
     end
 
     # Prefix::prefix(items)
+    # Function takes an array of items and prefixes it with any relevant stratification or top up
     def self.prefix(items)
         return [] if items.empty?
         stratification = Stratification::getItemStratification(items[0])
