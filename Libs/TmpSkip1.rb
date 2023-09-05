@@ -2,8 +2,8 @@
 
 class TmpSkip1
 
-    # TmpSkip1::tmpskip1(item, hours)
-    def self.tmpskip1(item, hours)
+    # TmpSkip1::skip(item, hours)
+    def self.skip(item, hours)
         directive = {
             "unixtime"        => Time.new.to_f,
             "datetime"        => Time.new.utc.iso8601,
@@ -14,6 +14,14 @@ class TmpSkip1
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
         XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
+    end
+
+    # TmpSkip1::unskip(item)
+    def self.unskip(item)
+        if item["tmpskip1"] then
+            Cubes::setAttribute2(item["uuid"], "tmpskip1", nil)
+        end
+        XCache::destroy("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
     end
 
     # TmpSkip1::skipSuffix(item)

@@ -74,6 +74,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             ordinal = ordinal.to_f
             Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
+            TmpSkip1::unskip(item)
             return
         end
 
@@ -103,7 +104,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            TmpSkip1::tmpskip1(item, 1)
+            TmpSkip1::skip(item, 1)
             return
         end
 
