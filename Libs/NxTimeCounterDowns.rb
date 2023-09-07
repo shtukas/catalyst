@@ -20,7 +20,7 @@ class NxTimeCounterDowns
         v1 = Bank::getValue(item["uuid"])
         v2 = item["timespan"]
 
-        "(#{(v1.to_f/v2).round(2)}% of #{(item["timespan"].to_f/3600).round(2)} hours) #{str}"
+        "(#{100 * (v1.to_f/v2).round(2)}% of #{(item["timespan"].to_f/3600).round(2)} hours) #{str}"
     end
 
     # NxTimeCounterDowns::listingItems()
@@ -32,5 +32,12 @@ class NxTimeCounterDowns
                 end
             }
         Cubes::mikuType("NxTimeCounterDown")
+    end
+
+    # NxTimeCounterDowns::getNTCDByTargetUUIDOrNull(targetuuid)
+    def self.getNTCDByTargetUUIDOrNull(targetuuid)
+        Cubes::mikuType("NxTimeCounterDown")
+            .select{|item| item["targetuuid"] == targetuuid }
+            .first
     end
 end
