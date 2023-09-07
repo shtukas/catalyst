@@ -93,7 +93,7 @@ class TxCores
     # TxCores::coresForListing()
     def self.coresForListing()
         Cubes::mikuType("TxCore")
-            .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
+            .select{|core| Catalyst::listingCompletionRatio(core) < 1 or NxBalls::itemIsActive(core) }
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
