@@ -123,7 +123,8 @@ class Listing
             TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
-            NxPools::listingItems()
+            NxPools::listingItems(),
+            NxThreads::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

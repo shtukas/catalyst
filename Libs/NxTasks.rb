@@ -84,7 +84,8 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔺 (#{"%5.2f" % (item["coordinate-nx129"] || 0)}) #{item["description"]}"
+        orphans = item["lineage-nx128"].nil? ? " (orphan)" : ""
+        "🔺 (#{"%5.2f" % (item["coordinate-nx129"] || 0)})#{orphans} #{item["description"]}"
     end
 
     # --------------------------------------------------
@@ -123,7 +124,6 @@ class NxTasks
             thread = Cubes::itemOrNull(task["lineage-nx128"])
             next if thread
             Cubes::setAttribute2(task["uuid"], "lineage-nx128", nil)
-            Cubes::setAttribute2(task["uuid"], "coordinate-nx129", rand)
         }
 
         # Pick up NxFronts-BufferIn
