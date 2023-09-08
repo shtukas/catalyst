@@ -8,7 +8,6 @@ class NxTimeCounterDowns
         Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute2(uuid, "targetuuid", targetuuid)
         Cubes::setAttribute2(uuid, "timespan", timespan)
-        Cubes::setAttribute2(uuid, "ordinal-1324", ordinal)
         Cubes::itemOrNull(uuid)
     end
 

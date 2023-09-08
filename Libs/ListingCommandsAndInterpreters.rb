@@ -7,7 +7,6 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | engine <n> | pp (<n>) # postpone | destroy (<n>)",
             "",
-            "queue         : #{Listing::queueCommands()}",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -21,7 +20,6 @@ class ListingCommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                Catalyst::deQueue(item)
                 DoNotShowUntil::setUnixtime(item, unixtime)
                 return
             end
@@ -46,53 +44,6 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
- 
-        if Interpreting::match("q: new top line", input) then
-            line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
-            return if line == ""
-            item = NxLines::issue(line)
-            ordinal = XCache::getOrDefaultValue("42546732-27a9-4c67-bac4-4970e3acb833", "0").to_f
-            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
-            return
-        end
-
-        if Interpreting::match("q: insert line at *", input) then
-            _, _, _, _, ordinal = Interpreting::tokenizer(input)
-            ordinal = ordinal.to_f
-            line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
-            return if line == ""
-            item = NxLines::issue(line)
-            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
-            return
-        end
-
-        if Interpreting::match("q: insert item * *", input) then
-            _, _, _, listord, ordinal = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            ordinal = ordinal.to_f
-            Cubes::setAttribute2(item["uuid"], "ordinal-1324", ordinal)
-            TmpSkip1::unskip(item)
-            return
-        end
-
-        if Interpreting::match("q: target: * hours of * at *", input) then
-            _, _, timeInHours, _, _, listord, _, ordinal,  = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            ordinal = ordinal.to_f
-            timespan = timeInHours.to_f * 3600
-            NxTimeCounterDowns::issue(item["uuid"], timespan, ordinal)
-            return
-        end
-
-        if Interpreting::match("q: drop *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Cubes::setAttribute2(item["uuid"], "ordinal-1324", nil)
             return
         end
 
@@ -490,7 +441,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::stop(item)
-            Catalyst::deQueue(item)
             return
         end
 
@@ -499,7 +449,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::stop(item)
-            Catalyst::deQueue(item)
             return
         end
 

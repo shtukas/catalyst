@@ -1,5 +1,4 @@
 
-
 class SpaceControl
 
     def initialize(remaining_vertical_space)
@@ -102,51 +101,23 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::chasingTheDragon()
-    def self.chasingTheDragon()
-        threads1 = Cubes::mikuType("NxThread")
-            .select{|thread| thread["priority"]}
-            .select{|thread| TxDrives::ratio(thread) < 1 }
-            .sort_by{|thread| TxDrives::ratio(thread) }
-
-        threads2 = Cubes::mikuType("TxCore")
-            .select{|core| Catalyst::listingCompletionRatio(core) < 1 }
-            .sort_by{|core| Catalyst::listingCompletionRatio(core) }
-            .map{|core| 
-                TxCores::elementsInOrder(core).reduce([]){|selected, thread|
-                    if selected.size >= 6 then
-                        selected
-                    else
-                        if Bank::recoveredAverageHoursPerDay(thread["uuid"]) < 1 then
-                            selected + [thread]
-                        else
-                            selected
-                        end
-                    end
-                }
-            }
-            .flatten
-        threads1 + threads2
-    end
-
     # Listing::items()
     def self.items()
         cores = TxCores::coresForListing()
 
         [
-            NxBalls::runningItems(),
-            Anniversaries::listingItems(),
-            DropBox::items(),
-            PhysicalTargets::listingItems(),
-            Cubes::mikuType("NxLine"),
-            NxTimeCounterDowns::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
-            NxOndates::listingItems(),
-            NxBackups::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
-            Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
-            Cubes::mikuType("NxThread").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
-            Listing::chasingTheDragon()
+            #NxBalls::runningItems(),
+            #Anniversaries::listingItems(),
+            #DropBox::items(),
+            #PhysicalTargets::listingItems(),
+            #Cubes::mikuType("NxLine"),
+            #NxTimeCounterDowns::listingItems(),
+            #Waves::listingItems().select{|item| item["interruption"] },
+            #NxOndates::listingItems(),
+            #NxBackups::listingItems(),
+            #Waves::listingItems().select{|item| !item["interruption"] },
+            #Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
+            NxThreads::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -167,13 +138,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        queueSuffix = lambda{|item|
-            return "" if item["ordinal-1324"].nil?
-            ordinal = item["ordinal-1324"]
-            " [#{"%5.2f" % ordinal}]".green
-        }
-
-        line = "#{storePrefix}#{queueSuffix.call(item)} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -259,27 +224,6 @@ class Listing
         end
     end
 
-    # Listing::queueCommands()
-    def self.queueCommands()
-        "q: insert item <n> <ordinal> | q: new top line | q: insert line at <ordinal> | q: target: <time in hours> hours of <n> at <ordinal> | q: drop <n>"
-    end
-
-    # Listing::queueSorting(items)
-    def self.queueSorting(items)
-        i1s, i2s = items.partition{|item| item["ordinal-1324"] }
-        i1s = i1s.sort_by{|item| item["ordinal-1324"] }
-
-        if i1s.size > 0 then
-            XCache::set("42546732-27a9-4c67-bac4-4970e3acb833", i1s[0]["ordinal-1324"])
-        else
-            XCache::set("42546732-27a9-4c67-bac4-4970e3acb833", 0)
-        end
-
-        x1 = i1s.size > 0 ? [{"uuid" => "aa9062ea-e56a-4d51-b15e-630da0c00326", "mikuType" => "TxEmpty"}] : []
-
-        i1s + x1 + i2s
-    end
-
     # Listing::main()
     def self.main()
 
@@ -317,8 +261,6 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-            spacecontrol.putsline Listing::queueCommands()
-            spacecontrol.putsline ""
 
             cores = TxCores::coresForListing()
             if cores.size > 0 then
@@ -343,7 +285,6 @@ class Listing
             end
 
             items = Listing::items()
-            items = Listing::queueSorting(items)
             items = Prefix::prefix(items)
             items
                 .each{|item|

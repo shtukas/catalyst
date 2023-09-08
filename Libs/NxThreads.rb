@@ -88,6 +88,12 @@ class NxThreads
         position.to_f
     end
 
+    # NxThreads::listingItems()
+    def self.listingItems()
+        Cubes::mikuType("NxThread")
+            .sort_by{|thread| thread["coordinate-nx129"] }
+    end
+
     # --------------------------------------------------------------------------
     # Ops
 
