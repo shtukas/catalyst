@@ -120,7 +120,7 @@ class Listing
             NxPools::listingItems(),
             TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxThreads::listingItems()
+            TxTodos::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

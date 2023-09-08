@@ -119,36 +119,11 @@ class NxTasks
         # Ensuring consistency of lineages
 
         Cubes::mikuType("NxTask").each{|task|
-            next if task["lineage-nx128"]
-            thread = Cubes::itemOrNull("bc3901ad-18ad-4354-b90b-63f7a611e64e")  # Infinity Thread
-            if thread.nil? then
-                raise "error: C41FBB5C-518C-45A5-B45A-126C23282A05"
-            end
-            position = NxThreads::newFirstPosition(thread)
-            Cubes::setAttribute2(task["uuid"], "lineage-nx128", thread["uuid"])
-            Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
-        }
-
-        Cubes::mikuType("NxTask").each{|task|
-            if task["lineage-nx128"] then
-                thread = Cubes::itemOrNull(task["lineage-nx128"])
-                if thread.nil? then
-                    thread = Cubes::itemOrNull("bc3901ad-18ad-4354-b90b-63f7a611e64e")  # Infinity Thread
-                    if thread.nil? then
-                        raise "error: 51F2586F-E2BB-4F3D-954D-F859714F2267"
-                    end
-                    position = NxThreads::newFirstPosition(thread)
-                    Cubes::setAttribute2(task["uuid"], "lineage-nx128", thread["uuid"])
-                    Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
-                end
-            end
-        }
-
-        # Ensuring consistency of tasks lineages
-        Cubes::mikuType("NxTask").each{|task|
             next if task["lineage-nx128"].nil?
-            next if Cubes::itemOrNull(task["lineage-nx128"])
-            Cubes::setAttribute2(uuid, "lineage-nx128", nil)
+            thread = Cubes::itemOrNull(task["lineage-nx128"])
+            next if thread
+            Cubes::setAttribute2(task["uuid"], "lineage-nx128", nil)
+            Cubes::setAttribute2(task["uuid"], "coordinate-nx129", rand)
         }
 
         # Pick up NxFronts-BufferIn

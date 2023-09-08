@@ -232,6 +232,7 @@ class NxThreads
     # NxThreads::moveTasks(items)
     def self.moveTasks(items)
         thread = NxThreads::interactivelySelectOrNull()
+        return if thread.nil?
         items.each{|item|
             Cubes::setAttribute2(item["uuid"], "lineage-nx128", thread["uuid"])
         }
