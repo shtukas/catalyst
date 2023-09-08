@@ -4,16 +4,7 @@ Cross types conventions:
 
     - "field11"        : coredata reference string
     - "doNotShowUntil" : null or unixtime
-    - "note"           : null of String
     - "tmpskip1"       : TmpSkip1
 
-    - priority         : TxDrive
     - lineage-nx128    : string, uuid
     - coordinate-nx129 : float
-
-TxDrive {
-    "hours" : Float,
-    "type"  : "deadline",
-    "date"  : "YYYY-MM-DD"
-}
-

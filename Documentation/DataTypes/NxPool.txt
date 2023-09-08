@@ -1,0 +1,9 @@
+
+NxPool:
+    "uuid"        : String
+    "mikuType"    : "NxPool"
+    "unixtime"    : Float
+    "datetime"    : DateTime Iso 8601 UTC Zulu
+    "uuids"       : Array[String]
+    "dailyHours"  : null or Float
+    "weeklyHours" : null or Float

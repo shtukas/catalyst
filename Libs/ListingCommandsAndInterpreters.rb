@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | tx8 (<n>) | holiday <n> | skip | cloud (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | engine <n> | pp (<n>) # postpone | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
@@ -173,22 +173,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("position * *", input) then
+            _, listord, position = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts PolyFunctions::toString(item)
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set engine", "remove engine"])
-            return if option.nil?
-            if option == "set engine" then
-                engine = TxDrives::interactivelyBuildNewOrNull()
-                return if engine.nil?
-                Cubes::setAttribute2(item["uuid"], "priority", engine)
-            end
-            if option == "remove engine" then
-                Cubes::setAttribute2(item["uuid"], "priority", nil)
-            end
-            return
+            Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position.to_f)
         end
 
         if Interpreting::match("add time *", input) then

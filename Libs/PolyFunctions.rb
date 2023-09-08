@@ -27,13 +27,6 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTimeCounterDown" then
-            t = Cubes::itemOrNull(item["targetuuid"])
-            if t then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(t)
-            end
-        end
-
         # Special Features
 
         if item["lineage-nx128"] then
@@ -41,14 +34,6 @@ class PolyFunctions
             if lineage then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(lineage)
             end
-        end
-
-        ntcd = NxTimeCounterDowns::getNTCDByTargetUUIDOrNull(item["uuid"])
-        if ntcd then
-            accounts << {
-                "description" => "#{ntcd["mikuType"]} targetting #{item["description"]}",
-                "number"      => ntcd["uuid"]
-            }
         end
 
         accounts.reduce([]){|as, account|
@@ -91,9 +76,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxThread" then
             return NxThreads::toString(item)
-        end
-        if item["mikuType"] == "NxTimeCounterDown" then
-            return NxTimeCounterDowns::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

@@ -103,20 +103,20 @@ class Listing
 
     # Listing::items()
     def self.items()
-        cores = TxCores::coresForListing()
+        cores = TxCores::listingItems()
 
         [
-            #NxBalls::runningItems(),
-            #Anniversaries::listingItems(),
-            #DropBox::items(),
-            #PhysicalTargets::listingItems(),
-            #Cubes::mikuType("NxLine"),
-            #NxTimeCounterDowns::listingItems(),
-            #Waves::listingItems().select{|item| item["interruption"] },
-            #NxOndates::listingItems(),
-            #NxBackups::listingItems(),
-            #Waves::listingItems().select{|item| !item["interruption"] },
-            #Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
+            NxBalls::runningItems(),
+            Anniversaries::listingItems(),
+            DropBox::items(),
+            PhysicalTargets::listingItems(),
+            Cubes::mikuType("NxLine"),
+            Waves::listingItems().select{|item| item["interruption"] },
+            NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            NxPools::listingItems(),
+            TxCores::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
             NxThreads::listingItems()
         ]
             .flatten
@@ -127,9 +127,6 @@ class Listing
                 else
                     selected + [item]
                 end
-            }
-            .map{|item|
-                TxDrives::checkPriorityLiveness(item)
             }
     end
 
@@ -261,17 +258,6 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-
-            cores = TxCores::coresForListing()
-            if cores.size > 0 then
-                cores
-                    .each{|item|
-                        store.register(item, Listing::canBeDefault(item))
-                        status = spacecontrol.putsline Listing::toString2(store, item)
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
 
             desktopItems = Desktop::listingItems()
             if desktopItems.size > 0 then

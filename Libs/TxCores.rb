@@ -90,8 +90,8 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
-    # TxCores::coresForListing()
-    def self.coresForListing()
+    # TxCores::listingItems()
+    def self.listingItems()
         Cubes::mikuType("TxCore")
             .select{|core| Catalyst::listingCompletionRatio(core) < 1 or NxBalls::itemIsActive(core) }
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }

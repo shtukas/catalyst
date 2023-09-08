@@ -18,18 +18,9 @@ class NxThreads
     # --------------------------------------------------------------------------
     # Data
 
-    # NxThreads::engineSuffixOrNull(thread)
-    def self.engineSuffixOrNull(thread)
-        return nil if !TxDrives::isActiveEngineItem(thread)
-        ratio = TxDrives::ratio(thread)
-        return nil if ratio.nil?
-        percentage = 100*ratio
-        " (priority: #{"%6.2f" % percentage}% of #{thread["priority"]["hours"]} hours)"
-    end
-
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "⛵️ (#{"%5.2f" % thread["coordinate-nx129"]}) #{thread["description"]}#{NxThreads::engineSuffixOrNull(thread)}"
+        "⛵️ (#{"%5.2f" % thread["coordinate-nx129"]}) #{thread["description"]}"
     end
 
     # NxThreads::interactivelySelectOrNull()
@@ -91,7 +82,7 @@ class NxThreads
     # NxThreads::listingItems()
     def self.listingItems()
         Cubes::mikuType("NxThread")
-            .sort_by{|thread| thread["coordinate-nx129"] }
+            .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
     end
 
     # --------------------------------------------------------------------------

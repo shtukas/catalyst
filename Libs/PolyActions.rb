@@ -27,13 +27,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTimeCounterDown" then
-            t = Cubes::itemOrNull(item["targetuuid"])
-            return if t.nil?
-            PolyActions::access(t)
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -75,7 +68,6 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        Catalyst::deQueue(item)
 
         # Removing park, if any.
         item["parking"] = nil

@@ -8,16 +8,6 @@ class Prefix
         if item["mikuType"] == "NxThread" then
             return NxThreads::elementsInOrder(item).first(6)
         end
-
-        if item["mikuType"] == "NxTimeCounterDown" then
-            target = Cubes::itemOrNull(item["targetuuid"])
-            if target then
-                return Prefix::pureTopUp(target)
-            else
-                return []
-            end
-        end
-
         []
     end
 
