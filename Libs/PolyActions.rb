@@ -22,6 +22,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBurner" then
+            return
+        end
+
         if item["mikuType"] == "NxThread" then
             NxThreads::program1(item)
             return
@@ -85,6 +89,13 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBurner" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -177,6 +188,13 @@ class PolyActions
 
         NxBalls::stop(item)
 
+        if item["mikuType"] == "NxBurner" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
@@ -231,6 +249,13 @@ class PolyActions
     def self.doubleDots(item)
 
         if item["mikuType"] == "NxAnniversary" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxBurner" then
+            PolyFunctions::toString(item).green
+            NxBalls::start(item)
             PolyActions::access(item)
             return
         end

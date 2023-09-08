@@ -161,6 +161,7 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxThreads.rb"
 require_relative "NxPools.rb"
+require_relative "NxBurners.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

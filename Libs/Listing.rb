@@ -72,6 +72,8 @@ class Listing
 
         return false if item["mikuType"] == "DesktopTx1"
 
+        return false if item["mikuType"] == "NxBurner"
+
         return false if !DoNotShowUntil::isVisible(item)
 
         skipDirectiveOrNull = lambda {|item|
@@ -114,6 +116,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxBackups::listingItems(),
+            NxBurners::listingItems(),
             NxPools::listingItems(),
             TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
