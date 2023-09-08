@@ -74,6 +74,8 @@ class Listing
 
         return false if item["mikuType"] == "NxBurner"
 
+        return false if item["mikuType"] == "NxPool"
+
         return false if !DoNotShowUntil::isVisible(item)
 
         skipDirectiveOrNull = lambda {|item|
@@ -120,7 +122,8 @@ class Listing
             NxPools::listingItems(),
             TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            TxTodos::listingItems()
+            Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
+            NxPools::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

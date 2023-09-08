@@ -20,7 +20,7 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "⛵️ (#{"%5.2f" % thread["coordinate-nx129"]}) #{thread["description"]}"
+        "⛵️ #{thread["description"]}"
     end
 
     # NxThreads::interactivelySelectOrNull()

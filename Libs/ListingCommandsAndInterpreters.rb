@@ -7,7 +7,7 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | do not show until <n> | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | pool",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -67,6 +67,13 @@ class ListingCommandsAndInterpreters
             thread = Cubes::itemOrNull(threaduuid)
             position = NxThreads::newNextPosition(thread)
             Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
+            return
+        end
+
+        if Interpreting::match("pool", input) then
+            pool = NxPools::interactivelyIssueNewOrNull()
+            return if pool.nil?
+            puts JSON.pretty_generate(pool)
             return
         end
 
