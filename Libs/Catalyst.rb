@@ -86,23 +86,4 @@ class Catalyst
         DoNotShowUntil::setUnixtime(item, cursor)
         XCache::set("d74ae03d-24b7-4485-bf93-6c397ca4dc1c", cursor)
     end
-
-    # Catalyst::moveItemToInteractivelyDecidedThread1(item)
-    def self.moveItemToInteractivelyDecidedThread1(item)
-        if !["NxTask", "NxOndate"].include?(item["mikuType"]) then
-            puts "You can only moveItemToInteractivelyDecidedThread1 a NxTask or a NxOndate"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
-        end
-
-        thread = NxThreads::interactivelySelectOrNull()
-        return if thread.nil?
-        position = NxThreads::interactivelyDecidePositionAtThread(thread)
-        Cubes::setAttribute2(item["uuid"], "lineage-nx128", thread["uuid"])
-        Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position)
-    end
 end
