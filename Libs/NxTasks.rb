@@ -85,7 +85,7 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         orphans = item["lineage-nx128"].nil? ? " (orphan)" : ""
-        "🔺 (#{"%5.2f" % (item["coordinate-nx129"] || 0)})#{orphans} #{item["description"]}"
+        "🔹 (#{"%5.2f" % (item["coordinate-nx129"] || 0)})#{orphans} #{item["description"]}"
     end
 
     # --------------------------------------------------

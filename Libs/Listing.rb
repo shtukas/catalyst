@@ -118,10 +118,10 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxBackups::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
             NxBurners::listingItems(),
             NxPools::listingItems(),
             TxCores::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
             Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
             NxPools::listingItems(),
             NxThreads::listingItems()

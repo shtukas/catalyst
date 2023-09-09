@@ -20,20 +20,14 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "⛵️ #{thread["description"]}"
+        "🔺 #{thread["description"]}"
     end
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        threads = Cubes::mikuType("TxCore")
-                    .sort_by{|core| Catalyst::listingCompletionRatio(core) }
-                    .map{|core| 
-                        Cubes::mikuType("NxThread")
-                            .select{|item| item["lineage-nx128"] == core["uuid"] }
-                            .sort_by{|item| item["coordinate-nx129"] || 0 }
-                    }
-                    .flatten
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{PolyFunctions::lineageSuffix(item).strip.yellow} #{NxThreads::toString(item)}" })
+        threads = Cubes::mikuType("NxThread")
+                    .sort_by{|thread| thread["unixtime"] }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
     end
 
     # NxThreads::architectOrNull()

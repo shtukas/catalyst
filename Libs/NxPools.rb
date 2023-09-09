@@ -55,7 +55,7 @@ class NxPools
 
     # NxPools::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
-        threads = Cubes::mikuType("NxThread").sort_by{|item| item["coordinate-nx129"] || 0 }
+        threads = Cubes::mikuType("NxThread").sort_by{|item| item["unixtime"] }
         threads, _ = LucilleCore::selectZeroOrMore("threads", [], threads, lambda{|item| "#{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
         return nil if threads.empty?
         dailyHours = LucilleCore::askQuestionAnswerAsString("daily hours: ")
