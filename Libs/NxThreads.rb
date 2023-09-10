@@ -20,7 +20,10 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "🔺 #{thread["description"]}"
+        if thread["prefix-override"] then
+            return "🔹 #{thread["prefix-override"]} #{thread["description"]}"
+        end
+        "🔸 (#{"%5.2f" % (thread["coordinate-nx129"] || 0)}) #{thread["description"]}"
     end
 
     # NxThreads::interactivelySelectOrNull()
@@ -39,8 +42,7 @@ class NxThreads
 
     # NxThreads::elementsInOrder(thread)
     def self.elementsInOrder(thread)
-        Cubes::mikuType("NxTask")
-            .select{|item| item["lineage-nx128"] == thread["uuid"] }
+        Todos::children(thread)
             .sort_by{|item| item["coordinate-nx129"] || 0 }
     end
 
@@ -71,12 +73,6 @@ class NxThreads
             return NxThreads::newNextPosition(thread)
         end
         position.to_f
-    end
-
-    # NxThreads::listingItems()
-    def self.listingItems()
-        Cubes::mikuType("NxThread")
-            .sort_by{|thread| Bank::recoveredAverageHoursPerDay(thread["uuid"]) }
     end
 
     # --------------------------------------------------------------------------
@@ -221,31 +217,5 @@ class NxThreads
             break if thread.nil?
             NxThreads::program1(thread)
         }
-    end
-
-    # NxThreads::moveTaskablesToInteractivelySelectedThread(items)
-    def self.moveTaskablesToInteractivelySelectedThread(items)
-        if items.any?{|item| !["NxBurner", "NxTask", "NxOndate"].include?(item["mikuType"]) } then
-            puts "Moving items should be either NxBurner or NxTask or NxOndate"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-        thread = NxThreads::interactivelySelectOrNull()
-        return if thread.nil?
-        items.each{|item|
-            if item["mikuType"] == "NxBurner" then
-                Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            end
-            if item["mikuType"] == "NxOndate" then
-                Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
-            end
-            Cubes::setAttribute2(item["uuid"], "lineage-nx128", thread["uuid"])
-        }
-
-        if items.size == 1 then
-            item = items[0]
-            position = NxThreads::interactivelyDecidePositionAtThread(thread)
-            Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position)
-        end
     end
 end

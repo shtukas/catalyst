@@ -278,7 +278,7 @@ class PolyActions
                     return
                 end
                 NxBalls::stop(item)
-                NxThreads::moveTaskablesToInteractivelySelectedThread([item])
+                Catalyst::moveTaskables([item])
                 return
             end
 

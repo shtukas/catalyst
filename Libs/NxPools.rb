@@ -4,12 +4,12 @@ class PoolBanking
     # PoolBanking::dayRatioOrNull(pool)
     def self.dayRatioOrNull(pool)
         return nil if pool["dailyHours"].nil?
-        threads = pool["uuids"]
+        todos = pool["uuids"]
                     .map{|uuid| Cubes::itemOrNull(uuid) }
                     .compact
-        return 1 if threads.empty?
-        hoursDone = threads
-                        .map{|thread| Bank::getValueAtDate(thread["uuid"], CommonUtils::today()) }
+        return 1 if todos.empty?
+        hoursDone = todos
+                        .map{|todo| Bank::getValueAtDate(todo["uuid"], CommonUtils::today()) }
                         .map{|value| value.to_f/3066 }
                         .inject(0, :+)
         hoursDone.to_f/pool["dailyHours"]
@@ -18,14 +18,14 @@ class PoolBanking
     # PoolBanking::weekRatioOrNull(pool)
     def self.weekRatioOrNull(pool)
         return nil if pool["weeklyHours"].nil?
-        threads = pool["uuids"]
+        todos = pool["uuids"]
                     .map{|uuid| Cubes::itemOrNull(uuid) }
                     .compact
-        return 1 if threads.empty?
+        return 1 if todos.empty?
         hoursDone = (0..6)
                         .map{|ind|
-                            threads
-                                .map{|thread| Bank::getValueAtDate(thread["uuid"], CommonUtils::nDaysInTheFuture(-ind)) }
+                            todos
+                                .map{|todo| Bank::getValueAtDate(todo["uuid"], CommonUtils::nDaysInTheFuture(-ind)) }
                                 .map{|value| value.to_f/3066 }
                                 .inject(0, :+)
                         }
@@ -55,15 +55,15 @@ class NxPools
 
     # NxPools::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
-        threads = Cubes::mikuType("NxThread").sort_by{|item| item["unixtime"] }
-        threads, _ = LucilleCore::selectZeroOrMore("threads", [], threads, lambda{|item| "#{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
-        return nil if threads.empty?
+        todos = Todos::topItemsForPoolBuilding().sort_by{|item| item["coordinate-nx129"] || 0  }
+        todos, _ = LucilleCore::selectZeroOrMore("todos", [], todos, lambda{|item| "#{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
+        return nil if todos.empty?
         dailyHours = LucilleCore::askQuestionAnswerAsString("daily hours: ")
         dailyHours = dailyHours.size > 0 ? dailyHours.to_f : nil
         weeklyHours = LucilleCore::askQuestionAnswerAsString("weekly hours: ")
         weeklyHours = weeklyHours.size > 0 ? weeklyHours.to_f : nil
         return nil if dailyHours.nil? and weeklyHours.nil?
-        NxPools::issue(threads.map{|thread| thread["uuid"] }, dailyHours, weeklyHours)
+        NxPools::issue(todos.map{|todo| todo["uuid"] }, dailyHours, weeklyHours)
     end
 
     # NxPools::poolToElementsInOrder(pool)
@@ -91,7 +91,14 @@ class NxPools
         Cubes::mikuType("NxPool")
             .select{|pool| NxPools::poolToCompletionRatio(pool) < 1 }
             .sort_by{|pool| NxPools::poolToCompletionRatio(pool) }
-            .map{|pool| [pool] + NxPools::poolToElementsInOrder(pool) }
+            .map{|pool|
+                elements = NxPools::poolToElementsInOrder(pool)
+                            .map{|item|
+                                item["prefix-override"] = "(#{"%5.3f" % Bank::recoveredAverageHoursPerDay(item["uuid"])})"
+                                item
+                            }
+                [pool] + elements
+            }
             .flatten
     end
 

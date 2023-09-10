@@ -44,8 +44,8 @@ class NxTasks
         Cubes::itemOrNull(uuid)
     end
 
-    # NxTasks::locationToTask(location)
-    def self.locationToTask(location)
+    # NxTasks::bufferInLocationToTask(location)
+    def self.bufferInLocationToTask(location)
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
@@ -84,8 +84,10 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        orphans = item["lineage-nx128"].nil? ? " (orphan)" : ""
-        "🔹 (#{"%5.2f" % (item["coordinate-nx129"] || 0)})#{orphans} #{item["description"]}"
+        if item["prefix-override"] then
+            return "🔹 #{item["prefix-override"]} #{item["description"]}"
+        end
+        "🔹 (#{"%5.2f" % (item["coordinate-nx129"] || 0)}) #{item["description"]}"
     end
 
     # --------------------------------------------------
@@ -128,7 +130,7 @@ class NxTasks
 
         # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
-            NxTasks::locationToTask(location)
+            NxTasks::bufferInLocationToTask(location)
             LucilleCore::removeFileSystemLocation(location)
         }
 

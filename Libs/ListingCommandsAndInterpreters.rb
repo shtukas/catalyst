@@ -79,7 +79,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
-            NxThreads::moveTaskablesToInteractivelySelectedThread([item])
+            Catalyst::moveTaskables([item])
             return
         end
 
@@ -113,7 +113,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             puts PolyFunctions::toString(item).green
-            NxThreads::moveTaskablesToInteractivelySelectedThread([item])
+            Catalyst::moveTaskables([item])
             return
         end
 
@@ -122,7 +122,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts PolyFunctions::toString(item).green
-            NxThreads::moveTaskablesToInteractivelySelectedThread([item])
+            Catalyst::moveTaskables([item])
             return
         end
 

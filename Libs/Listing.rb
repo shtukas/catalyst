@@ -120,11 +120,10 @@ class Listing
             Backups::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxBurners::listingItems(),
-            Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
             NxPools::listingItems(),
+            Cubes::mikuType("NxTask").select{|item| item["description"].include?("(buffer-in)") }.sort_by{|item| item["unixtime"] },
             TxCores::listingItems(),
-            NxPools::listingItems(),
-            NxThreads::listingItems()
+            Todos::mainListingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

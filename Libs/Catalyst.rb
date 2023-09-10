@@ -85,4 +85,63 @@ class Catalyst
         DoNotShowUntil::setUnixtime(item, cursor)
         XCache::set("d74ae03d-24b7-4485-bf93-6c397ca4dc1c", cursor)
     end
+
+    # Catalyst::moveTaskables(items, parent or nil)
+    def self.moveTaskables(items, parent = nil)
+        if items.any?{|item| !["NxOndate", "NxBurner", "NxTask", "NxThread"].include?(item["mikuType"]) } then
+            puts "Moving items should be either NxOndate, NxBurner, NxTask or NxThread"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if parent.nil? then
+            parent = TxCores::interactivelySelectOneOrNull()
+            return if parent.nil?
+            Catalyst::moveTaskables(items, parent)
+            return
+        end
+
+        loop {
+            system("clear")
+            parentKids = Todos::children(parent).sort_by{|item| item["coordinate-nx129"] || 0 }
+            puts "parent: #{PolyFunctions::toString(parent).green}"
+            puts "kids:"
+            parentKids.each_with_index{|i, indx| puts "  - (#{indx}) #{PolyFunctions::toString(i)}"}
+            puts ""
+            puts "> here | make thread here | go to <n> # of thread to go in"
+            command = STDIN.gets().strip
+            if command == "here" then
+                items.each{|item|
+                    if item["mikuType"] == "NxBurner" then
+                        Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
+                    end
+                    if item["mikuType"] == "NxOndate" then
+                        Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
+                    end
+                    Cubes::setAttribute2(item["uuid"], "lineage-nx128", parent["uuid"])
+                }
+                if items.size == 1 then
+                    item = items[0]
+                    position = NxThreads::interactivelyDecidePositionAtThread(parent)
+                    Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position)
+                end
+                return
+            end
+            if command == "make thread here" then
+                position = NxThreads::interactivelyDecidePositionAtThread(parent)
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                next if thread.nil?
+                Cubes::setAttribute2(thread["uuid"], "lineage-nx128", parent["uuid"])
+                Cubes::setAttribute2(thread["uuid"], "coordinate-nx129", position)
+                next
+            end
+            if command.start_with?("go to") then
+                indx = command[5, 99].strip.to_i
+                target = parentKids[indx]
+                next if target.nil?
+                Catalyst::moveTaskables(items, target)
+                return
+            end
+        }
+    end
 end
