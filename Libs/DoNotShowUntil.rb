@@ -3,9 +3,11 @@ class DoNotShowUntil
 
     # DoNotShowUntil::setUnixtime(item, unixtime)
     def self.setUnixtime(item, unixtime)
-        Cubes::setAttribute2(item["uuid"], "doNotShowUntil", unixtime)
         # We use XCache for the special purpose of backup items on alexandra
         XCache::set("DoNotShowUntil:#{item["uuid"]}", unixtime)
+
+        return if item["mikuType"] == "Backup"
+        Cubes::setAttribute2(item["uuid"], "doNotShowUntil", unixtime)
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)

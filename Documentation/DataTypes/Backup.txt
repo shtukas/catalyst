@@ -1,0 +1,5 @@
+
+Backup 
+    - "uuid"                : String
+    - "mikuType"            : "Backup"
+    - "description"         : String

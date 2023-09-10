@@ -117,12 +117,12 @@ class Listing
             Cubes::mikuType("NxLine"),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            NxBackups::listingItems(),
+            Backups::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             NxBurners::listingItems(),
+            Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
             NxPools::listingItems(),
             TxCores::listingItems(),
-            Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"].nil? }.sort_by{|item| item["unixtime"] },
             NxPools::listingItems(),
             NxThreads::listingItems()
         ]
@@ -170,7 +170,6 @@ class Listing
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
-        spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })

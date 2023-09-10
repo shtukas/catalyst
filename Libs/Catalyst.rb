@@ -6,7 +6,6 @@ class Catalyst
     def self.mikuTypes()
         [
           "NxAnniversary",
-          "NxBackup",
           "NxIce",
           "NxLine",
           "NxOndate",

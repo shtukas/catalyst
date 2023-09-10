@@ -1,20 +1,28 @@
 
 class DropBox
 
+    # DropBox::strFormat(str)
+    def self.strFormat(str)
+        str = str.strip
+        return "" if str == ""
+        str.lines.map{|l| "      #{l}" }
+        .join()
+    end
+
     # DropBox::locationToItem(location)
     def self.locationToItem(location)
         uuid = File.basename(location)
         {
             "uuid"        => uuid,
             "mikuType"    => "DropBox",
-            "description" => "(DropBox) #{IO.read(location).strip}"
+            "description" => "(DropBox)\n#{DropBox::strFormat(IO.read(location).strip)}"
         }
     end
 
     # DropBox::items()
     def self.items()
         LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/DropBox")
-            .select{|location| File.basename(location)[-9, 9] == ".txt" }
+            .select{|location| File.basename(location)[-4, 4] == ".txt" }
             .map{|location| DropBox::locationToItem(location)}
     end
 

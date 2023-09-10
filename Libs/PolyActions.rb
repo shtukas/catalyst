@@ -15,10 +15,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxBackups::performDone(item)
-            end
+        if item["mikuType"] == "Backup" then
             return
         end
 
@@ -86,10 +83,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                DoNotShowUntil::setUnixtime(item, Time.new.to_i + item["periodInDays"] * 86400)
-            end
+        if item["mikuType"] == "Backup" then
+            XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
             return
         end
 
@@ -124,12 +119,6 @@ class PolyActions
 
         if item["mikuType"] == "NxLong" then
             Cubes::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            puts "done-ing item: #{item["description"]}"
-            NxBackups::performDone(item)
             return
         end
 
@@ -260,8 +249,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBackup" then
+        if item["mikuType"] == "Backup" then
             PolyActions::access(item)
+            PolyActions::done(item)
             return
         end
 
@@ -344,11 +334,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBackup" then
-            NxBackups::program(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
             return
@@ -383,8 +368,8 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-        if item["mikuType"] == "NxBackup" then
-            puts "There is no description edit for NxBackups (inherited from the file)"
+        if item["mikuType"] == "Backup" then
+            puts "There is no description edit for Backups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
             return
         end

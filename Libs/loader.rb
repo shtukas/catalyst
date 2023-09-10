@@ -132,6 +132,7 @@ require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
+require_relative "Backups.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
@@ -154,7 +155,6 @@ require_relative "ListingCommandsAndInterpreters.rb"
 
 require_relative "Memoize.rb"
 
-require_relative "NxBackups.rb"
 require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
