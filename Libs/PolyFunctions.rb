@@ -36,6 +36,13 @@ class PolyFunctions
             end
         end
 
+        NxPools::getPoolsByElementUUID(item["uuid"]).each{|pool|
+            accounts << {
+                "description" => "(pool: #{pool["uuid"]})",
+                "number"      => pool["uuid"]
+            }
+        }
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

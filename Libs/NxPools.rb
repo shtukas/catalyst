@@ -106,4 +106,9 @@ class NxPools
     def self.toString(pool)
         "pool: #{NxPools::poolToCompletionRatio(pool)}"
     end
+
+    # NxPools::getPoolsByElementUUID(uuid)
+    def self.getPoolsByElementUUID(uuid)
+        Cubes::mikuType("NxPool").select{|pool| pool["uuids"].include?(uuid) }
+    end
 end
