@@ -121,7 +121,7 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             NxBurners::listingItems(),
             NxPools::listingItems(),
-            Cubes::mikuType("NxTask").select{|item| item["description"].include?("(buffer-in)") }.sort_by{|item| item["unixtime"] },
+            Todos::bufferInItems(),
             TxCores::listingItems(),
             Todos::mainListingItems()
         ]

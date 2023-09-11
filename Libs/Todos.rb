@@ -29,4 +29,12 @@ class Todos
         x2 = Cubes::mikuType("NxTask").select{|item| item["lineage-nx128"] == parent["uuid"] }
         (x1 + x2)
     end
+
+    # Todos::bufferInItems()
+    def self.bufferInItems()
+        Cubes::mikuType("NxTask")
+            .select{|item| item["lineage-nx128"].nil? }
+            .select{|item| item["description"].include?("(buffer-in)") }
+            .sort_by{|item| item["unixtime"] }
+    end
 end
