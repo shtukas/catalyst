@@ -89,6 +89,7 @@ class NxPools
     # NxPools::listingItems()
     def self.listingItems()
         Cubes::mikuType("NxPool")
+            .select{|pool| Listing::listable(pool) }
             .select{|pool| NxPools::poolToCompletionRatio(pool) < 1 }
             .sort_by{|pool| NxPools::poolToCompletionRatio(pool) }
             .map{|pool|
