@@ -23,7 +23,8 @@ class Stratification
     def self.getDirectTopOrNull(item)
         Cubes::mikuType("NxStrat")
             .select{|i| i["bottom"] == item["uuid"] }
-            .first
+            .sort_by{|i| i["unixtime"] }
+            .last
     end
 
     # Stratification::getItemStratification(item)
