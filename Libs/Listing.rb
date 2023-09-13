@@ -118,10 +118,10 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             Backups::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
             NxBurners::listingItems(),
             NxPools::listingItems(),
             Todos::bufferInItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
             TxCores::listingItems(),
             Todos::mainListingItems()
         ]
