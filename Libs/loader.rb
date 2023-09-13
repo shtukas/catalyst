@@ -146,6 +146,7 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 
 require_relative "EventPublisher.rb"
+require_relative "EventTimelineReducer.rb"
 
 require_relative "Galaxy.rb"
 

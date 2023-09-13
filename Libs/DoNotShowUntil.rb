@@ -11,6 +11,19 @@ class DoNotShowUntil
         }
     end
 
+    # DoNotShowUntil::getDataSet()
+    def self.getDataSet()
+        cachePrefix = "A057CBE4-9F58-491E-A2AB-6CB93205787C"
+        unit = {}
+        combinator = lambda{|data, event|
+            if event["eventType"] == "DoNotShowUntil" then
+                data[event["targetId"]] = event["unixtime"]
+            end
+            data
+        }
+        EventTimelineReducer::extract(cachePrefix, unit, combinator)
+    end
+
     # DoNotShowUntil::setUnixtime(item, unixtime)
     def self.setUnixtime(item, unixtime)
         # We use XCache for the special purpose of backup items on alexandra
