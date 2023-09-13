@@ -22,6 +22,7 @@ class DoNotShowUntil
             data
         }
         EventTimelineReducer::extract(cachePrefix, unit, combinator)
+        # data: Map[targetId, unixtime]
     end
 
     # DoNotShowUntil::setUnixtime(item, unixtime)
