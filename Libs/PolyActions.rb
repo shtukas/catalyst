@@ -131,11 +131,10 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             if Stratification::getDirectTopOrNull(item) then
-                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification"
+                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
                 LucilleCore::pressEnterToContinue()
                 return
             end
-
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes::destroy(item["uuid"])
@@ -162,6 +161,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxStrat" then
+            if Stratification::getDirectTopOrNull(item) then
+                puts "You are trying to destroy a strat item which has a top element. Operation forbidden."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
             end
@@ -192,6 +196,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
+            if Stratification::getDirectTopOrNull(item) then
+                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if NxThreads::elementsInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{NxThreads::elementsInOrder(item).size} children items"
                 LucilleCore::pressEnterToContinue()
@@ -217,6 +226,19 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTask" then
+            if Stratification::getDirectTopOrNull(item) then
+                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
+                Cubes::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "TxCore" then
             puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
@@ -224,6 +246,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxStrat" then
+            if Stratification::getDirectTopOrNull(item) then
+                puts "You are trying to destroy a strat item which has a top element. Operation forbidden."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
             end
