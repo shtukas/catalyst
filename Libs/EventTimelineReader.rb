@@ -74,4 +74,13 @@ class EventTimelineReader
         end
         EventTimelineReader::snakeMarker(cachePrefix, combinator, data, filepaths)
     end
+
+    # EventTimelineReader::lastFilepathForCaching()
+    def self.lastFilepathForCaching()
+        begin
+            return EventTimelineReader::timelineFilepathsReverseEnumerator().next()
+        rescue
+            "967016d2-d506-44e9-986b-bf7f91971009"
+        end
+    end
 end

@@ -168,10 +168,18 @@ class Listing
 
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
+        spot.contest_entry("DropBox::items()", lambda{ DropBox::items() })
+        spot.contest_entry("Catalyst::mikuType(NxLine)", lambda{ Catalyst::mikuType("NxLine") })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
+        spot.contest_entry("NxPools::listingItems()", lambda{ NxPools::listingItems() })
+        spot.contest_entry("Todos::bufferInItems()", lambda{ Todos::bufferInItems() })
+        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
+        spot.contest_entry("Todos::mainListingItems()", lambda{ Todos::mainListingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
+
         spot.end_contest()
 
         puts ""

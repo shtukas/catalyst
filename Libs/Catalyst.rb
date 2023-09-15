@@ -2,31 +2,6 @@
 
 class Catalyst
 
-    # Catalyst::mikuTypes()
-    def self.mikuTypes()
-        [
-          "NxAnniversary",
-          "NxBurner",
-          "NxIce",
-          "NxLine",
-          "NxOndate",
-          "NxPool",
-          "NxStrat",
-          "NxTask",
-          "NxThread",
-          "PhysicalTarget",
-          "TxCore",
-          "Wave"
-        ]
-    end
-
-    # Catalyst::catalystItems()
-    def self.catalystItems()
-        Catalyst::mikuTypes()
-            .map{|mikuType| Catalyst::mikuType(mikuType) }
-            .flatten
-    end
-
     # Catalyst::maintenance()
     def self.maintenance()
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/OpenCycles").each{|location|
@@ -175,16 +150,37 @@ class Catalyst
 
     # Catalyst::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        Catalyst::getDataSet()[uuid]
+        trace = EventTimelineReader::lastFilepathForCaching()
+        item = XCache::getOrNull("ef0b4eaf-f5ff-466e-b739-830028b55b83:#{trace}:#{uuid}")
+        if item then
+            return JSON.parse(item)
+        end
+        item = Catalyst::getDataSet()[uuid]
+        if item then
+            XCache::set("ef0b4eaf-f5ff-466e-b739-830028b55b83:#{trace}:#{uuid}", JSON.generate(item))
+        end
+        item
     end
 
     # Catalyst::mikuType(mikuType)
     def self.mikuType(mikuType)
-        Catalyst::getDataSet().values.select{|item| item["mikuType"] == mikuType }
+        trace = EventTimelineReader::lastFilepathForCaching()
+        items = XCache::getOrNull("128ae7d8-aa23-4e13-af7c-b2d663fa63dd:#{trace}:#{mikuType}")
+        if items then
+            return JSON.parse(items)
+        end
+        items = Catalyst::getDataSet().values.select{|item| item["mikuType"] == mikuType }
+        XCache::set("128ae7d8-aa23-4e13-af7c-b2d663fa63dd:#{trace}:#{mikuType}", JSON.generate(items))
+        items
     end
 
     # Catalyst::destroy(uuid)
     def self.destroy(uuid)
         Events::publishItemDestroy(uuid)
+    end
+
+    # Catalyst::catalystItems()
+    def self.catalystItems()
+        Catalyst::getDataSet().values
     end
 end
