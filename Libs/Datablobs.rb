@@ -3,7 +3,7 @@ class Datablobs
 
     # Datablobs::repository()
     def self.repository()
-        "#{Config::pathToGalaxy()}/DataHub/catalyst/Datablobs"
+        "#{Config::pathToGalaxy()}/DataHub/catalyst/Datablobs/2023-09"
     end
 
     # Datablobs::putBlob(datablob) # nhash
