@@ -22,7 +22,16 @@ class DoNotShowUntil
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
     def self.getUnixtimeOrNull(item)
-        DoNotShowUntil::getDataSet()[item["uuid"]]
+        trace = EventTimelineReader::lastTraceForCaching()
+        unxitime = XCache::getOrNull("11ef13b1-b3b7-48e8-8a4d-6caab4fcec52:#{trace}:#{item["uuid"]}")
+        if unxitime then
+            return unxitime.to_i
+        end
+        unxitime = DoNotShowUntil::getDataSet()[item["uuid"]]
+        if unxitime then
+            XCache::set("11ef13b1-b3b7-48e8-8a4d-6caab4fcec52:#{trace}:#{item["uuid"]}", unxitime)
+        end
+        unxitime
     end
 
     # DoNotShowUntil::isVisible(item)

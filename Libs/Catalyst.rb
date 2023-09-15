@@ -150,7 +150,7 @@ class Catalyst
 
     # Catalyst::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        trace = EventTimelineReader::lastFilepathForCaching()
+        trace = EventTimelineReader::lastTraceForCaching()
         item = XCache::getOrNull("ef0b4eaf-f5ff-466e-b739-830028b55b83:#{trace}:#{uuid}")
         if item then
             return JSON.parse(item)
@@ -164,7 +164,7 @@ class Catalyst
 
     # Catalyst::mikuType(mikuType)
     def self.mikuType(mikuType)
-        trace = EventTimelineReader::lastFilepathForCaching()
+        trace = EventTimelineReader::lastTraceForCaching()
         items = XCache::getOrNull("128ae7d8-aa23-4e13-af7c-b2d663fa63dd:#{trace}:#{mikuType}")
         if items then
             return JSON.parse(items)

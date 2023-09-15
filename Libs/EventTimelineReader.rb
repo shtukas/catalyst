@@ -1,15 +1,18 @@
 
+
+$trace68be8052a3bf = nil
+
 class EventTimelineReader
 
-    # EventTimelineReader::root()
-    def self.root()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Events"
+    # EventTimelineReader::eventsTimeline()
+    def self.eventsTimeline()
+        "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Events/Timeline"
     end
 
     # EventTimelineReader::timelineFilepathsReverseEnumerator()
     def self.timelineFilepathsReverseEnumerator()
         Enumerator.new do |filepaths|
-            LucilleCore::locationsAtFolder(EventTimelineReader::root()).sort.reverse.each{|locationYear|
+            LucilleCore::locationsAtFolder(EventTimelineReader::eventsTimeline()).sort.reverse.each{|locationYear|
                 LucilleCore::locationsAtFolder(locationYear).sort.reverse.each{|locationMonth|
                     LucilleCore::locationsAtFolder(locationMonth).sort.reverse.each{|locationDay|
                         LucilleCore::locationsAtFolder(locationDay).sort.reverse.each{|locationIndexFolder|
@@ -35,7 +38,7 @@ class EventTimelineReader
         loop {
             begin 
                 filepath = filepathEnumerator.next()
-                #puts "snakeMaker: cachePrefix: #{cachePrefix} / collecting: #{filepath}"
+                puts "snakeMaker: cachePrefix: #{cachePrefix} / collecting: #{filepath}".yellow
                 data = XCache::getOrNull("#{cachePrefix}:#{filepath}")
                 if data then
                     return [filepath] + filepaths
@@ -54,7 +57,7 @@ class EventTimelineReader
             filepath = filepaths.shift
             event = JSON.parse(IO.read(filepath))
             data = combinator.call(data, event)
-            #puts "snakeMarker: cachePrefix: #{cachePrefix} / storing data @ #{filepath}"
+            puts "snakeMarker: cachePrefix: #{cachePrefix} / storing data @ #{filepath}".yellow
             XCache::set("#{cachePrefix}:#{filepath}", JSON.generate(data))
         }
     end
@@ -75,10 +78,13 @@ class EventTimelineReader
         EventTimelineReader::snakeMarker(cachePrefix, combinator, data, filepaths)
     end
 
-    # EventTimelineReader::lastFilepathForCaching()
-    def self.lastFilepathForCaching()
+    # EventTimelineReader::lastTraceForCaching()
+    def self.lastTraceForCaching()
         begin
-            return EventTimelineReader::timelineFilepathsReverseEnumerator().next()
+            if $trace68be8052a3bf.nil? then
+                $trace68be8052a3bf = EventTimelineReader::timelineFilepathsReverseEnumerator().next()
+            end
+            $trace68be8052a3bf
         rescue
             "967016d2-d506-44e9-986b-bf7f91971009"
         end

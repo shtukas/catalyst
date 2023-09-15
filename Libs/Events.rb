@@ -1,23 +1,20 @@
 
 class Events
 
-    # Events::root()
-    def self.root()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Events"
-    end
-
     # Events::publish(event)
     def self.publish(event)
         timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
-        folder1 = LucilleCore::indexsubfolderpath("#{Events::root()}/#{timefragment}", 100)
+        folder1 = LucilleCore::indexsubfolderpath("#{EventTimelineReader::eventsTimeline()}/#{timefragment}", 100)
         filepath1 = "#{folder1}/#{CommonUtils::timeStringL22()}.json"
         File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
+        $trace68be8052a3bf = EventTimelineReader::timelineFilepathsReverseEnumerator().next()
     end
 
     # Events::makeDoNotShowUntil(item, unixtime)
     def self.makeDoNotShowUntil(item, unixtime)
         {
             "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_,
             "eventType" => "DoNotShowUntil",
             "targetId"  => item["uuid"],
             "unixtime"  => unixtime
@@ -33,6 +30,7 @@ class Events
     def self.makeItemAttributeUpdate(itemuuid, attname, attvalue)
         {
             "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_,
             "eventType" => "ItemAttributeUpdate",
             "payload" => {
                 "itemuuid" => itemuuid,
@@ -51,6 +49,7 @@ class Events
     def self.makeItemDestroy(itemuuid)
         {
             "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_,
             "eventType" => "ItemAttributeUpdate",
             "itemuuid"  => itemuuid
         }
@@ -64,7 +63,8 @@ class Events
     # Events::makeItemInit(uuid, mikuType)
     def self.makeItemInit(uuid, mikuType)
         {
-            "uuid" => SecureRandom.uuid,
+            "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_,
             "eventType" => "ItemInit",
             "payload" => {
                 "uuid"     => uuid,
