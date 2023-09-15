@@ -6,7 +6,6 @@
     Cubes::setAttribute2(uuid, attribute_name, value)
     Cubes::destroy(uuid)
     Cubes::mikuType(mikuType)
-    Cubes::putDatablob2(uuid, datablob)
 =end
 
 require 'fileutils'
@@ -380,12 +379,6 @@ class Cub3sX
         Cub3sX::getSet1(filepath, set_name)
     end
 
-    # Cub3sX::putDatablob2(uuid, datablob) # nhash
-    def self.putDatablob2(uuid, datablob)
-        # We are no longer putting datablobs into the cube files, sending them to the file system
-        Datablobs::putBlob(datablob)
-    end
-
     # Cub3sX::getDatablobOrNull1(filepath, nhash)
     def self.getDatablobOrNull1(filepath, nhash)
         raise "(error: 273139ba-e4ef-4345-a4de-2594ce77c563) filepath: #{filepath}" if !File.exist?(filepath)
@@ -460,7 +453,7 @@ class C3xElizabeth
     end
 
     def putBlob(datablob) # nhash
-        Cub3sX::putDatablob2(@uuid, datablob)
+        Datablobs::putBlob(datablob)
     end
 
     def filepathToContentHash(filepath)
@@ -600,8 +593,4 @@ class Cubes
             .map{|entry| entry["item"] }
     end
 
-    # Cubes::putDatablob2(uuid, datablob)
-    def self.putDatablob2(uuid, datablob)
-        Cub3sX::putDatablob2(uuid, datablob)
-    end
 end
