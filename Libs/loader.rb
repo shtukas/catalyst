@@ -53,9 +53,7 @@ checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
 
-require_relative "Cubes.rb"
-
-require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/CoreDataRefStrings.rb"
+require_relative "CoreDataRefStrings.rb"
 
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/LucilleCore.rb"
 
@@ -146,9 +144,10 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
 
-require_relative "EventPublisher.rb"
-require_relative "EventTimelineReducer.rb"
+require_relative "EventTimelineReader.rb"
 require_relative "Events.rb"
+
+require_relative "Fsck.rb"
 
 require_relative "Galaxy.rb"
 

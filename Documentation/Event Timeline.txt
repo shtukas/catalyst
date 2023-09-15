@@ -31,12 +31,27 @@ We have one event timeline, but several extractors focusing on the events they f
 
 {
     "uuid": string
+    "eventType": "ItemInit"
+    "payload": {
+        "uuid"     : string,
+        "mikuType" : string
+    }
+}
+
+{
+    "uuid": string
     "eventType": "ItemAttributeUpdate"
     "payload": {
         "itemuuid" : string,
         "attname"  : string,
         "attvalue" : string
     }
+}
+
+{
+    "uuid": string
+    "eventType": "ItemDestroy"
+    "itemuuid" : string
 }
 
 -- Extractors ------------------------------------------------------------------

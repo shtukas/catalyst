@@ -63,10 +63,10 @@ class ListingCommandsAndInterpreters
             title = LucilleCore::askQuestionAnswerAsString("title: ")
             task = NxTasks::descriptionToTask("netflix: #{title}")
             threaduuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
-            Cubes::setAttribute2(task["uuid"], "lineage-nx128", threaduuid)
-            thread = Cubes::itemOrNull(threaduuid)
+            Events::publishItemAttributeUpdate(task["uuid"], "lineage-nx128", threaduuid)
+            thread = Catalyst::itemOrNull(threaduuid)
             position = NxThreads::newNextPosition(thread)
-            Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
+            Events::publishItemAttributeUpdate(task["uuid"], "coordinate-nx129", position)
             return
         end
 
@@ -94,7 +94,7 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Cubes::setAttribute2(item["uuid"], "lineage-nx128", core["uuid"])
+            Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", core["uuid"])
             return
         end
 
@@ -105,7 +105,7 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Cubes::setAttribute2(item["uuid"], "lineage-nx128", core["uuid"])
+            Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", core["uuid"])
             return
         end
 
@@ -191,7 +191,7 @@ class ListingCommandsAndInterpreters
             _, listord, position = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position.to_f)
+            Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position.to_f)
         end
 
         if Interpreting::match("add time *", input) then
@@ -233,7 +233,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Cubes::setAttribute2(item["uuid"], "field11", reference)
+            Events::publishItemAttributeUpdate(item["uuid"], "field11", reference)
             return
         end
 
@@ -243,7 +243,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Cubes::setAttribute2(item["uuid"], "field11", reference)
+            Events::publishItemAttributeUpdate(item["uuid"], "field11", reference)
             return
         end
 
@@ -468,7 +468,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            Cubes::setAttribute2(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            Events::publishItemAttributeUpdate(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

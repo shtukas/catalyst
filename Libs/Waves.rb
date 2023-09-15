@@ -114,17 +114,17 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "Wave", uuid)
+        Events::publishItemInit("Wave", uuid)
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "nx46", nx46)
-        Cubes::setAttribute2(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        Cubes::setAttribute2(uuid, "field11", coredataref)
-        Cubes::setAttribute2(uuid, "interruption", interruption)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "nx46", nx46)
+        Events::publishItemAttributeUpdate(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Events::publishItemAttributeUpdate(uuid, "interruption", interruption)
+        Catalyst::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -141,7 +141,7 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        Cubes::mikuType("Wave")
+        Catalyst::mikuType("Wave")
             .select{|item| Listing::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
@@ -157,9 +157,9 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
-        Cubes::setAttribute2(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Cubes::setAttribute2(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-        Cubes::setAttribute2(item["uuid"], "parking", nil)
+        Events::publishItemAttributeUpdate(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        Events::publishItemAttributeUpdate(item["uuid"], "parking", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -183,12 +183,12 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                Cubes::setAttribute2(item["uuid"], "description", description)
+                Events::publishItemAttributeUpdate(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                Cubes::setAttribute2(item["uuid"], "nx46", nx46)
+                Events::publishItemAttributeUpdate(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveDone(item)
@@ -196,11 +196,11 @@ class Waves
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                Cubes::setAttribute2(item["uuid"], "onlyOnDays", days)
+                Events::publishItemAttributeUpdate(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
-                    Cubes::destroy(item["uuid"])
+                    Catalyst::destroy(item["uuid"])
                     return
                 end
             end
@@ -210,7 +210,7 @@ class Waves
     # Waves::program1()
     def self.program1()
         loop {
-            items = Cubes::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
+            items = Catalyst::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
             wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
             return if wave.nil?
             Waves::program2(wave)
@@ -219,7 +219,7 @@ class Waves
 
     # Waves::fsck()
     def self.fsck()
-        Cubes::mikuType("Wave").each{|item|
+        Catalyst::mikuType("Wave").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

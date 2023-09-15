@@ -184,7 +184,7 @@ class NxBalls
         NxBalls::all()
             .map{|ball| ball["itemuuid"] }
             .map{|itemuuid| 
-                ix = Cubes::itemOrNull(itemuuid)
+                ix = Catalyst::itemOrNull(itemuuid)
                 if ix.nil? then
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then

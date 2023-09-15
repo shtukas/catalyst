@@ -8,11 +8,11 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxThread", uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemInit("NxThread", uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Catalyst::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------------------------
@@ -28,7 +28,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        threads = Cubes::mikuType("NxThread")
+        threads = Catalyst::mikuType("NxThread")
                     .sort_by{|thread| thread["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
     end
@@ -82,28 +82,28 @@ class NxThreads
     def self.maintenance()
         # Ensuring consistency of lineages
 
-        Cubes::mikuType("NxThread").each{|thread|
+        Catalyst::mikuType("NxThread").each{|thread|
             next if thread["lineage-nx128"]
-            core = Cubes::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22")  # Infinity Core
+            core = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22")  # Infinity Core
             if core.nil? then
                 raise "error: B1204141-BBB8-4712-8238-0C1FC979D4B9"
             end
             position = TxCores::newFirstPosition(core)
-            Cubes::setAttribute2(thread["uuid"], "lineage-nx128", core["uuid"])
-            Cubes::setAttribute2(thread["uuid"], "coordinate-nx129", position)
+            Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", core["uuid"])
+            Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
         }
 
-        Cubes::mikuType("NxThread").each{|thread|
+        Catalyst::mikuType("NxThread").each{|thread|
             if thread["lineage-nx128"] then
-                core = Cubes::itemOrNull(thread["lineage-nx128"])
+                core = Catalyst::itemOrNull(thread["lineage-nx128"])
                 if core.nil? then
-                    core = Cubes::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22")  # Infinity Core
+                    core = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22")  # Infinity Core
                     if core.nil? then
                         raise "error: 3CCCED4A-644A-42E1-B787-01686CAF57B4"
                     end
                     position = TxCores::newFirstPosition(core)
-                    Cubes::setAttribute2(thread["uuid"], "lineage-nx128", core["uuid"])
-                    Cubes::setAttribute2(thread["uuid"], "coordinate-nx129", position)
+                    Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", core["uuid"])
+                    Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
                 end
             end
         }
@@ -113,7 +113,7 @@ class NxThreads
     def self.program1(thread)
         loop {
 
-            thread = Cubes::itemOrNull(thread["uuid"])
+            thread = Catalyst::itemOrNull(thread["uuid"])
             return if thread.nil?
 
             system("clear")
@@ -147,8 +147,8 @@ class NxThreads
                 position = NxThreads::newNextPosition(thread)
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
-                Cubes::setAttribute2(task["uuid"], "lineage-nx128", thread["uuid"])
-                Cubes::setAttribute2(task["uuid"], "coordinate-nx129", position)
+                Events::publishItemAttributeUpdate(task["uuid"], "lineage-nx128", thread["uuid"])
+                Events::publishItemAttributeUpdate(task["uuid"], "coordinate-nx129", position)
                 next
             end
 
@@ -163,8 +163,8 @@ class NxThreads
                     next if t1.nil?
                     puts JSON.pretty_generate(t1)
 
-                    Cubes::setAttribute2(t1["uuid"], "lineage-nx128", thread["uuid"])
-                    Cubes::setAttribute2(t1["uuid"], "coordinate-nx129", position)
+                    Events::publishItemAttributeUpdate(t1["uuid"], "lineage-nx128", thread["uuid"])
+                    Events::publishItemAttributeUpdate(t1["uuid"], "coordinate-nx129", position)
                 }
                 next
             end
@@ -173,7 +173,7 @@ class NxThreads
                 _, listord, position = Interpreting::tokenizer(input)
                 item = store.get(listord.to_i)
                 return if item.nil?
-                Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position.to_f)
+                Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position.to_f)
                 next
             end
 
@@ -181,7 +181,7 @@ class NxThreads
                 itemindex = input[8, input.length].strip.to_i
                 item = store.get(itemindex)
                 next if item.nil?
-                Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position)
+                Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position)
                 next
             end
 
@@ -189,7 +189,7 @@ class NxThreads
                 unselected = NxThreads::elementsInOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    Cubes::setAttribute2(task["uuid"], "coordinate-nx129", NxThreads::newFirstPosition(thread))
+                    Events::publishItemAttributeUpdate(task["uuid"], "coordinate-nx129", NxThreads::newFirstPosition(thread))
                 }
             end
 
@@ -200,8 +200,8 @@ class NxThreads
                 target = NxThreads::interactivelySelectOrNull()
                 next if target.nil?
                 selected.reverse.each{|item|
-                    Cubes::setAttribute2(item["uuid"], "lineage-nx128", target["uuid"])
-                    Cubes::setAttribute2(item["uuid"], "coordinate-nx129", NxThreads::newFirstPosition(target))
+                    Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", target["uuid"])
+                    Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", NxThreads::newFirstPosition(target))
                 }
             end
 

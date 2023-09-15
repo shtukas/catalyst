@@ -3,7 +3,7 @@ class DoNotShowUntil
 
     # DoNotShowUntil::getDataSet()
     def self.getDataSet()
-        cachePrefix = "A057CBE4-9F58-491E-A2AB-6CB93205787C"
+        cachePrefix = "DoNotShowUntil-491E-A2AB-6CB93205787C"
         unit = {}
         combinator = lambda{|data, event|
             if event["eventType"] == "DoNotShowUntil" then
@@ -11,26 +11,18 @@ class DoNotShowUntil
             end
             data
         }
-        EventTimelineReducer::extract(cachePrefix, unit, combinator)
+        EventTimelineReader::extract(cachePrefix, unit, combinator)
         # data: Map[targetId, unixtime]
     end
 
     # DoNotShowUntil::setUnixtime(item, unixtime)
     def self.setUnixtime(item, unixtime)
-        # We use XCache for the special purpose of backup items on alexandra
-        XCache::set("DoNotShowUntil:#{item["uuid"]}", unixtime)
         Events::publishDoNotShowUntil(item, unixtime)
-        return if item["mikuType"] == "Backup"
-        Cubes::setAttribute2(item["uuid"], "doNotShowUntil", unixtime)
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
     def self.getUnixtimeOrNull(item)
-        unixtime = item["doNotShowUntil"]
-        return unixtime if unixtime
-        unixtime = XCache::getOrNull("DoNotShowUntil:#{item["uuid"]}")
-        return unixtime.to_f if unixtime
-        nil
+        DoNotShowUntil::getDataSet()[item["uuid"]]
     end
 
     # DoNotShowUntil::isVisible(item)

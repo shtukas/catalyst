@@ -90,7 +90,7 @@ class PolyActions
 
         if item["mikuType"] == "NxBurner" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -112,19 +112,19 @@ class PolyActions
 
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxLong" then
-            Cubes::destroy(item["uuid"])
+            Catalyst::destroy(item["uuid"])
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -137,7 +137,7 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -167,7 +167,7 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -183,14 +183,14 @@ class PolyActions
 
         if item["mikuType"] == "NxBurner" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -207,21 +207,21 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -234,7 +234,7 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -252,7 +252,7 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -301,7 +301,7 @@ class PolyActions
                 NxTasks::access(item)
                 if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
                     NxBalls::stop(item)
-                    Cubes::destroy(item["uuid"])
+                    Catalyst::destroy(item["uuid"])
                     return
                 end
                 NxBalls::stop(item)
@@ -313,7 +313,7 @@ class PolyActions
             NxTasks::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
                 NxBalls::stop(item)
-                Cubes::destroy(item["uuid"])
+                Catalyst::destroy(item["uuid"])
             end
             if NxBalls::itemIsRunning(item) then
                 if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
@@ -403,6 +403,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Cubes::setAttribute2(item["uuid"], "description", description)
+        Events::publishItemAttributeUpdate(item["uuid"], "description", description)
     end
 end

@@ -5,11 +5,11 @@ class NxLines
     def self.issue(line)
         description = line
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxLine", uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemInit("NxLine", uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxLines::toString(item)

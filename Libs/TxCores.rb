@@ -29,9 +29,9 @@ class TxCores
     # TxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         core = TxCores::interactivelyMakeOrNull()
-        Cubes::init(nil, core["mikuType"], core["uuid"])
+        Events::publishItemInit(core["mikuType"], core["uuid"])
         core.to_a.each{|key, value|
-            Cubes::setAttribute2(core["uuid"], key, value)
+            Events::publishItemAttributeUpdate(core["uuid"], key, value)
         }
     end
 
@@ -85,14 +85,14 @@ class TxCores
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = Cubes::mikuType("TxCore")
+        cores = Catalyst::mikuType("TxCore")
                     .sort_by {|core| Catalyst::listingCompletionRatio(core) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
     # TxCores::listingItems()
     def self.listingItems()
-        Cubes::mikuType("TxCore")
+        Catalyst::mikuType("TxCore")
             .select{|core| Catalyst::listingCompletionRatio(core) < 1 or NxBalls::itemIsActive(core) }
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
@@ -137,14 +137,14 @@ class TxCores
             end
         end
         core["lastResetTime"] = Time.new.to_i
-        Cubes::setAttribute2(core["uuid"], "hours", core["hours"])
-        Cubes::setAttribute2(core["uuid"], "lastResetTime", core["lastResetTime"])
+        Events::publishItemAttributeUpdate(core["uuid"], "hours", core["hours"])
+        Events::publishItemAttributeUpdate(core["uuid"], "lastResetTime", core["lastResetTime"])
     end
 
     # TxCores::maintenance2()
     def self.maintenance2()
-        Cubes::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
-        padding = (Cubes::mikuType("TxCore").map{|core| core["description"].size } + [0]).max
+        Catalyst::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
+        padding = (Catalyst::mikuType("TxCore").map{|core| core["description"].size } + [0]).max
         XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
     end
 
@@ -152,7 +152,7 @@ class TxCores
     def self.program1(core)
         loop {
 
-            core = Cubes::itemOrNull(core["uuid"])
+            core = Catalyst::itemOrNull(core["uuid"])
             return if core.nil?
 
             system("clear")
@@ -182,8 +182,8 @@ class TxCores
                 position = TxCores::newNextPosition(core)
                 thread = NxThreads::interactivelyIssueNewOrNull()
                 next if thread.nil?
-                Cubes::setAttribute2(thread["uuid"], "lineage-nx128", core["uuid"])
-                Cubes::setAttribute2(thread["uuid"], "coordinate-nx129", position)
+                Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", core["uuid"])
+                Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
                 next
             end
 
@@ -191,7 +191,7 @@ class TxCores
                 _, listord, position = Interpreting::tokenizer(input)
                 item = store.get(listord.to_i)
                 return if item.nil?
-                Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position.to_f)
+                Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position.to_f)
                 return
             end
 
@@ -199,7 +199,7 @@ class TxCores
                 unselected = TxCores::elementsInOrder(core)
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    Cubes::setAttribute2(task["uuid"], "coordinate-nx129",  TxCores::newFirstPosition(core))
+                    Events::publishItemAttributeUpdate(task["uuid"], "coordinate-nx129",  TxCores::newFirstPosition(core))
                 }
             end
 

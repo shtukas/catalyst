@@ -7,11 +7,11 @@ class Stratification
     def self.issue(line, bottom)
         description = line
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxStrat", uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "bottom", bottom)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemInit("NxStrat", uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "bottom", bottom)
+        Catalyst::itemOrNull(uuid)
     end
 
     # Stratification::toString(item)
@@ -21,7 +21,7 @@ class Stratification
 
     # Stratification::getDirectTopOrNull(item)
     def self.getDirectTopOrNull(item)
-        Cubes::mikuType("NxStrat")
+        Catalyst::mikuType("NxStrat")
             .select{|i| i["bottom"] == item["uuid"] }
             .sort_by{|i| i["unixtime"] }
             .last

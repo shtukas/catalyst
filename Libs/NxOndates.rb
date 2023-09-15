@@ -7,13 +7,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxOndate", uuid)
+        Events::publishItemInit("NxOndate", uuid)
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", datetime)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", datetime)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueNewTodayOrNull()
@@ -21,13 +21,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        Cubes::init(nil, "NxOndate", uuid)
+        Events::publishItemInit("NxOndate", uuid)
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Catalyst::itemOrNull(uuid)
     end
 
     # ------------------
@@ -40,7 +40,7 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        Cubes::mikuType("NxOndate")
+        Catalyst::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end
@@ -55,7 +55,7 @@ class NxOndates
             
             store = ItemStore.new()
 
-            items = Cubes::mikuType("NxOndate")
+            items = Catalyst::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
 
             items
@@ -82,14 +82,14 @@ class NxOndates
     def self.redate(item)
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
-        Cubes::setAttribute2(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
-        Cubes::setAttribute2(item["uuid"], "parking", nil)
+        Events::publishItemAttributeUpdate(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
+        Events::publishItemAttributeUpdate(item["uuid"], "parking", nil)
         DoNotShowUntil::setUnixtime(item, unixtime)
     end
 
     # NxOndates::fsck()
     def self.fsck()
-        Cubes::mikuType("NxOndate").each{|item|
+        Catalyst::mikuType("NxOndate").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

@@ -5,7 +5,7 @@ class PoolBanking
     def self.dayRatioOrNull(pool)
         return nil if pool["dailyHours"].nil?
         todos = pool["uuids"]
-                    .map{|uuid| Cubes::itemOrNull(uuid) }
+                    .map{|uuid| Catalyst::itemOrNull(uuid) }
                     .compact
         return 1 if todos.empty?
         hoursDone = todos
@@ -19,7 +19,7 @@ class PoolBanking
     def self.weekRatioOrNull(pool)
         return nil if pool["weeklyHours"].nil?
         todos = pool["uuids"]
-                    .map{|uuid| Cubes::itemOrNull(uuid) }
+                    .map{|uuid| Catalyst::itemOrNull(uuid) }
                     .compact
         return 1 if todos.empty?
         hoursDone = (0..6)
@@ -44,13 +44,13 @@ class NxPools
     # NxPools::issue(uuids, dailyHours, weeklyHours)
     def self.issue(uuids, dailyHours, weeklyHours)
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxPool", uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "uuids", uuids)
-        Cubes::setAttribute2(uuid, "dailyHours", dailyHours)
-        Cubes::setAttribute2(uuid, "weeklyHours", weeklyHours)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemInit("NxPool", uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "uuids", uuids)
+        Events::publishItemAttributeUpdate(uuid, "dailyHours", dailyHours)
+        Events::publishItemAttributeUpdate(uuid, "weeklyHours", weeklyHours)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxPools::interactivelyIssueNewOrNull()
@@ -69,13 +69,13 @@ class NxPools
     # NxPools::poolToElementsInOrder(pool)
     def self.poolToElementsInOrder(pool)
         elements = pool["uuids"]
-                    .map{|uuid| Cubes::itemOrNull(uuid) }
+                    .map{|uuid| Catalyst::itemOrNull(uuid) }
                     .compact
         if elements.size < pool["uuids"].size then
-            Cubes::setAttribute2(pool["uuid"], "uuids", elements.map{|item| item["uuid"] })
+            Events::publishItemAttributeUpdate(pool["uuid"], "uuids", elements.map{|item| item["uuid"] })
         end
         if elements.size == 0 then
-            Cubes::destroy(pool["uuid"])
+            Catalyst::destroy(pool["uuid"])
         end
         elements
             .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
@@ -88,7 +88,7 @@ class NxPools
 
     # NxPools::listingItems()
     def self.listingItems()
-        Cubes::mikuType("NxPool")
+        Catalyst::mikuType("NxPool")
             .select{|pool| Listing::listable(pool) }
             .select{|pool| NxPools::poolToCompletionRatio(pool) < 1 }
             .sort_by{|pool| NxPools::poolToCompletionRatio(pool) }
@@ -110,6 +110,6 @@ class NxPools
 
     # NxPools::getPoolsByElementUUID(uuid)
     def self.getPoolsByElementUUID(uuid)
-        Cubes::mikuType("NxPool").select{|pool| pool["uuids"].include?(uuid) }
+        Catalyst::mikuType("NxPool").select{|pool| pool["uuids"].include?(uuid) }
     end
 end

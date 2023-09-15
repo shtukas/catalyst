@@ -15,16 +15,16 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxTask", uuid)
+        Events::publishItemInit("NxTask", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "field11", coredataref)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
 
-        Cubes::itemOrNull(uuid)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxTasks::urlToTask(url)
@@ -32,16 +32,16 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Cubes::init(nil, "NxTask", uuid)
+        Events::publishItemInit("NxTask", uuid)
 
-        nhash = Cubes::putDatablob2(uuid, url)
+        nhash = Datablobs::putBlob(url)
         coredataref = "url:#{nhash}"
 
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxTasks::bufferInLocationToTask(location)
@@ -49,34 +49,34 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Cubes::init(nil, "NxTask", uuid)
+        Events::publishItemInit("NxTask", uuid)
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::setAttribute2(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask(description)
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
-        Cubes::init(nil, "NxTask", uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemInit("NxTask", uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Catalyst::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask_vX(uuid, description)
     def self.descriptionToTask_vX(uuid, description)
-        Cubes::init(nil, "NxTask", uuid)
-        Cubes::setAttribute2(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute2(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute2(uuid, "description", description)
-        Cubes::itemOrNull(uuid)
+        Events::publishItemInit("NxTask", uuid)
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Catalyst::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -99,15 +99,15 @@ class NxTasks
         return if text == ""
         text.lines.to_a.map{|line| line.strip }.select{|line| line != ""}.reverse.each {|line|
 
-            thread = Cubes::itemOrNull(task["lineage-nx128"])
+            thread = Catalyst::itemOrNull(task["lineage-nx128"])
             position = NxThreads::newFirstPosition(thread)
 
             t1 = NxTasks::descriptionToTask(line)
             next if t1.nil?
             puts JSON.pretty_generate(t1)
 
-            Cubes::setAttribute2(t1["uuid"], "lineage-nx128", thread["uuid"])
-            Cubes::setAttribute2(t1["uuid"], "coordinate-nx129", position)
+            Events::publishItemAttributeUpdate(t1["uuid"], "lineage-nx128", thread["uuid"])
+            Events::publishItemAttributeUpdate(t1["uuid"], "coordinate-nx129", position)
         }
     end
 
@@ -121,11 +121,11 @@ class NxTasks
 
         # Ensuring consistency of lineages
 
-        Cubes::mikuType("NxTask").each{|task|
+        Catalyst::mikuType("NxTask").each{|task|
             next if task["lineage-nx128"].nil?
-            thread = Cubes::itemOrNull(task["lineage-nx128"])
+            thread = Catalyst::itemOrNull(task["lineage-nx128"])
             next if thread
-            Cubes::setAttribute2(task["uuid"], "lineage-nx128", nil)
+            Events::publishItemAttributeUpdate(task["uuid"], "lineage-nx128", nil)
         }
 
         # Pick up NxFronts-BufferIn
@@ -135,20 +135,20 @@ class NxTasks
         }
 
         # Feed Infinity using NxIce
-        if Cubes::mikuType("NxTask").size < 100 then
-            Cubes::mikuType("NxIce").take(10).each{|item|
-                thread = Cubes::itemOrNull("8d67eae1-787e-4763-81bf-3ffb6e28c0eb") # Infinity Thread
+        if Catalyst::mikuType("NxTask").size < 100 then
+            Catalyst::mikuType("NxIce").take(10).each{|item|
+                thread = Catalyst::itemOrNull("8d67eae1-787e-4763-81bf-3ffb6e28c0eb") # Infinity Thread
                 position = NxThreads::newNextPosition(thread)
-                Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
-                Cubes::setAttribute2(item["uuid"], "lineage-nx128", thread["uuid"])
-                Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position)
+                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+                Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", thread["uuid"])
+                Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position)
             }
         end
     end
 
     # NxTasks::fsck()
     def self.fsck()
-        Cubes::mikuType("NxTask").each{|item|
+        Catalyst::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

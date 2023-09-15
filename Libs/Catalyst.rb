@@ -6,9 +6,12 @@ class Catalyst
     def self.mikuTypes()
         [
           "NxAnniversary",
+          "NxBurner",
           "NxIce",
           "NxLine",
           "NxOndate",
+          "NxPool",
+          "NxStrat",
           "NxTask",
           "NxThread",
           "PhysicalTarget",
@@ -20,7 +23,7 @@ class Catalyst
     # Catalyst::catalystItems()
     def self.catalystItems()
         Catalyst::mikuTypes()
-            .map{|mikuType| Cubes::mikuType(mikuType) }
+            .map{|mikuType| Catalyst::mikuType(mikuType) }
             .flatten
     end
 
@@ -38,14 +41,14 @@ class Catalyst
                     itemuuid = SecureRandom.uuid
                     File.open(markerfilepath, "w"){|f| f.write(itemuuid) }
                 end
-                next if Cubes::itemOrNull(itemuuid)
+                next if Catalyst::itemOrNull(itemuuid)
                 item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: dir) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
 
             if File.file?(location) then
                 itemuuid = Digest::SHA1.hexdigest("#{locationname}:c54c9b05-c914-4df5-b77a-6e72f2d43cf7")
-                next if Cubes::itemOrNull(itemuuid)
+                next if Catalyst::itemOrNull(itemuuid)
                 item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: file) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
@@ -73,7 +76,7 @@ class Catalyst
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
-            Cubes::setAttribute2(item["uuid"], key, value)
+            Events::publishItemAttributeUpdate(item["uuid"], key, value)
         }
     end
 
@@ -113,17 +116,17 @@ class Catalyst
             if command == "here" then
                 items.each{|item|
                     if item["mikuType"] == "NxBurner" then
-                        Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
+                        Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
                     end
                     if item["mikuType"] == "NxOndate" then
-                        Cubes::setAttribute2(item["uuid"], "mikuType", "NxTask")
+                        Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
                     end
-                    Cubes::setAttribute2(item["uuid"], "lineage-nx128", parent["uuid"])
+                    Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", parent["uuid"])
                 }
                 if items.size == 1 then
                     item = items[0]
                     position = NxThreads::interactivelyDecidePositionAtThread(parent)
-                    Cubes::setAttribute2(item["uuid"], "coordinate-nx129", position)
+                    Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position)
                 end
                 return
             end
@@ -131,8 +134,8 @@ class Catalyst
                 position = NxThreads::interactivelyDecidePositionAtThread(parent)
                 thread = NxThreads::interactivelyIssueNewOrNull()
                 next if thread.nil?
-                Cubes::setAttribute2(thread["uuid"], "lineage-nx128", parent["uuid"])
-                Cubes::setAttribute2(thread["uuid"], "coordinate-nx129", position)
+                Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", parent["uuid"])
+                Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
                 next
             end
             if command.start_with?("go to") then
@@ -143,5 +146,45 @@ class Catalyst
                 return
             end
         }
+    end
+
+    # Catalyst::getDataSet()
+    def self.getDataSet()
+        cachePrefix = "ITEMS-29DCCA9B-6EC4"
+        unit = {}
+        combinator = lambda{|data, event|
+            if event["eventType"] == "ItemAttributeUpdate" then
+                itemuuid = event["payload"]["itemuuid"]
+                attname  = event["payload"]["attname"]
+                attvalue = event["payload"]["attvalue"]
+                if data[itemuuid].nil? then
+                    data[itemuuid] = {
+                        "uuid" => itemuuid
+                    }
+                end
+                data[itemuuid][attname] = attvalue
+            end
+            if event["eventType"] == "ItemDestroy" then
+                data.delete(event["itemuuid"])
+            end
+            data
+        }
+        # data: Map[uuid, item]
+        EventTimelineReader::extract(cachePrefix, unit, combinator)
+    end
+
+    # Catalyst::itemOrNull(uuid)
+    def self.itemOrNull(uuid)
+        Catalyst::getDataSet()[uuid]
+    end
+
+    # Catalyst::mikuType(mikuType)
+    def self.mikuType(mikuType)
+        Catalyst::getDataSet().values.select{|item| item["mikuType"] == mikuType }
+    end
+
+    # Catalyst::destroy(uuid)
+    def self.destroy(uuid)
+        Events::publishItemDestroy(uuid)
     end
 end

@@ -114,7 +114,7 @@ class Listing
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
-            Cubes::mikuType("NxLine"),
+            Catalyst::mikuType("NxLine"),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             Backups::listingItems(),
@@ -180,7 +180,7 @@ class Listing
         Listing::maintenance()
         spot.end_unit()
 
-        cores = Cubes::mikuType("TxCore")
+        cores = Catalyst::mikuType("TxCore")
         spot.start_unit("Listing::items()")
         items = Listing::items()
         spot.end_unit()

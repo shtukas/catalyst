@@ -10,7 +10,7 @@ class TmpSkip1
             "durationInHours" => hours
         }
         puts JSON.pretty_generate(directive)
-        Cubes::setAttribute2(item["uuid"], "tmpskip1", directive)
+        Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", directive)
         # The backup items are dynamically generated and do not correspond to item
         # in the database. We also put the skip directive to the cache
         XCache::set("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}", JSON.generate(directive))
@@ -19,7 +19,7 @@ class TmpSkip1
     # TmpSkip1::unskip(item)
     def self.unskip(item)
         if item["tmpskip1"] then
-            Cubes::setAttribute2(item["uuid"], "tmpskip1", nil)
+            Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", nil)
         end
         XCache::destroy("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
     end

@@ -21,7 +21,7 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxStrat" then
-            b = Cubes::itemOrNull(item["bottom"])
+            b = Catalyst::itemOrNull(item["bottom"])
             if b then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(b)
             end
@@ -30,7 +30,7 @@ class PolyFunctions
         # Special Features
 
         if item["lineage-nx128"] then
-            lineage = Cubes::itemOrNull(item["lineage-nx128"])
+            lineage = Catalyst::itemOrNull(item["lineage-nx128"])
             if lineage then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(lineage)
             end
@@ -111,7 +111,7 @@ class PolyFunctions
     # PolyFunctions::lineageSuffix(item)
     def self.lineageSuffix(item)
         return "" if item["lineage-nx128"].nil?
-        parent = Cubes::itemOrNull(item["lineage-nx128"])
+        parent = Catalyst::itemOrNull(item["lineage-nx128"])
         return "" if parent.nil?
         " (#{parent["description"]})"
     end
