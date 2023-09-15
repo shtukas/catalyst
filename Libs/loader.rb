@@ -144,6 +144,7 @@ require_relative "DoNotShowUntil.rb"
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
+require_relative "Datablobs.rb"
 
 require_relative "EventPublisher.rb"
 require_relative "EventTimelineReducer.rb"
