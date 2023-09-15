@@ -1,8 +1,19 @@
 
 class DoNotShowUntil
 
-    # DoNotShowUntil::getDataSet()
+    # DoNotShowUntil::setUnixtime(item, unixtime)
+    def self.setUnixtime(item, unixtime)
+        Events::publishDoNotShowUntil(item, unixtime)
+    end
+
+    # DoNotShowUntil::getDataSet() # Map[targetId, unixtime]
     def self.getDataSet()
+        trace = EventTimelineReader::lastTraceForCaching()
+        dataset = InMemoryCache::getOrNull("3e9efc9a-785b-44f7-8b87-7dbe92eee8df:#{trace}")
+        if dataset then
+            return dataset
+        end
+
         cachePrefix = "DoNotShowUntil-491E-A2AB-6CB93205787C"
         unit = {}
         combinator = lambda{|data, event|
@@ -11,27 +22,15 @@ class DoNotShowUntil
             end
             data
         }
-        EventTimelineReader::extract(cachePrefix, unit, combinator)
-        # data: Map[targetId, unixtime]
-    end
+        dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
 
-    # DoNotShowUntil::setUnixtime(item, unixtime)
-    def self.setUnixtime(item, unixtime)
-        Events::publishDoNotShowUntil(item, unixtime)
+        InMemoryCache::set("3e9efc9a-785b-44f7-8b87-7dbe92eee8df:#{trace}", dataset)
+        dataset
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
     def self.getUnixtimeOrNull(item)
-        trace = EventTimelineReader::lastTraceForCaching()
-        unxitime = XCache::getOrNull("11ef13b1-b3b7-48e8-8a4d-6caab4fcec52:#{trace}:#{item["uuid"]}")
-        if unxitime then
-            return unxitime.to_i
-        end
-        unxitime = DoNotShowUntil::getDataSet()[item["uuid"]]
-        if unxitime then
-            XCache::set("11ef13b1-b3b7-48e8-8a4d-6caab4fcec52:#{trace}:#{item["uuid"]}", unxitime)
-        end
-        unxitime
+        DoNotShowUntil::getDataSet()[item["uuid"]]
     end
 
     # DoNotShowUntil::isVisible(item)

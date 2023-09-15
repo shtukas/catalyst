@@ -123,8 +123,14 @@ class Catalyst
         }
     end
 
-    # Catalyst::getDataSet()
+    # Catalyst::getDataSet() # Map[uuid, item]
     def self.getDataSet()
+        trace = EventTimelineReader::lastTraceForCaching()
+        dataset = InMemoryCache::getOrNull("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}")
+        if dataset then
+            return dataset
+        end
+
         cachePrefix = "ITEMS-29DCCA9B-6EC4"
         unit = {}
         combinator = lambda{|data, event|
@@ -144,34 +150,20 @@ class Catalyst
             end
             data
         }
-        # data: Map[uuid, item]
-        EventTimelineReader::extract(cachePrefix, unit, combinator)
+        dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
+
+        InMemoryCache::set("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}", dataset)
+        dataset
     end
 
     # Catalyst::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        trace = EventTimelineReader::lastTraceForCaching()
-        item = XCache::getOrNull("ef0b4eaf-f5ff-466e-b739-830028b55b83:#{trace}:#{uuid}")
-        if item then
-            return JSON.parse(item)
-        end
-        item = Catalyst::getDataSet()[uuid]
-        if item then
-            XCache::set("ef0b4eaf-f5ff-466e-b739-830028b55b83:#{trace}:#{uuid}", JSON.generate(item))
-        end
-        item
+        Catalyst::getDataSet()[uuid].clone
     end
 
     # Catalyst::mikuType(mikuType)
     def self.mikuType(mikuType)
-        trace = EventTimelineReader::lastTraceForCaching()
-        items = XCache::getOrNull("128ae7d8-aa23-4e13-af7c-b2d663fa63dd:#{trace}:#{mikuType}")
-        if items then
-            return JSON.parse(items)
-        end
-        items = Catalyst::getDataSet().values.select{|item| item["mikuType"] == mikuType }
-        XCache::set("128ae7d8-aa23-4e13-af7c-b2d663fa63dd:#{trace}:#{mikuType}", JSON.generate(items))
-        items
+        Catalyst::getDataSet().values.select{|item| item["mikuType"] == mikuType }
     end
 
     # Catalyst::destroy(uuid)

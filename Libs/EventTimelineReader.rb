@@ -38,7 +38,7 @@ class EventTimelineReader
         loop {
             begin 
                 filepath = filepathEnumerator.next()
-                puts "snakeMaker: cachePrefix: #{cachePrefix} / collecting: #{filepath}".yellow
+                #puts "cachePrefix: #{cachePrefix} / collecting: #{filepath}".yellow
                 data = XCache::getOrNull("#{cachePrefix}:#{filepath}")
                 if data then
                     return [filepath] + filepaths
@@ -57,7 +57,7 @@ class EventTimelineReader
             filepath = filepaths.shift
             event = JSON.parse(IO.read(filepath))
             data = combinator.call(data, event)
-            puts "snakeMarker: cachePrefix: #{cachePrefix} / storing data @ #{filepath}".yellow
+            #puts "cachePrefix: #{cachePrefix} / storing data @ #{filepath}".yellow
             XCache::set("#{cachePrefix}:#{filepath}", JSON.generate(data))
         }
     end
