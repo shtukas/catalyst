@@ -380,58 +380,10 @@ class Cub3sX
         Cub3sX::getSet1(filepath, set_name)
     end
 
-    # Cub3sX::putDatablob1(filepath, datablob) # nhash
-    def self.putDatablob1(filepath, datablob)
-        raise "(error: 95df5963-3f08-42f8-a74e-16eaf030f2fe) filepath: #{filepath}" if !File.exist?(filepath)
-        nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
-
-        # Compared to other data repositories, this one needs a check of whether the datablob is there or not
-        # If we insert it again after it's been put once, then it would be duplicated
-        # Alternatively we could delete any existing one, but unless in a transaction, this is more risky.
-        datablob_check = Cub3sX::getDatablobOrNull1(filepath, nhash)
-        if datablob_check then
-            nhash_check = "SHA256-#{Digest::SHA256.hexdigest(datablob_check)}"
-            if nhash_check == nhash then
-                return nhash
-            end
-        end
-
-        # So we didn't find the datablob, already in scope. We are going to store it
-        # Before we do so at the local file, let's test the size of that file
-
-        if File.size(filepath) > 1024*1024*1024 then # 1Gb Mb
-            # let's find or make a next file
-            nextuuid = Cub3sX::getAttributeOrNull1(filepath, "next")
-            if nextuuid then
-                Cub3sX::putDatablob2(nextuuid, datablob) # if that one if too full, we will carrying on recursively until the end
-                return
-            else
-                currentuuid = Cub3sX::getMandatoryAttribute1(filepath, "uuid")
-                nextuuid = SecureRandom.uuid
-                Cub3sX::init("NxPure", nextuuid)
-                Cub3sX::putDatablob2(nextuuid, datablob)
-                Cub3sX::setAttribute2(nextuuid, "previous", currentuuid)
-                Cub3sX::setAttribute2(currentuuid, "next", nextuuid)
-                return
-            end
-        end
-
-        puts "Cub3sX::putDatablob1(filepath: #{filepath}, nhash: #{nhash})".green
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "insert into entries (record_uuid, operation_unixtime, operation_type, _name1_, _name2_, _data_) values (?, ?, ?, ?, ?, ?)", [SecureRandom.uuid, Time.new.to_f, "datablob", nhash, nil, datablob]
-        db.close
-        Cub3sX::rename(filepath)
-        nhash
-    end
-
     # Cub3sX::putDatablob2(uuid, datablob) # nhash
     def self.putDatablob2(uuid, datablob)
-        filepath = Cub3sX::uuidToFilepathOrNull(uuid)
-        raise "(error: 58cd05ef-84dd-489b-84b4-d8e9f37333fe) uuid: #{uuid}" if filepath.nil?
-        Cub3sX::putDatablob1(filepath, datablob)
+        # We are no longer putting datablobs into the cube files, sending them to the file system
+        Datablobs::putBlob(datablob)
     end
 
     # Cub3sX::getDatablobOrNull1(filepath, nhash)

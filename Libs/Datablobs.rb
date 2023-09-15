@@ -6,7 +6,7 @@ class Datablobs
         "#{Config::pathToGalaxy()}/DataHub/catalyst/Datablobs"
     end
 
-    # Datablobs::putBlob(datablob)
+    # Datablobs::putBlob(datablob) # nhash
     def self.putBlob(datablob) # nhash
         nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
         fragment = "#{nhash[7, 2]}/#{nhash[9, 2]}"
