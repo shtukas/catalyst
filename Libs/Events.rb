@@ -14,7 +14,7 @@ class Events
     def self.makeDoNotShowUntil(item, unixtime)
         {
             "uuid"      => SecureRandom.uuid,
-            "unixtime"  => Time.new.to_,
+            "unixtime"  => Time.new.to_i,
             "eventType" => "DoNotShowUntil",
             "targetId"  => item["uuid"],
             "unixtime"  => unixtime
@@ -30,7 +30,7 @@ class Events
     def self.makeItemAttributeUpdate(itemuuid, attname, attvalue)
         {
             "uuid"      => SecureRandom.uuid,
-            "unixtime"  => Time.new.to_,
+            "unixtime"  => Time.new.to_i,
             "eventType" => "ItemAttributeUpdate",
             "payload" => {
                 "itemuuid" => itemuuid,
@@ -49,7 +49,7 @@ class Events
     def self.makeItemDestroy(itemuuid)
         {
             "uuid"      => SecureRandom.uuid,
-            "unixtime"  => Time.new.to_,
+            "unixtime"  => Time.new.to_i,
             "eventType" => "ItemAttributeUpdate",
             "itemuuid"  => itemuuid
         }
@@ -64,7 +64,7 @@ class Events
     def self.makeItemInit(uuid, mikuType)
         {
             "uuid"      => SecureRandom.uuid,
-            "unixtime"  => Time.new.to_,
+            "unixtime"  => Time.new.to_i,
             "eventType" => "ItemInit",
             "payload" => {
                 "uuid"     => uuid,
