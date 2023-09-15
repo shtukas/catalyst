@@ -8,9 +8,9 @@ class Todos
         x1 = Catalyst::mikuType("NxThread").select{|item| coreuuids.include?(item["lineage-nx128"]) }
         x2 = Catalyst::mikuType("NxTask").select{|item| coreuuids.include?(item["lineage-nx128"]) }
         (x1 + x2)
-            .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+            .sort_by{|item| Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }
             .map{|item| 
-                item["prefix-override"] = "(#{"%5.3f" % Bank::recoveredAverageHoursPerDay(item["uuid"])})"
+                item["prefix-override"] = "(#{"%5.3f" % Bank::recoveredAverageHoursPerDayCached(item["uuid"])})"
                 item
             }
     end
