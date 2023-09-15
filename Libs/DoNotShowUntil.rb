@@ -1,16 +1,6 @@
 
 class DoNotShowUntil
 
-    # DoNotShowUntil::event(item, unixtime)
-    def self.event(item, unixtime)
-        {
-            "uuid"      => SecureRandom.uuid,
-            "eventType" => "DoNotShowUntil",
-            "targetId"  => item["uuid"],
-            "unixtime"  => unixtime
-        }
-    end
-
     # DoNotShowUntil::getDataSet()
     def self.getDataSet()
         cachePrefix = "A057CBE4-9F58-491E-A2AB-6CB93205787C"
@@ -29,7 +19,7 @@ class DoNotShowUntil
     def self.setUnixtime(item, unixtime)
         # We use XCache for the special purpose of backup items on alexandra
         XCache::set("DoNotShowUntil:#{item["uuid"]}", unixtime)
-        EventPublisher::publish(DoNotShowUntil::event(item, unixtime))
+        Events::publishDoNotShowUntil(item, unixtime)
         return if item["mikuType"] == "Backup"
         Cubes::setAttribute2(item["uuid"], "doNotShowUntil", unixtime)
     end

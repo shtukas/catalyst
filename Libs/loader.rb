@@ -148,6 +148,7 @@ require_relative "Datablobs.rb"
 
 require_relative "EventPublisher.rb"
 require_relative "EventTimelineReducer.rb"
+require_relative "Events.rb"
 
 require_relative "Galaxy.rb"
 

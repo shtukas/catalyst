@@ -582,6 +582,7 @@ class Cubes
     # Cubes::setAttribute2(uuid, attribute_name, value)
     def self.setAttribute2(uuid, attribute_name, value)
         Cub3sX::setAttribute2(uuid, attribute_name, value)
+        Events::publishItemAttributeUpdate(uuid, attribute_name, value)
     end
 
     # Cubes::destroy(uuid)

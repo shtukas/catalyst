@@ -29,6 +29,16 @@ We have one event timeline, but several extractors focusing on the events they f
     "unixtime" : float
 }
 
+{
+    "uuid": string
+    "eventType": "ItemAttributeUpdate"
+    "payload": {
+        "itemuuid" : string,
+        "attname"  : string,
+        "attvalue" : string
+    }
+}
+
 -- Extractors ------------------------------------------------------------------
 
 
