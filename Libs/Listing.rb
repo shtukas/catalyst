@@ -209,6 +209,7 @@ class Listing
             CUtils3X::scan_merge()
             Catalyst::maintenance()
             NxThreads::maintenance()
+            EventTimelineMaintenance::shortenToLowerPing()
         end
     end
 
@@ -244,6 +245,16 @@ class Listing
         Thread.new {
             loop {
                 Listing::checkForCodeUpdates()
+                sleep 300
+            }
+        }
+
+        Thread.new {
+            loop {
+                # Event Timeline
+                EventTimelineMaintenance::rewriteHistory()
+                EventTimelineReader::issueNewFSComputedTraceForCaching()
+                EventTimelineMaintenance::publishPing()
                 sleep 300
             }
         }

@@ -144,7 +144,7 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
 
-require_relative "EventTimelineReader.rb"
+require_relative "EventTimeline.rb"
 require_relative "Events.rb"
 
 require_relative "Fsck.rb"

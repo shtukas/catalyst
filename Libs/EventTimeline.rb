@@ -1,6 +1,6 @@
 
 
-$trace68be8052a3bf = nil
+$liveTrace68be8052a3bf = SecureRandom.hex
 
 class EventTimelineReader
 
@@ -35,6 +35,23 @@ class EventTimelineReader
             end
         }
         nil
+    end
+
+    # EventTimelineReader::timelineFilepathsEnumerator()
+    def self.timelineFilepathsEnumerator()
+        Enumerator.new do |filepaths|
+            LucilleCore::locationsAtFolder(EventTimelineReader::eventsTimelineLocation()).sort.each{|locationYear|
+                LucilleCore::locationsAtFolder(locationYear).sort.each{|locationMonth|
+                    LucilleCore::locationsAtFolder(locationMonth).sort.each{|locationDay|
+                        LucilleCore::locationsAtFolder(locationDay).sort.each{|locationIndexFolder|
+                            LucilleCore::locationsAtFolder(locationIndexFolder).sort.each{|eventfilepath|
+                                filepaths << eventfilepath
+                            }
+                        }
+                    }
+                }
+            }
+        end
     end
 
     # EventTimelineReader::timelineFilepathsReverseEnumerator()
@@ -106,16 +123,30 @@ class EventTimelineReader
         EventTimelineReader::snakeWalk(cachePrefix, combinator, data, filepaths)
     end
 
-    # EventTimelineReader::lastTraceForCaching()
-    def self.lastTraceForCaching()
-        begin
-            if $trace68be8052a3bf.nil? then
-                $trace68be8052a3bf = EventTimelineReader::timelineFilepathsReverseEnumerator().next()
-            end
-            $trace68be8052a3bf
-        rescue
-            "967016d2-d506-44e9-986b-bf7f91971009"
-        end
+    # EventTimelineReader::traceForCachingCore()
+    def self.traceForCachingCore()
+        EventTimelineReader::timelineFilepathsEnumerator()
+            .reduce("") {|trace, filepath1|
+                Digest::SHA1.hexdigest("#{trace}:#{filepath1}")
+            }
+    end
+
+    # EventTimelineReader::liveTraceForCaching()
+    def self.liveTraceForCaching()
+        $liveTrace68be8052a3bf
+    end
+
+    # EventTimelineReader::issueNewRandomTraceForCaching()
+    def self.issueNewRandomTraceForCaching()
+        $liveTrace68be8052a3bf = SecureRandom.hex
+    end
+
+    # EventTimelineReader::issueNewFSComputedTraceForCaching()
+    def self.issueNewFSComputedTraceForCaching()
+        $liveTrace68be8052a3bf = EventTimelineReader::timelineFilepathsEnumerator()
+            .reduce("") {|trace, filepath1|
+                Digest::SHA1.hexdigest("#{trace}:#{filepath1}")
+            }
     end
 end
 
@@ -169,7 +200,7 @@ class EventTimelineDatasets
 
     # EventTimelineDatasets::doNotShowUntil() # Map[targetId, unixtime]
     def self.doNotShowUntil()
-        trace = EventTimelineReader::lastTraceForCaching()
+        trace = EventTimelineReader::liveTraceForCaching()
         dataset = InMemoryCache::getOrNull("3e9efc9a-785b-44f7-8b87-7dbe92eee8df:#{trace}")
         if dataset then
             return dataset
@@ -188,7 +219,7 @@ class EventTimelineDatasets
 
     # EventTimelineDatasets::catalystItems() # Map[uuid, item]
     def self.catalystItems()
-        trace = EventTimelineReader::lastTraceForCaching()
+        trace = EventTimelineReader::liveTraceForCaching()
         dataset = InMemoryCache::getOrNull("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}")
         if dataset then
             return dataset
@@ -208,8 +239,17 @@ end
 
 class EventTimelineMaintenance
 
+    # EventTimelineMaintenance::getFirstEventOrNull()
+    def self.getFirstEventOrNull()
+        eventFilepath = EventTimelineReader::firstFilepathOrNull()
+        return nil if eventFilepath.nil?
+        JSON.parse(IO.read(eventFilepath))
+    end
+
     # EventTimelineMaintenance::shortenOnce()
     def self.shortenOnce()
+        return if !Config::isPrimaryInstance()
+
         eventFilepath = EventTimelineReader::firstFilepathOrNull()
         return if eventFilepath.nil?
 
@@ -233,6 +273,48 @@ class EventTimelineMaintenance
 
         puts "deleting event #{eventFilepath}"
         FileUtils.rm(eventFilepath)
+    end
 
+    # EventTimelineMaintenance::publishPing()
+    def self.publishPing()
+        filepath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Pings/#{Config::thisInstanceId()}.unixtime"
+        File.open(filepath, "w"){|f| f.puts(Time.new.to_i) }
+    end
+
+    # EventTimelineMaintenance::getLowerPing()
+    def self.getLowerPing()
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Pings")
+            .select{|location| File.basename(location)[-9, 9] == ".unixtime" }
+            .map{|filepath| IO.read(filepath).strip.to_i }
+            .min
+    end
+
+    # EventTimelineMaintenance::shortenToLowerPing()
+    def self.shortenToLowerPing()
+        return if !Config::isPrimaryInstance()
+        loop {
+            event = EventTimelineMaintenance::getFirstEventOrNull()
+            break if event.nil?
+            break if event["unixtime"] > EventTimelineMaintenance::getLowerPing()
+            EventTimelineMaintenance::shortenOnce()
+        }
+    end
+
+    # EventTimelineMaintenance::rewriteHistory()
+    def self.rewriteHistory()
+        EventTimelineReader::timelineFilepathsEnumerator().reduce("") {|trace, filepath1|
+            filecontents = IO.read(filepath1)
+            trace = Digest::SHA1.hexdigest("#{trace}:#{filecontents}")
+            filename1 = File.basename(filepath1)
+            filename2 = "#{filename1[0, 22]}-#{trace}.json"
+            filepath2 = "#{File.dirname(filepath1)}/#{filename2}"
+            if filepath1 != filepath2 then
+                puts filepath1
+                puts filepath2
+                LucilleCore::pressEnterToContinue()
+                FileUtils.mv(filepath1, filepath2)
+            end
+            trace
+        }
     end
 end

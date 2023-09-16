@@ -172,7 +172,7 @@ class Bank
 
     # Bank::recoveredAverageHoursPerDayCached(uuid)
     def self.recoveredAverageHoursPerDayCached(uuid)
-        trace = EventTimelineReader::lastTraceForCaching()
+        trace = EventTimelineReader::liveTraceForCaching()
         rt = InMemoryCache::getOrNull("6e88325f-c710-4285-b720-dfb14df0def8:#{trace}")
         if rt then
             return rt

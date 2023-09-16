@@ -1,14 +1,7 @@
 
 class Events
 
-    # Events::publish(event)
-    def self.publish(event)
-        timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
-        folder1 = LucilleCore::indexsubfolderpath("#{EventTimelineReader::eventsTimelineLocation()}/#{timefragment}", 100)
-        filepath1 = "#{folder1}/#{CommonUtils::timeStringL22()}.json"
-        File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
-        $trace68be8052a3bf = EventTimelineReader::timelineFilepathsReverseEnumerator().next()
-    end
+    # Makers
 
     # Events::makeDoNotShowUntil(item, unixtime)
     def self.makeDoNotShowUntil(item, unixtime)
@@ -21,11 +14,6 @@ class Events
                 "unixtime"  => unixtime
             }
         }
-    end
-
-    # Events::publishDoNotShowUntil(item, unixtime)
-    def self.publishDoNotShowUntil(item, unixtime)
-        Events::publish(Events::makeDoNotShowUntil(item, unixtime))
     end
 
     # Events::makeItemAttributeUpdate(itemuuid, attname, attvalue)
@@ -42,11 +30,6 @@ class Events
         }
     end
 
-    # Events::publishItemAttributeUpdate(itemuuid, attname, attvalue)
-    def self.publishItemAttributeUpdate(itemuuid, attname, attvalue)
-        Events::publish(Events::makeItemAttributeUpdate(itemuuid, attname, attvalue))
-    end
-
     # Events::makeItemDestroy(itemuuid)
     def self.makeItemDestroy(itemuuid)
         {
@@ -57,11 +40,6 @@ class Events
                 "uuid" => itemuuid,
             }
         }
-    end
-
-    # Events::publishItemDestroy(itemuuid)
-    def self.publishItemDestroy(itemuuid)
-        Events::publish(Events::makeItemDestroy(itemuuid))
     end
 
     # Events::makeItemInit(uuid, mikuType)
@@ -75,6 +53,32 @@ class Events
                 "mikuType" => mikuType
             }
         }
+    end
+
+    # Publishers
+
+    # Events::publish(event)
+    def self.publish(event)
+        timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
+        folder1 = LucilleCore::indexsubfolderpath("#{EventTimelineReader::eventsTimelineLocation()}/#{timefragment}", 100)
+        filepath1 = "#{folder1}/#{CommonUtils::timeStringL22()}.json"
+        File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
+        EventTimelineReader::issueNewRandomTraceForCaching()
+    end
+
+    # Events::publishDoNotShowUntil(item, unixtime)
+    def self.publishDoNotShowUntil(item, unixtime)
+        Events::publish(Events::makeDoNotShowUntil(item, unixtime))
+    end
+
+    # Events::publishItemAttributeUpdate(itemuuid, attname, attvalue)
+    def self.publishItemAttributeUpdate(itemuuid, attname, attvalue)
+        Events::publish(Events::makeItemAttributeUpdate(itemuuid, attname, attvalue))
+    end
+
+    # Events::publishItemDestroy(itemuuid)
+    def self.publishItemDestroy(itemuuid)
+        Events::publish(Events::makeItemDestroy(itemuuid))
     end
 
     # Events::publishItemInit(uuid, mikuType)
