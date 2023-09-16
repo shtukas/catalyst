@@ -4,7 +4,7 @@ class Events
     # Events::publish(event)
     def self.publish(event)
         timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
-        folder1 = LucilleCore::indexsubfolderpath("#{EventTimelineReader::eventsTimeline()}/#{timefragment}", 100)
+        folder1 = LucilleCore::indexsubfolderpath("#{EventTimelineReader::eventsTimelineLocation()}/#{timefragment}", 100)
         filepath1 = "#{folder1}/#{CommonUtils::timeStringL22()}.json"
         File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
         $trace68be8052a3bf = EventTimelineReader::timelineFilepathsReverseEnumerator().next()
@@ -15,9 +15,11 @@ class Events
         {
             "uuid"      => SecureRandom.uuid,
             "unixtime"  => Time.new.to_i,
-            "eventType" => "DoNotShowUntil",
-            "targetId"  => item["uuid"],
-            "unixtime"  => unixtime
+            "eventType" => "DoNotShowUntil2",
+            "payload"   => {
+                "targetId"  => item["uuid"],
+                "unixtime"  => unixtime
+            }
         }
     end
 
@@ -50,8 +52,10 @@ class Events
         {
             "uuid"      => SecureRandom.uuid,
             "unixtime"  => Time.new.to_i,
-            "eventType" => "ItemAttributeUpdate",
-            "itemuuid"  => itemuuid
+            "eventType" => "ItemDestroy2",
+            "payload" => {
+                "uuid" => itemuuid,
+            }
         }
     end
 

@@ -24,10 +24,19 @@ We have one event timeline, but several extractors focusing on the events they f
 
 {
     "uuid"     : string
-    "unixtime" : Float
     "eventType": "DoNotShowUntil"
     "targetId" : string
     "unixtime" : float
+}
+
+{
+    "uuid"     : string
+    "unixtime" : Float
+    "eventType": "DoNotShowUntil2"
+    "payload": {
+        "targetId" : string
+        "unixtime" : float
+    }
 }
 
 {
@@ -56,6 +65,15 @@ We have one event timeline, but several extractors focusing on the events they f
     "unixtime" : Float
     "eventType": "ItemDestroy"
     "itemuuid" : string
+}
+
+{
+    "uuid": string
+    "unixtime" : Float
+    "eventType": "ItemDestroy2"
+    "payload": {
+        "uuid" : string,
+    }
 }
 
 -- Extractors ------------------------------------------------------------------
