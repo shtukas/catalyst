@@ -309,9 +309,6 @@ class EventTimelineMaintenance
             filename2 = "#{filename1[0, 22]}-#{trace}.json"
             filepath2 = "#{File.dirname(filepath1)}/#{filename2}"
             if filepath1 != filepath2 then
-                puts filepath1
-                puts filepath2
-                LucilleCore::pressEnterToContinue()
                 FileUtils.mv(filepath1, filepath2)
             end
             trace
