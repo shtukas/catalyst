@@ -16,7 +16,7 @@ class DoNotShowUntil
 
         cachePrefix = "DoNotShowUntil-491E-A2AB-6CB93205787C"
         unit = lambda{
-            {}
+            JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/DoNotShowUntil.json"))
         }
         combinator = lambda{|data, event|
             if event["eventType"] == "DoNotShowUntil" then
