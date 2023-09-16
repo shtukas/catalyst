@@ -123,49 +123,14 @@ class Catalyst
         }
     end
 
-    # Catalyst::getDataSet() # Map[uuid, item]
-    def self.getDataSet()
-        trace = EventTimelineReader::lastTraceForCaching()
-        dataset = InMemoryCache::getOrNull("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}")
-        if dataset then
-            return dataset
-        end
-
-        cachePrefix = "ITEMS-29DCCA9B-6EC4"
-        unit = lambda {
-            JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/Items.json"))
-        }
-        combinator = lambda{|data, event|
-            if event["eventType"] == "ItemAttributeUpdate" then
-                itemuuid = event["payload"]["itemuuid"]
-                attname  = event["payload"]["attname"]
-                attvalue = event["payload"]["attvalue"]
-                if data[itemuuid].nil? then
-                    data[itemuuid] = {
-                        "uuid" => itemuuid
-                    }
-                end
-                data[itemuuid][attname] = attvalue
-            end
-            if event["eventType"] == "ItemDestroy" then
-                data.delete(event["itemuuid"])
-            end
-            data
-        }
-        dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
-
-        InMemoryCache::set("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}", dataset)
-        dataset
-    end
-
     # Catalyst::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        Catalyst::getDataSet()[uuid].clone
+        EventTimelineDatasets::catalystItems()[uuid].clone
     end
 
     # Catalyst::mikuType(mikuType)
     def self.mikuType(mikuType)
-        Catalyst::getDataSet().values.select{|item| item["mikuType"] == mikuType }
+        EventTimelineDatasets::catalystItems().values.select{|item| item["mikuType"] == mikuType }
     end
 
     # Catalyst::destroy(uuid)
@@ -175,6 +140,6 @@ class Catalyst
 
     # Catalyst::catalystItems()
     def self.catalystItems()
-        Catalyst::getDataSet().values
+        EventTimelineDatasets::catalystItems().values
     end
 end

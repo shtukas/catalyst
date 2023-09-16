@@ -90,3 +90,65 @@ class EventTimelineReader
         end
     end
 end
+
+class EventTimelineDatasets
+
+    # EventTimelineDatasets::doNotShowUntil() # Map[targetId, unixtime]
+    def self.doNotShowUntil()
+        trace = EventTimelineReader::lastTraceForCaching()
+        dataset = InMemoryCache::getOrNull("3e9efc9a-785b-44f7-8b87-7dbe92eee8df:#{trace}")
+        if dataset then
+            return dataset
+        end
+
+        cachePrefix = "DoNotShowUntil-491E-A2AB-6CB93205787C"
+        unit = lambda{
+            JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/DoNotShowUntil.json"))
+        }
+        combinator = lambda{|data, event|
+            if event["eventType"] == "DoNotShowUntil" then
+                data[event["targetId"]] = event["unixtime"]
+            end
+            data
+        }
+        dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
+
+        InMemoryCache::set("3e9efc9a-785b-44f7-8b87-7dbe92eee8df:#{trace}", dataset)
+        dataset
+    end
+
+    # EventTimelineDatasets::catalystItems() # Map[uuid, item]
+    def self.catalystItems()
+        trace = EventTimelineReader::lastTraceForCaching()
+        dataset = InMemoryCache::getOrNull("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}")
+        if dataset then
+            return dataset
+        end
+
+        cachePrefix = "ITEMS-29DCCA9B-6EC4"
+        unit = lambda {
+            JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/Items.json"))
+        }
+        combinator = lambda{|data, event|
+            if event["eventType"] == "ItemAttributeUpdate" then
+                itemuuid = event["payload"]["itemuuid"]
+                attname  = event["payload"]["attname"]
+                attvalue = event["payload"]["attvalue"]
+                if data[itemuuid].nil? then
+                    data[itemuuid] = {
+                        "uuid" => itemuuid
+                    }
+                end
+                data[itemuuid][attname] = attvalue
+            end
+            if event["eventType"] == "ItemDestroy" then
+                data.delete(event["itemuuid"])
+            end
+            data
+        }
+        dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
+
+        InMemoryCache::set("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}", dataset)
+        dataset
+    end
+end
