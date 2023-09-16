@@ -91,6 +91,44 @@ class EventTimelineReader
     end
 end
 
+class EventTimelineReducers
+
+    # EventTimelineReducers::doNotShowUntilReducer(data, event)
+    def self.doNotShowUntilReducer(data, event)
+        if event["eventType"] == "DoNotShowUntil" then
+            data[event["targetId"]] = event["unixtime"]
+        end
+        data
+    end
+
+    # EventTimelineReducers::itemsReducer(data, event)
+    def self.itemsReducer(data, event)
+        if event["eventType"] == "ItemInit" then
+            uuid = event["payload"]["uuid"]
+            mikuType = event["payload"]["mikuType"]
+            data[uuid] = {
+                "uuid"     => uuid,
+                "mikuType" => mikuType
+            }
+        end
+        if event["eventType"] == "ItemAttributeUpdate" then
+            itemuuid = event["payload"]["itemuuid"]
+            attname  = event["payload"]["attname"]
+            attvalue = event["payload"]["attvalue"]
+            if data[itemuuid].nil? then
+                data[itemuuid] = {
+                    "uuid" => itemuuid
+                }
+            end
+            data[itemuuid][attname] = attvalue
+        end
+        if event["eventType"] == "ItemDestroy" then
+            data.delete(event["itemuuid"])
+        end
+        data
+    end
+end
+
 class EventTimelineDatasets
 
     # EventTimelineDatasets::doNotShowUntil() # Map[targetId, unixtime]
@@ -105,12 +143,7 @@ class EventTimelineDatasets
         unit = lambda{
             JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/DoNotShowUntil.json"))
         }
-        combinator = lambda{|data, event|
-            if event["eventType"] == "DoNotShowUntil" then
-                data[event["targetId"]] = event["unixtime"]
-            end
-            data
-        }
+        combinator = lambda{|data, event| EventTimelineReducers::doNotShowUntilReducer(data, event) }
         dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
 
         InMemoryCache::set("3e9efc9a-785b-44f7-8b87-7dbe92eee8df:#{trace}", dataset)
@@ -129,23 +162,7 @@ class EventTimelineDatasets
         unit = lambda {
             JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/Items.json"))
         }
-        combinator = lambda{|data, event|
-            if event["eventType"] == "ItemAttributeUpdate" then
-                itemuuid = event["payload"]["itemuuid"]
-                attname  = event["payload"]["attname"]
-                attvalue = event["payload"]["attvalue"]
-                if data[itemuuid].nil? then
-                    data[itemuuid] = {
-                        "uuid" => itemuuid
-                    }
-                end
-                data[itemuuid][attname] = attvalue
-            end
-            if event["eventType"] == "ItemDestroy" then
-                data.delete(event["itemuuid"])
-            end
-            data
-        }
+        combinator = lambda{|data, event| EventTimelineReducers::itemsReducer(data, event) }
         dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
 
         InMemoryCache::set("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}", dataset)
