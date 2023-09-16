@@ -15,7 +15,9 @@ class DoNotShowUntil
         end
 
         cachePrefix = "DoNotShowUntil-491E-A2AB-6CB93205787C"
-        unit = {}
+        unit = lambda{
+            {}
+        }
         combinator = lambda{|data, event|
             if event["eventType"] == "DoNotShowUntil" then
                 data[event["targetId"]] = event["unixtime"]

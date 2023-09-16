@@ -62,7 +62,7 @@ class EventTimelineReader
         }
     end
 
-    # EventTimelineReader::extract(cachePrefix, unit, combinator)
+    # EventTimelineReader::extract(cachePrefix, unit: lambda: () -> unitdata, combinator)
     # unit: data
     # combinator: (data, event) -> event
     def self.extract(cachePrefix, unit, combinator)
@@ -73,7 +73,7 @@ class EventTimelineReader
         if data then
             data = JSON.parse(data)
         else
-            data = unit
+            data = unit.call()
         end
         EventTimelineReader::snakeMarker(cachePrefix, combinator, data, filepaths)
     end

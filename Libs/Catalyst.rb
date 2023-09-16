@@ -132,7 +132,9 @@ class Catalyst
         end
 
         cachePrefix = "ITEMS-29DCCA9B-6EC4"
-        unit = {}
+        unit = lambda {
+            {}
+        }
         combinator = lambda{|data, event|
             if event["eventType"] == "ItemAttributeUpdate" then
                 itemuuid = event["payload"]["itemuuid"]
