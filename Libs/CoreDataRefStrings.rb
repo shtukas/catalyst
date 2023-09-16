@@ -117,7 +117,7 @@ class CoreDataRefStrings
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Cub3sX::getDatablobOrNull2(uuid, nhash)
+            text = Datablobs::getBlobOrNull(nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
@@ -132,7 +132,7 @@ class CoreDataRefStrings
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = Cub3sX::getDatablobOrNull2(uuid, nhash)
+            url = Datablobs::getBlobOrNull(nhash)
             if url.nil? then
                 puts "(error) I could not retrieve url for reference string: #{referenceString}"
                 LucilleCore::pressEnterToContinue()
