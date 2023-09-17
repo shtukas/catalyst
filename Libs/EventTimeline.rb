@@ -194,6 +194,23 @@ class EventTimelineReducers
         end
         data
     end
+
+    # EventTimelineReducers::banking(data, event)
+    def self.banking(data, event)
+        if event["eventType"] == "BankDeposit" then
+            uuid = event["payload"]["uuid"]
+            date = event["payload"]["date"]
+            value = event["payload"]["value"]
+            if data[uuid].nil? then
+                data[uuid] = {}
+            end
+            if data[uuid][date].nil? then
+                data[uuid][date] = 0
+            end
+            data[uuid][date] = data[uuid][date] + value
+        end
+        data
+    end
 end
 
 class EventTimelineDatasets
@@ -235,6 +252,25 @@ class EventTimelineDatasets
         InMemoryCache::set("140a1b12-9a9e-448f-a5e1-47c1270de830:#{trace}", dataset)
         dataset
     end
+
+    # EventTimelineDatasets::banking() # Map[uuid:string, Map[date:"YYYY-MM-DD", value:float]]
+    def self.banking() # Map[uuid, Map[date, value]]
+        trace = EventTimelineReader::liveTraceForCaching()
+        dataset = InMemoryCache::getOrNull("8676babf-edd3-439a-931c-e9cdcf3fd8b1:#{trace}")
+        if dataset then
+            return dataset
+        end
+
+        cachePrefix = "BANKING-BF1EDA838D33"
+        unit = lambda {
+            JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/Banking.json"))
+        }
+        combinator = lambda{|data, event| EventTimelineReducers::banking(data, event) }
+        dataset = EventTimelineReader::extract(cachePrefix, unit, combinator)
+
+        InMemoryCache::set("8676babf-edd3-439a-931c-e9cdcf3fd8b1:#{trace}", dataset)
+        dataset
+    end
 end
 
 class EventTimelineMaintenance
@@ -259,6 +295,7 @@ class EventTimelineMaintenance
 
         f1 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/DoNotShowUntil.json"
         f2 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/Items.json"
+        f3 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/Banking.json"
 
         # DoNotShowUntil
         data1 = JSON.parse(IO.read(f1))
@@ -268,8 +305,13 @@ class EventTimelineMaintenance
         data2 = JSON.parse(IO.read(f2))
         data2 = EventTimelineReducers::items(data2, event)
 
+        # Items
+        data3 = JSON.parse(IO.read(f3))
+        data3 = EventTimelineReducers::items(data3, event)
+
         File.open(f1, "w"){|f| f.puts(JSON.pretty_generate(data1))}
         File.open(f2, "w"){|f| f.puts(JSON.pretty_generate(data2))}
+        File.open(f3, "w"){|f| f.puts(JSON.pretty_generate(data3))}
 
         puts "deleting event #{eventFilepath}"
         FileUtils.rm(eventFilepath)

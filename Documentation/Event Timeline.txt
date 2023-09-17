@@ -76,6 +76,17 @@ We have one event timeline, but several extractors focusing on the events they f
     }
 }
 
+{
+    "uuid": string
+    "unixtime" : Float
+    "eventType": "BankDeposit"
+    "payload": {
+        "uuid"  : string,
+        "date"  : "YYYY-MM-DD",
+        "value" : Float
+    }
+}
+
 -- Extractors ------------------------------------------------------------------
 
 

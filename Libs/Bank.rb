@@ -23,7 +23,8 @@ class Bank
 
     # Bank::put(uuid, value)
     def self.put(uuid, value)
-        Bank::commit(uuid, Time.new.to_i, Time.new.to_s[0, 10], value)
+        Bank::commit(uuid, Time.new.to_i, CommonUtils::today(), value)
+        Events::publishBankDeposit(uuid, CommonUtils::today(), value)
     end
 
     # Bank::commit(uuid, unixtime, date, value)

@@ -55,6 +55,20 @@ class Events
         }
     end
 
+    # Events::makeBankDeposit(uuid, date, value)
+    def self.makeBankDeposit(uuid, date, value)
+        {
+            "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_i,
+            "eventType" => "BankDeposit",
+            "payload" => {
+                "uuid"  => uuid,
+                "date"  => date,
+                "value" => value
+            }
+        }
+    end
+
     # Publishers
 
     # Events::publish(event)
@@ -84,5 +98,10 @@ class Events
     # Events::publishItemInit(uuid, mikuType)
     def self.publishItemInit(uuid, mikuType)
         Events::publish(Events::makeItemInit(uuid, mikuType))
+    end
+
+    # Events::publishBankDeposit(uuid, date, value)
+    def self.publishBankDeposit(uuid, date, value)
+        Events::publish(Events::makeBankDeposit(uuid, date, value))
     end
 end
