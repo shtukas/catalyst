@@ -206,7 +206,6 @@ class Listing
             Bank::fileManagement()
             NxTasks::maintenance()
             TxCores::maintenance2()
-            CUtils3X::scan_merge()
             Catalyst::maintenance()
             NxThreads::maintenance()
             EventTimelineMaintenance::shortenToLowerPing()
@@ -264,12 +263,6 @@ class Listing
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
-            end
-
-            if (Time.new.to_f - XCache::getOrDefaultValue("liveness:0340e024-58b3-4eb7", "0").to_i) > 3600 then
-                # The deamon hits every 10 minutes, so an hour is ok.
-                puts "I am not seeing activity from CUtils3X::scan_mikuTypes_updates"
-                LucilleCore::pressEnterToContinue()
             end
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
