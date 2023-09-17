@@ -42,8 +42,8 @@ class Events
         }
     end
 
-    # Events::makeItemInit(uuid, mikuType)
-    def self.makeItemInit(uuid, mikuType)
+    # Events::makeItemInit(mikuType, uuid)
+    def self.makeItemInit(mikuType, uuid)
         {
             "uuid"      => SecureRandom.uuid,
             "unixtime"  => Time.new.to_i,

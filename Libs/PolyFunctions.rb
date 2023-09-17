@@ -29,6 +29,13 @@ class PolyFunctions
 
         # Special Features
 
+        if item["coreX-2300"] then
+            core = Catalyst::itemOrNull(item["coreX-2300"])
+            if core then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+            end
+        end
+
         if item["lineage-nx128"] then
             lineage = Catalyst::itemOrNull(item["lineage-nx128"])
             if lineage then
@@ -36,12 +43,12 @@ class PolyFunctions
             end
         end
 
-        NxPools::getPoolsByElementUUID(item["uuid"]).each{|pool|
+        if item["drive-nx1"] then
             accounts << {
-                "description" => "(pool: #{pool["uuid"]})",
-                "number"      => pool["uuid"]
+                "description" => "#{item["description"]}'s engine",
+                "number"      => item["drive-nx1"]["uuid"]
             }
-        }
+        end
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then

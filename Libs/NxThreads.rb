@@ -7,12 +7,29 @@ class NxThreads
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
+        sortType = NxThreads::interactivelySelectSortType()
         uuid = SecureRandom.uuid
         Events::publishItemInit("NxThread", uuid)
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "sortType", sortType)
         Catalyst::itemOrNull(uuid)
+    end
+
+    # --------------------------------------------------------------------------
+    # type
+
+    # NxThreads::sortTypes()
+    def self.sortTypes()
+        ["position-sort", "time-sort"]
+    end
+
+    # NxThreads::interactivelySelectSortType()
+    def self.interactivelySelectSortType()
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("sort type", NxThreads::sortTypes())
+        return type if type
+        NxThreads::interactivelySelectType()
     end
 
     # --------------------------------------------------------------------------
@@ -20,10 +37,17 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        if thread["prefix-override"] then
-            return "🔹 #{thread["prefix-override"]} #{thread["description"]}"
-        end
-        "🔸 (#{"%5.2f" % (thread["coordinate-nx129"] || 0)}) #{thread["description"]}"
+        "🔸 #{TxEngine::prefix(thread)}#{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}#{Todos::prioritySuffix(thread)}"
+    end
+
+    # NxThreads::toStringPosition(thread)
+    def self.toStringPosition(thread)
+        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % (thread["coordinate-nx129"] || 0)}) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}#{Todos::prioritySuffix(thread)}"
+    end
+
+    # NxThreads::toStringTime(thread)
+    def self.toStringTime(thread)
+        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(thread["uuid"]) }) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}#{Todos::prioritySuffix(thread)}"
     end
 
     # NxThreads::interactivelySelectOrNull()
@@ -42,8 +66,13 @@ class NxThreads
 
     # NxThreads::elementsInOrder(thread)
     def self.elementsInOrder(thread)
-        Todos::children(thread)
-            .sort_by{|item| item["coordinate-nx129"] || 0 }
+        if thread["sortType"] == "position-sort" then
+            return Todos::children(thread).sort_by{|item| item["coordinate-nx129"] || 0 }
+        end
+        if thread["sortType"] == "time-sort" then
+            return Todos::children(thread).sort_by{|item| Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }
+        end
+        raise "(error: bd8453d5-85bc-4da9-8bde-61431061ff65)"
     end
 
     # NxThreads::newFirstPosition(thread)
@@ -64,6 +93,9 @@ class NxThreads
 
     # NxThreads::interactivelyDecidePositionAtThread(thread)
     def self.interactivelyDecidePositionAtThread(thread)
+        if thread["sortType"] == "time-sort" then
+            return rand
+        end
         elements = NxThreads::elementsInOrder(thread)
         elements.each{|item|
             puts PolyFunctions::toString(item)
@@ -80,32 +112,11 @@ class NxThreads
 
     # NxThreads::maintenance()
     def self.maintenance()
-        # Ensuring consistency of lineages
-
         Catalyst::mikuType("NxThread").each{|thread|
-            next if thread["lineage-nx128"]
-            core = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22")  # Infinity Core
-            if core.nil? then
-                raise "error: B1204141-BBB8-4712-8238-0C1FC979D4B9"
-            end
-            position = TxCores::newFirstPosition(core)
+            next if thread["lineage-nx128"].nil?
+            core = Catalyst::itemOrNull(thread["lineage-nx128"])
+            next if core
             Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", core["uuid"])
-            Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
-        }
-
-        Catalyst::mikuType("NxThread").each{|thread|
-            if thread["lineage-nx128"] then
-                core = Catalyst::itemOrNull(thread["lineage-nx128"])
-                if core.nil? then
-                    core = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22")  # Infinity Core
-                    if core.nil? then
-                        raise "error: 3CCCED4A-644A-42E1-B787-01686CAF57B4"
-                    end
-                    position = TxCores::newFirstPosition(core)
-                    Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", core["uuid"])
-                    Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
-                end
-            end
         }
     end
 
@@ -133,7 +144,7 @@ class NxThreads
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item).gsub("(#{thread["description"]})", "")
+                    status = spacecontrol.putsline Listing::toString3(thread, store, item).gsub("(#{thread["description"]})", "")
                     break if !status
                 }
 

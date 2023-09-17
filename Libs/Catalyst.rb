@@ -79,6 +79,46 @@ class Catalyst
             return
         end
 
+        if parent["mikuType"] == "TxCore" then
+            core = parent
+            loop {
+                system("clear")
+                kids = TxCores::elements(core)
+                puts "core: #{PolyFunctions::toString(core).green}"
+                puts "kids:"
+                kids.each_with_index{|i, indx| puts "  - (#{indx}) #{PolyFunctions::toString(i)}"}
+                puts ""
+                puts "> here | make thread here | go to <n> # of thread to go in"
+                command = STDIN.gets().strip
+                if command == "here" then
+                    items.each{|item|
+                        if item["mikuType"] == "NxBurner" then
+                            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+                        end
+                        if item["mikuType"] == "NxOndate" then
+                            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+                        end
+                        Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+                        Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+                    }
+                    return
+                end
+                if command == "make thread here" then
+                    thread = NxThreads::interactivelyIssueNewOrNull()
+                    next if thread.nil?
+                    Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
+                    next
+                end
+                if command.start_with?("go to") then
+                    indx = command[5, 99].strip.to_i
+                    target = kids[indx]
+                    next if target.nil?
+                    Catalyst::moveTaskables(items, target)
+                    return
+                end
+            }
+        end
+
         loop {
             system("clear")
             parentKids = Todos::children(parent).sort_by{|item| item["coordinate-nx129"] || 0 }
@@ -97,6 +137,7 @@ class Catalyst
                         Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
                     end
                     Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", parent["uuid"])
+                    Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
                 }
                 if items.size == 1 then
                     item = items[0]

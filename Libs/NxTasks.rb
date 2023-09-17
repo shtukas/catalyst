@@ -84,10 +84,17 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        if item["prefix-override"] then
-            return "🔹 #{item["prefix-override"]} #{item["description"]}"
-        end
-        "🔹 (#{"%5.2f" % (item["coordinate-nx129"] || 0)}) #{item["description"]}"
+        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}#{Todos::prioritySuffix(item)}"
+    end
+
+    # NxTasks::toStringPosition(item)
+    def self.toStringPosition(item)
+        "🔹 #{TxEngine::prefix(item)}(#{"%5.2f" % (item["coordinate-nx129"] || 0)}) #{item["description"]}#{TxCores::suffix(item)}#{Todos::prioritySuffix(item)}"
+    end
+
+    # NxTasks::toStringTime(item)
+    def self.toStringTime(item)
+        "🔹 #{TxEngine::prefix(item)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }) #{item["description"]}#{TxCores::suffix(item)}#{Todos::prioritySuffix(item)}"
     end
 
     # --------------------------------------------------

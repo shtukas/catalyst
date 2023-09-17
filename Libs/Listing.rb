@@ -119,11 +119,12 @@ class Listing
             NxOndates::listingItems(),
             Backups::listingItems(),
             NxBurners::listingItems(),
-            NxPools::listingItems(),
             Todos::bufferInItems(),
+            Todos::drivenItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
+            Todos::priorityItems(),
             TxCores::listingItems(),
-            Todos::mainListingItems()
+            Todos::otherItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -158,6 +159,44 @@ class Listing
         line
     end
 
+    # Listing::toString3(thread, store, item)
+    def self.toString3(thread, store, item)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
+
+        str1 = (lambda {|thread, item|
+            if thread["sortType"] == "position-sort" and item["mikuType"] == "NxTask" then
+                return NxTasks::toStringPosition(item)
+            end
+            if thread["sortType"] == "time-sort" and item["mikuType"] == "NxTask" then
+                return NxTasks::toStringTime(item)
+            end
+            if thread["sortType"] == "position-sort" and item["mikuType"] == "NxThread" then
+                return NxThreads::toStringPosition(item)
+            end
+            if thread["sortType"] == "time-sort" and item["mikuType"] == "NxThread" then
+                return NxThreads::toStringTime(item)
+            end
+            PolyFunctions::toString(item)
+        }).call(thread, store, item)
+
+        line = "#{storePrefix} #{str1}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+
+        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -173,10 +212,9 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
-        spot.contest_entry("NxPools::listingItems()", lambda{ NxPools::listingItems() })
         spot.contest_entry("Todos::bufferInItems()", lambda{ Todos::bufferInItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
-        spot.contest_entry("Todos::mainListingItems()", lambda{ Todos::mainListingItems() })
+        spot.contest_entry("Todos::otherItems()", lambda{ Todos::otherItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
 
@@ -209,6 +247,7 @@ class Listing
             Catalyst::maintenance()
             NxThreads::maintenance()
             EventTimelineMaintenance::shortenToLowerPing()
+            EventTimelineMaintenance::rewriteHistory()
         end
     end
 
@@ -251,7 +290,6 @@ class Listing
         Thread.new {
             loop {
                 # Event Timeline
-                EventTimelineMaintenance::rewriteHistory()
                 EventTimelineReader::issueNewFSComputedTraceForCaching()
                 EventTimelineMaintenance::publishPing()
                 sleep 300

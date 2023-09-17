@@ -15,7 +15,9 @@ class EventTimelineReader
             LucilleCore::locationsAtFolder(locationYear).sort.each{|locationMonth|
                 LucilleCore::locationsAtFolder(locationMonth).sort.each{|locationDay|
                     LucilleCore::locationsAtFolder(locationDay).sort.each{|locationIndexFolder|
-                        LucilleCore::locationsAtFolder(locationIndexFolder).sort.each{|eventfilepath|
+                        LucilleCore::locationsAtFolder(locationIndexFolder)
+                        .select{|location| File.basename(location).start_with?("2") }
+                        .sort.each{|eventfilepath|
                             return eventfilepath
                         }
                         if LucilleCore::locationsAtFolder(locationIndexFolder).empty? then
@@ -44,7 +46,9 @@ class EventTimelineReader
                 LucilleCore::locationsAtFolder(locationYear).sort.each{|locationMonth|
                     LucilleCore::locationsAtFolder(locationMonth).sort.each{|locationDay|
                         LucilleCore::locationsAtFolder(locationDay).sort.each{|locationIndexFolder|
-                            LucilleCore::locationsAtFolder(locationIndexFolder).sort.each{|eventfilepath|
+                            LucilleCore::locationsAtFolder(locationIndexFolder)
+                            .select{|location| File.basename(location).start_with?("2") }
+                            .sort.each{|eventfilepath|
                                 filepaths << eventfilepath
                             }
                         }
@@ -61,7 +65,9 @@ class EventTimelineReader
                 LucilleCore::locationsAtFolder(locationYear).sort.reverse.each{|locationMonth|
                     LucilleCore::locationsAtFolder(locationMonth).sort.reverse.each{|locationDay|
                         LucilleCore::locationsAtFolder(locationDay).sort.reverse.each{|locationIndexFolder|
-                            LucilleCore::locationsAtFolder(locationIndexFolder).sort.reverse.each{|eventfilepath|
+                            LucilleCore::locationsAtFolder(locationIndexFolder)
+                            .select{|location| File.basename(location).start_with?("2") }
+                            .sort.reverse.each{|eventfilepath|
                                 filepaths << eventfilepath
                             }
                         }
@@ -113,7 +119,7 @@ class EventTimelineReader
     def self.extract(cachePrefix, unit, combinator)
         filepathEnumerator = EventTimelineReader::timelineFilepathsReverseEnumerator()
         filepaths = EventTimelineReader::snakeMake(cachePrefix, filepathEnumerator)
-        return unit if filepaths.empty?
+        return unit.call() if filepaths.empty?
         data = XCache::getOrNull("#{cachePrefix}:#{filepaths[0]}")
         if data then
             data = JSON.parse(data)
@@ -224,7 +230,7 @@ class EventTimelineDatasets
         end
 
         cachePrefix = "DoNotShowUntil-491E-A2AB-6CB93205787C"
-        unit = lambda{
+        unit = lambda {
             JSON.parse(IO.read("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Units/DoNotShowUntil.json"))
         }
         combinator = lambda{|data, event| EventTimelineReducers::doNotShowUntil(data, event) }

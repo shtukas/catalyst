@@ -1,0 +1,5 @@
+
+TxEngine:
+    "uuid"        : String
+    "dailyHours"  : null or Float
+    "weeklyHours" : null or Float

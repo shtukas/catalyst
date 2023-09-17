@@ -5,9 +5,11 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | >> <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | >> <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | pool",
+            "NxThreads     : sort type",
+            "",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -37,6 +39,55 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDots(item)
+            return
+        end
+
+        if Interpreting::match("priority *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
+                puts "We only assign priority status to NxTasks and NxThreads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", true)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
+                puts "We only assign TxEngines to NxTasks and NxThreads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            engine = TxEngine::interactivelyMakeOrNull()
+            return if engine.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
+            return
+        end
+
+        if Interpreting::match("engine-null *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", nil)
+            return
+        end
+
+        if Interpreting::match("sort type *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxThread" then
+                puts "sort type command only for NxThreads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Events::publishItemAttributeUpdate(item["uuid"], "sortType", NxThreads::interactivelySelectSortType())
             return
         end
 
@@ -70,13 +121,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pool", input) then
-            pool = NxPools::interactivelyIssueNewOrNull()
-            return if pool.nil?
-            puts JSON.pretty_generate(pool)
-            return
-        end
-
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             Catalyst::moveTaskables([item])
@@ -94,7 +138,7 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", core["uuid"])
+            Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
             return
         end
 
@@ -105,7 +149,7 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", core["uuid"])
+            Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
             return
         end
 

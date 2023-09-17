@@ -97,26 +97,27 @@ class TxCores
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
-    # TxCores::elementsInOrder(core)
-    def self.elementsInOrder(core)
-        Todos::children(core)
-            .sort_by{|item| item["coordinate-nx129"] || 0 }
+    # TxCores::elements(core)
+    def self.elements(core)
+        (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask"))
+            .select{|item| item["coreX-2300"] == core["uuid"] }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # TxCores::newFirstPosition(core)
     def self.newFirstPosition(core)
-        elements = TxCores::elementsInOrder(core)
+        elements = TxCores::elements(core)
                         .select{|item| item["coordinate-nx129"] }
         return 1 if elements.empty?
         elements.map{|item| item["coordinate-nx129"] }.min - 1
     end
 
-    # TxCores::newNextPosition(core)
-    def self.newNextPosition(core)
-        elements = NxThreads::elementsInOrder(core)
-                        .select{|item| item["coordinate-nx129"] }
-        return 1 if elements.empty?
-        elements.map{|item| item["coordinate-nx129"] }.max
+    # TxCores::suffix(item)
+    def self.suffix(item)
+        return "" if item["coreX-2300"].nil?
+        core = Catalyst::itemOrNull(item["coreX-2300"])
+        return "" if core.nil?
+        " (#{core["description"]})".yellow
     end
 
     # -----------------------------------------------
@@ -158,49 +159,30 @@ class TxCores
             system("clear")
 
             store = ItemStore.new()
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
 
-            spacecontrol.putsline ""
+            puts  ""
             store.register(core, false)
-            spacecontrol.putsline Listing::toString2(store, core)
-            spacecontrol.putsline ""
+            puts  Listing::toString2(store, core)
+            puts  ""
 
-            TxCores::elementsInOrder(core)
+            TxCores::elements(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item).gsub("(#{core["description"]})", "")
-                    break if !status
+                    puts  Listing::toString2(store, item)
                 }
 
             puts ""
-            puts "(thread, position * *, sort)"
+            puts "thread"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "thread" then
-                position = TxCores::newNextPosition(core)
                 thread = NxThreads::interactivelyIssueNewOrNull()
                 next if thread.nil?
-                Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", core["uuid"])
-                Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
+                puts JSON.pretty_generate(thread)
+                Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
                 next
-            end
-
-            if Interpreting::match("position * *", input) then
-                _, listord, position = Interpreting::tokenizer(input)
-                item = store.get(listord.to_i)
-                return if item.nil?
-                Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position.to_f)
-                return
-            end
-
-            if input == "sort" then
-                unselected = TxCores::elementsInOrder(core)
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
-                selected.reverse.each{|item|
-                    Events::publishItemAttributeUpdate(task["uuid"], "coordinate-nx129",  TxCores::newFirstPosition(core))
-                }
             end
 
             puts ""

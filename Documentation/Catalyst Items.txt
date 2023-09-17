@@ -6,5 +6,8 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "tmpskip1"       : TmpSkip1
 
-    - lineage-nx128    : string, uuid
-    - coordinate-nx129 : float
+    - lineage-nx128    : string, uuid # (optional)
+    - coordinate-nx129 : float        # (optional)
+    - drive-nx1        : TxEngine     # (optional)
+    - coreX-2300       : uuid of core # (optional)
+    - isPriorityTodo-8 : boolean # (optional)
