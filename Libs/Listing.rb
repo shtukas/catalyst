@@ -104,7 +104,7 @@ class Listing
             NxBurners::listingItems(),
             Todos::bufferInItems(),
             Todos::drivenItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
+            WaveControl::shouldShow() ? Waves::listingItems().select{|item| !item["interruption"] } : [],
             Todos::priorityItems(),
             TxCores::listingItems(),
             Todos::otherItems()

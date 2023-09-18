@@ -90,8 +90,8 @@ class NxBalls
         NxBalls::issueNxBall(item, accounts)
     end
 
-    # NxBalls::stop(item)
-    def self.stop(item)
+    # NxBalls::stop(item) # timespanInSeconds
+    def self.stop(item) # timespanInSeconds
         if NxBalls::itemIsBallFree(item) then
             NxBalls::destroyNxBall(item)
             return
@@ -112,6 +112,7 @@ class NxBalls
             Bank::put(account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
+        timespanInSeconds
     end
 
     # NxBalls::pause(item)

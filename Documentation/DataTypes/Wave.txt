@@ -27,3 +27,12 @@ Nx46Type                        Nx46Value
 "every-n-days"                  Float
 "every-this-day-of-the-week"    'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'
 "every-this-day-of-the-month"   String, length 2, Day Number
+
+WaveControl {
+    "timebucket" : countInSecond
+}
+
+- Vx038: When do done/delete an item we get 15 mins.
+- Vx039: When we stop an item we get the time.
+- Vx040: If the time is above 20 mins, we can show the non interruption waves.
+- Vx041: When we do a non interruption wave we retrieve 10 mins plus the time it took to do the wave.
