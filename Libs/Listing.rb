@@ -78,24 +78,7 @@ class Listing
 
         return false if !DoNotShowUntil::isVisible(item)
 
-        skipDirectiveOrNull = lambda {|item|
-            if item["tmpskip1"] then
-                return item["tmpskip1"]
-            end
-            cachedDirective = XCache::getOrNull("464e0d79-36b5-4bb6-951c-4d91d661ac6f:#{item["uuid"]}")
-            if cachedDirective then
-                return JSON.parse(cachedDirective)
-            end
-        }
-
-        skipTargetTimeOrNull = lambda {|item|
-            directive = skipDirectiveOrNull.call(item)
-            return nil if directive.nil?
-            targetTime = directive["unixtime"] + directive["durationInHours"]*3600
-            (Time.new.to_f < targetTime) ? targetTime : nil
-        }
-
-        return false if skipTargetTimeOrNull.call(item)
+        return false if TmpSkip1::isSkipped(item)
 
         true
     end

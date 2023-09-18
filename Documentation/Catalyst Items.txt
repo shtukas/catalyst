@@ -4,7 +4,7 @@ Cross types conventions:
 
     - "field11"        : coredata reference string
     - "doNotShowUntil" : null or unixtime
-    - "tmpskip1"       : TmpSkip1
+    - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
 
     - lineage-nx128    : string, uuid # (optional)
     - coordinate-nx129 : float        # (optional)

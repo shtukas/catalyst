@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | >> <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
             "",
             "NxThreads     : sort type",
             "",
@@ -106,7 +106,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            TmpSkip1::skip(item, 1)
+            Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -355,8 +355,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">> *", input) then
-            _, _, _, _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("push", input) then
+            item = store.getDefault()
+            return if item.nil?
+            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+            return if unixtime.nil?
+            DoNotShowUntil::setUnixtime(item, unixtime)
+            return
+        end
+
+        if Interpreting::match("push *", input) then
+            _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
