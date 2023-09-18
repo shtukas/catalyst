@@ -133,7 +133,7 @@ class Waves
     # Waves::toString(item)
     def self.toString(item)
         ago = "done: #{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
-        "♻️  #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreDataRefStrings::itemToSuffixString(item)} (#{ago})"
+        "♻️  #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreDataRefStrings::itemToSuffixString(item)} (#{ago})#{TxCores::suffix(item)}"
     end
 
     # -------------------------------------------------------------------------
