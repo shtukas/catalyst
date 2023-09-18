@@ -7,12 +7,13 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
             "",
-            "NxThreads     : sort type",
+            "Transmutations: >ondate (on buffer-in)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
+            "NxThreads     : sort type",
             "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
@@ -139,8 +140,12 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
+            if item["description"].include?("(buffer-in)") then
+                Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            end
+            if item["mikuType"] == "NxTask" then
+                Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
+            end
             return
         end
 
@@ -152,8 +157,12 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
+            if item["description"].include?("(buffer-in)") then
+                Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            end
+            if item["mikuType"] == "NxTask" then
+                Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
+            end
             return
         end
 
@@ -412,6 +421,31 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("manual countdown", input) then
             PhysicalTargets::issueNewOrNull()
+            return
+        end
+
+        if Interpreting::match(">ondate", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if !(item["mikuType"] == "NxTask" and item["description"].include?("(buffer-in)")) then
+                puts "For the moment we only run >ondate on buffer in NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+
+        if Interpreting::match(">ondate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             return
         end
 

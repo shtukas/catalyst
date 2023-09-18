@@ -133,7 +133,8 @@ class Waves
     # Waves::toString(item)
     def self.toString(item)
         ago = "done: #{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
-        "♻️  #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreDataRefStrings::itemToSuffixString(item)} (#{ago})#{TxCores::suffix(item)}"
+        interruption = item["interruption"] ? " (interruption)" : ""
+        "♻️  #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreDataRefStrings::itemToSuffixString(item)} (#{ago})#{TxCores::suffix(item)}#{interruption}"
     end
 
     # -------------------------------------------------------------------------
@@ -177,7 +178,7 @@ class Waves
     def self.program2(item)
         loop {
             puts Waves::toString(item)
-            actions = ["update description", "update wave pattern", "perform done", "set days of the week", "destroy"]
+            actions = ["update description", "update wave pattern", "perform done", "set priority", "set days of the week", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
@@ -193,6 +194,9 @@ class Waves
             if action == "perform done" then
                 Waves::performWaveDone(item)
                 return
+            end
+            if action == "set priority" then
+                Events::publishItemAttributeUpdate(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
