@@ -139,6 +139,8 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
             return
         end
 
@@ -150,6 +152,8 @@ class ListingCommandsAndInterpreters
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
             return
         end
 
