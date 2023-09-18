@@ -145,6 +145,10 @@ class TxCores
     # TxCores::maintenance2()
     def self.maintenance2()
         Catalyst::mikuType("TxCore").each{|core| TxCores::maintenance1(core) }
+    end
+
+    # TxCores::maintenance3()
+    def self.maintenance3()
         padding = (Catalyst::mikuType("TxCore").map{|core| core["description"].size } + [0]).max
         XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
     end

@@ -243,12 +243,13 @@ class Listing
             puts "> Listing::maintenance() on primary instance"
             Bank::fileManagement()
             NxTasks::maintenance()
-            TxCores::maintenance2()
             Catalyst::maintenance()
             NxThreads::maintenance()
+            TxCores::maintenance2()
             EventTimelineMaintenance::shortenToLowerPing()
             EventTimelineMaintenance::rewriteHistory()
         end
+        TxCores::maintenance3()
     end
 
     # Listing::launchNxBallMonitor()
