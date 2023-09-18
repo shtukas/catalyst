@@ -94,17 +94,17 @@ class NxBalls
     def self.stop(item) # timespanInSeconds
         if NxBalls::itemIsBallFree(item) then
             NxBalls::destroyNxBall(item)
-            return
+            return 0 
         end
         if NxBalls::itemIsPaused(item) then
             puts "stopping paused item, nothing to do..."
             NxBalls::destroyNxBall(item)
-            return
+            return 0
         end
         nxball = NxBalls::getNxBallOrNull(item)
         if nxball["instance"] != Config::thisInstanceId() then
             puts "This ball wasn't created here, was created at #{nxball["instance"]}."
-            return if !LucilleCore::askQuestionAnswerAsBoolean("Confirm stop operation: ")
+            return 0 if !LucilleCore::askQuestionAnswerAsBoolean("Confirm stop operation: ")
         end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
