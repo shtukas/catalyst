@@ -70,11 +70,10 @@ class PolyActions
 
         timeInSeconds = NxBalls::stop(item)
         if item["mikuType"] != "Wave" then
-            WaveControl::addTime(timeInSeconds)  # Vx039
+            WaveControl::addTime(15*60)  # Vx039
         end
         if item["mikuType"] == "Wave" and !item["interruption"] then
             WaveControl::addTime(-10*60)         # Vx041
-            WaveControl::addTime(-timeInSeconds) # Vx041
         end
 
         # Removing park, if any.

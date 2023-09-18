@@ -297,6 +297,7 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
+            spacecontrol.putsline JSON.generate(WaveControl::getControl())
 
             desktopItems = Desktop::listingItems()
             if desktopItems.size > 0 then

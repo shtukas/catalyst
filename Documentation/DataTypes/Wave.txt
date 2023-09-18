@@ -33,6 +33,5 @@ WaveControl {
 }
 
 - Vx038: When do done/delete an item we get 15 mins.
-- Vx039: When we stop an item we get the time.
 - Vx040: If the time is above 20 mins, we can show the non interruption waves.
-- Vx041: When we do a non interruption wave we retrieve 10 mins plus the time it took to do the wave.
+- Vx041: When we do a non interruption wave we retrieve 10 mins.
