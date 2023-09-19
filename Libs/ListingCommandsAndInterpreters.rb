@@ -24,6 +24,7 @@ class ListingCommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 DoNotShowUntil::setUnixtime(item, unixtime)
+                Listing::removeLstOrd(item)
                 return
             end
         end
@@ -198,6 +199,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Catalyst::postpone(item)
+            Listing::removeLstOrd(item)
             return
         end
 
@@ -206,6 +208,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::postpone(item)
+            Listing::removeLstOrd(item)
             return
         end
 
@@ -385,6 +388,7 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
+            Listing::removeLstOrd(item)
             return
         end
 
@@ -395,6 +399,7 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
+            Listing::removeLstOrd(item)
             return
         end
 
