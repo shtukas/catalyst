@@ -83,7 +83,6 @@ class NxOndates
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         Events::publishItemAttributeUpdate(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
-        Events::publishItemAttributeUpdate(item["uuid"], "parking", nil)
         DoNotShowUntil::setUnixtime(item, unixtime)
     end
 

@@ -33,4 +33,8 @@ class ItemStore
     def getDefault()
         @defaultItem.clone
     end
+
+    def items()
+        @items
+    end
 end

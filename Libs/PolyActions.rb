@@ -68,9 +68,7 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
-        # Removing park, if any.
-        item["parking"] = nil
-        item["skipped"] = false
+        Listing::removeLstOrd(item)
 
         # order: alphabetical order
 
@@ -121,6 +119,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
+            if Stratification::getDirectTopOrNull(item) then
+                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -304,6 +307,7 @@ class PolyActions
                 end
                 NxBalls::stop(item)
                 Catalyst::moveTaskables([item])
+                Listing::removeLstOrd(item)
                 return
             end
 
@@ -334,6 +338,7 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{Waves::toString(item).green} ? '", true) then
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
+                Listing::removeLstOrd(item)
             end
             return
         end

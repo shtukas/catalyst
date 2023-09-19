@@ -92,8 +92,7 @@ class Listing
     def self.items()
         cores = TxCores::listingItems()
 
-        [
-            NxBalls::runningItems(),
+        items = [
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
@@ -106,9 +105,14 @@ class Listing
             Todos::drivenItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
             Todos::priorityItems(),
-            TxCores::listingItems(),
-            Todos::otherItems()
+            TxCores::listingItems()
         ]
+
+        if items.empty? then
+            items = Todos::otherItems()
+        end
+
+        items
             .flatten
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
@@ -125,7 +129,8 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        s2 = item["list-ord-03"] ? "(#{"%.3f" % (item["list-ord-03"])})" : "       "
+        line = "#{storePrefix} #{s2} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -257,6 +262,68 @@ class Listing
         end
     end
 
+    # Listing::removeLstOrd(item)
+    def self.removeLstOrd(item)
+        Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", nil)
+    end
+
+    # Listing::ordinalise(items)
+    def self.ordinalise(items)
+        if items.select{|item| item["list-ord-03"] }.any?{|item| item["list-ord-03"] < 0 } then
+            lowerbound = items.select{|item| item["list-ord-03"] }.map{|item| item["list-ord-03"] }.min
+            items = items
+                        .select{|item| item["list-ord-03"] }
+                        .map{|item|
+                            value = item["list-ord-03"] + (-lowerbound)
+                            item["list-ord-03"] = value
+                            Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
+                            item
+                        }
+        end
+        if items.select{|item| item["list-ord-03"] }.any?{|item| item["list-ord-03"] > 1 } then
+            items = items
+                        .select{|item| item["list-ord-03"] }
+                        .map{|item|
+                            value = item["list-ord-03"].to_f/2
+                            item["list-ord-03"] = value
+                            Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
+                            item
+                        }
+        end
+
+        if items.select{|item| item["list-ord-03"] }.all?{|item| item["list-ord-03"] > 0.1 } then
+            items = items
+                        .select{|item| item["list-ord-03"] }
+                        .map{|item|
+                            value = item["list-ord-03"] - 0.1
+                            item["list-ord-03"] = value
+                            Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
+                            item
+                        }
+        end
+        getRandom = lambda{|lowerbound, upperbound|
+            lowerbound + rand*(upperbound-lowerbound)
+        }
+        itemToValue = lambda{|item|
+            return getRandom.call(0.5, 1.0) if (item["mikuType"] == "Wave" and !item["interruption"])
+            return getRandom.call(0.1, 0.2) if (item["mikuType"] == "Wave" and item["interruption"])
+            return getRandom.call(0.2, 0.3) if item["mikuType"] == "NxOndate"
+            return getRandom.call(0.3, 0.6) if item["mikuType"] == "NxThread"
+            return getRandom.call(0.3, 0.6) if item["mikuType"] == "NxTask"
+            return getRandom.call(0.5, 0.7) if item["mikuType"] == "TxCore"
+            raise "(error: cbbfa15a-6bff-4cac-a718-9906b69fb91e) Listing::ordinalise: unsupported mikuType: #{item["mikuType"]}"
+        }
+        items.reduce([]){|collection, item|
+            if item["list-ord-03"].nil? then
+                value = itemToValue.call(item)
+                Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
+                item["list-ord-03"] = value
+            end
+            collection + [item]
+        }
+        items.sort_by{|item| item["list-ord-03"] }
+    end
+
     # Listing::main()
     def self.main()
 
@@ -309,8 +376,18 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items = Listing::items()
+            items = NxBalls::runningItems() + Listing::ordinalise(Listing::items())
             items = Prefix::prefix(items)
+
+            # This last step is to remove duplicates due to running items
+            items = items.reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+
             items
                 .each{|item|
                     if item["mikuType"] == "TxEmpty" then

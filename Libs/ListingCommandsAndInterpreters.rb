@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxThreads     : sort type",
-            "misc          : search | speed | commands | edit <n>",
+            "misc          : search | speed | commands | edit <n> | sort",
         ].join("\n")
     end
 
@@ -40,6 +40,17 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDots(item)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            items = store.items().select{|item| item["mikuType"] != "NxStrat" }
+            selected, unselected = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+            selected
+                .reverse
+                .each_with_index{|item, indx|
+                    Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", -indx.to_f/100)
+                }
             return
         end
 

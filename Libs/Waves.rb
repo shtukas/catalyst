@@ -160,7 +160,6 @@ class Waves
         puts "done-ing: '#{Waves::toString(item).green}'"
         Events::publishItemAttributeUpdate(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-        Events::publishItemAttributeUpdate(item["uuid"], "parking", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])

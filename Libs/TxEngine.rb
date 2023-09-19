@@ -4,7 +4,7 @@ class TxEngine
     # TxEngine::dayRatioOrNull(engine)
     def self.dayRatioOrNull(engine)
         return nil if engine["dailyHours"].nil?
-        Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/engine["dailyHours"]
+        (Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).to_f/engine["dailyHours"]
     end
  
     # TxEngine::weekRatioOrNull(engine)
@@ -36,8 +36,8 @@ class TxEngine
     def self.prefix(item)
         return "" if item["drive-nx1"].nil?
         engine = item["drive-nx1"]
-        dhs = engine["dailyHours"] ? "#{"%5.2f" % TxEngine::dayRatioOrNull(engine)} of #{"%5.2f" % engine["dailyHours"]} hours" : ""
-        whs = engine["weeklyHours"] ? "#{"%5.2f" % TxEngine::weekRatioOrNull(engine)} of #{"%5.2f" % engine["weeklyHours"]} hours" : ""
+        dhs = engine["dailyHours"] ? "#{"%5.2f" % (100*TxEngine::dayRatioOrNull(engine))}% of #{"%5.2f" % engine["dailyHours"]} hours" : ""
+        whs = engine["weeklyHours"] ? "#{"%5.2f" % (100*TxEngine::weekRatioOrNull(engine))}% of #{"%5.2f" % engine["weeklyHours"]} hours" : ""
         "(#{dhs} ; #{whs}) ".yellow
     end
 end
