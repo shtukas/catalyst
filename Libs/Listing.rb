@@ -104,7 +104,7 @@ class Listing
             NxBurners::listingItems(),
             Todos::bufferInItems(),
             Todos::drivenItems(),
-            WaveControl::shouldShow() ? Waves::listingItems().select{|item| !item["interruption"] } : [],
+            Waves::listingItems().select{|item| !item["interruption"] },
             Todos::priorityItems(),
             TxCores::listingItems(),
             Todos::otherItems()
@@ -322,8 +322,6 @@ class Listing
                     break if !status
                 }
 
-            wavecontrol = WaveControl::getControl()
-            puts "(wave control: #{wavecontrol["credits"]})"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"

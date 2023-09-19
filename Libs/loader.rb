@@ -181,6 +181,5 @@ require_relative "Todos.rb"
 require_relative "TxEngine.rb"
 
 require_relative "Waves.rb"
-require_relative "WaveControl.rb"
 
 # ------------------------------------------------------------

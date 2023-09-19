@@ -27,12 +27,3 @@ Nx46Type                        Nx46Value
 "every-n-days"                  Float
 "every-this-day-of-the-week"    'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'
 "every-this-day-of-the-month"   String, length 2, Day Number
-
-WaveControl {
-    "credits" : value
-}
-
-- Vx038: When do done/delete an item we get 0.7 credit
-- Vx039: When stop the nxball of a non wave, we add the time in hours
-- Vx040: If credits are above 1, we can show the non interruption waves.
-- Vx041: When we do a non interruption wave we retrieve 0.9
