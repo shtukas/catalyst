@@ -247,8 +247,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
-            puts "You cannot done a TxCore"
-            LucilleCore::pressEnterToContinue()
+            if TxCores::elements(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::elements(item).size} elements"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
             return
         end
 
