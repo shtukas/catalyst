@@ -70,10 +70,10 @@ class PolyActions
 
         timeInSeconds = NxBalls::stop(item)
         if item["mikuType"] != "Wave" then
-            WaveControl::addTime(15*60)  # Vx039
+            WaveControl::credit(timeInSeconds.to_f/3600)  # Vx039
         end
         if item["mikuType"] == "Wave" and !item["interruption"] then
-            WaveControl::addTime(-10*60)         # Vx041
+            WaveControl::credit(-0.9)   # Vx041
         end
 
         # Removing park, if any.
@@ -85,7 +85,7 @@ class PolyActions
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
-                WaveControl::addTime(15*60) # Vx038
+                WaveControl::credit(0.7) # Vx038
             end
             return
         end
@@ -98,7 +98,7 @@ class PolyActions
         if item["mikuType"] == "NxBurner" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
-                WaveControl::addTime(15*60) # Vx038
+                WaveControl::credit(0.7) # Vx038
             end
             return
         end
@@ -121,7 +121,7 @@ class PolyActions
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
-                WaveControl::addTime(15*60) # Vx038
+                WaveControl::credit(0.7) # Vx038
             end
             return
         end
@@ -134,7 +134,7 @@ class PolyActions
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
-                WaveControl::addTime(15*60) # Vx038
+                WaveControl::credit(0.7) # Vx038
             end
             return
         end
@@ -148,7 +148,7 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Catalyst::destroy(item["uuid"])
-                WaveControl::addTime(15*60) # Vx038
+                WaveControl::credit(0.7) # Vx038
             end
             return
         end
@@ -179,7 +179,7 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
-                WaveControl::addTime(15*60) # Vx038
+                WaveControl::credit(0.7) # Vx038
             end
             return
         end
