@@ -166,7 +166,7 @@ class Listing
                 return NxThreads::toStringTime(item)
             end
             PolyFunctions::toString(item)
-        }).call(thread, store, item)
+        }).call(thread, item)
 
         line = "#{storePrefix} #{str1}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
