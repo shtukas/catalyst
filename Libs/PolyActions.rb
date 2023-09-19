@@ -92,8 +92,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            puts "You cannot done a NxThread, but you can destroy it"
-            LucilleCore::pressEnterToContinue()
+            if Todos::children(item).size > 0 then
+                puts "The thread '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Todos::children(item).size} elements"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
             return
         end
 
