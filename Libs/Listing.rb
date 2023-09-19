@@ -297,7 +297,6 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-            spacecontrol.putsline JSON.generate(WaveControl::getControl())
 
             desktopItems = Desktop::listingItems()
             if desktopItems.size > 0 then
@@ -323,6 +322,8 @@ class Listing
                     break if !status
                 }
 
+            wavecontrol = WaveControl::getControl()
+            puts "(wave control: #{wavecontrol["credits"]})"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
