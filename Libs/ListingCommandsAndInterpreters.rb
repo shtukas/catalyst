@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "Transmutations: >ondate (on buffer-in)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -41,6 +41,15 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDots(item)
+            return
+        end
+
+        if Interpreting::match("line", input) then
+            line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
+            return if line == ""
+            line = NxLines::issue(line)
+            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ")
+            Events::publishItemAttributeUpdate(line["uuid"], "list-ord-03", ordinal.to_f)
             return
         end
 
