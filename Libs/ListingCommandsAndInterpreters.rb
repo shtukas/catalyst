@@ -48,8 +48,18 @@ class ListingCommandsAndInterpreters
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
             line = NxLines::issue(line)
-            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal: ")
-            Events::publishItemAttributeUpdate(line["uuid"], "list-ord-03", ordinal.to_f)
+            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal (first, last): ")
+            ord = nil
+            if ordinal == "first" then
+                ord = XCache::getOrDefaultValue("low:a0ce-6591a1ee9d5d", "0").to_f - 0.1 
+            end 
+            if ordinal == "last" then
+                ord = XCache::getOrDefaultValue("high:a0ce-6591a1ee9d5d", "0").to_f + 0.1 
+            end 
+            if ordinal.nil? then
+                ord = ordinal.to_f
+            end
+            Events::publishItemAttributeUpdate(line["uuid"], "list-ord-03", ord)
             return
         end
 

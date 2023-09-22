@@ -323,7 +323,15 @@ class Listing
             end
             collection + [item]
         }
-        items.sort_by{|item| item["list-ord-03"] }
+        items = items.sort_by{|item| item["list-ord-03"] }
+
+        return [] if items.empty?
+        # One last thing we do is publishing the two bonds 
+
+        XCache::set("low:a0ce-6591a1ee9d5d", items.map{|item| item["list-ord-03"] }.min) 
+        XCache::set("high:a0ce-6591a1ee9d5d", items.map{|item| item["list-ord-03"] }.max)
+
+        items
     end
 
     # Listing::main()

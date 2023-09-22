@@ -176,10 +176,18 @@ class TxCores
                 }
 
             puts ""
-            puts "thread"
+            puts "task | thread"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                puts JSON.pretty_generate(task)
+                Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
+                next
+            end
 
             if input == "thread" then
                 thread = NxThreads::interactivelyIssueNewOrNull()
