@@ -313,6 +313,7 @@ class Listing
             return getRandom.call(0.5, 0.7) if item["mikuType"] == "TxCore"
             return getRandom.call(0.1, 0.2) if item["mikuType"] == "PhysicalTarget"
             return getRandom.call(0.1, 0.2) if item["mikuType"] == "Backup"
+            return getRandom.call(0.05, 0.06) if item["mikuType"] == "NxAnniversary"
             raise "(error: cbbfa15a-6bff-4cac-a718-9906b69fb91e) Listing::ordinalise: unsupported mikuType: #{item["mikuType"]}"
         }
         items.reduce([]){|collection, item|
