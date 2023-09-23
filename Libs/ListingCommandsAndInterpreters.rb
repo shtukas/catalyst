@@ -44,6 +44,63 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">task", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxOndate" then
+                puts "For the moment we only run >task on buffer in NxOndate"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                engine = TxEngine::interactivelyMakeOrNull()
+                Events::publishItemAttributeUpdate(uuid, "drive-nx1", engine)
+                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            else
+                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+                Catalyst::moveTaskables([item])
+            end
+            return
+        end
+
+        if Interpreting::match(">cruise", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "For the moment we only run >cruise on buffer in NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
+            Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
+            return
+        end
+
+        if Interpreting::match(">ondate", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if !(item["mikuType"] == "NxTask" and item["description"].include?("(buffer-in)")) then
+                puts "For the moment we only run >ondate on buffer in NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+        if Interpreting::match(">ondate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
         if Interpreting::match("line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
@@ -403,44 +460,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("manual countdown", input) then
             PhysicalTargets::issueNewOrNull()
-            return
-        end
-
-        if Interpreting::match(">ondate", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if !(item["mikuType"] == "NxTask" and item["description"].include?("(buffer-in)")) then
-                puts "For the moment we only run >ondate on buffer in NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
-            return
-        end
-
-        if Interpreting::match(">cruise", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >cruise on buffer in NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
-            Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
-            return
-        end
-
-        if Interpreting::match(">ondate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             return
         end
 

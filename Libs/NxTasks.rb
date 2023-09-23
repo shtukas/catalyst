@@ -24,6 +24,11 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
 
+        if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+            engine = TxEngine::interactivelyMakeOrNull()
+            Events::publishItemAttributeUpdate(uuid, "drive-nx1", engine)
+        end
+
         Catalyst::itemOrNull(uuid)
     end
 
