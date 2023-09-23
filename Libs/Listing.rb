@@ -88,31 +88,17 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::items()
-    def self.items()
-        cores = TxCores::listingItems()
-
-        items = [
+    # Listing::items_adhoc_today()
+    def self.items_adhoc_today()
+        [
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Catalyst::mikuType("NxLine"),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            Backups::listingItems(),
-            NxBurners::listingItems(),
-            Todos::bufferInItems(),
-            Todos::drivenItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
-            Todos::priorityItems(),
-            TxCores::listingItems()
+            Backups::listingItems()
         ]
-
-        if items.empty? then
-            items = Todos::otherItems()
-        end
-
-        items
             .flatten
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
@@ -122,6 +108,81 @@ class Listing
                     selected + [item]
                 end
             }
+    end
+
+    # Listing::items_waves2()
+    def self.items_waves2()
+        Waves::listingItems().select{|item| !item["interruption"] }
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+    end
+
+    # Listing::items_todo()
+    def self.items_todo()
+        [
+            NxBurners::listingItems(),
+            Todos::bufferInItems(),
+            Todos::drivenItems(),
+            Todos::priorityItems(),
+            TxCores::listingItems(),
+            Todos::otherItems()
+        ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+    end
+
+    # Listing::items()
+    def self.items()
+        blocks = [
+            {
+                "items"     => Listing::items_adhoc_today(),
+                "itemsmust" => Listing::items_adhoc_today().select{|item| NxBalls::itemIsActive(item) },
+                "ordinal"   => 0.1,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: adhoc today", lambda{
+                    items = Listing::items_adhoc_today()
+                    Dives::genericprogram(items)
+                })
+            },
+            {
+                "items"     => Listing::items_waves2(),
+                "itemsmust" => Listing::items_waves2().select{|item| NxBalls::itemIsActive(item) },
+                "ordinal"   => 0.0,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: wave2", lambda{
+                    items = Listing::items_waves2()
+                    Dives::genericprogram(items)
+                })
+            },
+            {
+                "items"     => Listing::items_todo(),
+                "itemsmust" => Listing::items_todo().select{|item| NxBalls::itemIsActive(item) },
+                "ordinal"   => 0.3,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: todo", lambda{
+                    items = Listing::items_todo()
+                    Dives::genericprogram(items)
+                })
+            }
+        ]
+            .sort_by{|block| block["ordinal"] }
+
+        [
+            blocks[0]["items"],
+            blocks.drop(1).map{|block| block["itemsmust"] },
+            blocks.drop(1).map{|block| block["block"] },
+        ]
+            .flatten
     end
 
     # Listing::toString2(store, item)
@@ -314,6 +375,7 @@ class Listing
             return getRandom.call(0.1, 0.2) if item["mikuType"] == "PhysicalTarget"
             return getRandom.call(0.1, 0.2) if item["mikuType"] == "Backup"
             return getRandom.call(0.05, 0.06) if item["mikuType"] == "NxAnniversary"
+            return getRandom.call(0.99, 0.99) if item["mikuType"] == "NxLambda"
             raise "(error: cbbfa15a-6bff-4cac-a718-9906b69fb91e) Listing::ordinalise: unsupported mikuType: #{item["mikuType"]}"
         }
         items.reduce([]){|collection, item|

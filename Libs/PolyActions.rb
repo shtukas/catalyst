@@ -289,6 +289,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxLambda" then
+            item["lambda"].call()
+            return
+        end
+
         if item["mikuType"] == "Backup" then
             PolyActions::access(item)
             PolyActions::done(item)
