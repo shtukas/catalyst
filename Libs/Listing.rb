@@ -204,7 +204,7 @@ class Listing
         [
             blocks[0]["items"],
             blocks.drop(1).map{|block| block["itemsmust"] },
-            blocks.drop(1).map{|block| block["block"] },
+            blocks.map{|block| block["block"] },
         ]
             .flatten
     end
@@ -446,8 +446,8 @@ class Listing
 
         Thread.new {
             loop {
-                sleep 120
                 Listing::generatePriorities()
+                sleep 120
             }
         }
 
