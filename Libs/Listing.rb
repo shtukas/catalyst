@@ -118,7 +118,7 @@ class Listing
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
             "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{ordinal})", lambda{
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{ordinal})", lambda {
                 items = Listing::block_ad_hoc_today()
                 Dives::genericprogram(items)
             })
@@ -146,7 +146,7 @@ class Listing
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
             "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{ordinal})", lambda{
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{ordinal})", lambda {
                 items = Listing::block_waves2()
                 Dives::genericprogram(items)
             })
@@ -181,7 +181,7 @@ class Listing
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
             "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo1 (#{ordinal})", lambda{
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo1 (#{ordinal})", lambda {
                 items = Listing::block_todos1()
                 Dives::genericprogram(items)
             })
@@ -211,7 +211,7 @@ class Listing
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
             "ordinal"   => Bank::getValueAtDate("block:todos2:189210--b86c-5c151g15b55a",  CommonUtils::today()),
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{XCache::getOrDefaultValue("block:todos2:189210--b86c-5c151g15b55a", "0")})", lambda{
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{XCache::getOrDefaultValue("block:todos2:189210--b86c-5c151g15b55a", "0")})", lambda {
                 items = Listing::block_todos1()
                 Dives::genericprogram(items)
             })
@@ -230,7 +230,7 @@ class Listing
 
         [
             blocks[0]["items"],
-            blocks.drop(1).map{|block| block["itemsmust"] },
+            blocks.map{|block| block["itemsmust"] },
             blocks.map{|block| block["block"] },
         ]
             .flatten
@@ -305,9 +305,9 @@ class Listing
         spot = Speedometer.new()
 
         spot.start_contest()
-        spot.contest_entry("Anniversaries::listingItems()", lambda{ Anniversaries::listingItems() })
-        spot.contest_entry("DropBox::items()", lambda{ DropBox::items() })
-        spot.contest_entry("Catalyst::mikuType(NxLine)", lambda{ Catalyst::mikuType("NxLine") })
+        spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
+        spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
+        spot.contest_entry("Catalyst::mikuType(NxLine)", lambda { Catalyst::mikuType("NxLine") })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
