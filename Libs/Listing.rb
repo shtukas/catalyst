@@ -190,6 +190,7 @@ class Listing
 
     # Listing::block_todos2()
     def self.block_todos2()
+        ordinal = Bank::getValueAtDate("block:todos2:189210--b86c-5c151g15b55a",  CommonUtils::today())
         items = [
             Todos::otherItems()
         ]
@@ -210,8 +211,8 @@ class Listing
         {
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => Bank::getValueAtDate("block:todos2:189210--b86c-5c151g15b55a",  CommonUtils::today()),
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{XCache::getOrDefaultValue("block:todos2:189210--b86c-5c151g15b55a", "0")})", lambda {
+            "ordinal"   => ordinal,
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{ordinal})", lambda {
                 items = Listing::block_todos1()
                 Dives::genericprogram(items)
             })
