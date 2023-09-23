@@ -88,6 +88,18 @@ class Listing
         item["interruption"]
     end
 
+    # Listing::itemsToCumulatedTodayTime(items)
+    def self.itemsToCumulatedTodayTime(items)
+        items.map{|item| Bank::getValueAtDate(item["uuid"], CommonUtils::today()) }.inject(0, :+)
+    end
+
+    # Listing::generatePriorities()
+    def self.generatePriorities()
+        XCache::set("8102-09aafb931f40:Listing::items_adhoc_today()", Listing::itemsToCumulatedTodayTime(Listing::items_adhoc_today()))
+        XCache::set("8102-09aafb931f40:Listing::items_waves2()", Listing::itemsToCumulatedTodayTime(Listing::items_waves2()))
+        XCache::set("8102-09aafb931f40:Listing::items_todo()", Listing::itemsToCumulatedTodayTime(Listing::items_todo()))
+    end
+
     # Listing::items_adhoc_today()
     def self.items_adhoc_today()
         [
@@ -150,8 +162,8 @@ class Listing
             {
                 "items"     => Listing::items_adhoc_today(),
                 "itemsmust" => Listing::items_adhoc_today().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => 0.1,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: adhoc today", lambda{
+                "ordinal"   => XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_adhoc_today()", "0").to_f,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: adhoc today (#{XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_adhoc_today()", "0")})", lambda{
                     items = Listing::items_adhoc_today()
                     Dives::genericprogram(items)
                 })
@@ -159,8 +171,8 @@ class Listing
             {
                 "items"     => Listing::items_waves2(),
                 "itemsmust" => Listing::items_waves2().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => 0.0,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: wave2", lambda{
+                "ordinal"   => XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_waves2()", "0").to_f,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: wave2 (#{XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_waves2()", "0")})", lambda{
                     items = Listing::items_waves2()
                     Dives::genericprogram(items)
                 })
@@ -168,8 +180,8 @@ class Listing
             {
                 "items"     => Listing::items_todo(),
                 "itemsmust" => Listing::items_todo().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => 0.3,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: todo", lambda{
+                "ordinal"   => XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_todo()", "0").to_f,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: todo (#{XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_todo()", "0")})", lambda{
                     items = Listing::items_todo()
                     Dives::genericprogram(items)
                 })
@@ -417,6 +429,13 @@ class Listing
                 EventTimelineReader::issueNewFSComputedTraceForCaching()
                 EventTimelineMaintenance::publishPing()
                 sleep 300
+            }
+        }
+
+        Thread.new {
+            loop {
+                sleep 120
+                Listing::generatePriorities()
             }
         }
 

@@ -68,6 +68,8 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
+        NxBalls::stop(item)
+
         Listing::removeLstOrd(item)
 
         # order: alphabetical order
