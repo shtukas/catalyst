@@ -37,17 +37,17 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "🔸 #{TxEngine::prefix(thread)}#{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}#{Todos::prioritySuffix(thread)}"
+        "🔸 #{TxEngine::prefix(thread)}#{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}"
     end
 
     # NxThreads::toStringPosition(thread)
     def self.toStringPosition(thread)
-        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % (thread["coordinate-nx129"] || 0)}) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}#{Todos::prioritySuffix(thread)}"
+        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % (thread["coordinate-nx129"] || 0)}) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}"
     end
 
     # NxThreads::toStringTime(thread)
     def self.toStringTime(thread)
-        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(thread["uuid"]) }) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}#{Todos::prioritySuffix(thread)}"
+        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(thread["uuid"]) }) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}"
     end
 
     # NxThreads::interactivelySelectOrNull()

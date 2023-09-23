@@ -18,6 +18,10 @@ class Fsck
         if item["mikuType"] == "NxLine" then
             return
         end
+        if item["mikuType"] == "NxCruise" then
+            NxCruises::fsck()
+            return
+        end
         if item["mikuType"] == "NxOndate" then
             if item["field11"] then
                 CoreDataRefStrings::fsck(item)

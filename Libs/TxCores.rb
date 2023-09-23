@@ -99,7 +99,7 @@ class TxCores
 
     # TxCores::elements(core)
     def self.elements(core)
-        (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask"))
+        (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
             .select{|item| item["coreX-2300"] == core["uuid"] }
             .sort_by{|item| item["unixtime"] }
     end
@@ -176,7 +176,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task | thread"
+            puts "task | thread | cruise"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -194,6 +194,14 @@ class TxCores
                 next if thread.nil?
                 puts JSON.pretty_generate(thread)
                 Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
+                next
+            end
+
+            if input == "cruise" then
+                cruise = NxCruise::interactivelyIssueNewOrNull()
+                next if cruise.nil?
+                puts JSON.pretty_generate(cruise)
+                Events::publishItemAttributeUpdate(cruise["uuid"], "coreX-2300", core["uuid"])
                 next
             end
 

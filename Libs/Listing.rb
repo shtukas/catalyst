@@ -88,10 +88,9 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::block_ad_hoc_today()
-    def self.block_ad_hoc_today()
-        ordinal = Bank::getValueAtDate("block:ad-hoc-today:1b76c-4c041e05b55a",  CommonUtils::today())
-        items = [
+    # Listing::block_high_priority()
+    def self.block_high_priority()
+        [
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
@@ -113,86 +112,59 @@ class Listing
                 InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:ad-hoc-today:1b76c-4c041e05b55a")
                 item
             }
-
-        {
-            "items"     => items,
-            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{ordinal})", lambda {
-                items = Listing::block_ad_hoc_today()
-                Dives::genericprogram(items)
-            })
-        }
     end
 
-    # Listing::block_waves2()
-    def self.block_waves2()
-        ordinal = Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today())
-        items = Waves::listingItems().select{|item| !item["interruption"] }
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:waves2:0111-1b76c-4c041e05b55a")
-                item
-            }
-
-        {
-            "items"     => items,
-            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{ordinal})", lambda {
-                items = Listing::block_waves2()
-                Dives::genericprogram(items)
-            })
-        }
-    end
-
-    # Listing::block_todos1()
-    def self.block_todos1()
-        ordinal = Bank::getValueAtDate("block:todos1:099111-1b76c-4c041e05b55a",  CommonUtils::today())
-        items = [
+    # Listing::block_todos_high_priority()
+    def self.block_todos_high_priority()
+        [
             NxBurners::listingItems(),
             Todos::bufferInItems(),
-            Todos::drivenItems(),
-            Todos::priorityItems(),
+            Todos::engineItems(),
             TxCores::listingItems()
         ]
             .flatten
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
             .map{|item|
                 InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos1:099111-1b76c-4c041e05b55a")
                 item
             }
-
-        {
-            "items"     => items,
-            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo1 (#{ordinal})", lambda {
-                items = Listing::block_todos1()
-                Dives::genericprogram(items)
-            })
-        }
     end
 
-    # Listing::block_todos2()
-    def self.block_todos2()
-        ordinal = Bank::getValueAtDate("block:todos2:189210--b86c-5c151g15b55a",  CommonUtils::today())
-        items = [
-            Todos::otherItems()
+    # Listing::block_waves_low_priority()
+    def self.block_waves_low_priority()
+        Waves::listingItems().select{|item| !item["interruption"] }
+            .map{|item|
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:waves2:0111-1b76c-4c041e05b55a")
+                item
+            }
+    end
+
+    # Listing::block_todos_low_priority()
+    def self.block_todos_low_priority()
+        Todos::otherItems()
+            .flatten
+            .map{|item|
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos2:189210--b86c-5c151g15b55a")
+                item
+            }
+    end
+
+    # Listing::block_cruises()
+    def self.block_cruises()
+        NxCruises::listingItems()
+            .map{|item|
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:cruise:a51072da-9021-4049")
+                item
+            }
+    end
+
+    # Listing::items()
+    def self.items()
+        [
+            Listing::block_high_priority(),
+            Listing::block_todos_high_priority(),
+            Listing::block_cruises(),
+            Listing::block_waves_low_priority(),
+            Listing::block_todos_low_priority()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -203,38 +175,6 @@ class Listing
                     selected + [item]
                 end
             }
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos2:189210--b86c-5c151g15b55a")
-                item
-            }
-
-        {
-            "items"     => items,
-            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => ordinal,
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{ordinal})", lambda {
-                items = Listing::block_todos2()
-                Dives::genericprogram(items)
-            })
-        }
-    end
-
-    # Listing::items()
-    def self.items()
-        blocks = [
-            Listing::block_ad_hoc_today(),
-            Listing::block_waves2(),
-            Listing::block_todos1(),
-            Listing::block_todos2()
-        ]
-            .sort_by{|block| block["ordinal"] }
-
-        [
-            blocks[0]["items"],
-            blocks.map{|block| block["itemsmust"] },
-            blocks.map{|block| block["block"] },
-        ]
-            .flatten
     end
 
     # Listing::toString2(store, item)

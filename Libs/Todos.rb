@@ -17,18 +17,11 @@ class Todos
             .sort_by{|item| item["unixtime"] }
     end
 
-    # Todos::drivenItems()
-    def self.drivenItems()
+    # Todos::engineItems()
+    def self.engineItems()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
             .select{|item| item["drive-nx1"]}
             .sort_by{|item| TxEngine::ratio(item["drive-nx1"]) }
-    end
-
-    # Todos::priorityItems()
-    def self.priorityItems()
-        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
-            .select{|item| item["isPriorityTodo-8"]}
-            .sort_by{|item| item["unixtime"] }
     end
 
     # Todos::otherItems()
@@ -37,11 +30,4 @@ class Todos
             .select{|item| item["drive-nx1"].nil? }
             .sort_by{|item| Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }
     end
-
-    # Todos::prioritySuffix(item)
-    def self.prioritySuffix(item)
-        return "" if !item["isPriorityTodo-8"]
-        " (priority)".green
-    end
-
 end

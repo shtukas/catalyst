@@ -10,4 +10,3 @@ Cross types conventions:
     - coordinate-nx129 : float        # (optional)
     - drive-nx1        : TxEngine     # (optional)
     - coreX-2300       : uuid of core # (optional)
-    - isPriorityTodo-8 : boolean # (optional)

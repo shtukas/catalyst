@@ -9,7 +9,7 @@ class ListingCommandsAndInterpreters
             "",
             "Transmutations: >ondate (on buffer-in)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line | cruise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -60,7 +60,6 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", true)
             return
         end
 
@@ -151,9 +150,6 @@ class ListingCommandsAndInterpreters
             if item["description"].include?("(buffer-in)") then
                 Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             end
-            if item["mikuType"] == "NxTask" then
-                Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
-            end
             return
         end
 
@@ -167,9 +163,6 @@ class ListingCommandsAndInterpreters
             Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
             if item["description"].include?("(buffer-in)") then
                 Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            end
-            if item["mikuType"] == "NxTask" then
-                Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
             end
             return
         end
@@ -195,6 +188,13 @@ class ListingCommandsAndInterpreters
             thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
             NxThreads::program1(thread)
+            return
+        end
+
+        if Interpreting::match("cruise", input) then
+            cruise = NxCruise::interactivelyIssueNewOrNull()
+            return if cruise.nil?
+            puts PolyFunctions::toString(cruise)
             return
         end
 

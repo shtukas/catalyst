@@ -91,7 +91,6 @@ class Catalyst
                         end
                         Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
                         Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-                        Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
                     }
                     return
                 end
@@ -130,7 +129,6 @@ class Catalyst
                     end
                     Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", parent["uuid"])
                     Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-                    Events::publishItemAttributeUpdate(item["uuid"], "isPriorityTodo-8", LucilleCore::askQuestionAnswerAsBoolean("is priority ? "))
                 }
                 if items.size == 1 then
                     item = items[0]

@@ -1,5 +1,4 @@
 
 TxEngine:
-    "uuid"        : String
-    "dailyHours"  : null or Float
-    "weeklyHours" : null or Float
+    "uuid" : String
+    "rt"   : null or Float

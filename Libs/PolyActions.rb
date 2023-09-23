@@ -19,6 +19,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCruise" then
+            NxCruises::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxBurner" then
             return
         end
@@ -81,6 +86,12 @@ class PolyActions
 
         if item["mikuType"] == "Backup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+            return
+        end
+
+        if item["mikuType"] == "NxCruise" then
+            puts "You cannot done a NxCruise, but you can destroy it"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -202,6 +213,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCruise" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxThread" then
             if Stratification::getDirectTopOrNull(item) then
                 puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
@@ -291,6 +309,12 @@ class PolyActions
 
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
+            return
+        end
+
+        if item["mikuType"] == "NxCruise" then
+            NxBalls::start(item)
+            PolyActions::access(item)
             return
         end
 
