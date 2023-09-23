@@ -88,21 +88,9 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::itemsToCumulatedTodayTime(items)
-    def self.itemsToCumulatedTodayTime(items)
-        items.map{|item| Bank::getValueAtDate(item["uuid"], CommonUtils::today()) }.inject(0, :+)
-    end
-
-    # Listing::generatePriorities()
-    def self.generatePriorities()
-        XCache::set("8102-09aafb931f40:Listing::items_adhoc_today()", Listing::itemsToCumulatedTodayTime(Listing::items_adhoc_today()))
-        XCache::set("8102-09aafb931f40:Listing::items_waves2()", Listing::itemsToCumulatedTodayTime(Listing::items_waves2()))
-        XCache::set("8102-09aafb931f40:Listing::items_todo()", Listing::itemsToCumulatedTodayTime(Listing::items_todo()))
-    end
-
-    # Listing::items_adhoc_today()
-    def self.items_adhoc_today()
-        [
+    # Listing::block_adhoc_today()
+    def self.block_adhoc_today()
+        items = [
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
@@ -124,11 +112,21 @@ class Listing
                 InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:adhoc-today:1b76c-4c041e05b55a")
                 item
             }
+
+        {
+            "items"     => items,
+            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
+            "ordinal"   => Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today()),
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
+                items = Listing::block_adhoc_today()
+                Dives::genericprogram(items)
+            })
+        }
     end
 
-    # Listing::items_waves2()
-    def self.items_waves2()
-        Waves::listingItems().select{|item| !item["interruption"] }
+    # Listing::block_waves2()
+    def self.block_waves2()
+        items = Waves::listingItems().select{|item| !item["interruption"] }
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
@@ -141,11 +139,21 @@ class Listing
                 InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:waves2:0111-1b76c-4c041e05b55a")
                 item
             }
+
+        {
+            "items"     => items,
+            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
+            "ordinal"   => Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today()),
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
+                items = Listing::block_waves2()
+                Dives::genericprogram(items)
+            })
+        }
     end
 
-    # Listing::items_todo()
-    def self.items_todo()
-        [
+    # Listing::block_todos()
+    def self.block_todos()
+        items = [
             NxBurners::listingItems(),
             Todos::bufferInItems(),
             Todos::drivenItems(),
@@ -163,41 +171,27 @@ class Listing
                 end
             }
             .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todo:099111-1b76c-4c041e05b55a")
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos:099111-1b76c-4c041e05b55a")
                 item
             }
+
+        {
+            "items"     => items,
+            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
+            "ordinal"   => Bank::getValueAtDate("block:todos:099111-1b76c-4c041e05b55a",  CommonUtils::today()),
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo (#{XCache::getOrDefaultValue("block:todos:099111-1b76c-4c041e05b55a", "0")})", lambda{
+                items = Listing::block_todos()
+                Dives::genericprogram(items)
+            })
+        }
     end
 
     # Listing::items()
     def self.items()
         blocks = [
-            {
-                "items"     => Listing::items_adhoc_today(),
-                "itemsmust" => Listing::items_adhoc_today().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today()),
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
-                    items = Listing::items_adhoc_today()
-                    Dives::genericprogram(items)
-                })
-            },
-            {
-                "items"     => Listing::items_waves2(),
-                "itemsmust" => Listing::items_waves2().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today()),
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
-                    items = Listing::items_waves2()
-                    Dives::genericprogram(items)
-                })
-            },
-            {
-                "items"     => Listing::items_todo(),
-                "itemsmust" => Listing::items_todo().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => Bank::getValueAtDate("block:todo:099111-1b76c-4c041e05b55a",  CommonUtils::today()),
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo (#{XCache::getOrDefaultValue("block:todo:099111-1b76c-4c041e05b55a", "0")})", lambda{
-                    items = Listing::items_todo()
-                    Dives::genericprogram(items)
-                })
-            }
+            Listing::block_adhoc_today(),
+            Listing::block_waves2(),
+            Listing::block_todos()
         ]
             .sort_by{|block| block["ordinal"] }
 
@@ -214,8 +208,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        s2 = item["list-ord-03"] ? "(#{"%.3f" % (item["list-ord-03"])})" : "       "
-        line = "#{storePrefix} #{s2} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -347,80 +340,6 @@ class Listing
         end
     end
 
-    # Listing::removeLstOrd(item)
-    def self.removeLstOrd(item)
-        Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", nil)
-    end
-
-    # Listing::ordinalise(items)
-    def self.ordinalise(items)
-        if items.select{|item| item["list-ord-03"] }.any?{|item| item["list-ord-03"] < 0 } then
-            lowerbound = items.select{|item| item["list-ord-03"] }.map{|item| item["list-ord-03"] }.min
-            items = items
-                        .select{|item| item["list-ord-03"] }
-                        .map{|item|
-                            value = item["list-ord-03"] + (-lowerbound)
-                            item["list-ord-03"] = value
-                            Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
-                            item
-                        }
-        end
-        if items.select{|item| item["list-ord-03"] }.any?{|item| item["list-ord-03"] > 1 } then
-            items = items
-                        .select{|item| item["list-ord-03"] }
-                        .map{|item|
-                            value = item["list-ord-03"].to_f/2
-                            item["list-ord-03"] = value
-                            Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
-                            item
-                        }
-        end
-
-        if items.select{|item| item["list-ord-03"] }.all?{|item| item["list-ord-03"] > 0.1 } then
-            items = items
-                        .select{|item| item["list-ord-03"] }
-                        .map{|item|
-                            value = item["list-ord-03"] - 0.1
-                            item["list-ord-03"] = value
-                            Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
-                            item
-                        }
-        end
-        getRandom = lambda{|lowerbound, upperbound|
-            lowerbound + rand*(upperbound-lowerbound)
-        }
-        itemToValue = lambda{|item|
-            return getRandom.call(0.5, 1.0) if (item["mikuType"] == "Wave" and !item["interruption"])
-            return getRandom.call(0.1, 0.2) if (item["mikuType"] == "Wave" and item["interruption"])
-            return getRandom.call(0.2, 0.3) if item["mikuType"] == "NxOndate"
-            return getRandom.call(0.3, 0.6) if item["mikuType"] == "NxThread"
-            return getRandom.call(0.3, 0.6) if item["mikuType"] == "NxTask"
-            return getRandom.call(0.5, 0.7) if item["mikuType"] == "TxCore"
-            return getRandom.call(0.1, 0.2) if item["mikuType"] == "PhysicalTarget"
-            return getRandom.call(0.1, 0.2) if item["mikuType"] == "Backup"
-            return getRandom.call(0.05, 0.06) if item["mikuType"] == "NxAnniversary"
-            return getRandom.call(0.99, 0.99) if item["mikuType"] == "NxLambda"
-            raise "(error: cbbfa15a-6bff-4cac-a718-9906b69fb91e) Listing::ordinalise: unsupported mikuType: #{item["mikuType"]}"
-        }
-        items.reduce([]){|collection, item|
-            if item["list-ord-03"].nil? then
-                value = itemToValue.call(item)
-                Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", value)
-                item["list-ord-03"] = value
-            end
-            collection + [item]
-        }
-        items = items.sort_by{|item| item["list-ord-03"] }
-
-        return [] if items.empty?
-        # One last thing we do is publishing the two bonds 
-
-        XCache::set("low:a0ce-6591a1ee9d5d", items.map{|item| item["list-ord-03"] }.min) 
-        XCache::set("high:a0ce-6591a1ee9d5d", items.map{|item| item["list-ord-03"] }.max)
-
-        items
-    end
-
     # Listing::main()
     def self.main()
 
@@ -441,13 +360,6 @@ class Listing
                 EventTimelineReader::issueNewFSComputedTraceForCaching()
                 EventTimelineMaintenance::publishPing()
                 sleep 300
-            }
-        }
-
-        Thread.new {
-            loop {
-                Listing::generatePriorities()
-                sleep 120
             }
         }
 
@@ -480,7 +392,15 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items = NxBalls::runningItems() + Listing::ordinalise(Listing::items())
+            items = NxBalls::runningItems() + Listing::items()
+            items = items
+                        .reduce([]){|selected, item|
+                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                                selected
+                            else
+                                selected + [item]
+                            end
+                        }
             items = Prefix::prefix(items)
 
             # This last step is to remove duplicates due to running items

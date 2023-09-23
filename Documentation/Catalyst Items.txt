@@ -11,4 +11,3 @@ Cross types conventions:
     - drive-nx1        : TxEngine     # (optional)
     - coreX-2300       : uuid of core # (optional)
     - isPriorityTodo-8 : boolean # (optional)
-    - list-ord-03      : float (between 0 and 1)

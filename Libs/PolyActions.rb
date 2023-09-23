@@ -70,8 +70,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        Listing::removeLstOrd(item)
-
         # order: alphabetical order
 
         if item["mikuType"] == "DropBox" then
@@ -326,7 +324,6 @@ class PolyActions
                 end
                 NxBalls::stop(item)
                 Catalyst::moveTaskables([item])
-                Listing::removeLstOrd(item)
                 return
             end
 
@@ -357,7 +354,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{Waves::toString(item).green} ? '", true) then
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
-                Listing::removeLstOrd(item)
             end
             return
         end

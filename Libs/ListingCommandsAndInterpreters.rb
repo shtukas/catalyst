@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxThreads     : sort type",
-            "misc          : search | speed | commands | edit <n> | sort",
+            "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
 
@@ -24,7 +24,6 @@ class ListingCommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 DoNotShowUntil::setUnixtime(item, unixtime)
-                Listing::removeLstOrd(item)
                 return
             end
         end
@@ -48,29 +47,7 @@ class ListingCommandsAndInterpreters
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
             line = NxLines::issue(line)
-            ordinal = LucilleCore::askQuestionAnswerAsString("ordinal (first, last): ")
-            ord = nil
-            if ordinal == "first" then
-                ord = XCache::getOrDefaultValue("low:a0ce-6591a1ee9d5d", "0").to_f - 0.1 
-            end 
-            if ordinal == "last" then
-                ord = XCache::getOrDefaultValue("high:a0ce-6591a1ee9d5d", "0").to_f + 0.1 
-            end 
-            if ordinal.nil? then
-                ord = ordinal.to_f
-            end
-            Events::publishItemAttributeUpdate(line["uuid"], "list-ord-03", ord)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            items = store.items().select{|item| item["mikuType"] != "NxStrat" }
-            selected, unselected = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
-            selected
-                .reverse
-                .each_with_index{|item, indx|
-                    Events::publishItemAttributeUpdate(item["uuid"], "list-ord-03", -indx.to_f/100)
-                }
+            puts JSON.pretty_generate(line)
             return
         end
 
@@ -218,7 +195,6 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Catalyst::postpone(item)
-            Listing::removeLstOrd(item)
             return
         end
 
@@ -227,7 +203,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::postpone(item)
-            Listing::removeLstOrd(item)
             return
         end
 
@@ -407,7 +382,6 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
-            Listing::removeLstOrd(item)
             return
         end
 
@@ -418,7 +392,6 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item, unixtime)
-            Listing::removeLstOrd(item)
             return
         end
 
