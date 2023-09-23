@@ -174,8 +174,8 @@ class Listing
             {
                 "items"     => Listing::items_adhoc_today(),
                 "itemsmust" => Listing::items_adhoc_today().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => XCache::getOrDefaultValue("block:adhoc-today:1b76c-4c041e05b55a", "0").to_f,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{XCache::getOrDefaultValue("block:adhoc-today:1b76c-4c041e05b55a", "0")})", lambda{
+                "ordinal"   => Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today()),
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
                     items = Listing::items_adhoc_today()
                     Dives::genericprogram(items)
                 })
@@ -183,8 +183,8 @@ class Listing
             {
                 "items"     => Listing::items_waves2(),
                 "itemsmust" => Listing::items_waves2().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => XCache::getOrDefaultValue("block:waves2:0111-1b76c-4c041e05b55a", "0").to_f,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{XCache::getOrDefaultValue("block:waves2:0111-1b76c-4c041e05b55a", "0")})", lambda{
+                "ordinal"   => Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today()),
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
                     items = Listing::items_waves2()
                     Dives::genericprogram(items)
                 })
@@ -192,7 +192,7 @@ class Listing
             {
                 "items"     => Listing::items_todo(),
                 "itemsmust" => Listing::items_todo().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => XCache::getOrDefaultValue("block:todo:099111-1b76c-4c041e05b55a", "0").to_f,
+                "ordinal"   => Bank::getValueAtDate("block:todo:099111-1b76c-4c041e05b55a",  CommonUtils::today()),
                 "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo (#{XCache::getOrDefaultValue("block:todo:099111-1b76c-4c041e05b55a", "0")})", lambda{
                     items = Listing::items_todo()
                     Dives::genericprogram(items)
