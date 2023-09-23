@@ -5,6 +5,7 @@ class DoNotShowUntil
     def self.setUnixtime(item, unixtime)
         Events::publishDoNotShowUntil(item, unixtime)
         XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{item["uuid"]}", unixtime)
+        puts "do not display '#{PolyFunctions::toString(item).green}' until #{Time.at(unixtime).utc.iso8601}"
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
