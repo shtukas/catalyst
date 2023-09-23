@@ -121,7 +121,7 @@ class Listing
                 end
             }
             .map{|item|
-                item["blockuuid"] = "block:adhoc-today:1b76c-4c041e05b55a"
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:adhoc-today:1b76c-4c041e05b55a")
                 item
             }
     end
@@ -138,7 +138,7 @@ class Listing
                 end
             }
             .map{|item|
-                item["blockuuid"] = "block:waves2:0111-1b76c-4c041e05b55a"
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:waves2:0111-1b76c-4c041e05b55a")
                 item
             }
     end
@@ -163,7 +163,7 @@ class Listing
                 end
             }
             .map{|item|
-                item["blockuuid"] = "block:todo:099111-1b76c-4c041e05b55a"
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todo:099111-1b76c-4c041e05b55a")
                 item
             }
     end

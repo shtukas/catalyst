@@ -50,10 +50,10 @@ class PolyFunctions
             }
         end
 
-        if item["blockuuid"] then
+        if blockuuid = InMemoryCache::getOrNull("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}") then
             accounts << {
-                "description" => "block: #{item["blockuuid"]}",
-                "number"      => item["blockuuid"]
+                "description" => "block: #{blockuuid}",
+                "number"      => blockuuid
             }
         end
 
