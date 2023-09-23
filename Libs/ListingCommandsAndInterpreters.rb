@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | pp (<n>) # postpone | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
             "",
             "Transmutations: >ondate (on buffer-in)",
             "",
@@ -188,21 +188,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts PolyFunctions::toString(item).green
             Catalyst::moveTaskables([item])
-            return
-        end
-
-        if Interpreting::match("pp", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Catalyst::postpone(item)
-            return
-        end
-
-        if Interpreting::match("pp *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::postpone(item)
             return
         end
 

@@ -4,11 +4,16 @@ class DoNotShowUntil
     # DoNotShowUntil::setUnixtime(item, unixtime)
     def self.setUnixtime(item, unixtime)
         Events::publishDoNotShowUntil(item, unixtime)
+        XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{item["uuid"]}", unixtime)
     end
 
     # DoNotShowUntil::getUnixtimeOrNull(item)
     def self.getUnixtimeOrNull(item)
-        EventTimelineDatasets::doNotShowUntil()[item["uuid"]]
+        unixtime = EventTimelineDatasets::doNotShowUntil()[item["uuid"]]
+        return unixtime if unixtime
+        unixtime = XCache::getOrNull("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{item["uuid"]}")
+        return unixtime.to_i if unixtime
+        nil
     end
 
     # DoNotShowUntil::isVisible(item)
