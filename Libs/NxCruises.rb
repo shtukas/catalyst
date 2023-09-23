@@ -18,13 +18,13 @@ class NxCruises
         Events::publishItemInit("NxCruise", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        hoursPerWeek = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt)").to_f
+        rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt)").to_f/7
 
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Events::publishItemAttributeUpdate(uuid, "rt", hoursPerWeek.to_f/7)
+        Events::publishItemAttributeUpdate(uuid, "rt", rt)
 
         Catalyst::itemOrNull(uuid)
     end

@@ -8,6 +8,7 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>)",
             "",
             "Transmutations: (buffer-in) >ondate",
+            "Transmutations: (NxTask)    >cruise",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line | cruise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
@@ -419,6 +420,19 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">cruise", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "For the moment we only run >cruise on buffer in NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt)").to_f/7
+            Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
+            return
+        end
 
         if Interpreting::match(">ondate *", input) then
             _, listord = Interpreting::tokenizer(input)
