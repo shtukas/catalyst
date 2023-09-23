@@ -82,7 +82,7 @@ class NxOndates
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         Events::publishItemAttributeUpdate(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
-        DoNotShowUntil::setUnixtime(item, unixtime)
+        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 
     # NxOndates::fsck()

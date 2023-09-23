@@ -3,14 +3,14 @@ class Events
 
     # Makers
 
-    # Events::makeDoNotShowUntil(item, unixtime)
-    def self.makeDoNotShowUntil(item, unixtime)
+    # Events::makeDoNotShowUntil(itemuuid, unixtime)
+    def self.makeDoNotShowUntil(itemuuid, unixtime)
         {
             "uuid"      => SecureRandom.uuid,
             "unixtime"  => Time.new.to_i,
             "eventType" => "DoNotShowUntil2",
             "payload"   => {
-                "targetId"  => item["uuid"],
+                "targetId"  => itemuuid,
                 "unixtime"  => unixtime
             }
         }
@@ -81,9 +81,9 @@ class Events
         EventTimelineReader::issueNewRandomTraceForCaching()
     end
 
-    # Events::publishDoNotShowUntil(item, unixtime)
-    def self.publishDoNotShowUntil(item, unixtime)
-        Events::publish(Events::makeDoNotShowUntil(item, unixtime))
+    # Events::publishDoNotShowUntil(itemuuid, unixtime)
+    def self.publishDoNotShowUntil(itemuuid, unixtime)
+        Events::publish(Events::makeDoNotShowUntil(itemuuid, unixtime))
     end
 
     # Events::publishItemAttributeUpdate(itemuuid, attname, attvalue)

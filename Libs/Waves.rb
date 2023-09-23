@@ -164,7 +164,7 @@ class Waves
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
         puts "not shown until: #{Time.at(unixtime).to_s}"
-        DoNotShowUntil::setUnixtime(item, unixtime)
+        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 
     # Waves::access(item)

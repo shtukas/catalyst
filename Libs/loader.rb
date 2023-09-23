@@ -137,7 +137,7 @@ require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
 
 require_relative "DoNotShowUntil.rb"
-# DoNotShowUntil::setUnixtime(item, unixtime)
+# DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
 # DoNotShowUntil::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
