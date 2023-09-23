@@ -50,6 +50,13 @@ class PolyFunctions
             }
         end
 
+        if item["blockuuid"] then
+            accounts << {
+                "description" => "block: #{item["blockuuid"]}",
+                "number"      => item["blockuuid"]
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

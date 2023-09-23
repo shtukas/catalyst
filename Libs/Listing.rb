@@ -120,6 +120,10 @@ class Listing
                     selected + [item]
                 end
             }
+            .map{|item|
+                item["blockuuid"] = "block:adhoc-today:1b76c-4c041e05b55a"
+                item
+            }
     end
 
     # Listing::items_waves2()
@@ -132,6 +136,10 @@ class Listing
                 else
                     selected + [item]
                 end
+            }
+            .map{|item|
+                item["blockuuid"] = "block:waves2:0111-1b76c-4c041e05b55a"
+                item
             }
     end
 
@@ -154,6 +162,10 @@ class Listing
                     selected + [item]
                 end
             }
+            .map{|item|
+                item["blockuuid"] = "block:todo:099111-1b76c-4c041e05b55a"
+                item
+            }
     end
 
     # Listing::items()
@@ -162,8 +174,8 @@ class Listing
             {
                 "items"     => Listing::items_adhoc_today(),
                 "itemsmust" => Listing::items_adhoc_today().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_adhoc_today()", "0").to_f,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: adhoc today (#{XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_adhoc_today()", "0")})", lambda{
+                "ordinal"   => XCache::getOrDefaultValue("block:adhoc-today:1b76c-4c041e05b55a", "0").to_f,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{XCache::getOrDefaultValue("block:adhoc-today:1b76c-4c041e05b55a", "0")})", lambda{
                     items = Listing::items_adhoc_today()
                     Dives::genericprogram(items)
                 })
@@ -171,8 +183,8 @@ class Listing
             {
                 "items"     => Listing::items_waves2(),
                 "itemsmust" => Listing::items_waves2().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_waves2()", "0").to_f,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: wave2 (#{XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_waves2()", "0")})", lambda{
+                "ordinal"   => XCache::getOrDefaultValue("block:waves2:0111-1b76c-4c041e05b55a", "0").to_f,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{XCache::getOrDefaultValue("block:waves2:0111-1b76c-4c041e05b55a", "0")})", lambda{
                     items = Listing::items_waves2()
                     Dives::genericprogram(items)
                 })
@@ -180,8 +192,8 @@ class Listing
             {
                 "items"     => Listing::items_todo(),
                 "itemsmust" => Listing::items_todo().select{|item| NxBalls::itemIsActive(item) },
-                "ordinal"   => XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_todo()", "0").to_f,
-                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 block: todo (#{XCache::getOrDefaultValue("8102-09aafb931f40:Listing::items_todo()", "0")})", lambda{
+                "ordinal"   => XCache::getOrDefaultValue("block:todo:099111-1b76c-4c041e05b55a", "0").to_f,
+                "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo (#{XCache::getOrDefaultValue("block:todo:099111-1b76c-4c041e05b55a", "0")})", lambda{
                     items = Listing::items_todo()
                     Dives::genericprogram(items)
                 })
