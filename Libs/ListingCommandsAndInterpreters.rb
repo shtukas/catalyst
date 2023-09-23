@@ -5,9 +5,9 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine-null (<n>) | priority (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>)",
             "",
-            "Transmutations: >ondate (on buffer-in)",
+            "Transmutations: (buffer-in) >ondate",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line | cruise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
@@ -51,18 +51,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("priority *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
-                puts "We only assign priority status to NxTasks and NxThreads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            return
-        end
-
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -78,8 +66,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine-null *", input) then
-            _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("engine zero *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", nil)

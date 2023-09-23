@@ -6,7 +6,8 @@ class Todos
     def self.children(parent)
         x1 = Catalyst::mikuType("NxThread").select{|item| item["lineage-nx128"] == parent["uuid"] }
         x2 = Catalyst::mikuType("NxTask").select{|item| item["lineage-nx128"] == parent["uuid"] }
-        (x1 + x2)
+        x3 = Catalyst::mikuType("NxCruise").select{|item| item["lineage-nx128"] == parent["uuid"] }
+        (x1 + x2 + x3)
     end
 
     # Todos::bufferInItems()
@@ -24,8 +25,8 @@ class Todos
             .sort_by{|item| TxEngine::ratio(item["drive-nx1"]) }
     end
 
-    # Todos::otherItems()
-    def self.otherItems()
+    # Todos::engineLessItems()
+    def self.engineLessItems()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
             .select{|item| item["drive-nx1"].nil? }
             .sort_by{|item| Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }
