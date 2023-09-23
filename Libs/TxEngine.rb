@@ -8,7 +8,7 @@ class TxEngine
 
     # TxEngine::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
-        rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt)").to_f/7
+        rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
         {
             "uuid" => SecureRandom.hex,
             "rt"   => rt

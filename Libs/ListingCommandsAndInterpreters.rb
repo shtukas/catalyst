@@ -181,7 +181,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("cruise", input) then
-            cruise = NxCruise::interactivelyIssueNewOrNull()
+            cruise = NxCruises::interactivelyIssueNewOrNull()
             return if cruise.nil?
             puts PolyFunctions::toString(cruise)
             return
@@ -428,7 +428,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt)").to_f/7
+            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
             Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
             return
