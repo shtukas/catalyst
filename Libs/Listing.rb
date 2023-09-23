@@ -88,8 +88,9 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::block_adhoc_today()
-    def self.block_adhoc_today()
+    # Listing::block_ad_hoc_today()
+    def self.block_ad_hoc_today()
+        ordinal = Bank::getValueAtDate("block:ad-hoc-today:1b76c-4c041e05b55a",  CommonUtils::today())
         items = [
             Anniversaries::listingItems(),
             DropBox::items(),
@@ -109,16 +110,16 @@ class Listing
                 end
             }
             .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:adhoc-today:1b76c-4c041e05b55a")
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:ad-hoc-today:1b76c-4c041e05b55a")
                 item
             }
 
         {
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today()),
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{Bank::getValueAtDate("block:adhoc-today:1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
-                items = Listing::block_adhoc_today()
+            "ordinal"   => ordinal,
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 adhoc today (#{ordinal})", lambda{
+                items = Listing::block_ad_hoc_today()
                 Dives::genericprogram(items)
             })
         }
@@ -126,6 +127,7 @@ class Listing
 
     # Listing::block_waves2()
     def self.block_waves2()
+        ordinal = Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today())
         items = Waves::listingItems().select{|item| !item["interruption"] }
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
@@ -143,22 +145,52 @@ class Listing
         {
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today()),
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{Bank::getValueAtDate("block:waves2:0111-1b76c-4c041e05b55a",  CommonUtils::today())})", lambda{
+            "ordinal"   => ordinal,
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 wave2 (#{ordinal})", lambda{
                 items = Listing::block_waves2()
                 Dives::genericprogram(items)
             })
         }
     end
 
-    # Listing::block_todos()
-    def self.block_todos()
+    # Listing::block_todos1()
+    def self.block_todos1()
+        ordinal = Bank::getValueAtDate("block:todos1:099111-1b76c-4c041e05b55a",  CommonUtils::today())
         items = [
             NxBurners::listingItems(),
             Todos::bufferInItems(),
             Todos::drivenItems(),
             Todos::priorityItems(),
-            TxCores::listingItems(),
+            TxCores::listingItems()
+        ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+            .map{|item|
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos1:099111-1b76c-4c041e05b55a")
+                item
+            }
+
+        {
+            "items"     => items,
+            "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
+            "ordinal"   => ordinal,
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo1 (#{ordinal})", lambda{
+                items = Listing::block_todos1()
+                Dives::genericprogram(items)
+            })
+        }
+    end
+
+    # Listing::block_todos2()
+    def self.block_todos2()
+        items = [
             Todos::otherItems()
         ]
             .flatten
@@ -171,16 +203,16 @@ class Listing
                 end
             }
             .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos:099111-1b76c-4c041e05b55a")
+                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos2:189210--b86c-5c151g15b55a")
                 item
             }
 
         {
             "items"     => items,
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
-            "ordinal"   => Bank::getValueAtDate("block:todos:099111-1b76c-4c041e05b55a",  CommonUtils::today()),
-            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo (#{XCache::getOrDefaultValue("block:todos:099111-1b76c-4c041e05b55a", "0")})", lambda{
-                items = Listing::block_todos()
+            "ordinal"   => Bank::getValueAtDate("block:todos2:189210--b86c-5c151g15b55a",  CommonUtils::today()),
+            "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{XCache::getOrDefaultValue("block:todos2:189210--b86c-5c151g15b55a", "0")})", lambda{
+                items = Listing::block_todos1()
                 Dives::genericprogram(items)
             })
         }
@@ -189,9 +221,10 @@ class Listing
     # Listing::items()
     def self.items()
         blocks = [
-            Listing::block_adhoc_today(),
+            Listing::block_ad_hoc_today(),
             Listing::block_waves2(),
-            Listing::block_todos()
+            Listing::block_todos1(),
+            Listing::block_todos2()
         ]
             .sort_by{|block| block["ordinal"] }
 
