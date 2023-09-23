@@ -54,7 +54,7 @@ class ListingCommandsAndInterpreters
             end
             if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                 engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(uuid, "drive-nx1", engine)
+                Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
                 Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             else
                 Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
