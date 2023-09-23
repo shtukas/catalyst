@@ -281,7 +281,6 @@ class Listing
     def self.maintenance()
         if Config::isPrimaryInstance() then
             puts "> Listing::maintenance() on primary instance"
-            Bank::fileManagement()
             NxTasks::maintenance()
             Catalyst::maintenance()
             NxThreads::maintenance()
