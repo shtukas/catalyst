@@ -22,6 +22,7 @@ class Todos
     def self.engineItems()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
             .select{|item| item["drive-nx1"]}
+            .select{|item| TxEngine::ratio(item["drive-nx1"]) < 1 }
             .sort_by{|item| TxEngine::ratio(item["drive-nx1"]) }
     end
 

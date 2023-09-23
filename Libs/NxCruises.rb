@@ -39,7 +39,7 @@ class NxCruises
 
     # NxCruises::toString(item)
     def self.toString(item)
-        "⛵️ (#{"%5.2f" % 100*NxCruises::completionRatio(item) } %) #{item["description"]}#{TxCores::suffix(item)}"
+        "⛵️ (#{"%5.2f" % (100*NxCruises::completionRatio(item)) } %) #{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxCruises::listingItems()
