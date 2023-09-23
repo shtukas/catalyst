@@ -213,7 +213,7 @@ class Listing
             "itemsmust" => items.select{|item| NxBalls::itemIsActive(item) },
             "ordinal"   => ordinal,
             "block"     => NxLambdas::make(SecureRandom.hex, "🫧 todo2 (#{ordinal})", lambda {
-                items = Listing::block_todos1()
+                items = Listing::block_todos2()
                 Dives::genericprogram(items)
             })
         }
