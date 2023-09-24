@@ -350,17 +350,24 @@ class PolyActions
                 Catalyst::moveTaskables([item])
                 return
             end
-
             NxBalls::start(item)
             NxTasks::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
                 NxBalls::stop(item)
                 Catalyst::destroy(item["uuid"])
+                return
             end
-            if NxBalls::itemIsRunning(item) then
-                if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
-                    NxBalls::stop(item)
-                end
+            if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
+                NxBalls::stop(item)
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                engine = TxEngine::interactivelyMakeOrNull()
+                Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
+            end
+
+            if LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
+                trajectory = TxTrajectory::interactivelyMakeOrNull()
+                Events::publishItemAttributeUpdate(item["uuid"], "traj-2349", trajectory)
             end
             return
         end

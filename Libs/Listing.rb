@@ -119,8 +119,9 @@ class Listing
         [
             NxBurners::listingItems(),
             Todos::bufferInItems(),
+            Todos::trajectoryItems(0.5),
             Todos::engineItems(),
-            TxCores::listingItems()
+            TxCores::listingItems(),
         ]
             .flatten
             .map{|item|
@@ -140,7 +141,7 @@ class Listing
 
     # Listing::block_todos_low_priority()
     def self.block_todos_low_priority()
-        Todos::engineLessItems()
+        Todos::driverLessItems()
             .flatten
             .map{|item|
                 InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos2:189210--b86c-5c151g15b55a")
@@ -163,8 +164,9 @@ class Listing
             Listing::block_high_priority(),
             Listing::block_todos_high_priority(),
             Listing::block_cruises(),
-            Listing::block_waves_low_priority(),
-            Listing::block_todos_low_priority()
+            #Listing::block_waves_low_priority(),
+            Todos::trajectoryItems(0.4),
+            #Listing::block_todos_low_priority()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -238,7 +240,7 @@ class Listing
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
         spot.contest_entry("Todos::bufferInItems()", lambda{ Todos::bufferInItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
-        spot.contest_entry("Todos::engineLessItems()", lambda{ Todos::engineLessItems() })
+        spot.contest_entry("Todos::driverLessItems()", lambda{ Todos::driverLessItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
 

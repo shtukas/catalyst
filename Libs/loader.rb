@@ -182,6 +182,7 @@ require_relative "TxCores.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Todos.rb"
 require_relative "TxEngine.rb"
+require_relative "TxTrajectory.rb"
 
 require_relative "Waves.rb"
 

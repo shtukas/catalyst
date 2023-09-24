@@ -15,6 +15,7 @@ class Todos
         Catalyst::mikuType("NxTask")
             .select{|item| item["lineage-nx128"].nil? }
             .select{|item| item["description"].include?("(buffer-in)") }
+            .select{|item| item["traj-2349"].nil? }
             .sort_by{|item| item["unixtime"] }
     end
 
@@ -26,10 +27,20 @@ class Todos
             .sort_by{|item| TxEngine::ratio(item["drive-nx1"]) }
     end
 
-    # Todos::engineLessItems()
-    def self.engineLessItems()
+    # Todos::trajectoryItems(level)
+    def self.trajectoryItems(level)
+        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
+            .select{|item| item["traj-2349"]}
+            .select{|item| TxTrajectory::ratio(item["traj-2349"]) >= level }
+            .sort_by{|item| TxTrajectory::ratio(item["traj-2349"]) }
+            .reverse
+    end
+
+    # Todos::driverLessItems()
+    def self.driverLessItems()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
             .select{|item| item["drive-nx1"].nil? }
+            .select{|item| item["traj-2349"].nil? }
             .sort_by{|item| Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }
     end
 end

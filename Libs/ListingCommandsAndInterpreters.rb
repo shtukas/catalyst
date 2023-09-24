@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>) | trajectory",
             "",
             "Transmutations: (buffer-in) >ondate (<n>)",
             "              : (NxTask)    >cruise (<n>)",
@@ -140,6 +140,21 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("trajectory *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
+                puts "We only assign TxTrajectories to NxTasks and NxThreads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            trajectory = TxTrajectory::interactivelyMakeOrNull()
+            return if trajectory.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "traj-2349", trajectory)
+            return
+        end
+
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -232,6 +247,16 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             puts PolyFunctions::toString(item).green
+            if item["lineage-nx128"].nil? then
+                if item["drive-nx1"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                    engine = TxEngine::interactivelyMakeOrNull()
+                    Events::publishItemAttributeUpdate(uuid, "drive-nx1", engine)
+                end
+                if item["traj-2349"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
+                    trajectory = TxTrajectory::interactivelyMakeOrNull()
+                    Events::publishItemAttributeUpdate(uuid, "traj-2349", trajectory)
+                end
+            end
             Catalyst::moveTaskables([item])
             return
         end

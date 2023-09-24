@@ -18,9 +18,9 @@ class NxThreads
     # --------------------------------------------------------------------------
     # Data
 
-    # NxThreads::toString(thread)
-    def self.toString(thread)
-        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(thread["uuid"]) }) #{thread["description"]}#{TxCores::suffix(thread)}"
+    # NxThreads::toString(item)
+    def self.toString(item)
+        "🔸 #{TxEngine::prefix(item)}#{TxTrajectory::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxThreads::interactivelySelectOrNull()
