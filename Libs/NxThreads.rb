@@ -7,29 +7,12 @@ class NxThreads
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        sortType = NxThreads::interactivelySelectSortType()
         uuid = SecureRandom.uuid
         Events::publishItemInit("NxThread", uuid)
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
-        Events::publishItemAttributeUpdate(uuid, "sortType", sortType)
         Catalyst::itemOrNull(uuid)
-    end
-
-    # --------------------------------------------------------------------------
-    # type
-
-    # NxThreads::sortTypes()
-    def self.sortTypes()
-        ["position-sort", "time-sort"]
-    end
-
-    # NxThreads::interactivelySelectSortType()
-    def self.interactivelySelectSortType()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("sort type", NxThreads::sortTypes())
-        return type if type
-        NxThreads::interactivelySelectType()
     end
 
     # --------------------------------------------------------------------------
@@ -37,7 +20,7 @@ class NxThreads
 
     # NxThreads::toString(thread)
     def self.toString(thread)
-        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(thread["uuid"]) }) #{thread["description"]} (#{thread["sortType"]})#{TxCores::suffix(thread)}"
+        "🔸 #{TxEngine::prefix(thread)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(thread["uuid"]) }) #{thread["description"]}#{TxCores::suffix(thread)}"
     end
 
     # NxThreads::interactivelySelectOrNull()

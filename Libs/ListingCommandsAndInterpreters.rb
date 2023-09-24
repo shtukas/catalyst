@@ -15,7 +15,6 @@ class ListingCommandsAndInterpreters
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
-            "NxThreads     : sort type",
             "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
@@ -161,19 +160,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", nil)
-            return
-        end
-
-        if Interpreting::match("sort type *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxThread" then
-                puts "sort type command only for NxThreads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Events::publishItemAttributeUpdate(item["uuid"], "sortType", NxThreads::interactivelySelectSortType())
             return
         end
 

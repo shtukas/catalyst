@@ -92,16 +92,6 @@ class NxTasks
         "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
-    # NxTasks::toStringPosition(item)
-    def self.toStringPosition(item)
-        "🔹 #{TxEngine::prefix(item)} #{item["description"]}#{TxCores::suffix(item)}"
-    end
-
-    # NxTasks::toStringTime(item)
-    def self.toStringTime(item)
-        "🔹 #{TxEngine::prefix(item)}(#{"%5.2f" % Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }) #{item["description"]}#{TxCores::suffix(item)}"
-    end
-
     # --------------------------------------------------
     # Operations
 
