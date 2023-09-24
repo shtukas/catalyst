@@ -75,7 +75,11 @@ class Events
     def self.publish(event)
         #puts "event: #{JSON.generate(event)}".yellow
         timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
-        folder1 = LucilleCore::indexsubfolderpath("#{EventTimelineReader::eventsTimelineLocation()}/#{timefragment}", 100)
+        folderpath0 = "#{EventTimelineReader::eventsTimelineLocation()}/#{timefragment}"
+        if !File.exist?(folderpath0) then
+            FileUtils.mkpath(folderpath0)
+        end
+        folder1 = LucilleCore::indexsubfolderpath(folderpath0, 100)
         filepath1 = "#{folder1}/#{CommonUtils::timeStringL22()}.json"
         File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
         EventTimelineReader::issueNewRandomTraceForCaching()
