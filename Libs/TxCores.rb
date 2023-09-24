@@ -105,14 +105,6 @@ class TxCores
         th1.sort_by{|thread| TxEngine::ratio(thread["drive-nx1"]) } + th2.sort_by{|thread| thread["unixtime"] }
     end
 
-    # TxCores::newFirstPosition(core)
-    def self.newFirstPosition(core)
-        elements = TxCores::elements(core)
-                        .select{|item| item["coordinate-nx129"] }
-        return 1 if elements.empty?
-        elements.map{|item| item["coordinate-nx129"] }.min - 1
-    end
-
     # TxCores::suffix(item)
     def self.suffix(item)
         return "" if item["coreX-2300"].nil?

@@ -5,13 +5,13 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>)",
             "",
             "Transmutations: (buffer-in) >ondate (<n>)",
             "              : (NxTask)    >cruise (<n>)",
             "              : (NxOndate)  >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line | cruise",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | burner | line | cruise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -201,9 +201,6 @@ class ListingCommandsAndInterpreters
             task = NxTasks::descriptionToTask("netflix: #{title}")
             threaduuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
             Events::publishItemAttributeUpdate(task["uuid"], "lineage-nx128", threaduuid)
-            thread = Catalyst::itemOrNull(threaduuid)
-            position = NxThreads::newNextPosition(thread)
-            Events::publishItemAttributeUpdate(task["uuid"], "coordinate-nx129", position)
             return
         end
 
@@ -313,13 +310,6 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull("+++")
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
             return
-        end
-
-        if Interpreting::match("position * *", input) then
-            _, listord, position = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position.to_f)
         end
 
         if Interpreting::match("add time *", input) then

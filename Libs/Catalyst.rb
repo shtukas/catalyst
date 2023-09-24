@@ -77,7 +77,7 @@ class Catalyst
                 kids = TxCores::elements(core)
                 puts "core: #{PolyFunctions::toString(core).green}"
                 puts "kids:"
-                kids.each_with_index{|i, indx| puts "  - (#{indx}) #{PolyFunctions::toString(i)}"}
+                kids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
                 puts ""
                 puts "> here | make thread here | go to <n> # of thread to go in"
                 command = STDIN.gets().strip
@@ -112,10 +112,10 @@ class Catalyst
 
         loop {
             system("clear")
-            parentKids = Todos::children(parent).sort_by{|item| item["coordinate-nx129"] || 0 }
+            parentKids = Todos::children(parent).sort_by{|item| item["unixtime"] }
             puts "parent: #{PolyFunctions::toString(parent).green}"
             puts "kids:"
-            parentKids.each_with_index{|i, indx| puts "  - (#{indx}) #{PolyFunctions::toString(i)}"}
+            parentKids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
             puts ""
             puts "> here | make thread here | go to <n> # of thread to go in"
             command = STDIN.gets().strip
@@ -130,19 +130,12 @@ class Catalyst
                     Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", parent["uuid"])
                     Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
                 }
-                if items.size == 1 then
-                    item = items[0]
-                    position = NxThreads::interactivelyDecidePositionAtThread(parent)
-                    Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position)
-                end
                 return
             end
             if command == "make thread here" then
-                position = NxThreads::interactivelyDecidePositionAtThread(parent)
                 thread = NxThreads::interactivelyIssueNewOrNull()
                 next if thread.nil?
                 Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", parent["uuid"])
-                Events::publishItemAttributeUpdate(thread["uuid"], "coordinate-nx129", position)
                 next
             end
             if command.start_with?("go to") then

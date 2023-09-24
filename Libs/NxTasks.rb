@@ -94,7 +94,7 @@ class NxTasks
 
     # NxTasks::toStringPosition(item)
     def self.toStringPosition(item)
-        "🔹 #{TxEngine::prefix(item)}(#{"%5.2f" % (item["coordinate-nx129"] || 0)}) #{item["description"]}#{TxCores::suffix(item)}"
+        "🔹 #{TxEngine::prefix(item)} #{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::toStringTime(item)
@@ -104,24 +104,6 @@ class NxTasks
 
     # --------------------------------------------------
     # Operations
-
-    # NxTasks::pile(task)
-    def self.pile(task)
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text.lines.to_a.map{|line| line.strip }.select{|line| line != ""}.reverse.each {|line|
-
-            thread = Catalyst::itemOrNull(task["lineage-nx128"])
-            position = NxThreads::newFirstPosition(thread)
-
-            t1 = NxTasks::descriptionToTask(line)
-            next if t1.nil?
-            puts JSON.pretty_generate(t1)
-
-            Events::publishItemAttributeUpdate(t1["uuid"], "lineage-nx128", thread["uuid"])
-            Events::publishItemAttributeUpdate(t1["uuid"], "coordinate-nx129", position)
-        }
-    end
 
     # NxTasks::access(task)
     def self.access(task)
@@ -150,10 +132,8 @@ class NxTasks
         if Catalyst::mikuType("NxTask").size < 100 then
             Catalyst::mikuType("NxIce").take(10).each{|item|
                 thread = Catalyst::itemOrNull("8d67eae1-787e-4763-81bf-3ffb6e28c0eb") # Infinity Thread
-                position = NxThreads::newNextPosition(thread)
-                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
                 Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", thread["uuid"])
-                Events::publishItemAttributeUpdate(item["uuid"], "coordinate-nx129", position)
+                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             }
         end
     end

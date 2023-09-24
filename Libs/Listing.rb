@@ -212,7 +212,7 @@ class Listing
                 return NxTasks::toStringTime(item)
             end
             if thread["sortType"] == "position-sort" and item["mikuType"] == "NxThread" then
-                return NxThreads::toStringPosition(item)
+                return NxThreads::toString(item)
             end
             if thread["sortType"] == "time-sort" and item["mikuType"] == "NxThread" then
                 return NxThreads::toStringTime(item)
