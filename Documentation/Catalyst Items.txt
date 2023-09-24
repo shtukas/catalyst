@@ -9,4 +9,4 @@ Cross types conventions:
     - lineage-nx128    : string, uuid # (optional)
     - drive-nx1        : TxEngine     # (optional)
     - coreX-2300       : uuid of core # (optional)
-    - traj2349         : TxTrajectory # (optional)
+    - traj-2349        : TxTrajectory # (optional)

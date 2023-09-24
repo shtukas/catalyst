@@ -164,9 +164,9 @@ class Listing
             Listing::block_high_priority(),
             Listing::block_todos_high_priority(),
             Listing::block_cruises(),
-            #Listing::block_waves_low_priority(),
+            Listing::block_waves_low_priority(),
             Todos::trajectoryItems(0.4),
-            #Listing::block_todos_low_priority()
+            Listing::block_todos_low_priority()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
