@@ -19,6 +19,6 @@ class TxTrajectory
     # TxTrajectory::prefix(item)
     def self.prefix(item)
         return "" if item["traj-2349"].nil?
-        "(trajec: #{"%5.2f" % (100*TxTrajectory::ratio(item["traj-2349"]))} %) ".green
+        "(trajectory: #{"%5.2f" % (100*TxTrajectory::ratio(item["traj-2349"]))} %) ".green
     end
 end

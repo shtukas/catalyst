@@ -39,7 +39,7 @@ class NxCruises
 
     # NxCruises::toString(item)
     def self.toString(item)
-        prefix = "(rt    : #{"%5.2f" % (100*NxCruises::completionRatio(item)) } % of #{"%4.2f" % item["rt"]} hours)".green
+        prefix = "(rt: #{"%5.2f" % (100*NxCruises::completionRatio(item)) } % of #{"%4.2f" % item["rt"]} hours)".green
         "⛵️ #{prefix} #{item["description"]}#{TxCores::suffix(item)}"
     end
 
