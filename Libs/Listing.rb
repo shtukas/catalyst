@@ -287,6 +287,7 @@ class Listing
             TxCores::maintenance2()
             EventTimelineMaintenance::shortenToLowerPing()
             EventTimelineMaintenance::rewriteHistory()
+            EventTimelineMaintenance::maintenance()
         end
         TxCores::maintenance3()
     end

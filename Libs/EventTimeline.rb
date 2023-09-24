@@ -337,6 +337,20 @@ class EventTimelineMaintenance
             .min
     end
 
+    # EventTimelineMaintenance::maintenance()
+    def self.maintenance()
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/catalyst/Events/Pings")
+            .select{|location| File.basename(location)[-9, 9] == ".unixtime" }
+            .each{|filepath|
+                unixtime = IO.read(filepath).strip.to_i
+                if (Time.new.to_f - unixtime) > 86400 then
+                    ux = Digest::SHA1.hexdigest("a92d18a9-3c48-4a7f-b906-69ec52dda50c:#{filepath}")
+                    text = "Ping file '#{File.basename(filepath)}' is more than 1 day old"
+                    File.open("#{ENV['HOME']}/Galaxy/DataHub/catalyst/DropBox/#{ux}.txt", "w") {|f| f.puts(JSON.pretty_generate(text))}
+                end
+            }
+    end
+
     # EventTimelineMaintenance::shortenToLowerPing()
     def self.shortenToLowerPing()
         return if !Config::isPrimaryInstance()
