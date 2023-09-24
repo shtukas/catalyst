@@ -17,7 +17,7 @@ class TxEngine
 
     # TxEngine::prefix(item)
     def self.prefix(item)
-        return "         " if item["drive-nx1"].nil?
+        return "           " if item["drive-nx1"].nil?
         "(#{"%6.2f" % (100*TxEngine::ratio(item["drive-nx1"]))} %) "
     end
 end

@@ -53,7 +53,8 @@ class NxThreads
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         threads = Catalyst::mikuType("NxThread")
-                    .sort_by{|thread| thread["unixtime"] }
+        th1, th2 = threads.partition{|thread| thread["drive-nx1"] }
+        threads = th1.sort_by{|thread| TxEngine::ratio(thread["drive-nx1"]) } + th2.sort_by{|thread| thread["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
     end
 
