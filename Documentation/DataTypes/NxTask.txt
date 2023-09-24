@@ -1,6 +1,5 @@
 
-NxTask: 
-
+NxTask:
     "uuid"         : String
     "mikuType"     : "NxTask"
     "unixtime"     : Float

@@ -7,8 +7,9 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | position <n> <position> | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>)",
             "",
-            "Transmutations: (buffer-in) >ondate",
-            "Transmutations: (NxTask)    >cruise",
+            "Transmutations: (buffer-in) >ondate (<n>)",
+            "              : (NxTask)    >cruise (<n>)",
+            "              : (NxOndate)  >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | pile | burner | line | cruise",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
@@ -48,23 +49,54 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >task on buffer in NxOndate"
+                puts "For the moment we only run >cruise on buffer in NxOndates"
                 LucilleCore::pressEnterToContinue()
                 return
             end
+            Catalyst::moveTaskables([item])
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                 engine = TxEngine::interactivelyMakeOrNull()
                 Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
-                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            else
-                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-                Catalyst::moveTaskables([item])
+            end
+            return
+        end
+
+        if Interpreting::match(">task *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxOndate" then
+                puts "For the moment we only run >cruise on buffer in NxOndates"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Catalyst::moveTaskables([item])
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                engine = TxEngine::interactivelyMakeOrNull()
+                Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
             end
             return
         end
 
         if Interpreting::match(">cruise", input) then
             item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "For the moment we only run >cruise on buffer in NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
+            Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
+            return
+        end
+
+        if Interpreting::match(">cruise *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
                 puts "For the moment we only run >cruise on buffer in NxTasks"

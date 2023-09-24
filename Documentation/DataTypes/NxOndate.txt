@@ -1,5 +1,5 @@
 
-NxOndate 
+NxOndate
     "uuid"        : uuid
     "mikuType"    : "NxOndate"
     "unixtime"    : Float

@@ -99,7 +99,14 @@ class NxThreads
         end
         elements = NxThreads::elementsInOrder(thread)
         elements.each{|item|
-            puts PolyFunctions::toString(item)
+            (lambda{|item|
+                if item["mikuType"] == "NxTask" then
+                    puts NxTasks::toStringPosition(item)
+                    return 
+                end
+                puts PolyFunctions::toString(item)
+            }).call(item)
+            
         }
         position = LucilleCore::askQuestionAnswerAsString("position (empty for next): ")
         if position == "" then

@@ -99,9 +99,10 @@ class TxCores
 
     # TxCores::elements(core)
     def self.elements(core)
-        (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
-            .select{|item| item["coreX-2300"] == core["uuid"] }
-            .sort_by{|item| item["unixtime"] }
+        items = (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
+                    .select{|item| item["coreX-2300"] == core["uuid"] }
+        th1, th2 = items.partition{|thread| thread["drive-nx1"] }
+        th1.sort_by{|thread| TxEngine::ratio(thread["drive-nx1"]) } + th2.sort_by{|thread| thread["unixtime"] }
     end
 
     # TxCores::newFirstPosition(core)
