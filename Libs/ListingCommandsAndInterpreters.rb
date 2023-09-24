@@ -266,6 +266,16 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts PolyFunctions::toString(item).green
+            if item["lineage-nx128"].nil? then
+                if item["drive-nx1"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                    engine = TxEngine::interactivelyMakeOrNull()
+                    Events::publishItemAttributeUpdate(uuid, "drive-nx1", engine)
+                end
+                if item["traj-2349"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
+                    trajectory = TxTrajectory::interactivelyMakeOrNull()
+                    Events::publishItemAttributeUpdate(uuid, "traj-2349", trajectory)
+                end
+            end
             Catalyst::moveTaskables([item])
             return
         end
