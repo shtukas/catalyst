@@ -100,6 +100,7 @@ class Listing
             Backups::listingItems(),
             NxBurners::listingItems(),
             Todos::bufferInItems(),
+            Todos::onDateItems(),
             Todos::trajectoryItems(0.5),
             Todos::timeCommitmentItems(),
             TxCores::listingItems(),

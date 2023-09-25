@@ -8,3 +8,7 @@ TxEngine:
     "mikuType"      : "TxE-Trajectory"
     "start"         : Unixtime
     "horizonInDays" : Float
+
+TxEngine:
+    "mikuType" : "TxE-OnDate"
+    "date"     : "YYYY-MM-DD"

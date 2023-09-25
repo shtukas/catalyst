@@ -10,11 +10,12 @@ class TxEngine
             daysSinceStart = (Time.new.to_i - engine["start"]).to_f/86400
             return daysSinceStart.to_f/engine["horizonInDays"]
         end
+        raise "ratio is not defined for engine: #{engine}"
     end
 
     # TxEngine::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["time commitment", "trajectory"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["time commitment", "date", "trajectory"])
         return nil if type.nil?
         if type == "time commitment" then
             rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
@@ -22,6 +23,12 @@ class TxEngine
                 "mikuType" => "TxE-TimeCommitment",
                 "uuid"     => SecureRandom.hex,
                 "rt"       => rt
+            }
+        end
+        if type == "date" then
+            return {
+                "mikuType" => "TxE-OnDate",
+                "date"     => CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()[0, 10]
             }
         end
         if type == "trajectory" then
@@ -40,6 +47,9 @@ class TxEngine
         engine = item["engine-0852"]
         if engine["mikuType"] == "TxE-TimeCommitment" then
             return "(engine: #{"%5.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["rt"]} hours) ".green
+        end
+        if engine["mikuType"] == "TxE-OnDate" then
+            return "(ondate: #{engine["date"]}) ".green
         end
         if engine["mikuType"] == "TxE-Trajectory" then
             return "(trajectory: #{"%5.2f" % (100*TxEngine::ratio(engine))} %) ".green

@@ -27,6 +27,14 @@ class Todos
             .sort_by{|item| TxEngine::ratio(item["engine-0852"]) }
     end
 
+    # Todos::onDateItems()
+    def self.onDateItems()
+        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
+            .select{|item| item["engine-0852"] and item["engine-0852"]["mikuType"] == "TxE-OnDate" }
+            .select{|item| CommonUtils::today() >= item["engine-0852"]["date"] }
+            .sort_by{|item| item["engine-0852"]["date"] }
+    end
+
     # Todos::trajectoryItems(level)
     def self.trajectoryItems(level)
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
