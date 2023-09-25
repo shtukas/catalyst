@@ -192,6 +192,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
             Catalyst::moveTaskables([item])
             return
         end
