@@ -56,7 +56,7 @@ class ListingCommandsAndInterpreters
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                 engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
+                Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
             end
             return
         end
@@ -74,7 +74,7 @@ class ListingCommandsAndInterpreters
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                 engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
+                Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
             end
             return
         end
@@ -140,21 +140,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("trajectory *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
-                puts "We only assign TxTrajectories to NxTasks and NxThreads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            trajectory = TxTrajectory::interactivelyMakeOrNull()
-            return if trajectory.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "traj-2349", trajectory)
-            return
-        end
-
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -166,7 +151,7 @@ class ListingCommandsAndInterpreters
             end
             engine = TxEngine::interactivelyMakeOrNull()
             return if engine.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
+            Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
             return
         end
 
@@ -174,7 +159,7 @@ class ListingCommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", nil)
+            Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", nil)
             return
         end
 
@@ -248,13 +233,9 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts PolyFunctions::toString(item).green
             if item["lineage-nx128"].nil? then
-                if item["drive-nx1"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                if item["engine-0852"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                     engine = TxEngine::interactivelyMakeOrNull()
-                    Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
-                end
-                if item["traj-2349"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
-                    trajectory = TxTrajectory::interactivelyMakeOrNull()
-                    Events::publishItemAttributeUpdate(item["uuid"], "traj-2349", trajectory)
+                    Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
                 end
             end
             Catalyst::moveTaskables([item])
@@ -267,13 +248,9 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts PolyFunctions::toString(item).green
             if item["lineage-nx128"].nil? then
-                if item["drive-nx1"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
+                if item["engine-0852"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                     engine = TxEngine::interactivelyMakeOrNull()
-                    Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
-                end
-                if item["traj-2349"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
-                    trajectory = TxTrajectory::interactivelyMakeOrNull()
-                    Events::publishItemAttributeUpdate(item["uuid"], "traj-2349", trajectory)
+                    Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
                 end
             end
             Catalyst::moveTaskables([item])

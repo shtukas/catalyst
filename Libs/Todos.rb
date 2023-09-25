@@ -15,32 +15,31 @@ class Todos
         Catalyst::mikuType("NxTask")
             .select{|item| item["lineage-nx128"].nil? }
             .select{|item| item["description"].include?("(buffer-in)") }
-            .select{|item| item["traj-2349"].nil? }
+            .select{|item| item["engine-0852"].nil? }
             .sort_by{|item| item["unixtime"] }
     end
 
-    # Todos::engineItems()
-    def self.engineItems()
+    # Todos::timeCommitmentItems()
+    def self.timeCommitmentItems()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
-            .select{|item| item["drive-nx1"]}
-            .select{|item| TxEngine::ratio(item["drive-nx1"]) < 1 }
-            .sort_by{|item| TxEngine::ratio(item["drive-nx1"]) }
+            .select{|item| item["engine-0852"] and item["engine-0852"]["mikuType"] == "TxE-TimeCommitment" }
+            .select{|item| TxEngine::ratio(item["engine-0852"]) < 1 }
+            .sort_by{|item| TxEngine::ratio(item["engine-0852"]) }
     end
 
     # Todos::trajectoryItems(level)
     def self.trajectoryItems(level)
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
-            .select{|item| item["traj-2349"]}
-            .select{|item| TxTrajectory::ratio(item["traj-2349"]) >= level }
-            .sort_by{|item| TxTrajectory::ratio(item["traj-2349"]) }
+            .select{|item| item["engine-0852"] and item["engine-0852"]["mikuType"] == "TxE-Trajectory" }
+            .select{|item| TxEngine::ratio(item["engine-0852"]) >= level }
+            .sort_by{|item| TxEngine::ratio(item["engine-0852"]) }
             .reverse
     end
 
-    # Todos::driverLessItems()
-    def self.driverLessItems()
+    # Todos::noEngineItems()
+    def self.noEngineItems()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
-            .select{|item| item["drive-nx1"].nil? }
-            .select{|item| item["traj-2349"].nil? }
+            .select{|item| item["engine-0852"].nil? }
             .sort_by{|item| Bank::recoveredAverageHoursPerDayCached(item["uuid"]) }
     end
 end

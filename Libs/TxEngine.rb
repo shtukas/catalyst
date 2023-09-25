@@ -3,21 +3,46 @@ class TxEngine
 
     # TxEngine::ratio(engine)
     def self.ratio(engine)
-        Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["rt"] || 1)
+        if engine["mikuType"] == "TxE-TimeCommitment" then
+            return Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/engine["rt"]
+        end
+        if engine["mikuType"] == "TxE-Trajectory" then
+            daysSinceStart = (Time.new.to_i - engine["start"]).to_f/86400
+            return daysSinceStart.to_f/engine["horizonInDays"]
+        end
     end
 
     # TxEngine::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
-        rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
-        {
-            "uuid" => SecureRandom.hex,
-            "rt"   => rt
-        }
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", ["time commitment", "trajectory"])
+        return nil if type.nil?
+        if type == "time commitment" then
+            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
+            return {
+                "mikuType" => "TxE-TimeCommitment",
+                "uuid"     => SecureRandom.hex,
+                "rt"       => rt
+            }
+        end
+        if type == "trajectory" then
+            horizon = LucilleCore::askQuestionAnswerAsString("horizonInDays: ").to_f
+            return {
+                "mikuType"      => "TxE-Trajectory",
+                "start"         => Time.new.to_f,
+                "horizonInDays" => horizon
+            }
+        end
     end
 
     # TxEngine::prefix(item)
     def self.prefix(item)
-        return "" if item["drive-nx1"].nil?
-        "(engine: #{"%5.2f" % (100*TxEngine::ratio(item["drive-nx1"]))} % of #{"%4.2f" % item["drive-nx1"]["rt"]} hours) ".green
+        return "" if item["engine-0852"].nil?
+        engine = item["engine-0852"]
+        if engine["mikuType"] == "TxE-TimeCommitment" then
+            return "(engine: #{"%5.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["rt"]} hours) ".green
+        end
+        if engine["mikuType"] == "TxE-Trajectory" then
+            return "(trajectory: #{"%5.2f" % (100*TxEngine::ratio(engine))} %) ".green
+        end
     end
 end

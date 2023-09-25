@@ -1,4 +1,10 @@
 
 TxEngine:
-    "uuid" : String
-    "rt"   : null or Float
+    "mikuType" : "TxE-TimeCommitment"
+    "uuid"     : String
+    "rt"       : null or Float
+
+TxEngine:
+    "mikuType"      : "TxE-Trajectory"
+    "start"         : Unixtime
+    "horizonInDays" : Float

@@ -362,12 +362,7 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
                 engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "drive-nx1", engine)
-            end
-
-            if LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
-                trajectory = TxTrajectory::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "traj-2349", trajectory)
+                Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
             end
             return
         end

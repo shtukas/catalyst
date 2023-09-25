@@ -26,12 +26,7 @@ class NxTasks
 
         if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
             engine = TxEngine::interactivelyMakeOrNull()
-            Events::publishItemAttributeUpdate(uuid, "drive-nx1", engine)
-        end
-
-        if LucilleCore::askQuestionAnswerAsBoolean("set trajectory ? ") then
-            trajectory = TxTrajectory::interactivelyMakeOrNull()
-            Events::publishItemAttributeUpdate(uuid, "traj-2349", trajectory)
+            Events::publishItemAttributeUpdate(uuid, "engine-0852", engine)
         end
 
         Catalyst::itemOrNull(uuid)
@@ -94,7 +89,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{TxEngine::prefix(item)}#{TxTrajectory::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
+        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # --------------------------------------------------

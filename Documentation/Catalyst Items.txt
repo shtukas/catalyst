@@ -7,6 +7,5 @@ Cross types conventions:
     - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
 
     - lineage-nx128    : string, uuid # (optional)
-    - drive-nx1        : TxEngine     # (optional)
+    - engine-0852        : TxEngine     # (optional)
     - coreX-2300       : uuid of core # (optional)
-    - traj-2349        : TxTrajectory # (optional)

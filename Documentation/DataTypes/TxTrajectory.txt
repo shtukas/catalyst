@@ -1,4 +1,0 @@
-
-TxTrajectory:
-    "start"         : Unixtime
-    "horizonInDays" : Float

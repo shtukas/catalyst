@@ -88,8 +88,8 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::block_high_priority()
-    def self.block_high_priority()
+    # Listing::items()
+    def self.items()
         [
             Anniversaries::listingItems(),
             DropBox::items(),
@@ -97,76 +97,16 @@ class Listing
             Catalyst::mikuType("NxLine"),
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            Backups::listingItems()
-        ]
-            .flatten
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:ad-hoc-today:1b76c-4c041e05b55a")
-                item
-            }
-    end
-
-    # Listing::block_todos_high_priority()
-    def self.block_todos_high_priority()
-        [
+            Backups::listingItems(),
             NxBurners::listingItems(),
             Todos::bufferInItems(),
             Todos::trajectoryItems(0.5),
-            Todos::engineItems(),
+            Todos::timeCommitmentItems(),
             TxCores::listingItems(),
-        ]
-            .flatten
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos1:099111-1b76c-4c041e05b55a")
-                item
-            }
-    end
-
-    # Listing::block_waves_low_priority()
-    def self.block_waves_low_priority()
-        Waves::listingItems().select{|item| !item["interruption"] }
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:waves2:0111-1b76c-4c041e05b55a")
-                item
-            }
-    end
-
-    # Listing::block_todos_low_priority()
-    def self.block_todos_low_priority()
-        Todos::driverLessItems()
-            .flatten
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:todos2:189210--b86c-5c151g15b55a")
-                item
-            }
-    end
-
-    # Listing::block_cruises()
-    def self.block_cruises()
-        NxCruises::listingItems()
-            .map{|item|
-                InMemoryCache::set("block-attribution:4858-a4ce-ff9b44527809:#{item["uuid"]}", "block:cruise:a51072da-9021-4049")
-                item
-            }
-    end
-
-    # Listing::items()
-    def self.items()
-        [
-            Listing::block_high_priority(),
-            Listing::block_todos_high_priority(),
-            Listing::block_cruises(),
-            Listing::block_waves_low_priority(),
+            NxCruises::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
             Todos::trajectoryItems(0.4),
-            Listing::block_todos_low_priority()
+            Todos::noEngineItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -240,7 +180,7 @@ class Listing
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
         spot.contest_entry("Todos::bufferInItems()", lambda{ Todos::bufferInItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
-        spot.contest_entry("Todos::driverLessItems()", lambda{ Todos::driverLessItems() })
+        spot.contest_entry("Todos::noEngineItems()", lambda{ Todos::noEngineItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
 

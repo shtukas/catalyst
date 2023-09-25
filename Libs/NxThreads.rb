@@ -20,14 +20,14 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
-        "🔸 #{TxEngine::prefix(item)}#{TxTrajectory::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
+        "🔸 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxThreads::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         threads = Catalyst::mikuType("NxThread")
-        th1, th2 = threads.partition{|thread| thread["drive-nx1"] }
-        threads = th1.sort_by{|thread| TxEngine::ratio(thread["drive-nx1"]) } + th2.sort_by{|thread| thread["unixtime"] }
+        th1, th2 = threads.partition{|thread| thread["engine-0852"] }
+        threads = th1.sort_by{|thread| TxEngine::ratio(thread["engine-0852"]) } + th2.sort_by{|thread| thread["unixtime"] }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| "#{NxThreads::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}" })
     end
 
