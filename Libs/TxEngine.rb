@@ -6,11 +6,13 @@ class TxEngine
         if engine["mikuType"] == "TxE-TimeCommitment" then
             return Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/engine["rt"]
         end
+        if engine["mikuType"] == "TxE-OnDate" then
+            return 0
+        end
         if engine["mikuType"] == "TxE-Trajectory" then
             daysSinceStart = (Time.new.to_i - engine["start"]).to_f/86400
             return daysSinceStart.to_f/engine["horizonInDays"]
         end
-        raise "ratio is not defined for engine: #{engine}"
     end
 
     # TxEngine::interactivelyMakeOrNull()
