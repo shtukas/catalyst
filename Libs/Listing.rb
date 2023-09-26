@@ -68,8 +68,6 @@ class Listing
 
         return false if TmpSkip1::isSkipped(item)
 
-        return false if item["mikuType"] == "TxCore"
-
         return false if item["mikuType"] == "DesktopTx1"
 
         return false if item["mikuType"] == "NxBurner"
@@ -106,6 +104,13 @@ class Listing
             }
     end
 
+    # Listing::cto()
+    def self.cto()
+        core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
+        ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
+        ratio < 1 ? [core] : []
+    end
+
     # Listing::items()
     def self.items()
         lowPriorityWaves = (lambda {
@@ -124,6 +129,7 @@ class Listing
         }).call()
         [
             Anniversaries::listingItems(),
+            Listing::cto(),
             lowPriorityWaves,
             noEngineItems,
             DropBox::items(),
