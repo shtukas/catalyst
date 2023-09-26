@@ -88,10 +88,44 @@ class Listing
         item["interruption"]
     end
 
+    # Listing::lowWaves()
+    def self.lowWaves()
+        Waves::listingItems().select{|item| !item["interruption"] }
+            .map{|item|
+                InMemoryCache::set("d3fded3d-190a-468f-8203-5bedcbf53454:#{item["uuid"]}", "low:waves:51c83743-417e-4cb8")
+                item
+            }
+    end
+
+    # Listing::noEngineItems()
+    def self.noEngineItems()
+        Todos::noEngineItems()
+            .map{|item|
+                InMemoryCache::set("d3fded3d-190a-468f-8203-5bedcbf53454:#{item["uuid"]}", "low:todo:9abd3235-2cfa")
+                item
+            }
+    end
+
     # Listing::items()
     def self.items()
+        lowPriorityWaves = (lambda {
+            if Bank::recoveredAverageHoursPerDayCached("low:waves:51c83743-417e-4cb8") < 1 then
+                Listing::lowWaves()
+            else
+                []
+            end
+        }).call()
+        noEngineItems = (lambda {
+            if Bank::recoveredAverageHoursPerDayCached("low:todo:9abd3235-2cfa") < 1 then
+                Listing::noEngineItems()
+            else
+                []
+            end
+        }).call()
         [
             Anniversaries::listingItems(),
+            lowPriorityWaves,
+            noEngineItems,
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Catalyst::mikuType("NxLine"),
@@ -103,7 +137,7 @@ class Listing
             Todos::onDateItems(),
             Todos::trajectoryItems(0.5),
             TxCores::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
+            Listing::lowWaves(),
             Todos::timeCommitmentItems(),
             NxCruises::listingItems(),
             Todos::trajectoryItems(0.4),
