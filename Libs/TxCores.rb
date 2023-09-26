@@ -97,14 +97,6 @@ class TxCores
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
-    # TxCores::elements(core)
-    def self.elements(core)
-        items = (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
-                    .select{|item| item["coreX-2300"] == core["uuid"] }
-        th1, th2 = items.partition{|thread| thread["engine-0852"] }
-        th1.sort_by{|thread| TxEngine::ratio(thread["engine-0852"]) }.reverse + th2.sort_by{|thread| thread["unixtime"] }
-    end
-
     # TxCores::suffix(item)
     def self.suffix(item)
         return "" if item["coreX-2300"].nil?
@@ -162,7 +154,7 @@ class TxCores
             puts  Listing::toString2(store, core)
             puts  ""
 
-            TxCores::elements(core)
+            Todos::children(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString2(store, item)

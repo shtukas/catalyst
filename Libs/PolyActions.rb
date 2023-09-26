@@ -265,8 +265,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
-            if TxCores::elements(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::elements(item).size} elements"
+            if Todos::children(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Todos::children(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end

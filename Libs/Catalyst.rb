@@ -74,7 +74,7 @@ class Catalyst
             core = parent
             loop {
                 system("clear")
-                kids = TxCores::elements(core)
+                kids = Todos::children(core)
                 puts "core: #{PolyFunctions::toString(core).green}"
                 puts "kids:"
                 kids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
