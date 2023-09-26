@@ -6,7 +6,7 @@ class Prefix
     # prefix items
     def self.pureTopUp(item)
         if item["mikuType"] == "NxThread" then
-            return NxThreads::elementsInOrder(item).first(6)
+            return Catalyst::children(item).first(6)
         end
         []
     end

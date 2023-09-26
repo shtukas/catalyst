@@ -38,11 +38,6 @@ class NxThreads
         NxThreads::interactivelyIssueNewOrNull()
     end
 
-    # NxThreads::elementsInOrder(thread)
-    def self.elementsInOrder(thread)
-        Catalyst::children(thread).sort_by{|item| item["unixtime"] }
-    end
-
     # --------------------------------------------------------------------------
     # Ops
 
@@ -73,7 +68,7 @@ class NxThreads
             spacecontrol.putsline Listing::toString2(store, thread)
             spacecontrol.putsline ""
 
-            items = NxThreads::elementsInOrder(thread)
+            items = Catalyst::children(thread)
             items = items
                         .map{|item| Stratification::getItemStratification(item).reverse + [item] }
                         .flatten
@@ -98,7 +93,7 @@ class NxThreads
             end
 
             if input == "move" then
-                unselected = NxThreads::elementsInOrder(thread)
+                unselected = Catalyst::children(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], unselected, lambda{ |item| PolyFunctions::toString(item) })
                 next if selected.empty?
                 target = NxThreads::interactivelySelectOrNull()

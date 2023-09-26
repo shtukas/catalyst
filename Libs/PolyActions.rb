@@ -226,8 +226,8 @@ class PolyActions
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if NxThreads::elementsInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{NxThreads::elementsInOrder(item).size} children items"
+            if Catalyst::children(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Catalyst::children(item).size} children items"
                 LucilleCore::pressEnterToContinue()
                 return
             end
