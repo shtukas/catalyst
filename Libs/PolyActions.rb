@@ -103,8 +103,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if Todos::children(item).size > 0 then
-                puts "The thread '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Todos::children(item).size} elements"
+            if Catalyst::children(item).size > 0 then
+                puts "The thread '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Catalyst::children(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -265,8 +265,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
-            if Todos::children(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Todos::children(item).size} elements"
+            if Catalyst::children(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Catalyst::children(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end

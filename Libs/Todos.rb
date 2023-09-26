@@ -2,18 +2,6 @@
 
 class Todos
 
-    # Todos::children(parent)
-    def self.children(parent)
-        items = (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
-                    .select{|item| item["coreX-2300"] == parent["uuid"] }
-        is1, is2 = items.partition{|thread| thread["engine-0852"] }
-        [
-            is1.select{|thread| TxEngine::ratio(thread["engine-0852"]) > 0 }.sort_by{|thread| TxEngine::ratio(thread["engine-0852"]) },
-            is1.select{|thread| TxEngine::ratio(thread["engine-0852"]) < 0 }.sort_by{|thread| TxEngine::ratio(thread["engine-0852"]) }.reverse,
-            is2.sort_by{|thread| thread["unixtime"] }
-        ].flatten
-    end
-
     # Todos::bufferInItems()
     def self.bufferInItems()
         Catalyst::mikuType("NxTask")

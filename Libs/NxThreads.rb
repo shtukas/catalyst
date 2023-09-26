@@ -40,7 +40,7 @@ class NxThreads
 
     # NxThreads::elementsInOrder(thread)
     def self.elementsInOrder(thread)
-        Todos::children(thread).sort_by{|item| item["unixtime"] }
+        Catalyst::children(thread).sort_by{|item| item["unixtime"] }
     end
 
     # --------------------------------------------------------------------------

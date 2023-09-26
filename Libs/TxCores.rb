@@ -154,7 +154,7 @@ class TxCores
             puts  Listing::toString2(store, core)
             puts  ""
 
-            Todos::children(core)
+            Catalyst::children(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString2(store, item)

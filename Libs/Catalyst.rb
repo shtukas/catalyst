@@ -74,7 +74,7 @@ class Catalyst
             core = parent
             loop {
                 system("clear")
-                kids = Todos::children(core)
+                kids = Catalyst::children(core)
                 puts "core: #{PolyFunctions::toString(core).green}"
                 puts "kids:"
                 kids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
@@ -112,7 +112,7 @@ class Catalyst
 
         loop {
             system("clear")
-            parentKids = Todos::children(parent).sort_by{|item| item["unixtime"] }
+            parentKids = Catalyst::children(parent).sort_by{|item| item["unixtime"] }
             puts "parent: #{PolyFunctions::toString(parent).green}"
             puts "kids:"
             parentKids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
@@ -166,5 +166,17 @@ class Catalyst
     # Catalyst::catalystItems()
     def self.catalystItems()
         EventTimelineDatasets::catalystItems().values
+    end
+
+    # Catalyst::children(parent)
+    def self.children(parent)
+        items = (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
+                    .select{|item| item["coreX-2300"] == parent["uuid"] }
+        is1, is2 = items.partition{|thread| thread["engine-0852"] }
+        [
+            is1.select{|thread| TxEngine::ratio(thread["engine-0852"]) > 0 }.sort_by{|thread| TxEngine::ratio(thread["engine-0852"]) },
+            is1.select{|thread| TxEngine::ratio(thread["engine-0852"]) < 0 }.sort_by{|thread| TxEngine::ratio(thread["engine-0852"]) }.reverse,
+            is2.sort_by{|thread| thread["unixtime"] }
+        ].flatten
     end
 end
