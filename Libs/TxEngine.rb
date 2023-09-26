@@ -48,13 +48,13 @@ class TxEngine
         return "" if item["engine-0852"].nil?
         engine = item["engine-0852"]
         if engine["mikuType"] == "TxE-TimeCommitment" then
-            return "(time comm: #{"%5.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["rt"]} hours) ".green
+            return "(time comm: #{"%6.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["rt"]} hours) ".green
         end
         if engine["mikuType"] == "TxE-OnDate" then
             return "(ondate: #{engine["date"]}) ".green
         end
         if engine["mikuType"] == "TxE-Trajectory" then
-            return "(trajectory: #{"%5.2f" % (100*TxEngine::ratio(engine))} %) ".green
+            return "(trajectory: #{"%6.2f" % (100*TxEngine::ratio(engine))} %) ".green
         end
     end
 end
