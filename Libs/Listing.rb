@@ -102,10 +102,10 @@ class Listing
             Todos::bufferInItems(),
             Todos::onDateItems(),
             Todos::trajectoryItems(0.5),
-            Todos::timeCommitmentItems(),
             TxCores::listingItems(),
-            NxCruises::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
+            Todos::timeCommitmentItems(),
+            NxCruises::listingItems(),
             Todos::trajectoryItems(0.4),
             Todos::noEngineItems()
         ]
