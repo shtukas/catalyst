@@ -28,11 +28,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            NxThreads::program1(item)
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -96,18 +91,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBurner" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            if Catalyst::children(item).size > 0 then
-                puts "The thread '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Catalyst::children(item).size} elements"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -220,23 +203,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if Catalyst::children(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' at this time. It has #{Catalyst::children(item).size} children items"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -265,8 +231,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
-            if Catalyst::children(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Catalyst::children(item).size} elements"
+            if TxCores::childrenInOrder(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::childrenInOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -324,11 +290,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -347,7 +308,6 @@ class PolyActions
                     return
                 end
                 NxBalls::stop(item)
-                Catalyst::moveTaskables([item])
                 return
             end
             NxBalls::start(item)
@@ -359,10 +319,6 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
                 NxBalls::stop(item)
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
-                engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
             end
             return
         end
@@ -407,11 +363,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
             return
         end
 

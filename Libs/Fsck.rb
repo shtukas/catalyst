@@ -46,12 +46,6 @@ class Fsck
             end
             return
         end
-        if item["mikuType"] == "NxThread" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
-            return
-        end
         if item["mikuType"] == "PhysicalTarget" then
             if item["field11"] then
                 CoreDataRefStrings::fsck(item)

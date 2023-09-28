@@ -86,15 +86,6 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::noEngineItems()
-    def self.noEngineItems()
-        Todos::noEngineItems()
-            .map{|item|
-                InMemoryCache::set("d3fded3d-190a-468f-8203-5bedcbf53454:#{item["uuid"]}", "low:todo:9abd3235-2cfa")
-                item
-            }
-    end
-
     # Listing::cto()
     def self.cto()
         core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
@@ -102,53 +93,12 @@ class Listing
         ratio < 1 ? [core] : []
     end
 
-    # Listing::todos()
-    def self.todos()
-        [
-            Todos::trajectoryItems(0.5),
-            Todos::timeCommitmentItems(),
-            Todos::trajectoryItems(0.4),
-            Todos::noEngineItems()
-        ]
-            .flatten
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-    end
-
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
-
-        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
-    end
-
-    # Listing::toString3(thread, store, item)
-    def self.toString3(thread, store, item)
-        return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "     "
-
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{PolyFunctions::lineageSuffix(item).yellow}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{TmpSkip1::skipSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -181,8 +131,7 @@ class Listing
             PhysicalTargets::listingItems(),
             Catalyst::mikuType("NxLine"),
             NxOndates::listingItems(),
-            Backups::listingItems(),
-            Todos::onDateItems()
+            Backups::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -210,9 +159,8 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
-        spot.contest_entry("Todos::bufferInItems()", lambda{ Todos::bufferInItems() })
+        spot.contest_entry("NxTasks::bufferInItems()", lambda{ NxTasks::bufferInItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
-        spot.contest_entry("Todos::noEngineItems()", lambda{ Todos::noEngineItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
 
@@ -222,11 +170,6 @@ class Listing
 
         spot.start_unit("Listing::maintenance()")
         Listing::maintenance()
-        spot.end_unit()
-
-        cores = Catalyst::mikuType("TxCore")
-        spot.start_unit("Listing::todos()")
-        items = Listing::todos()
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -241,7 +184,6 @@ class Listing
             puts "> Listing::maintenance() on primary instance"
             NxTasks::maintenance()
             Catalyst::maintenance()
-            NxThreads::maintenance()
             TxCores::maintenance2()
             EventTimelineMaintenance::shortenToLowerPing()
             EventTimelineMaintenance::rewriteHistory()
@@ -347,7 +289,7 @@ class Listing
             spacecontrol.putsline ""
 
             spacecontrol.putsline "stack:"
-            Listing::stack()
+            LStack::stackify(Listing::stack())
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item)
@@ -356,7 +298,7 @@ class Listing
             spacecontrol.putsline ""
 
             spacecontrol.putsline "buffer-in:"
-            Todos::bufferInItems()
+            NxTasks::bufferInItems()
                 .first(5)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -374,15 +316,6 @@ class Listing
                 }
             spacecontrol.putsline ""
 
-            spacecontrol.putsline "cores:"
-            TxCores::listingItems()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
             spacecontrol.putsline "cruises:"
             NxCruises::listingItems()
                 .each{|item|
@@ -392,13 +325,14 @@ class Listing
                 }
             spacecontrol.putsline ""
 
-            Listing::todos()
-                .first(5)
+            spacecontrol.putsline "todos:"
+            Prefix::prefix(TxCores::listingItems())
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status
                 }
+            spacecontrol.putsline ""
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

@@ -5,17 +5,17 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | move (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | engine (<n>) | engine zero (<n>) | trajectory",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | trajectory",
             "",
             "Transmutations: (buffer-in) >ondate (<n>)",
             "              : (NxTask)    >cruise (<n>)",
             "              : (NxOndate)  >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | netflix | thread | burner | line | cruise",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | cruise | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
-            "misc          : search | speed | commands | edit <n>",
+            "misc          : search | speed | commands | edit <n> | sort",
         ].join("\n")
     end
 
@@ -52,12 +52,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Catalyst::moveTaskables([item])
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
-                engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
-            end
             return
         end
 
@@ -70,12 +65,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Catalyst::moveTaskables([item])
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
-                engine = TxEngine::interactivelyMakeOrNull()
-                Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
-            end
             return
         end
 
@@ -140,29 +130,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
-                puts "We only assign TxEngines to NxTasks and NxThreads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            engine = TxEngine::interactivelyMakeOrNull()
-            return if engine.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
-            return
-        end
-
-        if Interpreting::match("engine zero *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", nil)
-            return
-        end
-
         if Interpreting::match("today", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
@@ -182,23 +149,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("netflix", input) then
-            title = LucilleCore::askQuestionAnswerAsString("title: ")
-            task = NxTasks::descriptionToTask("netflix: #{title}")
-            threaduuid = "c7ae8253-0650-478e-9c95-e99f553bc7f3" # netflix viewings thread in Infinity
-            Events::publishItemAttributeUpdate(task["uuid"], "lineage-nx128", threaduuid)
-            return
-        end
-
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
-            Catalyst::moveTaskables([item])
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
             return
         end
 
@@ -229,42 +181,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move", input) then
-            item = store.getDefault()
-            return if item.nil?
-            puts PolyFunctions::toString(item).green
-            if item["lineage-nx128"].nil? then
-                if item["engine-0852"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
-                    engine = TxEngine::interactivelyMakeOrNull()
-                    Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
-                end
-            end
-            Catalyst::moveTaskables([item])
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts PolyFunctions::toString(item).green
-            if item["lineage-nx128"].nil? then
-                if item["engine-0852"].nil? and LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
-                    engine = TxEngine::interactivelyMakeOrNull()
-                    Events::publishItemAttributeUpdate(item["uuid"], "engine-0852", engine)
-                end
-            end
-            Catalyst::moveTaskables([item])
-            return
-        end
-
-        if Interpreting::match("thread", input) then
-            thread = NxThreads::interactivelyIssueNewOrNull()
-            return if thread.nil?
-            NxThreads::program1(thread)
-            return
-        end
-
         if Interpreting::match("cruise", input) then
             cruise = NxCruises::interactivelyIssueNewOrNull()
             return if cruise.nil?
@@ -280,9 +196,10 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("pile", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Stratification::pile3(item)
+            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if line == ""
+            item = NxLines::issue(line)
+            Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newFirstPositionInLStack())
             return
         end
 
@@ -291,6 +208,15 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Stratification::pile3(item)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            items = LStack::stackify(Listing::stack())
+            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+            selected.reverse.each{|item|
+                Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newFirstPositionInLStack())
+            }
             return
         end
 

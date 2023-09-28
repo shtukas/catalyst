@@ -23,12 +23,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
-
-        if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ") then
-            engine = TxEngine::interactivelyMakeOrNull()
-            Events::publishItemAttributeUpdate(uuid, "engine-0852", engine)
-        end
-
+        Events::publishItemAttributeUpdate(uuid, "global-position", 90 + rand*10)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -89,7 +84,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
+        "🔹 #{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # --------------------------------------------------
@@ -105,13 +100,6 @@ class NxTasks
 
         # Ensuring consistency of lineages
 
-        Catalyst::mikuType("NxTask").each{|task|
-            next if task["lineage-nx128"].nil?
-            thread = Catalyst::itemOrNull(task["lineage-nx128"])
-            next if thread
-            Events::publishItemAttributeUpdate(task["uuid"], "lineage-nx128", nil)
-        }
-
         # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
             next if File.basename(location)[0, 1] == "."
@@ -122,9 +110,7 @@ class NxTasks
         # Feed Infinity using NxIce
         if Catalyst::mikuType("NxTask").size < 100 then
             Catalyst::mikuType("NxIce").take(10).each{|item|
-                thread = Catalyst::itemOrNull("8d67eae1-787e-4763-81bf-3ffb6e28c0eb") # Infinity Thread
-                Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", thread["uuid"])
-                Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+
             }
         end
     end
@@ -135,4 +121,13 @@ class NxTasks
             CoreDataRefStrings::fsck(item)
         }
     end
+
+    # NxTasks::bufferInItems()
+    def self.bufferInItems()
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["lineage-nx128"].nil? }
+            .select{|item| item["description"].include?("(buffer-in)") }
+            .sort_by{|item| item["unixtime"] }
+    end
+
 end

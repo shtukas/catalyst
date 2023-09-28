@@ -6,6 +6,5 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
 
-    - lineage-nx128    : string, uuid # (optional)
-    - engine-0852        : TxEngine     # (optional)
     - coreX-2300       : uuid of core # (optional)
+    - lstack-position  : float # (optional)

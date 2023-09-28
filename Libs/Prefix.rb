@@ -5,8 +5,8 @@ class Prefix
     # Function takes an item and returns a possible empty array of 
     # prefix items
     def self.pureTopUp(item)
-        if item["mikuType"] == "NxThread" then
-            return Catalyst::children(item).first(6)
+        if item["mikuType"] == "TxCore" then
+            return TxCores::childrenInOrder(item).first(6)
         end
         []
     end

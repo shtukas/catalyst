@@ -1,8 +1,0 @@
-
-NxThread:
-    "uuid"        : String
-    "mikuType"    : "NxThread"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : String
-    "field11"     : CoreData Reference

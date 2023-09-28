@@ -158,6 +158,7 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
+require_relative "LStack.rb"
 
 require_relative "InMemoryCache.rb"
 
@@ -165,7 +166,6 @@ require_relative "NxLines.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
-require_relative "NxThreads.rb"
 require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
 
@@ -180,8 +180,6 @@ require_relative "Stratification.rb"
 
 require_relative "TxCores.rb"
 require_relative "TmpSkip1.rb"
-require_relative "Todos.rb"
-require_relative "TxEngine.rb"
 
 require_relative "Waves.rb"
 

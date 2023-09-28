@@ -36,27 +36,6 @@ class PolyFunctions
             end
         end
 
-        if item["lineage-nx128"] then
-            lineage = Catalyst::itemOrNull(item["lineage-nx128"])
-            if lineage then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(lineage)
-            end
-        end
-
-        if item["engine-0852"] then
-            accounts << {
-                "description" => "#{item["description"]}'s engine",
-                "number"      => item["engine-0852"]["uuid"]
-            }
-        end
-
-        if blockuuid = InMemoryCache::getOrNull("d3fded3d-190a-468f-8203-5bedcbf53454:#{item["uuid"]}") then
-            accounts << {
-                "description" => "block: #{blockuuid}",
-                "number"      => blockuuid
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -104,9 +83,6 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
-        end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end
@@ -123,13 +99,5 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(#{JSON.pretty_generate(item)})"
-    end
-
-    # PolyFunctions::lineageSuffix(item)
-    def self.lineageSuffix(item)
-        return "" if item["lineage-nx128"].nil?
-        parent = Catalyst::itemOrNull(item["lineage-nx128"])
-        return "" if parent.nil?
-        " (#{parent["description"]})"
     end
 end

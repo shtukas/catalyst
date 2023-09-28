@@ -36,10 +36,6 @@ class Catalyst
         if item["mikuType"] == "NxTask" then
             return Bank::recoveredAverageHoursPerDay(item["uuid"])
         end
-        if item["mikuType"] == "NxThread" then
-            hours = item["hours"] || 2
-            return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/7)
-        end
         if item["mikuType"] == "TxCore" then
             hours = item["hours"]
             return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
@@ -52,99 +48,6 @@ class Catalyst
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
             Events::publishItemAttributeUpdate(item["uuid"], key, value)
-        }
-    end
-
-    # Catalyst::moveTaskables(items, parent or nil)
-    def self.moveTaskables(items, parent = nil)
-        if items.any?{|item| !["NxOndate", "NxBurner", "NxTask", "NxThread"].include?(item["mikuType"]) } then
-            puts "Moving items should be either NxOndate, NxBurner, NxTask or NxThread"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if parent.nil? then
-            parent = TxCores::interactivelySelectOneOrNull()
-            return if parent.nil?
-            Catalyst::moveTaskables(items, parent)
-            return
-        end
-
-        if parent["mikuType"] == "TxCore" then
-            core = parent
-            loop {
-                system("clear")
-                kids = Catalyst::children(core)
-                puts "core: #{PolyFunctions::toString(core).green}"
-                puts "kids:"
-                kids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
-                puts ""
-                puts "> here | make thread here | go to <n> # of thread to go in"
-                command = STDIN.gets().strip
-                if command == "here" then
-                    items.each{|item|
-                        if item["mikuType"] == "NxBurner" then
-                            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-                        end
-                        if item["mikuType"] == "NxOndate" then
-                            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-                        end
-                        Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-                        Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-                    }
-                    return
-                end
-                if command == "make thread here" then
-                    thread = NxThreads::interactivelyIssueNewOrNull()
-                    next if thread.nil?
-                    Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
-                    next
-                end
-                if command.start_with?("go to") then
-                    indx = command[5, 99].strip.to_i
-                    target = kids[indx]
-                    next if target.nil?
-                    Catalyst::moveTaskables(items, target)
-                    return
-                end
-            }
-        end
-
-        loop {
-            system("clear")
-            parentKids = Catalyst::children(parent).sort_by{|item| item["unixtime"] }
-            puts "parent: #{PolyFunctions::toString(parent).green}"
-            puts "kids:"
-            parentKids.each_with_index{|i, indx| puts "  - (#{indx.to_s.ljust(3)}) #{PolyFunctions::toString(i)}"}
-            puts ""
-            puts "> here | make thread here | go to <n> # of thread to go in"
-            command = STDIN.gets().strip
-            if command == "here" then
-                items.each{|item|
-                    if item["mikuType"] == "NxBurner" then
-                        Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-                    end
-                    if item["mikuType"] == "NxOndate" then
-                        Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-                    end
-                    Events::publishItemAttributeUpdate(item["uuid"], "lineage-nx128", parent["uuid"])
-                    Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-                }
-                return
-            end
-            if command == "make thread here" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                next if thread.nil?
-                Events::publishItemAttributeUpdate(thread["uuid"], "lineage-nx128", parent["uuid"])
-                next
-            end
-            if command.start_with?("go to") then
-                indx = command[5, 99].strip.to_i
-                target = parentKids[indx]
-                next if target.nil?
-                Catalyst::moveTaskables(items, target)
-                return
-            end
         }
     end
 
@@ -166,17 +69,5 @@ class Catalyst
     # Catalyst::catalystItems()
     def self.catalystItems()
         EventTimelineDatasets::catalystItems().values
-    end
-
-    # Catalyst::children(parent)
-    def self.children(parent)
-        items = (Catalyst::mikuType("NxThread") + Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCruise"))
-                    .select{|item| item["coreX-2300"] == parent["uuid"] or item["lineage-nx128"] == parent["uuid"] }
-        is1, is2 = items.partition{|item| item["engine-0852"] }
-        [
-            is1.select{|item| TxEngine::ratio(item["engine-0852"]) >= 0 }.sort_by{|item| TxEngine::ratio(item["engine-0852"]) },
-            is1.select{|item| TxEngine::ratio(item["engine-0852"]) < 0 }.sort_by{|item| TxEngine::ratio(item["engine-0852"]) }.reverse,
-            is2.sort_by{|item| item["unixtime"] }
-        ].flatten
     end
 end

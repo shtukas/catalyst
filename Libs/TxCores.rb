@@ -105,6 +105,13 @@ class TxCores
         " (#{core["description"]})".yellow
     end
 
+    # TxCores::childrenInOrder(core)
+    def self.childrenInOrder(core)
+        items = Catalyst::mikuType("NxTask")
+                    .select{|item| item["coreX-2300"] == core["uuid"] }
+                    .sort_by{|item| item["global-position"] }
+    end
+
     # -----------------------------------------------
     # Ops
 
@@ -154,14 +161,14 @@ class TxCores
             puts  Listing::toString2(store, core)
             puts  ""
 
-            Catalyst::children(core)
+            TxCores::childrenInOrder(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString2(store, item)
                 }
 
             puts ""
-            puts "task | thread | cruise"
+            puts "task"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -170,23 +177,7 @@ class TxCores
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
-                next
-            end
-
-            if input == "thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                next if thread.nil?
-                puts JSON.pretty_generate(thread)
-                Events::publishItemAttributeUpdate(thread["uuid"], "coreX-2300", core["uuid"])
-                next
-            end
-
-            if input == "cruise" then
-                cruise = NxCruise::interactivelyIssueNewOrNull()
-                next if cruise.nil?
-                puts JSON.pretty_generate(cruise)
-                Events::publishItemAttributeUpdate(cruise["uuid"], "coreX-2300", core["uuid"])
+                Events::publishItemAttributeUpdate(core["uuid"], "coreX-2300", core["uuid"])
                 next
             end
 
