@@ -86,15 +86,6 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::lowWaves()
-    def self.lowWaves()
-        Waves::listingItems().select{|item| !item["interruption"] }
-            .map{|item|
-                InMemoryCache::set("d3fded3d-190a-468f-8203-5bedcbf53454:#{item["uuid"]}", "low:waves:51c83743-417e-4cb8")
-                item
-            }
-    end
-
     # Listing::noEngineItems()
     def self.noEngineItems()
         Todos::noEngineItems()
@@ -111,41 +102,11 @@ class Listing
         ratio < 1 ? [core] : []
     end
 
-    # Listing::items()
-    def self.items()
-        lowPriorityWaves = (lambda {
-            if Bank::recoveredAverageHoursPerDayCached("low:waves:51c83743-417e-4cb8") < 1 then
-                Listing::lowWaves()
-            else
-                []
-            end
-        }).call()
-        noEngineItems = (lambda {
-            if Bank::recoveredAverageHoursPerDayCached("low:todo:9abd3235-2cfa") < 1 then
-                Listing::noEngineItems()
-            else
-                []
-            end
-        }).call()
+    # Listing::todos()
+    def self.todos()
         [
-            Anniversaries::listingItems(),
-            Listing::cto(),
-            lowPriorityWaves,
-            noEngineItems,
-            DropBox::items(),
-            PhysicalTargets::listingItems(),
-            Catalyst::mikuType("NxLine"),
-            Waves::listingItems().select{|item| item["interruption"] },
-            NxOndates::listingItems(),
-            Backups::listingItems(),
-            NxBurners::listingItems(),
-            Todos::bufferInItems(),
-            Todos::onDateItems(),
             Todos::trajectoryItems(0.5),
-            TxCores::listingItems(),
-            Listing::lowWaves(),
             Todos::timeCommitmentItems(),
-            NxCruises::listingItems(),
             Todos::trajectoryItems(0.4),
             Todos::noEngineItems()
         ]
@@ -204,6 +165,36 @@ class Listing
         line
     end
 
+    # Listing::waves()
+    def self.waves()
+        waves = Waves::listingItems()
+        w1, w2 = waves.partition{|item| item["interruption"] }
+        w1 + w2
+    end
+
+    # Listing::stack()
+    def self.stack()
+        [
+            Anniversaries::listingItems(),
+            Listing::cto(),
+            DropBox::items(),
+            PhysicalTargets::listingItems(),
+            Catalyst::mikuType("NxLine"),
+            NxOndates::listingItems(),
+            Backups::listingItems(),
+            Todos::onDateItems()
+        ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -234,8 +225,8 @@ class Listing
         spot.end_unit()
 
         cores = Catalyst::mikuType("TxCore")
-        spot.start_unit("Listing::items()")
-        items = Listing::items()
+        spot.start_unit("Listing::todos()")
+        items = Listing::todos()
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -333,32 +324,77 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items = NxBalls::runningItems() + Listing::items()
-            items = items
-                        .reduce([]){|selected, item|
-                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                                selected
-                            else
-                                selected + [item]
-                            end
-                        }
+            items = NxBalls::runningItems()
             items = Prefix::prefix(items)
-
-            # This last step is to remove duplicates due to running items
-            items = items.reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-
             items
                 .each{|item|
-                    if item["mikuType"] == "TxEmpty" then
-                        spacecontrol.putsline ""
-                        next
-                    end
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            if items.size > 0 then
+                spacecontrol.putsline ""
+            end
+
+            spacecontrol.putsline "waves:"
+            Listing::waves()
+                .first(5)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
+            spacecontrol.putsline "stack:"
+            Listing::stack()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
+            spacecontrol.putsline "buffer-in:"
+            Todos::bufferInItems()
+                .first(5)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
+            spacecontrol.putsline "burners:"
+            NxBurners::listingItems()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
+            spacecontrol.putsline "cores:"
+            TxCores::listingItems()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
+            spacecontrol.putsline "cruises:"
+            NxCruises::listingItems()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
+            spacecontrol.putsline ""
+
+            Listing::todos()
+                .first(5)
+                .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status

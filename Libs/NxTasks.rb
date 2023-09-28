@@ -114,6 +114,7 @@ class NxTasks
 
         # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
+            next if File.basename(location)[0, 1] == "."
             NxTasks::bufferInLocationToTask(location)
             LucilleCore::removeFileSystemLocation(location)
         }
