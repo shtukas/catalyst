@@ -23,7 +23,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Events::publishItemAttributeUpdate(uuid, "global-position", 90 + rand*10)
+        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -57,6 +57,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -67,6 +68,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -76,6 +78,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -85,6 +88,24 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         "🔹 #{item["description"]}#{TxCores::suffix(item)}"
+    end
+
+    # NxTasks::newGlobalFirstPosition()
+    def self.newGlobalFirstPosition()
+        t = Catalyst::mikuType("NxTask")
+                .select{|item| item["global-position"] }
+                .map{|item| item["global-position"] }
+                .reduce(0){|number, x| [number, x].min}
+        t - 1
+    end
+
+    # NxTasks::newGlobalLastPosition()
+    def self.newGlobalLastPosition()
+        t = Catalyst::mikuType("NxTask")
+                .select{|item| item["global-position"] }
+                .map{|item| item["global-position"] }
+                .reduce(0){|number, x| [number, x].max }
+        t + 1
     end
 
     # --------------------------------------------------
@@ -98,7 +119,12 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
 
-        # Ensuring consistency of lineages
+        Catalyst::mikuType("NxTask").each{|item|
+            if item["coreX-2300"] and Catalyst::itemOrNull(item["coreX-2300"]).nil? then
+                Events::publishItemAttributeUpdate(uuid, "coreX-2300", "7cf30bc6-d791-4c0c-b03f-16c728396f22") # infinity
+                Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalFirstPosition())
+            end
+        }
 
         # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|

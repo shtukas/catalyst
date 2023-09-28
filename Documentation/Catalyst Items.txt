@@ -5,6 +5,5 @@ Cross types conventions:
     - "field11"        : coredata reference string
     - "doNotShowUntil" : null or unixtime
     - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
-
     - coreX-2300       : uuid of core # (optional)
     - lstack-position  : float # (optional)

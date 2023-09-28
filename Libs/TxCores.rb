@@ -93,7 +93,6 @@ class TxCores
     # TxCores::listingItems()
     def self.listingItems()
         Catalyst::mikuType("TxCore")
-            .select{|core| Catalyst::listingCompletionRatio(core) < 1 or NxBalls::itemIsActive(core) }
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
     end
 
@@ -168,7 +167,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task"
+            puts "task | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -179,6 +178,15 @@ class TxCores
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(core["uuid"], "coreX-2300", core["uuid"])
                 next
+            end
+
+            if Interpreting::match("sort", input) then
+                items = TxCores::childrenInOrder(core)
+                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    Events::publishItemAttributeUpdate(item["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
+                }
+                return
             end
 
             puts ""
