@@ -187,6 +187,10 @@ class Listing
                 "items" => Listing::waves()
             },
             {
+                "name"  => "burners",
+                "items" => NxBurners::listingItems()
+            },
+            {
                 "name"   => "stack",
                 "items"  => LStack::stackify(Listing::stack()),
                 "render" => lambda {|store, item| Listing::toString4_stackItems(store, item) }
@@ -194,10 +198,6 @@ class Listing
             {
                 "name"  => "buffer-in",
                 "items" => NxTasks::bufferInItems().first(5)
-            },
-            {
-                "name"  => "burners",
-                "items" => NxBurners::listingItems()
             },
             {
                 "name"  => "cruises",
