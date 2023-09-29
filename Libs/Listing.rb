@@ -145,6 +145,36 @@ class Listing
             }
     end
 
+    # Listing::listingBlocks()
+    def self.listingBlocks()
+        [
+            {
+                "name"  => "waves",
+                "items" => Listing::waves()
+            },
+            {
+                "name"  => "stack",
+                "items" => LStack::stackify(Listing::stack())
+            },
+            {
+                "name"  => "buffer-in",
+                "items" => NxTasks::bufferInItems().first(5)
+            },
+            {
+                "name"  => "burners",
+                "items" => NxBurners::listingItems()
+            },
+            {
+                "name"  => "cruises",
+                "items" => NxCruises::listingItems()
+            },
+            {
+                "name"  => "todos",
+                "items" => Prefix::prefix(TxCores::listingItems())
+            }
+        ]
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -164,10 +194,13 @@ class Listing
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
-
         spot.end_contest()
 
         puts ""
+
+        spot.start_unit("Listing::listingBlocks()")
+        Listing::listingBlocks()
+        spot.end_unit()
 
         spot.start_unit("Listing::maintenance()")
         Listing::maintenance()
@@ -279,61 +312,18 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            spacecontrol.putsline "waves:"
-            Listing::waves()
-                .first(5)
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            spacecontrol.putsline "stack:"
-            LStack::stackify(Listing::stack())
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            spacecontrol.putsline "buffer-in:"
-            NxTasks::bufferInItems()
-                .first(5)
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            spacecontrol.putsline "burners:"
-            NxBurners::listingItems()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            spacecontrol.putsline "cruises:"
-            NxCruises::listingItems()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            spacecontrol.putsline "todos:"
-            Prefix::prefix(TxCores::listingItems())
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            spacecontrol.putsline ""
+            Listing::listingBlocks().each{|block|
+                if block["items"].size > 0 then
+                    spacecontrol.putsline "#{block["name"]}:"
+                    block["items"]
+                        .each{|item|
+                            store.register(item, Listing::canBeDefault(item))
+                            status = spacecontrol.putsline Listing::toString2(store, item)
+                            break if !status
+                        }
+                    spacecontrol.putsline ""
+                end
+            }
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
