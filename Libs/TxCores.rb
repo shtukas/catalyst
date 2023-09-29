@@ -186,7 +186,7 @@ class TxCores
                 selected.reverse.each{|item|
                     Events::publishItemAttributeUpdate(item["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
                 }
-                return
+                next
             end
 
             puts ""
