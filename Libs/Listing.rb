@@ -150,8 +150,6 @@ class Listing
     # Listing::stack()
     def self.stack()
         [
-            Anniversaries::listingItems(),
-            DropBox::items(),
             Catalyst::mikuType("NxLine"),
             NxOndates::listingItems(),
             Backups::listingItems()
@@ -170,6 +168,18 @@ class Listing
     # Listing::listingBlocks()
     def self.listingBlocks()
         [
+
+            {
+                "name"  => "preliminaries",
+                "items" => (lambda{
+                    [
+                        Anniversaries::listingItems(),
+                        DropBox::items(),
+                    ]
+                        .flatten
+                        .select{|item| Listing::listable(item) }
+                }).call()
+            },
             {
                 "name"  => "cto",
                 "items" => (lambda{
@@ -183,8 +193,10 @@ class Listing
                 "items" => PhysicalTargets::listingItems()
             },
             {
-                "name"  => "waves",
-                "items" => Listing::waves()
+                "name"  => "waves (interruption)",
+                "items" => (lambda{
+                    Waves::listingItems().select{|item| item["interruption"] }
+                }).call()
             },
             {
                 "name"  => "burners",
@@ -192,12 +204,18 @@ class Listing
             },
             {
                 "name"   => "stack",
-                "items"  => LStack::stackify(Listing::stack()),
+                "items"  => Time.new.hour >= 9 ? LStack::stackify(Listing::stack()) : [],
                 "render" => lambda {|store, item| Listing::toString4_stackItems(store, item) }
             },
             {
                 "name"  => "buffer-in",
                 "items" => NxTasks::bufferInItems().first(5)
+            },
+            {
+                "name"  => "waves",
+                "items" => (lambda{
+                    Waves::listingItems().select{|item| !item["interruption"] }.first(5)
+                }).call()
             },
             {
                 "name"  => "projects",
