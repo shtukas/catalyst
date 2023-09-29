@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : (NxTask)    >cruise (<n>)",
             "              : (NxOndate)  >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | cruise | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | cruise | stack",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -195,7 +195,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile", input) then
+        if Interpreting::match("stack", input) then
             line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if line == ""
             item = NxLines::issue(line)
