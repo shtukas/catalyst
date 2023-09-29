@@ -127,9 +127,7 @@ class Listing
     def self.stack()
         [
             Anniversaries::listingItems(),
-            Listing::cto(),
             DropBox::items(),
-            PhysicalTargets::listingItems(),
             Catalyst::mikuType("NxLine"),
             NxOndates::listingItems(),
             Backups::listingItems()
@@ -148,6 +146,18 @@ class Listing
     # Listing::listingBlocks()
     def self.listingBlocks()
         [
+            {
+                "name"  => "cto",
+                "items" => (lambda{
+                    core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
+                    ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
+                    ratio < 1 ? [core] : []
+                }).call()
+            },
+            {
+                "name"  => "physical 100",
+                "items" => PhysicalTargets::listingItems()
+            },
             {
                 "name"  => "waves",
                 "items" => Listing::waves()

@@ -12,6 +12,7 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
+            LStack::unstack(item)
             return
         end
 
@@ -81,6 +82,7 @@ class PolyActions
 
         if item["mikuType"] == "Backup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+            LStack::unstack(item)
             return
         end
 

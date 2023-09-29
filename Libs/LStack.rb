@@ -34,4 +34,9 @@ class LStack
             }
             .sort_by{|item| item["lstack-position"] }
     end
+
+    # LStack::unstack(item)
+    def self.unstack(item)
+        Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", nil)
+    end
 end
