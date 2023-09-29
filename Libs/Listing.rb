@@ -119,7 +119,8 @@ class Listing
     def self.waves()
         waves = Waves::listingItems()
         w1, w2 = waves.partition{|item| item["interruption"] }
-        w1 + w2
+        return w1 if !w1.empty?
+        w2
     end
 
     # Listing::stack()
