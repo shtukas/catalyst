@@ -17,14 +17,14 @@ class Catalyst
                     File.open(markerfilepath, "w"){|f| f.write(itemuuid) }
                 end
                 next if Catalyst::itemOrNull(itemuuid)
-                item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: dir) #{locationname}")
+                item = NxTasks::descriptionToTask1(itemuuid, "(open cycle: dir) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
 
             if File.file?(location) then
                 itemuuid = Digest::SHA1.hexdigest("#{locationname}:c54c9b05-c914-4df5-b77a-6e72f2d43cf7")
                 next if Catalyst::itemOrNull(itemuuid)
-                item = NxTasks::descriptionToTask_vX(itemuuid, "(open cycle: file) #{locationname}")
+                item = NxTasks::descriptionToTask1(itemuuid, "(open cycle: file) #{locationname}")
                 puts JSON.pretty_generate(item)
             end
 

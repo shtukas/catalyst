@@ -49,6 +49,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCollection" then
+            NxCollections::program1(item)
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             return
@@ -156,6 +161,12 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCollection" then
+            puts "You cannot done a NxCollection. You can destroy it."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -213,6 +224,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxCollection" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -347,6 +365,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCollection" then
+            PolyActions::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxStrat" then
             return
         end
@@ -365,6 +388,11 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCollection" then
+            NxCollections::program1(item)
             return
         end
 

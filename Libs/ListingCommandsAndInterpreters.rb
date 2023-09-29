@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "              : (NxOndate)  >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | project | stack top | stack bottom | stack at | collection",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | collections",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort",
@@ -126,6 +126,11 @@ class ListingCommandsAndInterpreters
             item = NxCollections::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("collections", input) then
+            NxCollections::program2()
             return
         end
 

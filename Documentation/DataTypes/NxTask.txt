@@ -7,3 +7,4 @@ NxTask:
     "description"     : String
     "field11"         : null or CoreData reference string
     "global-position" : float # (optional)
+    "collection-21ef" : uuid of the collection # (optional)

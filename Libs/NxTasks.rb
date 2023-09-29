@@ -24,6 +24,40 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
         Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
+        
+        options = ["position in stack", "send to collection"]
+        option = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("option", options)
+        if option == "position in stack" then
+            position = LucilleCore::askQuestionAnswerAsString("stack position: ").to_f
+            Events::publishItemAttributeUpdate(uuid, "lstack-position", position)
+        end
+        if option == "send to collection" then
+            collection = NxCollections::architectCollection()
+            Events::publishItemAttributeUpdate(uuid, "collection-21ef", collection["uuid"])
+        end
+        Catalyst::itemOrNull(uuid)
+    end
+
+    # NxTasks::interactivelyIssueNewOrNull_withoutCollectionChoice()
+    def self.interactivelyIssueNewOrNull_withoutCollectionChoice()
+
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+
+        # We need to create the blade before we call CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull
+        # because the blade need to exist for aion points data blobs to have a place to go.
+
+        uuid = SecureRandom.uuid
+        Events::publishItemInit("NxTask", uuid)
+
+        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+
+        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Events::publishItemAttributeUpdate(uuid, "description", description)
+        Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
+
         Catalyst::itemOrNull(uuid)
     end
 
@@ -61,19 +95,8 @@ class NxTasks
         Catalyst::itemOrNull(uuid)
     end
 
-    # NxTasks::descriptionToTask(description)
-    def self.descriptionToTask(description)
-        uuid = SecureRandom.uuid
-        Events::publishItemInit("NxTask", uuid)
-        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Events::publishItemAttributeUpdate(uuid, "description", description)
-        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
-        Catalyst::itemOrNull(uuid)
-    end
-
-    # NxTasks::descriptionToTask_vX(uuid, description)
-    def self.descriptionToTask_vX(uuid, description)
+    # NxTasks::descriptionToTask1(uuid, description)
+    def self.descriptionToTask1(uuid, description)
         Events::publishItemInit("NxTask", uuid)
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
@@ -121,8 +144,9 @@ class NxTasks
 
         Catalyst::mikuType("NxTask").each{|item|
             if item["coreX-2300"] and Catalyst::itemOrNull(item["coreX-2300"]).nil? then
-                Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", "7cf30bc6-d791-4c0c-b03f-16c728396f22") # infinity
-                Events::publishItemAttributeUpdate(item["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
+                # We remove the coreX-2300 because it's invaid and we remove the collection-21ef because we want to treat it as a buffer in
+                Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", nil)
+                Events::publishItemAttributeUpdate(item["uuid"], "collection-21ef", nil)
             end
         }
 
@@ -148,11 +172,10 @@ class NxTasks
         }
     end
 
-    # NxTasks::bufferInItems()
-    def self.bufferInItems()
+    # NxTasks::collectionLessItems()
+    def self.collectionLessItems()
         Catalyst::mikuType("NxTask")
-            .select{|item| item["lineage-nx128"].nil? }
-            .select{|item| item["description"].include?("(buffer-in)") }
+            .select{|item| item["collection-21ef"].nil? }
             .sort_by{|item| item["unixtime"] }
     end
 

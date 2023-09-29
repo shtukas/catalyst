@@ -168,7 +168,13 @@ class Listing
     # Listing::listingBlocks()
     def self.listingBlocks()
         [
-
+            {
+                "name"  => "collection",
+                "items" => (lambda{
+                    Catalyst::mikuType("NxCollection")
+                        .select{|item| Listing::listable(item) }
+                }).call()
+            },
             {
                 "name"  => "preliminaries",
                 "items" => (lambda{
@@ -208,8 +214,8 @@ class Listing
                 "render" => lambda {|store, item| Listing::toString4_stackItems(store, item) }
             },
             {
-                "name"  => "buffer-in",
-                "items" => NxTasks::bufferInItems().first(5)
+                "name"  => "no collection tasks, including buffer-in",
+                "items" => NxTasks::collectionLessItems().first(5)
             },
             {
                 "name"  => "waves",
@@ -243,7 +249,7 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
-        spot.contest_entry("NxTasks::bufferInItems()", lambda{ NxTasks::bufferInItems() })
+        spot.contest_entry("NxTasks::collectionLessItems()", lambda{ NxTasks::collectionLessItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
