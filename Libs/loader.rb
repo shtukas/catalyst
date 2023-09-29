@@ -135,7 +135,6 @@ require_relative "Backups.rb"
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
-require_relative "NxProjects.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
@@ -168,6 +167,8 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
+require_relative "NxCollection.rb"
+require_relative "NxProjects.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

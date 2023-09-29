@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : (NxTask)    >project (<n>)",
             "              : (NxOndate)  >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | project | stack top | stack bottom | stack at",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | project | stack top | stack bottom | stack at | collection",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -119,6 +119,13 @@ class ListingCommandsAndInterpreters
             Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+        if Interpreting::match("collection", input) then
+            item = NxCollections::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
