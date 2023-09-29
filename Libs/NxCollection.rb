@@ -15,12 +15,17 @@ class NxCollections
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        NxCollections::issue(description)
+        collection = NxCollections::issue(description)
+        core = TxCores::interactivelySelectOneOrNull()
+        if core then
+            Events::publishItemAttributeUpdate(collection["uuid"], "coreX-2300", core["uuid"])
+        end
+        Catalyst::itemOrNull(collection["uuid"])
     end
 
     # NxCollections::toString(item)
     def self.toString(item)
-        "✨ #{item["description"]}"
+        "✨ #{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxCollections::listingItems()
