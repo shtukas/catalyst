@@ -121,8 +121,8 @@ class NxTasks
 
         Catalyst::mikuType("NxTask").each{|item|
             if item["coreX-2300"] and Catalyst::itemOrNull(item["coreX-2300"]).nil? then
-                Events::publishItemAttributeUpdate(uuid, "coreX-2300", "7cf30bc6-d791-4c0c-b03f-16c728396f22") # infinity
-                Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalFirstPosition())
+                Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", "7cf30bc6-d791-4c0c-b03f-16c728396f22") # infinity
+                Events::publishItemAttributeUpdate(item["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
             end
         }
 
