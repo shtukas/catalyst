@@ -169,13 +169,6 @@ class Listing
     def self.listingBlocks()
         [
             {
-                "name"  => "collection",
-                "items" => (lambda {
-                    Catalyst::mikuType("NxCollection")
-                        .select{|item| Listing::listable(item) }
-                }).call()
-            },
-            {
                 "name"  => "preliminaries",
                 "items" => (lambda {
                     [
