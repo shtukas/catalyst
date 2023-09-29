@@ -200,8 +200,8 @@ class Listing
                 "items" => NxTasks::bufferInItems().first(5)
             },
             {
-                "name"  => "cruises",
-                "items" => NxCruises::listingItems()
+                "name"  => "projects",
+                "items" => NxProjects::listingItems()
             },
             {
                 "name"  => "todos",

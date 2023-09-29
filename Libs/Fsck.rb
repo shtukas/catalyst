@@ -18,8 +18,8 @@ class Fsck
         if item["mikuType"] == "NxLine" then
             return
         end
-        if item["mikuType"] == "NxCruise" then
-            NxCruises::fsck()
+        if item["mikuType"] == "NxProject" then
+            NxProjects::fsck()
             return
         end
         if item["mikuType"] == "NxOndate" then

@@ -135,7 +135,7 @@ require_relative "Backups.rb"
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
-require_relative "NxCruises.rb"
+require_relative "NxProjects.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::setUnixtime(item["uuid"], unixtime)

@@ -8,10 +8,10 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | trajectory",
             "",
             "Transmutations: (buffer-in) >ondate (<n>)",
-            "              : (NxTask)    >cruise (<n>)",
+            "              : (NxTask)    >project (<n>)",
             "              : (NxOndate)  >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | cruise | stack top | stack bottom | stack at",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | project | stack top | stack bottom | stack at",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -48,7 +48,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >cruise on buffer in NxOndates"
+                puts "For the moment we only run >project on buffer in NxOndates"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -61,7 +61,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >cruise on buffer in NxOndates"
+                puts "For the moment we only run >project on buffer in NxOndates"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -69,32 +69,32 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">cruise", input) then
+        if Interpreting::match(">project", input) then
             item = store.getDefault()
             return if item.nil?
             if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >cruise on buffer in NxTasks"
+                puts "For the moment we only run >project on buffer in NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
             rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
             Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxProject")
             return
         end
 
-        if Interpreting::match(">cruise *", input) then
+        if Interpreting::match(">project *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >cruise on buffer in NxTasks"
+                puts "For the moment we only run >project on buffer in NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
             rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
             Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxCruise")
+            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxProject")
             return
         end
 
@@ -181,10 +181,10 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cruise", input) then
-            cruise = NxCruises::interactivelyIssueNewOrNull()
-            return if cruise.nil?
-            puts PolyFunctions::toString(cruise)
+        if Interpreting::match("project", input) then
+            project = NxProjects::interactivelyIssueNewOrNull()
+            return if project.nil?
+            puts PolyFunctions::toString(project)
             return
         end
 

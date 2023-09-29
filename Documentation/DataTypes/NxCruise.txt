@@ -1,8 +1,8 @@
 
-NxCruise:
+NxProject:
 
     "uuid"         : String
-    "mikuType"     : "NxCruise"
+    "mikuType"     : "NxProject"
     "unixtime"     : Float
     "datetime"     : DateTime Iso 8601 UTC Zulu
     "description"  : String

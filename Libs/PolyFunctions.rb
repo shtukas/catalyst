@@ -65,8 +65,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBurner" then
             return NxBurners::toString(item)
         end
-        if item["mikuType"] == "NxCruise" then
-            return NxCruises::toString(item)
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

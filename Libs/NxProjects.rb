@@ -1,11 +1,11 @@
 
 
-class NxCruises
+class NxProjects
 
     # --------------------------------------------------
     # Makers
 
-    # NxCruises::interactivelyIssueNewOrNull()
+    # NxProjects::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
 
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
@@ -15,7 +15,7 @@ class NxCruises
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        Events::publishItemInit("NxCruise", uuid)
+        Events::publishItemInit("NxProject", uuid)
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
@@ -32,34 +32,34 @@ class NxCruises
     # --------------------------------------------------
     # Data
 
-    # NxCruises::completionRatio(item)
+    # NxProjects::completionRatio(item)
     def self.completionRatio(item)
         Bank::recoveredAverageHoursPerDayCached(item["uuid"]).to_f/item["rt"]
     end
 
-    # NxCruises::toString(item)
+    # NxProjects::toString(item)
     def self.toString(item)
-        prefix = "(rt: #{"%5.2f" % (100*NxCruises::completionRatio(item)) } % of #{"%4.2f" % item["rt"]} hours)".green
+        prefix = "(rt: #{"%5.2f" % (100*NxProjects::completionRatio(item)) } % of #{"%4.2f" % item["rt"]} hours)".green
         "⛵️ #{prefix} #{item["description"]}#{TxCores::suffix(item)}"
     end
 
-    # NxCruises::listingItems()
+    # NxProjects::listingItems()
     def self.listingItems()
-        Catalyst::mikuType("NxCruise")
-            .select{|item| NxCruises::completionRatio(item) < 1 }
+        Catalyst::mikuType("NxProject")
+            .select{|item| NxProjects::completionRatio(item) < 1 }
     end
 
     # --------------------------------------------------
     # Operations
 
-    # NxCruises::access(item)
+    # NxProjects::access(item)
     def self.access(item)
         CoreDataRefStrings::access(item["uuid"], item["field11"])
     end
 
-    # NxCruises::fsck()
+    # NxProjects::fsck()
     def self.fsck()
-        Catalyst::mikuType("NxCruise").each{|item|
+        Catalyst::mikuType("NxProject").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

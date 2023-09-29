@@ -20,8 +20,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCruise" then
-            NxCruises::access(item)
+        if item["mikuType"] == "NxProject" then
+            NxProjects::access(item)
             return
         end
 
@@ -86,8 +86,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCruise" then
-            puts "You cannot done a NxCruise, but you can destroy it"
+        if item["mikuType"] == "NxProject" then
+            puts "You cannot done a NxProject, but you can destroy it"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -198,7 +198,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCruise" then
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -280,7 +280,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCruise" then
+        if item["mikuType"] == "NxProject" then
             NxBalls::start(item)
             PolyActions::access(item)
             return
