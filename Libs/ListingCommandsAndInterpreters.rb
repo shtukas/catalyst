@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : (NxTask)    >cruise (<n>)",
             "              : (NxOndate)  >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | cruise | stack",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | cruise | stack top | stack bottom | stack at",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -195,11 +195,28 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack", input) then
+        if Interpreting::match("stack top", input) then
             line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if line == ""
             item = NxLines::issue(line)
             Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newFirstPositionInLStack())
+            return
+        end
+
+        if Interpreting::match("stack bottom", input) then
+            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if line == ""
+            item = NxLines::issue(line)
+            Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newNextPositionInLStack())
+            return
+        end
+
+        if Interpreting::match("stack at *", input) then
+            _, _, position = Interpreting::tokenizer(input)
+            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if line == ""
+            item = NxLines::issue(line)
+            Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", position.to_f)
             return
         end
 

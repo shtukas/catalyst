@@ -115,6 +115,30 @@ class Listing
         line
     end
 
+    # Listing::toString4_stackItems(store, item)
+    def self.toString4_stackItems(store, item)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
+
+        stack = "#{"%6.2f" % item["lstack-position"]}"
+
+        line = "#{storePrefix} (#{stack}) #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+
+        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
     # Listing::waves()
     def self.waves()
         waves = Waves::listingItems()
@@ -163,8 +187,9 @@ class Listing
                 "items" => Listing::waves()
             },
             {
-                "name"  => "stack",
-                "items" => LStack::stackify(Listing::stack())
+                "name"   => "stack",
+                "items"  => LStack::stackify(Listing::stack()),
+                "render" => lambda {|store, item| Listing::toString4_stackItems(store, item) }
             },
             {
                 "name"  => "buffer-in",
@@ -328,7 +353,8 @@ class Listing
                     block["items"]
                         .each{|item|
                             store.register(item, Listing::canBeDefault(item))
-                            status = spacecontrol.putsline Listing::toString2(store, item)
+                            line = block["render"] ? block["render"].call(store, item) : Listing::toString2(store, item)
+                            status = spacecontrol.putsline line
                             break if !status
                         }
                     spacecontrol.putsline ""
