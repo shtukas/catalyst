@@ -5,3 +5,4 @@ NxCollection:
     "unixtime"    : Float
     "datetime"    : DateTime Iso 8601 UTC Zulu
     "description" : String
+    "engine-2251" : TxEngine (optional)

@@ -27,6 +27,17 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxTask" and item["collection-21ef"] then
+            collection = Catalyst::itemOrNull(item["collection-21ef"])
+            if collection then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(collection)
+            end
+        end
+
+        if item["mikuType"] == "NxCollection" and item["engine-2251"] then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["engine-2251"])
+        end
+
         # Special Features
 
         if item["coreX-2300"] then
@@ -67,9 +78,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBurner" then
             return NxBurners::toString(item)
-        end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

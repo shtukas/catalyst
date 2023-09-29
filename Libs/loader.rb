@@ -168,7 +168,6 @@ require_relative "NxTasks.rb"
 require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxCollection.rb"
-require_relative "NxProjects.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
@@ -181,6 +180,7 @@ require_relative "Stratification.rb"
 
 require_relative "TxCores.rb"
 require_relative "TmpSkip1.rb"
+require_relative "TxEngine.rb"
 
 require_relative "Waves.rb"
 

@@ -20,11 +20,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            NxProjects::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxBurner" then
             return
         end
@@ -41,11 +36,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             NxTasks::access(item)
-            return
-        end
-
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
             return
         end
 
@@ -88,12 +78,6 @@ class PolyActions
         if item["mikuType"] == "Backup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
             LStack::unstack(item)
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            puts "You cannot done a NxProject, but you can destroy it"
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -209,13 +193,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -295,12 +272,6 @@ class PolyActions
 
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            NxBalls::start(item)
-            PolyActions::access(item)
             return
         end
 

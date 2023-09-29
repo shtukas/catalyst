@@ -23,9 +23,11 @@ class NxCollections
         Catalyst::itemOrNull(collection["uuid"])
     end
 
+    # Data
+
     # NxCollections::toString(item)
     def self.toString(item)
-        "✨ #{item["description"]}#{TxCores::suffix(item)}"
+        "✨ #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxCollections::listingItems()
@@ -64,6 +66,16 @@ class NxCollections
             .select{|item| item["collection-21ef"] == collection["uuid"] }
             .sort_by{|item| item["global-position"] }
     end
+
+    # NxCollections::orphans()
+    def self.orphans()
+        Catalyst::mikuType("NxCollection")
+            .select{|item| item["coreX-2300"].nil? and item["engine-2251"].nil? }
+            .sort_by{|item| item["unixtime"] }
+            .reverse
+    end
+
+    # Ops
 
     # NxCollections::program1(collection)
     def self.program1(collection)

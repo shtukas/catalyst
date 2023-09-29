@@ -6,7 +6,13 @@ class Prefix
     # prefix items
     def self.pureTopUp(item)
         if item["mikuType"] == "TxCore" then
-            return TxCores::childrenInOrder(item).first(6)
+            core = item
+            chs = (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxCollection"))
+                    .select{|i2| i2["coreX-2300"] == core["uuid"] }
+                    .select{|i2| i2["engine-2251"].nil? }
+                    .sort_by{|collection| Bank::recoveredAverageHoursPerDay(collection["uuid"]) }
+                    .first(3)
+            return Prefix::prefix(chs)
         end
         []
     end

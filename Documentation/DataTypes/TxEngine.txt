@@ -1,0 +1,8 @@
+
+TxEngine
+{
+    "uuid"     => SecureRandom.hex,
+    "mikuType" => "TxEngine",
+    "type"     => "recovery-time",
+    "rt"       => rt
+}

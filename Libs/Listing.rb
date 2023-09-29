@@ -170,14 +170,14 @@ class Listing
         [
             {
                 "name"  => "collection",
-                "items" => (lambda{
+                "items" => (lambda {
                     Catalyst::mikuType("NxCollection")
                         .select{|item| Listing::listable(item) }
                 }).call()
             },
             {
                 "name"  => "preliminaries",
-                "items" => (lambda{
+                "items" => (lambda {
                     [
                         Anniversaries::listingItems(),
                         DropBox::items(),
@@ -188,7 +188,7 @@ class Listing
             },
             {
                 "name"  => "cto",
-                "items" => (lambda{
+                "items" => (lambda {
                     core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
                     ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
                     ratio < 1 ? [core] : []
@@ -200,7 +200,7 @@ class Listing
             },
             {
                 "name"  => "waves (interruption)",
-                "items" => (lambda{
+                "items" => (lambda {
                     Waves::listingItems().select{|item| item["interruption"] }
                 }).call()
             },
@@ -214,22 +214,14 @@ class Listing
                 "render" => lambda {|store, item| Listing::toString4_stackItems(store, item) }
             },
             {
-                "name"  => "no collection tasks, including buffer-in",
-                "items" => NxTasks::collectionLessItems().first(5)
+                "name"  => "orphans",
+                "items" => NxTasks::orphans() + NxCollections::orphans()
             },
             {
-                "name"  => "waves",
-                "items" => (lambda{
+                "name"  => "waves (low priority)",
+                "items" => (lambda {
                     Waves::listingItems().select{|item| !item["interruption"] }.first(5)
                 }).call()
-            },
-            {
-                "name"  => "projects",
-                "items" => NxProjects::listingItems()
-            },
-            {
-                "name"  => "todos",
-                "items" => Prefix::prefix(TxCores::listingItems())
             }
         ]
     end
@@ -249,7 +241,7 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
-        spot.contest_entry("NxTasks::collectionLessItems()", lambda{ NxTasks::collectionLessItems() })
+        spot.contest_entry("NxTasks::orphans()", lambda{ NxTasks::orphans() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })

@@ -7,12 +7,15 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | trajectory",
             "",
-            "Transmutations: (buffer-in) >ondate (<n>)",
-            "              : (NxTask)    >project (<n>)",
-            "              : (NxOndate)  >task (<n>)",
+            "Transmutations:",
+            "              : buffer-in: >ondate (<n>)",
+            "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | project | stack top | stack bottom | stack at | collection",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | collections",
+            "mikuTypes     :",
+            "              : NxCollection: engine <n>",
+            "",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | stack top | stack bottom | stack at | collection",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | collections",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort",
@@ -69,35 +72,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">project", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >project on buffer in NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
-            Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxProject")
-            return
-        end
-
-        if Interpreting::match(">project *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >project on buffer in NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
-            Events::publishItemAttributeUpdate(item["uuid"], "rt", rt)
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxProject")
-            return
-        end
-
         if Interpreting::match(">ondate", input) then
             item = store.getDefault()
             return if item.nil?
@@ -149,11 +123,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
-            TxCores::program2()
-            return
-        end
-
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
@@ -193,10 +162,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("project", input) then
-            project = NxProjects::interactivelyIssueNewOrNull()
-            return if project.nil?
-            puts PolyFunctions::toString(project)
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if !["NxCollection", "Nxtask"].include?(item) then
+                puts "For the moment we only give TxEngines to tasks and collections"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            engine = TxEngine::interactivelyMakeOrNull()
+            return if engine.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
             return
         end
 

@@ -131,6 +131,14 @@ class NxTasks
         t + 1
     end
 
+    # NxTasks::orphans()
+    def self.orphans()
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["coreX-2300"].nil? and item["collection-21ef"].nil? }
+            .sort_by{|item| item["unixtime"] }
+            .reverse
+    end
+
     # --------------------------------------------------
     # Operations
 
@@ -171,12 +179,4 @@ class NxTasks
             CoreDataRefStrings::fsck(item)
         }
     end
-
-    # NxTasks::collectionLessItems()
-    def self.collectionLessItems()
-        Catalyst::mikuType("NxTask")
-            .select{|item| item["collection-21ef"].nil? }
-            .sort_by{|item| item["unixtime"] }
-    end
-
 end
