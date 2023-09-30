@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "mikuTypes     :",
             "              : NxCollection: engine <n>",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | >> (new stack element) | stack * | collection",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | >> (new stack element) | stack * | collection",
             "divings       : anniversaries | ondates | waves | desktop | boxes | collections | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -129,14 +129,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             TxCores::program2()
-            return
-        end
-
-        if Interpreting::match("line", input) then
-            line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
-            return if line == ""
-            line = NxLines::issue(line)
-            puts JSON.pretty_generate(line)
             return
         end
 

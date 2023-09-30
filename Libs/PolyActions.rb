@@ -110,13 +110,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLine" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxLong" then
             Catalyst::destroy(item["uuid"])
             return

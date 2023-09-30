@@ -92,9 +92,6 @@ class PolyFunctions
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
-        if item["mikuType"] == "NxLine" then
-            return NxLines::toString(item)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end

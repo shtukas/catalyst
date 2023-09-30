@@ -126,7 +126,6 @@ class Listing
     # Listing::stack()
     def self.stack()
         [
-            Catalyst::mikuType("NxLine"),
             NxOndates::listingItems(),
             Backups::listingItems()
         ]
@@ -205,7 +204,6 @@ class Listing
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
-        spot.contest_entry("Catalyst::mikuType(NxLine)", lambda { Catalyst::mikuType("NxLine") })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
