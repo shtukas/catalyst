@@ -190,7 +190,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxCollection", "Nxtask"].include?(item) then
+            if !["NxCollection", "NxTask"].include?(item) then
                 puts "For the moment we only give TxEngines to tasks and collections"
                 LucilleCore::pressEnterToContinue()
                 return

@@ -107,7 +107,7 @@ class NxCollections
                 }
 
             puts ""
-            puts "task | pile | pile * | sort "
+            puts "task | pile | pile * | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -141,6 +141,19 @@ class NxCollections
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     Events::publishItemAttributeUpdate(item["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
+                }
+                next
+            end
+
+            if input == "move" then
+                tasks = NxCollections::childrenInOrder(collection)
+                selected, _ = LucilleCore::selectZeroOrMore("task", [], tasks, lambda{|item| PolyFunctions::toString(item) })
+                next if selected.empty?
+                target_collection = NxCollections::architectCollection()
+                next if target_collection.nil?
+                selected.each{|task|
+                    Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", nil) # we do this on case the target collection has a diffrent core
+                    Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", target_collection["uuid"])
                 }
                 next
             end

@@ -172,7 +172,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task | collection "
+            puts "task | collection | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -192,6 +192,19 @@ class TxCores
             if input == "collection" then
                 collection = NxCollections::interactivelyIssueNewOrNull_withoutCoreAttribution()
                 Events::publishItemAttributeUpdate(collection["uuid"], "coreX-2300", core["uuid"])
+                next
+            end
+
+            if input == "move" then
+                tasks = TxCores::childrenInOrder(core).select{|item| item["mikuType"] == "NxTask" }
+                selected, _ = LucilleCore::selectZeroOrMore("task", [], tasks, lambda{|item| PolyFunctions::toString(item) })
+                next if selected.empty?
+                collection = NxCollections::architectCollection()
+                next if collection.nil?
+                selected.each{|task|
+                    Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", nil) # we do this on case the target collection has a diffrent core
+                    Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", collection["uuid"])
+                }
                 next
             end
 

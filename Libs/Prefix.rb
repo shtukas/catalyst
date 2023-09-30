@@ -14,6 +14,10 @@ class Prefix
                     .first(3)
             return Prefix::prefix(chs)
         end
+        if item["mikuType"] == "NxCollection" then
+            collection = item
+            return Prefix::prefix(NxCollections::childrenInOrder(collection).first(3))
+        end
         []
     end
 
