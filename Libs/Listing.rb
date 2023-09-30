@@ -160,7 +160,7 @@ class Listing
                 "items" => (lambda {
                     core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
                     ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
-                    ratio < 1 ? [core] : []
+                    ratio < 1 ? Prefix::prefix([core]) : []
                 }).call()
             },
             {
@@ -320,18 +320,6 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            items = NxBalls::runningItems()
-            items = Prefix::prefix(items)
-            items
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
-                    break if !status
-                }
-            if items.size > 0 then
-                spacecontrol.putsline ""
-            end
-
             Listing::listingBlocks().each{|block|
                 if block["items"].size > 0 then
                     spacecontrol.putsline "#{block["name"]}:"
@@ -345,6 +333,13 @@ class Listing
                     spacecontrol.putsline ""
                 end
             }
+
+            NxBalls::runningItems()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    status = spacecontrol.putsline Listing::toString2(store, item)
+                    break if !status
+                }
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
