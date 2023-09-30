@@ -241,6 +241,7 @@ class Listing
             EventTimelineMaintenance::shortenToLowerPing()
             EventTimelineMaintenance::rewriteHistory()
             EventTimelineMaintenance::maintenance()
+            DxStack::maintenance()
         end
         TxCores::maintenance3()
     end

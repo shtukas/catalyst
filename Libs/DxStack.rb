@@ -52,4 +52,20 @@ class DxStack
         return if target.nil?
         l.call(target)
     end
+
+    # DxStack::maintenance()
+    def self.maintenance()
+        horizon = Catalyst::mikuType("DxStackItem").reduce(0){|x, item| [x, item["position"]].min }
+        if horizon < 0 then
+            Catalyst::mikuType("DxStackItem").each{|item|
+                Events::publishItemAttributeUpdate(item["uuid"], "position", item["position"]+(-horizon))
+            }
+        end
+        horizon = Catalyst::mikuType("DxStackItem").reduce(0){|x, item| [x, item["position"]].max }
+        if horizon >= 100 then
+            Catalyst::mikuType("DxStackItem").each{|item|
+                Events::publishItemAttributeUpdate(item["uuid"], "position", 0.9*item["position"])
+            }
+        end
+    end
 end
