@@ -7,12 +7,9 @@ Cross types conventions:
     - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
     - coreX-2300       : uuid of core # (optional)
 
-A NxTask has a global position, and can have a TxCore and a NxCollection and a TxEngine
+A NxTask has a global position, and can have a TxCore and a TxEngine
 
-A NxCollection can have a TxCore and a TxEngine, and many NxTasks
-
-A TxCore can have many NxCollection and many NxTasks.
+A TxCore can have many NxTasks.
 
 Orphans are 
-    - NxTasks without a TxCore or a NxCollection
-    - NxCollections without a TxCore or a TxEngine
+    - NxTasks without a TxCore and without an TxEngine

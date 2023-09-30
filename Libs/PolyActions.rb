@@ -40,13 +40,17 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            NxTasks::access(item)
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            NxCollections::program1(item)
+        if item["mikuType"] == "NxTask" then
+            if NxTasks::quarksInOrder(item).size > 0 then
+                NxTasks::program1(item)
+            else
+                NxTasks::access(item)
+            end
             return
         end
 
@@ -57,6 +61,10 @@ class PolyActions
 
         if item["mikuType"] == "NxStrat" then
             return
+        end
+
+        if item["mikuType"] == "NxQuark" then
+            return NxQuarks::access(item)
         end
 
         if item["mikuType"] == "Wave" then
@@ -116,11 +124,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -128,8 +131,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
+            if NxTasks::quarksInOrder(item).size > 0 then
+                puts "The item '#{PolyFunctions::toString(item).green}' has quarks. Operation forbidden."
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -151,17 +154,17 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            puts "You cannot done a NxCollection. You can destroy it."
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
             return
+        end
+
+        if item["mikuType"] == "NxQuark" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
         end
 
         if item["mikuType"] == "NxStrat" then
@@ -221,13 +224,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             if Stratification::getDirectTopOrNull(item) then
                 puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
@@ -239,6 +235,12 @@ class PolyActions
                 Catalyst::destroy(item["uuid"])
             end
             return
+        end
+
+        if item["mikuType"] == "NxQuark" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
         end
 
         if item["mikuType"] == "TxCore" then
@@ -310,27 +312,23 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["description"].start_with?("(buffer-in)") then
-                puts PolyFunctions::toString(item).green
-                NxBalls::start(item)
-                NxTasks::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
-                    NxBalls::stop(item)
-                    Catalyst::destroy(item["uuid"])
-                    return
+            NxBalls::start(item)
+            if NxTasks::quarksInOrder(item).size > 0 then
+                NxTasks::program1(item)
+                if NxTasks::quarksInOrder(item).size == 0 then
+                    if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                        PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
+                        Catalyst::destroy(item["uuid"])
+                        NxBalls::stop(item)
+                        return
+                    end
                 end
                 NxBalls::stop(item)
-                return
-            end
-            NxBalls::start(item)
-            NxTasks::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done and destroy '#{PolyFunctions::toString(item).green}' ? ") then
-                NxBalls::stop(item)
-                Catalyst::destroy(item["uuid"])
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
-                NxBalls::stop(item)
+            else
+                NxTasks::access(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
+                    NxBalls::stop(item)
+                end
             end
             return
         end
@@ -357,11 +355,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            PolyActions::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxStrat" then
             return
         end
@@ -380,11 +373,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxCollection" then
-            NxCollections::program1(item)
             return
         end
 

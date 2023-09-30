@@ -34,8 +34,8 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxCollection" and item["engine-2251"] then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["engine-2251"])
+        if item["mikuType"] == "NxQuark" then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(item["taskuuid"])
         end
 
         if item["mikuType"] == "DxStackItem" then
@@ -80,9 +80,6 @@ class PolyFunctions
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
-        if item["mikuType"] == "NxCollection" then
-            return NxCollections::toString(item)
-        end
         if item["mikuType"] == "Backup" then
             return Backups::toString(item)
         end
@@ -97,6 +94,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
+        end
+        if item["mikuType"] == "NxQuark" then
+            return NxQuarks::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)

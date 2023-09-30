@@ -1,10 +1,12 @@
 
-NxTask:
+NxQuark are sequence items that are attached to a particular NxTask (they are for tasks for tasks used to be for collections)
+
+NxQuark:
     "uuid"            : String
-    "mikuType"        : "NxTask"
+    "mikuType"        : "NxQuark"
     "unixtime"        : Float
     "datetime"        : DateTime Iso 8601 UTC Zulu
     "description"     : String
     "field11"         : null or CoreData reference string
     "global-position" : float
-    "engine-2251"     : TxEngine (optional)
+    "taskuuid"        : uuid of the parent task

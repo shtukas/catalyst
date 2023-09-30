@@ -186,7 +186,7 @@ class Listing
             },
             {
                 "name"  => "orphans",
-                "items" => NxTasks::orphans() + NxCollections::orphans()
+                "items" => NxTasks::orphans()
             },
             {
                 "name"  => "waves (low priority)",

@@ -78,4 +78,19 @@ class DxStack
             }
         end
     end
+
+    # DxStack::pile3()
+    def self.pile3()
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .reverse
+            .each{|line|
+                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
+                puts JSON.pretty_generate(task)
+                DxStack::issue(task, DxStack::newFirstPosition())
+            }
+    end
 end

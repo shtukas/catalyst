@@ -166,7 +166,7 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
-require_relative "NxCollection.rb"
+require_relative "NxQuark.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
@@ -175,7 +175,6 @@ require_relative "PhysicalTargets.rb"
 require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
-require_relative "Stratification.rb"
 
 require_relative "TxCores.rb"
 require_relative "TmpSkip1.rb"

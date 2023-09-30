@@ -106,14 +106,9 @@ class TxCores
 
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
-        [
-            Catalyst::mikuType("NxTask")
-                .select{|item| item["coreX-2300"] == core["uuid"] }
-                .sort_by{|item| item["global-position"] },
-            Catalyst::mikuType("NxCollection")
-                .select{|item| item["coreX-2300"] == core["uuid"] }
-                .sort_by{|item| item["unixtime"] }
-        ].flatten
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["coreX-2300"] == core["uuid"] }
+            .sort_by{|item| item["global-position"] }
     end
 
     # -----------------------------------------------
@@ -149,6 +144,21 @@ class TxCores
         XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
     end
 
+    # TxCores::pile3(core)
+    def self.pile3(core)
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .reverse
+            .each{|line|
+                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
+                puts JSON.pretty_generate(task)
+                Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+            }
+    end
+
     # TxCores::program1(core)
     def self.program1(core)
         loop {
@@ -172,39 +182,21 @@ class TxCores
                 }
 
             puts ""
-            puts "task | collection | move"
+            puts "task"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
+            if input == "pile" then
+                TxCores::pile3(core)
+                next
+            end
+
             if input == "task" then
-                task = NxTasks::interactivelyIssueNewOrNull_withoutCollectionChoice()
+                task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
-                collection = NxCollections::interactivelySelectNewOrNull()
-                if collection then
-                    Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", collection["uuid"])
-                end
-                next
-            end
-
-            if input == "collection" then
-                collection = NxCollections::interactivelyIssueNewOrNull_withoutCoreAttribution()
-                Events::publishItemAttributeUpdate(collection["uuid"], "coreX-2300", core["uuid"])
-                next
-            end
-
-            if input == "move" then
-                tasks = TxCores::childrenInOrder(core).select{|item| item["mikuType"] == "NxTask" }
-                selected, _ = LucilleCore::selectZeroOrMore("task", [], tasks, lambda{|item| PolyFunctions::toString(item) })
-                next if selected.empty?
-                collection = NxCollections::architectCollection()
-                next if collection.nil?
-                selected.each{|task|
-                    Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", nil) # we do this on case the target collection has a diffrent core
-                    Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", collection["uuid"])
-                }
                 next
             end
 

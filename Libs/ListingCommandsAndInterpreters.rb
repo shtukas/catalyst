@@ -11,11 +11,8 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "mikuTypes     :",
-            "              : NxCollection: engine <n>",
-            "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | >> (new stack element) | stack * | collection",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | collections | cores",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | >> (new stack element) | stack *",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort",
@@ -115,18 +112,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("collection", input) then
-            item = NxCollections::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("collections", input) then
-            NxCollections::program2()
-            return
-        end
-
         if Interpreting::match("cores", input) then
             TxCores::program2()
             return
@@ -182,8 +167,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxCollection", "NxTask"].include?(item["mikuType"]) then
-                puts "For the moment we only give TxEngines to tasks and collections"
+            if !["NxTask"].include?(item["mikuType"]) then
+                puts "For the moment we only give TxEngines to tasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -210,17 +195,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("pile", input) then
-            text = CommonUtils::editTextSynchronously("").strip
-            return if text == ""
-            text
-                .lines
-                .map{|line| line.strip }
-                .reverse
-                .each{|line|
-                    task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
-                    puts JSON.pretty_generate(task)
-                    DxStack::issue(task, DxStack::newFirstPosition())
-                }
+            DxStack::pile3()
             return
         end
 
@@ -228,7 +203,12 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Stratification::pile3(item)
+            if item["mikuType"] != "NxTask" then
+                puts "We only pile NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            NxTasks::pile3(task)
             return
         end
 
