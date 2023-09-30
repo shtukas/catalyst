@@ -179,7 +179,7 @@ class Listing
             },
             {
                 "name"   => "stack",
-                "items"  => Time.new.hour >= 6 ? DxStack::itemsInOrder() : [],
+                "items"  => Time.new.hour >= 6 ? Prefix::prefix(DxStack::itemsInOrder()) : [],
             },
             {
                 "name"  => "orphans",

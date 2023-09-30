@@ -148,4 +148,64 @@ class TxCores
         padding = (Catalyst::mikuType("TxCore").map{|core| core["description"].size } + [0]).max
         XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
     end
+
+    # TxCores::program1(core)
+    def self.program1(core)
+        loop {
+
+            core = Catalyst::itemOrNull(core["uuid"])
+            return if core.nil?
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts  ""
+            store.register(core, false)
+            puts  Listing::toString2(store, core)
+            puts  ""
+
+            Prefix::prefix(TxCores::childrenInOrder(core))
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  Listing::toString2(store, item)
+                }
+
+            puts ""
+            puts "task | collection "
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull_withoutCollectionChoice()
+                next if task.nil?
+                puts JSON.pretty_generate(task)
+                Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+                collection = NxCollections::interactivelySelectNewOrNull()
+                if collection then
+                    Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", collection["uuid"])
+                end
+                next
+            end
+
+            if input == "collection" then
+                collection = NxCollections::interactivelyIssueNewOrNull_withoutCoreAttribution()
+                Events::publishItemAttributeUpdate(collection["uuid"], "coreX-2300", core["uuid"])
+                next
+            end
+
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # TxCores::program2()
+    def self.program2()
+        loop {
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            TxCores::program1(core)
+        }
+    end
 end

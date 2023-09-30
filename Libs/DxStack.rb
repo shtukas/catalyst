@@ -16,7 +16,7 @@ class DxStack
     def self.toString(item)
         target = DxStack::targetOrNull(item)
         if target then
-            "(stack: #{"%6.2f" % item["position"]}) #{PolyFunctions::toString(target)}"
+            "(stack: #{"%6.3f" % item["position"]}) #{PolyFunctions::toString(target)}"
         else
             Catalyst::destroy(item["uuid"])
             "(stack) garbage collected"

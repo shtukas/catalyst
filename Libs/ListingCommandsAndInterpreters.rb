@@ -15,7 +15,7 @@ class ListingCommandsAndInterpreters
             "              : NxCollection: engine <n>",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | >> (new stack element) | stack * | collection",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | collections",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | collections | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort",
@@ -127,6 +127,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("cores", input) then
+            TxCores::program2()
+            return
+        end
+
         if Interpreting::match("line", input) then
             line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
             return if line == ""
@@ -209,6 +214,21 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
             DxStack::issue(item, position)
+            return
+        end
+
+        if Interpreting::match("pile", input) then
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text
+                .lines
+                .map{|line| line.strip }
+                .reverse
+                .each{|line|
+                    task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
+                    puts JSON.pretty_generate(task)
+                    DxStack::issue(task, DxStack::newFirstPosition())
+                }
             return
         end
 

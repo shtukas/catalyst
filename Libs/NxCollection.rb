@@ -23,6 +23,13 @@ class NxCollections
         Catalyst::itemOrNull(collection["uuid"])
     end
 
+    # NxCollections::interactivelyIssueNewOrNull_withoutCoreAttribution()
+    def self.interactivelyIssueNewOrNull_withoutCoreAttribution()
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+        NxCollections::issue(description)
+    end
+
     # Data
 
     # NxCollections::toString(item)
@@ -93,7 +100,7 @@ class NxCollections
             puts  Listing::toString2(store, collection)
             puts  ""
 
-            NxCollections::childrenInOrder(collection)
+            Prefix::prefix(NxCollections::childrenInOrder(collection))
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString2(store, item)
@@ -126,7 +133,6 @@ class NxCollections
                         Events::publishItemAttributeUpdate(task["uuid"], "global-position", NxTasks::newGlobalFirstPosition)
                         Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", collection["uuid"])
                     }
-                    next
                 next
             end
 
