@@ -165,7 +165,7 @@ class Listing
             },
             {
                 "name"  => "physical 100",
-                "items" => PhysicalTargets::listingItems()
+                "items" => PhysicalTargets::listingItems().select{|item| Listing::listable(item) }
             },
             {
                 "name"  => "waves (interruption)",
