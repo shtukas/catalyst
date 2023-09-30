@@ -140,23 +140,26 @@ class Listing
 
     # Listing::items()
     def self.items()
-        [
-            NxBurners::listingItems(),
+        items = [
             Anniversaries::listingItems(),
             DropBox::items(),
             Desktop::listingItems(),
-            PhysicalTargets::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
             DxStack::itemsInOrder(),
+            NxBurners::listingItems(),
             NxTasks::engined(),
             NxTasks::orphans(),
-            Waves::listingItems().select{|item| !item["interruption"] },
-            TxCores::listingItems()
+            PhysicalTargets::listingItems(),
+            TxCores::listingItems(),
+            Waves::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
             .sort_by{|item| ListingPriorities::metric(item) }
             .reverse
+
+        # We could now have items that appear both in their own listing and as stack target
+        exclusionUUIDs = DxStack::itemsInOrder().map{|i| i["targetuuid"] }
+        items.select{|item| !exclusionUUIDs.include?(item["uuid"]) }
     end
 
     # -----------------------------------------

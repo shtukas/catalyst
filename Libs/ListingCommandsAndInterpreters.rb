@@ -213,10 +213,15 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = DxStack::itemsInOrder()
+            items = Listing::items().first(30)
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
-                Events::publishItemAttributeUpdate(item["uuid"], "position", DxStack::newFirstPosition())
+                if item["mikuType"] == "DxStackItem" then
+                    Catalyst::destroy(item["uuid"])
+                else
+                    DxStack::destroyByTargetUUID(item["uuid"])
+                end
+                DxStack::issue(item, DxStack::newFirstPosition())
             }
             return
         end

@@ -7,16 +7,16 @@ class ListingPriorities
 
         return item["listing-priority"] if item["listing-priority"]
 
-        if item["mikuType"] == "NxBurner" then
-            return 1
-        end
-
         if item["mikuType"] == "DesktopTx1" then
             return 0.9
         end
 
         if item["mikuType"] == "DxStackItem" then
             return 0.8 + 0.2*0.1*Math.atan(-item["position"]) # range: (0.7, 0.9)
+        end
+
+        if item["mikuType"] == "NxBurner" then
+            return 0.67
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then

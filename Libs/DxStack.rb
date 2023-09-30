@@ -94,4 +94,13 @@ class DxStack
                 DxStack::issue(task, DxStack::newFirstPosition())
             }
     end
+
+    # DxStack::destroyByTargetUUID(targetuuid)
+    def self.destroyByTargetUUID(targetuuid)
+        Catalyst::mikuType("DxStackItem")
+            .select{|item| item["targetuuid"] == targetuuid }
+            .each{|item|
+                Catalyst::destroy(item["uuid"])
+            }
+    end
 end
