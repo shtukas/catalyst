@@ -14,7 +14,7 @@ class DxStack
 
     # DxStack::toString(item)
     def self.toString(item)
-        target = DxStack::targetOrNull(item)
+        target = Catalyst::itemOrNull(item["targetuuid"])
         if target then
             "(stack: #{"%6.3f" % item["position"]}) #{PolyFunctions::toString(target)}"
         else
@@ -26,12 +26,22 @@ class DxStack
     # DxStack::itemsInOrder()
     def self.itemsInOrder()
         Catalyst::mikuType("DxStackItem")
+            .map{|item|
+                target = Catalyst::itemOrNull(item["targetuuid"])
+                if target then
+                    if Listing::listable(target) then
+                        item
+                    else
+                        Catalyst::destroy(item["uuid"])
+                        nil
+                    end
+                else
+                    Catalyst::destroy(item["uuid"])
+                    nil
+                end
+            }
+            .compact
             .sort_by{|item| item["position"]}
-    end
-
-    # DxStack::targetOrNull(item)
-    def self.targetOrNull(item)
-        Catalyst::itemOrNull(item["targetuuid"])
     end
 
     # DxStack::newFirstPosition()
@@ -48,7 +58,7 @@ class DxStack
 
     # DxStack::onTarget(item, l = lambda {|target| })
     def self.onTarget(item, l)
-        target = DxStack::targetOrNull(item)
+        target = Catalyst::itemOrNull(item["targetuuid"])
         return if target.nil?
         l.call(target)
     end

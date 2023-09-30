@@ -156,14 +156,6 @@ class Listing
                 }).call()
             },
             {
-                "name"  => "cto",
-                "items" => (lambda {
-                    core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
-                    ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
-                    ratio < 1 ? Prefix::prefix([core]) : []
-                }).call()
-            },
-            {
                 "name"  => "physical 100",
                 "items" => PhysicalTargets::listingItems().select{|item| Listing::listable(item) }
             },
@@ -179,7 +171,15 @@ class Listing
             },
             {
                 "name"   => "stack",
-                "items"  => Time.new.hour >= 6 ? Prefix::prefix(DxStack::itemsInOrder()) : [],
+                "items"  => Prefix::prefix(DxStack::itemsInOrder()),
+            },
+            {
+                "name"  => "cto",
+                "items" => (lambda {
+                    core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
+                    ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
+                    ratio < 1 ? Prefix::prefix([core]) : []
+                }).call()
             },
             {
                 "name"  => "orphans",
