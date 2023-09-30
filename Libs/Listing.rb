@@ -144,6 +144,10 @@ class Listing
     def self.listingBlocks()
         [
             {
+                "name"  => "burners",
+                "items" => NxBurners::listingItems()
+            },
+            {
                 "name"  => "preliminaries",
                 "items" => (lambda {
                     [
@@ -155,6 +159,10 @@ class Listing
                 }).call()
             },
             {
+                "name"  => "desktop",
+                "items" => Desktop::listingItems()
+            },
+            {
                 "name"  => "physical 100",
                 "items" => PhysicalTargets::listingItems().select{|item| Listing::listable(item) }
             },
@@ -163,10 +171,6 @@ class Listing
                 "items" => (lambda {
                     Waves::listingItems().select{|item| item["interruption"] }
                 }).call()
-            },
-            {
-                "name"  => "burners",
-                "items" => NxBurners::listingItems()
             },
             {
                 "name"   => "stack",
@@ -306,17 +310,6 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-
-            desktopItems = Desktop::listingItems()
-            if desktopItems.size > 0 then
-                desktopItems
-                    .each{|item|
-                        store.register(item, false)
-                        status = spacecontrol.putsline Listing::toString2(store, item)
-                        break if !status
-                    }
-                spacecontrol.putsline ""
-            end
 
             Listing::listingBlocks().each{|block|
                 if block["items"].size > 0 then
