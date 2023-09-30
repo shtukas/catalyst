@@ -12,11 +12,17 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
-            LStack::unstack(item)
             return
         end
 
         if item["mikuType"] == "Backup" then
+            return
+        end
+
+        if item["mikuType"] == "DxStackItem" then
+            DxStack::onTarget(item, lambda {|target|
+                PolyActions::access(target)
+            })
             return
         end
 
@@ -77,7 +83,14 @@ class PolyActions
 
         if item["mikuType"] == "Backup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
-            LStack::unstack(item)
+            return
+        end
+
+        if item["mikuType"] == "DxStackItem" then
+            DxStack::onTarget(item, lambda {|target|
+                PolyActions::done(target)
+                Catalyst::destroy(item["uuid"])
+            })
             return
         end
 
@@ -186,6 +199,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "DxStackItem" then
+            DxStack::onTarget(item, lambda {|target|
+                PolyActions::destroy(target)
+                Catalyst::destroy(item["uuid"])
+            })
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -272,6 +293,13 @@ class PolyActions
 
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
+            return
+        end
+
+        if item["mikuType"] == "DxStackItem" then
+            DxStack::onTarget(item, lambda {|target|
+                PolyActions::doubleDots(target)
+            })
             return
         end
 

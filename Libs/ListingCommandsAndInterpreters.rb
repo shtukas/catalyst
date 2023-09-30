@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "mikuTypes     :",
             "              : NxCollection: engine <n>",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | stack top | stack bottom | stack at | collection",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | line | >> (new stack element) | stack * | collection",
             "divings       : anniversaries | ondates | waves | desktop | boxes | collections",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -93,6 +93,25 @@ class ListingCommandsAndInterpreters
             Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+        if Interpreting::match(">>", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            item = NxTasks::descriptionToTask1(SecureRandom.uuid, description)
+            options = ["top", "(position)", "bottom"]
+            option = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("position", options)
+            if option == "top" then
+                DxStack::issue(item, DxStack::newFirstPosition())
+            end
+            if option == "(position)" then
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                DxStack::issue(item, position)
+            end
+            if option == "bottom" then
+                DxStack::issue(item, DxStack::newNextPosition())
+            end
             return
         end
 
@@ -184,28 +203,12 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack top", input) then
-            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if line == ""
-            item = NxLines::issue(line)
-            Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newFirstPositionInLStack())
-            return
-        end
-
-        if Interpreting::match("stack bottom", input) then
-            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if line == ""
-            item = NxLines::issue(line)
-            Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newNextPositionInLStack())
-            return
-        end
-
-        if Interpreting::match("stack at *", input) then
-            _, _, position = Interpreting::tokenizer(input)
-            line = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if line == ""
-            item = NxLines::issue(line)
-            Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", position.to_f)
+        if Interpreting::match("stack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            DxStack::issue(item, position)
             return
         end
 
@@ -218,10 +221,10 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = LStack::stackify(Listing::stack())
+            items = DxStack::itemsInOrder()
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
-                Events::publishItemAttributeUpdate(item["uuid"], "lstack-position", LStack::newFirstPositionInLStack())
+                Events::publishItemAttributeUpdate(item["uuid"], "position", DxStack::newFirstPosition())
             }
             return
         end

@@ -144,6 +144,7 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
 require_relative "Dives.rb"
+require_relative "DxStack.rb"
 
 require_relative "EventTimeline.rb"
 require_relative "Events.rb"
@@ -157,7 +158,6 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
-require_relative "LStack.rb"
 
 require_relative "InMemoryCache.rb"
 

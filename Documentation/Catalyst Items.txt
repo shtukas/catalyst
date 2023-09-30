@@ -6,7 +6,6 @@ Cross types conventions:
     - "doNotShowUntil" : null or unixtime
     - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
     - coreX-2300       : uuid of core # (optional)
-    - lstack-position  : float # (optional)
 
 A NxTask has a global position, and can have a TxCore and a NxCollection and a TxEngine
 
