@@ -116,7 +116,7 @@ class NxCollections
                 task = NxTasks::interactivelyIssueNewOrNull_withoutCollectionChoice()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(uuid, "collection-21ef", collection["uuid"])
+                Events::publishItemAttributeUpdate(task["uuid"], "collection-21ef", collection["uuid"])
                 next
             end
 
