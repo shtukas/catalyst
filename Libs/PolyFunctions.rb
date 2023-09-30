@@ -27,13 +27,6 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTask" and item["collection-21ef"] then
-            collection = Catalyst::itemOrNull(item["collection-21ef"])
-            if collection then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(collection)
-            end
-        end
-
         if item["mikuType"] == "NxQuark" then
             accounts = accounts + PolyFunctions::itemToBankingAccounts(item["taskuuid"])
         end

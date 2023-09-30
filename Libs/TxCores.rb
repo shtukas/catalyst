@@ -182,7 +182,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task"
+            puts "task | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -197,6 +197,15 @@ class TxCores
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+                next
+            end
+
+            if Interpreting::match("sort", input) then
+                tasks = TxCores::childrenInOrder(core)
+                selected, _ = LucilleCore::selectZeroOrMore("tasks", [], tasks, lambda{|quark| PolyFunctions::toString(quark) })
+                selected.reverse.each{|quark|
+                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
+                }
                 next
             end
 

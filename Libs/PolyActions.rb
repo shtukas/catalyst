@@ -165,6 +165,7 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
+            return
         end
 
         if item["mikuType"] == "NxStrat" then
@@ -241,6 +242,7 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
+            return
         end
 
         if item["mikuType"] == "TxCore" then

@@ -89,7 +89,7 @@ class NxTasks
         icon = NxTasks::quarksInOrder(item).size > 0 ? "🔺" : "🔹"
         count = NxTasks::quarksInOrder(item).size
         s1 = (count > 0) ? "(#{count.to_s.rjust(3)})" : "     "
-        "#{icon} #{s1} #{item["description"]}#{TxCores::suffix(item)}"
+        "#{icon} #{s1} #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::newGlobalFirstPosition()
@@ -110,10 +110,16 @@ class NxTasks
         t + 1
     end
 
+    # NxTasks::engined()
+    def self.engined()
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["engine-2251"] }
+    end
+
     # NxTasks::orphans()
     def self.orphans()
         Catalyst::mikuType("NxTask")
-            .select{|item| item["coreX-2300"].nil? and item["collection-21ef"].nil? }
+            .select{|item| item["coreX-2300"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
     end
@@ -136,9 +142,7 @@ class NxTasks
 
         Catalyst::mikuType("NxTask").each{|item|
             if item["coreX-2300"] and Catalyst::itemOrNull(item["coreX-2300"]).nil? then
-                # We remove the coreX-2300 because it's invaid and we remove the collection-21ef because we want to treat it as a buffer in
                 Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", nil)
-                Events::publishItemAttributeUpdate(item["uuid"], "collection-21ef", nil)
             end
         }
 

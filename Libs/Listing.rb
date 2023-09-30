@@ -68,8 +68,6 @@ class Listing
 
         return false if TmpSkip1::isSkipped(item)
 
-        return false if item["mikuType"] == "DesktopTx1"
-
         return false if item["mikuType"] == "NxBurner"
 
         return false if item["mikuType"] == "NxPool"
@@ -98,7 +96,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} (lp: #{"%5.3f" % ListingPriorities::metric(item)}) #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -140,61 +138,25 @@ class Listing
             }
     end
 
-    # Listing::listingBlocks()
-    def self.listingBlocks()
+    # Listing::items()
+    def self.items()
         [
-            {
-                "name"  => "burners",
-                "items" => NxBurners::listingItems()
-            },
-            {
-                "name"  => "preliminaries",
-                "items" => (lambda {
-                    [
-                        Anniversaries::listingItems(),
-                        DropBox::items(),
-                    ]
-                        .flatten
-                        .select{|item| Listing::listable(item) }
-                }).call()
-            },
-            {
-                "name"  => "desktop",
-                "items" => Desktop::listingItems()
-            },
-            {
-                "name"  => "physical 100",
-                "items" => PhysicalTargets::listingItems().select{|item| Listing::listable(item) }
-            },
-            {
-                "name"  => "waves (interruption)",
-                "items" => (lambda {
-                    Waves::listingItems().select{|item| item["interruption"] }
-                }).call()
-            },
-            {
-                "name"   => "stack",
-                "items"  => Prefix::prefix(DxStack::itemsInOrder()),
-            },
-            {
-                "name"  => "cto",
-                "items" => (lambda {
-                    core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
-                    ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
-                    ratio < 1 ? Prefix::prefix([core]) : []
-                }).call()
-            },
-            {
-                "name"  => "orphans",
-                "items" => NxTasks::orphans()
-            },
-            {
-                "name"  => "waves (low priority)",
-                "items" => (lambda {
-                    Waves::listingItems().select{|item| !item["interruption"] }.first(5)
-                }).call()
-            }
+            NxBurners::listingItems(),
+            Anniversaries::listingItems(),
+            DropBox::items(),
+            Desktop::listingItems(),
+            PhysicalTargets::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
+            DxStack::itemsInOrder(),
+            NxTasks::engined(),
+            NxTasks::orphans(),
+            Waves::listingItems().select{|item| !item["interruption"] },
+            TxCores::listingItems()
         ]
+            .flatten
+            .select{|item| Listing::listable(item) }
+            .sort_by{|item| ListingPriorities::metric(item) }
+            .reverse
     end
 
     # -----------------------------------------
@@ -311,19 +273,14 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Listing::listingBlocks().each{|block|
-                if block["items"].size > 0 then
-                    spacecontrol.putsline "#{block["name"]}:"
-                    block["items"]
-                        .each{|item|
-                            store.register(item, Listing::canBeDefault(item))
-                            line = Listing::toString2(store, item)
-                            status = spacecontrol.putsline line
-                            break if !status
-                        }
-                    spacecontrol.putsline ""
-                end
-            }
+            Prefix::prefix(Listing::items())
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    line = Listing::toString2(store, item)
+                    status = spacecontrol.putsline line
+                    break if !status
+                }
+            spacecontrol.putsline ""
 
             NxBalls::runningItems()
                 .each{|item|

@@ -16,7 +16,8 @@ class DxStack
     def self.toString(item)
         target = Catalyst::itemOrNull(item["targetuuid"])
         if target then
-            "(stack: #{"%6.3f" % item["position"]}) #{PolyFunctions::toString(target)}"
+            s = "(stack: #{"%6.3f" % item["position"]})".green
+            "#{s} #{PolyFunctions::toString(target)}"
         else
             Catalyst::destroy(item["uuid"])
             "(stack) garbage collected"
