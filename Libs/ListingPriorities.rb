@@ -2,6 +2,11 @@
 
 class ListingPriorities
 
+    # ListingPriorities::increasingFunctionOfUnixtime(unixtime)
+    def self.increasingFunctionOfUnixtime(unixtime)
+        Math.atan(unixtime.to_f/(10**8))
+    end
+
     # ListingPriorities::metric(item)
     def self.metric(item)
 
@@ -22,7 +27,7 @@ class ListingPriorities
         end
 
         if item["mikuType"] == "NxOndate" then
-            return 0.68
+            return 0.68 - 0.01*ListingPriorities::increasingFunctionOfUnixtime(DateTime.parse(item["datetime"]).to_time.to_i)
         end
 
         if item["mikuType"] == "NxBurner" then
