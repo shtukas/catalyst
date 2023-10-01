@@ -186,10 +186,6 @@ class Listing
         Listing::items()
         spot.end_unit()
 
-        spot.start_unit("Listing::maintenance()")
-        Listing::maintenance()
-        spot.end_unit()
-
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
         store = ItemStore.new()
 
