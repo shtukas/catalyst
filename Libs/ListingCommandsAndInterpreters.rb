@@ -217,11 +217,6 @@ class ListingCommandsAndInterpreters
             items = Listing::items().first(30)
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
-                if item["mikuType"] == "DxStackItem" then
-                    Catalyst::destroy(item["uuid"])
-                else
-                    DxStack::destroyByTargetUUID(item["uuid"])
-                end
                 DxStack::issue(item, DxStack::newFirstPosition())
             }
             return

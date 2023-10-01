@@ -96,7 +96,9 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} (lp: #{"%5.3f" % ListingPriorities::metric(item)}) #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+        s1 = item["stack-0620"] ? DxStack::toString(item) : PolyFunctions::toString(item)
+
+        line = "#{storePrefix} (lp: #{"%5.3f" % ListingPriorities::metric(item)}) #{s1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -155,12 +157,15 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
             .sort_by{|item| ListingPriorities::metric(item) }
             .reverse
-
-        # We could now have items that appear both in their own listing and as stack target
-        exclusionUUIDs = DxStack::itemsInOrder().map{|i| i["targetuuid"] }
-        items.select{|item| !exclusionUUIDs.include?(item["uuid"]) }
     end
 
     # -----------------------------------------

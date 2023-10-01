@@ -5,7 +5,9 @@ class ListingPriorities
     # ListingPriorities::metric(item)
     def self.metric(item)
 
-        return item["listing-priority"] if item["listing-priority"]
+        if item["stack-0620"] then
+            return 0.8 + 0.2*0.1*Math.atan(-item["stack-0620"]) # range: (0.7, 0.9)
+        end
 
         if item["mikuType"] == "DesktopTx1" then
             return 0.95
@@ -17,10 +19,6 @@ class ListingPriorities
 
         if item["mikuType"] == "PhysicalTarget" then
             return 0.91
-        end
-
-        if item["mikuType"] == "DxStackItem" then
-            return 0.8 + 0.2*0.1*Math.atan(-item["position"]) # range: (0.7, 0.9)
         end
 
         if item["mikuType"] == "NxOndate" then

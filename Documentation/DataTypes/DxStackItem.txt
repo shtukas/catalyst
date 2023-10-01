@@ -1,6 +1,0 @@
-
-DxStackItem
-    "uuid"       : string
-    "mikuType"   : "DxStackItem"
-    "targetuuid" : string (uuid)
-    "position"   : float

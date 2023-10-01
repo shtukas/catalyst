@@ -31,13 +31,6 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemToBankingAccounts(item["taskuuid"])
         end
 
-        if item["mikuType"] == "DxStackItem" then
-            target = Catalyst::itemOrNull(item["targetuuid"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
         # Special Features
 
         if item["coreX-2300"] then
@@ -66,9 +59,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "DeviceBackup" then
             return item["announce"]
-        end
-        if item["mikuType"] == "DxStackItem" then
-            return DxStack::toString(item)
         end
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
