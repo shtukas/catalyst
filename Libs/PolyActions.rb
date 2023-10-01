@@ -42,7 +42,7 @@ class PolyActions
             if NxTasks::quarksInOrder(item).size > 0 then
                 NxTasks::program1(item)
             end
-            if NxTasks::quarksInOrder(item) == 0 then
+            if NxTasks::quarksInOrder(item).size == 0 then
                 NxTasks::access(item)
             end
             return
