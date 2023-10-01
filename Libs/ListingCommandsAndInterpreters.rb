@@ -227,7 +227,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            NxTasks::pile3(task)
+            NxTasks::pile3(item)
             return
         end
 
