@@ -13,7 +13,7 @@ class NxBurners
 
     # NxBurners::toString(item)
     def self.toString(item)
-        "🔥 #{item["description"]}"
+        "🔥 #{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxBurners::listingItems()
