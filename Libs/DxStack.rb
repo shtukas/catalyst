@@ -1,9 +1,9 @@
 
 class DxStack
 
-    # DxStack::issue(target, position)
-    def self.issue(target, position)
-        Events::publishItemAttributeUpdate(target["uuid"], "stack-0620", position)
+    # DxStack::issue(item, position)
+    def self.issue(item, position)
+        Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", position)
     end
 
     # Data

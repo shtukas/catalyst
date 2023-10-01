@@ -186,6 +186,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("stack", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            task = NxTasks::descriptionToTask1(Time.new.to_f.to_s, description)
+            DxStack::issue(task, DxStack::newFirstPosition())
+            return
+        end
+
         if Interpreting::match("stack *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
