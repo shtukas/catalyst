@@ -23,6 +23,10 @@ class ListingPriorities
             return 0.8 + 0.2*0.1*Math.atan(-item["position"]) # range: (0.7, 0.9)
         end
 
+        if item["mikuType"] == "NxOndate" then
+            return 0.68
+        end
+
         if item["mikuType"] == "NxBurner" then
             return 0.67
         end

@@ -146,6 +146,7 @@ class Listing
             Desktop::listingItems(),
             DxStack::itemsInOrder(),
             NxBurners::listingItems(),
+            NxOndates::listingItems(),
             NxTasks::engined(),
             NxTasks::orphans(),
             PhysicalTargets::listingItems(),
