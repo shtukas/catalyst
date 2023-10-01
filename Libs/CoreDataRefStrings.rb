@@ -103,8 +103,8 @@ class CoreDataRefStrings
         CoreDataRefStrings::referenceStringToSuffixString(item["field11"])
     end
 
-    # CoreDataRefStrings::access(uuid, referenceString)
-    def self.access(uuid, referenceString)
+    # CoreDataRefStrings::accessAndMaybeEdit(uuid, referenceString)
+    def self.accessAndMaybeEdit(uuid, referenceString)
         if referenceString.nil? then
             puts "Accessing null reference string. Nothing to do."
             LucilleCore::pressEnterToContinue()
@@ -124,8 +124,7 @@ class CoreDataRefStrings
             if LucilleCore::askQuestionAnswerAsBoolean("edit ? ") then
                 text = CommonUtils::editTextSynchronously(text)
                 nhash = Datablobs::putBlob(text)
-                refstr = "text:#{nhash}"
-                BladesGI::setAttribute2(uuid, "field11", refstr)
+                Events::publishItemAttributeUpdate(uuid, "field11", "text:#{nhash}")
             end
             LucilleCore::pressEnterToContinue()
             return

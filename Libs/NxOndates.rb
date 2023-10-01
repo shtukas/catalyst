@@ -74,7 +74,7 @@ class NxOndates
 
     # NxOndates::access(item)
     def self.access(item)
-        CoreDataRefStrings::access(item["uuid"], item["field11"])
+        CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
     end
 
     # NxOndates::redate(item)

@@ -132,7 +132,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
+            NxTasks::interactivelyIssueNewOrNull()
             return
         end
 

@@ -170,7 +170,7 @@ class Waves
     # Waves::access(item)
     def self.access(item)
         puts Waves::toString(item).green
-        CoreDataRefStrings::access(item["uuid"], item["field11"])
+        CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
     end
 
     # Waves::program2(item)

@@ -27,7 +27,7 @@ class NxTasks
 
         if LucilleCore::askQuestionAnswerAsBoolean("send to stack ? ", false) then
             position = LucilleCore::askQuestionAnswerAsString("stack position: ").to_f
-            Events::publishItemAttributeUpdate(uuid, "lstack-position", position)
+            DxStack::issue(Catalyst::itemOrNull(uuid), position)
         else
             engine = TxEngine::interactivelyMakeOrNull()
             if engine then
@@ -134,7 +134,7 @@ class NxTasks
 
     # NxTasks::access(task)
     def self.access(task)
-        CoreDataRefStrings::access(task["uuid"], task["field11"])
+        CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
     end
 
     # NxTasks::maintenance()
