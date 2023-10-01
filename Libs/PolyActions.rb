@@ -288,7 +288,9 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
             PolyActions::access(item)
-            NxBalls::stop(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxBalls::stop(item)
+            end
             if NxTasks::quarksInOrder(item).size == 0 then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                     Catalyst::destroy(item["uuid"])
