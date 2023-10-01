@@ -6,7 +6,7 @@ class ListingPriorities
     def self.metric(item)
 
         if item["stack-0620"] then
-            return 0.8 + 0.2*0.1*Math.atan(-item["stack-0620"]) # range: (0.7, 0.9)
+            return 0.96 + 0.02*0.01*Math.atan(-item["stack-0620"]) # range: (0.97, 0.99)
         end
 
         if item["mikuType"] == "DesktopTx1" then
