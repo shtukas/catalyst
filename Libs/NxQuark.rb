@@ -43,7 +43,7 @@ class NxQuarks
 
     # NxQuarks::toString(item)
     def self.toString(item)
-        "▪️ #{item["description"]}"
+        "▪️  #{item["description"]}"
     end
 
     # NxQuarks::quarksForTaskInOrder(taskuuid)
