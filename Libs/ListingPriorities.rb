@@ -8,7 +8,15 @@ class ListingPriorities
         return item["listing-priority"] if item["listing-priority"]
 
         if item["mikuType"] == "DesktopTx1" then
-            return 0.9
+            return 0.95
+        end
+
+        if item["mikuType"] == "NxAnniversary" then
+            return 0.93
+        end
+
+        if item["mikuType"] == "PhysicalTarget" then
+            return 0.91
         end
 
         if item["mikuType"] == "DxStackItem" then

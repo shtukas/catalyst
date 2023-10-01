@@ -132,7 +132,8 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("task", input) then
-            NxTasks::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
+            puts JSON.pretty_generate(item)
             return
         end
 
