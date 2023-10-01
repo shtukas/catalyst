@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | holiday <n> | skip | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | trajectory",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | holiday <n> | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | trajectory",
             "",
             "Transmutations:",
             "              : buffer-in: >ondate (<n>)",
@@ -126,6 +126,14 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("skip", input) then
             item = store.getDefault()
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
+            return
+        end
+
+        if Interpreting::match("skip *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
             return
