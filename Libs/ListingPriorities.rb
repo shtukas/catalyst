@@ -31,7 +31,7 @@ class ListingPriorities
         end
 
         if item["mikuType"] == "NxBurner" then
-            return 0.67
+            return 0.67 - 0.01*ListingPriorities::increasingFunctionOfUnixtime(item["unixtime"])
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
