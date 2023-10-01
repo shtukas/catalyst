@@ -33,7 +33,7 @@ class NxQuarks
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
-        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
+        Events::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
         Events::publishItemAttributeUpdate(uuid, "taskuuid", taskuuid)
         Catalyst::itemOrNull(uuid)
     end

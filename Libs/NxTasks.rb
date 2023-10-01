@@ -23,7 +23,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
+        Events::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
 
         if LucilleCore::askQuestionAnswerAsBoolean("send to stack ? ", false) then
             position = LucilleCore::askQuestionAnswerAsString("stack position: ").to_f
@@ -69,7 +69,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
+        Events::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -79,7 +79,7 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Events::publishItemAttributeUpdate(uuid, "description", description)
-        Events::publishItemAttributeUpdate(uuid, "global-position", NxTasks::newGlobalLastPosition())
+        Events::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -92,24 +92,6 @@ class NxTasks
         count = NxTasks::quarksInOrder(item).size
         s1 = (count > 0) ? "(#{count.to_s.rjust(3)})" : "     "
         "#{icon} #{s1} #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
-    end
-
-    # NxTasks::newGlobalFirstPosition()
-    def self.newGlobalFirstPosition()
-        t = Catalyst::mikuType("NxTask")
-                .select{|item| item["global-position"] }
-                .map{|item| item["global-position"] }
-                .reduce(0){|number, x| [number, x].min}
-        t - 1
-    end
-
-    # NxTasks::newGlobalLastPosition()
-    def self.newGlobalLastPosition()
-        t = Catalyst::mikuType("NxTask")
-                .select{|item| item["global-position"] }
-                .map{|item| item["global-position"] }
-                .reduce(0){|number, x| [number, x].max }
-        t + 1
     end
 
     # NxTasks::engined()
@@ -229,7 +211,7 @@ class NxTasks
                 quarks = NxTasks::quarksInOrder(task)
                 selected, _ = LucilleCore::selectZeroOrMore("quarks", [], quarks, lambda{|quark| PolyFunctions::toString(quark) })
                 selected.reverse.each{|quark|
-                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
+                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
                 next
             end

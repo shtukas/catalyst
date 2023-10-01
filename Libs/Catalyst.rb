@@ -70,4 +70,22 @@ class Catalyst
     def self.catalystItems()
         EventTimelineDatasets::catalystItems().values
     end
+
+    # Catalyst::newGlobalFirstPosition()
+    def self.newGlobalFirstPosition()
+        t = Catalyst::catalystItems()
+                .select{|item| item["global-position"] }
+                .map{|item| item["global-position"] }
+                .reduce(0){|number, x| [number, x].min}
+        t - 1
+    end
+
+    # Catalyst::newGlobalLastPosition()
+    def self.newGlobalLastPosition()
+        t = Catalyst::catalystItems()
+                .select{|item| item["global-position"] }
+                .map{|item| item["global-position"] }
+                .reduce(0){|number, x| [number, x].max }
+        t + 1
+    end
 end

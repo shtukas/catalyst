@@ -204,7 +204,7 @@ class TxCores
                 tasks = TxCores::childrenInOrder(core)
                 selected, _ = LucilleCore::selectZeroOrMore("tasks", [], tasks, lambda{|quark| PolyFunctions::toString(quark) })
                 selected.reverse.each{|quark|
-                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", NxTasks::newGlobalFirstPosition())
+                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
                 next
             end
