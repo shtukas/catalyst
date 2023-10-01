@@ -41,7 +41,8 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if NxTasks::quarksInOrder(item).size > 0 then
                 NxTasks::program1(item)
-            else
+            end
+            if NxTasks::quarksInOrder(item) == 0 then
                 NxTasks::access(item)
             end
             return
@@ -204,8 +205,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "The item '#{PolyFunctions::toString(item).green}' has a stratification. Operation forbidden."
+            if NxTasks::quarksInOrder(item).size == 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -286,21 +287,11 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
-            if NxTasks::quarksInOrder(item).size > 0 then
-                NxTasks::program1(item)
-                if NxTasks::quarksInOrder(item).size == 0 then
-                    if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                        PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                        Catalyst::destroy(item["uuid"])
-                        NxBalls::stop(item)
-                        return
-                    end
-                end
-                NxBalls::stop(item)
-            else
-                NxTasks::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("stop '#{PolyFunctions::toString(item).green} ? '", true) then
-                    NxBalls::stop(item)
+            PolyActions::access(item)
+            NxBalls::stop(item)
+            if NxTasks::quarksInOrder(item).size == 0 then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    Catalyst::destroy(item["uuid"])
                 end
             end
             return
