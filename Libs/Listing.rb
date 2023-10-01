@@ -158,6 +158,10 @@ class Listing
             }
             .sort_by{|item| ListingPriorities::metric(item) }
             .reverse
+
+        i2 = NxBalls::runningItems().select{|i| !items.map{|x| x["uuid"]}.include?(i["uuid"]) }
+
+        i2 + items
     end
 
     # -----------------------------------------
