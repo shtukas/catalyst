@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack *",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack *",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -141,6 +141,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
