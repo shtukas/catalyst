@@ -215,7 +215,6 @@ class NxTasks
                 }
                 next
             end
-
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }

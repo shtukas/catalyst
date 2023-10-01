@@ -65,7 +65,6 @@ class DxStack
 
     # DxStack::unregister(item)
     def self.unregister(item)
-        LucilleCore::pressEnterToContinue()
         return if item["stack-0620"].nil?
         Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", nil)
     end
