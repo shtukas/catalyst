@@ -181,6 +181,7 @@ class NxTasks
             .each{|line|
                 quark = NxQuarks::descriptionToTask1(task["uuid"], line)
                 puts JSON.pretty_generate(quark)
+                Events::publishItemAttributeUpdate(quark["uuid"], "global-position", NxQuarks::newGlobalFirstPosition())
             }
     end
 
