@@ -27,8 +27,10 @@ class NxTasks
 
         if LucilleCore::askQuestionAnswerAsBoolean("send to stack ? ", false) then
             position = LucilleCore::askQuestionAnswerAsString("stack position: ").to_f
-            Events::publishItemAttributeUpdate(uuid, "lstack-position", position)
-        else
+            DxStack::issue(Catalyst::itemOrNull(uuid), position)
+        end
+
+        if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ", false) then
             engine = TxEngine::interactivelyMakeOrNull()
             if engine then
                 Events::publishItemAttributeUpdate(uuid, "engine-2251", engine)
