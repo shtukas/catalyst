@@ -190,8 +190,8 @@ class Listing
 
         puts ""
 
-        spot.start_unit("Listing::listingBlocks()")
-        Listing::listingBlocks()
+        spot.start_unit("Listing::items()")
+        Listing::items()
         spot.end_unit()
 
         spot.start_unit("Listing::maintenance()")
