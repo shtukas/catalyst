@@ -141,7 +141,7 @@ class Listing
             DxStack::itemsInOrder(),
             NxBurners::listingItems(),
             NxOndates::listingItems(),
-            NxTasks::engined(),
+            Catalyst::engined(),
             NxTasks::orphans(),
             PhysicalTargets::listingItems(),
             TxCores::listingItems(),

@@ -17,6 +17,13 @@ class TxEngine
         }
     end
 
+    # TxEngine::interactivelyIssueNew()
+    def self.interactivelyIssueNew()
+        engine = TxEngine::interactivelyMakeOrNull()
+        return engine if engine
+        TxEngine::interactivelyMakeOrNull()
+    end
+
     # TxEngine::prefix(item)
     def self.prefix(item)
         return "" if item["engine-2251"].nil?

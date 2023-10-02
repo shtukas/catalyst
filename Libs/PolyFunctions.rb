@@ -43,6 +43,21 @@ class PolyFunctions
             end
         end
 
+        if item["feeder-1509"] then
+            feeder = Catalyst::itemOrNull(item["feeder-1509"])
+            if feeder then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(feeder)
+            end
+        end
+
+        if item["engine-2251"] then
+            engine = item["engine-2251"]
+            accounts << {
+                "description" => "engine: #{engine["uuid"]}",
+                "number"      => engine["uuid"]
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -71,6 +86,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBurner" then
             return NxBurners::toString(item)
+        end
+        if item["mikuType"] == "NxFeeder" then
+            return NxFeeders::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

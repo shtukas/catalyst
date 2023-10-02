@@ -11,8 +11,8 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack *",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | feeder",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | feeders",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort",
@@ -122,6 +122,20 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("feeder", input) then
+            item = NxFeeders::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("feeders", input) then
+            item = NxFeeders::interactivelyIssueNewOrNull()
+            return if item.nil?
+            NxFeeders::program2()
             return
         end
 

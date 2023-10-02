@@ -168,6 +168,7 @@ require_relative "NxTasks.rb"
 require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxQuark.rb"
+require_relative "NxFeeders.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

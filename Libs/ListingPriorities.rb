@@ -38,6 +38,11 @@ class ListingPriorities
             return 0.65
         end
 
+        if item["mikuType"] == "NxFeeder" then
+            # recovery time: [0.5, 0.6]
+            return TxEngine::engineToListingPriority(item["engine-2251"])
+        end
+
         if item["mikuType"] == "NxTask" and item["engine-2251"] then
             # recovery time: [0.5, 0.6]
             return TxEngine::engineToListingPriority(item["engine-2251"])

@@ -106,7 +106,7 @@ class TxCores
 
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
-        Catalyst::mikuType("NxTask")
+        (Catalyst::mikuType("NxTask")+Catalyst::mikuType("NxFeeder"))
             .select{|item| item["coreX-2300"] == core["uuid"] }
             .sort_by{|item| item["global-position"] }
     end
@@ -201,10 +201,10 @@ class TxCores
             end
 
             if Interpreting::match("sort", input) then
-                tasks = TxCores::childrenInOrder(core)
-                selected, _ = LucilleCore::selectZeroOrMore("tasks", [], tasks, lambda{|quark| PolyFunctions::toString(quark) })
-                selected.reverse.each{|quark|
-                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+                items = TxCores::childrenInOrder(core)
+                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
                 next
             end

@@ -23,6 +23,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFeeder" then
+            return NxFeeders::program1(item)
+        end
+
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -93,6 +97,12 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxFeeder" then
+            puts "You cannot done a TxCore"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -197,6 +207,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFeeder" then
+            if NxFeeders::elementsInOrder(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -205,7 +227,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if NxTasks::quarksInOrder(item).size == 0 then
+            if NxTasks::quarksInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -285,6 +307,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFeeder" then
+            PolyActions::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
             PolyActions::access(item)
@@ -339,6 +366,11 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
+            return
+        end
+
+        if item["mikuType"] == "NxFeeder" then
+            PolyActions::access(item)
             return
         end
 

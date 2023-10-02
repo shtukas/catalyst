@@ -1,0 +1,9 @@
+
+NxFeeder:
+    "uuid"            : String
+    "mikuType"        : "NxFeeder"
+    "unixtime"        : Float
+    "datetime"        : DateTime Iso 8601 UTC Zulu
+    "description"     : String
+    "global-position" : float
+    "engine-2251"     : TxEngine (optional)

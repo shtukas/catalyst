@@ -88,4 +88,10 @@ class Catalyst
                 .reduce(0){|number, x| [number, x].max }
         t + 1
     end
+
+    # Catalyst::engined()
+    def self.engined()
+        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxFeeder"))
+            .select{|item| item["engine-2251"] }
+    end
 end

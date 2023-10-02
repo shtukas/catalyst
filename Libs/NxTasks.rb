@@ -94,12 +94,6 @@ class NxTasks
         "#{icon} #{s1} #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
-    # NxTasks::engined()
-    def self.engined()
-        Catalyst::mikuType("NxTask")
-            .select{|item| item["engine-2251"] }
-    end
-
     # NxTasks::orphans()
     def self.orphans()
         Catalyst::mikuType("NxTask")

@@ -8,3 +8,4 @@ NxTask:
     "field11"         : null or CoreData reference string
     "global-position" : float
     "engine-2251"     : TxEngine (optional)
+    "feeder-1509"     : parent feeder uuid (optional)
