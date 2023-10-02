@@ -38,7 +38,7 @@ class ListingPriorities
             return 0.65
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxClique" then
             # recovery time: [0.5, 0.6]
             return TxEngine::engineToListingPriority(item["engine-2251"])
         end
@@ -58,10 +58,6 @@ class ListingPriorities
 
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return 0.4
-        end
-
-        if item["mikuType"] == "NxQuark" then
-            return 0
         end
 
         raise "I do not know how to ListingPriorities::metric item: #{item}"

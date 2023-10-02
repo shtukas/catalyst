@@ -23,8 +23,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
-            return NxFeeders::program1(item)
+        if item["mikuType"] == "NxClique" then
+            return NxCliques::program1(item)
         end
 
         if item["mikuType"] == "NxLambda" then
@@ -43,12 +43,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if NxTasks::quarksInOrder(item).size > 0 then
-                NxTasks::program1(item)
-            end
-            if NxTasks::quarksInOrder(item).size == 0 then
-                NxTasks::access(item)
-            end
+            NxTasks::access(item)
             return
         end
 
@@ -59,10 +54,6 @@ class PolyActions
 
         if item["mikuType"] == "NxStrat" then
             return
-        end
-
-        if item["mikuType"] == "NxQuark" then
-            return NxQuarks::access(item)
         end
 
         if item["mikuType"] == "Wave" then
@@ -100,7 +91,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxClique" then
             puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
             return
@@ -128,11 +119,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if NxTasks::quarksInOrder(item).size > 0 then
-                puts "The item '#{PolyFunctions::toString(item).green}' has quarks. Operation forbidden."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Catalyst::destroy(item["uuid"])
@@ -154,13 +140,6 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxQuark" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -207,8 +186,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
-            if NxFeeders::elementsInOrder(item).size > 0 then
+        if item["mikuType"] == "NxClique" then
+            if NxCliques::elementsInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -227,20 +206,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if NxTasks::quarksInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxQuark" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
             return
@@ -307,7 +274,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxClique" then
             PolyActions::access(item)
             return
         end
@@ -318,10 +285,8 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxBalls::stop(item)
             end
-            if NxTasks::quarksInOrder(item).size == 0 then
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    Catalyst::destroy(item["uuid"])
-                end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -369,7 +334,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFeeder" then
+        if item["mikuType"] == "NxClique" then
             PolyActions::access(item)
             return
         end

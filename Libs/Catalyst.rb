@@ -40,6 +40,9 @@ class Catalyst
             hours = item["hours"]
             return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
         end
+        if item["mikuType"] == "NxClique" then
+            return TxEngine::ratio(item["engine-2251"])
+        end
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
 
@@ -91,7 +94,7 @@ class Catalyst
 
     # Catalyst::engined()
     def self.engined()
-        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxFeeder"))
+        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxClique"))
             .select{|item| item["engine-2251"] }
     end
 end

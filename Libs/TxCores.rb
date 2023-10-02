@@ -106,7 +106,7 @@ class TxCores
 
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
-        (Catalyst::mikuType("NxTask")+Catalyst::mikuType("NxFeeder"))
+        (Catalyst::mikuType("NxTask")+Catalyst::mikuType("NxClique"))
             .select{|item| item["coreX-2300"] == core["uuid"] }
             .sort_by{|item| item["global-position"] }
     end

@@ -14,8 +14,8 @@ class Prefix
                     .first(3)
             return Prefix::prefix(chs)
         end
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::quarksInOrder(item).first(3)
+        if item["mikuType"] == "NxClique" then
+            return NxCliques::elementsInOrder(item).first(3)
         end
         []
     end

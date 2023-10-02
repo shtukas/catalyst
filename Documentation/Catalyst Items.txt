@@ -7,10 +7,4 @@ Cross types conventions:
     - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
     - coreX-2300       : uuid of core # (optional)
     - stack-0620       : position in the stack
-
-A NxTask has a global position, and can have a TxCore and a TxEngine
-
-A TxCore can have many NxTasks.
-
-Orphans are 
-    - NxTasks without a TxCore and without an TxEngine
+    - clique-0037      : clique uuid (optional)

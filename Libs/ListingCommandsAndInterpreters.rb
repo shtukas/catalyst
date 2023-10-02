@@ -11,11 +11,11 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | feeder",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | feeders",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | clique",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | cliques",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
-            "misc          : search | speed | commands | edit <n> | sort",
+            "misc          : search | speed | commands | edit <n> | sort | move",
         ].join("\n")
     end
 
@@ -118,6 +118,22 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("move", input) then
+            items = store.items()
+            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda { |item| PolyFunctions::toString(item) })
+            return if selected.empty?
+            clique = NxCliques::interactivelyArchitect()
+            selected.each{|item|
+                NxCliques::append(clique, item)
+            }
+            if LucilleCore::askQuestionAnswerAsBoolean("unregister selected from stack ? ") then
+                selected.each{|item|
+                    DxStack::unregister(item)
+                }
+            end
+            return
+        end
+
         if Interpreting::match("today", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
@@ -125,17 +141,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("feeder", input) then
-            item = NxFeeders::interactivelyIssueNewOrNull()
+        if Interpreting::match("clique", input) then
+            item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("feeders", input) then
-            item = NxFeeders::interactivelyIssueNewOrNull()
+        if Interpreting::match("cliques", input) then
+            item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
-            NxFeeders::program2()
+            NxCliques::program2()
             return
         end
 
@@ -229,19 +245,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("pile", input) then
             DxStack::pile3()
-            return
-        end
-
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "We only pile NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            NxTasks::pile3(item)
             return
         end
 

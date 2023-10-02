@@ -88,10 +88,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        icon = NxTasks::quarksInOrder(item).size > 0 ? "🔺" : "🔹"
-        count = NxTasks::quarksInOrder(item).size
-        s1 = (count > 0) ? "(#{count.to_s.rjust(3)})" : "     "
-        "#{icon} #{s1} #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
+        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::orphans()
@@ -100,11 +97,6 @@ class NxTasks
             .select{|item| item["coreX-2300"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
-    end
-
-    # NxTasks::quarksInOrder(item)
-    def self.quarksInOrder(item)
-        NxQuarks::quarksForTaskInOrder(item["uuid"])
     end
 
     # --------------------------------------------------
@@ -143,74 +135,6 @@ class NxTasks
     def self.fsck()
         Catalyst::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
-        }
-    end
-
-    # NxTasks::pile3(task)
-    def self.pile3(task)
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text
-            .lines
-            .map{|line| line.strip }
-            .reverse
-            .each{|line|
-                quark = NxQuarks::descriptionToTask1(task["uuid"], line)
-                puts JSON.pretty_generate(quark)
-                Events::publishItemAttributeUpdate(quark["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
-            }
-    end
-
-    # NxTasks::program1(task)
-    def self.program1(task)
-        loop {
-
-            task = Catalyst::itemOrNull(task["uuid"])
-            return if task.nil?
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts  ""
-            store.register(task, false)
-            puts  Listing::toString2(store, task)
-            puts  ""
-
-            Prefix::prefix(NxTasks::quarksInOrder(task))
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts  Listing::toString2(store, item)
-                }
-
-            puts ""
-            puts "quark | pile | sort"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "quark" then
-                quark = NxQuarks::interactivelyIssueNewOrNull(task["uuid"])
-                next if quark.nil?
-                puts JSON.pretty_generate(quark)
-                next
-            end
-
-            if input == "pile" then
-                NxTasks::pile3(task)
-                next
-            end
-
-            if Interpreting::match("sort", input) then
-                quarks = NxTasks::quarksInOrder(task)
-                selected, _ = LucilleCore::selectZeroOrMore("quarks", [], quarks, lambda{|quark| PolyFunctions::toString(quark) })
-                selected.reverse.each{|quark|
-                    Events::publishItemAttributeUpdate(quark["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
-                }
-                next
-            end
-            puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
         }
     end
 end

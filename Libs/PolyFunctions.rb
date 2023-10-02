@@ -27,13 +27,6 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxQuark" then
-            t = Catalyst::itemOrNull(item["taskuuid"])
-            if t then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(t)
-            end
-        end
-
         # Special Features
 
         if item["coreX-2300"] then
@@ -43,10 +36,10 @@ class PolyFunctions
             end
         end
 
-        if item["feeder-1509"] then
-            feeder = Catalyst::itemOrNull(item["feeder-1509"])
-            if feeder then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(feeder)
+        if item["clique-0037"] then
+            clique = Catalyst::itemOrNull(item["clique-0037"])
+            if clique then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(clique)
             end
         end
 
@@ -87,8 +80,8 @@ class PolyFunctions
         if item["mikuType"] == "NxBurner" then
             return NxBurners::toString(item)
         end
-        if item["mikuType"] == "NxFeeder" then
-            return NxFeeders::toString(item)
+        if item["mikuType"] == "NxClique" then
+            return NxCliques::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]
@@ -98,9 +91,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
-        end
-        if item["mikuType"] == "NxQuark" then
-            return NxQuarks::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
