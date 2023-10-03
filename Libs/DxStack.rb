@@ -42,27 +42,4 @@ class DxStack
         return if item["stack-0620"].nil?
         Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", nil)
     end
-
-    # DxStack::diversify()
-    def self.diversify()
-        stack   = DxStack::itemsInOrder()
-        engined = Catalyst::enginedInOrder()
-        waves   = Waves::listingItems().select{|item| !item["interruption"] }
-        tasks   = NxTasks::orphans()
-        loop {
-            return if stack.size < 2
-            p1 = stack[0]["stack-0620"]
-            p2 = stack[1]["stack-0620"]
-            if something = engined.shift then
-                Events::publishItemAttributeUpdate(something["uuid"], "stack-0620", p1 + 0.25*(p2-p1))
-            end
-            if something = waves.shift then
-                Events::publishItemAttributeUpdate(something["uuid"], "stack-0620", p1 + 0.50*(p2-p1))
-            end
-            if something = tasks.shift then
-                Events::publishItemAttributeUpdate(something["uuid"], "stack-0620", p1 + 0.75*(p2-p1))
-            end
-            stack.shift
-        }
-    end
 end
