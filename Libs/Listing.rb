@@ -72,6 +72,8 @@ class Listing
 
         return false if item["mikuType"] == "NxPool"
 
+        return false if (item["mikuType"] == "NxTask" and item["active-1634"])
+
         return false if !DoNotShowUntil::isVisible(item)
 
         return false if TmpSkip1::isSkipped(item)
@@ -145,8 +147,8 @@ class Listing
             Desktop::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             NxBurners::listingItems(),
-            NxOndates::listingItems(),
             Catalyst::activeInOrder(),
+            NxOndates::listingItems(),
             Catalyst::enginedInOrder(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },

@@ -74,14 +74,14 @@ class Catalyst
             .sort_by{|item| item["unixtime"] }
     end
 
-    # Catalyst::append(parent, item)
-    def self.append(parent, item)
+    # Catalyst::appendAtEndOfChildrenSequence(parent, item)
+    def self.appendAtEndOfChildrenSequence(parent, item)
         Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
         Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
     end
 
-    # Catalyst::prepend(parent, item)
-    def self.prepend(parent, item)
+    # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
+    def self.prependAtBeginingOfChildrenSequence(parent, item)
         Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
         Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
     end
@@ -102,14 +102,14 @@ class Catalyst
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Catalyst::prepend(item, task)
+                Catalyst::prependAtBeginingOfChildrenSequence(item, task)
             }
     end
 
-    # Catalyst::elementsInOrder(clique)
-    def self.elementsInOrder(clique)
+    # Catalyst::elementsInOrder(parent)
+    def self.elementsInOrder(parent)
         Catalyst::catalystItems()
-            .select{|item| item["parent-1328"] == clique["uuid"] }
+            .select{|item| item["parent-1328"] == parent["uuid"] }
             .sort_by {|item| item["global-position"] }
     end
 

@@ -77,7 +77,14 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
+        icon = "🔹"
+        if item["active-1634"] then
+            icon = "🔺"
+        end
+        if Catalyst::elementsInOrder(item).size > 0 then
+            icon = "📃"
+        end
+        "#{icon} #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::orphans()
