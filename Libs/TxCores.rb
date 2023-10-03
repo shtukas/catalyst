@@ -182,7 +182,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task | sort"
+            puts "task | pile | pile * | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -197,6 +197,11 @@ class TxCores
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+                next
+            end
+
+            if input == "pile" then
+                TxCores::pile3(core)
                 next
             end
 

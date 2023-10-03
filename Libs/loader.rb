@@ -158,7 +158,6 @@ require_relative "ItemStore.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingCommandsAndInterpreters.rb"
-require_relative "ListingPriorities.rb"
 
 require_relative "InMemoryCache.rb"
 

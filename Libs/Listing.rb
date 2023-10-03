@@ -98,7 +98,7 @@ class Listing
 
         s1 = item["stack-0620"] ? DxStack::toString(item) : PolyFunctions::toString(item)
 
-        line = "#{storePrefix} (lp: #{"%5.3f" % ListingPriorities::metric(item)}) #{s1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} #{s1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -135,17 +135,18 @@ class Listing
     # Listing::items()
     def self.items()
         items = [
+            DxStack::itemsInOrder(),
             Anniversaries::listingItems(),
             DropBox::items(),
+            PhysicalTargets::listingItems(),
             Desktop::listingItems(),
-            DxStack::itemsInOrder(),
+            Waves::listingItems().select{|item| item["interruption"] },
             NxBurners::listingItems(),
             NxOndates::listingItems(),
             Catalyst::engined(),
             NxTasks::orphans(),
-            PhysicalTargets::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] }.first(3),
             TxCores::listingItems(),
-            Waves::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -156,11 +157,8 @@ class Listing
                     selected + [item]
                 end
             }
-            .sort_by{|item| ListingPriorities::metric(item) }
-            .reverse
 
         i2 = NxBalls::runningItems().select{|i| !items.map{|x| x["uuid"]}.include?(i["uuid"]) }
-
         i2 + items
     end
 
@@ -206,7 +204,6 @@ class Listing
             EventTimelineMaintenance::shortenToLowerPing()
             EventTimelineMaintenance::rewriteHistory()
             EventTimelineMaintenance::maintenance()
-            DxStack::maintenance()
             OpenCycles::maintenance()
         end
         TxCores::maintenance3()

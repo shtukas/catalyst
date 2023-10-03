@@ -36,8 +36,8 @@ class PolyFunctions
             end
         end
 
-        if item["clique-0037"] then
-            clique = Catalyst::itemOrNull(item["clique-0037"])
+        if item["parent-1328"] then
+            clique = Catalyst::itemOrNull(item["parent-1328"])
             if clique then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(clique)
             end

@@ -68,4 +68,85 @@ class Catalyst
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxClique"))
             .select{|item| item["engine-2251"] }
     end
+
+    # Catalyst::pile3(item)
+    def self.pile3(item)
+        if item["mikuType"] == "NxCore" then
+            TxCores::pile3(core)
+            return
+        end
+
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .reverse
+            .each{|line|
+                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
+                puts JSON.pretty_generate(task)
+                NxCliques::prepend(item, task)
+            }
+    end
+
+    # Catalyst::elementsInOrder(clique)
+    def self.elementsInOrder(clique)
+        Catalyst::catalystItems()
+            .select{|item| item["parent-1328"] == clique["uuid"] }
+            .sort_by {|item| item["global-position"] }
+    end
+
+    # Catalyst::program1(parent)
+    def self.program1(parent)
+        loop {
+
+            parent = Catalyst::itemOrNull(parent["uuid"])
+            return if parent.nil?
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts  ""
+            store.register(parent, false)
+            puts  Listing::toString2(store, parent)
+            puts  ""
+
+            Catalyst::elementsInOrder(parent)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  Listing::toString2(store, item)
+                }
+
+            puts ""
+            puts "task | pile | pile * | sort"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                puts JSON.pretty_generate(task)
+                Events::publishItemAttributeUpdate(task["uuid"], "parent-1328", parent["uuid"])
+                next
+            end
+
+            if input == "pile" then
+                Catalyst::pile3(parent)
+                next
+            end
+
+            if input == "sort" then
+                items = Catalyst::elementsInOrder(parent)
+                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+                }
+                next
+            end
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
 end

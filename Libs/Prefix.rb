@@ -15,7 +15,7 @@ class Prefix
             return Prefix::prefix(chs)
         end
         if item["mikuType"] == "NxClique" then
-            return NxCliques::elementsInOrder(item).first(3)
+            return Catalyst::elementsInOrder(item).first(3)
         end
         []
     end

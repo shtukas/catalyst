@@ -10,7 +10,7 @@ class DxStack
 
     # DxStack::toString(item)
     def self.toString(item)
-        "#{"(stack: #{"%6.3f" % item["stack-0620"]})".green} #{PolyFunctions::toString(item)}"
+        "#{PolyFunctions::toString(item)}"
     end
 
     # DxStack::itemsInOrder()
@@ -31,22 +31,6 @@ class DxStack
     end
 
     # Ops
-
-    # DxStack::maintenance()
-    def self.maintenance()
-        horizon = DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0620"]].min }
-        if horizon < 0 then
-            DxStack::itemsInOrder().each{|item|
-                Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", item["stack-0620"]+(-horizon))
-            }
-        end
-        horizon = DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0620"]].min }
-        if horizon >= 100 then
-            DxStack::itemsInOrder().each{|item|
-                Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", 0.9*item["stack-0620"])
-            }
-        end
-    end
 
     # DxStack::pile3()
     def self.pile3()

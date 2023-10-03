@@ -1,4 +1,4 @@
- 
+
 # encoding: UTF-8
 
 class PolyActions
@@ -9,6 +9,14 @@ class PolyActions
     def self.access(item)
 
         # types in alphabetical order
+
+        if Catalyst::elementsInOrder(item).size > 0 then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
+            if option == "elements access (default)" then
+                Catalyst::program1(item)
+                return
+            end
+        end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
@@ -24,7 +32,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxClique" then
-            return NxCliques::program1(item)
+            return Catalyst::program1(item)
         end
 
         if item["mikuType"] == "NxLambda" then
@@ -188,7 +196,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxClique" then
-            if NxCliques::elementsInOrder(item).size > 0 then
+            if Catalyst::elementsInOrder(item).size > 0 then
                 puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
                 LucilleCore::pressEnterToContinue()
                 return

@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | clique",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | clique | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | cliques",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -245,6 +245,14 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("pile", input) then
             DxStack::pile3()
+            return
+        end
+
+        if Interpreting::match("pile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Catalyst::pile3(item)
             return
         end
 
