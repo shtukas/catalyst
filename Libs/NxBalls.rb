@@ -112,6 +112,7 @@ class NxBalls
             Bank::put(account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
+        DxStack::unregister(item)
         timespanInSeconds
     end
 

@@ -63,10 +63,11 @@ class Catalyst
         t + 1
     end
 
-    # Catalyst::engined()
-    def self.engined()
+    # Catalyst::enginedInOrder()
+    def self.enginedInOrder()
         (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxClique"))
             .select{|item| item["engine-2251"] }
+            .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
     end
 
     # Catalyst::pile3(item)
