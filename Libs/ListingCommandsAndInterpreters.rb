@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | clique | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | stack | stack * | clique | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | cliques | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -94,27 +94,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">>", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            item = NxTasks::descriptionToTask1(SecureRandom.uuid, description)
-            options = ["top", "(position)", "bottom"]
-            option = LucilleCore::selectEntityFromListOfEntities_EnsureChoice("position", options)
-            if option == "top" then
-                DxStack::issue(item, DxStack::newFirstPosition())
-            end
-            if option == "(position)" then
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                DxStack::issue(item, position)
-            end
-            if option == "bottom" then
-                DxStack::issue(item, DxStack::newNextPosition())
-            end
-            return
-        end
-
         if Interpreting::match("engined", input) then
-            Catalyst::program1(Catalyst::enginedInOrder())
+            Catalyst::program2(Catalyst::enginedInOrder())
             return
         end
 
@@ -175,10 +156,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo", input) then
+        if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            Catalyst::setDrivingForce(item)
             return
         end
 
@@ -243,8 +225,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            DxStack::issue(item, position)
+            DxStack::issue(item, DxStack::newFirstPosition())
             return
         end
 
@@ -453,7 +434,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            NxOndates::program()
+            items = Catalyst::mikuType("NxOndate")
+                        .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
+            Catalyst::program2(items)
             return
         end
 

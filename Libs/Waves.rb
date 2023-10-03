@@ -212,12 +212,11 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        loop {
-            items = Catalyst::mikuType("Wave").sort{|w1, w2| w1["description"] <=> w2["description"] }
-            wave = LucilleCore::selectEntityFromListOfEntitiesOrNull("wave", items, lambda{|wave| wave["description"] })
-            return if wave.nil?
-            Waves::program2(wave)
-        }
+        items = Catalyst::mikuType("Wave")
+        i1, i2 = items.partition{|item| DoNotShowUntil::isVisible(item) }
+        i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+        items = i1 + i2
+        Catalyst::program2(items)
     end
 
     # Waves::fsck()

@@ -65,9 +65,16 @@ class Catalyst
 
     # Catalyst::enginedInOrder()
     def self.enginedInOrder()
-        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxClique"))
+        Catalyst::catalystItems()
             .select{|item| item["engine-2251"] }
             .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
+    end
+
+    # Catalyst::activeInOrder()
+    def self.activeInOrder()
+        Catalyst::catalystItems()
+            .select{|item| item["active-1634"] }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # Catalyst::pile3(item)
@@ -149,5 +156,74 @@ class Catalyst
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
+    end
+
+    # Catalyst::program2(elements)
+    def self.program2(elements)
+        loop {
+
+            elements = elements.map{|item| Catalyst::itemOrNull(item["uuid"]) }.compact
+            return if elements.empty?
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts  ""
+
+            elements
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  Listing::toString2(store, item)
+                }
+
+            puts ""
+            puts "task | pile | pile * | sort"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "pile" then
+                puts "pile is not defined in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
+
+            if input == "sort" then
+               puts "sort is not defined in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # Catalyst::setDrivingForce(item)
+    def self.setDrivingForce(item)
+        options = [
+            "stack (top position)",
+            "engine",
+            "active (will show in active listing)",
+            "to clique"
+        ]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        return option.nil?
+        if option == "stack (top position)" then
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", DxStack::newFirstPosition())
+        end
+        if option == "engine" then
+            engine = TxEngine::interactivelyMakeOrNull()
+            return if engine.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
+        end
+        if option == "active (will show in active listing)" then
+            Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
+        end
+        if option == "to clique" then
+            clique = NxCliques::interactivelyIssueNewOrNull()
+            return if clique.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", clique["uuid"])
+        end
     end
 end

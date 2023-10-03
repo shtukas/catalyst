@@ -48,30 +48,6 @@ class NxOndates
     # ------------------
     # Ops
 
-    # NxOndates::program()
-    def self.program()
-        loop {
-            system("clear")
-            
-            store = ItemStore.new()
-
-            items = Catalyst::mikuType("NxOndate")
-                        .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
-
-            items
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
-                }
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == ""
-            return if input == "exit"
-            ListingCommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
     # NxOndates::access(item)
     def self.access(item)
         CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])

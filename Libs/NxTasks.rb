@@ -25,17 +25,6 @@ class NxTasks
         Events::publishItemAttributeUpdate(uuid, "field11", coredataref)
         Events::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
 
-        if LucilleCore::askQuestionAnswerAsBoolean("send to stack ? ", false) then
-            position = LucilleCore::askQuestionAnswerAsString("stack position: ").to_f
-            DxStack::issue(Catalyst::itemOrNull(uuid), position)
-        end
-
-        if LucilleCore::askQuestionAnswerAsBoolean("set engine ? ", false) then
-            engine = TxEngine::interactivelyMakeOrNull()
-            if engine then
-                Events::publishItemAttributeUpdate(uuid, "engine-2251", engine)
-            end
-        end
         Catalyst::itemOrNull(uuid)
     end
 

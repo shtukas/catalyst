@@ -25,11 +25,6 @@ class DxStack
         DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0620"]].min } - 1
     end
 
-    # DxStack::newNextPosition()
-    def self.newNextPosition()
-        DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0620"]].max } + 1
-    end
-
     # Ops
 
     # DxStack::pile3()
