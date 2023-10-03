@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | destroy (<n>) | trajectory",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | destroy (<n>) | trajectory",
             "",
             "Transmutations:",
             "              : buffer-in: >ondate (<n>)",
@@ -217,7 +217,7 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             task = NxTasks::descriptionToTask1(Time.new.to_f.to_s, description)
-            DxStack::issue(task, DxStack::newFirstPosition())
+            Events::publishItemAttributeUpdate(task["uuid"], "stack-0620", DxStack::newFirstPosition())
             return
         end
 
@@ -225,7 +225,22 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DxStack::issue(item, DxStack::newFirstPosition())
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", DxStack::newFirstPosition())
+            return
+        end
+
+        if Interpreting::match("unstack", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Events::publishItemAttributeUpdate(unstack["uuid"], "stack-0620", nil)
+            return
+        end
+
+        if Interpreting::match("unstack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Events::publishItemAttributeUpdate(unstack["uuid"], "stack-0620", nil)
             return
         end
 
@@ -246,7 +261,7 @@ class ListingCommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
-                DxStack::issue(item, DxStack::newFirstPosition())
+                Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", DxStack::newFirstPosition())
             }
             return
         end
