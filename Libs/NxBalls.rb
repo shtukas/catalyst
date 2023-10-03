@@ -25,6 +25,7 @@ class NxBalls
     # NxBalls::issueNxBall(item, accounts)
     def self.issueNxBall(item, accounts)
         nxball = {
+            "unixtime"       => Time.new.to_f,
             "itemuuid"       => item["uuid"],
             "instance"       => Config::thisInstanceId(),
             "type"           => "running",
@@ -142,6 +143,7 @@ class NxBalls
         end
         if NxBalls::itemIsPaused(item) then
             nxball = NxBalls::getNxBallOrNull(item)
+            nxball["unixtime"]      = Time.new.to_f
             nxball["type"]          = "running"
             nxball["startunixtime"] = Time.new.to_i
             nxball["sequencestart"] = nxball["sequencestart"] || nxball["startunixtime"]
@@ -184,6 +186,8 @@ class NxBalls
     # NxBalls::runningItems()
     def self.runningItems()
         NxBalls::all()
+            .sort_by{|item| item["unixtime"] }
+            .reverse
             .map{|ball| ball["itemuuid"] }
             .map{|itemuuid| 
                 ix = Catalyst::itemOrNull(itemuuid)

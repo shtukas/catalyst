@@ -77,7 +77,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
+        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::orphans()

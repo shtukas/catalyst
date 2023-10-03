@@ -136,7 +136,8 @@ class Listing
 
     # Listing::items()
     def self.items()
-        items = [
+        [
+            NxBalls::runningItems(),
             DxStack::itemsInOrder(),
             Anniversaries::listingItems(),
             DropBox::items(),
@@ -160,9 +161,6 @@ class Listing
                     selected + [item]
                 end
             }
-
-        i2 = NxBalls::runningItems().select{|i| !items.map{|x| x["uuid"]}.include?(i["uuid"]) }
-        i2 + items
     end
 
     # -----------------------------------------
