@@ -2,12 +2,13 @@ Catalyst items are json object with at least a uuid ("uuid") and a miku type ("m
 
 Cross types conventions:
 
-    - "field11"        : coredata reference string
-    - "doNotShowUntil" : null or unixtime
-    - "tmpskip1"       : "YYYY-MM-DD" skipped for the entire day
-    - coreX-2300       : uuid of core # (optional)
+    - field11          : coredata reference string
+    - doNotShowUntil   : null or unixtime
+    - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
     - stack-0620       : position in the stack
     - open-cycle-1143  : uuid of the open cycle that this item represents
-    - parent-1328      : parent uuid (optional)
-    - engine-2251      : TxEngine (optional)
     - active-1634      : Boolean (indicate whether the item is important)
+
+    - coreX-2300       : (optional) uuid of core
+    - parent-1328      : (optional) parent uuid
+    - engine-2251      : (optional) TxEngine
