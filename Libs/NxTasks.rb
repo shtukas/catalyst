@@ -105,6 +105,12 @@ class NxTasks
             end
         }
 
+        Catalyst::mikuType("NxTask").each{|item|
+            if item["parent-1328"] and Catalyst::itemOrNull(item["parent-1328"]).nil? then
+                Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
+            end
+        }
+
         # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
             next if File.basename(location)[0, 1] == "."
