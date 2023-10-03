@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | destroy (<n>) | trajectory",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | destroy (<n>) | trajectory",
             "",
             "Transmutations:",
             "              : buffer-in: >ondate (<n>)",
@@ -110,7 +110,7 @@ class ListingCommandsAndInterpreters
             return if selected.empty?
             clique = NxCliques::interactivelyArchitect()
             selected.each{|item|
-                NxCliques::append(clique, item)
+                Catalyst::append(clique, item)
             }
             if LucilleCore::askQuestionAnswerAsBoolean("unregister selected from stack ? ") then
                 selected.each{|item|
@@ -138,6 +138,21 @@ class ListingCommandsAndInterpreters
             item = NxCliques::interactivelyIssueNewOrNull()
             return if item.nil?
             NxCliques::program2()
+            return
+        end
+
+        if Interpreting::match("active", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
+            return
+        end
+
+        if Interpreting::match("active *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
             return
         end
 

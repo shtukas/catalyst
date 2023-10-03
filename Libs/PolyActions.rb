@@ -12,7 +12,7 @@ class PolyActions
 
         if Catalyst::elementsInOrder(item).size > 0 then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
-            if option == "elements access (default)" then
+            if option.nil? or option == "elements access (default)" then
                 Catalyst::program1(item)
                 return
             end

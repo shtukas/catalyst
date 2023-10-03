@@ -10,4 +10,4 @@ Cross types conventions:
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - parent-1328      : parent uuid (optional)
     - engine-2251      : TxEngine (optional)
-    - active-1634   : Boolean (indicate whether the item is important)
+    - active-1634      : Boolean (indicate whether the item is important)

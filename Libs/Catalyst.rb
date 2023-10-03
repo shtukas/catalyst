@@ -77,13 +77,25 @@ class Catalyst
             .sort_by{|item| item["unixtime"] }
     end
 
+    # Catalyst::append(parent, item)
+    def self.append(parent, item)
+        Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
+    end
+
+    # Catalyst::prepend(parent, item)
+    def self.prepend(parent, item)
+        Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+    end
+
     # Catalyst::pile3(item)
     def self.pile3(item)
         if item["mikuType"] == "NxCore" then
             TxCores::pile3(core)
             return
         end
-
+        puts "Piling on elements of '#{PolyFunctions::toString(item)}'"
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text
@@ -93,7 +105,7 @@ class Catalyst
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                NxCliques::prepend(item, task)
+                Catalyst::prepend(item, task)
             }
     end
 

@@ -60,18 +60,6 @@ class NxCliques
     # --------------------------------------------------
     # Operations
 
-    # NxCliques::append(clique, task)
-    def self.append(clique, task)
-        Events::publishItemAttributeUpdate(task["uuid"], "parent-1328", clique["uuid"])
-        Events::publishItemAttributeUpdate(task["uuid"], "global-position", Catalyst::newGlobalLastPosition())
-    end
-
-    # NxCliques::prepend(clique, task)
-    def self.prepend(clique, task)
-        Events::publishItemAttributeUpdate(task["uuid"], "parent-1328", clique["uuid"])
-        Events::publishItemAttributeUpdate(task["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
-    end
-
     # NxCliques::program2()
     def self.program2()
         loop {

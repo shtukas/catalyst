@@ -98,7 +98,9 @@ class Listing
 
         s1 = item["stack-0620"] ? DxStack::toString(item) : PolyFunctions::toString(item)
 
-        line = "#{storePrefix} #{s1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+        active = item["active-1634"] ? " (active)" : ""
+
+        line = "#{storePrefix} #{s1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{active}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
