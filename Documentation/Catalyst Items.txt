@@ -8,3 +8,4 @@ Cross types conventions:
     - coreX-2300       : uuid of core # (optional)
     - stack-0620       : position in the stack
     - clique-0037      : clique uuid (optional)
+    - open-cycle-1143  : uuid of the open cycle that this item represents

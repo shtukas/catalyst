@@ -169,6 +169,8 @@ require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxCliques.rb"
 
+require_relative "OpenCycles.rb"
+
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"

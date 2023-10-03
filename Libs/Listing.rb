@@ -201,12 +201,13 @@ class Listing
         if Config::isPrimaryInstance() then
             puts "> Listing::maintenance() on primary instance"
             NxTasks::maintenance()
-            Catalyst::maintenance()
+            OpenCycles::maintenance()
             TxCores::maintenance2()
             EventTimelineMaintenance::shortenToLowerPing()
             EventTimelineMaintenance::rewriteHistory()
             EventTimelineMaintenance::maintenance()
             DxStack::maintenance()
+            OpenCycles::maintenance()
         end
         TxCores::maintenance3()
     end
