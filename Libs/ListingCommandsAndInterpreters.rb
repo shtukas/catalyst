@@ -249,7 +249,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = Listing::items().first(30)
+            items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
                 DxStack::issue(item, DxStack::newFirstPosition())

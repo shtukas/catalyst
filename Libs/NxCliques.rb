@@ -43,8 +43,8 @@ class NxCliques
 
     # NxCliques::elementsInOrder(clique)
     def self.elementsInOrder(clique)
-        Catalyst::mikuType("NxTask")
-            .select{|item| item["engine-2251"] == clique["uuid"] }
+        Catalyst::catalystItems()
+            .select{|item| item["clique-0037"] == clique["uuid"] }
             .sort_by {|item| item["global-position"] }
     end
 
@@ -73,6 +73,12 @@ class NxCliques
         Events::publishItemAttributeUpdate(task["uuid"], "global-position", Catalyst::newGlobalLastPosition())
     end
 
+    # NxCliques::prepend(clique, task)
+    def self.prepend(clique, task)
+        Events::publishItemAttributeUpdate(task["uuid"], "clique-0037", clique["uuid"])
+        Events::publishItemAttributeUpdate(task["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+    end
+
     # NxCliques::pile3(clique)
     def self.pile3(clique)
         text = CommonUtils::editTextSynchronously("").strip
@@ -84,7 +90,7 @@ class NxCliques
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                NxCliques::append(clique, task)
+                NxCliques::prepend(clique, task)
             }
     end
 
