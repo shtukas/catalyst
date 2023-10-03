@@ -33,7 +33,7 @@ class NxCliques
     # NxCliques::toString(item)
     def self.toString(item)
         count = Catalyst::elementsInOrder(item).size
-        "▫️  #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)} (#{count.to_s.rjust(3)})"
+        "▫️  #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)} (#{count})"
     end
 
     # NxCliques::cliquesInPriorityOrder()
