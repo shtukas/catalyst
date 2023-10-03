@@ -128,6 +128,7 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
+            DxStack::unregister(item)
             return
         end
 
@@ -294,6 +295,7 @@ class PolyActions
         if item["mikuType"] == "PhysicalTarget" then
             PolyFunctions::toString(item).green
             PhysicalTargets::access(item)
+            DxStack::unregister(item)
             return
         end
 
