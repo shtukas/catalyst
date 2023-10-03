@@ -6,9 +6,9 @@ class Prefix
     # prefix items
     def self.pureTopUp(item)
         if item["mikuType"] == "TxCore" then
-            return TxCores::childrenInOrder(item)
+            return TxCores::childrenInOrder(item).first(5)
         end
-        Catalyst::elementsInOrder(item)
+        Catalyst::elementsInOrder(item).first(5)
     end
 
     # Prefix::prefix(items)
