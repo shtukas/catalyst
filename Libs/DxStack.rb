@@ -3,21 +3,16 @@ class DxStack
 
     # Data
 
-    # DxStack::toString(item)
-    def self.toString(item)
-        "#{PolyFunctions::toString(item)}"
-    end
-
     # DxStack::itemsInOrder()
     def self.itemsInOrder()
         Catalyst::catalystItems()
-            .select{|item| item["stack-0620"] }
-            .sort_by{|item| item["stack-0620"]}
+            .select{|item| item["stack-0012"] and (item["stack-0012"][0] == CommonUtils::today()) }
+            .sort_by{|item| item["stack-0012"][1]}
     end
 
     # DxStack::newFirstPosition()
     def self.newFirstPosition()
-        DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0620"]].min } - 1
+        DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0012"][1]].min } - 1
     end
 
     # Ops
@@ -33,13 +28,14 @@ class DxStack
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "stack-0620", DxStack::newFirstPosition())
+                Events::publishItemAttributeUpdate(task["uuid"], "active-1634", true)
+                Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             }
     end
 
     # DxStack::unregister(item)
     def self.unregister(item)
-        return if item["stack-0620"].nil?
-        Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", nil)
+        return if item["stack-0012"].nil?
+        Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
     end
 end
