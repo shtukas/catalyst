@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "              : NxOndate : >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | todo | burner | >> (new stack element) | stack | stack * | clique | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | cliques",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | cliques | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort | move",
@@ -110,6 +110,11 @@ class ListingCommandsAndInterpreters
             if option == "bottom" then
                 DxStack::issue(item, DxStack::newNextPosition())
             end
+            return
+        end
+
+        if Interpreting::match("engined", input) then
+            Catalyst::program1(Catalyst::enginedInOrder())
             return
         end
 
