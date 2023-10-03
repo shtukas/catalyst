@@ -11,9 +11,6 @@ class Catalyst
             hours = item["hours"]
             return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
         end
-        if item["mikuType"] == "NxClique" then
-            return TxEngine::ratio(item["engine-2251"])
-        end
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
 
@@ -217,7 +214,6 @@ class Catalyst
             "stack (top position)",
             "engine",
             "active (will show in active listing)",
-            "to clique"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return option.nil?
@@ -231,11 +227,6 @@ class Catalyst
         end
         if option == "active (will show in active listing)" then
             Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
-        end
-        if option == "to clique" then
-            clique = NxCliques::interactivelyIssueNewOrNull()
-            return if clique.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", clique["uuid"])
         end
     end
 end
