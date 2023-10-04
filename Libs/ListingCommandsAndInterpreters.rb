@@ -8,8 +8,8 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | unparent <n> | destroy (<n>)",
             "",
             "Transmutations:",
-            "              : buffer-in: >ondate (<n>)",
-            "              : NxOndate : >task (<n>)",
+            "              : (task)   >ondate (<n>)",
+            "              : (ondate) >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack | stack * | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives",
@@ -49,7 +49,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >project on buffer in NxOndates"
+                puts "For the moment we only run >task on buffer in NxOndates"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -62,7 +62,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >project on buffer in NxOndates"
+                puts "For the moment we only run >task on buffer in NxOndates"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -73,8 +73,8 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">ondate", input) then
             item = store.getDefault()
             return if item.nil?
-            if !(item["mikuType"] == "NxTask" and item["description"].include?("(buffer-in)")) then
-                puts "For the moment we only run >ondate on buffer in NxTasks"
+            if !item["mikuType"] != "NxTask" then
+                puts "For the moment we only run >ondate on NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -88,6 +88,11 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if !item["mikuType"] != "NxTask" then
+                puts "For the moment we only run >ondate on NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
