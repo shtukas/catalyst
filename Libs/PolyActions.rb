@@ -27,10 +27,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBurner" then
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -85,13 +81,6 @@ class PolyActions
 
         if item["mikuType"] == "Backup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
-            return
-        end
-
-        if item["mikuType"] == "NxBurner" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
             return
         end
 
@@ -164,13 +153,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxBurner" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -232,13 +214,6 @@ class PolyActions
     def self.doubleDots(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxBurner" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end

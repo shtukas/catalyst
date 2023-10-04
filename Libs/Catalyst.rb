@@ -67,10 +67,10 @@ class Catalyst
             .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
     end
 
-    # Catalyst::activeInOrder()
-    def self.activeInOrder()
+    # Catalyst::activeBurnerForefrontsInOrder()
+    def self.activeBurnerForefrontsInOrder()
         Catalyst::catalystItems()
-            .select{|item| item["active-1634"] }
+            .select{|item| item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" }
             .sort_by{|item| item["unixtime"] }
     end
 

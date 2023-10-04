@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : buffer-in: >ondate (<n>)",
             "              : NxOndate : >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | burner | stack | stack * | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack | stack * | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -192,14 +192,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("actives", input) then
-            Catalyst::program2(Catalyst::activeInOrder())
-            return
-        end
-
-        if Interpreting::match("burner", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            NxBurners::issue(description)
+            Catalyst::program2(Catalyst::activeBurnerForefrontsInOrder())
             return
         end
 
@@ -215,7 +208,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             return
         end
 
@@ -251,7 +244,7 @@ class ListingCommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
-                Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+                Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             }
             return
         end

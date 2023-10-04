@@ -6,9 +6,6 @@ class Fsck
         if item["mikuType"] == "NxAnniversary" then
             return
         end
-        if item["mikuType"] == "NxBurner" then
-            return
-        end
         if item["mikuType"] == "NxIce" then
             if item["field11"] then
                 CoreDataRefStrings::fsck(item)

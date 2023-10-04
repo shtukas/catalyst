@@ -166,7 +166,6 @@ require_relative "InMemoryCache.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
-require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
 
 require_relative "OpenCycles.rb"

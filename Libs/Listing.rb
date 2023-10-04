@@ -68,11 +68,7 @@ class Listing
 
         return true if NxBalls::itemIsRunning(item)
 
-        return false if item["mikuType"] == "NxBurner"
-
-        return false if item["mikuType"] == "NxPool"
-
-        return false if (item["mikuType"] == "NxTask" and item["active-1634"])
+        return false if (item["mikuType"] == "NxTask" and item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront")
 
         return false if !DoNotShowUntil::isVisible(item)
 
@@ -144,8 +140,7 @@ class Listing
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxBurners::listingItems(),
-            Catalyst::activeInOrder(),
+            Catalyst::activeBurnerForefrontsInOrder(),
             NxOndates::listingItems(),
             Catalyst::enginedInOrder(),
             NxTasks::orphans(),
@@ -176,7 +171,6 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
         spot.contest_entry("NxTasks::orphans()", lambda{ NxTasks::orphans() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })

@@ -1,8 +1,17 @@
 
 TxEngine
-{
     "uuid"     => SecureRandom.hex,
     "mikuType" => "TxEngine",
     "type"     => "recovery-time",
     "rt"       => rt
-}
+
+TxEngine
+    "uuid"      => SecureRandom.hex,
+    "mikuType"  => "TxEngine",
+    "type"      => "recovery-time2",
+    "week-time" => float
+
+TxEngine
+    "uuid"      => SecureRandom.hex,
+    "mikuType"  => "TxEngine",
+    "type"      => "active-burner-forefront",

@@ -78,7 +78,7 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = "🔹"
-        if item["active-1634"] then
+        if item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" then
             icon = "🔺"
         end
         if Catalyst::elementsInOrder(item).size > 0 then
@@ -91,6 +91,7 @@ class NxTasks
     def self.orphans()
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2300"].nil? }
+            .select{|item| item["engine-2251"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
     end
