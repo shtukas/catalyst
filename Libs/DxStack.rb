@@ -15,6 +15,13 @@ class DxStack
         DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0012"][1]].min } - 1
     end
 
+    # DxStack::prefix(item)
+    def self.prefix(item)
+        return "" if item["stack-0012"].nil?
+        return "" if item["stack-0012"][0] != CommonUtils::today()
+        return "🥞 (stacked) ".green
+    end
+
     # Ops
 
     # DxStack::pile3()
