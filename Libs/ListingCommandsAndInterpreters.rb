@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | destroy (<n>) | trajectory",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | unparent <n> | destroy (<n>)",
             "",
             "Transmutations:",
             "              : buffer-in: >ondate (<n>)",
@@ -256,6 +256,13 @@ class ListingCommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
+        end
+
+        if Interpreting::match("unparent *", input) then
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
+            return
         end
 
         if Interpreting::match("access", input) then

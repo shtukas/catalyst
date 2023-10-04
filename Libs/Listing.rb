@@ -135,6 +135,7 @@ class Listing
         [
             NxBalls::runningItems(),
             DxStack::itemsInOrder(),
+            Catalyst::absolute(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),

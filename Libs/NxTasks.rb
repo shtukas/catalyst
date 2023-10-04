@@ -78,6 +78,9 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = "🔹"
+        if item["engine-2251"] and item["engine-2251"]["type"] == "absolute" then
+            icon = "✨"
+        end
         if item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" then
             icon = "🔺"
         end
