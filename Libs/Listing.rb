@@ -143,7 +143,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Catalyst::activeBurnerForefrontsInOrder(),
             NxOndates::listingItems(),
-            Catalyst::enginedInOrder(),
+            Catalyst::enginedInOrderForListing(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxCores::listingItems(),

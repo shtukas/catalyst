@@ -67,6 +67,12 @@ class Catalyst
             .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
     end
 
+    # Catalyst::enginedInOrderForListing()
+    def self.enginedInOrderForListing()
+        Catalyst::enginedInOrder()
+            .select{|item| TxEngine::ratio(item["engine-2251"]) < 1 }
+    end
+
     # Catalyst::absolute()
     def self.absolute()
         Catalyst::catalystItems()
