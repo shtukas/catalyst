@@ -69,7 +69,7 @@ class TxEngine
             return ""
         end
         if engine["type"] == "absolute" then
-            return "(absolute) "
+            return "(absolute) ".green
         end
         raise "(error: 5440d0bb-ce79-49b7-b125-cbe1d6ccc372): #{engine}"
     end
