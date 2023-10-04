@@ -77,13 +77,24 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{TxEngine::prefix(item)}#{item["description"]}#{TxCores::suffix(item)}"
+        icon = "🔹"
+        if item["engine-2251"] and item["engine-2251"]["type"] == "absolute" then
+            icon = "✨"
+        end
+        if item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" then
+            icon = "🔺"
+        end
+        if Catalyst::elementsInOrder(item).size > 0 then
+            icon = "📃"
+        end
+        "#{icon} #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::orphans()
     def self.orphans()
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2300"].nil? }
+            .select{|item| item["engine-2251"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
     end
@@ -102,6 +113,12 @@ class NxTasks
         Catalyst::mikuType("NxTask").each{|item|
             if item["coreX-2300"] and Catalyst::itemOrNull(item["coreX-2300"]).nil? then
                 Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", nil)
+            end
+        }
+
+        Catalyst::mikuType("NxTask").each{|item|
+            if item["parent-1328"] and Catalyst::itemOrNull(item["parent-1328"]).nil? then
+                Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
             end
         }
 

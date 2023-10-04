@@ -11,9 +11,6 @@ class Catalyst
             hours = item["hours"]
             return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
         end
-        if item["mikuType"] == "NxClique" then
-            return TxEngine::ratio(item["engine-2251"])
-        end
         raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
     end
 
@@ -70,11 +67,36 @@ class Catalyst
             .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
     end
 
-    # Catalyst::activeInOrder()
-    def self.activeInOrder()
+    # Catalyst::enginedInOrderForListing()
+    def self.enginedInOrderForListing()
+        Catalyst::enginedInOrder()
+            .select{|item| TxEngine::ratio(item["engine-2251"]) < 1 }
+    end
+
+    # Catalyst::absolute()
+    def self.absolute()
         Catalyst::catalystItems()
-            .select{|item| item["active-1634"] }
+            .select{|item| item["engine-2251"] and item["engine-2251"]["type"] == "absolute" }
             .sort_by{|item| item["unixtime"] }
+    end
+
+    # Catalyst::activeBurnerForefrontsInOrder()
+    def self.activeBurnerForefrontsInOrder()
+        Catalyst::catalystItems()
+            .select{|item| item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" }
+            .sort_by{|item| item["unixtime"] }
+    end
+
+    # Catalyst::appendAtEndOfChildrenSequence(parent, item)
+    def self.appendAtEndOfChildrenSequence(parent, item)
+        Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
+    end
+
+    # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
+    def self.prependAtBeginingOfChildrenSequence(parent, item)
+        Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
     end
 
     # Catalyst::pile3(item)
@@ -83,7 +105,7 @@ class Catalyst
             TxCores::pile3(core)
             return
         end
-
+        puts "Piling on elements of '#{PolyFunctions::toString(item)}'"
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text
@@ -93,14 +115,14 @@ class Catalyst
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                NxCliques::prepend(item, task)
+                Catalyst::prependAtBeginingOfChildrenSequence(item, task)
             }
     end
 
-    # Catalyst::elementsInOrder(clique)
-    def self.elementsInOrder(clique)
+    # Catalyst::elementsInOrder(parent)
+    def self.elementsInOrder(parent)
         Catalyst::catalystItems()
-            .select{|item| item["parent-1328"] == clique["uuid"] }
+            .select{|item| item["parent-1328"] == parent["uuid"] }
             .sort_by {|item| item["global-position"] }
     end
 
@@ -205,12 +227,11 @@ class Catalyst
             "stack (top position)",
             "engine",
             "active (will show in active listing)",
-            "to clique"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return option.nil?
         if option == "stack (top position)" then
-            Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", DxStack::newFirstPosition())
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
         end
         if option == "engine" then
             engine = TxEngine::interactivelyMakeOrNull()
@@ -219,11 +240,6 @@ class Catalyst
         end
         if option == "active (will show in active listing)" then
             Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
-        end
-        if option == "to clique" then
-            clique = NxCliques::interactivelyIssueNewOrNull()
-            return if clique.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", clique["uuid"])
         end
     end
 end

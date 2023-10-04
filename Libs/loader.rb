@@ -46,14 +46,12 @@ checkLocation = lambda{|location|
     end
 } 
 
+checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataBank/Stargate-Config.json")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/catalyst")
 checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries")
-checkLocation.call("#{ENV['HOME']}/x-space/xcache-v1-days")
 
 # ------------------------------------------------------------
-
-require_relative "CoreDataRefStrings.rb"
 
 require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/LucilleCore.rb"
 
@@ -72,7 +70,7 @@ require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/XCache.rb"
 
 # ------------------------------------------------------------
 
-require_relative "Config.rb"
+require_relative "CoreDataRefStrings.rb"
 
 require_relative "AionCore.rb"
 =begin
@@ -124,7 +122,11 @@ AionFsck::structureCheckAionHashRaiseErrorIfAny(operator, nhash)
 
 =end
 
+require_relative "Config.rb"
+
 # ------------------------------------------------------------
+
+checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}")
 
 require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
@@ -164,9 +166,7 @@ require_relative "InMemoryCache.rb"
 require_relative "NxBalls.rb"
 require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
-require_relative "NxBurners.rb"
 require_relative "NxLambdas.rb"
-require_relative "NxCliques.rb"
 
 require_relative "OpenCycles.rb"
 

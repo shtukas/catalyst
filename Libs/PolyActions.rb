@@ -12,7 +12,7 @@ class PolyActions
 
         if Catalyst::elementsInOrder(item).size > 0 then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
-            if option == "elements access (default)" then
+            if option.nil? or option == "elements access (default)" then
                 Catalyst::program1(item)
                 return
             end
@@ -25,14 +25,6 @@ class PolyActions
 
         if item["mikuType"] == "Backup" then
             return
-        end
-
-        if item["mikuType"] == "NxBurner" then
-            return
-        end
-
-        if item["mikuType"] == "NxClique" then
-            return Catalyst::program1(item)
         end
 
         if item["mikuType"] == "NxLambda" then
@@ -89,19 +81,6 @@ class PolyActions
 
         if item["mikuType"] == "Backup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
-            return
-        end
-
-        if item["mikuType"] == "NxBurner" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxClique" then
-            puts "You cannot done a TxCore"
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -174,13 +153,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxBurner" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -189,18 +161,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxClique" then
-            if Catalyst::elementsInOrder(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}'. It's not empty"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -258,13 +218,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBurner" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -283,18 +236,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxClique" then
-            PolyActions::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxBalls::stop(item)
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if Catalyst::elementsInOrder(item).empty? and LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
             return
@@ -341,11 +289,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxClique" then
-            PolyActions::access(item)
             return
         end
 

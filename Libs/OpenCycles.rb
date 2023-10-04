@@ -23,7 +23,7 @@ class OpenCycles
     # OpenCycles::makeItemOrNull(message)
     def self.makeItemOrNull(message)
         puts "> make item for open cycle: #{message.green}"
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["wave", "ondate", "clique", "task"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["wave", "ondate", "task"])
         return nil if option.nil?
         item = nil
         if option == "wave" then
@@ -31,9 +31,6 @@ class OpenCycles
         end
         if option == "ondate" then
             item = NxOndates::interactivelyIssueNewOrNull()
-        end
-        if option == "clique" then
-            item = NxCliques::interactivelyIssueNewOrNull()
         end
         if option == "task" then
             item = NxTasks::interactivelyIssueNewOrNull()

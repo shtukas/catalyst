@@ -1,5 +1,6 @@
 NxBall
 {
+    "unixtime"      : Float
     "itemuuid"      : String
     "type"          : "running" | "paused"
     "startunixtime" : Unixtime

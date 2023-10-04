@@ -3,21 +3,23 @@ class DxStack
 
     # Data
 
-    # DxStack::toString(item)
-    def self.toString(item)
-        "#{PolyFunctions::toString(item)}"
-    end
-
     # DxStack::itemsInOrder()
     def self.itemsInOrder()
         Catalyst::catalystItems()
-            .select{|item| item["stack-0620"] }
-            .sort_by{|item| item["stack-0620"]}
+            .select{|item| item["stack-0012"] and (item["stack-0012"][0] == CommonUtils::today()) }
+            .sort_by{|item| item["stack-0012"][1]}
     end
 
     # DxStack::newFirstPosition()
     def self.newFirstPosition()
-        DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0620"]].min } - 1
+        DxStack::itemsInOrder().reduce(0){|x, item| [x, item["stack-0012"][1]].min } - 1
+    end
+
+    # DxStack::prefix(item)
+    def self.prefix(item)
+        return "" if item["stack-0012"].nil?
+        return "" if item["stack-0012"][0] != CommonUtils::today()
+        return "🥞 (stacked) ".green
     end
 
     # Ops
@@ -33,36 +35,14 @@ class DxStack
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "stack-0620", DxStack::newFirstPosition())
+                Events::publishItemAttributeUpdate(task["uuid"], "active-1634", true)
+                Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             }
     end
 
     # DxStack::unregister(item)
     def self.unregister(item)
-        return if item["stack-0620"].nil?
-        Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", nil)
-    end
-
-    # DxStack::diversify()
-    def self.diversify()
-        stack   = DxStack::itemsInOrder()
-        engined = Catalyst::enginedInOrder()
-        waves   = Waves::listingItems().select{|item| !item["interruption"] }
-        tasks   = NxTasks::orphans()
-        loop {
-            return if stack.size < 2
-            p1 = stack[0]["stack-0620"]
-            p2 = stack[1]["stack-0620"]
-            if something = engined.shift then
-                Events::publishItemAttributeUpdate(something["uuid"], "stack-0620", p1 + 0.25*(p2-p1))
-            end
-            if something = waves.shift then
-                Events::publishItemAttributeUpdate(something["uuid"], "stack-0620", p1 + 0.50*(p2-p1))
-            end
-            if something = tasks.shift then
-                Events::publishItemAttributeUpdate(something["uuid"], "stack-0620", p1 + 0.75*(p2-p1))
-            end
-            stack.shift
-        }
+        return if item["stack-0012"].nil?
+        Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
     end
 end

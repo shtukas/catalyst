@@ -68,9 +68,7 @@ class Listing
 
         return true if NxBalls::itemIsRunning(item)
 
-        return false if item["mikuType"] == "NxBurner"
-
-        return false if item["mikuType"] == "NxPool"
+        return false if (item["mikuType"] == "NxTask" and item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront")
 
         return false if !DoNotShowUntil::isVisible(item)
 
@@ -96,9 +94,9 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        s1 = item["stack-0620"] ? DxStack::toString(item) : PolyFunctions::toString(item)
+        active = item["active-1634"] ? " (active)" : ""
 
-        line = "#{storePrefix} #{s1}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{active}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -134,17 +132,18 @@ class Listing
 
     # Listing::items()
     def self.items()
-        items = [
+        [
+            NxBalls::runningItems(),
             DxStack::itemsInOrder(),
+            Catalyst::absolute(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            NxBurners::listingItems(),
+            Catalyst::activeBurnerForefrontsInOrder(),
             NxOndates::listingItems(),
-            Catalyst::enginedInOrder(),
-            Catalyst::activeInOrder(),
+            Catalyst::enginedInOrderForListing(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxCores::listingItems(),
@@ -158,9 +157,6 @@ class Listing
                     selected + [item]
                 end
             }
-
-        i2 = NxBalls::runningItems().select{|i| !items.map{|x| x["uuid"]}.include?(i["uuid"]) }
-        i2 + items
     end
 
     # -----------------------------------------
@@ -176,7 +172,6 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxBurners::listingItems()", lambda{ NxBurners::listingItems() })
         spot.contest_entry("NxTasks::orphans()", lambda{ NxTasks::orphans() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })

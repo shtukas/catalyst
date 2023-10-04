@@ -3,18 +3,49 @@ class TxEngine
 
     # TxEngine::ratio(engine)
     def self.ratio(engine)
-        Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["rt"] || 1)
+        if engine["type"] == "recovery-time" then
+            return Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/engine["rt"]
+        end
+        if engine["type"] == "recovery-time(2)" then
+            return Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["week-time"].to_f/7)
+        end
+        if engine["type"] == "active-burner-forefront" then
+            return 0
+        end
+        if engine["type"] == "absolute" then
+            return 0
+        end
+        raise "(error: 361099e7-4368-4932-94e5-ee878994536f): #{engine}"
     end
 
     # TxEngine::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
-        rt = LucilleCore::askQuestionAnswerAsString("hours per week (will be converted into a rt): ").to_f/7
-        {
-            "uuid"     => SecureRandom.hex,
-            "mikuType" => "TxEngine",
-            "type"     => "recovery-time",
-            "rt"       => rt
-        }
+        options = ["absolute", "active-burner-forefront", "recovery-time(2) [weekly hours]"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", options)
+        return nil if option.nil?
+        if option == "recovery-time(2) [weekly hours]" then
+            hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+            return {
+                "uuid"      => SecureRandom.hex,
+                "mikuType"  => "TxEngine",
+                "type"      => "recovery-time(2)",
+                "week-time" => hours
+            }
+        end
+        if option == "active-burner-forefront" then
+            return {
+                "uuid"      => SecureRandom.hex,
+                "mikuType"  => "TxEngine",
+                "type"      => "active-burner-forefront"
+            }
+        end
+        if option == "absolute" then
+            return {
+                "uuid"      => SecureRandom.hex,
+                "mikuType"  => "TxEngine",
+                "type"      => "absolute"
+            }
+        end
     end
 
     # TxEngine::interactivelyIssueNew()
@@ -27,11 +58,19 @@ class TxEngine
     # TxEngine::prefix(item)
     def self.prefix(item)
         return "" if item["engine-2251"].nil?
-        "(engine: #{"%6.2f" % (100*TxEngine::ratio(item["engine-2251"]))} % of #{"%4.2f" % item["engine-2251"]["rt"]} hours) ".green
-    end
-
-    # TxEngine::engineToListingPriority(engine)
-    def self.engineToListingPriority(engine)
-        0.5 + 0.1*(1-TxEngine::ratio(engine))
+        engine = item["engine-2251"]
+        if engine["type"] == "recovery-time" then
+            return "(engine: #{"%6.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["rt"]}) ".green
+        end
+        if engine["type"] == "recovery-time(2)" then
+            return "(engine: #{"%6.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["week-time"]} h/w) ".green
+        end
+        if engine["type"] == "active-burner-forefront" then
+            return ""
+        end
+        if engine["type"] == "absolute" then
+            return "(absolute) ".green
+        end
+        raise "(error: 5440d0bb-ce79-49b7-b125-cbe1d6ccc372): #{engine}"
     end
 end
