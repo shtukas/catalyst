@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "              : (ondate) >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack | stack * | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives | absolutes",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort",
@@ -198,6 +198,11 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("actives", input) then
             Catalyst::program2(Catalyst::activeBurnerForefrontsInOrder())
+            return
+        end
+
+        if Interpreting::match("absolutes", input) then
+            Catalyst::program2(Catalyst::absolutes())
             return
         end
 

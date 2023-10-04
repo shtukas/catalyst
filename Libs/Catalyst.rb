@@ -73,18 +73,18 @@ class Catalyst
             .select{|item| TxEngine::ratio(item["engine-2251"]) < 1 }
     end
 
-    # Catalyst::absolute()
-    def self.absolute()
+    # Catalyst::absolutes()
+    def self.absolutes()
         Catalyst::catalystItems()
             .select{|item| item["engine-2251"] and item["engine-2251"]["type"] == "absolute" }
-            .sort_by{|item| item["unixtime"] }
+            .sort_by{|item| item["global-position"] || 0 }
     end
 
     # Catalyst::activeBurnerForefrontsInOrder()
     def self.activeBurnerForefrontsInOrder()
         Catalyst::catalystItems()
             .select{|item| item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" }
-            .sort_by{|item| item["unixtime"] }
+            .sort_by{|item| item["global-position"] || 0 }
     end
 
     # Catalyst::appendAtEndOfChildrenSequence(parent, item)
