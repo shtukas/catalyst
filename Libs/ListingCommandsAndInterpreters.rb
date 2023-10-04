@@ -232,7 +232,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("unstack", input) then
             item = store.getDefault()
             return if item.nil?
-            Events::publishItemAttributeUpdate(unstack["uuid"], "stack-0620", nil)
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", nil)
             return
         end
 
@@ -240,7 +240,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(unstack["uuid"], "stack-0620", nil)
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0620", nil)
             return
         end
 

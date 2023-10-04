@@ -33,8 +33,7 @@ class DxStack
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "stack-0620", position)
-                DxStack::issue(task, DxStack::newFirstPosition())
+                Events::publishItemAttributeUpdate(task["uuid"], "stack-0620", DxStack::newFirstPosition())
             }
     end
 
