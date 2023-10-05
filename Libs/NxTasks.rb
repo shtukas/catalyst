@@ -75,16 +75,23 @@ class NxTasks
     # --------------------------------------------------
     # Data
 
+    # NxTasks::suffixIcons(item)
+    def self.suffixIcons(item)
+        icons = []
+        if Catalyst::elementsInOrder(item).size > 0 then
+            icons << "📃"
+        end
+        return "" if icons.empty?
+        " #{icons.join("")}"
+    end 
+
     # NxTasks::toString(item)
     def self.toString(item)
         icon = "🔹"
         if item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" then
             icon = "🔺"
         end
-        if Catalyst::elementsInOrder(item).size > 0 then
-            icon = "📃"
-        end
-        "#{icon} #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
+        "#{icon} #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}#{NxTasks::suffixIcons(item)}"
     end
 
     # NxTasks::orphans()
