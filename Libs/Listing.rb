@@ -85,7 +85,7 @@ class Listing
     # Listing::cto()
     def self.cto()
         core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
-        ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/6)
+        ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/10)
         ratio < 1 ? [core] : []
     end
 
@@ -96,7 +96,7 @@ class Listing
 
         active = item["active-1634"] ? " (active)" : ""
 
-        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{active}"
+        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{active}#{OpenCycles::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -139,6 +139,7 @@ class Listing
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
+            Listing::cto(),
             Waves::listingItems().select{|item| item["interruption"] },
             Catalyst::activeBurnerForefrontsInOrder(),
             NxOndates::listingItems(),

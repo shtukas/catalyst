@@ -55,4 +55,10 @@ class OpenCycles
             end
         }
     end
+
+    # OpenCycles::suffix(item)
+    def self.suffix(item)
+        return "" if item["open-cycle-1143"].nil?
+        " (open cycle)"
+    end
 end
