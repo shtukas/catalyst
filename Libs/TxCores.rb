@@ -180,28 +180,25 @@ class TxCores
             puts  Listing::toString2(store, core)
             puts  ""
 
-            Prefix::prefix(TxCores::childrenInOrder(core))
+            TxCores::childrenInOrder(core)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts  Listing::toString2(store, item)
+                    puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
                 }
 
             puts ""
-            puts "task | pile | pile * | sort | move"
+            puts "task | pile | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
-
-            if input == "pile" then
-                TxCores::pile3(core)
-                next
-            end
 
             if input == "task" then
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 

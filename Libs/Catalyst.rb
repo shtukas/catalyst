@@ -138,11 +138,11 @@ class Catalyst
             Catalyst::elementsInOrder(parent)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts  Listing::toString2(store, item)
+                    puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
                 }
 
             puts ""
-            puts "task | pile | pile * | sort"
+            puts "task | pile | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -152,6 +152,8 @@ class Catalyst
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(task["uuid"], "parent-1328", parent["uuid"])
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 
@@ -168,6 +170,12 @@ class Catalyst
                 }
                 next
             end
+
+            if input == "move" then
+                Catalyst::selectSubsetAndMoveToSelectedParent(TxCores::childrenInOrder(parent))
+                next
+            end
+
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
@@ -193,10 +201,16 @@ class Catalyst
                 }
 
             puts ""
-            puts "task | pile | pile * | sort | move"
+            puts "task | pile | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "task" then
+                puts "task is not defined in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
 
             if input == "pile" then
                 puts "pile is not defined in this context"

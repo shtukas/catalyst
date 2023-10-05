@@ -244,14 +244,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::pile3(item)
-            return
-        end
-
         if Interpreting::match("sort", input) then
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })

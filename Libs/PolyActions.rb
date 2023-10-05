@@ -10,7 +10,7 @@ class PolyActions
 
         # types in alphabetical order
 
-        if Catalyst::elementsInOrder(item).size > 0 then
+        if item["mikuType"] != "TxCore" and Catalyst::elementsInOrder(item).size > 0 then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
             if option.nil? or option == "elements access (default)" then
                 Catalyst::program1(item)
