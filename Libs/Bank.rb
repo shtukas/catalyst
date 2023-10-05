@@ -43,18 +43,4 @@ class Bank
     def self.recoveredAverageHoursPerDay(uuid)
         (0..6).map{|n| Bank::averageHoursPerDayOverThePastNDays(uuid, n) }.max
     end
-
-    # Bank::recoveredAverageHoursPerDayCached(uuid)
-    def self.recoveredAverageHoursPerDayCached(uuid)
-        trace = EventTimelineReader::liveTraceForCaching()
-        rt = InMemoryCache::getOrNull("6e88325f-c710-4285-b720-dfb14df0def8:#{trace}")
-        if rt then
-            return rt
-        end
-
-        rt = Bank::recoveredAverageHoursPerDay(uuid)
-
-        InMemoryCache::set("6e88325f-c710-4285-b720-dfb14df0def8:#{trace}", rt)
-        rt
-    end
 end
