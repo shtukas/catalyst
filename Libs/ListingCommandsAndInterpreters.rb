@@ -12,7 +12,7 @@ class ListingCommandsAndInterpreters
             "              : (ondate) >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack | stack * | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives | absolutes",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "misc          : search | speed | commands | edit <n> | sort | move",
@@ -206,16 +206,12 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("absolutes", input) then
-            Catalyst::program2(Catalyst::absolutes())
-            return
-        end
-
         if Interpreting::match("stack", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             task = NxTasks::descriptionToTask1(Time.new.to_f.to_s, description)
-            Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), position])
             return
         end
 
@@ -223,7 +219,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
             return
         end
 

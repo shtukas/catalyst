@@ -12,7 +12,7 @@ class TxEngine
         if engine["type"] == "active-burner-forefront" then
             return 0
         end
-        if engine["type"] == "absolute" then
+        if engine["type"] == "absolute" then # deprecated
             return 0
         end
         raise "(error: 361099e7-4368-4932-94e5-ee878994536f): #{engine}"
@@ -20,7 +20,7 @@ class TxEngine
 
     # TxEngine::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
-        options = ["absolute", "active-burner-forefront", "recovery-time(2) [weekly hours]"]
+        options = ["active-burner-forefront", "recovery-time(2) [weekly hours]"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", options)
         return nil if option.nil?
         if option == "recovery-time(2) [weekly hours]" then
@@ -37,13 +37,6 @@ class TxEngine
                 "uuid"      => SecureRandom.hex,
                 "mikuType"  => "TxEngine",
                 "type"      => "active-burner-forefront"
-            }
-        end
-        if option == "absolute" then
-            return {
-                "uuid"      => SecureRandom.hex,
-                "mikuType"  => "TxEngine",
-                "type"      => "absolute"
             }
         end
     end
@@ -69,7 +62,7 @@ class TxEngine
             return ""
         end
         if engine["type"] == "absolute" then
-            return "(absolute) ".green
+            return "".green
         end
         raise "(error: 5440d0bb-ce79-49b7-b125-cbe1d6ccc372): #{engine}"
     end

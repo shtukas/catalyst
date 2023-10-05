@@ -19,7 +19,7 @@ class DxStack
     def self.prefix(item)
         return "" if item["stack-0012"].nil?
         return "" if item["stack-0012"][0] != CommonUtils::today()
-        return "🥞 (stacked) ".green
+        return "🥞 #{"%6.2f" % item["stack-0012"][1]} ".green
     end
 
     # Ops
