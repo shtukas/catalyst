@@ -113,6 +113,7 @@ class TxCores
     def self.childrenInOrder(core)
         Catalyst::catalystItems()
             .select{|item| item["coreX-2300"] == core["uuid"] or item["parent-1328"] == core["uuid"] }
+            .select{|item| item["mikuType"] != "Wave" }
             .sort_by{|item| item["global-position"] || 0 }
     end
 
