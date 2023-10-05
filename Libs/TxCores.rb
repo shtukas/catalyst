@@ -90,10 +90,15 @@ class TxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|core| TxCores::toString(core) })
     end
 
-    # TxCores::listingItems()
-    def self.listingItems()
+    # TxCores::coresInOrder()
+    def self.coresInOrder()
         Catalyst::mikuType("TxCore")
             .sort_by{|core| Catalyst::listingCompletionRatio(core) }
+    end
+
+    # TxCores::listingItems()
+    def self.listingItems()
+        TxCores::coresInOrder()
     end
 
     # TxCores::suffix(item)
@@ -108,7 +113,7 @@ class TxCores
     def self.childrenInOrder(core)
         Catalyst::catalystItems()
             .select{|item| item["coreX-2300"] == core["uuid"] }
-            .sort_by{|item| item["global-position"] }
+            .sort_by{|item| item["global-position"] || 0 }
     end
 
     # -----------------------------------------------
@@ -182,7 +187,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task | pile | pile * | sort"
+            puts "task | pile | pile * | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -211,6 +216,11 @@ class TxCores
                 selected.reverse.each{|item|
                     Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
+                next
+            end
+
+            if input == "move" then
+                Catalyst::selectSubsetAndMoveToSelectedParent(TxCores::childrenInOrder(core))
                 next
             end
 

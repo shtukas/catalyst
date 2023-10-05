@@ -200,7 +200,7 @@ class Catalyst
                 }
 
             puts ""
-            puts "task | pile | pile * | sort"
+            puts "task | pile | pile * | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -212,10 +212,16 @@ class Catalyst
             end
 
             if input == "sort" then
-               puts "sort is not defined in this context"
+                puts "sort is not defined in this context"
                 LucilleCore::pressEnterToContinue()
                 next
             end
+
+            if input == "move" then
+                Catalyst::selectSubsetAndMoveToSelectedParent(elements)
+                next
+            end
+
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
@@ -241,5 +247,27 @@ class Catalyst
         if option == "active (will show in active listing)" then
             Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
         end
+    end
+
+    # Catalyst::interactivelySelectOneItemOrNull(items)
+    def self.interactivelySelectOneItemOrNull(items)
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # Catalyst::interactivelySelectGenericMoveParentOrNull()
+    def self.interactivelySelectGenericMoveParentOrNull()
+        items = TxCores::coresInOrder() + NxOndates::ondatesInOrder()+ Catalyst::activeBurnerForefrontsInOrder() + Catalyst::enginedInOrder()
+        Catalyst::interactivelySelectOneItemOrNull(items)
+    end
+
+    # Catalyst::selectSubsetAndMoveToSelectedParent(items)
+    def self.selectSubsetAndMoveToSelectedParent(items)
+        selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+        return if selected.empty?
+        parent = Catalyst::interactivelySelectGenericMoveParentOrNull()
+        return if parent.nil?
+        selected.each{|item|
+            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        }
     end
 end

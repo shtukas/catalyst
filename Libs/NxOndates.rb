@@ -38,11 +38,16 @@ class NxOndates
         "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
     end
 
+    # NxOndates::ondatesInOrder()
+    def self.ondatesInOrder()
+        Catalyst::mikuType("NxOndate")
+            .sort_by{|item| item["datetime"] }
+    end
+
     # NxOndates::listingItems()
     def self.listingItems()
-        Catalyst::mikuType("NxOndate")
+        NxOndates::ondatesInOrder()
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
     end
 
     # ------------------

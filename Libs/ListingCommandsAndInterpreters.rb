@@ -15,7 +15,7 @@ class ListingCommandsAndInterpreters
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives | absolutes",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
-            "misc          : search | speed | commands | edit <n> | sort",
+            "misc          : search | speed | commands | edit <n> | sort | move",
         ].join("\n")
     end
 
@@ -96,6 +96,11 @@ class ListingCommandsAndInterpreters
             Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
             Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+        if Interpreting::match("move", input) then
+            Catalyst::selectSubsetAndMoveToSelectedParent(store.items())
             return
         end
 
