@@ -134,12 +134,12 @@ class Listing
     def self.items()
         [
             NxBalls::runningItems(),
-            DxStack::itemsInOrder(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
             Listing::cto(),
+            DxStack::itemsInOrder(),
             Waves::listingItems().select{|item| item["interruption"] },
             Catalyst::activeBurnerForefrontsInOrder(),
             NxOndates::listingItems(),
