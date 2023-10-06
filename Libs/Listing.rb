@@ -135,12 +135,12 @@ class Listing
         [
             NxBalls::runningItems(),
             DxStack::itemsInOrder(),
+            Waves::listingItems().select{|item| item["interruption"] },
             Listing::cto(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             Catalyst::red(),
             Catalyst::enginedInOrderForListing(),
