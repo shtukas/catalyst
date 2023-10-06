@@ -81,9 +81,6 @@ class NxTasks
         if Catalyst::elementsInOrder(item).size > 0 then
             icons << "📃"
         end
-        if item["star-0936"] then
-            icons << "⭐️"
-        end
         return "" if icons.empty?
         " #{icons.join("")}"
     end 
@@ -91,7 +88,7 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = "🔹"
-        if item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" then
+        if item["red-2029"] then
             icon = "🔺"
         end
         "#{icon} #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}#{NxTasks::suffixIcons(item)}"

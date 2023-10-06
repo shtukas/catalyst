@@ -9,9 +9,6 @@ class TxEngine
         if engine["type"] == "recovery-time(2)" then
             return Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["week-time"].to_f/7)
         end
-        if engine["type"] == "active-burner-forefront" then
-            return 0
-        end
         if engine["type"] == "absolute" then # deprecated
             return 0
         end
@@ -20,7 +17,7 @@ class TxEngine
 
     # TxEngine::interactivelyMakeOrNull()
     def self.interactivelyMakeOrNull()
-        options = ["active-burner-forefront", "recovery-time(2) [weekly hours]"]
+        options = ["recovery-time(2) [weekly hours]"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("engine type", options)
         return nil if option.nil?
         if option == "recovery-time(2) [weekly hours]" then
@@ -30,13 +27,6 @@ class TxEngine
                 "mikuType"  => "TxEngine",
                 "type"      => "recovery-time(2)",
                 "week-time" => hours
-            }
-        end
-        if option == "active-burner-forefront" then
-            return {
-                "uuid"      => SecureRandom.hex,
-                "mikuType"  => "TxEngine",
-                "type"      => "active-burner-forefront"
             }
         end
     end
@@ -57,9 +47,6 @@ class TxEngine
         end
         if engine["type"] == "recovery-time(2)" then
             return "(engine: #{"%6.2f" % (100*TxEngine::ratio(engine))} % of #{"%4.2f" % engine["week-time"]} h/w) ".green
-        end
-        if engine["type"] == "active-burner-forefront" then
-            return ""
         end
         if engine["type"] == "absolute" then
             return "".green

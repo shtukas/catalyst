@@ -7,3 +7,4 @@ NxTask:
     - description     : String
     - field11         : null or CoreData reference string
     - global-position : float
+    - red-2029        : (optional) boolean

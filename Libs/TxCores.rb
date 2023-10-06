@@ -105,8 +105,7 @@ class TxCores
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
         children = Catalyst::catalystItems()
-                        .select{|item| item["coreX-2300"] == core["uuid"] or item["parent-1328"] == core["uuid"] }
-                        .select{|item| item["mikuType"] != "Wave" }
+                        .select{|item| item["parent-1328"] == core["uuid"] or (item["coreX-2300"] == core["uuid"] and item["parent-1328"].nil?) }
                         .sort_by{|item| item["global-position"] || 0 }
         if core["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
             children = children.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
@@ -185,7 +184,7 @@ class TxCores
                 }
 
             puts ""
-            puts "task | pile | sort | move"
+            puts "task | pile | position * | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -202,6 +201,15 @@ class TxCores
 
             if input == "pile" then
                 TxCores::pile3(core)
+                next
+            end
+
+            if Interpreting::match("position *", input) then
+                _, listord = Interpreting::tokenizer(input)
+                item = store.get(listord.to_i)
+                next if item.nil?
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 

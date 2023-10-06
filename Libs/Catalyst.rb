@@ -67,23 +67,16 @@ class Catalyst
             .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
     end
 
-    # Catalyst::starredInOrder()
-    def self.starredInOrder()
-        Catalyst::catalystItems()
-            .select{|item| item["star-0936"] }
-            .sort_by{|item| item["global-position"] || 0 }
-    end
-
     # Catalyst::enginedInOrderForListing()
     def self.enginedInOrderForListing()
         Catalyst::enginedInOrder()
             .select{|item| TxEngine::ratio(item["engine-2251"]) < 1 }
     end
 
-    # Catalyst::activeBurnerForefrontsInOrder()
-    def self.activeBurnerForefrontsInOrder()
+    # Catalyst::red()
+    def self.red()
         Catalyst::catalystItems()
-            .select{|item| item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront" }
+            .select{|item| item["red-2029"] }
             .sort_by{|item| item["global-position"] || 0 }
     end
 
@@ -123,7 +116,7 @@ class Catalyst
     def self.elementsInOrder(parent)
         Catalyst::catalystItems()
             .select{|item| item["parent-1328"] == parent["uuid"] }
-            .sort_by {|item| item["global-position"] }
+            .sort_by {|item| item["global-position"] || 0 }
     end
 
     # Catalyst::program1(parent)
@@ -149,7 +142,7 @@ class Catalyst
                 }
 
             puts ""
-            puts "task | pile | sort | move"
+            puts "task | pile | position * |sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -166,6 +159,15 @@ class Catalyst
 
             if input == "pile" then
                 Catalyst::pile3(parent)
+                next
+            end
+
+            if Interpreting::match("position *", input) then
+                _, listord = Interpreting::tokenizer(input)
+                item = store.get(listord.to_i)
+                next if item.nil?
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 
@@ -270,7 +272,7 @@ class Catalyst
 
     # Catalyst::interactivelySelectGenericMoveParentOrNull()
     def self.interactivelySelectGenericMoveParentOrNull()
-        items = (Catalyst::starredInOrder() + TxCores::coresInOrder() + NxOndates::ondatesInOrder()+ Catalyst::activeBurnerForefrontsInOrder() + Catalyst::enginedInOrder())
+        items = (TxCores::coresInOrder() + NxOndates::ondatesInOrder()+ Catalyst::red() + Catalyst::enginedInOrder())
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected

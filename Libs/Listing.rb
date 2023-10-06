@@ -68,7 +68,7 @@ class Listing
 
         return true if NxBalls::itemIsRunning(item)
 
-        return false if (item["mikuType"] == "NxTask" and item["engine-2251"] and item["engine-2251"]["type"] == "active-burner-forefront")
+        return false if item["red-2029"]
 
         return false if !DoNotShowUntil::isVisible(item)
 
@@ -134,15 +134,15 @@ class Listing
     def self.items()
         [
             NxBalls::runningItems(),
+            DxStack::itemsInOrder(),
+            Listing::cto(),
             Anniversaries::listingItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
-            Listing::cto(),
             Waves::listingItems().select{|item| item["interruption"] },
-            DxStack::itemsInOrder(),
-            Catalyst::activeBurnerForefrontsInOrder(),
             NxOndates::listingItems(),
+            Catalyst::red(),
             Catalyst::enginedInOrderForListing(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },
