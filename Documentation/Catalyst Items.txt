@@ -7,7 +7,7 @@ Cross types conventions:
     - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
     - stack-0012       : [date: "YYYY-MM-DD", float: position in the stack]
     - open-cycle-1143  : uuid of the open cycle that this item represents
-
+    - star-0936        : (optional) boolean (mostly used with NxTask, indicate a standard moving parent)
     - coreX-2300       : (optional) uuid of core
     - parent-1328      : (optional) parent uuid
     - engine-2251      : (optional) TxEngine

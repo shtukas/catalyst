@@ -67,6 +67,13 @@ class Catalyst
             .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
     end
 
+    # Catalyst::starredInOrder()
+    def self.starredInOrder()
+        Catalyst::catalystItems()
+            .select{|item| item["star-0936"] }
+            .sort_by{|item| item["global-position"] || 0 }
+    end
+
     # Catalyst::enginedInOrderForListing()
     def self.enginedInOrderForListing()
         Catalyst::enginedInOrder()
@@ -263,7 +270,14 @@ class Catalyst
 
     # Catalyst::interactivelySelectGenericMoveParentOrNull()
     def self.interactivelySelectGenericMoveParentOrNull()
-        items = TxCores::coresInOrder() + NxOndates::ondatesInOrder()+ Catalyst::activeBurnerForefrontsInOrder() + Catalyst::enginedInOrder()
+        items = (Catalyst::starredInOrder() + TxCores::coresInOrder() + NxOndates::ondatesInOrder()+ Catalyst::activeBurnerForefrontsInOrder() + Catalyst::enginedInOrder())
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
         Catalyst::interactivelySelectOneItemOrNull(items)
     end
 

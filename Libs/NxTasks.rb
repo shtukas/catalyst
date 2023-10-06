@@ -81,6 +81,9 @@ class NxTasks
         if Catalyst::elementsInOrder(item).size > 0 then
             icons << "📃"
         end
+        if item["star-0936"] then
+            icons << "⭐️"
+        end
         return "" if icons.empty?
         " #{icons.join("")}"
     end 
