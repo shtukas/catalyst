@@ -35,13 +35,6 @@ class TxCores
         }
     end
 
-    # TxCores::interactivelyMakeEngine()
-    def self.interactivelyMakeEngine()
-        core = TxCores::interactivelyMakeOrNull()
-        return core if core
-        TxCores::interactivelyMakeEngine()
-    end
-
     # -----------------------------------------------
     # Data
 
@@ -111,10 +104,14 @@ class TxCores
 
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
-        Catalyst::catalystItems()
-            .select{|item| item["coreX-2300"] == core["uuid"] or item["parent-1328"] == core["uuid"] }
-            .select{|item| item["mikuType"] != "Wave" }
-            .sort_by{|item| item["global-position"] || 0 }
+        children = Catalyst::catalystItems()
+                        .select{|item| item["coreX-2300"] == core["uuid"] or item["parent-1328"] == core["uuid"] }
+                        .select{|item| item["mikuType"] != "Wave" }
+                        .sort_by{|item| item["global-position"] || 0 }
+        if core["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
+            children = children.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        end
+        children
     end
 
     # -----------------------------------------------
