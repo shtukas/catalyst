@@ -102,6 +102,7 @@ class NxTasks
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2300"].nil? }
             .select{|item| item["engine-2251"].nil? }
+            .select{|item| item["parent-1328"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
     end
