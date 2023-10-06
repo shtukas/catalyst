@@ -196,7 +196,7 @@ class TxCores
                 puts JSON.pretty_generate(task)
                 Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
+                Events::publishItemAttributeUpdate(task["uuid"], "global-position", position)
                 next
             end
 
