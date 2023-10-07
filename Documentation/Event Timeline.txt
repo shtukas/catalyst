@@ -24,13 +24,6 @@ We have one event timeline, but several extractors focusing on the events they f
 
 {
     "uuid"     : string
-    "eventType": "DoNotShowUntil"
-    "targetId" : string
-    "unixtime" : float
-}
-
-{
-    "uuid"     : string
     "unixtime" : Float
     "eventType": "DoNotShowUntil2"
     "payload": {

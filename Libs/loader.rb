@@ -149,7 +149,7 @@ require_relative "Datablobs.rb"
 require_relative "Dives.rb"
 require_relative "DxStack.rb"
 
-require_relative "EventTimeline.rb"
+require_relative "EventsTimeline.rb"
 
 require_relative "Fsck.rb"
 

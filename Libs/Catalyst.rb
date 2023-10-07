@@ -24,12 +24,32 @@ class Catalyst
 
     # Catalyst::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        EventTimelineDatasets::catalystItems()[uuid].clone
+        item = nil
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from Items where _uuid_=?", [uuid]) do |row|
+            item = JSON.parse(row["_item_"])
+        end
+        db.close
+        item
     end
 
     # Catalyst::mikuType(mikuType)
     def self.mikuType(mikuType)
-        EventTimelineDatasets::catalystItems().values.select{|item| item["mikuType"] == mikuType }
+        items = []
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from Items where _mikuType_=?", [mikuType]) do |row|
+            items << JSON.parse(row["_item_"])
+        end
+        db.close
+        items
     end
 
     # Catalyst::destroy(uuid)
@@ -39,7 +59,17 @@ class Catalyst
 
     # Catalyst::catalystItems()
     def self.catalystItems()
-        EventTimelineDatasets::catalystItems().values
+        items = []
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from Items", []) do |row|
+            items << JSON.parse(row["_item_"])
+        end
+        db.close
+        items
     end
 
     # Catalyst::newGlobalFirstPosition()

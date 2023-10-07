@@ -1,18 +1,28 @@
 
 class DoNotShowUntil
 
-    # DoNotShowUntil::setUnixtime(itemuuid, unixtime)
-    def self.setUnixtime(itemuuid, unixtime)
-        Broadcasts::publishDoNotShowUntil(itemuuid, unixtime)
-        XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{itemuuid}", unixtime)
-        puts "do not display '#{itemuuid}' until #{Time.at(unixtime).utc.iso8601}"
+    # DoNotShowUntil::setUnixtime(id, unixtime)
+    def self.setUnixtime(id, unixtime)
+        Broadcasts::publishDoNotShowUntil(id, unixtime)
+        XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", unixtime)
+        puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}"
     end
 
-    # DoNotShowUntil::getUnixtimeOrNull(itemuuid)
-    def self.getUnixtimeOrNull(itemuuid)
-        unixtime = EventTimelineDatasets::doNotShowUntil()[itemuuid]
-        return unixtime if unixtime
-        unixtime = XCache::getOrNull("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{itemuuid}")
+    # DoNotShowUntil::getUnixtimeOrNull(id)
+    def self.getUnixtimeOrNull(id)
+        unixtime = nil
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/DoNotShowUntil.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from DoNotShowUntil where _id_=?", [id]) do |row|
+            unixtime = row["_unixtime_"]
+        end
+        db.close
+        unixtime
+
+        unixtime = XCache::getOrNull("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}")
         return unixtime.to_i if unixtime
         nil
     end

@@ -73,23 +73,25 @@ class Broadcasts
 
     # Broadcasts::publish(event)
     def self.publish(event)
-        #puts "event: #{JSON.generate(event)}".yellow
-        timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
-        folderpath0 = "#{EventTimelineReader::eventsTimelineLocation()}/#{timefragment}"
-        if !File.exist?(folderpath0) then
-            FileUtils.mkpath(folderpath0)
-        end
-        folder1 = LucilleCore::indexsubfolderpath(folderpath0, 100)
-        filepath1 = "#{folder1}/#{CommonUtils::timeStringL22()}.json"
-        File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
-        EventTimelineReader::issueNewRandomTraceForCaching()
+        Config::instanceIds().each{|instanceId|
+            next if instanceId == Config::thisInstanceId()
+            fragment1 = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{instanceId}/events-timeline"
+            fragment2 = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
+            folder1 = "#{fragment1}/#{fragment2}"
+            if !File.exist?(folder1) then
+                FileUtils.mkpath(folder1)
+            end
+            folder2 = LucilleCore::indexsubfolderpath(folder1, 100)
+            filepath1 = "#{folder2}/#{CommonUtils::timeStringL22()}.json"
+            File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
+        }
     end
 
     # Broadcasts::publishDoNotShowUntil(itemuuid, unixtime)
     def self.publishDoNotShowUntil(itemuuid, unixtime)
         Broadcasts::publish(Broadcasts::makeDoNotShowUntil(itemuuid, unixtime))
 
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/Lucille23/databases/DoNotShowUntil.sqlite3"
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/DoNotShowUntil.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -105,7 +107,8 @@ class Broadcasts
 
         item = Catalyst::itemOrNull(itemuuid)
         if item then
-            filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/Lucille23/databases/Items.sqlite3"
+            item[attname] = attvalue
+            filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -120,7 +123,7 @@ class Broadcasts
     def self.publishItemDestroy(itemuuid)
         Broadcasts::publish(Broadcasts::makeItemDestroy(itemuuid))
 
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/Lucille23/databases/Items.sqlite3"
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -138,21 +141,20 @@ class Broadcasts
             "mikuType" => mikuType
         }
 
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/Lucille23/databases/Items.sqlite3"
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
         db.close
-
     end
 
     # Broadcasts::publishBankDeposit(uuid, date, value)
     def self.publishBankDeposit(uuid, date, value)
         Broadcasts::publish(Broadcasts::makeBankDeposit(uuid, date, value))
 
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/Lucille23/databases/Bank.sqlite3"
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }

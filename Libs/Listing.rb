@@ -197,9 +197,6 @@ class Listing
             NxTasks::maintenance()
             OpenCycles::maintenance()
             TxCores::maintenance2()
-            EventTimelineMaintenance::shortenToLowerPing()
-            EventTimelineMaintenance::rewriteHistory()
-            EventTimelineMaintenance::maintenance()
             OpenCycles::maintenance()
         end
         TxCores::maintenance3()
@@ -241,15 +238,6 @@ class Listing
             }
         }
 
-        Thread.new {
-            loop {
-                # Event Timeline
-                EventTimelineReader::issueNewFSComputedTraceForCaching()
-                EventTimelineMaintenance::publishPing()
-                sleep 300
-            }
-        }
-
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -260,6 +248,15 @@ class Listing
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
                 Listing::maintenance()
             end
+
+            loop {
+                filepath = EventsTimeline::firstFilepathOrNull()
+                break if filepath.nil?
+                puts "processing: #{filepath}"
+                event = JSON.parse(IO.read(filepath))
+                EventsTimeline::digestEvent(event)
+                FileUtils.rm(filepath)
+            }
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
