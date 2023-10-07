@@ -7,7 +7,7 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit("NxOndate", uuid)
+        Broadcasts::publishItemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Broadcasts::publishItemAttributeUpdate(uuid, "datetime", datetime)
@@ -21,7 +21,7 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        Broadcasts::publishItemInit("NxOndate", uuid)
+        Broadcasts::publishItemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)

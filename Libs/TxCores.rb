@@ -29,7 +29,7 @@ class TxCores
     # TxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         core = TxCores::interactivelyMakeOrNull()
-        Broadcasts::publishItemInit(core["mikuType"], core["uuid"])
+        Broadcasts::publishItemInit(core["uuid"], core["mikuType"])
         core.to_a.each{|key, value|
             Broadcasts::publishItemAttributeUpdate(core["uuid"], key, value)
         }

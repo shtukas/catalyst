@@ -107,7 +107,7 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Broadcasts::publishItemInit("NxAnniversary", uuid)
+        Broadcasts::publishItemInit(uuid, "NxAnniversary")
         Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Broadcasts::publishItemAttributeUpdate(uuid, "description", description)

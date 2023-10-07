@@ -114,7 +114,7 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit("Wave", uuid)
+        Broadcasts::publishItemInit(uuid, "Wave")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)

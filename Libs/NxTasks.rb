@@ -15,7 +15,7 @@ class NxTasks
         # because the blade need to exist for aion points data blobs to have a place to go.
 
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit("NxTask", uuid)
+        Broadcasts::publishItemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
@@ -33,7 +33,7 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Broadcasts::publishItemInit("NxTask", uuid)
+        Broadcasts::publishItemInit(uuid, "NxTask")
 
         nhash = Datablobs::putBlob(url)
         coredataref = "url:#{nhash}"
@@ -50,7 +50,7 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Broadcasts::publishItemInit("NxTask", uuid)
+        Broadcasts::publishItemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
@@ -64,7 +64,7 @@ class NxTasks
 
     # NxTasks::descriptionToTask1(uuid, description)
     def self.descriptionToTask1(uuid, description)
-        Broadcasts::publishItemInit("NxTask", uuid)
+        Broadcasts::publishItemInit(uuid, "NxTask")
         Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Broadcasts::publishItemAttributeUpdate(uuid, "description", description)

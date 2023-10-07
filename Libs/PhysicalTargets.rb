@@ -11,7 +11,7 @@ class PhysicalTargets
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit("PhysicalTarget", uuid)
+        Broadcasts::publishItemInit(uuid, "PhysicalTarget")
         Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
         Broadcasts::publishItemAttributeUpdate(uuid, "dailyTarget", dailyTarget)
         Broadcasts::publishItemAttributeUpdate(uuid, "date", CommonUtils::today())
