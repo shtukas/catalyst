@@ -185,5 +185,3 @@ require_relative "TxEngine.rb"
 require_relative "Waves.rb"
 
 # ------------------------------------------------------------
-
-$renderingLoopTrace = SecureRandom.uuid
