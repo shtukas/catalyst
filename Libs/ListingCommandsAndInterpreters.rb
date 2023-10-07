@@ -54,7 +54,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
         end
 
@@ -67,7 +67,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
         end
 
@@ -79,9 +79,9 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             return
         end
 
@@ -94,9 +94,9 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Events::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Events::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             return
         end
 
@@ -125,7 +125,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("red", input) then
             item = store.getDefault()
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
             return
         end
 
@@ -133,14 +133,14 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
             return
         end
 
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -148,7 +148,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -166,9 +166,9 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
             if item["description"].include?("(buffer-in)") then
-                Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             end
             return
         end
@@ -180,9 +180,9 @@ class ListingCommandsAndInterpreters
             puts PolyFunctions::toString(item).green
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
             if item["description"].include?("(buffer-in)") then
-                Events::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             end
             return
         end
@@ -198,7 +198,7 @@ class ListingCommandsAndInterpreters
             end
             engine = TxEngine::interactivelyMakeOrNull()
             return if engine.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
             return
         end
 
@@ -212,7 +212,7 @@ class ListingCommandsAndInterpreters
             return if description == ""
             task = NxTasks::descriptionToTask1(Time.new.to_f.to_s, description)
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), position])
+            Broadcasts::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), position])
             return
         end
 
@@ -221,14 +221,14 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
             return
         end
 
         if Interpreting::match("unstack", input) then
             item = store.getDefault()
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
             return
         end
 
@@ -236,7 +236,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
             return
         end
 
@@ -249,7 +249,7 @@ class ListingCommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
-                Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             }
             return
         end
@@ -266,7 +266,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("unparent *", input) then
             item = store.get(listord.to_i)
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
             return
         end
 
@@ -300,7 +300,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "field11", reference)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "field11", reference)
             return
         end
 
@@ -310,7 +310,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "field11", reference)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "field11", reference)
             return
         end
 
@@ -548,7 +548,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

@@ -29,9 +29,9 @@ class TxCores
     # TxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         core = TxCores::interactivelyMakeOrNull()
-        Events::publishItemInit(core["mikuType"], core["uuid"])
+        Broadcasts::publishItemInit(core["mikuType"], core["uuid"])
         core.to_a.each{|key, value|
-            Events::publishItemAttributeUpdate(core["uuid"], key, value)
+            Broadcasts::publishItemAttributeUpdate(core["uuid"], key, value)
         }
     end
 
@@ -144,8 +144,8 @@ class TxCores
             end
         end
         core["lastResetTime"] = Time.new.to_i
-        Events::publishItemAttributeUpdate(core["uuid"], "hours", core["hours"])
-        Events::publishItemAttributeUpdate(core["uuid"], "lastResetTime", core["lastResetTime"])
+        Broadcasts::publishItemAttributeUpdate(core["uuid"], "hours", core["hours"])
+        Broadcasts::publishItemAttributeUpdate(core["uuid"], "lastResetTime", core["lastResetTime"])
     end
 
     # TxCores::maintenance2()
@@ -170,7 +170,7 @@ class TxCores
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
             }
     end
 
@@ -206,9 +206,9 @@ class TxCores
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "coreX-2300", core["uuid"])
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Events::publishItemAttributeUpdate(task["uuid"], "global-position", position)
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "global-position", position)
                 next
             end
 
@@ -222,7 +222,7 @@ class TxCores
                 item = store.get(listord.to_i)
                 next if item.nil?
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 
@@ -230,7 +230,7 @@ class TxCores
                 items = TxCores::childrenInOrder(core)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+                    Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
                 next
             end

@@ -48,10 +48,10 @@ class OpenCycles
             message = "> required item for open cycle folder: #{File.basename(location)}"
             item = OpenCycles::makeItemOrNull(message)
             next if item.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "open-cycle-1143", id)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "open-cycle-1143", id)
             core = TxCores::interactivelySelectOneOrNull()
             if core then
-                Events::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
             end
         }
     end

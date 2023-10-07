@@ -1,9 +1,9 @@
 
-class Events
+class Broadcasts
 
     # Makers
 
-    # Events::makeDoNotShowUntil(itemuuid, unixtime)
+    # Broadcasts::makeDoNotShowUntil(itemuuid, unixtime)
     def self.makeDoNotShowUntil(itemuuid, unixtime)
         {
             "uuid"      => SecureRandom.uuid,
@@ -16,7 +16,7 @@ class Events
         }
     end
 
-    # Events::makeItemAttributeUpdate(itemuuid, attname, attvalue)
+    # Broadcasts::makeItemAttributeUpdate(itemuuid, attname, attvalue)
     def self.makeItemAttributeUpdate(itemuuid, attname, attvalue)
         {
             "uuid"      => SecureRandom.uuid,
@@ -30,7 +30,7 @@ class Events
         }
     end
 
-    # Events::makeItemDestroy(itemuuid)
+    # Broadcasts::makeItemDestroy(itemuuid)
     def self.makeItemDestroy(itemuuid)
         {
             "uuid"      => SecureRandom.uuid,
@@ -42,7 +42,7 @@ class Events
         }
     end
 
-    # Events::makeItemInit(mikuType, uuid)
+    # Broadcasts::makeItemInit(mikuType, uuid)
     def self.makeItemInit(mikuType, uuid)
         {
             "uuid"      => SecureRandom.uuid,
@@ -55,7 +55,7 @@ class Events
         }
     end
 
-    # Events::makeBankDeposit(uuid, date, value)
+    # Broadcasts::makeBankDeposit(uuid, date, value)
     def self.makeBankDeposit(uuid, date, value)
         {
             "uuid"      => SecureRandom.uuid,
@@ -71,7 +71,7 @@ class Events
 
     # Publishers
 
-    # Events::publish(event)
+    # Broadcasts::publish(event)
     def self.publish(event)
         #puts "event: #{JSON.generate(event)}".yellow
         timefragment = "#{Time.new.strftime("%Y")}/#{Time.new.strftime("%Y-%m")}/#{Time.new.strftime("%Y-%m-%d")}"
@@ -85,28 +85,28 @@ class Events
         EventTimelineReader::issueNewRandomTraceForCaching()
     end
 
-    # Events::publishDoNotShowUntil(itemuuid, unixtime)
+    # Broadcasts::publishDoNotShowUntil(itemuuid, unixtime)
     def self.publishDoNotShowUntil(itemuuid, unixtime)
-        Events::publish(Events::makeDoNotShowUntil(itemuuid, unixtime))
+        Broadcasts::publish(Broadcasts::makeDoNotShowUntil(itemuuid, unixtime))
     end
 
-    # Events::publishItemAttributeUpdate(itemuuid, attname, attvalue)
+    # Broadcasts::publishItemAttributeUpdate(itemuuid, attname, attvalue)
     def self.publishItemAttributeUpdate(itemuuid, attname, attvalue)
-        Events::publish(Events::makeItemAttributeUpdate(itemuuid, attname, attvalue))
+        Broadcasts::publish(Broadcasts::makeItemAttributeUpdate(itemuuid, attname, attvalue))
     end
 
-    # Events::publishItemDestroy(itemuuid)
+    # Broadcasts::publishItemDestroy(itemuuid)
     def self.publishItemDestroy(itemuuid)
-        Events::publish(Events::makeItemDestroy(itemuuid))
+        Broadcasts::publish(Broadcasts::makeItemDestroy(itemuuid))
     end
 
-    # Events::publishItemInit(uuid, mikuType)
+    # Broadcasts::publishItemInit(uuid, mikuType)
     def self.publishItemInit(uuid, mikuType)
-        Events::publish(Events::makeItemInit(uuid, mikuType))
+        Broadcasts::publish(Broadcasts::makeItemInit(uuid, mikuType))
     end
 
-    # Events::publishBankDeposit(uuid, date, value)
+    # Broadcasts::publishBankDeposit(uuid, date, value)
     def self.publishBankDeposit(uuid, date, value)
-        Events::publish(Events::makeBankDeposit(uuid, date, value))
+        Broadcasts::publish(Broadcasts::makeBankDeposit(uuid, date, value))
     end
 end

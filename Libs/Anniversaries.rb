@@ -107,13 +107,13 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Events::publishItemInit("NxAnniversary", uuid)
-        Events::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Events::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Events::publishItemAttributeUpdate(uuid, "description", description)
-        Events::publishItemAttributeUpdate(uuid, "startdate", startdate)
-        Events::publishItemAttributeUpdate(uuid, "repeatType", repeatType)
-        Events::publishItemAttributeUpdate(uuid, "lastCelebrationDate", lastCelebrationDate)
+        Broadcasts::publishItemInit("NxAnniversary", uuid)
+        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
+        Broadcasts::publishItemAttributeUpdate(uuid, "startdate", startdate)
+        Broadcasts::publishItemAttributeUpdate(uuid, "repeatType", repeatType)
+        Broadcasts::publishItemAttributeUpdate(uuid, "lastCelebrationDate", lastCelebrationDate)
 
         Catalyst::itemOrNull(uuid)
     end
@@ -145,14 +145,14 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        Events::publishItemAttributeUpdate(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
+        Broadcasts::publishItemAttributeUpdate(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::accessAndDone(anniversary)
     def self.accessAndDone(anniversary)
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            Events::publishItemAttributeUpdate(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
+            Broadcasts::publishItemAttributeUpdate(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
         end
     end
 
@@ -165,12 +165,12 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                Events::publishItemAttributeUpdate(item["uuid"], "description", description)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                Events::publishItemAttributeUpdate(item["uuid"], "startdate", startdate)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "startdate", startdate)
             end
         }
     end

@@ -11,12 +11,12 @@ class PhysicalTargets
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
-        Events::publishItemInit("PhysicalTarget", uuid)
-        Events::publishItemAttributeUpdate(uuid, "description", description)
-        Events::publishItemAttributeUpdate(uuid, "dailyTarget", dailyTarget)
-        Events::publishItemAttributeUpdate(uuid, "date", CommonUtils::today())
-        Events::publishItemAttributeUpdate(uuid, "counter", 0)
-        Events::publishItemAttributeUpdate(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
+        Broadcasts::publishItemInit("PhysicalTarget", uuid)
+        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
+        Broadcasts::publishItemAttributeUpdate(uuid, "dailyTarget", dailyTarget)
+        Broadcasts::publishItemAttributeUpdate(uuid, "date", CommonUtils::today())
+        Broadcasts::publishItemAttributeUpdate(uuid, "counter", 0)
+        Broadcasts::publishItemAttributeUpdate(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -32,8 +32,8 @@ class PhysicalTargets
     def self.listingItems()
         Catalyst::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
-                Events::publishItemAttributeUpdate(item["uuid"], "date", CommonUtils::today())
-                Events::publishItemAttributeUpdate(item["uuid"], "counter", 0)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "date", CommonUtils::today())
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "counter", 0)
             end
         }
         Catalyst::mikuType("PhysicalTarget")
@@ -52,8 +52,8 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        Events::publishItemAttributeUpdate(item["uuid"], "counter", count + item["counter"])
-        Events::publishItemAttributeUpdate(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "counter", count + item["counter"])
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
     # PhysicalTargets::access(item)

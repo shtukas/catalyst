@@ -3,7 +3,7 @@ class DoNotShowUntil
 
     # DoNotShowUntil::setUnixtime(itemuuid, unixtime)
     def self.setUnixtime(itemuuid, unixtime)
-        Events::publishDoNotShowUntil(itemuuid, unixtime)
+        Broadcasts::publishDoNotShowUntil(itemuuid, unixtime)
         XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{itemuuid}", unixtime)
         puts "do not display '#{itemuuid}' until #{Time.at(unixtime).utc.iso8601}"
     end

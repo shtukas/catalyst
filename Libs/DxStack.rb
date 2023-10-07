@@ -35,14 +35,14 @@ class DxStack
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "active-1634", true)
-                Events::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "active-1634", true)
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             }
     end
 
     # DxStack::unregister(item)
     def self.unregister(item)
         return if item["stack-0012"].nil?
-        Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
     end
 end

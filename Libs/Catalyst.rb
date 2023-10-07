@@ -18,7 +18,7 @@ class Catalyst
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
-            Events::publishItemAttributeUpdate(item["uuid"], key, value)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], key, value)
         }
     end
 
@@ -34,7 +34,7 @@ class Catalyst
 
     # Catalyst::destroy(uuid)
     def self.destroy(uuid)
-        Events::publishItemDestroy(uuid)
+        Broadcasts::publishItemDestroy(uuid)
     end
 
     # Catalyst::catalystItems()
@@ -82,14 +82,14 @@ class Catalyst
 
     # Catalyst::appendAtEndOfChildrenSequence(parent, item)
     def self.appendAtEndOfChildrenSequence(parent, item)
-        Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
     end
 
     # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
     def self.prependAtBeginingOfChildrenSequence(parent, item)
-        Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
     end
 
     # Catalyst::pile3(item)
@@ -151,9 +151,9 @@ class Catalyst
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Events::publishItemAttributeUpdate(task["uuid"], "parent-1328", parent["uuid"])
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "parent-1328", parent["uuid"])
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 
@@ -167,7 +167,7 @@ class Catalyst
                 item = store.get(listord.to_i)
                 next if item.nil?
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Events::publishItemAttributeUpdate(item["uuid"], "global-position", position)
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 
@@ -175,7 +175,7 @@ class Catalyst
                 items = Catalyst::elementsInOrder(parent)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    Events::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+                    Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
                 next
             end
@@ -253,15 +253,15 @@ class Catalyst
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return option.nil?
         if option == "stack (top position)" then
-            Events::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
         end
         if option == "engine" then
             engine = TxEngine::interactivelyMakeOrNull()
             return if engine.nil?
-            Events::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
         end
         if option == "active (will show in active listing)" then
-            Events::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
         end
     end
 
@@ -290,7 +290,7 @@ class Catalyst
         parent = Catalyst::interactivelySelectGenericMoveParentOrNull()
         return if parent.nil?
         selected.each{|item|
-            Events::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
         }
     end
 end

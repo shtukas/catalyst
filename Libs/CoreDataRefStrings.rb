@@ -124,7 +124,7 @@ class CoreDataRefStrings
             if LucilleCore::askQuestionAnswerAsBoolean("edit ? ") then
                 text = CommonUtils::editTextSynchronously(text)
                 nhash = Datablobs::putBlob(text)
-                Events::publishItemAttributeUpdate(uuid, "field11", "text:#{nhash}")
+                Broadcasts::publishItemAttributeUpdate(uuid, "field11", "text:#{nhash}")
             end
             LucilleCore::pressEnterToContinue()
             return

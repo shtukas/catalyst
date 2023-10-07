@@ -133,6 +133,7 @@ require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
 require_relative "Backups.rb"
+require_relative "Broadcasts.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
@@ -149,7 +150,6 @@ require_relative "Dives.rb"
 require_relative "DxStack.rb"
 
 require_relative "EventTimeline.rb"
-require_relative "Events.rb"
 
 require_relative "Fsck.rb"
 
