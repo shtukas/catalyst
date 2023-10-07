@@ -109,7 +109,23 @@ class NxTasks
 
     # NxTasks::access(task)
     def self.access(task)
-        CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
+        if task["field11"] and Catalyst::elementsInOrder(task).size > 0 then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
+            if option.nil? or option == "elements access (default)" then
+                Catalyst::program1(item)
+                return
+            end
+            CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
+            return
+        end
+        if Catalyst::elementsInOrder(task).size > 0 then
+            Catalyst::program1(item)
+            return
+        end
+        if task["field11"] then
+            CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
+            return
+        end
     end
 
     # NxTasks::maintenance()

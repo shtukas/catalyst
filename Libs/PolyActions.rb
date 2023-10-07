@@ -10,14 +10,6 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] != "TxCore" and Catalyst::elementsInOrder(item).size > 0 then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
-            if option.nil? or option == "elements access (default)" then
-                Catalyst::program1(item)
-                return
-            end
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
