@@ -88,6 +88,15 @@ class Broadcasts
     # Broadcasts::publishDoNotShowUntil(itemuuid, unixtime)
     def self.publishDoNotShowUntil(itemuuid, unixtime)
         Broadcasts::publish(Broadcasts::makeDoNotShowUntil(itemuuid, unixtime))
+
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/Lucille23/databases/DoNotShowUntil.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute "delete from DoNotShowUntil where _id_=?", [itemuuid]
+        db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [itemuuid, unixtime]
+        db.close
     end
 
     # Broadcasts::publishItemAttributeUpdate(itemuuid, attname, attvalue)
