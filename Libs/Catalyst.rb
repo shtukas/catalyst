@@ -183,7 +183,7 @@ class Catalyst
                 puts JSON.pretty_generate(task)
                 Broadcasts::publishItemAttributeUpdate(task["uuid"], "parent-1328", parent["uuid"])
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", position)
+                Broadcasts::publishItemAttributeUpdate(task["uuid"], "global-position", position)
                 next
             end
 
