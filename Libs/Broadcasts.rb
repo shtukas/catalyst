@@ -42,8 +42,8 @@ class Broadcasts
         }
     end
 
-    # Broadcasts::makeItemInit(mikuType, uuid)
-    def self.makeItemInit(mikuType, uuid)
+    # Broadcasts::makeItemInit(uuid, mikuType)
+    def self.makeItemInit(uuid, mikuType)
         {
             "uuid"      => SecureRandom.uuid,
             "unixtime"  => Time.new.to_i,
