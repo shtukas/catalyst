@@ -15,7 +15,7 @@ class Prefix
     # prefix items
     def self.pureTopUp(item)
         if item["mikuType"] == "TxCore" then
-            return TxCores::childrenInOrder(item)
+            return TxCores::childrenInOrderForPrefix(core)
                     .select{|item| Listing::listable(item) }
                     .select{|item| Prefix::timeControl(item) }
                     .first(5)
