@@ -247,7 +247,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("sort", input) then
             items = store.items()
-            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| CommonUtils::memoize("d4ca6467-375c-48fe-b0f7-3d9faec5cd45:#{item["uuid"]}:#{$renderingLoopTrace}", lambda { "#{DxStack::prefix(item)}#{PolyFunctions::toString(item)}" })})
             selected.reverse.each{|item|
                 Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
             }

@@ -625,4 +625,13 @@ class CommonUtils
         }
         raise "CommonUtils::computeThatPosition failed: positions: #{positions.join(", ")}"
     end
+
+    # CommonUtils::memoize(id, l)
+    def self.memoize(id, l)
+        value = InMemoryCache::getOrNull(id)
+        return value if value
+        value = l.call()
+        InMemoryCache::set("#{$renderingLoopHash1515}:#{id}", value)
+        value
+    end
 end

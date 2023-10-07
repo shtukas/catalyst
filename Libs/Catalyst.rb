@@ -278,20 +278,17 @@ class Catalyst
         options = [
             "stack (top position)",
             "engine",
-            "active (will show in active listing)",
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return option.nil?
         if option == "stack (top position)" then
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
         end
         if option == "engine" then
             engine = TxEngine::interactivelyMakeOrNull()
             return if engine.nil?
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
-        end
-        if option == "active (will show in active listing)" then
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "active-1634", true)
         end
     end
 
