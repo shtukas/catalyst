@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxTask        : red (<n>)",
-            "misc          : search | speed | commands | edit <n> | sort | move",
+            "misc          : search | speed | commands | edit <n> | sort | move | rise",
         ].join("\n")
     end
 
@@ -112,6 +112,34 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             TxCores::program2()
+            return
+        end
+
+        if Interpreting::match("rise", input) then
+            # 1. select some items
+            # 2. sort them
+
+            puts "Select what to do today (order doesn't matter)"
+            sleep 2
+            i2s, _ = LucilleCore::selectZeroOrMore("items", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
+            return if i2s.size == 0
+            puts "You have selected #{i2s.size} items. Now putting them in order"
+            sleep 2
+
+            i3s, _ = LucilleCore::selectZeroOrMore("items", [], i2s, lambda{|item| PolyFunctions::toString(item) })
+
+            (i3s + i2s)
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
+                .reverse
+                .each{|item|
+                    Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
+                }
             return
         end
 
