@@ -70,8 +70,6 @@ require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/XCache.rb"
 
 # ------------------------------------------------------------
 
-require_relative "CoreDataRefStrings.rb"
-
 require_relative "AionCore.rb"
 =begin
 
@@ -138,6 +136,7 @@ require_relative "Broadcasts.rb"
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
+require_relative "CoreDataRefStrings.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
