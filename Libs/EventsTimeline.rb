@@ -78,17 +78,18 @@ class EventsTimeline
             attname  = event["payload"]["attname"]
             attvalue = event["payload"]["attvalue"]
             item = Catalyst::itemOrNull(itemuuid)
-            if item then
-                item[attname] = attvalue
-                filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute "delete from Items where _uuid_=?", [itemuuid]
-                db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
-                db.close
+            if item.nil? then
+                raise "(error: 06842C06-4097)"
             end
+            item[attname] = attvalue
+            filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute "delete from Items where _uuid_=?", [itemuuid]
+            db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
+            db.close
             return
         end
 
