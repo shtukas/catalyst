@@ -131,11 +131,11 @@ class Listing
     # Listing::items()
     def self.items()
         [
+            DropBox::items(),
             DxStack::itemsInOrder(),
             Waves::listingItems().select{|item| item["interruption"] },
             Listing::cto(),
             Anniversaries::listingItems(),
-            DropBox::items(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
             NxOndates::listingItems(),
