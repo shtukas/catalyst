@@ -252,14 +252,7 @@ class Listing
                 Listing::maintenance()
             end
 
-            loop {
-                filepath = EventsTimeline::firstFilepathOrNull()
-                break if filepath.nil?
-                puts "processing: #{filepath}"
-                event = JSON.parse(IO.read(filepath))
-                EventsTimeline::digestEvent(event)
-                FileUtils.rm(filepath)
-            }
+            EventsTimeline::procesLine()
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()

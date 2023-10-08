@@ -120,6 +120,19 @@ class EventsTimeline
 
         raise "(error: 0d1295ae-b021-42f7-b419-3214ac0a917f) cannot digest event: #{event}"
     end
+
+    # EventsTimeline::procesLine()
+    def self.procesLine()
+        loop {
+            filepath = EventsTimeline::firstFilepathOrNull()
+            return if filepath.nil?
+            puts "processing: #{filepath}"
+            event = JSON.parse(IO.read(filepath))
+            return if (Time.new.to_i - event["unixtime"]) < 300
+            EventsTimeline::digestEvent(event)
+            FileUtils.rm(filepath)
+        }
+    end
 end
 
 
