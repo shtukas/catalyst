@@ -150,9 +150,12 @@ class Catalyst
 
     # Catalyst::elementsInOrder(parent)
     def self.elementsInOrder(parent)
-        Catalyst::catalystItems()
+        children =  Catalyst::catalystItems()
             .select{|item| item["parent-1328"] == parent["uuid"] }
-            .sort_by {|item| item["global-position"] || 0 }
+
+        c1, c2 = children.partition{|item| item["engine-2251"] }
+
+        c1.sort_by{|item| TxEngine::ratio(item["engine-2251"]) } + c2.sort_by{|item| item["global-position"] || 0 }
     end
 
     # Catalyst::program1(parent)

@@ -106,24 +106,13 @@ class TxCores
     def self.childrenInOrder(core)
         children = Catalyst::catalystItems()
                         .select{|item| item["parent-1328"] == core["uuid"] or (item["coreX-2300"] == core["uuid"] and item["parent-1328"].nil?) }
-                        .sort_by{|item| item["global-position"] || 0 }
         if core["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
-            children = children.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+            return children.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         end
-        children
-    end
 
-    # TxCores::childrenInOrderForPrefix(core)
-    def self.childrenInOrderForPrefix(core)
-        if core["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
-            return Catalyst::catalystItems()
-                        .select{|item| item["parent-1328"] == core["uuid"] or (item["coreX-2300"] == core["uuid"] and item["parent-1328"].nil?) }
-                        .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-        Catalyst::catalystItems()
-            .select{|item| item["mikuType"] == "NxTask" }
-            .select{|item| item["parent-1328"] == core["uuid"] }
-            .sort_by{|item| item["global-position"] || 0 }
+        c1, c2 = children.partition{|item| item["engine-2251"] }
+
+        c1.sort_by{|item| TxEngine::ratio(item["engine-2251"]) } + c2.sort_by{|item| item["global-position"] || 0 }
     end
 
     # -----------------------------------------------

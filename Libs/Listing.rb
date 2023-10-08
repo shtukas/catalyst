@@ -141,7 +141,6 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             Catalyst::red(),
-            Catalyst::enginedInOrderForListing(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxCores::listingItems(),
@@ -297,14 +296,6 @@ class Listing
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            NxBalls::runningItems()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status
                 }
 
