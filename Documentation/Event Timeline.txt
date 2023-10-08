@@ -1,25 +1,4 @@
 
--- Specs -----------------------------------------------------------------------
-
-
-On disk: ordered sequence of files / events.
-
-extractor: [] -> data
-extractor: (data, event) -> data
-extractor: array[event] -> data
-
-This is essentially a reducer but one which has some memoization built in
-
-extractor([event(1), ... event(n)]) = extractor( extractor([event(1), ... event(n-1)]), event(n) )
-
-where extractor([event(1), ... event(n-1)]) could have been memoized against the filename of event(n-1)
-
-Because an event can be inserted in the middle of two existing events, the filename of the last event in the sequence would not be guaranteed to represent the entire sequence, this is why we have a process that rewrites the sequence and makes sure that each event's filename is sensitive to all the events that came before it as well as its own contents.
-
--- Timeline --------------------------------------------------------------------
-
-We have one event timeline, but several extractors focusing on the events they find relevant to generate the data they find relevant
-
 -- Events ----------------------------------------------------------------------
 
 {
