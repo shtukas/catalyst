@@ -35,13 +35,6 @@
 {
     "uuid": string
     "unixtime" : Float
-    "eventType": "ItemDestroy"
-    "itemuuid" : string
-}
-
-{
-    "uuid": string
-    "unixtime" : Float
     "eventType": "ItemDestroy2"
     "payload": {
         "uuid" : string,
@@ -58,7 +51,3 @@
         "value" : Float
     }
 }
-
--- Extractors ------------------------------------------------------------------
-
-
