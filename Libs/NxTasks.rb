@@ -119,7 +119,7 @@ class NxTasks
             return
         end
         if Catalyst::elementsInOrder(task).size > 0 then
-            Catalyst::program1(item)
+            Catalyst::program1(task)
             return
         end
         if task["field11"] then
