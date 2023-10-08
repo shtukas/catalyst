@@ -148,6 +148,7 @@ require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
 require_relative "Dives.rb"
 require_relative "DxStack.rb"
+require_relative "DataOperators.rb"
 
 require_relative "EventsTimeline.rb"
 
@@ -185,3 +186,10 @@ require_relative "TxEngine.rb"
 require_relative "Waves.rb"
 
 # ------------------------------------------------------------
+
+$BankOperator = BankOperator.new()
+
+$DoNotShowUntilOperator = DoNotShowUntilOperator.new()
+
+$ItemsOperator = ItemsOperator.new()
+

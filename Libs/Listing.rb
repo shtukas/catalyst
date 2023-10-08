@@ -182,6 +182,12 @@ class Listing
         Listing::items()
         spot.end_unit()
 
+        spot.start_unit("Listing::items().first(100) >> Listing::toString2(store, item)")
+        store = ItemStore.new()
+        items = Listing::items().first(100)
+        items.each {|item| Listing::toString2(store, item) }
+        spot.end_unit()
+
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
         store = ItemStore.new()
 

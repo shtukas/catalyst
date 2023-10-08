@@ -10,6 +10,9 @@ class DoNotShowUntil
 
     # DoNotShowUntil::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
+
+        return $DoNotShowUntilOperator.getUnixtimeOrNull(id)
+
         unixtime = nil
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/DoNotShowUntil.sqlite3"
         db = SQLite3::Database.new(filepath)

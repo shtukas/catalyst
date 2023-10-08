@@ -24,6 +24,8 @@ class Catalyst
 
     # Catalyst::itemOrNull(uuid)
     def self.itemOrNull(uuid)
+        return $ItemsOperator.itemOrNull(uuid)
+
         item = nil
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
         db = SQLite3::Database.new(filepath)
@@ -39,6 +41,8 @@ class Catalyst
 
     # Catalyst::mikuType(mikuType)
     def self.mikuType(mikuType)
+        return $ItemsOperator.mikuType(mikuType)
+
         items = []
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
         db = SQLite3::Database.new(filepath)
@@ -59,6 +63,8 @@ class Catalyst
 
     # Catalyst::catalystItems()
     def self.catalystItems()
+        return $ItemsOperator.all()
+
         items = []
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
         db = SQLite3::Database.new(filepath)

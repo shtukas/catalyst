@@ -7,6 +7,9 @@ class Bank
 
     # Bank::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
+
+        return $BankOperator.getValueAtDate(uuid, date)
+
         value = 0
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
         db = SQLite3::Database.new(filepath)
@@ -22,6 +25,8 @@ class Bank
 
     # Bank::getValue(uuid)
     def self.getValue(uuid)
+        return $BankOperator.getValue(uuid)
+
         value = 0
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
         db = SQLite3::Database.new(filepath)
