@@ -138,6 +138,7 @@ class Listing
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
+            Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             Catalyst::red(),
             Catalyst::enginedInOrderForListing(),
