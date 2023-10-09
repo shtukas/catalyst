@@ -286,7 +286,9 @@ class Catalyst
     def self.setDrivingForce(item)
         options = [
             "stack (top position)",
+            "red mark",
             "engine",
+            "interactively select parent"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return option.nil?
@@ -294,10 +296,22 @@ class Catalyst
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
         end
+        if option == "red mark" then
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
+            Catalyst::setDrivingForce(item)
+        end
         if option == "engine" then
             engine = TxEngine::interactivelyMakeOrNull()
             return if engine.nil?
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
+            Catalyst::setDrivingForce(item)
+        end
+        if option == "interactively select parent" then
+            parent = Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(nil)
+            if parent then
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent)
+            end
+            Catalyst::setDrivingForce(item)
         end
     end
 
@@ -306,24 +320,32 @@ class Catalyst
         LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # Catalyst::interactivelySelectGenericMoveParentOrNull()
-    def self.interactivelySelectGenericMoveParentOrNull()
-        items = (TxCores::coresInOrder() + NxOndates::ondatesInOrder()+ Catalyst::red() + Catalyst::enginedInOrder())
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
+    # Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(context)
+    def self.interactivelySelectParentOrNullUsingTopDownNavigation(context)
+        if context.nil? then
+            options = ["no parent (default)", "select core"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            if option.nil? or option == "no parent (default)" then
+                return nil
+            end
+            if option == "select core" then
+                core = TxCores::interactivelySelectOneOrNull()
+                if core then
+                    return Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(core)
                 else
-                    selected + [item]
+                    return Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(nil)
                 end
-            }
-        Catalyst::interactivelySelectOneItemOrNull(items)
+            end
+        else
+            return context
+        end
     end
 
     # Catalyst::selectSubsetAndMoveToSelectedParent(items)
     def self.selectSubsetAndMoveToSelectedParent(items)
         selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.empty?
-        parent = Catalyst::interactivelySelectGenericMoveParentOrNull()
+        parent = Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation()
         return if parent.nil?
         selected.each{|item|
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
