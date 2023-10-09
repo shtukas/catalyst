@@ -11,7 +11,7 @@ class ListingCommandsAndInterpreters
             "              : (task)   >ondate (<n>)",
             "              : (ondate) >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack | stack * | pile",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack+ | stack * | pile",
             "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
@@ -260,7 +260,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack", input) then
+        if Interpreting::match("stack+", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             task = NxTasks::descriptionToTask1(Time.new.to_f.to_s, description)
