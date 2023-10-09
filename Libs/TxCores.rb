@@ -104,9 +104,11 @@ class TxCores
 
     # TxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
-        Catalyst::catalystItems()
+        items = Catalyst::catalystItems()
             .select{|item| item["parent-1328"] == core["uuid"] or (item["coreX-2300"] == core["uuid"] and item["parent-1328"].nil?) }
             .sort_by{|item| item["global-position"] || 0 }
+        i1, i2 = items.partition{|i| i["mikuType"] == "NxTask" }
+        i1 + i2 
     end
 
     # -----------------------------------------------

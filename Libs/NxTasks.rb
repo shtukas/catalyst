@@ -75,23 +75,16 @@ class NxTasks
     # --------------------------------------------------
     # Data
 
-    # NxTasks::suffixIcons(item)
-    def self.suffixIcons(item)
-        icons = []
-        if Catalyst::children(item).size > 0 then
-            icons << "📃"
-        end
-        return "" if icons.empty?
-        " #{icons.join("")}"
-    end 
-
     # NxTasks::toString(item)
     def self.toString(item)
         icon = "🔹"
         if item["red-2029"] then
             icon = "🔺"
         end
-        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}#{NxTasks::suffixIcons(item)}"
+        if Catalyst::children(item).size > 0 then
+            icon = "📃"
+        end
+        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
     end
 
     # NxTasks::orphans()
