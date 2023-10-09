@@ -139,6 +139,7 @@ class Catalyst
     def self.children(parent)
         Catalyst::catalystItems()
             .select{|item| item["parent-1328"] == parent["uuid"] }
+            .sort_by{|item| item["global-position"] || 0 }
     end
 
     # Catalyst::program1(parent)
