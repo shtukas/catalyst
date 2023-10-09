@@ -55,6 +55,7 @@ class ListingCommandsAndInterpreters
                 return
             end
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
             return
         end
 
@@ -68,6 +69,7 @@ class ListingCommandsAndInterpreters
                 return
             end
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
             return
         end
 
