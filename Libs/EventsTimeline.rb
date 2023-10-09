@@ -79,7 +79,7 @@ class EventsTimeline
             attvalue = event["payload"]["attvalue"]
             item = Catalyst::itemOrNull(itemuuid)
             if item.nil? then
-                raise "(error: 06842C06-4097)"
+                return
             end
             item[attname] = attvalue
             filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
