@@ -127,9 +127,9 @@ class Listing
             NxBalls::runningItems(),
             DropBox::items(),
             DxStack::itemsInOrder(),
+            PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             Anniversaries::listingItems(),
-            PhysicalTargets::listingItems(),
             Desktop::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
@@ -246,36 +246,6 @@ class Listing
             end
 
             EventsTimeline::procesLine()
-
-            #Catalyst::catalystItems().each{|item|
-            #    if item.keys.size == 2 then
-            #        puts ""
-            #        puts JSON.pretty_generate(item)
-            #        if item["list-ord-03"] then
-            #            puts "destroying: #{item["uuid"]}"
-            #            sleep 0.1
-            #            Broadcasts::publishItemDestroy(item["uuid"])
-            #            next
-            #        end
-            #        if item["uuid"].start_with?("Nx") then
-            #            puts "destroying: #{item["mikuType"]}"
-            #            puts "destroying: #{item["uuid"]}"
-            #            sleep 0.1
-            #            Broadcasts::publishItemDestroy(item["mikuType"])
-            #            Broadcasts::publishItemDestroy(item["uuid"])
-            #            next
-            #        end
-            #        if item["mikuType"] == "NxTask" and item.keys.size == 2 then
-            #            puts "destroying: #{item["uuid"]}"
-            #            sleep 0.1
-            #            Broadcasts::publishItemDestroy(item["uuid"])
-            #            next
-            #        end
-            #        puts JSON.pretty_generate(item)
-            #        LucilleCore::pressEnterToContinue()
-            #        exit
-            #    end
-            #}
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
