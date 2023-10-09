@@ -78,7 +78,7 @@ class NxTasks
     # NxTasks::suffixIcons(item)
     def self.suffixIcons(item)
         icons = []
-        if Catalyst::elementsInOrder(item).size > 0 then
+        if Catalyst::children(item).size > 0 then
             icons << "📃"
         end
         return "" if icons.empty?
@@ -91,14 +91,13 @@ class NxTasks
         if item["red-2029"] then
             icon = "🔺"
         end
-        "#{icon} #{TxEngine::prefix(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}#{NxTasks::suffixIcons(item)}"
+        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}#{NxTasks::suffixIcons(item)}"
     end
 
     # NxTasks::orphans()
     def self.orphans()
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2300"].nil? }
-            .select{|item| item["engine-2251"].nil? }
             .select{|item| item["parent-1328"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
@@ -109,7 +108,7 @@ class NxTasks
 
     # NxTasks::access(task)
     def self.access(task)
-        if task["field11"] and Catalyst::elementsInOrder(task).size > 0 then
+        if task["field11"] and Catalyst::children(task).size > 0 then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["content access", "elements access (default)"])
             if option.nil? or option == "elements access (default)" then
                 Catalyst::program1(item)
@@ -118,7 +117,7 @@ class NxTasks
             CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
             return
         end
-        if Catalyst::elementsInOrder(task).size > 0 then
+        if Catalyst::children(task).size > 0 then
             Catalyst::program1(task)
             return
         end

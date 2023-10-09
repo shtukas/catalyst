@@ -43,14 +43,6 @@ class PolyFunctions
             end
         end
 
-        if item["engine-2251"] then
-            engine = item["engine-2251"]
-            accounts << {
-                "description" => "engine: #{engine["uuid"]}",
-                "number"      => engine["uuid"]
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

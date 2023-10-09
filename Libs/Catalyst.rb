@@ -96,24 +96,11 @@ class Catalyst
         t + 1
     end
 
-    # Catalyst::enginedInOrder()
-    def self.enginedInOrder()
-        Catalyst::catalystItems()
-            .select{|item| item["engine-2251"] }
-            .sort_by{|item| TxEngine::ratio(item["engine-2251"]) }
-    end
-
-    # Catalyst::enginedInOrderForListing()
-    def self.enginedInOrderForListing()
-        Catalyst::enginedInOrder()
-            .select{|item| TxEngine::ratio(item["engine-2251"]) < 1 }
-    end
-
-    # Catalyst::red()
-    def self.red()
+    # Catalyst::redInOrder()
+    def self.redInOrder()
         Catalyst::catalystItems()
             .select{|item| item["red-2029"] }
-            .sort_by{|item| item["global-position"] || 0 }
+            .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
     end
 
     # Catalyst::appendAtEndOfChildrenSequence(parent, item)
@@ -148,14 +135,10 @@ class Catalyst
             }
     end
 
-    # Catalyst::elementsInOrder(parent)
-    def self.elementsInOrder(parent)
-        children =  Catalyst::catalystItems()
+    # Catalyst::children(parent)
+    def self.children(parent)
+        Catalyst::catalystItems()
             .select{|item| item["parent-1328"] == parent["uuid"] }
-
-        c1, c2 = children.partition{|item| item["engine-2251"] }
-
-        c1.sort_by{|item| TxEngine::ratio(item["engine-2251"]) } + c2.sort_by{|item| item["global-position"] || 0 }
     end
 
     # Catalyst::program1(parent)
@@ -174,7 +157,7 @@ class Catalyst
             puts  Listing::toString2(store, parent)
             puts  ""
 
-            Catalyst::elementsInOrder(parent)
+            Catalyst::children(parent)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
@@ -211,7 +194,7 @@ class Catalyst
             end
 
             if input == "sort" then
-                items = Catalyst::elementsInOrder(parent)
+                items = Catalyst::children(parent)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
@@ -287,7 +270,6 @@ class Catalyst
         options = [
             "stack (top position)",
             "red mark",
-            "engine",
             "interactively select parent"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
@@ -298,12 +280,6 @@ class Catalyst
         end
         if option == "red mark" then
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
-            Catalyst::setDrivingForce(item)
-        end
-        if option == "engine" then
-            engine = TxEngine::interactivelyMakeOrNull()
-            return if engine.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
             Catalyst::setDrivingForce(item)
         end
         if option == "interactively select parent" then

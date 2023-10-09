@@ -9,4 +9,3 @@ Cross types conventions:
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - coreX-2300       : (optional) uuid of core
     - parent-1328      : (optional) parent uuid
-    - engine-2251      : (optional) TxEngine

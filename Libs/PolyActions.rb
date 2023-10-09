@@ -234,7 +234,7 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxBalls::stop(item)
             end
-            if Catalyst::elementsInOrder(item).empty? and LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if Catalyst::children(item).empty? and LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
             return

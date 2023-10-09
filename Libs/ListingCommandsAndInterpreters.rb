@@ -5,14 +5,14 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | unparent <n> | engine * | engine-no * | red (*) | unred (*)  | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | unparent <n> | red (*) | unred (*)  | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
             "              : (ondate) >task (<n>)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack+ | stack * | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | engined | actives",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | actives",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxTask        : red (<n>)",
@@ -104,11 +104,6 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("move", input) then
             Catalyst::selectSubsetAndMoveToSelectedParent(store.items())
-            return
-        end
-
-        if Interpreting::match("engined", input) then
-            Catalyst::program2(Catalyst::enginedInOrder())
             return
         end
 
@@ -232,31 +227,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if !["NxTask"].include?(item["mikuType"]) then
-                puts "For the moment we only give TxEngines to tasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            engine = TxEngine::interactivelyMakeOrNull()
-            return if engine.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", engine)
-            return
-        end
-
-        if Interpreting::match("engine-no *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "engine-2251", nil)
-            return
-        end
-
         if Interpreting::match("actives", input) then
-            Catalyst::program2(Catalyst::red())
+            Catalyst::program2(Catalyst::redInOrder())
             return
         end
 

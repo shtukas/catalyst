@@ -82,13 +82,6 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::cto()
-    def self.cto()
-        core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
-        ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/10)
-        ratio < 1 ? [core] : []
-    end
-
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
@@ -135,13 +128,12 @@ class Listing
             DropBox::items(),
             DxStack::itemsInOrder(),
             Waves::listingItems().select{|item| item["interruption"] },
-            Listing::cto(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Desktop::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
-            Catalyst::red(),
+            Catalyst::redInOrder(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },
             TxCores::listingItems(),
