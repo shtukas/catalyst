@@ -68,7 +68,7 @@ class Listing
 
         return true if NxBalls::itemIsRunning(item)
 
-        return false if item["red-2029"]
+        return false if (item["red-2029"] and DxStack::prefix(item).size == 0)
 
         return false if !DoNotShowUntil::isVisible(item)
 
