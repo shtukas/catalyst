@@ -291,7 +291,7 @@ class Catalyst
             "interactively select parent"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        return option.nil?
+        return if option.nil?
         if option == "stack (top position)" then
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
