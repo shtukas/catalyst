@@ -4,15 +4,15 @@ class Prefix
     # Prefix::polymorphRatio(item)
     def self.polymorphRatio(item)
         if item["engine-2251"] then
-            TxEngine::ratio(item["engine-2251"]) < 1
+            TxEngine::ratio(item["engine-2251"])
         else
-            Bank::recoveredAverageHoursPerDay(item["uuid"]) < 1
+            Bank::recoveredAverageHoursPerDay(item["uuid"])
         end
     end
 
     # Prefix::responsibleRatio(item)
     def self.responsibleRatio(item)
-        vs = [Prefix::polymorphRatio(item)] + TxCores::childrenInOrder(item).map{|i| Prefix::responsibleRatio(item) }
+        vs = [Prefix::polymorphRatio(item)] + TxCores::childrenInOrder(item).map{|i| Prefix::responsibleRatio(i) }
         vs.max
     end
 

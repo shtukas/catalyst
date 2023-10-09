@@ -131,6 +131,7 @@ class Listing
     # Listing::items()
     def self.items()
         [
+            NxBalls::runningItems(),
             DropBox::items(),
             DxStack::itemsInOrder(),
             Waves::listingItems().select{|item| item["interruption"] },
