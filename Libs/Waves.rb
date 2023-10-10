@@ -114,16 +114,16 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit(uuid, "Wave")
+        Updates::itemInit(uuid, "Wave")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "nx46", nx46)
-        Broadcasts::publishItemAttributeUpdate(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        Broadcasts::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Broadcasts::publishItemAttributeUpdate(uuid, "interruption", interruption)
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "nx46", nx46)
+        Updates::itemAttributeUpdate(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Updates::itemAttributeUpdate(uuid, "interruption", interruption)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -158,8 +158,8 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        Updates::itemAttributeUpdate(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -183,23 +183,23 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", description)
+                Updates::itemAttributeUpdate(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "nx46", nx46)
+                Updates::itemAttributeUpdate(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveDone(item)
                 return
             end
             if action == "set priority" then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
+                Updates::itemAttributeUpdate(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "onlyOnDays", days)
+                Updates::itemAttributeUpdate(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then

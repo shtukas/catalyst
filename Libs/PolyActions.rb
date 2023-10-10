@@ -281,6 +281,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", description)
+        Updates::itemAttributeUpdate(item["uuid"], "description", description)
     end
 end

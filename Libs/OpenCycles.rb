@@ -48,7 +48,7 @@ class OpenCycles
             message = "> required item for open cycle folder: #{File.basename(location)}"
             item = OpenCycles::makeItemOrNull(message)
             next if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "open-cycle-1143", id)
+            Updates::itemAttributeUpdate(item["uuid"], "open-cycle-1143", id)
         }
     end
 
