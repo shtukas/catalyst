@@ -7,4 +7,8 @@ NxTask:
     - description     : String
     - field11         : null or CoreData reference string
     - global-position : float
-    - red-2029        : (optional) boolean
+
+    - red-1854        : (optional) "YYYY-MM-DD"
+    - position-1941   : (optional) {date: "YYYY-MM-DD", position: float}
+                        attribute carried by NxTasks and NxOndates, positioning in the listing block
+

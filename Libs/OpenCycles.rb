@@ -49,10 +49,6 @@ class OpenCycles
             item = OpenCycles::makeItemOrNull(message)
             next if item.nil?
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "open-cycle-1143", id)
-            core = TxCores::interactivelySelectOneOrNull()
-            if core then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-            end
         }
     end
 

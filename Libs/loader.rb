@@ -146,9 +146,7 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
 require_relative "Dives.rb"
-require_relative "DxStack.rb"
 require_relative "DataOperators.rb"
-require_relative "DayTime.rb"
 
 require_relative "EventsTimelineProcessor.rb"
 
@@ -179,7 +177,7 @@ require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
 
-require_relative "TxCores.rb"
+require_relative "NxThreads.rb"
 require_relative "TmpSkip1.rb"
 
 require_relative "Waves.rb"

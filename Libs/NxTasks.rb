@@ -75,22 +75,25 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = "🔹"
-        if item["red-2029"] then
+        if item["red-1854"] == CommonUtils::today() then
             icon = "🔺"
         end
-        if Catalyst::children(item).size > 0 then
-            icon = "📃"
-        end
-        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
+        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::orphans()
     def self.orphans()
         Catalyst::mikuType("NxTask")
-            .select{|item| item["coreX-2300"].nil? }
             .select{|item| item["parent-1328"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
+    end
+
+    # NxTasks::redItems()
+    def self.redItems()
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["red-1854"] == CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # --------------------------------------------------
@@ -119,12 +122,6 @@ class NxTasks
 
     # NxTasks::maintenance()
     def self.maintenance()
-
-        Catalyst::mikuType("NxTask").each{|item|
-            if item["coreX-2300"] and Catalyst::itemOrNull(item["coreX-2300"]).nil? then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", nil)
-            end
-        }
 
         Catalyst::mikuType("NxTask").each{|item|
             if item["parent-1328"] and Catalyst::itemOrNull(item["parent-1328"]).nil? then

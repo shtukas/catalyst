@@ -5,18 +5,18 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | core (<n>) | unstack (<n>) | active (<n>) | unparent <n> | red (*) | unred (*) | day time  * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | active (<n>) | unparent <n> | red (*) | unred (*) | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
             "              : (ondate) >task (<n>)",
             "",
-            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | stack+ | stack * | pile",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | cores | actives",
+            "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | pile | thread",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxTask        : red (<n>)",
-            "misc          : search | speed | commands | edit <n> | sort | move | rise | day time unproductive",
+            "misc          : search | speed | commands | edit <n> | sort | move | morning",
         ].join("\n")
     end
 
@@ -26,7 +26,6 @@ class ListingCommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                DxStack::unregister(item)
                 return
             end
         end
@@ -55,7 +54,6 @@ class ListingCommandsAndInterpreters
                 return
             end
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
             return
         end
 
@@ -69,7 +67,6 @@ class ListingCommandsAndInterpreters
                 return
             end
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
             return
         end
 
@@ -84,6 +81,20 @@ class ListingCommandsAndInterpreters
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+        if Interpreting::match("tothread *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", description)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "hours", hours)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "lastResetTime", 0)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "capsule", SecureRandom.hex)
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxThread")
             return
         end
 
@@ -107,49 +118,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
-            TxCores::program2()
-            return
-        end
-
-        if Interpreting::match("day time unproductive", input) then
-            DayTime::issueUnproductive()
-            return
-        end
-
-        if Interpreting::match("rise", input) then
-            # 1. select some items
-            # 2. sort them
-
-            puts "Select what to do today (order doesn't matter)"
-            sleep 2
-            i2s, _ = LucilleCore::selectZeroOrMore("items", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
-            return if i2s.size == 0
-            puts "You have selected #{i2s.size} items. Now putting them in order"
-            sleep 2
-
-            i3s, _ = LucilleCore::selectZeroOrMore("items", [], i2s, lambda{|item| PolyFunctions::toString(item) })
-
-            (i3s + i2s)
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
-                .reverse
-                .each{|item|
-                    Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
-                }
-            return
-        end
-
-        if Interpreting::match("day time *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            DayTime::issue(item)
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
@@ -160,10 +130,25 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("sort", input) then
+            items = Catalyst::mikuType("NxOndate") + NxTasks::redItems()
+            t1, t2 = LucilleCore::selectZeroOrMore("sorting", [], items, lambda {|i| PolyFunctions::toString(i) })
+            selected =  t1 + t2
+            position = 0
+            selected.each{|item|
+                position = position + 1
+                data = {
+                    "date"     => CommonUtils::today(),
+                    "position" => position
+                }
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "position-1941", data)
+            }
+            return
+        end
+
         if Interpreting::match("unred", input) then
             item = store.getDefault()
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", false)
             return
         end
 
@@ -171,14 +156,18 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", false)
             return
         end
 
         if Interpreting::match("red", input) then
             item = store.getDefault()
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
+            if item["mikuType"] != "NxTask" then
+                puts "We only red NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
             return
         end
 
@@ -186,7 +175,12 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
+            if item["mikuType"] != "NxTask" then
+                puts "We only red NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
             return
         end
 
@@ -213,82 +207,10 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("core", input) then
-            item = store.getDefault()
+        if Interpreting::match("thread", input) then
+            item = NxThreads::interactivelyIssueNewOrNull()
             return if item.nil?
-            puts PolyFunctions::toString(item).green
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-            if item["description"].include?("(buffer-in)") then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            end
-            return
-        end
-
-        if Interpreting::match("core *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts PolyFunctions::toString(item).green
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-            if item["description"].include?("(buffer-in)") then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            end
-            return
-        end
-
-        if Interpreting::match("actives", input) then
-            Catalyst::program2(Catalyst::redInOrder())
-            return
-        end
-
-        if Interpreting::match("stack+", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            task = NxTasks::descriptionToTask1(Time.new.to_f.to_s, description)
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            Broadcasts::publishItemAttributeUpdate(task["uuid"], "stack-0012", [CommonUtils::today(), position])
-            return
-        end
-
-        if Interpreting::match("stack *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
-            return
-        end
-
-        if Interpreting::match("unstack", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
-            return
-        end
-
-        if Interpreting::match("unstack *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", nil)
-            return
-        end
-
-        if Interpreting::match("pile", input) then
-            DxStack::pile3()
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            items = store.items()
-            selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| "#{DxStack::prefix(item)}#{PolyFunctions::toString(item)}" })
-            selected.reverse.each{|item|
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), DxStack::newFirstPosition()])
-            }
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -302,6 +224,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("unparent *", input) then
+            _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
@@ -422,7 +345,6 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            DxStack::unregister(item)
             return
         end
 
@@ -433,7 +355,6 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            DxStack::unregister(item)
             return
         end
 

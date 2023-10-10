@@ -36,7 +36,7 @@ class Fsck
             end
             return
         end
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxThread" then
             return
         end 
         if item["mikuType"] == "Wave" then

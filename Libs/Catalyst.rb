@@ -7,7 +7,7 @@ class Catalyst
         if item["mikuType"] == "NxTask" then
             return Bank::recoveredAverageHoursPerDay(item["uuid"])
         end
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxThread" then
             hours = item["hours"]
             return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
         end
@@ -96,13 +96,6 @@ class Catalyst
         t + 1
     end
 
-    # Catalyst::redInOrder()
-    def self.redInOrder()
-        Catalyst::catalystItems()
-            .select{|item| item["red-2029"] }
-            .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-    end
-
     # Catalyst::appendAtEndOfChildrenSequence(parent, item)
     def self.appendAtEndOfChildrenSequence(parent, item)
         Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
@@ -118,7 +111,7 @@ class Catalyst
     # Catalyst::pile3(item)
     def self.pile3(item)
         if item["mikuType"] == "NxCore" then
-            TxCores::pile3(core)
+            NxThreads::pile3(core)
             return
         end
         puts "Piling on elements of '#{PolyFunctions::toString(item)}'"
@@ -140,77 +133,6 @@ class Catalyst
         Catalyst::catalystItems()
             .select{|item| item["parent-1328"] == parent["uuid"] }
             .sort_by{|item| item["global-position"] || 0 }
-    end
-
-    # Catalyst::program1(parent)
-    def self.program1(parent)
-        loop {
-
-            parent = Catalyst::itemOrNull(parent["uuid"])
-            return if parent.nil?
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts  ""
-            store.register(parent, false)
-            puts  Listing::toString2(store, parent)
-            puts  ""
-
-            Catalyst::children(parent)
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
-                }
-
-            puts ""
-            puts "task | pile | position * |sort | move"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "task" then
-                task = NxTasks::interactivelyIssueNewOrNull()
-                next if task.nil?
-                puts JSON.pretty_generate(task)
-                Broadcasts::publishItemAttributeUpdate(task["uuid"], "parent-1328", parent["uuid"])
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Broadcasts::publishItemAttributeUpdate(task["uuid"], "global-position", position)
-                next
-            end
-
-            if input == "pile" then
-                Catalyst::pile3(parent)
-                next
-            end
-
-            if Interpreting::match("position *", input) then
-                _, listord = Interpreting::tokenizer(input)
-                item = store.get(listord.to_i)
-                next if item.nil?
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", position)
-                next
-            end
-
-            if input == "sort" then
-                items = Catalyst::children(parent)
-                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
-                selected.reverse.each{|item|
-                    Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
-                }
-                next
-            end
-
-            if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedParent(TxCores::childrenInOrder(parent))
-                next
-            end
-
-            puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
-        }
     end
 
     # Catalyst::program2(elements)
@@ -263,76 +185,6 @@ class Catalyst
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # Catalyst::setDrivingForce(item)
-    def self.setDrivingForce(item)
-        options = [
-            "set core",
-            "stack (top position)",
-            "red mark",
-            "interactively select parent"
-        ]
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        return if option.nil?
-        if option == "set core" then
-            core = TxCores::interactivelySelectOneOrNull()
-            if core then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
-            end
-        end
-        if option == "stack (top position)" then
-            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
-        end
-        if option == "red mark" then
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-2029", true)
-            Catalyst::setDrivingForce(item)
-        end
-        if option == "interactively select parent" then
-            parent = Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(nil)
-            if parent then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent)
-            end
-            Catalyst::setDrivingForce(item)
-        end
-    end
-
-    # Catalyst::interactivelySelectOneItemOrNull(items)
-    def self.interactivelySelectOneItemOrNull(items)
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|item| PolyFunctions::toString(item) })
-    end
-
-    # Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(context)
-    def self.interactivelySelectParentOrNullUsingTopDownNavigation(context)
-        if context.nil? then
-            options = ["no parent (default)", "select core"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            if option.nil? or option == "no parent (default)" then
-                return nil
-            end
-            if option == "select core" then
-                core = TxCores::interactivelySelectOneOrNull()
-                if core then
-                    return Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(core)
-                else
-                    return Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation(nil)
-                end
-            end
-        else
-            return context
-        end
-    end
-
-    # Catalyst::selectSubsetAndMoveToSelectedParent(items)
-    def self.selectSubsetAndMoveToSelectedParent(items)
-        selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
-        return if selected.empty?
-        parent = Catalyst::interactivelySelectParentOrNullUsingTopDownNavigation()
-        return if parent.nil?
-        selected.each{|item|
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
         }
     end
 end

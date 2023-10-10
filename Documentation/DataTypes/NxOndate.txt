@@ -1,9 +1,11 @@
 
 NxOndate
-    "uuid"        : uuid
-    "mikuType"    : "NxOndate"
-    "unixtime"    : Float
-    "datetime"    : DateTime Iso 8601 UTC Zulu
-    "description" : description,
-    "field11"     : coredataref
+    - uuid        : uuid
+    - mikuType    : "NxOndate"
+    - unixtime    : Float
+    - datetime    : DateTime Iso 8601 UTC Zulu
+    - description : description,
+    - field11     : coredataref
 
+    - position-1941 : (optional) {date: "YYYY-MM-DD", position: float}
+                      attribute carried by NxTasks and NxOndates, positioning in the listing block

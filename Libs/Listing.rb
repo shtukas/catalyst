@@ -68,8 +68,6 @@ class Listing
 
         return true if NxBalls::itemIsRunning(item)
 
-        return false if (item["red-2029"] and DxStack::prefix(item).size == 0)
-
         return false if !DoNotShowUntil::isVisible(item)
 
         return false if TmpSkip1::isSkipped(item)
@@ -87,7 +85,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{DayTime::suffix(item).green}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -104,21 +102,10 @@ class Listing
         line
     end
 
-    # Listing::stack()
-    def self.stack()
-        [
-            NxOndates::listingItems(),
-            Backups::listingItems()
-        ]
-            .flatten
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
+    # Listing::block()
+    def self.block()
+        t1, t2 = (NxOndates::listingItems() + NxTasks::redItems()).partition{|item| item["position-1941"] and item["position-1941"]["date"] == CommonUtils::today() }
+        t1.sort_by{|item| item["position-1941"]["position"] } + t2.sort_by{|item| item["unixtime"] }
     end
 
     # Listing::items()
@@ -126,18 +113,15 @@ class Listing
         [
             NxBalls::runningItems(),
             DropBox::items(),
-            DxStack::itemsInOrder(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             Anniversaries::listingItems(),
             Desktop::listingItems(),
-            DayTime::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            NxOndates::listingItems(),
-            Catalyst::redInOrder(),
+            Listing::block(),
             NxTasks::orphans(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            TxCores::listingItems(),
+            NxThreads::listingItems(),
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -165,7 +149,7 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTasks::orphans()", lambda{ NxTasks::orphans() })
-        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
+        spot.contest_entry("NxThreads::listingItems()", lambda{ NxThreads::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()
@@ -194,10 +178,10 @@ class Listing
             puts "> Listing::maintenance() on primary instance"
             NxTasks::maintenance()
             OpenCycles::maintenance()
-            TxCores::maintenance2()
+            NxThreads::maintenance2()
             OpenCycles::maintenance()
         end
-        TxCores::maintenance3()
+        NxThreads::maintenance3()
     end
 
     # Listing::launchNxBallMonitor()
@@ -249,13 +233,12 @@ class Listing
 
             EventsTimelineProcessor::procesLine()
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 5)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
             system("clear")
 
             spacecontrol.putsline ""
-            puts "DayTime::cummulatedDayTimeLeft(): #{DayTime::cummulatedDayTimeLeft().to_s.green}, DayTime::getTodayUnproductiveHours(): #{DayTime::getTodayUnproductiveHours().to_s.green}, DayTime::completionETA(): #{DayTime::completionETA().green}"
 
             Prefix::prefix(Listing::items())
                 .each{|item|

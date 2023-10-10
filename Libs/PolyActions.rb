@@ -29,8 +29,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -56,7 +56,6 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        DxStack::unregister(item)
 
         # order: alphabetical order
 
@@ -103,12 +102,11 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
-            DxStack::unregister(item)
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            puts "You cannot done a TxCore"
+        if item["mikuType"] == "NxThread" then
+            puts "You cannot done a NxThread"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -158,9 +156,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            if TxCores::childrenInOrder(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::childrenInOrder(item).size} elements"
+        if item["mikuType"] == "NxThread" then
+            if Catalyst::children(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Catalyst::children(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -215,7 +213,6 @@ class PolyActions
         if item["mikuType"] == "PhysicalTarget" then
             PolyFunctions::toString(item).green
             PhysicalTargets::access(item)
-            DxStack::unregister(item)
             return
         end
 
@@ -230,7 +227,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end
