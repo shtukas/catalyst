@@ -68,6 +68,10 @@ class EventsTimelineProcessor
                     "mikuType" => mikuType
                 }
             else
+                puts "Received init for an existing item"
+                puts "pre-existing item: #{JSON.pretty_generate(item)}"
+                puts "event: #{JSON.pretty_generate(event)}"
+                LucilleCore::pressEnterToContinue()
                 item["mikuType"] = mikuType
             end
 
@@ -88,11 +92,14 @@ class EventsTimelineProcessor
             attvalue = event["payload"]["attvalue"]
             item = Catalyst::itemOrNull(itemuuid)
             if item.nil? then
+                puts "Generating a Phantom"
                 item = {
                     "uuid"     => itemuuid,
                     "mikuType" => "NxThePhantomMenace",
                     "unixtime" => Time.new.to_i
                 }
+                puts JSON.pretty_generate(item)
+                LucilleCore::pressEnterToContinue()
             end
             item[attname] = attvalue
             filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"

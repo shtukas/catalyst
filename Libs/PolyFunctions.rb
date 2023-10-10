@@ -20,13 +20,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxStrat" then
-            b = Catalyst::itemOrNull(item["bottom"])
-            if b then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(b)
-            end
-        end
-
         # Special Features
 
         if item["coreX-2300"] then
@@ -86,9 +79,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
-        end
-        if item["mikuType"] == "NxStrat" then
-            return Stratification::toString(item)
         end
         if item["mikuType"] == "TxCore" then
             return TxCores::toString(item)

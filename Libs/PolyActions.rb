@@ -44,10 +44,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::access(item)
             return
@@ -124,18 +120,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "You are trying to destroy a strat item which has a top element. Operation forbidden."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -177,18 +161,6 @@ class PolyActions
         if item["mikuType"] == "TxCore" then
             if TxCores::childrenInOrder(item).size > 0 then
                 puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::childrenInOrder(item).size} elements"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "You are trying to destroy a strat item which has a top element. Operation forbidden."
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -260,10 +232,6 @@ class PolyActions
 
         if item["mikuType"] == "TxCore" then
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
             return
         end
 

@@ -11,9 +11,6 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        # We need to create the blade before we call CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull
-        # because the blade need to exist for aion points data blobs to have a place to go.
-
         uuid = SecureRandom.uuid
         Broadcasts::publishItemInit(uuid, "NxTask")
 

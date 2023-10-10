@@ -1,8 +1,0 @@
-
-NxStrat:
-    "uuid"        : String
-    "mikuType"    : "NxStrat"
-    "unixtime"    : Float
-    "description" : String
-    "bottom"      : String
-
