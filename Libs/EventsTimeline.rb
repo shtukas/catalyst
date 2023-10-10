@@ -90,7 +90,7 @@ class EventsTimeline
             if item.nil? then
                 item = {
                     "uuid"     => itemuuid,
-                    "mikuType" => "NxThePhantomMenace"
+                    "mikuType" => "NxThePhantomMenace",
                     "unixtime" => Time.new.to_i
                 }
             end
