@@ -1,14 +1,14 @@
 
-class EventsTimeline
+class EventsTimelineProcessor
 
-    # EventsTimeline::eventsTimelineLocation()
+    # EventsTimelineProcessor::eventsTimelineLocation()
     def self.eventsTimelineLocation()
         "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/events-timeline"
     end
 
-    # EventsTimeline::firstFilepathOrNull()
+    # EventsTimelineProcessor::firstFilepathOrNull()
     def self.firstFilepathOrNull()
-        LucilleCore::locationsAtFolder(EventsTimeline::eventsTimelineLocation()).sort.each{|locationYear|
+        LucilleCore::locationsAtFolder(EventsTimelineProcessor::eventsTimelineLocation()).sort.each{|locationYear|
             LucilleCore::locationsAtFolder(locationYear).sort.each{|locationMonth|
                 LucilleCore::locationsAtFolder(locationMonth).sort.each{|locationDay|
                     LucilleCore::locationsAtFolder(locationDay).sort.each{|locationIndexFolder|
@@ -36,7 +36,7 @@ class EventsTimeline
         nil
     end
 
-    # EventsTimeline::digestEvent(event)
+    # EventsTimelineProcessor::digestEvent(event)
     def self.digestEvent(event)
 
         if event["eventType"] == "DoNotShowUntil2" then
@@ -135,15 +135,15 @@ class EventsTimeline
         raise "(error: 0d1295ae-b021-42f7-b419-3214ac0a917f) cannot digest event: #{event}"
     end
 
-    # EventsTimeline::procesLine()
+    # EventsTimelineProcessor::procesLine()
     def self.procesLine()
         loop {
-            filepath = EventsTimeline::firstFilepathOrNull()
+            filepath = EventsTimelineProcessor::firstFilepathOrNull()
             return if filepath.nil?
             puts "processing: #{filepath}"
             event = JSON.parse(IO.read(filepath))
             return if (Time.new.to_i - event["unixtime"]) < 300
-            EventsTimeline::digestEvent(event)
+            EventsTimelineProcessor::digestEvent(event)
             FileUtils.rm(filepath)
         }
     end

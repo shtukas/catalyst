@@ -246,7 +246,7 @@ class Listing
                 Listing::maintenance()
             end
 
-            EventsTimeline::procesLine()
+            EventsTimelineProcessor::procesLine()
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 5)
             store = ItemStore.new()
