@@ -4,28 +4,6 @@ class NxThreads
     # -----------------------------------------------
     # Build
 
-    # NxThreads::make(uuid, description, hours, capsule)
-    def self.make(uuid, description, hours, capsule)
-        {
-            "uuid"          => uuid,
-            "mikuType"      => "NxThread",
-            "description"   => description,
-            "hours"         => hours.to_f,
-            "lastResetTime" => Time.new.to_f,
-            "capsule"       => capsule
-        }
-    end
-
-    # NxThreads::interactivelyMakeOrNull()
-    def self.interactivelyMakeOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("description (empty for abort): ")
-        return nil if description == ""
-        hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
-        return nil if hours == ""
-        return nil if hours == "0"
-        NxThreads::make(SecureRandom.uuid, description, hours, SecureRandom.hex)
-    end
-
     # NxThreads::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")

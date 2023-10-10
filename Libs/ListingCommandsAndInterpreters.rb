@@ -131,7 +131,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            items = Catalyst::mikuType("NxOndate") + NxTasks::redItems()
+            items = Catalyst::mikuType("NxOndate") + NxTasks::redItems() + Waves::listingItems()
             t1, t2 = LucilleCore::selectZeroOrMore("sorting", [], items, lambda {|i| PolyFunctions::toString(i) })
             selected =  t1 + t2
             position = 0

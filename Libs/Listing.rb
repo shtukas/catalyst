@@ -104,7 +104,8 @@ class Listing
 
     # Listing::block()
     def self.block()
-        t1, t2 = (NxOndates::listingItems() + NxTasks::redItems()).partition{|item| item["position-1941"] and item["position-1941"]["date"] == CommonUtils::today() }
+        items = NxOndates::listingItems() + NxTasks::redItems() + Waves::listingItems()
+        t1, t2 = items.partition{|item| item["position-1941"] and item["position-1941"]["date"] == CommonUtils::today() }
         t1.sort_by{|item| item["position-1941"]["position"] } + t2.sort_by{|item| item["unixtime"] }
     end
 
@@ -114,13 +115,11 @@ class Listing
             NxBalls::runningItems(),
             DropBox::items(),
             PhysicalTargets::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             Listing::block(),
             NxTasks::orphans(),
-            Waves::listingItems().select{|item| !item["interruption"] },
             NxThreads::listingItems(),
         ]
             .flatten

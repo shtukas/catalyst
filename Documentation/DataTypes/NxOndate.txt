@@ -8,4 +8,4 @@ NxOndate
     - field11     : coredataref
 
     - position-1941 : (optional) {date: "YYYY-MM-DD", position: float}
-                      attribute carried by NxTasks and NxOndates, positioning in the listing block
+                      attribute carried by NxTasks, NxOndates and Waves, positioning in the listing block

@@ -15,6 +15,9 @@ Wave :
     "onlyOnDays"       : null or Array[week days names lowercase english] 
                          Indicates on which days the wave can show up
 
+    - position-1941 : (optional) {date: "YYYY-MM-DD", position: float}
+                      attribute carried by NxTasks, NxOndates and Waves, positioning in the listing block
+
 Nx46 {
     "type"  : Nx46Type
     "value" : Nx46Value
