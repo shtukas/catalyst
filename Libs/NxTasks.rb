@@ -12,15 +12,15 @@ class NxTasks
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit(uuid, "NxTask")
+        Updates::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Broadcasts::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Updates::itemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
 
         Catalyst::itemOrNull(uuid)
     end
@@ -30,15 +30,15 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Broadcasts::publishItemInit(uuid, "NxTask")
+        Updates::itemInit(uuid, "NxTask")
 
         nhash = Datablobs::putBlob(url)
         coredataref = "url:#{nhash}"
 
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -47,25 +47,25 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Broadcasts::publishItemInit(uuid, "NxTask")
+        Updates::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "field11", coredataref)
-        Broadcasts::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Updates::itemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask1(uuid, description)
     def self.descriptionToTask1(uuid, description)
-        Broadcasts::publishItemInit(uuid, "NxTask")
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
+        Updates::itemInit(uuid, "NxTask")
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
         Catalyst::itemOrNull(uuid)
     end
 
@@ -125,7 +125,7 @@ class NxTasks
 
         Catalyst::mikuType("NxTask").each{|item|
             if item["parent-1328"] and Catalyst::itemOrNull(item["parent-1328"]).nil? then
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
+                Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
             end
         }
 

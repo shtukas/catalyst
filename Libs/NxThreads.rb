@@ -15,15 +15,15 @@ class NxThreads
         return nil if hours == 0
 
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit(uuid, "NxThread")
+        Updates::itemInit(uuid, "NxThread")
 
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "hours", hours)
-        Broadcasts::publishItemAttributeUpdate(uuid, "lastResetTime", Time.new.to_f)
-        Broadcasts::publishItemAttributeUpdate(uuid, "capsule", SecureRandom.hex)
-        Broadcasts::publishItemAttributeUpdate(uuid, "global-position", rand)
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "hours", hours)
+        Updates::itemAttributeUpdate(uuid, "lastResetTime", Time.new.to_f)
+        Updates::itemAttributeUpdate(uuid, "capsule", SecureRandom.hex)
+        Updates::itemAttributeUpdate(uuid, "global-position", rand)
 
         Catalyst::itemOrNull(uuid)
     end
@@ -100,8 +100,8 @@ class NxThreads
             end
         end
         item["lastResetTime"] = Time.new.to_i
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "hours", item["hours"])
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "lastResetTime", item["lastResetTime"])
+        Updates::itemAttributeUpdate(item["uuid"], "hours", item["hours"])
+        Updates::itemAttributeUpdate(item["uuid"], "lastResetTime", item["lastResetTime"])
     end
 
     # NxThreads::maintenance2()
@@ -126,7 +126,7 @@ class NxThreads
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Broadcasts::publishItemAttributeUpdate(task["uuid"], "parent-1328", item["uuid"])
+                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", item["uuid"])
             }
     end
 
@@ -162,9 +162,9 @@ class NxThreads
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Broadcasts::publishItemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
+                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Broadcasts::publishItemAttributeUpdate(task["uuid"], "global-position", position)
+                Updates::itemAttributeUpdate(task["uuid"], "global-position", position)
                 next
             end
 
@@ -178,7 +178,7 @@ class NxThreads
                 item = store.get(listord.to_i)
                 next if item.nil?
                 position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", position)
+                Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
                 next
             end
 
@@ -186,7 +186,7 @@ class NxThreads
                 items = Catalyst::children(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
-                    Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+                    Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
                 }
                 next
             end
@@ -197,7 +197,7 @@ class NxThreads
                 target = NxThreads::interactivelySelectOneOrNull()
                 next if target["uuid"] == thread["uuid"]
                 selected.each{|item|
-                    Broadcasts::publishItemAttributeUpdate(task["uuid"], "parent-1328", target["uuid"])
+                    Updates::itemAttributeUpdate(task["uuid"], "parent-1328", target["uuid"])
                 }
                 next
             end
