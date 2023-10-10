@@ -2,18 +2,6 @@
 
 class Catalyst
 
-    # Catalyst::listingCompletionRatio(item)
-    def self.listingCompletionRatio(item)
-        if item["mikuType"] == "NxTask" then
-            return Bank::recoveredAverageHoursPerDay(item["uuid"])
-        end
-        if item["mikuType"] == "NxThread" then
-            hours = item["hours"]
-            return Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/6)
-        end
-        raise "(error: 3b1e3b09-1472-48ef-bcbb-d98c8d170056) with item: #{item}"
-    end
-
     # Catalyst::editItem(item)
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))

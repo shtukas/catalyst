@@ -31,6 +31,11 @@ class NxThreads
     # -----------------------------------------------
     # Data
 
+    # NxThreads::listingCompletionRatio(item)
+    def self.listingCompletionRatio(item)
+        Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(item["hours"].to_f/6)
+    end
+
     # NxThreads::periodCompletionRatio(item)
     def self.periodCompletionRatio(item)
         Bank::getValue(item["capsule"]).to_f/(item["hours"]*3600)
@@ -42,7 +47,7 @@ class NxThreads
 
         padding = XCache::getOrDefaultValue("bf986315-dfd7-44e2-8f00-ebea0271e2b2", "0").to_i
 
-        strings << "🧶 #{item["description"].ljust(padding)}: today: #{"#{"%6.2f" % (100*Catalyst::listingCompletionRatio(item))}%".green} of #{"%5.2f" % (item["hours"].to_f/5)} hours"
+        strings << "🧶 #{item["description"].ljust(padding)}: today: #{"#{"%6.2f" % (100*NxThreads::listingCompletionRatio(item))}%".green} of #{"%5.2f" % (item["hours"].to_f/5)} hours"
         strings << ", period: #{"#{"%6.2f" % (100*NxThreads::periodCompletionRatio(item))}%".green} of #{"%5.2f" % item["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(item["capsule"]) >= item["hours"]*3600
@@ -72,14 +77,14 @@ class NxThreads
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         items = Catalyst::mikuType("NxThread")
-                    .sort_by {|item| Catalyst::listingCompletionRatio(item) }
+                    .sort_by {|item| NxThreads::listingCompletionRatio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|item| NxThreads::toString(item) })
     end
 
     # NxThreads::listingItems()
     def self.listingItems()
         Catalyst::mikuType("NxThread")
-            .sort_by{|item| Catalyst::listingCompletionRatio(item) }
+            .sort_by{|item| NxThreads::listingCompletionRatio(item) }
     end
 
     # -----------------------------------------------
