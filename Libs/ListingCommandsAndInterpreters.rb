@@ -53,7 +53,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
         end
 
@@ -66,7 +66,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
         end
 
@@ -78,9 +78,9 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            Updates::itemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Updates::itemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             return
         end
 
@@ -90,11 +90,11 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             description = LucilleCore::askQuestionAnswerAsString("description: ")
             hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", description)
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "hours", hours)
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "lastResetTime", 0)
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "capsule", SecureRandom.hex)
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxThread")
+            Updates::itemAttributeUpdate(item["uuid"], "description", description)
+            Updates::itemAttributeUpdate(item["uuid"], "hours", hours)
+            Updates::itemAttributeUpdate(item["uuid"], "lastResetTime", 0)
+            Updates::itemAttributeUpdate(item["uuid"], "capsule", SecureRandom.hex)
+            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxThread")
             return
         end
 
@@ -107,9 +107,9 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            Updates::itemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
+            Updates::itemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
+            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             return
         end
 
@@ -141,7 +141,7 @@ class ListingCommandsAndInterpreters
                     "date"     => CommonUtils::today(),
                     "position" => position
                 }
-                Broadcasts::publishItemAttributeUpdate(item["uuid"], "position-1941", data)
+                Updates::itemAttributeUpdate(item["uuid"], "position-1941", data)
             }
             return
         end
@@ -167,7 +167,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
+            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
             return
         end
 
@@ -180,14 +180,14 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
+            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
             return
         end
 
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
+            Updates::itemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -195,7 +195,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
+            Updates::itemAttributeUpdate(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -227,7 +227,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", nil)
+            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
             return
         end
 
@@ -261,7 +261,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "field11", reference)
+            Updates::itemAttributeUpdate(item["uuid"], "field11", reference)
             return
         end
 
@@ -271,7 +271,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "field11", reference)
+            Updates::itemAttributeUpdate(item["uuid"], "field11", reference)
             return
         end
 
@@ -507,7 +507,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            Updates::itemAttributeUpdate(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

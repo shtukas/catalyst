@@ -6,7 +6,7 @@ class Catalyst
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
-            Broadcasts::publishItemAttributeUpdate(item["uuid"], key, value)
+            Updates::itemAttributeUpdate(item["uuid"], key, value)
         }
     end
 
@@ -46,7 +46,7 @@ class Catalyst
 
     # Catalyst::destroy(uuid)
     def self.destroy(uuid)
-        Broadcasts::publishItemDestroy(uuid)
+        Updates::itemDestroy(uuid)
     end
 
     # Catalyst::catalystItems()
@@ -86,14 +86,14 @@ class Catalyst
 
     # Catalyst::appendAtEndOfChildrenSequence(parent, item)
     def self.appendAtEndOfChildrenSequence(parent, item)
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
+        Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
     end
 
     # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
     def self.prependAtBeginingOfChildrenSequence(parent, item)
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+        Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
+        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
     end
 
     # Catalyst::pile3(item)
