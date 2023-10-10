@@ -140,6 +140,7 @@ class Listing
             TxCores::listingItems(),
         ]
             .flatten
+            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
