@@ -87,7 +87,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
+        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{DayTime::suffix(item).green}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -131,6 +131,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Anniversaries::listingItems(),
             Desktop::listingItems(),
+            DayTime::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             Catalyst::redInOrder(),
@@ -247,12 +248,13 @@ class Listing
 
             EventsTimeline::procesLine()
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 5)
             store = ItemStore.new()
 
             system("clear")
 
             spacecontrol.putsline ""
+            puts "DayTime::cummulatedDayTimeLeft(): #{DayTime::cummulatedDayTimeLeft().to_s.green}, DayTime::completionETA(): #{DayTime::completionETA().green}"
 
             Prefix::prefix(Listing::items())
                 .each{|item|

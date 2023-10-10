@@ -148,6 +148,7 @@ require_relative "Datablobs.rb"
 require_relative "Dives.rb"
 require_relative "DxStack.rb"
 require_relative "DataOperators.rb"
+require_relative "DayTime.rb"
 
 require_relative "EventsTimeline.rb"
 
