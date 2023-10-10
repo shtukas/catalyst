@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxTask        : red (<n>)",
-            "misc          : search | speed | commands | edit <n> | sort | move | rise",
+            "misc          : search | speed | commands | edit <n> | sort | move | rise | day time unproductive",
         ].join("\n")
     end
 
@@ -109,6 +109,11 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             TxCores::program2()
+            return
+        end
+
+        if Interpreting::match("day time unproductive", input) then
+            DayTime::issueUnproductive()
             return
         end
 

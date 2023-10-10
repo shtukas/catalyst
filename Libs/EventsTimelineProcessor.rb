@@ -76,7 +76,7 @@ class EventsTimelineProcessor
             db.busy_timeout = 117
             db.busy_handler { |count| true }
             db.results_as_hash = true
-            db.execute "delete from Items where _uuid_=?", [itemuuid]
+            db.execute "delete from Items where _uuid_=?", [item["uuid"]]
             db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
             db.close
             return

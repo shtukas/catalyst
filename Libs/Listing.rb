@@ -254,7 +254,7 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-            puts "DayTime::cummulatedDayTimeLeft(): #{DayTime::cummulatedDayTimeLeft().to_s.green}, DayTime::completionETA(): #{DayTime::completionETA().green}"
+            puts "DayTime::cummulatedDayTimeLeft(): #{DayTime::cummulatedDayTimeLeft().to_s.green}, DayTime::getTodayUnproductiveHours(): #{DayTime::getTodayUnproductiveHours().to_s.green}, DayTime::completionETA(): #{DayTime::completionETA().green}"
 
             Prefix::prefix(Listing::items())
                 .each{|item|
