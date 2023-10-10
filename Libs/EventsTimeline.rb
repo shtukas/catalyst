@@ -58,16 +58,25 @@ class EventsTimeline
             uuid = event["payload"]["uuid"]
             mikuType = event["payload"]["mikuType"]
 
-            item = {
-                "uuid"     => uuid,
-                "mikuType" => mikuType
-            }
+            # We need to deal with attributes and instructions appearing out of order
+            # In particular we could have created a phantom item when we received the attribute update, before the init
+
+            item = Catalyst::itemOrNull(uuid)
+            if item.nil? then
+                item = {
+                    "uuid"     => uuid,
+                    "mikuType" => mikuType
+                }
+            else
+                item["mikuType"] = mikuType
+            end
 
             filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
             db.results_as_hash = true
+            db.execute "delete from Items where _uuid_=?", [itemuuid]
             db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
             db.close
             return
@@ -79,7 +88,11 @@ class EventsTimeline
             attvalue = event["payload"]["attvalue"]
             item = Catalyst::itemOrNull(itemuuid)
             if item.nil? then
-                return
+                item = {
+                    "uuid"     => itemuuid,
+                    "mikuType" => "NxThePhantomMenace"
+                    "unixtime" => Time.new.to_i
+                }
             end
             item[attname] = attvalue
             filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
