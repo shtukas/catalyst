@@ -269,12 +269,19 @@ class Catalyst
     # Catalyst::setDrivingForce(item)
     def self.setDrivingForce(item)
         options = [
+            "set core",
             "stack (top position)",
             "red mark",
             "interactively select parent"
         ]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return if option.nil?
+        if option == "set core" then
+            core = TxCores::interactivelySelectOneOrNull()
+            if core then
+                Broadcasts::publishItemAttributeUpdate(item["uuid"], "coreX-2300", core["uuid"])
+            end
+        end
         if option == "stack (top position)" then
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
             Broadcasts::publishItemAttributeUpdate(item["uuid"], "stack-0012", [CommonUtils::today(), position])
