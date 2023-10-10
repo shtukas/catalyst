@@ -18,7 +18,7 @@ class Updates
     end
 
     # Updates::itemAttributeUpdate(itemuuid, attname, attvalue)
-    def self.publishItemAttributeUpdate(itemuuid, attname, attvalue)
+    def self.itemAttributeUpdate(itemuuid, attname, attvalue)
         item = Catalyst::itemOrNull(itemuuid)
         if item.nil? then
             raise "(error 1219) Updates::itemAttributeUpdate(#{itemuuid}, #{attname}, #{attvalue})"
