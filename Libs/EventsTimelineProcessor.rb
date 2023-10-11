@@ -149,7 +149,6 @@ class EventsTimelineProcessor
             return if filepath.nil?
             puts "processing: #{filepath}"
             event = JSON.parse(IO.read(filepath))
-            return if (Time.new.to_i - event["unixtime"]) < 300
             EventsTimelineProcessor::digestEvent(event)
             FileUtils.rm(filepath)
         }
