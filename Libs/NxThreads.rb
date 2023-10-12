@@ -204,7 +204,7 @@ class NxThreads
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedParent(NxThreads::childrenInOrder(thread))
+                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInOrder(thread))
                 next
             end
 

@@ -160,7 +160,7 @@ class Catalyst
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedParent(elements)
+                Catalyst::selectSubsetAndMoveToSelectedThread(elements)
                 next
             end
 
@@ -169,8 +169,8 @@ class Catalyst
         }
     end
 
-    # Catalyst::selectSubsetAndMoveToSelectedParent(items)
-    def self.selectSubsetAndMoveToSelectedParent(items)
+    # Catalyst::selectSubsetAndMoveToSelectedThread(items)
+    def self.selectSubsetAndMoveToSelectedThread(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
         thread = NxThreads::interactivelySelectOneOrNull()

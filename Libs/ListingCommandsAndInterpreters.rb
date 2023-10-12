@@ -118,7 +118,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("move", input) then
-            Catalyst::selectSubsetAndMoveToSelectedParent(store.items())
+            Catalyst::selectSubsetAndMoveToSelectedThread(store.items())
             return
         end
 
