@@ -176,7 +176,7 @@ class Catalyst
         thread = NxThreads::interactivelySelectOneOrNull()
         return if thread.nil?
         selected.each{|item|
-            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", item["uuid"])
+            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
         }
     end
 end
