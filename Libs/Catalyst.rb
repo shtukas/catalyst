@@ -116,13 +116,6 @@ class Catalyst
             }
     end
 
-    # Catalyst::children(parent)
-    def self.children(parent)
-        Catalyst::catalystItems()
-            .select{|item| item["parent-1328"] == parent["uuid"] }
-            .sort_by{|item| item["global-position"] || 0 }
-    end
-
     # Catalyst::program2(elements)
     def self.program2(elements)
         loop {
@@ -173,6 +166,17 @@ class Catalyst
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # Catalyst::selectSubsetAndMoveToSelectedParent(items)
+    def self.selectSubsetAndMoveToSelectedParent(items)
+        selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
+        return if selected.size == 0
+        thread = NxThreads::interactivelySelectOneOrNull()
+        return if thread.nil?
+        selected.each{|item|
+            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", item["uuid"])
         }
     end
 end

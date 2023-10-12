@@ -6,4 +6,3 @@ Cross types conventions:
     - doNotShowUntil   : null or unixtime
     - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
     - open-cycle-1143  : uuid of the open cycle that this item represents
-    - parent-1328      : (optional) parent uuid

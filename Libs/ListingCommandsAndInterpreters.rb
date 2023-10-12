@@ -53,6 +53,8 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
+            status = NxThreads::interactivelySelectAndInstallInThread(item)
+            return if !status
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -66,6 +68,8 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
+            status = NxThreads::interactivelySelectAndInstallInThread(item)
+            return if !status
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
         end
@@ -146,9 +150,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            thread = NxThreads::interactivelySelectOneOrNull()
+            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
+            return
+        end
+
         if Interpreting::match("unred", input) then
             item = store.getDefault()
             return if item.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "red-1854", nil)
             return
         end
 
@@ -156,6 +169,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "red-1854", nil)
             return
         end
 
@@ -203,7 +217,12 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::setDrivingForce(item)
+            loop {
+                thread = NxThreads::interactivelySelectOneOrNull()
+                next if thread.nil?
+                Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
+                break
+            }
             return
         end
 

@@ -23,7 +23,7 @@ class DoNotShowUntil
             unixtime = row["_unixtime_"]
         end
         db.close
-        unixtime
+        return unixtime if unixtime
 
         unixtime = XCache::getOrNull("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}")
         return unixtime.to_i if unixtime

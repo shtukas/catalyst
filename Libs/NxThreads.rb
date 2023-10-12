@@ -87,6 +87,13 @@ class NxThreads
             .sort_by{|item| NxThreads::listingCompletionRatio(item) }
     end
 
+    # NxThreads::childrenInOrder(parent)
+    def self.childrenInOrder(parent)
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["parent-1328"] == parent["uuid"] }
+            .sort_by{|item| item["global-position"] || 0 }
+    end
+
     # -----------------------------------------------
     # Ops
 
@@ -151,10 +158,10 @@ class NxThreads
             puts  Listing::toString2(store, thread)
             puts  ""
 
-            Catalyst::children(thread)
-                .each{|thread|
-                    store.register(thread, Listing::canBeDefault(thread))
-                    puts  "(#{"%6.2f" % (thread["global-position"] || 0)}) #{Listing::toString2(store, thread)}"
+            NxThreads::childrenInOrder(thread)
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
                 }
 
             puts ""
@@ -188,7 +195,7 @@ class NxThreads
             end
 
             if Interpreting::match("sort", input) then
-                items = Catalyst::children(thread)
+                items = NxThreads::childrenInOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
@@ -197,13 +204,7 @@ class NxThreads
             end
 
             if input == "move" then
-                selected, _ = LucilleCore::selectZeroOrMore(Catalyst::children(thread))
-                next if selected.empty?
-                target = NxThreads::interactivelySelectOneOrNull()
-                next if target["uuid"] == thread["uuid"]
-                selected.each{|item|
-                    Updates::itemAttributeUpdate(task["uuid"], "parent-1328", target["uuid"])
-                }
+                Catalyst::selectSubsetAndMoveToSelectedParent(NxThreads::childrenInOrder(thread))
                 next
             end
 
@@ -219,5 +220,32 @@ class NxThreads
             return if item.nil?
             NxThreads::program1(item)
         }
+    end
+
+    # NxThreads::interactivelySelectAndInstallInThread(item) # boolean
+    def self.interactivelySelectAndInstallInThread(item)
+        thread = NxThreads::interactivelySelectOneOrNull()
+        return false if thread.nil?
+        children = NxThreads::childrenInOrder(thread)
+        children
+            .first(40)
+            .each{|task|
+                puts "(#{"%6.2f" % (task["global-position"] || 0)}) #{PolyFunctions::toString(task)}"
+            }
+        position = LucilleCore::askQuestionAnswerAsString("> position (top, next # default): ")
+        position = lambda {|position|
+            if position == "top" then
+                return ([1] + children.map{|item| item["global-position"] }.compact).min - 1
+            end
+            if position == "" or position == "next" then
+                return ([1] + children.map{|item| item["global-position"] }.compact).max + 1
+            end
+            position.to_f
+        }
+        toBeRed = LucilleCore::askQuestionAnswerAsBoolean("Set to red today ? ", false)
+        Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
+        Updates::itemAttributeUpdate(item["uuid"], "position-1941", position)
+        Updates::itemAttributeUpdate(item["uuid"], "red-1854", toBeRed)
+        true
     end
 end

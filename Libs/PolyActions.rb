@@ -157,8 +157,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if Catalyst::children(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{Catalyst::children(item).size} elements"
+            if NxThreads::childrenInOrder(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{NxThreads::childrenInOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -204,8 +204,13 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxBalls::stop(item)
             end
-            if Catalyst::children(item).empty? and LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            return if NxBalls::itemIsActive(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
                 Catalyst::destroy(item["uuid"])
+            else
+                if item["parent-1328"].nil? then
+                    NxThreads::interactivelySelectAndInstallInThread(item)
+                end
             end
             return
         end
