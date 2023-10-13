@@ -158,6 +158,21 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("red", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
+            return
+        end
+
+        if Interpreting::match("red *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
+            return
+        end
+
         if Interpreting::match("unred", input) then
             item = store.getDefault()
             return if item.nil?
@@ -170,31 +185,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Updates::itemAttributeUpdate(item["uuid"], "red-1854", nil)
-            return
-        end
-
-        if Interpreting::match("red", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "We only red NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
-            return
-        end
-
-        if Interpreting::match("red *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "We only red NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
             return
         end
 
