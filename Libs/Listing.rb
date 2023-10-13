@@ -104,9 +104,9 @@ class Listing
 
     # Listing::block()
     def self.block()
-        items = NxOndates::listingItems() + NxTasks::redItems() + Waves::listingItems()
+        items = Waves::listingItems() + NxOndates::listingItems() + NxTasks::redItems()
         t1, t2 = items.partition{|item| item["position-1941"] and item["position-1941"]["date"] == CommonUtils::today() }
-        t1.sort_by{|item| item["position-1941"]["position"] } + t2.sort_by{|item| item["unixtime"] }
+        t1.sort_by{|item| item["position-1941"]["position"] } + t2
     end
 
     # Listing::items()
