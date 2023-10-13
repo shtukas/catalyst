@@ -177,7 +177,7 @@ class Listing
             puts "> Listing::maintenance() on primary instance"
             NxTasks::maintenance()
             OpenCycles::maintenance()
-            NxThreads::maintenance2()
+            Catalyst::maintenance0924()
             OpenCycles::maintenance()
         end
         NxThreads::maintenance3()

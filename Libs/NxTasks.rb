@@ -108,7 +108,9 @@ class NxTasks
     def self.maintenance()
 
         Catalyst::mikuType("NxTask").each{|item|
-            if item["parent-1328"] and Catalyst::itemOrNull(item["parent-1328"]).nil? then
+            next if item["parent-1328"].nil?
+            parent = Catalyst::itemOrNull(item["parent-1328"])
+            if parent.nil? or parent["mikuType"] != "NxThread" then
                 Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
             end
         }

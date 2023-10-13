@@ -1,12 +1,6 @@
 
 TxEngine
-    "uuid"     => SecureRandom.hex,
-    "mikuType" => "TxEngine",
-    "type"     => "recovery-time",
-    "rt"       => rt
-
-TxEngine
-    "uuid"      => SecureRandom.hex,
-    "mikuType"  => "TxEngine",
-    "type"      => "recovery-time2",
-    "week-time" => float
+    "uuid"          : String
+    "hours"         : Float
+    "lastResetTime" : Unixtime
+    "capsule"       : String

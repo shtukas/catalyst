@@ -20,9 +20,7 @@ class NxThreads
         Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "hours", hours)
-        Updates::itemAttributeUpdate(uuid, "lastResetTime", Time.new.to_f)
-        Updates::itemAttributeUpdate(uuid, "capsule", SecureRandom.hex)
+        Updates::itemAttributeUpdate(uuid, "engine-0916", TxEngines::make(hours))
         Updates::itemAttributeUpdate(uuid, "global-position", rand)
 
         Catalyst::itemOrNull(uuid)
@@ -33,45 +31,17 @@ class NxThreads
 
     # NxThreads::listingCompletionRatio(item)
     def self.listingCompletionRatio(item)
-        Bank::recoveredAverageHoursPerDay(item["uuid"]).to_f/(item["hours"].to_f/6)
+        TxEngines::listingCompletionRatio(item["engine-0916"])
     end
 
     # NxThreads::periodCompletionRatio(item)
     def self.periodCompletionRatio(item)
-        Bank::getValue(item["capsule"]).to_f/(item["hours"]*3600)
+        TxEngines::periodCompletionRatio(item["engine-0916"])
     end
 
     # NxThreads::toString(item)
     def self.toString(item)
-        strings = []
-
-        padding = XCache::getOrDefaultValue("bf986315-dfd7-44e2-8f00-ebea0271e2b2", "0").to_i
-
-        strings << "🧶 #{item["description"].ljust(padding)}: today: #{"#{"%6.2f" % (100*NxThreads::listingCompletionRatio(item))}%".green} of #{"%5.2f" % (item["hours"].to_f/5)} hours"
-        strings << ", period: #{"#{"%6.2f" % (100*NxThreads::periodCompletionRatio(item))}%".green} of #{"%5.2f" % item["hours"]} hours"
-
-        hasReachedObjective = Bank::getValue(item["capsule"]) >= item["hours"]*3600
-        timeSinceResetInDays = (Time.new.to_i - item["lastResetTime"]).to_f/86400
-        itHassBeenAWeek = timeSinceResetInDays >= 7
-
-        if hasReachedObjective and itHassBeenAWeek then
-            strings << ", awaiting data management"
-        end
-
-        if hasReachedObjective and !itHassBeenAWeek then
-            strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset"
-        end
-
-        if !hasReachedObjective and !itHassBeenAWeek then
-            strings << ", #{(item["hours"] - Bank::getValue(item["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
-        end
-
-        if !hasReachedObjective and itHassBeenAWeek then
-            strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
-        end
-
-        strings << ""
-        strings.join()
+        "🧶 #{TxEngines::prefix(item)}#{item["description"]}"
     end
 
     # NxThreads::interactivelySelectOneOrNull()
@@ -114,11 +84,6 @@ class NxThreads
         item["lastResetTime"] = Time.new.to_i
         Updates::itemAttributeUpdate(item["uuid"], "hours", item["hours"])
         Updates::itemAttributeUpdate(item["uuid"], "lastResetTime", item["lastResetTime"])
-    end
-
-    # NxThreads::maintenance2()
-    def self.maintenance2()
-        Catalyst::mikuType("NxThread").each{|item| NxThreads::maintenance1(item) }
     end
 
     # NxThreads::maintenance3()

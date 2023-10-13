@@ -1,8 +1,6 @@
 
 NxThread
-    "uuid"          : Float
-    "mikuType"      : "NxThread"
-    "description"   : String
-    "hours"         : Float
-    "lastResetTime" : Unixtime
-    "capsule"       : String
+    "uuid"        : Float
+    "mikuType"    : "NxThread"
+    "description" : String
+    "engine-0916" : TxEngine
