@@ -28,6 +28,7 @@ class TxEngines
 
     # TxEngines::listingCompletionRatio(engine)
     def self.listingCompletionRatio(engine)
+        return 1 if TxEngines::periodCompletionRatio(engine) >= 1
         Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)
     end
 
@@ -40,8 +41,7 @@ class TxEngines
     def self.toString(engine)
         strings = []
 
-        strings << "today: #{"#{"%6.2f" % (100*TxEngines::listingCompletionRatio(engine))}%".green} of #{"%5.2f" % (engine["hours"].to_f/5)} hours"
-        strings << ", period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
+        strings << "period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
         timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
@@ -97,5 +97,15 @@ class TxEngines
     def self.prefix2(item)
         return "" if item["engine-0916"].nil?
         "(engine: #{"%6.2f" % (100*TxEngines::listingCompletionRatio(item["engine-0916"]))} %) ".green
+    end
+
+    # TxEngines::maintenance0924()
+    def self.maintenance0924()
+        Catalyst::catalystItems().each{|item|
+            next if item["engine-0916"].nil?
+            e2 = TxEngines::maintenance1(item["engine-0916"], PolyFunctions::toString(item))
+            next if e2.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "engine-0916", e2)
+        }
     end
 end

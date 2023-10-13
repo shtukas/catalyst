@@ -180,6 +180,7 @@ require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxEngines.rb"
+require_relative "TxCore.rb"
 
 require_relative "Updates.rb"
 

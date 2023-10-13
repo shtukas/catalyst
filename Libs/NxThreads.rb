@@ -26,7 +26,7 @@ class NxThreads
     # -----------------------------------------------
     # Data
 
-    # NxThreads::listingCompletionRatio(item)
+    # TxEngines::listingCompletionRatio(item)
     def self.listingCompletionRatio(item)
         TxEngines::listingCompletionRatio(item["engine-0916"])
     end
@@ -39,20 +39,20 @@ class NxThreads
     # NxThreads::toString(item)
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
-        "🧶 #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})"
+        "⏱️  #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})"
     end
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         items = Catalyst::mikuType("NxThread")
-                    .sort_by {|item| NxThreads::listingCompletionRatio(item) }
+                    .sort_by {|item| TxEngines::listingCompletionRatio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|item| NxThreads::toString(item) })
     end
 
     # NxThreads::listingItems()
     def self.listingItems()
         Catalyst::mikuType("NxThread")
-            .sort_by{|item| NxThreads::listingCompletionRatio(item) }
+            .sort_by{|item| TxEngines::listingCompletionRatio(item) }
     end
 
     # NxThreads::childrenInOrder(parent)
@@ -64,25 +64,6 @@ class NxThreads
 
     # -----------------------------------------------
     # Ops
-
-    # NxThreads::maintenance1(item) # item or null
-    def self.maintenance1(item)
-        return if NxBalls::itemIsActive(item)
-        return nil if Bank::getValue(item["capsule"]).to_f/3600 < item["hours"]
-        return nil if (Time.new.to_i - item["lastResetTime"]) < 86400*7
-        puts "> I am about to reset item for #{item["description"]}"
-        LucilleCore::pressEnterToContinue()
-        Bank::put(item["capsule"], -item["hours"]*3600)
-        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{item["hours"]} hours ? ") then
-            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
-            if hours.size > 0 then
-                item["hours"] = hours.to_f
-            end
-        end
-        item["lastResetTime"] = Time.new.to_i
-        Updates::itemAttributeUpdate(item["uuid"], "hours", item["hours"])
-        Updates::itemAttributeUpdate(item["uuid"], "lastResetTime", item["lastResetTime"])
-    end
 
     # NxThreads::maintenance3()
     def self.maintenance3()

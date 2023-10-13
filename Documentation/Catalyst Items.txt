@@ -8,3 +8,4 @@ Cross types conventions:
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - engine-0916      : TxEngine
     - red-1854         : YYYY-MM-DD (promote the item to red at that day)
+    - core-1919        : string, uuid of the core

@@ -98,7 +98,7 @@ class Catalyst
 
     # Catalyst::pile3(item)
     def self.pile3(item)
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "TxCore" then
             NxThreads::pile3(core)
             return
         end
@@ -177,16 +177,6 @@ class Catalyst
         return if thread.nil?
         selected.each{|item|
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-        }
-    end
-
-    # Catalyst::maintenance0924()
-    def self.maintenance0924()
-        Catalyst::catalystItems().each{|item|
-            next if item["engine-0916"].nil?
-            e2 = TxEngines::maintenance1(item["engine-0916"], PolyFunctions::toString(item))
-            next if e2.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "engine-0916", e2)
         }
     end
 

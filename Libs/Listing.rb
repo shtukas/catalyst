@@ -89,7 +89,7 @@ class Listing
 
         toString = Listing::redRewrite(item, PolyFunctions::toString(item))
 
-        line = "#{storePrefix} #{toString}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
+        line = "#{storePrefix} #{toString}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{TxCores::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -120,6 +120,7 @@ class Listing
             Waves::listingItems(),
             NxTasks::orphans(),
             Engined::listingItems(),
+            TxCores::listingItems()
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -176,10 +177,11 @@ class Listing
             puts "> Listing::maintenance() on primary instance"
             NxTasks::maintenance()
             OpenCycles::maintenance()
-            Catalyst::maintenance0924()
+            TxEngines::maintenance0924()
             OpenCycles::maintenance()
         end
         NxThreads::maintenance3()
+        TxCores::maintenance3()
     end
 
     # Listing::launchNxBallMonitor()

@@ -41,6 +41,13 @@ class PolyFunctions
             }
         end
 
+        if item["core-1919"] then
+            core = Catalyst::itemOrNull(item["core-1919"])
+            if core then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+            end
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -84,6 +91,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
+        end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::toString(item)
         end
         if item["mikuType"] == "NxThread" then
             return NxThreads::toString(item)
