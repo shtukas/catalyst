@@ -186,4 +186,10 @@ class Catalyst
             .select{|item| item["red-1854"] == CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end
+
+    # Catalyst::maintenance3()
+    def self.maintenance3()
+        padding = ((Catalyst::mikuType("NxThread") + Catalyst::mikuType("TxCore")).map{|item| item["description"].size } + [0]).max
+        XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
+    end
 end

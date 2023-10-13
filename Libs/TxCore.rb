@@ -27,7 +27,7 @@ class TxCores
 
     # TxCores::toString(item)
     def self.toString(item)
-        padding = XCache::getOrDefaultValue("b1bd5d84-@051-030a-03d0-02efe1bf6457", "0").to_i
+        padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
         "🎇 #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})"
     end
 
@@ -52,10 +52,4 @@ class TxCores
 
     # -----------------------------------------------
     # Ops
-
-    # TxCores::maintenance3()
-    def self.maintenance3()
-        padding = (Catalyst::mikuType("TxCore").map{|item| item["description"].size } + [0]).max
-        XCache::set("b1bd5d84-@051-030a-03d0-02efe1bf6457", padding)
-    end
 end

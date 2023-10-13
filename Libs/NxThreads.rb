@@ -65,12 +65,6 @@ class NxThreads
     # -----------------------------------------------
     # Ops
 
-    # NxThreads::maintenance3()
-    def self.maintenance3()
-        padding = (Catalyst::mikuType("NxThread").map{|item| item["description"].size } + [0]).max
-        XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
-    end
-
     # NxThreads::pile3(item)
     def self.pile3(item)
         text = CommonUtils::editTextSynchronously("").strip

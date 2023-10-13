@@ -180,8 +180,7 @@ class Listing
             TxEngines::maintenance0924()
             OpenCycles::maintenance()
         end
-        NxThreads::maintenance3()
-        TxCores::maintenance3()
+        Catalyst::maintenance3()
     end
 
     # Listing::launchNxBallMonitor()
