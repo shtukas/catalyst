@@ -14,6 +14,15 @@ class TxEngines
         }
     end
 
+    # TxEngines::interactivelyMakeNewOrNull()
+    def self.interactivelyMakeNewOrNull()
+        hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
+        return nil if hours == ""
+        hours = hours.to_f
+        return nil if hours == 0
+        TxEngines::make(hours)
+    end
+
     # -----------------------------------------------
     # Data
 
@@ -78,9 +87,15 @@ class TxEngines
         engine
     end
 
-    # TxEngines::prefix(item)
-    def self.prefix(item)
-        return "" if item["engine-0916"]
-        "#{TxEngines::toString(engine).green} "
+    # TxEngines::prefix1(item)
+    def self.prefix1(item)
+        return "" if item["engine-0916"].nil?
+        "(engine: #{TxEngines::toString(item["engine-0916"]).green}) "
+    end
+
+    # TxEngines::prefix2(item)
+    def self.prefix2(item)
+        return "" if item["engine-0916"].nil?
+        "(engine: #{"%6.2f" % (100*TxEngines::listingCompletionRatio(item["engine-0916"]))} %) ".green
     end
 end

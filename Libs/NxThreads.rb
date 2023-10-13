@@ -9,10 +9,7 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
 
-        hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
-        return nil if hours == ""
-        hours = hours.to_f
-        return nil if hours == 0
+        engine = TxEngines::interactivelyMakeNewOrNull()
 
         uuid = SecureRandom.uuid
         Updates::itemInit(uuid, "NxThread")
@@ -20,7 +17,7 @@ class NxThreads
         Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
         Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "engine-0916", TxEngines::make(hours))
+        Updates::itemAttributeUpdate(uuid, "engine-0916", engine)
         Updates::itemAttributeUpdate(uuid, "global-position", rand)
 
         Catalyst::itemOrNull(uuid)
@@ -41,7 +38,8 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
-        "🧶 #{TxEngines::prefix(item)}#{item["description"]}"
+        padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
+        "🧶 #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})"
     end
 
     # NxThreads::interactivelySelectOneOrNull()
@@ -89,7 +87,7 @@ class NxThreads
     # NxThreads::maintenance3()
     def self.maintenance3()
         padding = (Catalyst::mikuType("NxThread").map{|item| item["description"].size } + [0]).max
-        XCache::set("bf986315-dfd7-44e2-8f00-ebea0271e2b2", padding)
+        XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
     end
 
     # NxThreads::pile3(item)

@@ -120,7 +120,7 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             Listing::block(),
             NxTasks::orphans(),
-            NxThreads::listingItems(),
+            Engined::listingItems(),
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }

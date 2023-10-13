@@ -78,7 +78,7 @@ class NxTasks
         if item["red-1854"] == CommonUtils::today() then
             icon = "🔺"
         end
-        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "#{icon} #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::orphans()

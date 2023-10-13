@@ -149,6 +149,7 @@ require_relative "Dives.rb"
 require_relative "DataOperators.rb"
 
 require_relative "EventsTimelineProcessor.rb"
+require_relative "Engined.rb"
 
 require_relative "Fsck.rb"
 
