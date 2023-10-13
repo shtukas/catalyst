@@ -8,7 +8,4 @@ NxTask:
     - field11         : null or CoreData reference string
     - global-position : float
 
-    - red-1854        : (optional) "YYYY-MM-DD"
-    - position-1941   : (optional) {date: "YYYY-MM-DD", position: float}
-                        attribute carried by NxTasks, NxOndates and Waves, positioning in the listing block
     - parent-1328      : (optional) parent uuid

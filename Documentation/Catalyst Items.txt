@@ -7,3 +7,4 @@ Cross types conventions:
     - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - engine-0916      : TxEngine
+    - red-1854         : YYYY-MM-DD (promote the item to red at that day)

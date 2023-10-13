@@ -65,13 +65,9 @@ class Listing
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
-
         return true if NxBalls::itemIsRunning(item)
-
         return false if !DoNotShowUntil::isVisible(item)
-
         return false if TmpSkip1::isSkipped(item)
-
         true
     end
 
@@ -80,12 +76,20 @@ class Listing
         item["interruption"]
     end
 
+    # Listing::redRewrite(item, str)
+    def self.redRewrite(item, str)
+        return str if item["red-1854"] != CommonUtils::today()
+        str.gsub("🔹", "🔺")
+    end
+
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
+        toString = Listing::redRewrite(item, PolyFunctions::toString(item))
+
+        line = "#{storePrefix} #{toString}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -102,13 +106,6 @@ class Listing
         line
     end
 
-    # Listing::block()
-    def self.block()
-        items = Waves::listingItems() + NxOndates::listingItems() + NxTasks::redItems()
-        t1, t2 = items.partition{|item| item["position-1941"] and item["position-1941"]["date"] == CommonUtils::today() }
-        t1.sort_by{|item| item["position-1941"]["position"] } + t2
-    end
-
     # Listing::items()
     def self.items()
         [
@@ -118,7 +115,9 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            Listing::block(),
+            Catalyst::redItems(),
+            NxOndates::listingItems(),
+            Waves::listingItems(),
             NxTasks::orphans(),
             Engined::listingItems(),
         ]

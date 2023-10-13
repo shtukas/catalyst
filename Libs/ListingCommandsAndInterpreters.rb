@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxTask        : red (<n>)",
-            "misc          : search | speed | commands | edit <n> | sort | move | morning",
+            "misc          : search | speed | commands | edit <n> | move | morning",
         ].join("\n")
     end
 
@@ -131,22 +131,6 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            items = Catalyst::mikuType("NxOndate") + NxTasks::redItems() + Waves::listingItems()
-            t1, t2 = LucilleCore::selectZeroOrMore("sorting", [], items, lambda {|i| PolyFunctions::toString(i) })
-            selected =  t1 + t2
-            position = 0
-            selected.each{|item|
-                position = position + 1
-                data = {
-                    "date"     => CommonUtils::today(),
-                    "position" => position
-                }
-                Updates::itemAttributeUpdate(item["uuid"], "position-1941", data)
-            }
             return
         end
 

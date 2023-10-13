@@ -189,4 +189,11 @@ class Catalyst
             Updates::itemAttributeUpdate(item["uuid"], "engine-0916", e2)
         }
     end
+
+    # Catalyst::redItems()
+    def self.redItems()
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["red-1854"] == CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
+    end
 end

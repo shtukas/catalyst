@@ -6,6 +6,3 @@ NxOndate
     - datetime    : DateTime Iso 8601 UTC Zulu
     - description : description,
     - field11     : coredataref
-
-    - position-1941 : (optional) {date: "YYYY-MM-DD", position: float}
-                      attribute carried by NxTasks, NxOndates and Waves, positioning in the listing block

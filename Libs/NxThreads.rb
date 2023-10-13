@@ -207,7 +207,7 @@ class NxThreads
         }
         toBeRed = LucilleCore::askQuestionAnswerAsBoolean("Set to red today ? ", false)
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-        Updates::itemAttributeUpdate(item["uuid"], "position-1941", position)
+        Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
         Updates::itemAttributeUpdate(item["uuid"], "red-1854", toBeRed)
         true
     end

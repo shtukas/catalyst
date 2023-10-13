@@ -74,11 +74,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        icon = "🔹"
-        if item["red-1854"] == CommonUtils::today() then
-            icon = "🔺"
-        end
-        "#{icon} #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "🔹 #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::orphans()
@@ -87,13 +83,6 @@ class NxTasks
             .select{|item| item["parent-1328"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
-    end
-
-    # NxTasks::redItems()
-    def self.redItems()
-        Catalyst::mikuType("NxTask")
-            .select{|item| item["red-1854"] == CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
     end
 
     # --------------------------------------------------
