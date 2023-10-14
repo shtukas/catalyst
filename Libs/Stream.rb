@@ -46,7 +46,7 @@ class Stream
                 raise "(error: 59585a2d-fe88) I do not know how to computer commands for item: #{item}"
             }).call(item)
 
-            print "#{Listing::toString2(store, item).green}: #{commands.green} > "
+            print "#{PolyFunctions::toString(item).green}: #{commands.green} > "
             input = STDIN.gets().strip
             return if input == "exit"
 
