@@ -53,6 +53,15 @@ class Stream
             input = STDIN.gets().strip
             return if input == "exit"
 
+            if input == "'" then
+                command = LucilleCore::askQuestionAnswerAsString("> command: ")
+                next if command == ""
+                store = ItemStore.new()
+                store.register(item, true)
+                ListingCommandsAndInterpreters::interpreter(command, store)
+                next
+            end
+
             if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 next

@@ -312,6 +312,15 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("engine", input) then
+            item = store.getDefault()
+            return if item.nil?
+            engine = TxEngines::interactivelyMakeNewOrNull()
+            return if engine.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
+            return
+        end
+
         if Interpreting::match("engine *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
