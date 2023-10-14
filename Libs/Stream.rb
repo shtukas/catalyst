@@ -43,6 +43,9 @@ class Stream
                 if item["mikuType"] == "Backup" then
                     return "[enter] for done"
                 end
+                if item["mikuType"] == "NxTask" then
+                    return "[enter] for processing"
+                end
                 raise "(error: 59585a2d-fe88) I do not know how to compute fragment for item: #{item}"
             }).call(item)
 
@@ -70,6 +73,20 @@ class Stream
                 if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{Waves::toString(item).green}: for done-ing: ", true) then
                     NxBalls::stop(item)
                     Waves::performWaveDone(item)
+                end
+                next
+            end
+            if item["mikuType"] == "NxTask" then
+                NxBalls::start(item)
+                PolyActions::access(item)
+                LucilleCore::pressEnterToContinue("[enter] to stop: ")
+                NxBalls::stop(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
+                    Catalyst::destroy(item["uuid"])
+                else
+                    if item["parent-1328"].nil? then
+                        NxThreads::interactivelySelectAndInstallInThread(item)
+                    end
                 end
                 next
             end
