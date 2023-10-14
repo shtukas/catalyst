@@ -124,6 +124,8 @@ class Waves
         Updates::itemAttributeUpdate(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
         Updates::itemAttributeUpdate(uuid, "field11", coredataref)
         Updates::itemAttributeUpdate(uuid, "interruption", interruption)
+
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 

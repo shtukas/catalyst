@@ -1,7 +1,7 @@
 
 class Broadcasts
 
-    # Makers
+    # Events Makers
 
     # Broadcasts::makeDoNotShowUntil(itemuuid, unixtime)
     def self.makeDoNotShowUntil(itemuuid, unixtime)
@@ -79,7 +79,7 @@ class Broadcasts
         }
     end
 
-    # Publishers
+    # Publisher
 
     # Broadcasts::publish(event)
     def self.publish(event)
@@ -95,5 +95,14 @@ class Broadcasts
             filepath1 = "#{folder2}/#{CommonUtils::timeStringL22()}.json"
             File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
         }
+    end
+
+    # Utils
+
+    # Broadcasts::publishItem(uuid)
+    def self.publishItem(uuid)
+        item = Catalyst::itemOrNull(uuid)
+        return if item.nil?
+        Broadcasts::publish(Broadcasts::makeItem(item))
     end
 end

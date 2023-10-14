@@ -19,6 +19,7 @@ class TxCores
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "engine-0916", engine)
 
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 

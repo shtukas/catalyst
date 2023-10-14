@@ -115,6 +115,7 @@ class Anniversaries
         Updates::itemAttributeUpdate(uuid, "repeatType", repeatType)
         Updates::itemAttributeUpdate(uuid, "lastCelebrationDate", lastCelebrationDate)
 
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 

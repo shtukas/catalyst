@@ -20,6 +20,7 @@ class NxThreads
         Updates::itemAttributeUpdate(uuid, "engine-0916", engine)
         Updates::itemAttributeUpdate(uuid, "global-position", rand)
 
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -179,7 +180,7 @@ class NxThreads
                 return ([1] + children.map{|item| item["global-position"] }.compact).max + 1
             end
             position.to_f
-        }
+        }.call(position)
         toBeRed = LucilleCore::askQuestionAnswerAsBoolean("Set to red today ? ", false)
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
         Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
