@@ -69,6 +69,16 @@ class Broadcasts
         }
     end
 
+    # Broadcasts::makeItem(item)
+    def self.makeItem(item)
+        {
+            "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_i,
+            "eventType" => "Item",
+            "payload"   => item
+        }
+    end
+
     # Publishers
 
     # Broadcasts::publish(event)

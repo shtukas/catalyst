@@ -51,3 +51,10 @@
         "value" : Float
     }
 }
+
+{
+    "uuid": string
+    "unixtime" : Float
+    "eventType": "Item"
+    "payload": Item
+}
