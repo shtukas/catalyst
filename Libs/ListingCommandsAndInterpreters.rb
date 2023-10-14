@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "NxOnDate      : redate",
             "NxTask        : red (<n>)",
-            "misc          : search | speed | commands | edit <n> | move | morning",
+            "misc          : search | speed | commands | edit <n> | move | stream",
         ].join("\n")
     end
 
@@ -85,6 +85,11 @@ class ListingCommandsAndInterpreters
             Updates::itemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
             Updates::itemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
+            return
+        end
+
+        if Interpreting::match("stream", input) then
+            Listing::stream()
             return
         end
 
