@@ -208,7 +208,7 @@ class Listing
     # Listing::main()
     def self.main()
 
-        Listing::stream()
+        Stream::main()
 
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
@@ -256,65 +256,6 @@ class Listing
             return if input == "exit"
 
             ListingCommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # Listing::stream()
-    def self.stream()
-
-        initialCodeTrace = CommonUtils::catalystTraceCode()
-
-        latestCodeTrace = initialCodeTrace
-
-        Listing::checkForCodeUpdates()
-
-        Thread.new {
-            loop {
-                sleep 300
-                Listing::checkForCodeUpdates()
-            }
-        }
-
-        loop {
-
-            if CommonUtils::catalystTraceCode() != initialCodeTrace then
-                puts "Code change detected"
-                break
-            end
-
-            EventsTimelineProcessor::procesLine()
-
-            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
-                Listing::maintenance()
-            end
-
-            store = ItemStore.new()
-            item = Listing::items().first
-
-            commands = (lambda {|item|
-                if item["mikuType"] == "Wave" then
-                    return ["done"]
-                end
-                if item["mikuType"] == "PhysicalTarget" then
-                    return [".."]
-                end
-                raise "(error: 59585a2d-fe88) I do not know how to computer commands for item: #{item}"
-            }).call(item)
-
-            print "#{Listing::toString2(store, item).green} (#{commands.join(", ")}) > "
-            command = STDIN.gets().strip
-            next if command == ""
-            return if command == "exit"
-            if !commands.include?(command) then
-                puts "command '#{command.green}' is not part of #{commands.join(", ").green}"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-            if item["mikuType"] == "PhysicalTarget" then
-                if command == ".." then
-                    PolyActions::access(item)
-                end
-            end
         }
     end
 end

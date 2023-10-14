@@ -89,7 +89,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("stream", input) then
-            Listing::stream()
+            Stream::main()
             return
         end
 

@@ -102,6 +102,7 @@ class TxEngines
     # TxEngines::maintenance0924()
     def self.maintenance0924()
         Catalyst::catalystItems().each{|item|
+            next if item["mikuType"] == "NxThePhantomMenace"
             next if item["engine-0916"].nil?
             e2 = TxEngines::maintenance1(item["engine-0916"], PolyFunctions::toString(item))
             next if e2.nil?
