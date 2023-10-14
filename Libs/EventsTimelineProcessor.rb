@@ -51,6 +51,8 @@ class EventsTimelineProcessor
             db.execute "delete from DoNotShowUntil where _id_=?", [targetId]
             db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [targetId, unixtime]
             db.close
+
+            $DoNotShowUntilOperator.set(targetId, unixtime)
             return
         end
 
@@ -82,6 +84,8 @@ class EventsTimelineProcessor
             db.execute "delete from Items where _uuid_=?", [item["uuid"]]
             db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
             db.close
+
+            $ItemsOperator.init(uuid, mikuType)
             return
         end
 
@@ -108,6 +112,8 @@ class EventsTimelineProcessor
             db.execute "delete from Items where _uuid_=?", [itemuuid]
             db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
             db.close
+
+            $ItemsOperator.itemAttributeUpdate(itemuuid, attname, attvalue)
             return
         end
 
@@ -120,6 +126,8 @@ class EventsTimelineProcessor
             db.results_as_hash = true
             db.execute "delete from Items where _uuid_=?", [itemuuid]
             db.close
+
+            $ItemsOperator.destroy(itemuuid)
             return
         end
 
@@ -134,6 +142,8 @@ class EventsTimelineProcessor
             db.results_as_hash = true
             db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, date, value]
             db.close
+
+            $BankOperator.deposit(uuid, date, value)
             return
         end
 
@@ -147,6 +157,8 @@ class EventsTimelineProcessor
             db.execute "delete from Items where _uuid_=?", [item["uuid"]]
             db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
             db.close
+
+            $ItemsOperator.setItem(item)
             return
         end
         raise "(error: 0d1295ae-b021-42f7-b419-3214ac0a917f) cannot digest event: #{event}"

@@ -33,20 +33,20 @@ class Stream
             store = ItemStore.new()
             item = Listing::items().first
 
-            commands = (lambda {|item|
+            fragment = (lambda {|item|
                 if item["mikuType"] == "Wave" then
-                    return "done"
+                    return "[enter] to start"
                 end
                 if item["mikuType"] == "PhysicalTarget" then
-                    return ".."
+                    return "[enter] for access"
                 end
                 if item["mikuType"] == "Backup" then
-                    return "do and [enter]"
+                    return "[enter] for done"
                 end
-                raise "(error: 59585a2d-fe88) I do not know how to computer commands for item: #{item}"
+                raise "(error: 59585a2d-fe88) I do not know how to compute fragment for item: #{item}"
             }).call(item)
 
-            print "#{PolyFunctions::toString(item).green}: #{commands.green} > "
+            print "#{Time.new.utc.iso8601.red}: #{PolyFunctions::toString(item).green}: #{fragment.green} > "
             input = STDIN.gets().strip
             return if input == "exit"
 
@@ -56,13 +56,25 @@ class Stream
             end
 
             if item["mikuType"] == "PhysicalTarget" then
-                if input == ".." then
-                    PolyActions::access(item)
-                end
+                PolyActions::access(item)
+                next
             end
             if item["mikuType"] == "Backup" then
                 XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+                next
             end
+            if item["mikuType"] == "Wave" then
+                PolyFunctions::toString(item).green
+                NxBalls::start(item)
+                PolyActions::access(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{Waves::toString(item).green}: for done-ing: ", true) then
+                    NxBalls::stop(item)
+                    Waves::performWaveDone(item)
+                end
+                next
+            end
+
+            raise "(error: ac6f-c5bad8fb5527) could not do: #{item}"
         }
     end
 end
