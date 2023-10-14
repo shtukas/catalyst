@@ -208,8 +208,6 @@ class Listing
     # Listing::main()
     def self.main()
 
-        Stream::main()
-
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
         latestCodeTrace = initialCodeTrace
