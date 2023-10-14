@@ -70,7 +70,7 @@ class Catalyst
     def self.newGlobalFirstPosition()
         t = Catalyst::catalystItems()
                 .select{|item| item["global-position"] }
-                .map{|item| item["global-position"] }
+                .map{|item| item["global-position"] || 0 }
                 .reduce(0){|number, x| [number, x].min}
         t - 1
     end
@@ -79,7 +79,7 @@ class Catalyst
     def self.newGlobalLastPosition()
         t = Catalyst::catalystItems()
                 .select{|item| item["global-position"] }
-                .map{|item| item["global-position"] }
+                .map{|item| item["global-position"] || 0 }
                 .reduce(0){|number, x| [number, x].max }
         t + 1
     end
