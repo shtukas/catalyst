@@ -1,6 +1,12 @@
 
 class Stream
 
+    # Stream::toString3(item)
+    def self.toString3(item)
+        toString = Listing::redRewrite(item, PolyFunctions::toString(item))
+        "#{toString}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{TxCores::suffix(item)}"
+    end
+
     # Stream::main()
     def self.main()
 
@@ -32,6 +38,10 @@ class Stream
 
             store = ItemStore.new()
             item = Listing::items().first
+            if item["mikuType"] == "NxThread" then
+                item = NxThreads::childrenInOrder(item).first
+                return if item.nil?
+            end
 
             fragment = (lambda {|item|
                 if item["mikuType"] == "Wave" then
@@ -49,7 +59,7 @@ class Stream
                 raise "(error: 59585a2d-fe88) I do not know how to compute fragment for item: #{item}"
             }).call(item)
 
-            print "#{Time.new.utc.iso8601.red}: #{PolyFunctions::toString(item).green}: #{fragment.green} > "
+            print "#{Time.new.utc.iso8601.red}: #{Stream::toString3(item).green}#{NxThreads::suffix(item)}: #{fragment.green} > "
             input = STDIN.gets().strip
             return if input == "exit"
 
