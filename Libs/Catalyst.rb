@@ -66,34 +66,32 @@ class Catalyst
         items
     end
 
-    # Catalyst::newGlobalFirstPosition()
-    def self.newGlobalFirstPosition()
-        t = Catalyst::catalystItems()
-                .select{|item| item["global-position"] }
-                .map{|item| item["global-position"] }
-                .reduce(0){|number, x| [number, x].min}
-        t - 1
+    # Catalyst::gloalFirstPosition()
+    def self.gloalFirstPosition()
+        Catalyst::catalystItems()
+            .select{|item| item["global-position"] }
+            .map{|item| item["global-position"] }
+            .reduce(0){|number, x| [number, x].min}
     end
 
-    # Catalyst::newGlobalLastPosition()
-    def self.newGlobalLastPosition()
-        t = Catalyst::catalystItems()
-                .select{|item| item["global-position"] }
-                .map{|item| item["global-position"] }
-                .reduce(0){|number, x| [number, x].max }
-        t + 1
+    # Catalyst::globalLastPosition()
+    def self.globalLastPosition()
+        Catalyst::catalystItems()
+            .select{|item| item["global-position"] }
+            .map{|item| item["global-position"] }
+            .reduce(0){|number, x| [number, x].max}
     end
 
     # Catalyst::appendAtEndOfChildrenSequence(parent, item)
     def self.appendAtEndOfChildrenSequence(parent, item)
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalLastPosition())
+        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::globalLastPosition()+1)
     end
 
     # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
     def self.prependAtBeginingOfChildrenSequence(parent, item)
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::newGlobalFirstPosition())
+        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::gloalFirstPosition()-1)
     end
 
     # Catalyst::pile3(item)
@@ -185,6 +183,24 @@ class Catalyst
         Catalyst::mikuType("NxTask")
             .select{|item| item["red-1854"] == CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
+    end
+
+    # Catalyst::maintenance2()
+    def self.maintenance2()
+        t = Catalyst::gloalFirstPosition()
+        if t < 0 then
+            Catalyst::catalystItems()
+                .each{|item|
+                    Updates::itemAttributeUpdate(item["uuid"], "global-position", (item["global-position"] || 0) + (-t))
+                }
+        end
+        t = Catalyst::globalLastPosition()
+        if t >= 1000 then
+            Catalyst::catalystItems()
+                .each{|item|
+                    Updates::itemAttributeUpdate(item["uuid"], "global-position", 0.9*(item["global-position"] || 0))
+                }
+        end
     end
 
     # Catalyst::maintenance3()
