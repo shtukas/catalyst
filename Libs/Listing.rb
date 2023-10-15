@@ -76,20 +76,12 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::redRewrite(item, str)
-    def self.redRewrite(item, str)
-        return str if item["red-1854"] != CommonUtils::today()
-        str.gsub("🔹", "🔺")
-    end
-
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        toString = Listing::redRewrite(item, PolyFunctions::toString(item))
-
-        line = "#{storePrefix} #{toString}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{TxCores::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{TxCores::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -115,7 +107,6 @@ class Listing
             Anniversaries::listingItems(),
             Desktop::listingItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            Catalyst::redItems(),
             NxOndates::listingItems(),
             Waves::listingItems(),
             NxTasks::orphans(),
@@ -170,19 +161,6 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::maintenance()
-    def self.maintenance()
-        if Config::isPrimaryInstance() then
-            puts "> Listing::maintenance() on primary instance"
-            NxTasks::maintenance()
-            OpenCycles::maintenance()
-            TxEngines::maintenance0924()
-            OpenCycles::maintenance()
-            Catalyst::maintenance2()
-        end
-        Catalyst::maintenance3()
-    end
-
     # Listing::launchNxBallMonitor()
     def self.launchNxBallMonitor()
         Thread.new {
@@ -231,7 +209,7 @@ class Listing
             EventsTimelineProcessor::procesLine()
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
-                Listing::maintenance()
+                Catalyst::listing_maintenance()
             end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)

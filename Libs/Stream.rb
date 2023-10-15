@@ -60,7 +60,6 @@ class Stream
     # Stream::block4()
     def self.block4()
         [
-            Catalyst::redItems(),
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxTasks::orphans(),
             Engined::listingItems()
@@ -117,15 +116,14 @@ class Stream
 
     # Stream::toString3(item)
     def self.toString3(item)
-        toString = Listing::redRewrite(item, PolyFunctions::toString(item))
-        "#{toString}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{TxCores::suffix(item)}"
+        "#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{TxCores::suffix(item)}"
     end
 
     # Stream::seek() # item or nil
     def self.seek()
         item = Stream::items().first
         if item["mikuType"] == "NxThread" then
-            item = NxThreads::childrenInOrder(item).first
+            item = NxThreads::childrenInSortingStyleOrder(item).first
         end
         item
     end
@@ -328,7 +326,7 @@ class Stream
             EventsTimelineProcessor::procesLine()
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
-                Listing::maintenance()
+                Catalyst::listing_maintenance()
             end
 
             nx1 = Stream::processState(nx1)

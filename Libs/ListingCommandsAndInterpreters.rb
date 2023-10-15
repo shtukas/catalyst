@@ -5,17 +5,19 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | active (<n>) | unparent <n> | red (*) | unred (*) | engine * | core * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | active (<n>) | unparent <n> | engine * | core * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
             "              : (ondate) >task (<n>)",
             "",
+            "mikuTypes:",
+            "   - NxOndate : redate (*)",
+            "   - NxThread : sorting-style (*)",
+            "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | pile | thread",
             "divings       : anniversaries | ondates | waves | desktop | boxes | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "NxOnDate      : redate",
-            "NxTask        : red (<n>)",
             "misc          : search | speed | commands | edit <n> | move | stream",
         ].join("\n")
     end
@@ -144,36 +146,6 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             thread = NxThreads::interactivelySelectOneOrNull()
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-            return
-        end
-
-        if Interpreting::match("red", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
-            return
-        end
-
-        if Interpreting::match("red *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "red-1854", CommonUtils::today())
-            return
-        end
-
-        if Interpreting::match("unred", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "red-1854", nil)
-            return
-        end
-
-        if Interpreting::match("unred *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "red-1854", nil)
             return
         end
 
@@ -463,6 +435,35 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
+            return
+        end
+
+        if Interpreting::match("sorting-style", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if item["mikuType"] != "NxThread" then
+                puts "sorting-style is reserved for NxThreads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            style = NxThreads::interactivelySelectSortingStyleOrNull()
+            return if style.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "sorting-style", style)
+            return
+        end
+
+        if Interpreting::match("sorting-style *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxThread" then
+                puts "sorting-style is reserved for NxThreads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            style = NxThreads::interactivelySelectSortingStyleOrNull()
+            return if style.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "sorting-style", style)
             return
         end
 

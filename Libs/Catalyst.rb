@@ -178,13 +178,6 @@ class Catalyst
         }
     end
 
-    # Catalyst::redItems()
-    def self.redItems()
-        Catalyst::mikuType("NxTask")
-            .select{|item| item["red-1854"] == CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
-    end
-
     # Catalyst::maintenance2()
     def self.maintenance2()
         t = Catalyst::gloalFirstPosition()
@@ -207,5 +200,19 @@ class Catalyst
     def self.maintenance3()
         padding = ((Catalyst::mikuType("NxThread") + Catalyst::mikuType("TxCore")).map{|item| item["description"].size } + [0]).max
         XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
+    end
+
+    # Catalyst::listing_maintenance()
+    def self.listing_maintenance()
+        if Config::isPrimaryInstance() then
+            puts "> Catalyst::listing_maintenance() on primary instance"
+            NxTasks::maintenance()
+            OpenCycles::maintenance()
+            TxEngines::maintenance0924()
+            OpenCycles::maintenance()
+            Catalyst::maintenance2()
+            NxThreads::maintenance()
+        end
+        Catalyst::maintenance3()
     end
 end

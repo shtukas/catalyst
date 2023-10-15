@@ -157,8 +157,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if NxThreads::childrenInOrder(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{NxThreads::childrenInOrder(item).size} elements"
+            if NxThreads::childrenInSortingStyleOrder(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{NxThreads::childrenInSortingStyleOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
