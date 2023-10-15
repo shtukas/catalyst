@@ -97,8 +97,8 @@ class Stream
             .sort_by {|packet| Bank::recoveredAverageHoursPerDay(packet["account"]) }
     end
 
-    # Stream::item()
-    def self.item()
+    # Stream::items()
+    def self.items()
         items = Stream::blocksInOrder()
                     .map{|packet| packet["items"] }
                     .flatten
@@ -123,7 +123,7 @@ class Stream
 
     # Stream::seek() # item or nil
     def self.seek()
-        item = Stream::item().first
+        item = Stream::items().first
         if item["mikuType"] == "NxThread" then
             item = NxThreads::childrenInOrder(item).first
         end
