@@ -178,6 +178,7 @@ class Listing
             OpenCycles::maintenance()
             TxEngines::maintenance0924()
             OpenCycles::maintenance()
+            Catalyst::maintenance2()
         end
         Catalyst::maintenance3()
     end
@@ -225,15 +226,6 @@ class Listing
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
                 break
-            end
-
-            hour = Time.new.to_s[0, 13]
-            key = "f679065f-c7a6-4950-8b77-81487da2e7a4:#{hour}"
-            if InMemoryCache::getOrNull(key).nil? then
-                InMemoryCache::set(key, hour)
-                system('clear')
-                Stream::main()
-                next
             end
 
             EventsTimelineProcessor::procesLine()

@@ -4,6 +4,8 @@ class PolyFunctions
     # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
     def self.itemToBankingAccounts(item)
 
+        return [] if item["mikuType"] == "NxThePhantomMenace"
+
         accounts = []
 
         accounts << {
@@ -46,6 +48,10 @@ class PolyFunctions
             if core then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
             end
+        end
+
+        if item["10fd0f74-03e8"] then
+            accounts << item["10fd0f74-03e8"]
         end
 
         accounts.reduce([]){|as, account|
