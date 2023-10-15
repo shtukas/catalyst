@@ -17,6 +17,8 @@ class PhysicalTargets
         Updates::itemAttributeUpdate(uuid, "date", CommonUtils::today())
         Updates::itemAttributeUpdate(uuid, "counter", 0)
         Updates::itemAttributeUpdate(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
+
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 

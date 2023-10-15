@@ -22,6 +22,7 @@ class NxTasks
         Updates::itemAttributeUpdate(uuid, "field11", coredataref)
         Updates::itemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
 
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -39,6 +40,8 @@ class NxTasks
         Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -56,6 +59,8 @@ class NxTasks
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "field11", coredataref)
         Updates::itemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
+
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -66,6 +71,8 @@ class NxTasks
         Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "global-position", Catalyst::newGlobalLastPosition())
+
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 

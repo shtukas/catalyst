@@ -13,6 +13,7 @@ class NxOndates
         Updates::itemAttributeUpdate(uuid, "datetime", datetime)
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -27,6 +28,7 @@ class NxOndates
         Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
