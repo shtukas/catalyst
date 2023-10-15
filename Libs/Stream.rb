@@ -218,7 +218,7 @@ class Stream
     # Stream::processState(nx1)
     def self.processState(nx1)
 
-        puts JSON.pretty_generate(nx1)
+        #puts JSON.pretty_generate(nx1)
 
         if nx1["nx2"]["state"] == "seeking" then
             item = Stream::seek()
