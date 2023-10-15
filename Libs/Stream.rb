@@ -130,7 +130,19 @@ class Stream
 
     # Stream::oldStyleLoop()
     def self.oldStyleLoop()
+        initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
+            if CommonUtils::catalystTraceCode() != initialCodeTrace then
+                puts "Code change detected"
+                break
+            end
+
+            EventsTimelineProcessor::procesLine()
+
+            if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
+                Catalyst::listing_maintenance()
+            end
+            
             system('clear')
             puts ""
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
