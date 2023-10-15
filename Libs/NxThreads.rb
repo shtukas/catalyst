@@ -63,6 +63,14 @@ class NxThreads
             .sort_by{|item| item["global-position"] || 0 }
     end
 
+    # NxThreads::suffix(item)
+    def self.suffix(item)
+        return "" if item["parent-1328"].nil?
+        parent = Catalyst::itemOrNull(item["parent-1328"])
+        return "" if parent.nil?
+        " (#{parent["description"]})".green
+    end
+
     # -----------------------------------------------
     # Ops
 

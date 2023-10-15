@@ -88,6 +88,7 @@ class NxTasks
     def self.orphans()
         Catalyst::mikuType("NxTask")
             .select{|item| item["parent-1328"].nil? }
+            .reject{|item| item["engine-0916"] }
             .sort_by{|item| item["unixtime"] }
             .reverse
     end

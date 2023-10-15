@@ -8,8 +8,10 @@ class Engined
 
     # Engined::listingItems()
     def self.listingItems()
-        Engined::items()
-            .select{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
+        items = Engined::items()
+            .select{|item| TxEngines::shouldListing(item) }
             .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
+        return items if items.size > 0
+        TxCores::listingItems()
     end
 end

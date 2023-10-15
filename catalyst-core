@@ -1,11 +1,4 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 
-option = LucilleCore::selectEntityFromListOfEntitiesOrNull("", ["classic", "stream"])
-exit if option.nil?
-if option == "classic" then
-    Listing::main()
-end
-if option == "stream" then
-    Stream::main()
-end
+Listing::main()
