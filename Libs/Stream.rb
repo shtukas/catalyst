@@ -181,7 +181,7 @@ class Stream
         end
         if item["mikuType"] == "Wave" then
             PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{Waves::toString(item).green}: for done-ing: ", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{PolyFunctions::toString(item).green}: for done-ing: ", true) then
                 Waves::performWaveDone(item)
                 nx1["nx2"]["state"] = "completed"
             end
@@ -199,6 +199,14 @@ class Stream
                 if item["parent-1328"].nil? and item["engine-0916"].nil? then
                     NxThreads::interactivelySelectAndInstallInThread(item)
                 end
+                nx1["nx2"]["state"] = "completed"
+            end
+            return nx1
+        end
+        if item["mikuType"] == "NxOndate" then
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{PolyFunctions::toString(item).green}: for done-ing: ", true) then
+                Catalyst::destroy(item["uuid"])
                 nx1["nx2"]["state"] = "completed"
             end
             return nx1
