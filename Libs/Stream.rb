@@ -261,6 +261,13 @@ class Stream
                 }
                 return nx1
             end
+            if input == 'exit' then
+                nx1 = {
+                    "nx2"   => { "state" => "exit" },
+                    "item"  => nil
+                }
+                return nx1
+            end
             if input == 'done' then
                 PolyActions::done(item)
                 nx1 = {

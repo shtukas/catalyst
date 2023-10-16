@@ -11,9 +11,10 @@ Thread.new {
 }
 
 loop {
-    mode = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["classic (default)", "stream"])
+    Listing::checkForCodeUpdates()
+    mode = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["classic", "stream"])
     exit if mode.nil? 
-    if mode == "classic (default)" then
+    if mode == "classic" then
         Listing::main()
     end
     if mode == "stream" then
