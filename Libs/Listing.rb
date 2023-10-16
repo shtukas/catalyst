@@ -106,9 +106,10 @@ class Listing
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Desktop::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
-            Waves::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::orphans(),
             Engined::listingItems()
         ]
