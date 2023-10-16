@@ -484,6 +484,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
+            NxBalls::stop(item)
             NxOndates::redate(item)
             return
         end
@@ -497,6 +498,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
+            NxBalls::stop(item)
             NxOndates::redate(item)
             return
         end
