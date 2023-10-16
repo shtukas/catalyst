@@ -82,12 +82,6 @@ class Catalyst
             .reduce(0){|number, x| [number, x].max}
     end
 
-    # Catalyst::appendAtEndOfChildrenSequence(parent, item)
-    def self.appendAtEndOfChildrenSequence(parent, item)
-        Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::globalLastPosition()+1)
-    end
-
     # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
     def self.prependAtBeginingOfChildrenSequence(parent, item)
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])

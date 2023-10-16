@@ -129,6 +129,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("move * ", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxThreads::interactivelySelectAndInstallInThread(item)
+            return
+        end
+
         if Interpreting::match("threads", input) then
             NxThreads::program2()
             return
