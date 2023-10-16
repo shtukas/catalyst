@@ -190,15 +190,6 @@ class Listing
 
         latestCodeTrace = initialCodeTrace
 
-        Listing::checkForCodeUpdates()
-
-        Thread.new {
-            loop {
-                sleep 300
-                Listing::checkForCodeUpdates()
-            }
-        }
-
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then

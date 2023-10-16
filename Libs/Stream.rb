@@ -101,6 +101,9 @@ class Stream
         items = Stream::blocksInOrder()
                     .map{|packet| packet["items"] }
                     .flatten
+                    .select{|item|
+                        item["mikuType"] != "NxThread" or NxThreads::children(item).size > 0
+                    }
 
         (Stream::block1() + items)
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -163,53 +166,59 @@ class Stream
         }
     end
 
-    # Stream::activateAndTerminate(nx1)
-    def self.activateAndTerminate(nx1)
-        raise "(error: 7c48000d-cc6e-4dc6-bb89-6ae91601e532): #{nx1}" if nx1["nx2"]["state"] != "running"
-
-        item = nx1["item"]
-
+    # Stream::activate(item)
+    def self.activate(item)
         if item["mikuType"] == "PhysicalTarget" then
-            PolyActions::access(item)
-            nx1["nx2"]["state"] = "completed"
-            return nx1
+            return
         end
         if item["mikuType"] == "Backup" then
-            XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
-            nx1["nx2"]["state"] = "completed"
-            return nx1
+            return
         end
         if item["mikuType"] == "Wave" then
             PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{PolyFunctions::toString(item).green}: for done-ing: ", true) then
-                Waves::performWaveDone(item)
-                nx1["nx2"]["state"] = "completed"
-            end
-            return nx1
+            return
         end
         if item["mikuType"] == "NxTask" then
             PolyActions::access(item)
+            return
+        end
+        if item["mikuType"] == "NxOndate" then
+            PolyActions::access(item)
+            return
+        end
+        raise "(error: ac6f-c5bad8fb5527) could not do: #{item}"
+    end
+
+    # Stream::terminate(item)
+    def self.terminate(item)
+
+        if item["mikuType"] == "PhysicalTarget" then
+            PolyActions::access(item)
+            return
+        end
+        if item["mikuType"] == "Backup" then
+            XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+            return
+        end
+        if item["mikuType"] == "Wave" then
+            Waves::performWaveDone(item)
+            return
+        end
+        if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
                 Catalyst::destroy(item["uuid"])
-                nx1 = {
-                    "nx2"   => { "state" => "seeking" },
-                    "item"  => nil
-                }
             else
                 if item["parent-1328"].nil? and item["engine-0916"].nil? then
                     NxThreads::interactivelySelectAndInstallInThread(item)
                 end
-                nx1["nx2"]["state"] = "completed"
             end
-            return nx1
+            return
         end
         if item["mikuType"] == "NxOndate" then
-            PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("#{Time.new.utc.iso8601.red}: #{PolyFunctions::toString(item).green}: for done-ing: ", true) then
                 Catalyst::destroy(item["uuid"])
-                nx1["nx2"]["state"] = "completed"
             end
-            return nx1
+            return
         end
 
         raise "(error: ac6f-c5bad8fb5527) could not do: #{item}"
@@ -289,18 +298,21 @@ class Stream
                 return nx1
             end
             nx1["nx2"] = { "state" => "running", "start-unixtime" => Time.new.to_i }
-            nx1 = Stream::activateAndTerminate(nx1)
+            Stream::activate(nx1["item"])
             return nx1
         end
 
         if nx1["nx2"]["state"] == "running" then
             item = nx1["item"]
             print "#{Time.new.utc.iso8601.red}: #{Stream::toString3(item).green}#{NxThreads::suffix(item)}: [enter] to terminate: "
+            input = STDIN.gets().strip
+            nx1["nx2"]["state"] = "completed"
             return nx1
         end
 
         if nx1["nx2"]["state"] == "completed" then
             item = nx1["item"]
+            Stream::terminate(item)
             unixtime = nx1["nx2"]["start-unixtime"]
             timespan = Time.new.to_i - unixtime
             PolyFunctions::itemToBankingAccounts(item).each{|account|
@@ -322,15 +334,6 @@ class Stream
 
         latestCodeTrace = initialCodeTrace
 
-        Listing::checkForCodeUpdates()
-
-        Thread.new {
-            loop {
-                sleep 300
-                Listing::checkForCodeUpdates()
-            }
-        }
-
         nx1 = {
             "nx2"   => { "state" => "seeking" },
             "item"  => nil
@@ -350,10 +353,7 @@ class Stream
             end
 
             nx1 = Stream::processState(nx1)
-            if nx1["nx2"]["state"] == "exit" then
-                puts JSON.pretty_generate(nx1)
-                return
-            end
+            return if nx1["nx2"]["state"] == "exit"
         }
     end
 end
