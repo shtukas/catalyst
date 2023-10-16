@@ -92,7 +92,7 @@ class Broadcasts
                 FileUtils.mkpath(folder1)
             end
             folder2 = LucilleCore::indexsubfolderpath(folder1, 100)
-            filepath1 = "#{folder2}/#{CommonUtils::timeStringL22()}.json"
+            filepath1 = "#{folder2}/#{CommonUtils::timeStringL22()}-#{Config::thisInstanceId()}.json"
             File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
         }
     end
