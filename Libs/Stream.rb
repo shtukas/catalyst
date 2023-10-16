@@ -137,7 +137,7 @@ class Stream
         loop {
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
-                break
+                exit
             end
 
             EventsTimelineProcessor::procesLine()
@@ -350,7 +350,7 @@ class Stream
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
-                break
+                exit
             end
 
             EventsTimelineProcessor::procesLine()

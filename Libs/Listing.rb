@@ -195,7 +195,7 @@ class Listing
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
-                break
+                exit
             end
 
             EventsTimelineProcessor::procesLine()
