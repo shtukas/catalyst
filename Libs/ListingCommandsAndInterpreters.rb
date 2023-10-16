@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | active (<n>) | unparent <n> | engine * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | unparent <n> | move * | engine * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -18,7 +18,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | pile | thread",
             "divings       : anniversaries | ondates | waves | desktop | boxes | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | stream",
+            "misc          : search | speed | commands | edit <n> | move",
         ].join("\n")
     end
 
@@ -90,25 +90,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stream", input) then
-            Stream::main()
-            return
-        end
-
-        if Interpreting::match("tothread *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            Updates::itemAttributeUpdate(item["uuid"], "description", description)
-            Updates::itemAttributeUpdate(item["uuid"], "hours", hours)
-            Updates::itemAttributeUpdate(item["uuid"], "lastResetTime", 0)
-            Updates::itemAttributeUpdate(item["uuid"], "capsule", SecureRandom.hex)
-            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxThread")
-            return
-        end
-
         if Interpreting::match(">ondate *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -125,7 +106,8 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("move", input) then
-            Catalyst::selectSubsetAndMoveToSelectedThread(store.items())
+            items = store.items().select{|i| ["NxTask", "NxThread"].include?(i["mikuType"])}
+            Catalyst::selectSubsetAndMoveToSelectedThread(items)
             return
         end
 
@@ -133,6 +115,11 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
+                puts "We can only move tasks and threads"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             NxThreads::interactivelySelectAndInstallInThread(item)
             return
         end

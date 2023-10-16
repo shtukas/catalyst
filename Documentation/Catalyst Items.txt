@@ -7,4 +7,4 @@ Cross types conventions:
     - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - engine-0916      : TxEngine
-    - core-1919        : string, uuid of the core
+    - parent-1328      : (optional) parent uuid (parents are threads, children are tasks and threads)

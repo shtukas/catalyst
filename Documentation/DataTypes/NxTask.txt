@@ -7,5 +7,3 @@ NxTask:
     - description     : String
     - field11         : null or CoreData reference string
     - global-position : float
-
-    - parent-1328      : (optional) parent uuid

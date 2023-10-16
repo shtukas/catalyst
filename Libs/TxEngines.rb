@@ -67,24 +67,6 @@ class TxEngines
         strings.join()
     end
 
-    # TxEngines::shouldListing(item)
-    def self.shouldListing(item)
-        raise "(error: 8977-c65c6f3f720f)" if item["engine-0916"].nil?
-        if item["core-1919"] then
-            core = Catalyst::itemOrNull(item["core-1919"])
-            if core.nil? then
-                Updates::itemAttributeUpdate(uuid, "core-1919", nil)
-                TxEngines::listingCompletionRatio(item["engine-0916"]) < 1
-            else
-                b1 = TxEngines::listingCompletionRatio(item["engine-0916"]) < 1
-                b2 = TxEngines::listingCompletionRatio(core["engine-0916"]) < 1
-                b1 and b2
-            end
-        else
-            TxEngines::listingCompletionRatio(item["engine-0916"]) < 1
-        end
-    end
-
     # -----------------------------------------------
     # Ops
 

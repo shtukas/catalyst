@@ -54,13 +54,14 @@ class NxThreads
     # NxThreads::listingItems()
     def self.listingItems()
         Catalyst::mikuType("NxThread")
+            .select{|item| item["parent-1328"].nil? }
             .sort_by{|item| TxEngines::listingCompletionRatio(item) }
     end
 
-    # NxThreads::children(parent)
-    def self.children(parent)
-        Catalyst::mikuType("NxTask")
-                .select{|item| item["parent-1328"] == parent["uuid"] }
+    # NxThreads::children(thread)
+    def self.children(thread)
+        (Catalyst::mikuType("NxTask") + Catalyst::mikuType("NxThread"))
+                .select{|item| item["parent-1328"] == thread["uuid"] }
     end
 
     # NxThreads::childrenInSortingStyleOrder(thread)
@@ -163,6 +164,10 @@ class NxThreads
             end
 
             if Interpreting::match("sort", input) then
+                if thread["sorting-style"] == "perfection" then
+                    puts "We are not sorting, threads with sorting-style perfection"
+                    LucilleCore::pressEnterToContinue()
+                end
                 items = NxThreads::childrenInSortingStyleOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|

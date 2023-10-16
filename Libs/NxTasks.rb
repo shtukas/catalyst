@@ -104,14 +104,6 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
 
-        Catalyst::mikuType("NxTask").each{|item|
-            next if item["parent-1328"].nil?
-            parent = Catalyst::itemOrNull(item["parent-1328"])
-            if parent.nil? or parent["mikuType"] != "NxThread" then
-                Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
-            end
-        }
-
         # Pick up NxFronts-BufferIn
         LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
             next if File.basename(location)[0, 1] == "."

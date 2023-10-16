@@ -201,6 +201,14 @@ class Catalyst
             TxEngines::maintenance0924()
             OpenCycles::maintenance()
             Catalyst::maintenance2()
+
+            Catalyst::catalystItems().each{|item|
+                next if item["parent-1328"].nil?
+                parent = Catalyst::itemOrNull(item["parent-1328"])
+                if parent.nil? then
+                    Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
+                end
+            }
         end
         Catalyst::maintenance3()
     end

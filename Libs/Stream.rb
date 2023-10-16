@@ -6,108 +6,15 @@ nx1 = {
 }
 =end
 
-# Blocks
-#   1: Now                 :
-#   2: Non important waves : 48d8bde7-8033-4377-bbfc-2ea7918a150d
-#   3: Ondates             : f6fd957b-8d62-45e4-9290-6b0f78e27599
-#   4: Tasks               : 646884a0-4625-46e7-9de3-e9ebadcadc21
-
 class Stream
-
-    # Stream::block1()
-    def self.block1()
-        [
-            DropBox::items(),
-            PhysicalTargets::listingItems(),
-            Anniversaries::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] }
-        ]
-            .flatten
-            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
-            .select{|item| Listing::listable(item) }
-    end
-
-    # Stream::block2()
-    def self.block2()
-        [
-            Waves::listingItems().select{|item| !item["interruption"] }
-        ]
-            .flatten
-            .map{|item|
-                item["10fd0f74-03e8"] = {
-                    "description" => "non important waves",
-                    "number"      => "48d8bde7-8033-4377-bbfc-2ea7918a150d"
-                }
-                item
-            }
-    end
-
-    # Stream::block3()
-    def self.block3()
-        [
-            NxOndates::listingItems(),
-        ]
-            .flatten
-            .map{|item|
-                item["10fd0f74-03e8"] = {
-                    "description" => "ondate",
-                    "number"      => "f6fd957b-8d62-45e4-9290-6b0f78e27599"
-                }
-                item
-            }
-    end
-
-    # Stream::block4()
-    def self.block4()
-        [
-            Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            NxTasks::orphans(),
-            Engined::listingItems()
-        ]
-            .flatten
-            .map{|item|
-                item["10fd0f74-03e8"] = {
-                    "description" => "tasks",
-                    "number"      => "646884a0-4625-46e7-9de3-e9ebadcadc21"
-                }
-                item
-            }
-    end
-
-    # Stream::blocksInOrder()
-    def self.blocksInOrder()
-        [
-            {
-                "name"    => "block 2: non important waves",
-                "items"   => Stream::block2(),
-                "account" => "48d8bde7-8033-4377-bbfc-2ea7918a150d"
-            },
-            {
-                "name"    => "block 3: ondates",
-                "items"   => Stream::block3(),
-                "account" => "f6fd957b-8d62-45e4-9290-6b0f78e27599"
-            },
-            {
-                "name"    => "block 4: tasks",
-                "items"   => Stream::block4(),
-                "account" => "646884a0-4625-46e7-9de3-e9ebadcadc21"
-            },
-        ]
-            .sort_by {|packet| Bank::recoveredAverageHoursPerDay(packet["account"]) }
-    end
 
     # Stream::items()
     def self.items()
-        items = Stream::blocksInOrder()
-                    .map{|packet| packet["items"] }
-                    .flatten
-                    .select{|item|
-                        item["mikuType"] != "NxThread" or NxThreads::children(item).size > 0
-                    }
-
-        (Stream::block1() + items)
-            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
-            .select{|item| Listing::listable(item) }
+        [
+            Listing::block(),
+            Listing::tasks()
+        ]
+            .flatten
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -124,7 +31,7 @@ class Stream
 
     # Stream::seek() # item or nil
     def self.seek()
-        item = Stream::items().first
+        item = Prefix::prefix(Stream::items()).first
         if item["mikuType"] == "NxThread" then
             item = NxThreads::childrenInSortingStyleOrder(item).first
         end
@@ -287,18 +194,6 @@ class Stream
                     "nx2"   => { "state" => "seeking" },
                     "item"  => nil
                 }
-                return nx1
-            end
-            if input == "blocks" then
-                if Stream::block1().size > 0 then
-                    puts "block 1: #{"now".ljust(21)}: (active: #{Stream::block1().size} items)"
-                end
-                Stream::blocksInOrder()
-                .select{|block| block["items"].size > 0 }
-                .each{|block|
-                    puts "#{block["name"].ljust(30)}: rt: #{"%6.2f" % Bank::recoveredAverageHoursPerDay(block["account"])}"
-                }
-                LucilleCore::pressEnterToContinue()
                 return nx1
             end
             if input != "" then
