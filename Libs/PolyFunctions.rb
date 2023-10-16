@@ -98,9 +98,6 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::toString(item)
-        end
         if item["mikuType"] == "NxThread" then
             return NxThreads::toString(item)
         end

@@ -10,6 +10,7 @@ Thread.new {
     }
 }
 
+Listing::main()
 loop {
     Listing::checkForCodeUpdates()
     mode = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["classic", "stream"])

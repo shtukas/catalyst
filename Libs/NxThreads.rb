@@ -41,7 +41,7 @@ class NxThreads
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
         st = item["sorting-style"] ? " (#{item["sorting-style"]})" : ""
-        "⏱️  #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}#{TxCores::suffix(item)}"
+        "⏱️  #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
     end
 
     # NxThreads::interactivelySelectOneOrNull()
@@ -213,17 +213,5 @@ class NxThreads
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
         Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
         true
-    end
-
-    # NxThreads::maintenance()
-    def self.maintenance()
-        Catalyst::mikuType("NxThread")
-            .each{|thread|
-                next if NxThreads::children(thread).size > 0
-                next if (Time.new.to_i - thread["unixtime"]) < 86400 
-                puts "thread '#{thread["description"]}' is empty, going to destroy it"
-                LucilleCore::pressEnterToContinue()
-                Catalyst::destroy(thread["uuid"])
-            }
     end
 end

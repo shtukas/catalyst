@@ -90,10 +90,6 @@ class Catalyst
 
     # Catalyst::pile3(item)
     def self.pile3(item)
-        if item["mikuType"] == "TxCore" then
-            NxThreads::pile3(core)
-            return
-        end
         puts "Piling on elements of '#{PolyFunctions::toString(item)}'"
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
@@ -192,7 +188,7 @@ class Catalyst
 
     # Catalyst::maintenance3()
     def self.maintenance3()
-        padding = ((Catalyst::mikuType("NxThread") + Catalyst::mikuType("TxCore")).map{|item| item["description"].size } + [0]).max
+        padding = (Catalyst::mikuType("NxThread").map{|item| item["description"].size } + [0]).max
         XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
     end
 
@@ -205,7 +201,6 @@ class Catalyst
             TxEngines::maintenance0924()
             OpenCycles::maintenance()
             Catalyst::maintenance2()
-            NxThreads::maintenance()
         end
         Catalyst::maintenance3()
     end
