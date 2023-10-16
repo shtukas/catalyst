@@ -216,6 +216,15 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("core", input) then
+            item = store.getDefault()
+            return if item.nil?
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "core-1919", core["uuid"])
+            return
+        end
+
         if Interpreting::match("core *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
