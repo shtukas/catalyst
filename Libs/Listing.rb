@@ -134,7 +134,6 @@ class Listing
                 Catalyst::mikuType("NxThread").select{|item| item["parent-1328"].nil? }
             ]
                 .flatten
-                .select{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1}
                 .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"])}
         ]
             .flatten
