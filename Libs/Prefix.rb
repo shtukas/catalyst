@@ -28,6 +28,7 @@ class Prefix
     # Prefix::prefix(items)
     def self.prefix(items)
         return [] if items.empty?
+        return items if NxBalls::itemIsActive(items[0])
         topUp = Prefix::pureTopUp(items[0])
         if topUp.size > 0 then
             return Prefix::prefix(topUp + items)

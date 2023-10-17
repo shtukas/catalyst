@@ -146,7 +146,7 @@ class Listing
         [
             Listing::prelude(),
             Listing::block(),
-            Prefix::prefix(Listing::tasks())
+            Listing::tasks()
         ]
             .flatten
             .reduce([]){|selected, item|
@@ -244,7 +244,7 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Listing::items()
+            Prefix::prefix(Listing::items())
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
