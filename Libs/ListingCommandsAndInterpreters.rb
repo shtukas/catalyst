@@ -139,6 +139,25 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if !["NxOndate", "NxTask"].include?(item["mikuType"]) then
+                puts "We are only threading ondates and tasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
+            return if thread.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
+            if item["mikuType"] == "NxOndate" then
+                puts "Before moving it, we need to transform the ondate into a task"
+                LucilleCore::pressEnterToContinue()
+                Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            end
+            return
+        end
+
         if Interpreting::match("thread", input) then
             item = store.getDefault()
             return if item.nil?
