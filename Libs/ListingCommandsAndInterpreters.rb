@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | unparent <n> | move * | engine *  | thread * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | unparent <n> | move * | engine *  | thread * | strat * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -121,6 +121,14 @@ class ListingCommandsAndInterpreters
                 return
             end
             NxThreads::interactivelySelectAndInstallInThread(item)
+            return
+        end
+
+        if Interpreting::match("strat * ", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxStrats::interactivelyPile(item)
             return
         end
 

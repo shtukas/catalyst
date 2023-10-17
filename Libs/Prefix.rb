@@ -1,8 +1,8 @@
 
 class Prefix
 
-    # Prefix::isPefixable(item)
-    def self.isPefixable(item)
+    # Prefix::isBankPrefixable(item)
+    def self.isBankPrefixable(item)
         if item["mikuType"] == "NxThread" then
             return TxEngines::listingCompletionRatio(item["engine-0916"]) < 1
         end
@@ -15,13 +15,13 @@ class Prefix
         end
     end
 
-    # Prefix::pureTopUp(item)
+    # Prefix::threadTreeStructureTopUp(item)
     # Takes an item and returns a possible empty array of prefix items
-    def self.pureTopUp(item)
+    def self.threadTreeStructureTopUp(item)
         return [] if item["mikuType"] != "NxThread"
         thread = item
         NxThreads::childrenInSortingStyleOrder(thread)
-            .select{|i| Prefix::isPefixable(i) }
+            .select{|i| Prefix::isBankPrefixable(i) }
             .first(1)
     end
 
@@ -29,9 +29,15 @@ class Prefix
     def self.prefix(items)
         return [] if items.empty?
         return items if NxBalls::itemIsActive(items[0])
-        topUp = Prefix::pureTopUp(items[0])
-        if topUp.size > 0 then
-            return Prefix::prefix(topUp + items)
+
+        stratification = NxStrats::stratification([items[0]])
+        if stratification.size > 1 then
+            return stratification.take(stratification.size-1) + items
+        end
+
+        topUp2 = Prefix::threadTreeStructureTopUp(items[0])
+        if topUp2.size > 0 then
+            return Prefix::prefix(topUp2 + items)
         end
         return items
     end

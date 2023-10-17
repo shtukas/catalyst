@@ -22,6 +22,17 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "TxStrat" then
+            accounts << {
+                "description" => item["description"],
+                "number"      => item["capsule"]
+            }
+            bottom = Catalyst::itemOrNull(item["bottom"])
+            if bottom then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
+            end
+        end
+
         # Special Features
 
         if item["parent-1328"] then
@@ -100,6 +111,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxThread" then
             return NxThreads::toString(item)
+        end
+        if item["mikuType"] == "NxStrat" then
+            return NxStrats::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
