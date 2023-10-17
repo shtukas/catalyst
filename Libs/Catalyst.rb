@@ -161,7 +161,7 @@ class Catalyst
     def self.selectSubsetAndMoveToSelectedThread(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        thread = NxThreads::interactivelySelectOneOrNull()
+        thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
         return if thread.nil?
         selected.each{|item|
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])

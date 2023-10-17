@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | unparent <n> | move * | engine * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | unparent <n> | move * | engine *  | >> | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "   - NxThread : sorting-style (*)",
             "",
             "makers        : anniversary | manual countdown | wave | today | tomorrow | ondate | desktop | task | pile | thread",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | threads",
+            "divings       : anniversaries | ondates | waves | desktop | boxes",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move",
         ].join("\n")
@@ -124,11 +124,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
-            return
-        end
-
         if Interpreting::match("today", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
@@ -139,8 +134,19 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
-            thread = NxThreads::interactivelySelectOneOrNull()
+            if !["NxOndate", "NxTask"].include?(item["mikuType"]) then
+                puts "We are only >>'ing and therefore moving ondates and tasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
+            return if thread.nil?
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
+            if item["mikuType"] == "NxOndate" then
+                puts "Before moving it, we need to transform the ondate into a task"
+                LucilleCore::pressEnterToContinue()
+                Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+            end
             return
         end
 
@@ -164,7 +170,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(item)
             loop {
-                thread = NxThreads::interactivelySelectOneOrNull()
+                thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
                 next if thread.nil?
                 Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
                 break

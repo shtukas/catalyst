@@ -34,11 +34,45 @@ class NxThreads
         "⏱️  #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
     end
 
-    # NxThreads::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        items = Catalyst::mikuType("NxThread")
-                    .sort_by {|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|item| NxThreads::toString(item) })
+    # NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(context = nil)
+    def self.interactivelySelectOneOrNullUsingTopDownNavigation(context =  nil)
+        if context.nil? then
+            threads = Catalyst::mikuType("NxThread")
+                        .select{|item| item["parent-1328"].nil? }
+                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
+            selected = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| PolyFunctions::toString(item) })
+            if selected then
+                return NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(selected)
+            else
+                return nil
+            end
+        end
+        threadKids = Catalyst::mikuType("NxThread").select{|t| t["parent-1328"] == context["uuid"] }
+        if threadKids.size > 0 then
+            store = []
+            store << context
+            puts "----------------------------"
+            puts "0: context: #{PolyFunctions::toString(context)}"
+            puts ""
+            threadKids.each{|t|
+                store << t
+                puts "#{store.size-1}: #{NxThreads::toString(t)}"
+            }
+            indx = LucilleCore::askQuestionAnswerAsString("index of target: ").to_i
+            if indx == 0 then
+                return context
+            end
+            target = store[indx]
+            if target.nil? then
+                return NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(context)
+            else
+                return NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(target)
+            end
+        else
+            puts "About to return '#{PolyFunctions::toString(context).green}'"
+            LucilleCore::pressEnterToContinue()
+            return context
+        end
     end
 
     # NxThreads::listingItems()
@@ -176,18 +210,9 @@ class NxThreads
         }
     end
 
-    # NxThreads::program2()
-    def self.program2()
-        loop {
-            item = NxThreads::interactivelySelectOneOrNull()
-            return if item.nil?
-            NxThreads::program1(item)
-        }
-    end
-
     # NxThreads::interactivelySelectAndInstallInThread(item) # boolean
     def self.interactivelySelectAndInstallInThread(item)
-        thread = NxThreads::interactivelySelectOneOrNull()
+        thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
         return false if thread.nil?
         children = NxThreads::childrenInSortingStyleOrder(thread)
         children
