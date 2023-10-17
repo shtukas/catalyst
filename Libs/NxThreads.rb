@@ -27,16 +27,6 @@ class NxThreads
     # -----------------------------------------------
     # Data
 
-    # TxEngines::listingCompletionRatio(item)
-    def self.listingCompletionRatio(item)
-        TxEngines::listingCompletionRatio(item["engine-0916"])
-    end
-
-    # NxThreads::periodCompletionRatio(item)
-    def self.periodCompletionRatio(item)
-        TxEngines::periodCompletionRatio(item["engine-0916"])
-    end
-
     # NxThreads::toString(item)
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
