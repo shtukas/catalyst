@@ -79,7 +79,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">ondate", input) then
             item = store.getDefault()
             return if item.nil?
-            if !item["mikuType"] != "NxTask" then
+            if item["mikuType"] != "NxTask" then
                 puts "For the moment we only run >ondate on NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -94,7 +94,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !item["mikuType"] != "NxTask" then
+            if item["mikuType"] != "NxTask" then
                 puts "For the moment we only run >ondate on NxTasks"
                 LucilleCore::pressEnterToContinue()
                 return
