@@ -244,7 +244,7 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Prefix::prefix(Listing::items())
+            Prefix::prefix(Ox1s::organiseListing(Listing::items()))
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)

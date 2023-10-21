@@ -8,3 +8,4 @@ Cross types conventions:
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - engine-0916      : TxEngine
     - parent-1328      : (optional) parent uuid (parents are threads, children are tasks and threads)
+    - ordinal-1050     : Ox1

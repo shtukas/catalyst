@@ -461,6 +461,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
+
+        if Interpreting::match("sort", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("ordering", [], store.items(), lambda {|item| PolyFunctions::toString(item) })
+            selected.reverse.each{|item|
+                Ox1s::markAtTop(item["uuid"])
+            }
+            return
+        end
         if Interpreting::match("pursue", input) then
             item = store.getDefault()
             return if item.nil?

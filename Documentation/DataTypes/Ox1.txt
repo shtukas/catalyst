@@ -1,0 +1,2 @@
+Ox1
+    "ordinal"       : Float
