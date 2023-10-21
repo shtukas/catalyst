@@ -1,0 +1,8 @@
+
+NxLifter:
+    "uuid"         : String
+    "mikuType"     : "NxLifter"
+    "unixtime"     : Float
+    "datetime"     : DateTime Iso 8601 UTC Zulu
+    "targetuuid"   : String
+    "hours"        : Float

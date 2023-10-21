@@ -168,6 +168,7 @@ require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxThreads.rb"
 require_relative "NxStrats.rb"
+require_relative "NxLifters.rb"
 
 require_relative "OpenCycles.rb"
 require_relative "Ox1s.rb"
@@ -179,7 +180,6 @@ require_relative "PhysicalTargets.rb"
 require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
-require_relative "Stream.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxEngines.rb"

@@ -1,2 +1,3 @@
 Ox1
-    "ordinal"       : Float
+    "ordinal" : Float
+    "date"    : Date:YYYY-MM-DD
