@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "   - NxThread : sorting-style (*)",
             "",
             "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | engined",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | engined | buffer-ins",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
         ].join("\n")
@@ -436,6 +436,13 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("buffer-ins", input) then
+            items = Catalyst::mikuType("NxThread").select{|item| item["parent-1328"].nil? }
+                        .sort_by{|item| item["unixtime"] }
+            Catalyst::program2(items)
             return
         end
 
