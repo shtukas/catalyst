@@ -284,6 +284,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTask" then
+            Catalyst::program1(item)
+            return
+        end
+
         puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"
         LucilleCore::pressEnterToContinue()
     end
