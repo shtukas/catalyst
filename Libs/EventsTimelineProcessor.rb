@@ -1,14 +1,14 @@
 
-class EventsTimeline
+class EventsTimelineProcessor
 
-    # EventsTimeline::eventsTimelineLocation()
+    # EventsTimelineProcessor::eventsTimelineLocation()
     def self.eventsTimelineLocation()
         "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/events-timeline"
     end
 
-    # EventsTimeline::firstFilepathOrNull()
+    # EventsTimelineProcessor::firstFilepathOrNull()
     def self.firstFilepathOrNull()
-        LucilleCore::locationsAtFolder(EventsTimeline::eventsTimelineLocation()).sort.each{|locationYear|
+        LucilleCore::locationsAtFolder(EventsTimelineProcessor::eventsTimelineLocation()).sort.each{|locationYear|
             LucilleCore::locationsAtFolder(locationYear).sort.each{|locationMonth|
                 LucilleCore::locationsAtFolder(locationMonth).sort.each{|locationDay|
                     LucilleCore::locationsAtFolder(locationDay).sort.each{|locationIndexFolder|
@@ -36,7 +36,7 @@ class EventsTimeline
         nil
     end
 
-    # EventsTimeline::digestEvent(event)
+    # EventsTimelineProcessor::digestEvent(event)
     def self.digestEvent(event)
 
         if event["eventType"] == "DoNotShowUntil2" then
@@ -51,6 +51,8 @@ class EventsTimeline
             db.execute "delete from DoNotShowUntil where _id_=?", [targetId]
             db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [targetId, unixtime]
             db.close
+
+            $DoNotShowUntilOperator.set(targetId, unixtime)
             return
         end
 
@@ -58,18 +60,32 @@ class EventsTimeline
             uuid = event["payload"]["uuid"]
             mikuType = event["payload"]["mikuType"]
 
-            item = {
-                "uuid"     => uuid,
-                "mikuType" => mikuType
-            }
+            # We need to deal with attributes and instructions appearing out of order
+            # In particular we could have created a phantom item when we received the attribute update, before the init
+
+            item = Catalyst::itemOrNull(uuid)
+            if item.nil? then
+                item = {
+                    "uuid"     => uuid,
+                    "mikuType" => mikuType
+                }
+            else
+                puts "Received init for an existing item"
+                puts "pre-existing item: #{JSON.pretty_generate(item)}"
+                puts "event: #{JSON.pretty_generate(event)}"
+                item["mikuType"] = mikuType
+            end
 
             filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
             db.results_as_hash = true
+            db.execute "delete from Items where _uuid_=?", [item["uuid"]]
             db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
             db.close
+
+            $ItemsOperator.init(uuid, mikuType)
             return
         end
 
@@ -78,17 +94,26 @@ class EventsTimeline
             attname  = event["payload"]["attname"]
             attvalue = event["payload"]["attvalue"]
             item = Catalyst::itemOrNull(itemuuid)
-            if item then
-                item[attname] = attvalue
-                filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute "delete from Items where _uuid_=?", [itemuuid]
-                db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
-                db.close
+            if item.nil? then
+                puts "Generating a Phantom"
+                item = {
+                    "uuid"     => itemuuid,
+                    "mikuType" => "NxThePhantomMenace",
+                    "unixtime" => Time.new.to_i
+                }
+                puts JSON.pretty_generate(item)
             end
+            item[attname] = attvalue
+            filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute "delete from Items where _uuid_=?", [itemuuid]
+            db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
+            db.close
+
+            $ItemsOperator.itemAttributeUpdate(itemuuid, attname, attvalue)
             return
         end
 
@@ -101,6 +126,8 @@ class EventsTimeline
             db.results_as_hash = true
             db.execute "delete from Items where _uuid_=?", [itemuuid]
             db.close
+
+            $ItemsOperator.destroy(itemuuid)
             return
         end
 
@@ -115,21 +142,36 @@ class EventsTimeline
             db.results_as_hash = true
             db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, date, value]
             db.close
+
+            $BankOperator.deposit(uuid, date, value)
             return
         end
 
+        if event["eventType"] == "Item" then
+            item = event["payload"]
+            filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute "delete from Items where _uuid_=?", [item["uuid"]]
+            db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
+            db.close
+
+            $ItemsOperator.setItem(item)
+            return
+        end
         raise "(error: 0d1295ae-b021-42f7-b419-3214ac0a917f) cannot digest event: #{event}"
     end
 
-    # EventsTimeline::procesLine()
+    # EventsTimelineProcessor::procesLine()
     def self.procesLine()
         loop {
-            filepath = EventsTimeline::firstFilepathOrNull()
+            filepath = EventsTimelineProcessor::firstFilepathOrNull()
             return if filepath.nil?
             puts "processing: #{filepath}"
             event = JSON.parse(IO.read(filepath))
-            return if (Time.new.to_i - event["unixtime"]) < 300
-            EventsTimeline::digestEvent(event)
+            EventsTimelineProcessor::digestEvent(event)
             FileUtils.rm(filepath)
         }
     end

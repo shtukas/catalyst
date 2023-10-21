@@ -1,7 +1,7 @@
 
 class Broadcasts
 
-    # Makers
+    # Events Makers
 
     # Broadcasts::makeDoNotShowUntil(itemuuid, unixtime)
     def self.makeDoNotShowUntil(itemuuid, unixtime)
@@ -69,7 +69,17 @@ class Broadcasts
         }
     end
 
-    # Publishers
+    # Broadcasts::makeItem(item)
+    def self.makeItem(item)
+        {
+            "uuid"      => SecureRandom.uuid,
+            "unixtime"  => Time.new.to_i,
+            "eventType" => "Item",
+            "payload"   => item
+        }
+    end
+
+    # Publisher
 
     # Broadcasts::publish(event)
     def self.publish(event)
@@ -82,95 +92,17 @@ class Broadcasts
                 FileUtils.mkpath(folder1)
             end
             folder2 = LucilleCore::indexsubfolderpath(folder1, 100)
-            filepath1 = "#{folder2}/#{CommonUtils::timeStringL22()}.json"
+            filepath1 = "#{folder2}/#{CommonUtils::timeStringL22()}-#{Config::thisInstanceId()}.json"
             File.open(filepath1, "w"){|f| f.puts(JSON.pretty_generate(event)) }
         }
     end
 
-    # Broadcasts::publishDoNotShowUntil(itemuuid, unixtime)
-    def self.publishDoNotShowUntil(itemuuid, unixtime)
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/DoNotShowUntil.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "delete from DoNotShowUntil where _id_=?", [itemuuid]
-        db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [itemuuid, unixtime]
-        db.close
+    # Utils
 
-        $DoNotShowUntilOperator.set(itemuuid, unixtime)
-
-        Broadcasts::publish(Broadcasts::makeDoNotShowUntil(itemuuid, unixtime))
-    end
-
-    # Broadcasts::publishItemAttributeUpdate(itemuuid, attname, attvalue)
-    def self.publishItemAttributeUpdate(itemuuid, attname, attvalue)
-        item = Catalyst::itemOrNull(itemuuid)
-        if item.nil? then
-            raise "(error 1219) Broadcasts::publishItemAttributeUpdate(#{itemuuid}, #{attname}, #{attvalue})"
-        end
-        item[attname] = attvalue
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "delete from Items where _uuid_=?", [itemuuid]
-        db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
-        db.close
-
-        $ItemsOperator.itemAttributeUpdate(itemuuid, attname, attvalue)
-
-        Broadcasts::publish(Broadcasts::makeItemAttributeUpdate(itemuuid, attname, attvalue))
-    end
-
-    # Broadcasts::publishItemDestroy(itemuuid)
-    def self.publishItemDestroy(itemuuid)
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "delete from Items where _uuid_=?", [itemuuid]
-        db.close
-
-        $ItemsOperator.destroy(itemuuid)
-
-        Broadcasts::publish(Broadcasts::makeItemDestroy(itemuuid))
-    end
-
-    # Broadcasts::publishItemInit(uuid, mikuType)
-    def self.publishItemInit(uuid, mikuType)
-        item = {
-            "uuid"     => uuid,
-            "mikuType" => mikuType
-        }
-
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "insert into Items (_uuid_, _mikuType_, _item_) values (?, ?, ?)", [item["uuid"], item["mikuType"], JSON.generate(item)]
-        db.close
-
-        $ItemsOperator.init(uuid, mikuType)
-
-        Broadcasts::publish(Broadcasts::makeItemInit(uuid, mikuType))
-    end
-
-    # Broadcasts::publishBankDeposit(uuid, date, value)
-    def self.publishBankDeposit(uuid, date, value)
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, date, value]
-        db.close
-
-        $BankOperator.deposit(uuid, date, value)
-
-        Broadcasts::publish(Broadcasts::makeBankDeposit(uuid, date, value))
+    # Broadcasts::publishItem(uuid)
+    def self.publishItem(uuid)
+        item = Catalyst::itemOrNull(uuid)
+        return if item.nil?
+        Broadcasts::publish(Broadcasts::makeItem(item))
     end
 end

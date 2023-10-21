@@ -65,15 +65,9 @@ class Listing
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
-
         return true if NxBalls::itemIsRunning(item)
-
-        return false if item["red-2029"]
-
         return false if !DoNotShowUntil::isVisible(item)
-
         return false if TmpSkip1::isSkipped(item)
-
         true
     end
 
@@ -82,19 +76,12 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::cto()
-    def self.cto()
-        core = Catalyst::itemOrNull("a72e3c37-5456-416c-ab04-7ce0c1971938")
-        ratio = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/(core["hours"].to_f/10)
-        ratio < 1 ? [core] : []
-    end
-
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        line = "#{storePrefix} #{DxStack::prefix(item)}#{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -111,43 +98,57 @@ class Listing
         line
     end
 
-    # Listing::stack()
-    def self.stack()
+    # Listing::prelude()
+    def self.prelude()
         [
-            NxOndates::listingItems(),
-            Backups::listingItems()
+            NxBalls::runningItems(),
+            DropBox::items(),
+            Desktop::listingItems(),
         ]
             .flatten
+            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
             .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
+    end
+
+    # Listing::block()
+    def self.block()
+        [
+            PhysicalTargets::listingItems(),
+            Anniversaries::listingItems(),
+            Waves::listingItems().select{|item| item["interruption"] },
+            Config::isPrimaryInstance() ? Backups::listingItems() : [],
+            NxOndates::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] },
+        ]
+            .flatten
+            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
+            .select{|item| Listing::listable(item) }
+    end
+
+    # Listing::tasks()
+    def self.tasks()
+        [
+            NxTasks::orphans(),
+            [
+                Catalyst::mikuType("NxTask").select{|item| item["engine-0916"] },
+                Catalyst::mikuType("NxThread").select{|item| item["parent-1328"].nil? }
+            ]
+                .flatten
+                .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"])}
+        ]
+            .flatten
+            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
+            .select{|item| Listing::listable(item) }
     end
 
     # Listing::items()
     def self.items()
         [
-            DropBox::items(),
-            DxStack::itemsInOrder(),
-            Waves::listingItems().select{|item| item["interruption"] },
-            Listing::cto(),
-            Anniversaries::listingItems(),
-            PhysicalTargets::listingItems(),
-            Desktop::listingItems(),
-            Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            NxOndates::listingItems(),
-            Catalyst::red(),
-            Catalyst::enginedInOrderForListing(),
-            NxTasks::orphans(),
-            Waves::listingItems().select{|item| !item["interruption"] },
-            TxCores::listingItems(),
+            Listing::prelude(),
+            Listing::block(),
+            Listing::tasks()
         ]
             .flatten
-            .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -171,7 +172,7 @@ class Listing
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTasks::orphans()", lambda{ NxTasks::orphans() })
-        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
+        spot.contest_entry("NxThreads::listingItems()", lambda{ NxThreads::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()
@@ -192,18 +193,6 @@ class Listing
         store = ItemStore.new()
 
         LucilleCore::pressEnterToContinue()
-    end
-
-    # Listing::maintenance()
-    def self.maintenance()
-        if Config::isPrimaryInstance() then
-            puts "> Listing::maintenance() on primary instance"
-            NxTasks::maintenance()
-            OpenCycles::maintenance()
-            TxCores::maintenance2()
-            OpenCycles::maintenance()
-        end
-        TxCores::maintenance3()
     end
 
     # Listing::launchNxBallMonitor()
@@ -235,25 +224,18 @@ class Listing
 
         latestCodeTrace = initialCodeTrace
 
-        Thread.new {
-            loop {
-                Listing::checkForCodeUpdates()
-                sleep 300
-            }
-        }
-
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
                 puts "Code change detected"
-                break
+                exit
             end
+
+            EventsTimelineProcessor::procesLine()
 
             if ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600) then
-                Listing::maintenance()
+                Catalyst::listing_maintenance()
             end
-
-            EventsTimeline::procesLine()
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
@@ -262,19 +244,11 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Prefix::prefix(Listing::items())
+            Prefix::prefix(Ox1s::organiseListing(Listing::items()))
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
-                    break if !status
-                }
-            spacecontrol.putsline ""
-
-            NxBalls::runningItems()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    status = spacecontrol.putsline Listing::toString2(store, item)
                     break if !status
                 }
 

@@ -29,8 +29,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -39,12 +39,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "PhysicalTarget" then
-            PhysicalTargets::access(item)
+        if item["mikuType"] == "NxStrat" then
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
+        if item["mikuType"] == "PhysicalTarget" then
+            PhysicalTargets::access(item)
             return
         end
 
@@ -60,7 +60,6 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        DxStack::unregister(item)
 
         # order: alphabetical order
 
@@ -97,6 +96,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
@@ -107,12 +113,11 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
-            DxStack::unregister(item)
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            puts "You cannot done a TxCore"
+        if item["mikuType"] == "NxThread" then
+            puts "You cannot done a NxThread"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -120,18 +125,6 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "You are trying to destroy a strat item which has a top element. Operation forbidden."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Catalyst::destroy(item["uuid"])
             end
             return
         end
@@ -174,9 +167,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            if TxCores::childrenInOrder(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::childrenInOrder(item).size} elements"
+        if item["mikuType"] == "NxThread" then
+            if NxThreads::childrenInSortingStyleOrder(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{NxThreads::childrenInSortingStyleOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -187,11 +180,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxStrat" then
-            if Stratification::getDirectTopOrNull(item) then
-                puts "You are trying to destroy a strat item which has a top element. Operation forbidden."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
             end
@@ -221,6 +209,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            PolyFunctions::toString(item).green
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxOndate" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
@@ -234,8 +229,13 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 NxBalls::stop(item)
             end
-            if Catalyst::elementsInOrder(item).empty? and LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            return if NxBalls::itemIsActive(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
                 Catalyst::destroy(item["uuid"])
+            else
+                if item["parent-1328"].nil? then
+                    NxThreads::interactivelySelectAndInstallInThread(item)
+                end
             end
             return
         end
@@ -243,7 +243,6 @@ class PolyActions
         if item["mikuType"] == "PhysicalTarget" then
             PolyFunctions::toString(item).green
             PhysicalTargets::access(item)
-            DxStack::unregister(item)
             return
         end
 
@@ -258,12 +257,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
             return
         end
 
@@ -321,6 +316,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "description", description)
+        Updates::itemAttributeUpdate(item["uuid"], "description", description)
     end
 end

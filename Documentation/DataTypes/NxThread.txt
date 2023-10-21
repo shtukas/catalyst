@@ -1,0 +1,7 @@
+
+NxThread
+    "uuid"          : Float
+    "mikuType"      : "NxThread"
+    "description"   : String
+    "engine-0916"   : TxEngine
+    "sorting-style" : null (default, linear) | "perfection" | "top3"

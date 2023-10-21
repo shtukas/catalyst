@@ -109,6 +109,10 @@ class ItemsOperator
         }
     end
 
+    def setItem(item)
+        @data = @data.reject{|i| i["uuid"] == item["uuid"] } + [item]
+    end
+
     def itemOrNull(uuid)
         @data.select{|item| item["uuid"] == uuid }.first
     end

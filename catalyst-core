@@ -1,4 +1,26 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 
+Listing::checkForCodeUpdates()
+
+Thread.new {
+    loop {
+        sleep 300
+        Listing::checkForCodeUpdates()
+    }
+}
+
 Listing::main()
+loop {
+    Listing::checkForCodeUpdates()
+    mode = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["classic", "stream"])
+    exit if mode.nil? 
+    if mode == "classic" then
+        Listing::main()
+    end
+    if mode == "stream" then
+        Stream::main()
+    end
+}
+
+

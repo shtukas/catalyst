@@ -5,8 +5,7 @@ Cross types conventions:
     - field11          : coredata reference string
     - doNotShowUntil   : null or unixtime
     - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
-    - stack-0012       : [date: "YYYY-MM-DD", float: position in the stack]
     - open-cycle-1143  : uuid of the open cycle that this item represents
-    - coreX-2300       : (optional) uuid of core
-    - parent-1328      : (optional) parent uuid
-    - engine-2251      : (optional) TxEngine
+    - engine-0916      : TxEngine
+    - parent-1328      : (optional) parent uuid (parents are threads, children are tasks and threads)
+    - ordinal-1050     : Ox1

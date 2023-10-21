@@ -1,8 +1,0 @@
-
-TxCore
-    "uuid"          : Float
-    "mikuType"      : "TxCore"
-    "description"   : String
-    "hours"         : Float
-    "lastResetTime" : Unixtime
-    "capsule"       : String

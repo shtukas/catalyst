@@ -7,12 +7,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid = SecureRandom.uuid
-        Broadcasts::publishItemInit(uuid, "NxOndate")
+        Updates::itemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", datetime)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", datetime)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -21,12 +22,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         uuid  = SecureRandom.uuid
-        Broadcasts::publishItemInit(uuid, "NxOndate")
+        Updates::itemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Broadcasts::publishItemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Broadcasts::publishItemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Broadcasts::publishItemAttributeUpdate(uuid, "description", description)
-        Broadcasts::publishItemAttributeUpdate(uuid, "field11", coredataref)
+        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
+        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
+        Updates::itemAttributeUpdate(uuid, "description", description)
+        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
     end
 
@@ -35,7 +37,7 @@ class NxOndates
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}#{TxCores::suffix(item)}"
+        "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxOndates::ondatesInOrder()
@@ -62,7 +64,7 @@ class NxOndates
     def self.redate(item)
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
-        Broadcasts::publishItemAttributeUpdate(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
+        Updates::itemAttributeUpdate(item["uuid"], "datetime", Time.at(unixtime).utc.iso8601)
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 

@@ -1,38 +1,43 @@
 
 class Prefix
 
-    # Prefix::timeControl(item)
-    def self.timeControl(item)
-        if item["engine-2251"] then
-            TxEngine::ratio(item["engine-2251"]) < 1
-        else
-            Bank::recoveredAverageHoursPerDay(item["uuid"]) < 1
+    # Prefix::isBankPrefixable(item)
+    def self.isBankPrefixable(item)
+        if item["mikuType"] == "NxThread" then
+            return TxEngines::listingCompletionRatio(item["engine-0916"]) < 1
+        end
+        if item["mikuType"] == "NxTask" then
+            if item["engine-0916"] then
+                TxEngines::listingCompletionRatio(item["engine-0916"]) < 1
+            else
+                Bank::recoveredAverageHoursPerDay(item["uuid"]) < 1
+            end
         end
     end
 
-    # Prefix::pureTopUp(item)
-    # Function takes an item and returns a possible empty array of 
-    # prefix items
-    def self.pureTopUp(item)
-        if item["mikuType"] == "TxCore" then
-            core = item
-            return TxCores::childrenInOrderForPrefix(core)
-                    .select{|item| Listing::listable(item) }
-                    .select{|item| Prefix::timeControl(item) }
-                    .first(5)
-        end
-        Catalyst::elementsInOrder(item)
-            .select{|item| Listing::listable(item) }
-            .select{|item| Prefix::timeControl(item) }
-            .first(5)
+    # Prefix::threadTreeStructureTopUp(item)
+    # Takes an item and returns a possible empty array of prefix items
+    def self.threadTreeStructureTopUp(item)
+        return [] if item["mikuType"] != "NxThread"
+        thread = item
+        NxThreads::childrenInSortingStyleOrder(thread)
+            .select{|i| Prefix::isBankPrefixable(i) }
+            .first(1)
     end
 
     # Prefix::prefix(items)
     def self.prefix(items)
         return [] if items.empty?
-        topUp = Prefix::pureTopUp(items[0])
-        if topUp.size > 0 then
-            return Prefix::prefix(topUp + items)
+        return items if NxBalls::itemIsActive(items[0])
+
+        stratification = NxStrats::stratification([items[0]])
+        if stratification.size > 1 then
+            return stratification.take(stratification.size-1) + items
+        end
+
+        topUp2 = Prefix::threadTreeStructureTopUp(items[0])
+        if topUp2.size > 0 then
+            return Prefix::prefix(topUp2 + items)
         end
         return items
     end

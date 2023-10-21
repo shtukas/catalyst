@@ -42,7 +42,7 @@ class Bank
 
     # Bank::put(uuid, value)
     def self.put(uuid, value)
-        Broadcasts::publishBankDeposit(uuid, CommonUtils::today(), value)
+        Updates::bankDeposit(uuid, CommonUtils::today(), value)
     end
 
     # ----------------------------------

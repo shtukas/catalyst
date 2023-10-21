@@ -4,6 +4,8 @@ class PolyFunctions
     # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
     def self.itemToBankingAccounts(item)
 
+        return [] if item["mikuType"] == "NxThePhantomMenace"
+
         accounts = []
 
         accounts << {
@@ -13,28 +15,25 @@ class PolyFunctions
 
         # Types
 
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxThread" then
             accounts << {
                 "description" => item["description"],
                 "number"      => item["capsule"]
             }
         end
 
-        if item["mikuType"] == "NxStrat" then
-            b = Catalyst::itemOrNull(item["bottom"])
-            if b then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(b)
+        if item["mikuType"] == "TxStrat" then
+            accounts << {
+                "description" => item["description"],
+                "number"      => item["capsule"]
+            }
+            bottom = Catalyst::itemOrNull(item["bottom"])
+            if bottom then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
         end
 
         # Special Features
-
-        if item["coreX-2300"] then
-            core = Catalyst::itemOrNull(item["coreX-2300"])
-            if core then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
-            end
-        end
 
         if item["parent-1328"] then
             clique = Catalyst::itemOrNull(item["parent-1328"])
@@ -43,12 +42,27 @@ class PolyFunctions
             end
         end
 
-        if item["engine-2251"] then
-            engine = item["engine-2251"]
+        if item["engine-0916"] then
+            engine = item["engine-0916"]
             accounts << {
-                "description" => "engine: #{engine["uuid"]}",
+                "description" => "(engine uuid for: #{PolyFunctions::toString(item)})",
                 "number"      => engine["uuid"]
             }
+            accounts << {
+                "description" => "(engine capsule for: #{PolyFunctions::toString(item)})",
+                "number"      => engine["capsule"]
+            }
+        end
+
+        if item["core-1919"] then
+            core = Catalyst::itemOrNull(item["core-1919"])
+            if core then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+            end
+        end
+
+        if item["10fd0f74-03e8"] then
+            accounts << item["10fd0f74-03e8"]
         end
 
         accounts.reduce([]){|as, account|
@@ -95,11 +109,11 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxStrat" then
-            return Stratification::toString(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::toString(item)
         end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::toString(item)
+        if item["mikuType"] == "NxStrat" then
+            return NxStrats::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
