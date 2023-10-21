@@ -441,6 +441,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("buffer-ins", input) then
             items = Catalyst::mikuType("NxTask").select{|item| item["parent-1328"].nil? }
+                        .select{|item| item["engine-0916"].nil? }
                         .sort_by{|item| item["unixtime"] || 0 }
             Catalyst::program2(items)
             return
