@@ -190,13 +190,13 @@ class PolyActions
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
 
-    # PolyActions::doubleDots(item)
-    def self.doubleDots(item)
+    # PolyActions::naturalProgression(item)
+    def self.naturalProgression(item)
 
         if item["mikuType"] == "NxLifter" then
             target = Catalyst::itemOrNull(item["targetuuid"])
             return if target.nil?
-            PolyActions::doubleDots(target)
+            PolyActions::naturalProgression(target)
             return
         end
 
