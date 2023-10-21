@@ -193,6 +193,13 @@ class PolyActions
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
 
+        if item["mikuType"] == "NxLifter" then
+            target = Catalyst::itemOrNull(item["targetuuid"])
+            return if target.nil?
+            PolyActions::doubleDots(target)
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             PolyActions::access(item)
             return
