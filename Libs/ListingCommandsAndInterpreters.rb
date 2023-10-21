@@ -18,7 +18,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop",
             "divings       : anniversaries | ondates | waves | desktop | boxes",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move",
+            "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
         ].join("\n")
     end
 
@@ -147,7 +147,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
+            thread = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22") # Infinity Thread
             return if thread.nil?
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
             if item["mikuType"] == "NxOndate" then
