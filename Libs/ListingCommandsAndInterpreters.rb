@@ -461,6 +461,20 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("pile", input) then
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text
+                .lines
+                .map{|line| line.strip }
+                .reverse
+                .each{|line|
+                    task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
+                    puts JSON.pretty_generate(task)
+                    Ox1s::markAtTop(task["uuid"])
+                }
+            return
+        end
 
         if Interpreting::match("sort", input) then
             selected, _ = LucilleCore::selectZeroOrMore("ordering", [], store.items(), lambda {|item| PolyFunctions::toString(item) })
@@ -469,6 +483,7 @@ class ListingCommandsAndInterpreters
             }
             return
         end
+
         if Interpreting::match("pursue", input) then
             item = store.getDefault()
             return if item.nil?
