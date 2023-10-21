@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "   - NxThread : sorting-style (*)",
             "",
             "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop",
-            "divings       : anniversaries | ondates | waves | desktop | boxes",
+            "divings       : anniversaries | ondates | waves | desktop | boxes | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
         ].join("\n")
@@ -436,6 +436,15 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("engined", input) then
+            items = Catalyst::catalystItems()
+                        .select{|item| item["mikuType"] != "NxThePhantomMenace" }
+                        .select{|item| item["engine-0916"] }
+                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
+            Catalyst::program2(items)
             return
         end
 
