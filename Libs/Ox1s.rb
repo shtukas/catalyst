@@ -35,6 +35,7 @@ class Ox1s
     def self.itemIsOx1(item)
         return false if item["ordinal-1051"].nil?
         return false if item["ordinal-1051"]["date"] != CommonUtils::today()
+        true
     end
 
     # Ox1s::organiseListing(items)
