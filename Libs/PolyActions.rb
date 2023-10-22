@@ -190,8 +190,15 @@ class PolyActions
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
 
-    # PolyActions::doubleDots(item)
-    def self.doubleDots(item)
+    # PolyActions::naturalProgression(item)
+    def self.naturalProgression(item)
+
+        if item["mikuType"] == "NxLifter" then
+            target = Catalyst::itemOrNull(item["targetuuid"])
+            return if target.nil?
+            PolyActions::naturalProgression(target)
+            return
+        end
 
         if item["mikuType"] == "NxAnniversary" then
             PolyActions::access(item)
@@ -258,7 +265,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
+            i1 = NxThreads::children(item).first
+            if i1 then
+                puts "running: '#{PolyFunctions::toString(i1).green}'"
+                PolyActions::naturalProgression(i1)
+            else
+                puts "thread: '#{PolyFunctions::toString(i1).green}' is empty"
+                LucilleCore::pressEnterToContinue()
+            end
             return
         end
 

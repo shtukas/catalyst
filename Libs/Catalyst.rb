@@ -157,6 +157,59 @@ class Catalyst
         }
     end
 
+    # Catalyst::program3(selector)
+    def self.program3(selector)
+        loop {
+
+            elements = selector.call()
+            return if elements.empty?
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts  ""
+
+            elements
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts  Listing::toString2(store, item)
+                }
+
+            puts ""
+            puts "task | pile | sort | move"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "task" then
+                puts "task is not defined in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
+
+            if input == "pile" then
+                puts "pile is not defined in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
+
+            if input == "sort" then
+                puts "sort is not defined in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
+
+            if input == "move" then
+                Catalyst::selectSubsetAndMoveToSelectedThread(elements)
+                next
+            end
+
+            puts ""
+            ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
     # Catalyst::selectSubsetAndMoveToSelectedThread(items)
     def self.selectSubsetAndMoveToSelectedThread(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })

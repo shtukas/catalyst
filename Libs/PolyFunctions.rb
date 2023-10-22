@@ -33,6 +33,13 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxLifter" then
+            target = Catalyst::itemOrNull(item["targetuuid"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
         # Special Features
 
         if item["parent-1328"] then
@@ -102,6 +109,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
+        end
+        if item["mikuType"] == "NxLifter" then
+            return NxLifters::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

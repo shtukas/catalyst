@@ -98,36 +98,18 @@ class Listing
         line
     end
 
-    # Listing::prelude()
-    def self.prelude()
+    # Listing::items()
+    def self.items()
         [
-            NxBalls::runningItems(),
             DropBox::items(),
             Desktop::listingItems(),
-        ]
-            .flatten
-            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
-            .select{|item| Listing::listable(item) }
-    end
-
-    # Listing::block()
-    def self.block()
-        [
+            NxLifters::listingItems(),
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-        ]
-            .flatten
-            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
-            .select{|item| Listing::listable(item) }
-    end
-
-    # Listing::tasks()
-    def self.tasks()
-        [
             NxTasks::orphans(),
             [
                 Catalyst::mikuType("NxTask").select{|item| item["engine-0916"] },
@@ -139,16 +121,6 @@ class Listing
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
             .select{|item| Listing::listable(item) }
-    end
-
-    # Listing::items()
-    def self.items()
-        [
-            Listing::prelude(),
-            Listing::block(),
-            Listing::tasks()
-        ]
-            .flatten
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -244,7 +216,23 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Prefix::prefix(Ox1s::organiseListing(Listing::items()))
+            cto = (lambda{
+                thread = Catalyst::itemOrNull("f495d79f-b023-4903-b7cb-a84873c48c83")
+                if TxEngines::listingCompletionRatio(thread["engine-0916"]) < 1 then
+                    [thread]
+                else
+                    []
+                end
+            }).call()
+
+            Prefix::prefix(NxBalls::runningItems() + cto + Ox1s::organiseListing(Listing::items()))
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)

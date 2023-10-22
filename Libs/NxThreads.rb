@@ -31,7 +31,7 @@ class NxThreads
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
         st = item["sorting-style"] ? " (#{item["sorting-style"]})" : ""
-        "⏱️  #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
+        "⛵️ #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
     end
 
     # NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(context = nil)
@@ -117,11 +117,26 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("sorting-style", ["linear", "perfection", "top3"])
     end
 
+    # NxThreads::firstPositionAtThread(thread)
+    def self.firstPositionAtThread(thread)
+        NxThreads::children(thread).reduce(0){|position, item|
+            [position, item["global-position"] || 0].min
+        }
+    end
+
+    # NxThreads::lastPositionAtThread(thread)
+    def self.lastPositionAtThread(thread)
+        NxThreads::children(thread).reduce(0){|position, item|
+            [position, item["global-position"] || 0].max
+        }
+    end
+
     # -----------------------------------------------
     # Ops
 
-    # NxThreads::pile3(item)
-    def self.pile3(item)
+    # NxThreads::pile3(thread)
+    def self.pile3(thread)
+        raise "(error: fff05fbf-7ad5-4ea4-ad88-47da74e20c97)" if thread["mikuType"] != "NxThread"
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         text
@@ -131,9 +146,29 @@ class NxThreads
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
                 puts JSON.pretty_generate(task)
-                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", item["uuid"])
+                position = NxThreads::firstPositionAtThread(thread) - 1
+                Updates::itemAttributeUpdate(task["uuid"], "global-position", position)
+                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
             }
     end
+
+    # NxThreads::append(thread)
+    def self.append(thread)
+        raise "(error: fff05fbf-7ad5-4ea4-ad88-47da74e20c97)" if thread["mikuType"] != "NxThread"
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .each{|line|
+                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
+                puts JSON.pretty_generate(task)
+                position = NxThreads::lastPositionAtThread(thread) + 1
+                Updates::itemAttributeUpdate(task["uuid"], "global-position", position)
+                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
+            }
+    end
+
 
     # NxThreads::program1(thread)
     def self.program1(thread)
@@ -158,7 +193,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "task | pile | position * | sort | move"
+            puts "task | pile | append | position * | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -175,6 +210,11 @@ class NxThreads
 
             if input == "pile" then
                 NxThreads::pile3(thread)
+                next
+            end
+
+            if input == "append" then
+                NxThreads::append(thread)
                 next
             end
 

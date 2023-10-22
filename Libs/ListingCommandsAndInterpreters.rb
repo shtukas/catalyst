@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile (<n>) | deadline (<n>) | unparent <n> | move * | engine *  | thread * | strat * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | deadline (<n>) | unparent <n> | move * | engine *  | thread * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -15,7 +15,7 @@ class ListingCommandsAndInterpreters
             "   - NxOndate : redate (*)",
             "   - NxThread : sorting-style (*)",
             "",
-            "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop",
+            "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop | pile | hours of.new",
             "divings       : anniversaries | ondates | waves | desktop | boxes | engined | buffer-ins",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
@@ -35,7 +35,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::doubleDots(item)
+            PolyActions::naturalProgression(item)
             return
         end
 
@@ -43,7 +43,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::doubleDots(item)
+            PolyActions::naturalProgression(item)
             return
         end
 
@@ -124,11 +124,22 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("strat * ", input) then
+        if Interpreting::match("pile * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             NxStrats::interactivelyPile(item)
+            return
+        end
+
+        if Interpreting::match("hours of.new", input) then
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            targetIndex = LucilleCore::askQuestionAnswerAsString("index: ").to_i
+            target = store.get(targetIndex)
+            return if target.nil?
+            item = NxLifters::issue(target["uuid"], hours)
+            puts JSON.pretty_generate(item)
+            Ox1s::markAtTop(item)
             return
         end
 
@@ -148,7 +159,7 @@ class ListingCommandsAndInterpreters
                 return
             end
             thread = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22") # Infinity Thread
-            return if thread.nil?
+            raise "(error: 60de96bb-fa67-49df-a924-d938847c9f35)" if thread.nil?
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
             if item["mikuType"] == "NxOndate" then
                 puts "Before moving it, we need to transform the ondate into a task"
@@ -440,9 +451,12 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("buffer-ins", input) then
-            items = Catalyst::mikuType("NxThread").select{|item| item["parent-1328"].nil? }
-                        .sort_by{|item| item["unixtime"] }
-            Catalyst::program2(items)
+            selector = lambda {
+                Catalyst::mikuType("NxTask").select{|item| item["parent-1328"].nil? }
+                        .select{|item| item["engine-0916"].nil? }
+                        .sort_by{|item| item["unixtime"] || 0 }
+            }
+            Catalyst::program3(selector)
             return
         end
 
