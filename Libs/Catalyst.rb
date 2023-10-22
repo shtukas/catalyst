@@ -221,26 +221,6 @@ class Catalyst
         }
     end
 
-    # Catalyst::maintenance2()
-    def self.maintenance2()
-        t = Catalyst::gloalFirstPosition()
-        if t <= -100 then
-            Catalyst::catalystItems()
-                .each{|item|
-                    next if item["global-position"].nil?
-                    Updates::itemAttributeUpdate(item["uuid"], "global-position", item["global-position"] + (-t))
-                }
-        end
-        t = Catalyst::globalLastPosition()
-        if t >= 1000 then
-            Catalyst::catalystItems()
-                .each{|item|
-                    next if item["global-position"].nil?
-                    Updates::itemAttributeUpdate(item["uuid"], "global-position", 0.5*item["global-position"])
-                }
-        end
-    end
-
     # Catalyst::maintenance3()
     def self.maintenance3()
         padding = (Catalyst::mikuType("NxThread").map{|item| item["description"].size } + [0]).max
@@ -255,8 +235,6 @@ class Catalyst
             OpenCycles::maintenance()
             TxEngines::maintenance0924()
             OpenCycles::maintenance()
-            Catalyst::maintenance2()
-
             Catalyst::catalystItems().each{|item|
                 next if item["parent-1328"].nil?
                 parent = Catalyst::itemOrNull(item["parent-1328"])
