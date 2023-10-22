@@ -69,16 +69,16 @@ class Catalyst
     # Catalyst::gloalFirstPosition()
     def self.gloalFirstPosition()
         Catalyst::catalystItems()
-            .select{|item| item["global-position"] }
-            .map{|item| item["global-position"] }
+            .select{|item| item["mikuType"] != "NxIce" }
+            .map{|item| item["global-position"] || 0 }
             .reduce(0){|number, x| [number, x].min}
     end
 
     # Catalyst::globalLastPosition()
     def self.globalLastPosition()
         Catalyst::catalystItems()
-            .select{|item| item["global-position"] }
-            .map{|item| item["global-position"] }
+            .select{|item| item["mikuType"] != "NxIce" }
+            .map{|item| item["global-position"] || 0 }
             .reduce(0){|number, x| [number, x].max}
     end
 
@@ -226,6 +226,7 @@ class Catalyst
         t = Catalyst::gloalFirstPosition()
         if t <= 100 then
             Catalyst::catalystItems()
+                .select{|item| item["mikuType"] != "NxIce" }
                 .each{|item|
                     Updates::itemAttributeUpdate(item["uuid"], "global-position", (item["global-position"] || 0) + (-t))
                 }
@@ -233,8 +234,9 @@ class Catalyst
         t = Catalyst::globalLastPosition()
         if t >= 1000 then
             Catalyst::catalystItems()
+                .select{|item| item["mikuType"] != "NxIce" }
                 .each{|item|
-                    Updates::itemAttributeUpdate(item["uuid"], "global-position", 0.9*(item["global-position"] || 0))
+                    Updates::itemAttributeUpdate(item["uuid"], "global-position", 0.5*(item["global-position"] || 0))
                 }
         end
     end
