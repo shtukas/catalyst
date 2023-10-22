@@ -39,7 +39,15 @@ class Ox1s
 
     # Ox1s::organiseListing(items)
     def self.organiseListing(items)
+        i0 = (lambda{
+                thread = Catalyst::itemOrNull("f495d79f-b023-4903-b7cb-a84873c48c83")
+                if TxEngines::listingCompletionRatio(thread["engine-0916"]) < 1 then
+                    [thread]
+                else
+                    []
+                end
+            }).call()
         i1, i2 = items.partition{|item| Ox1s::itemIsOx1(item) }
-        i1.sort_by{|item| item["ordinal-1051"]["ordinal"] } + i2
+        i0 + i1.sort_by{|item| item["ordinal-1051"]["ordinal"] } + i2
     end
 end
