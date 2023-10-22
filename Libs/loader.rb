@@ -53,9 +53,9 @@ checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries")
 
 # ------------------------------------------------------------
 
-require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/LucilleCore.rb"
+require_relative "LucilleCore.rb"
 
-require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/XCache.rb"
+require_relative "XCache.rb"
 =begin
     XCache::set(key, value)
     XCache::getOrNull(key)
@@ -67,8 +67,6 @@ require "#{ENV['HOME']}/Galaxy/DataHub/Lucille-Ruby-Libraries/XCache.rb"
 
     XCache::filepath(key)
 =end
-
-# ------------------------------------------------------------
 
 require_relative "AionCore.rb"
 =begin
