@@ -171,6 +171,7 @@ class EventsTimelineProcessor
             return if filepath.nil?
             puts "processing: #{filepath}"
             event = JSON.parse(IO.read(filepath))
+            puts JSON.pretty_generate(event)
             EventsTimelineProcessor::digestEvent(event)
             FileUtils.rm(filepath)
         }
