@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | donation * | move * | move # multiple to thread | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to thread | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -525,6 +525,14 @@ class ListingCommandsAndInterpreters
             style = NxThreads::interactivelySelectSortingStyleOrNull()
             return if style.nil?
             Updates::itemAttributeUpdate(item["uuid"], "sorting-style", style)
+            return
+        end
+
+        if Interpreting::match("unstack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
             return
         end
 
