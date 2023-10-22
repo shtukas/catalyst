@@ -104,6 +104,14 @@ class Listing
             DropBox::items(),
             Desktop::listingItems(),
             NxLifters::listingItems(),
+            (lambda{
+                thread = Catalyst::itemOrNull("f495d79f-b023-4903-b7cb-a84873c48c83")
+                if TxEngines::listingCompletionRatio(thread["engine-0916"]) < 1 then
+                    [thread]
+                else
+                    []
+                end
+            }).call(),
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -189,6 +197,19 @@ class Listing
         end
     end
 
+    # Listing::injectRunningItems(items, runningItems)
+    def self.injectRunningItems(items, runningItems)
+        if runningItems.empty? then
+            return items
+        else
+            if items.take(20).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
+                return Listing::injectRunningItems(items, runningItems.drop(1))
+            else
+                return Listing::injectRunningItems(runningItems.take(1) + items, runningItems.drop(1))
+            end
+        end
+    end
+
     # Listing::main()
     def self.main()
 
@@ -225,7 +246,7 @@ class Listing
                 end
             }).call()
 
-            Prefix::prefix(NxBalls::runningItems() + cto + Ox1s::organiseListing(Listing::items()))
+            Prefix::prefix(Listing::injectRunningItems(Ox1s::organiseListing(Listing::items()), NxBalls::runningItems()))
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected
