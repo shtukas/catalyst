@@ -224,7 +224,7 @@ class Catalyst
     # Catalyst::maintenance2()
     def self.maintenance2()
         t = Catalyst::gloalFirstPosition()
-        if t < 0 then
+        if t <= 100 then
             Catalyst::catalystItems()
                 .each{|item|
                     Updates::itemAttributeUpdate(item["uuid"], "global-position", (item["global-position"] || 0) + (-t))
