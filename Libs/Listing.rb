@@ -101,7 +101,6 @@ class Listing
     # Listing::items()
     def self.items()
         [
-            NxBalls::runningItems(),
             DropBox::items(),
             Desktop::listingItems(),
             NxLifters::listingItems(),
@@ -217,7 +216,23 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Prefix::prefix(Ox1s::organiseListing(Listing::items()))
+            cto = (lambda{
+                thread = Catalyst::itemOrNull("f495d79f-b023-4903-b7cb-a84873c48c83")
+                if TxEngines::listingCompletionRatio(thread["engine-0916"]) < 1 then
+                    [thread]
+                else
+                    []
+                end
+            }).call()
+
+            Prefix::prefix(NxBalls::runningItems() + cto + Ox1s::organiseListing(Listing::items()))
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
