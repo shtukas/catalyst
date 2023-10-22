@@ -9,3 +9,4 @@ Cross types conventions:
     - engine-0916      : TxEngine
     - parent-1328      : (optional) parent uuid (parents are threads, children are tasks and threads)
     - ordinal-1051     : Ox1
+    - donation-1605    : uuid of donation target

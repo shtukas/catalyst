@@ -68,8 +68,11 @@ class PolyFunctions
             end
         end
 
-        if item["10fd0f74-03e8"] then
-            accounts << item["10fd0f74-03e8"]
+        if item["donation-1605"] then
+            i2 = Catalyst::itemOrNull(item["donation-1605"])
+            if i2 then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(i2)
+            end
         end
 
         accounts.reduce([]){|as, account|

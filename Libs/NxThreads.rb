@@ -39,7 +39,6 @@ class NxThreads
         if context.nil? then
             threads = Catalyst::mikuType("NxThread")
                         .select{|item| item["parent-1328"].nil? }
-                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
             selected = LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, lambda{|item| PolyFunctions::toString(item) })
             if selected then
                 return NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(selected)

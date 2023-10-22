@@ -265,4 +265,12 @@ class Catalyst
         end
         Catalyst::maintenance3()
     end
+
+    # Catalyst::donationpSuffix(item)
+    def self.donationpSuffix(item)
+        return "" if item["donation-1605"].nil?
+        target = Catalyst::itemOrNull(item["donation-1605"])
+        return "" if target.nil?
+        " (#{target["description"]})".green
+    end
 end

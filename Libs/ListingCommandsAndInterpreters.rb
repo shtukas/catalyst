@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | deadline (<n>) | unparent <n> | move * | engine *  | thread * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | donation * | move * | move # multiple to thread | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -111,19 +111,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move * ", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if !["NxTask", "NxThread"].include?(item["mikuType"]) then
-                puts "We can only move tasks and threads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            NxThreads::interactivelySelectAndInstallInThread(item)
-            return
-        end
-
         if Interpreting::match("pile * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -169,26 +156,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("thread", input) then
-            item = store.getDefault()
+        if Interpreting::match("donation *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxOndate", "NxTask"].include?(item["mikuType"]) then
-                puts "We are only threading ondates and tasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
             return if thread.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-            if item["mikuType"] == "NxOndate" then
-                puts "Before moving it, we need to transform the ondate into a task"
-                LucilleCore::pressEnterToContinue()
-                Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            end
+            Updates::itemAttributeUpdate(item["uuid"], "donation-1605", thread["uuid"])
             return
         end
 
-        if Interpreting::match("thread *", input) then
+        if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
@@ -250,14 +228,6 @@ class ListingCommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
-        end
-
-        if Interpreting::match("unparent *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
-            return
         end
 
         if Interpreting::match("access", input) then
