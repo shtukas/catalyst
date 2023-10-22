@@ -31,7 +31,7 @@ class NxThreads
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
         st = item["sorting-style"] ? " (#{item["sorting-style"]})" : ""
-        "⏱️  #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
+        "⛵️ #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
     end
 
     # NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(context = nil)

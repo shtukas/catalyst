@@ -28,7 +28,9 @@ class NxLifters
     def self.listingItems()
         Catalyst::mikuType("NxLifter")
             .map{|item|
-                if !NxBalls::itemIsActive(item) and Bank::getValueAtDate(item["uuid"], CommonUtils::today()) >= (item["hours"]*3600) then
+                obsolte1 = item["datetime"][0, 10] != CommonUtils::today()
+                obsolte2 = Bank::getValueAtDate(item["uuid"], CommonUtils::today()) >= (item["hours"]*3600)
+                if !NxBalls::itemIsActive(item) and (obsolte1 or obsolte2) then
                     Catalyst::destroy(item["uuid"])
                     nil
                 else
