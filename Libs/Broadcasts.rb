@@ -83,7 +83,7 @@ class Broadcasts
 
     # Broadcasts::publish(event)
     def self.publish(event)
-        puts JSON.pretty_generate(event)
+        #puts JSON.pretty_generate(event)
         Config::instanceIds().each{|instanceId|
             next if instanceId == Config::thisInstanceId()
             fragment1 = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{instanceId}/events-timeline"
