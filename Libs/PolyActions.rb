@@ -265,14 +265,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            i1 = NxThreads::children(item).first
-            if i1 then
-                puts "running: '#{PolyFunctions::toString(i1).green}'"
-                PolyActions::naturalProgression(i1)
-            else
-                puts "thread: '#{PolyFunctions::toString(i1).green}' is empty"
-                LucilleCore::pressEnterToContinue()
-            end
+            PolyActions::access(item)
             return
         end
 

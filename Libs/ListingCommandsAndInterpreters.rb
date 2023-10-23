@@ -16,7 +16,7 @@ class ListingCommandsAndInterpreters
             "   - NxThread : sorting-style (*)",
             "",
             "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop | pile | hours of.new",
-            "divings       : anniversaries | ondates | waves | desktop | boxes | engined | buffer-ins",
+            "divings       : anniversaries | ondates | waves | desktop | threads | engined | buffer-ins",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
         ].join("\n")
@@ -427,6 +427,14 @@ class ListingCommandsAndInterpreters
                         .sort_by{|item| item["unixtime"] || 0 }
             }
             Catalyst::program3(selector)
+            return
+        end
+
+        if Interpreting::match("threads", input) then
+            threads = Catalyst::mikuType("NxThread")
+                        .select{|item| item["parent-1328"].nil? }
+                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
+            Catalyst::program2(threads)
             return
         end
 

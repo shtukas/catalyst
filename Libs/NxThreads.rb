@@ -100,6 +100,16 @@ class NxThreads
             items = NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
             return items.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) } + items.drop(3)
         end
+        if thread["sorting-style"] == "engined" then
+            if NxThreads::children(thread).any?{|item| item["engine-0916"].nil? } then
+                puts "You are looking for the children in sorting order for thread: '#{PolyFunctions::toString(thread).green}'"
+                puts "That thread has sorting-style: engined"
+                puts "But one of the children of the thread doesn't have an engine"
+                puts "exiting"
+                exit
+            end
+            return NxThreads::children(thread).sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
+        end
         raise "(error: EE0A2644-BD60-44EB-A5CA-B620B0EEE992)"
     end
 
@@ -113,7 +123,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectSortingStyleOrNull()
     def self.interactivelySelectSortingStyleOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("sorting-style", ["linear", "perfection", "top3"])
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("sorting-style", ["linear", "perfection", "top3", "engined"])
     end
 
     # NxThreads::firstPositionAtThread(thread)

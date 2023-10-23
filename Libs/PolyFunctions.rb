@@ -61,13 +61,6 @@ class PolyFunctions
             }
         end
 
-        if item["core-1919"] then
-            core = Catalyst::itemOrNull(item["core-1919"])
-            if core then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
-            end
-        end
-
         if item["donation-1605"] then
             i2 = Catalyst::itemOrNull(item["donation-1605"])
             if i2 then

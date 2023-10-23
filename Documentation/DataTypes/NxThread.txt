@@ -4,4 +4,6 @@ NxThread
     "mikuType"      : "NxThread"
     "description"   : String
     "engine-0916"   : TxEngine
-    "sorting-style" : null (default, linear) | "perfection" | "top3"
+    "sorting-style" : null (default, linear) | "perfection" | "top3" | "engined"
+
+engined assumes that all the children of the thread are engine items
