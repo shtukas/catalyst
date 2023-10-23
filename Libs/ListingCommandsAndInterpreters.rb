@@ -141,7 +141,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if !["NxOndate", "NxTask"].include?(item["mikuType"]) then
-                puts "We are only threading ondates and tasks"
+                puts "We are only >> ondates and tasks"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -170,11 +170,6 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxOndate", "NxTask"].include?(item["mikuType"]) then
-                puts "We are only threading ondates and tasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
             return if thread.nil?
             Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
