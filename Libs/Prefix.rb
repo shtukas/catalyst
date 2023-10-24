@@ -22,6 +22,7 @@ class Prefix
         thread = item
         NxThreads::childrenInSortingStyleOrder(thread)
             .select{|i| Prefix::isBankPrefixable(i) }
+            .select{|i| Listing::listable(i) }
             .first(1)
     end
 
