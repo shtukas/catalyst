@@ -22,7 +22,7 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "TxStrat" then
+        if item["mikuType"] == "NxStrat" then
             accounts << {
                 "description" => item["description"],
                 "number"      => item["capsule"]
