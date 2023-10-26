@@ -41,11 +41,11 @@ class PolyFunctions
         if item["engine-0916"] then
             engine = item["engine-0916"]
             accounts << {
-                "description" => "(engine uuid for: #{PolyFunctions::toString(item)})",
+                "description" => "engine: #{engine["uuid"]}",
                 "number"      => engine["uuid"]
             }
             accounts << {
-                "description" => "(engine capsule for: #{PolyFunctions::toString(item)})",
+                "description" => "capsule: #{engine["capsule"]}",
                 "number"      => engine["capsule"]
             }
         end
