@@ -15,18 +15,7 @@ class PolyFunctions
 
         # Types
 
-        if item["mikuType"] == "NxThread" then
-            accounts << {
-                "description" => item["description"],
-                "number"      => item["capsule"]
-            }
-        end
-
         if item["mikuType"] == "NxStrat" then
-            accounts << {
-                "description" => item["description"],
-                "number"      => item["capsule"]
-            }
             bottom = Catalyst::itemOrNull(item["bottom"])
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
