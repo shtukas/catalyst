@@ -15,7 +15,7 @@ class ListingCommandsAndInterpreters
             "   - NxOndate : redate (*)",
             "   - NxThread : sorting-style (*)",
             "",
-            "makers        : anniversary.new | manual-countdown.new | wave.new | today.new | tomorrow.new | ondate.new | task.new | thread.new | desktop | pile | hours of.new",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | thread | desktop | pile | hours of",
             "divings       : anniversaries | ondates | waves | desktop | threads | engined | buffer-ins",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
@@ -119,7 +119,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("hours of.new", input) then
+        if Interpreting::match("hours of", input) then
             hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
             targetIndex = LucilleCore::askQuestionAnswerAsString("index: ").to_i
             target = store.get(targetIndex)
@@ -130,7 +130,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("today.new", input) then
+        if Interpreting::match("today", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -196,7 +196,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("task.new", input) then
+        if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -209,7 +209,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("thread.new", input) then
+        if Interpreting::match("thread", input) then
             item = NxThreads::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -240,7 +240,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("anniversary.new", input) then
+        if Interpreting::match("anniversary", input) then
             Anniversaries::issueNewAnniversaryOrNullInteractively()
             return
         end
@@ -403,12 +403,12 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("manual-countdown.new", input) then
+        if Interpreting::match("manual-countdown", input) then
             PhysicalTargets::issueNewOrNull()
             return
         end
 
-        if Interpreting::match("ondate.new", input) then
+        if Interpreting::match("ondate", input) then
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -606,14 +606,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tomorrow.new", input) then
+        if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
             Updates::itemAttributeUpdate(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 
-        if input == "wave.new" then
+        if input == "wave" then
             item = Waves::issueNewWaveInteractivelyOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
