@@ -29,7 +29,6 @@ class Prefix
     # Prefix::prefix(items)
     def self.prefix(items)
         return [] if items.empty?
-        return items if NxBalls::itemIsActive(items[0])
 
         stratification = NxStrats::stratification([items[0]])
         if stratification.size > 1 then
