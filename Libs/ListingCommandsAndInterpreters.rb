@@ -584,6 +584,9 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("stop", input) then
             item = store.getDefault()
             return if item.nil?
+            if item["ordinal-1051"] then
+                Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
+            end
             NxBalls::stop(item)
             return
         end
@@ -592,6 +595,9 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["ordinal-1051"] then
+                Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
+            end
             NxBalls::stop(item)
             return
         end

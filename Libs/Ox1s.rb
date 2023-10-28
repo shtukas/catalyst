@@ -34,7 +34,10 @@ class Ox1s
     # Ox1s::itemIsOx1(item)
     def self.itemIsOx1(item)
         return false if item["ordinal-1051"].nil?
-        return false if item["ordinal-1051"]["date"] != CommonUtils::today()
+        if item["ordinal-1051"]["date"] != CommonUtils::today() then
+            Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
+            return false
+        end
         true
     end
 
