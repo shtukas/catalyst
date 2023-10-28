@@ -13,7 +13,6 @@ class ListingCommandsAndInterpreters
             "",
             "mikuTypes:",
             "   - NxOndate : redate (*)",
-            "   - NxThread : sorting-style (*)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | thread | desktop | pile | hours of",
             "divings       : anniversaries | ondates | waves | desktop | threads | engined | buffer-ins",
@@ -499,35 +498,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            return
-        end
-
-        if Interpreting::match("sorting-style", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxThread" then
-                puts "sorting-style is reserved for NxThreads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            style = NxThreads::interactivelySelectSortingStyleOrNull()
-            return if style.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "sorting-style", style)
-            return
-        end
-
-        if Interpreting::match("sorting-style *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxThread" then
-                puts "sorting-style is reserved for NxThreads"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            style = NxThreads::interactivelySelectSortingStyleOrNull()
-            return if style.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "sorting-style", style)
             return
         end
 

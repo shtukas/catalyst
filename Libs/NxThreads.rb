@@ -30,8 +30,7 @@ class NxThreads
     # NxThreads::toString(item)
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
-        st = item["sorting-style"] ? " (#{item["sorting-style"]})" : ""
-        "⛵️ #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})#{st}"
+        "⛵️ #{TxEngines::prefix2(item)}#{item["description"].ljust(padding)} (#{TxEngines::toString(item["engine-0916"]).green})"
     end
 
     # NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(context = nil)
@@ -87,30 +86,17 @@ class NxThreads
                 .select{|item| item["parent-1328"] == thread["uuid"] }
     end
 
-    # NxThreads::childrenInSortingStyleOrder(thread)
-    def self.childrenInSortingStyleOrder(thread)
-        if thread["sorting-style"].nil? or thread["sorting-style"] == "linear" then
-            return NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
-        end
-        if thread["sorting-style"] == "perfection" then
-            return NxThreads::children(thread)
-                    .sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-        if thread["sorting-style"] == "top3" then
-            items = NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
-            return items.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) } + items.drop(3)
-        end
-        if thread["sorting-style"] == "engined" then
-            if NxThreads::children(thread).any?{|item| item["engine-0916"].nil? } then
-                puts "You are looking for the children in sorting order for thread: '#{PolyFunctions::toString(thread).green}'"
-                puts "That thread has sorting-style: engined"
-                puts "But one of the children of the thread doesn't have an engine"
-                puts "exiting"
-                exit
-            end
-            return NxThreads::children(thread).sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
-        end
-        raise "(error: EE0A2644-BD60-44EB-A5CA-B620B0EEE992)"
+    # NxThreads::childrenInIntelligentOrder(thread)
+    def self.childrenInIntelligentOrder(thread)
+        a, b = NxThreads::children(thread).partition{|item| item["engine-0916"] }
+        a1, a2 = a.partition{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
+        b = b.sort_by{|item| item["global-position"] || 0 }
+        [
+            a1.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) },
+            b.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) } + b.drop(3),
+            a2.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
+        ]
+            .flatten
     end
 
     # NxThreads::suffix(item)
@@ -119,11 +105,6 @@ class NxThreads
         parent = Catalyst::itemOrNull(item["parent-1328"])
         return "" if parent.nil?
         " (#{parent["description"]})".green
-    end
-
-    # NxThreads::interactivelySelectSortingStyleOrNull()
-    def self.interactivelySelectSortingStyleOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("sorting-style", ["linear", "perfection", "top3", "engined"])
     end
 
     # NxThreads::firstPositionAtThread(thread)
@@ -195,7 +176,7 @@ class NxThreads
             puts  Listing::toString2(store, thread)
             puts  ""
 
-            NxThreads::childrenInSortingStyleOrder(thread)
+            NxThreads::childrenInIntelligentOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
@@ -237,11 +218,7 @@ class NxThreads
             end
 
             if Interpreting::match("sort", input) then
-                if thread["sorting-style"] == "perfection" then
-                    puts "We are not sorting, threads with sorting-style perfection"
-                    LucilleCore::pressEnterToContinue()
-                end
-                items = NxThreads::childrenInSortingStyleOrder(thread)
+                items = NxThreads::childrenInIntelligentOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::gloalFirstPosition()-1)
@@ -250,7 +227,7 @@ class NxThreads
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInSortingStyleOrder(thread))
+                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInIntelligentOrder(thread))
                 next
             end
 
@@ -263,7 +240,7 @@ class NxThreads
     def self.interactivelySelectAndInstallInThread(item)
         thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
         return false if thread.nil?
-        children = NxThreads::childrenInSortingStyleOrder(thread)
+        children = NxThreads::childrenInIntelligentOrder(thread)
         children
             .first(40)
             .each{|task|
