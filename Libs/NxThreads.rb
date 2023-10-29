@@ -72,8 +72,6 @@ class NxThreads
                 return NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(target)
             end
         else
-            puts "About to return '#{PolyFunctions::toString(context).green}'"
-            LucilleCore::pressEnterToContinue()
             return context
         end
     end
