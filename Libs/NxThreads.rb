@@ -268,7 +268,7 @@ class NxThreads
         return false if coordinates.nil?
         thread, position = coordinates
 
-        if item["mikuType"] != "NxTask" then
+        if item["mikuType"] != "NxTask" and item["mikuType"] != "NxThread" then
             puts "The current mikuType of '#{PolyFunctions::toString(item).green}' is #{item["mikuType"].green}"
             puts "We need to convert it to a NxTask"
             if LucilleCore::askQuestionAnswerAsBoolean("> convert ? ", true) then
