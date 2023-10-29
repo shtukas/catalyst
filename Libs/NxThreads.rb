@@ -241,10 +241,10 @@ class NxThreads
         }
     end
 
-    # NxThreads::interactivelySelectAndInstallInThread(item) # boolean
-    def self.interactivelySelectAndInstallInThread(item)
+    # NxThreads::interactivelySelectThreadAndPositionInThreadOrNull() # null or [thread, position]
+    def self.interactivelySelectThreadAndPositionInThreadOrNull()
         thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
-        return false if thread.nil?
+        return nil if thread.nil?
         children = NxThreads::childrenInIntelligentOrder(thread)
         children
             .first(40)
@@ -261,6 +261,31 @@ class NxThreads
             end
             position.to_f
         }.call(position)
+        [thread, position]
+    end
+
+    # NxThreads::interactivelySelectAndInstallInThread(item) # boolean
+    def self.interactivelySelectAndInstallInThread(item)
+        coordinates = NxThreads::interactivelySelectThreadAndPositionInThreadOrNull()
+        return false if coordinates.nil?
+        thread, position = coordinates
+
+        if item["mikuType"] != "NxTask" then
+            puts "The current mikuType of '#{PolyFunctions::toString(item).green}' is #{item["mikuType"].green}"
+            puts "We need to convert it to a NxTask"
+            if LucilleCore::askQuestionAnswerAsBoolean("> convert ? ", true) then
+                (lambda {|item|
+                    if item["mikuType"] == "NxOndate" then
+                        Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
+                        return
+                    end
+                    raise "(error: 9d319de8-879c-4cd7-9700-2bdf204b0a67) with mikuType: #{item["mikuType"]}"
+                }).call(item)
+            else
+                return false
+            end
+        end
+
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
         Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
         true

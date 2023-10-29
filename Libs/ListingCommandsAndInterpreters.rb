@@ -104,12 +104,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move", input) then
-            items = store.items().select{|i| ["NxTask", "NxThread"].include?(i["mikuType"])}
-            Catalyst::selectSubsetAndMoveToSelectedThread(items)
-            return
-        end
-
         if Interpreting::match("pile * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -165,18 +159,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("move", input) then
+            items = store.items().select{|i| ["NxTask", "NxThread"].include?(i["mikuType"])}
+            Catalyst::selectSubsetAndMoveToSelectedThread(items)
+            return
+        end
+
         if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
-            return if thread.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-            if item["mikuType"] == "NxOndate" then
-                puts "Before moving it, we need to transform the ondate into a task"
-                LucilleCore::pressEnterToContinue()
-                Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            end
+            NxThreads::interactivelySelectAndInstallInThread(item)
             return
         end
 
