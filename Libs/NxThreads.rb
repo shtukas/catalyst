@@ -56,7 +56,12 @@ class NxThreads
                 store << t
                 puts "#{store.size-1}: #{NxThreads::toString(t)}"
             }
-            indx = LucilleCore::askQuestionAnswerAsString("index of target: ").to_i
+            indx = LucilleCore::askQuestionAnswerAsString("index of target (default to 0): ")
+            if indx == "" then
+                indx = 0
+            else
+                indx = indx.to_i
+            end
             if indx == 0 then
                 return context
             end
