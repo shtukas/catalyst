@@ -211,8 +211,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "Backup" then
+            puts "starting '#{PolyFunctions::toString(item).green}'"
             PolyActions::access(item)
-            PolyActions::done(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::done(item)
+            end
             return
         end
 
