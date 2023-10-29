@@ -89,8 +89,13 @@ class NxThreads
                 .select{|item| item["parent-1328"] == thread["uuid"] }
     end
 
-    # NxThreads::childrenInIntelligentOrder(thread)
-    def self.childrenInIntelligentOrder(thread)
+    # NxThreads::childrenInGlobalPositionOrder(thread)
+    def self.childrenInGlobalPositionOrder(thread)
+        NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
+    end
+
+    # NxThreads::childrenInTodoOrder(thread)
+    def self.childrenInTodoOrder(thread)
         a, b = NxThreads::children(thread).partition{|item| item["engine-0916"] }
         a1, a2 = a.partition{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
         b = b.sort_by{|item| item["global-position"] || 0 }
@@ -179,7 +184,7 @@ class NxThreads
             puts  Listing::toString2(store, thread)
             puts  ""
 
-            NxThreads::childrenInIntelligentOrder(thread)
+            NxThreads::childrenInTodoOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
@@ -221,7 +226,7 @@ class NxThreads
             end
 
             if Interpreting::match("sort", input) then
-                items = NxThreads::childrenInIntelligentOrder(thread)
+                items = NxThreads::childrenInTodoOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::gloalFirstPosition()-1)
@@ -230,7 +235,7 @@ class NxThreads
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInIntelligentOrder(thread))
+                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInTodoOrder(thread))
                 next
             end
 
@@ -243,7 +248,7 @@ class NxThreads
     def self.interactivelySelectThreadAndPositionInThreadOrNull()
         thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
         return nil if thread.nil?
-        children = NxThreads::childrenInIntelligentOrder(thread)
+        children = NxThreads::childrenInGlobalPositionOrder(thread)
         children
             .first(40)
             .each{|task|
