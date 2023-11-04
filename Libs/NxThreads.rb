@@ -94,8 +94,8 @@ class NxThreads
         NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
     end
 
-    # NxThreads::childrenInTodoOrder(thread)
-    def self.childrenInTodoOrder(thread)
+    # NxThreads::childrenInPrefixOrder(thread)
+    def self.childrenInPrefixOrder(thread)
         a, b = NxThreads::children(thread).partition{|item| item["engine-0916"] }
         a1, a2 = a.partition{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
         b = b.sort_by{|item| item["global-position"] || 0 }
@@ -184,7 +184,7 @@ class NxThreads
             puts  Listing::toString2(store, thread)
             puts  ""
 
-            NxThreads::childrenInTodoOrder(thread)
+            NxThreads::childrenInGlobalPositionOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
@@ -226,7 +226,7 @@ class NxThreads
             end
 
             if Interpreting::match("sort", input) then
-                items = NxThreads::childrenInTodoOrder(thread)
+                items = NxThreads::childrenInGlobalPositionOrder(thread)
                 selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
                 selected.reverse.each{|item|
                     Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::gloalFirstPosition()-1)
@@ -235,7 +235,7 @@ class NxThreads
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInTodoOrder(thread))
+                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInGlobalPositionOrder(thread))
                 next
             end
 
