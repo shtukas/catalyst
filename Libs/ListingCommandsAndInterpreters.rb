@@ -156,7 +156,7 @@ class ListingCommandsAndInterpreters
                 }
                 XCache::set("0c441bf5-b565-4207-acb4-1a6b2e6817d3", cursor)
                 return cursor
-            }).call()
+            })
 
             cursor = (lambda {|item|
                 if item["mikuType"] == "PhysicalTarget" then
