@@ -104,13 +104,6 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
 
-        # Pick up NxFronts-BufferIn
-        LucilleCore::locationsAtFolder("/Users/pascal/Galaxy/DataHub/NxFronts-BufferIn").each{|location|
-            next if File.basename(location)[0, 1] == "."
-            NxTasks::bufferInLocationToTask(location)
-            LucilleCore::removeFileSystemLocation(location)
-        }
-
         # Feed Infinity using NxIce
         if Catalyst::mikuType("NxTask").size < 100 then
             Catalyst::mikuType("NxIce").take(10).each{|item|
