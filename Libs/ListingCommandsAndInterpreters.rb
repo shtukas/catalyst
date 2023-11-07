@@ -171,6 +171,9 @@ class ListingCommandsAndInterpreters
                 if item["mikuType"] == "NxOndate" then
                     return getNextManagedCursor.call()
                 end
+                if item["mikuType"] == "NxTask" then
+                    return getNextManagedCursor.call()
+                end
                 raise "I don't know how to >> mikuType: #{item["mikuType"].green}"
             }).call(item)
 
