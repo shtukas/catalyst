@@ -17,7 +17,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | thread | desktop | pile | hours of",
             "divings       : anniversaries | ondates | waves | desktop | threads | engined | buffer-ins",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | >> # move default to Infinity",
+            "misc          : search | speed | commands | edit <n> | move | >> # push intelligently",
         ].join("\n")
     end
 
@@ -133,19 +133,49 @@ class ListingCommandsAndInterpreters
         if Interpreting::match(">>", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["NxOndate", "NxTask"].include?(item["mikuType"]) then
-                puts "We are only >> ondates and tasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            thread = Catalyst::itemOrNull("7cf30bc6-d791-4c0c-b03f-16c728396f22") # Infinity Thread
-            raise "(error: 60de96bb-fa67-49df-a924-d938847c9f35)" if thread.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-            if item["mikuType"] == "NxOndate" then
-                puts "Before moving it, we need to transform the ondate into a task"
-                LucilleCore::pressEnterToContinue()
-                Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            end
+
+            getNextManagedCursor = (lambda {
+                cursor = XCache::getOrNull("0c441bf5-b565-4207-acb4-1a6b2e6817d3")
+                if cursor.nil? then
+                    cursor = Time.new.to_f
+                else
+                    cursor = cursor.to_f
+                end
+                cursor = Time.new.to_f + 3600*3
+                loop {
+                    time = Time.at(cursor)
+                    if time.hour < 8 then
+                        cursor = cursor + 3600
+                        next
+                    end
+                    if time.hour > 21 then
+                        cursor = cursor + 3600
+                        next
+                    end
+                    break
+                }
+                XCache::set("0c441bf5-b565-4207-acb4-1a6b2e6817d3", cursor)
+                return cursor
+            }).call()
+
+            cursor = (lambda {|item|
+                if item["mikuType"] == "PhysicalTarget" then
+                    return Time.new.to_f + 3600 + rand*3600
+                end
+                if item["mikuType"] == "Wave" and item["interruption"] then
+                    return Time.new.to_f + 3600 + rand*3600
+                end
+                if item["mikuType"] == "Wave" and !item["interruption"] then
+                    return getNextManagedCursor.call()
+                end
+                if item["mikuType"] == "NxOndate" then
+                    return getNextManagedCursor.call()
+                end
+                raise "I don't know how to >> mikuType: #{item["mikuType"].green}"
+            }).call(item)
+
+            puts "Pushing '#{PolyFunctions::toString(item).green}' to #{Time.at(cursor).utc.iso8601}"
+            DoNotShowUntil::setUnixtime(item["uuid"], cursor)
             return
         end
 
