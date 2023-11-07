@@ -141,7 +141,7 @@ class ListingCommandsAndInterpreters
                 else
                     cursor = cursor.to_f
                 end
-                cursor = Time.new.to_f + 3600*3
+                cursor = cursor + 3600*3
                 loop {
                     time = Time.at(cursor)
                     if time.hour < 8 then
