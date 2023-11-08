@@ -94,8 +94,13 @@ class NxThreads
         NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
     end
 
-    # NxThreads::childrenInPrefixOrder(thread)
-    def self.childrenInPrefixOrder(thread)
+    # NxThreads::childrenInShouldBeDoingItThatWayOrder(thread)
+    def self.childrenInShouldBeDoingItThatWayOrder(thread)
+        if thread["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
+            # In the case of "Perfection" we return this:
+            return NxThreads::children(thread).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
+        end
+
         a, b = NxThreads::children(thread).partition{|item| item["engine-0916"] }
         a1, a2 = a.partition{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
         b = b.sort_by{|item| item["global-position"] || 0 }

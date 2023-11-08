@@ -20,7 +20,7 @@ class Prefix
     def self.threadTreeStructureTopUp(item)
         return [] if item["mikuType"] != "NxThread"
         thread = item
-        NxThreads::childrenInPrefixOrder(thread)
+        NxThreads::childrenInShouldBeDoingItThatWayOrder(thread)
             .select{|i| Prefix::isBankPrefixable(i) }
             .select{|i| Listing::listable(i) }
             .first(1)
