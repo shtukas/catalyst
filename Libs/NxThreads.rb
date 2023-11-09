@@ -100,13 +100,13 @@ class NxThreads
             # In the case of "Perfection" we return this:
             return NxThreads::children(thread).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         end
-
         a, b = NxThreads::children(thread).partition{|item| item["engine-0916"] }
         a1, a2 = a.partition{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
-        b = b.sort_by{|item| item["global-position"] || 0 }
+        b1, b2 = b.partition{|item| item["active"] }
         [
             a1.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) },
-            b.take(3).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) } + b.drop(3),
+            b1.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) },
+            b2.sort_by{|item| item["global-position"] || 0 },
             a2.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
         ]
             .flatten
