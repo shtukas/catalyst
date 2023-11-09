@@ -117,6 +117,15 @@ class Listing
         if item["mikuType"] == "NxOndate" then
             return 2
         end
+        if item["mikuType"] == "NxThread" then
+            return 1
+        end
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return 4
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return 0.2
+        end
         raise "(error: 86a7-50641e6a2f7d) I don't know how to compute the speed for miku type: #{item["mikuType"]}"
     end
 
@@ -169,7 +178,6 @@ class Listing
             }
             .sort_by{|item| Listing::trajectoryToPosition(Listing::itemToTrajectory(item)) }
             .reverse
-
     end
 
     # -----------------------------------------
