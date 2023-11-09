@@ -60,6 +60,7 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
+        Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
 
         # order: alphabetical order
 

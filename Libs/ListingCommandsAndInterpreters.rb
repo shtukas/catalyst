@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to thread | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to thread | listing item * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -26,6 +26,7 @@ class ListingCommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
+                Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 return
             end
@@ -413,6 +414,18 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("listing item *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            listingItem = Catalyst::mikuType("ListingItem").select{|li| li["targetuuid"] == item["uuid"] }.first
+            return if listingItem.nil?
+            puts JSON.pretty_generate(listingItem)
+            puts "position: #{Listing::trajectoryToPosition(listingItem["trajectory"])}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         if Interpreting::match("program", input) then
             item = store.getDefault()
             return if item.nil?
@@ -583,6 +596,7 @@ class ListingCommandsAndInterpreters
             if item["ordinal-1051"] then
                 Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
             end
+            Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
             NxBalls::stop(item)
             return
         end
@@ -594,6 +608,7 @@ class ListingCommandsAndInterpreters
             if item["ordinal-1051"] then
                 Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
             end
+            Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
             NxBalls::stop(item)
             return
         end

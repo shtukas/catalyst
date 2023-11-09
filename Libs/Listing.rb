@@ -98,20 +98,51 @@ class Listing
         line
     end
 
+    # Listing::trajectoryToPosition(trajectory)
+    def self.trajectoryToPosition(trajectory)
+        # ListingTrajectory 
+        #     unixtime : float, unixtime
+        #     speed    : float, 0.1 per hour
+        trajectory["speed"] * (Time.new.to_f-trajectory["unixtime"]).to_f/3600
+    end
+
+    # Listing::itemToSpeed(item)
+    def self.itemToSpeed(item)
+        # ListingTrajectory 
+        #     unixtime : float, unixtime
+        #     speed    : float, 0.1 per hour
+        if item["mikuType"] == "NxTask" then
+            return 1
+        end
+        if item["mikuType"] == "NxOndate" then
+            return 2
+        end
+        raise "(error: 86a7-50641e6a2f7d) I don't know how to compute the speed for miku type: #{item["mikuType"]}"
+    end
+
+    # Listing::itemToTrajectory(item)
+    def self.itemToTrajectory(item)
+        # ListingTrajectory 
+        #     unixtime : float, unixtime
+        #     speed    : float, 0.1 per hour
+        return item["trajectory"] if item["trajectory"]
+        item = Catalyst::itemOrNull(item["uuid"])
+        return item["trajectory"] if item["trajectory"]
+        trajectory = {
+            "unixtime" => Time.new.to_f,
+            "speed"    => Listing::itemToSpeed(item)
+        }
+        puts "New trajectory for '#{PolyFunctions::toString(item)}': #{trajectory}"
+        Updates::itemAttributeUpdate(item["uuid"], "trajectory", trajectory)
+        trajectory
+    end
+
     # Listing::items()
     def self.items()
         [
             DropBox::items(),
             Desktop::listingItems(),
             NxLifters::listingItems(),
-            (lambda{
-                thread = Catalyst::itemOrNull("f495d79f-b023-4903-b7cb-a84873c48c83")
-                if TxEngines::listingCompletionRatio(thread["engine-0916"]) < 1 then
-                    [thread]
-                else
-                    []
-                end
-            }).call(),
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -136,6 +167,9 @@ class Listing
                     selected + [item]
                 end
             }
+            .sort_by{|item| Listing::trajectoryToPosition(Listing::itemToTrajectory(item)) }
+            .reverse
+
     end
 
     # -----------------------------------------
@@ -233,20 +267,13 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
+            items = Prefix::prefix(Listing::injectRunningItems(Ox1s::organiseListing(Listing::items()), NxBalls::runningItems()))
+
             system("clear")
 
             spacecontrol.putsline ""
 
-            cto = (lambda{
-                thread = Catalyst::itemOrNull("f495d79f-b023-4903-b7cb-a84873c48c83")
-                if TxEngines::listingCompletionRatio(thread["engine-0916"]) < 1 then
-                    [thread]
-                else
-                    []
-                end
-            }).call()
-
-            Prefix::prefix(Listing::injectRunningItems(Ox1s::organiseListing(Listing::items()), NxBalls::runningItems()))
+            items
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected
