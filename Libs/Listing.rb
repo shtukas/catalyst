@@ -276,6 +276,7 @@ class Listing
             store = ItemStore.new()
 
             items = Prefix::prefix(Listing::injectRunningItems(Ox1s::organiseListing(Listing::items()), NxBalls::runningItems()))
+                        .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
 
             system("clear")
 
