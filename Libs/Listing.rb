@@ -164,7 +164,9 @@ class Listing
             NxTasks::orphans(),
             [
                 Catalyst::mikuType("NxTask").select{|item| item["engine-0916"] },
-                Catalyst::mikuType("NxThread").select{|item| item["parent-1328"].nil? }
+                Catalyst::mikuType("NxThread")
+                    .select{|item| item["parent-1328"].nil? }
+                    .select{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
             ]
                 .flatten
                 .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"])}
