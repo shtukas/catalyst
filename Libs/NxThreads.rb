@@ -18,7 +18,6 @@ class NxThreads
         Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
         Updates::itemAttributeUpdate(uuid, "description", description)
         Updates::itemAttributeUpdate(uuid, "engine-0916", engine)
-        Updates::itemAttributeUpdate(uuid, "global-position", rand)
 
         Broadcasts::publishItem(uuid)
         Catalyst::itemOrNull(uuid)
@@ -89,13 +88,8 @@ class NxThreads
                 .select{|item| item["parent-1328"] == thread["uuid"] }
     end
 
-    # NxThreads::childrenInGlobalPositionOrder(thread)
-    def self.childrenInGlobalPositionOrder(thread)
-        NxThreads::children(thread).sort_by{|item| item["global-position"] || 0 }
-    end
-
-    # NxThreads::childrenInShouldBeDoingItThatWayOrder(thread)
-    def self.childrenInShouldBeDoingItThatWayOrder(thread)
+    # NxThreads::childrenInOrder(thread)
+    def self.childrenInOrder(thread)
         if thread["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
             # In the case of "Perfection" we return this:
             return NxThreads::children(thread).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
@@ -106,7 +100,7 @@ class NxThreads
         [
             a1.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) },
             b1.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) },
-            b2.sort_by{|item| item["global-position"] || 0 },
+            b2.sort_by{|item| item["unixtime"] },
             a2.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
         ]
             .flatten
@@ -120,58 +114,8 @@ class NxThreads
         " (#{parent["description"]})".green
     end
 
-    # NxThreads::firstPositionAtThread(thread)
-    def self.firstPositionAtThread(thread)
-        NxThreads::children(thread).reduce(0){|position, item|
-            [position, item["global-position"] || 0].min
-        }
-    end
-
-    # NxThreads::lastPositionAtThread(thread)
-    def self.lastPositionAtThread(thread)
-        NxThreads::children(thread).reduce(0){|position, item|
-            [position, item["global-position"] || 0].max
-        }
-    end
-
     # -----------------------------------------------
     # Ops
-
-    # NxThreads::pile3(thread)
-    def self.pile3(thread)
-        raise "(error: fff05fbf-7ad5-4ea4-ad88-47da74e20c97)" if thread["mikuType"] != "NxThread"
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text
-            .lines
-            .map{|line| line.strip }
-            .reverse
-            .each{|line|
-                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
-                puts JSON.pretty_generate(task)
-                position = NxThreads::firstPositionAtThread(thread) - 1
-                Updates::itemAttributeUpdate(task["uuid"], "global-position", position)
-                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
-            }
-    end
-
-    # NxThreads::append(thread)
-    def self.append(thread)
-        raise "(error: fff05fbf-7ad5-4ea4-ad88-47da74e20c97)" if thread["mikuType"] != "NxThread"
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text
-            .lines
-            .map{|line| line.strip }
-            .each{|line|
-                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
-                puts JSON.pretty_generate(task)
-                position = NxThreads::lastPositionAtThread(thread) + 1
-                Updates::itemAttributeUpdate(task["uuid"], "global-position", position)
-                Updates::itemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
-            }
-    end
-
 
     # NxThreads::program1(thread)
     def self.program1(thread)
@@ -189,14 +133,14 @@ class NxThreads
             puts  Listing::toString2(store, thread)
             puts  ""
 
-            NxThreads::childrenInGlobalPositionOrder(thread)
+            NxThreads::childrenInOrder(thread)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts  "(#{"%6.2f" % (item["global-position"] || 0)}) #{Listing::toString2(store, item)}"
+                    puts  Listing::toString2(store, item)
                 }
 
             puts ""
-            puts "task | pile | append | position * | sort | move"
+            puts "task | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -206,41 +150,11 @@ class NxThreads
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Updates::itemAttributeUpdate(task["uuid"], "parent-1328", thread["uuid"])
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Updates::itemAttributeUpdate(task["uuid"], "global-position", position)
-                next
-            end
-
-            if input == "pile" then
-                NxThreads::pile3(thread)
-                next
-            end
-
-            if input == "append" then
-                NxThreads::append(thread)
-                next
-            end
-
-            if Interpreting::match("position *", input) then
-                _, listord = Interpreting::tokenizer(input)
-                item = store.get(listord.to_i)
-                next if item.nil?
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
-                next
-            end
-
-            if Interpreting::match("sort", input) then
-                items = NxThreads::childrenInGlobalPositionOrder(thread)
-                selected, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
-                selected.reverse.each{|item|
-                    Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::gloalFirstPosition()-1)
-                }
                 next
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInGlobalPositionOrder(thread))
+                Catalyst::selectSubsetAndMoveToSelectedThread(NxThreads::childrenInOrder())
                 next
             end
 
@@ -249,34 +163,10 @@ class NxThreads
         }
     end
 
-    # NxThreads::interactivelySelectThreadAndPositionInThreadOrNull() # null or [thread, position]
-    def self.interactivelySelectThreadAndPositionInThreadOrNull()
-        thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
-        return nil if thread.nil?
-        children = NxThreads::childrenInGlobalPositionOrder(thread)
-        children
-            .first(40)
-            .each{|task|
-                puts "(#{"%6.2f" % (task["global-position"] || 0)}) #{PolyFunctions::toString(task)}"
-            }
-        position = LucilleCore::askQuestionAnswerAsString("> position (top, next # default): ")
-        position = lambda {|position|
-            if position == "top" then
-                return ([1] + children.map{|item| item["global-position"] }.compact).min - 1
-            end
-            if position == "" or position == "next" then
-                return ([1] + children.map{|item| item["global-position"] }.compact).max + 1
-            end
-            position.to_f
-        }.call(position)
-        [thread, position]
-    end
-
-    # NxThreads::interactivelySelectAndInstallInThread(item) # boolean
-    def self.interactivelySelectAndInstallInThread(item)
-        coordinates = NxThreads::interactivelySelectThreadAndPositionInThreadOrNull()
-        return false if coordinates.nil?
-        thread, position = coordinates
+    # NxThreads::interactivelySelectAndPutInThread(item) # boolean
+    def self.interactivelySelectAndPutInThread(item)
+        thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation()
+        return false if thread.nil?
 
         if item["mikuType"] != "NxTask" and item["mikuType"] != "NxThread" then
             puts "The current mikuType of '#{PolyFunctions::toString(item).green}' is #{item["mikuType"].green}"
@@ -295,7 +185,6 @@ class NxThreads
         end
 
         Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-        Updates::itemAttributeUpdate(item["uuid"], "global-position", position)
         true
     end
 end

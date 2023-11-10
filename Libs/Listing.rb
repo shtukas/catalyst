@@ -126,6 +126,9 @@ class Listing
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return 0.2
         end
+        if item["mikuType"] == "PhysicalTarget" then
+            return 5
+        end
         raise "(error: 86a7-50641e6a2f7d) I don't know how to compute the speed for miku type: #{item["mikuType"]}"
     end
 

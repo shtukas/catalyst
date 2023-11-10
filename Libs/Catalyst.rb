@@ -66,44 +66,6 @@ class Catalyst
         items
     end
 
-    # Catalyst::gloalFirstPosition()
-    def self.gloalFirstPosition()
-        Catalyst::catalystItems()
-            .select{|item| item["global-position"] }
-            .map{|item| item["global-position"] }
-            .reduce(0){|number, x| [number, x].min}
-    end
-
-    # Catalyst::globalLastPosition()
-    def self.globalLastPosition()
-        Catalyst::catalystItems()
-            .select{|item| item["global-position"] }
-            .map{|item| item["global-position"] }
-            .reduce(0){|number, x| [number, x].max}
-    end
-
-    # Catalyst::prependAtBeginingOfChildrenSequence(parent, item)
-    def self.prependAtBeginingOfChildrenSequence(parent, item)
-        Updates::itemAttributeUpdate(item["uuid"], "parent-1328", parent["uuid"])
-        Updates::itemAttributeUpdate(item["uuid"], "global-position", Catalyst::gloalFirstPosition()-1)
-    end
-
-    # Catalyst::pile3(item)
-    def self.pile3(item)
-        puts "Piling on elements of '#{PolyFunctions::toString(item)}'"
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text
-            .lines
-            .map{|line| line.strip }
-            .reverse
-            .each{|line|
-                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
-                puts JSON.pretty_generate(task)
-                Catalyst::prependAtBeginingOfChildrenSequence(item, task)
-            }
-    end
-
     # Catalyst::program2(elements)
     def self.program2(elements)
         loop {

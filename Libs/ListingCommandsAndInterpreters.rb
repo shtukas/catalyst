@@ -55,7 +55,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            status = NxThreads::interactivelySelectAndInstallInThread(item)
+            status = NxThreads::interactivelySelectAndPutInThread(item)
             return if !status
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
@@ -70,7 +70,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            status = NxThreads::interactivelySelectAndInstallInThread(item)
+            status = NxThreads::interactivelySelectAndPutInThread(item)
             return if !status
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
@@ -211,7 +211,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxThreads::interactivelySelectAndInstallInThread(item)
+            NxThreads::interactivelySelectAndPutInThread(item)
             return
         end
 
