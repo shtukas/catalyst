@@ -117,7 +117,7 @@ class Listing
         if item["mikuType"] == "NxOndate" then
             return 2
         end
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "TxCore" then
             return 1
         end
         if item["mikuType"] == "Wave" and item["interruption"] then
@@ -161,18 +161,17 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxTasks::orphans().select{|task|
-                task["engine-0916"].nil? or (TxEngines::listingCompletionRatio(task["engine-0916"]) < 1)
-            },
+            NxTasks::orphansNonEngined(),
+            NxTasks::orphansEngined()
+                .select{|task| TxEngines::dailyRelativeCompletionRatio(task["engine-0916"]) < 1 },
             [
                 Catalyst::mikuType("NxTask").select{|item| item["engine-0916"] }
-                    .select{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 },
-                Catalyst::mikuType("NxThread")
-                    .select{|item| item["parent-1328"].nil? }
-                    .select{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) < 1 }
+                    .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 },
+                Catalyst::mikuType("TxCore")
+                    .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
             ]
                 .flatten
-                .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"])}
+                .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"])}
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -201,8 +200,9 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxTasks::orphans()", lambda{ NxTasks::orphans() })
-        spot.contest_entry("NxThreads::listingItems()", lambda{ NxThreads::listingItems() })
+        spot.contest_entry("NxTasks::orphansEngined()", lambda{ NxTasks::orphansEngined() })
+        spot.contest_entry("NxTasks::orphansNonEngined()", lambda{ NxTasks::orphansNonEngined() })
+        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()

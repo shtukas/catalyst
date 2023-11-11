@@ -110,7 +110,7 @@ class Catalyst
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedThread(elements)
+                Catalyst::selectSubsetAndMoveToSelectedCore(elements)
                 next
             end
 
@@ -163,7 +163,7 @@ class Catalyst
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedThread(elements)
+                Catalyst::selectSubsetAndMoveToSelectedCore(elements)
                 next
             end
 
@@ -172,20 +172,20 @@ class Catalyst
         }
     end
 
-    # Catalyst::selectSubsetAndMoveToSelectedThread(items)
-    def self.selectSubsetAndMoveToSelectedThread(items)
+    # Catalyst::selectSubsetAndMoveToSelectedCore(items)
+    def self.selectSubsetAndMoveToSelectedCore(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
-        return if thread.nil?
+        core = TxCores::interactivelySelectOneOrNull()
+        return if core.nil?
         selected.each{|item|
-            Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
+            Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", core["uuid"])
         }
     end
 
     # Catalyst::maintenance3()
     def self.maintenance3()
-        padding = (Catalyst::mikuType("NxThread").map{|item| item["description"].size } + [0]).max
+        padding = (Catalyst::mikuType("TxCore").map{|item| item["description"].size } + [0]).max
         XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
     end
 
@@ -197,13 +197,6 @@ class Catalyst
             OpenCycles::maintenance()
             TxEngines::maintenance0924()
             OpenCycles::maintenance()
-            Catalyst::catalystItems().each{|item|
-                next if item["parent-1328"].nil?
-                parent = Catalyst::itemOrNull(item["parent-1328"])
-                if parent.nil? then
-                    Updates::itemAttributeUpdate(item["uuid"], "parent-1328", nil)
-                end
-            }
         end
         Catalyst::maintenance3()
     end

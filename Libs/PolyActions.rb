@@ -29,8 +29,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            NxThreads::program1(item)
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 
@@ -117,8 +117,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            puts "You cannot done a NxThread"
+        if item["mikuType"] == "TxCore" then
+            puts "You cannot done a TxCore"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -168,9 +168,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            if NxThreads::children(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{NxThreads::childrenInOrder(item).size} elements"
+        if item["mikuType"] == "TxCore" then
+            if TxCores::children(item).size > 0 then
+                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::childrenInOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -244,8 +244,8 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
                 Catalyst::destroy(item["uuid"])
             else
-                if item["parent-1328"].nil? then
-                    NxThreads::interactivelySelectAndPutInThread(item)
+                if item["coreX-2137"].nil? then
+                    TxCores::interactivelySelectAndPutInCore(item)
                 end
             end
             return
@@ -268,7 +268,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
+        if item["mikuType"] == "TxCore" then
             PolyActions::access(item)
             return
         end

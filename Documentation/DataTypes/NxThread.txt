@@ -1,8 +1,0 @@
-
-NxThread
-    "uuid"          : Float
-    "mikuType"      : "NxThread"
-    "description"   : String
-    "engine-0916"   : TxEngine
-
-engined assumes that all the children of the thread are engine items

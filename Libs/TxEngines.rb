@@ -8,6 +8,7 @@ class TxEngines
     def self.make(hours)
         {
             "uuid"          => SecureRandom.uuid,
+            "mikuType"      => "TxEngine",
             "hours"         => hours,
             "lastResetTime" => Time.new.to_i,
             "capsule"       => SecureRandom.hex
@@ -26,10 +27,11 @@ class TxEngines
     # -----------------------------------------------
     # Data
 
-    # TxEngines::listingCompletionRatio(engine)
-    def self.listingCompletionRatio(engine)
+    # TxEngines::dailyRelativeCompletionRatio(engine)
+    def self.dailyRelativeCompletionRatio(engine)
         return 1 if TxEngines::periodCompletionRatio(engine) >= 1
-        Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)
+        return 1 if Bank::recoveredAverageHoursPerDay(engine["uuid"]) >= (engine["hours"].to_f/6)
+        (Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).to_f/(engine["hours"].to_f/6)
     end
 
     # TxEngines::periodCompletionRatio(engine)
@@ -41,26 +43,26 @@ class TxEngines
     def self.toString(engine)
         strings = []
 
-        strings << "period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
+        strings << "(daily: #{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %, period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
         hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
         timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
         itHassBeenAWeek = timeSinceResetInDays >= 7
 
         if hasReachedObjective and itHassBeenAWeek then
-            strings << ", awaiting data management"
+            strings << ", awaiting data management)"
         end
 
         if hasReachedObjective and !itHassBeenAWeek then
-            strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset"
+            strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
         end
 
         if !hasReachedObjective and !itHassBeenAWeek then
-            strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period"
+            strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period)"
         end
 
         if !hasReachedObjective and itHassBeenAWeek then
-            strings << ", late by #{(timeSinceResetInDays-7).round(2)} days"
+            strings << ", late by #{(timeSinceResetInDays-7).round(2)} days)"
         end
 
         strings << ""
@@ -87,16 +89,11 @@ class TxEngines
         engine
     end
 
-    # TxEngines::prefix1(item)
-    def self.prefix1(item)
-        return "" if item["engine-0916"].nil?
-        "(engine: #{TxEngines::toString(item["engine-0916"]).green}) "
-    end
-
     # TxEngines::prefix2(item)
     def self.prefix2(item)
         return "" if item["engine-0916"].nil?
-        "(engine: #{"%6.2f" % (100*TxEngines::listingCompletionRatio(item["engine-0916"]))} %) ".green
+        engine = item["engine-0916"]
+        "(engine today: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
     end
 
     # TxEngines::maintenance0924()

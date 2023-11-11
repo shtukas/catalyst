@@ -31,8 +31,8 @@ class PolyFunctions
 
         # Special Features
 
-        if item["parent-1328"] then
-            clique = Catalyst::itemOrNull(item["parent-1328"])
+        if item["coreX-2137"] then
+            clique = Catalyst::itemOrNull(item["coreX-2137"])
             if clique then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(clique)
             end
@@ -104,8 +104,8 @@ class PolyFunctions
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
+        if item["mikuType"] == "TxCore" then
+            return TxCores::toString(item)
         end
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)

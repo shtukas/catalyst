@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to thread | active * | listing item * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to core | active * | listing item * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -14,8 +14,8 @@ class ListingCommandsAndInterpreters
             "mikuTypes:",
             "   - NxOndate : redate (*)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | thread | desktop | pile | hours of",
-            "divings       : anniversaries | ondates | waves | desktop | threads | engined | buffer-ins",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop | pile | hours of",
+            "divings       : anniversaries | ondates | waves | desktop | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # push intelligently",
         ].join("\n")
@@ -55,7 +55,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            status = NxThreads::interactivelySelectAndPutInThread(item)
+            status = TxCores::interactivelySelectAndPutInCore(item)
             return if !status
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
@@ -70,7 +70,7 @@ class ListingCommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            status = NxThreads::interactivelySelectAndPutInThread(item)
+            status = TxCores::interactivelySelectAndPutInCore(item)
             return if !status
             Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
             return
@@ -195,15 +195,15 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
-            return if thread.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "donation-1605", thread["uuid"])
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "donation-1605", core["uuid"])
             return
         end
 
         if Interpreting::match("move", input) then
-            items = store.items().select{|i| ["NxTask", "NxThread"].include?(i["mikuType"])}
-            Catalyst::selectSubsetAndMoveToSelectedThread(items)
+            items = store.items().select{|i| ["NxTask", "TxCore"].include?(i["mikuType"])}
+            Catalyst::selectSubsetAndMoveToSelectedCore(items)
             return
         end
 
@@ -211,7 +211,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxThreads::interactivelySelectAndPutInThread(item)
+            TxCores::interactivelySelectAndPutInCore(item)
             return
         end
 
@@ -234,17 +234,25 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            loop {
-                thread = NxThreads::interactivelySelectOneOrNullUsingTopDownNavigation(nil)
-                next if thread.nil?
-                Updates::itemAttributeUpdate(item["uuid"], "parent-1328", thread["uuid"])
-                break
-            }
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["engine", "core"])
+            return if option.nil?
+            if option == "engine" then
+                engine = TxEngines::interactivelyMakeNewOrNull()
+                if engine then
+                    Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
+                end
+            end
+            if option == "engine" then
+                core = TxCores::interactivelySelectOneOrNull()
+                if core then
+                    Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", core["uuid"])
+                end
+            end
             return
         end
 
-        if Interpreting::match("thread", input) then
-            item = NxThreads::interactivelyIssueNewOrNull()
+        if Interpreting::match("core", input) then
+            item = TxCores::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -461,30 +469,10 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("buffer-ins", input) then
-            selector = lambda {
-                Catalyst::mikuType("NxTask").select{|item| item["parent-1328"].nil? }
-                        .select{|item| item["engine-0916"].nil? }
-                        .sort_by{|item| item["unixtime"] || 0 }
-            }
-            Catalyst::program3(selector)
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            threads = Catalyst::mikuType("NxThread")
-                        .select{|item| item["parent-1328"].nil? }
-                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
-            Catalyst::program2(threads)
-            return
-        end
-
-        if Interpreting::match("engined", input) then
-            items = Catalyst::catalystItems()
-                        .select{|item| item["mikuType"] != "NxThePhantomMenace" }
-                        .select{|item| item["engine-0916"] }
-                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0916"]) }
-            Catalyst::program2(items)
+        if Interpreting::match("cores", input) then
+            cores = Catalyst::mikuType("TxCore")
+                        .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+            Catalyst::program2(cores)
             return
         end
 

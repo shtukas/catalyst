@@ -81,10 +81,19 @@ class NxTasks
         "#{item["active"] ? "🔺" : "🔹"} #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxTasks::orphans()
-    def self.orphans()
+    # NxTasks::orphansEngined()
+    def self.orphansEngined()
         Catalyst::mikuType("NxTask")
-            .select{|item| item["parent-1328"].nil? }
+            .select{|item| item["coreX-2137"].nil? }
+            .select{|item| item["engine-0916"] }
+            .sort_by{|item| item["unixtime"] }
+            .reverse
+    end
+
+    # NxTasks::orphansNonEngined()
+    def self.orphansNonEngined()
+        Catalyst::mikuType("NxTask")
+            .select{|item| item["coreX-2137"].nil? }
             .select{|item| item["engine-0916"].nil? }
             .sort_by{|item| item["unixtime"] }
             .reverse
@@ -100,6 +109,15 @@ class NxTasks
 
     # NxTasks::maintenance()
     def self.maintenance()
+
+        Catalyst::mikuType("NxTask")
+            .each{|item|
+                next if item["coreX-2137"].nil?
+                core = Catalyst::itemOrNull(item["coreX-2137"])
+                if core.nil? or (core["mikuType"] != "TxCore") then
+                    Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", nil)
+                end
+            }
 
         # Feed Infinity using NxIce
         if Catalyst::mikuType("NxTask").size < 100 then

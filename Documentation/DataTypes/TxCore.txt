@@ -1,0 +1,7 @@
+
+TxCore
+    "uuid"          : Float
+    "mikuType"      : "TxCore"
+    "description"   : String
+    "engine-0916"   : TxEngine
+
