@@ -86,8 +86,6 @@ class NxTasks
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2137"].nil? }
             .select{|item| item["engine-0916"] }
-            .sort_by{|item| item["unixtime"] }
-            .reverse
     end
 
     # NxTasks::orphansNonEngined()
@@ -95,8 +93,6 @@ class NxTasks
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2137"].nil? }
             .select{|item| item["engine-0916"].nil? }
-            .sort_by{|item| item["unixtime"] }
-            .reverse
     end
 
     # --------------------------------------------------

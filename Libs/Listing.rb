@@ -160,18 +160,10 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
             NxTasks::orphansNonEngined(),
-            NxTasks::orphansEngined()
-                .select{|task| TxEngines::dailyRelativeCompletionRatio(task["engine-0916"]) < 1 },
-            [
-                Catalyst::mikuType("NxTask").select{|item| item["engine-0916"] }
-                    .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 },
-                Catalyst::mikuType("TxCore")
-                    .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
-            ]
-                .flatten
-                .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"])}
+            NxTasks::orphansEngined().select{|task| TxEngines::dailyRelativeCompletionRatio(task["engine-0916"]) < 1 },
+            TxCores::listingItems()
+            Waves::listingItems().select{|item| !item["interruption"] },
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
