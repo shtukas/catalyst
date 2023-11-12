@@ -234,19 +234,24 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["engine", "core"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine", "ondate"])
             return if option.nil?
+            if option == "core" then
+                core = TxCores::interactivelySelectOneOrNull()
+                if core then
+                    Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", core["uuid"])
+                end
+            end
             if option == "engine" then
                 engine = TxEngines::interactivelyMakeNewOrNull()
                 if engine then
                     Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
                 end
             end
-            if option == "engine" then
-                core = TxCores::interactivelySelectOneOrNull()
-                if core then
-                    Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", core["uuid"])
-                end
+            if option == "ondate" then
+                datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+                Updates::itemAttributeUpdate(item["uuid"], "datetime", datetime)
+                Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
             end
             return
         end
