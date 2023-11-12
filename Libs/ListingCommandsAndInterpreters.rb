@@ -504,6 +504,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("actives", input) then
+            items = Catalyst::catalystItems()
+                        .select{|item| item["active"] }
+            Catalyst::program2(items)
+            return
+        end
+
         if Interpreting::match("ondates", input) then
             items = Catalyst::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }

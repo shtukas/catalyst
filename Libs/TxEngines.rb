@@ -48,9 +48,7 @@ class TxEngines
     # TxEngines::dailyRelativeCompletionRatio(engine)
     def self.dailyRelativeCompletionRatio(engine)
         if engine["type"] == "orbital" then
-            return 1 if TxEngines::periodCompletionRatio(engine) >= 1
-            return 1 if Bank::recoveredAverageHoursPerDay(engine["uuid"]) >= (engine["hours"].to_f/6)
-            return (Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).to_f/(engine["hours"].to_f/6)
+            return [TxEngines::periodCompletionRatio(engine), Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)].max
         end
         if engine["type"] == "booster" then
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
