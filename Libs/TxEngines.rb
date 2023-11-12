@@ -52,6 +52,24 @@ class TxEngines
             return 1 if Bank::recoveredAverageHoursPerDay(engine["uuid"]) >= (engine["hours"].to_f/6)
             return (Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).to_f/(engine["hours"].to_f/6)
         end
+        if engine["type"] == "booster" then
+            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
+            timeSpanSinceStartInDays = (Time.new.to_f - engine["startUnixtime"]).to_f/86400
+            timeRatio = [timeSpanSinceStartInDays.to_f/periodInDays, 1].min
+            idealDoneTimeInSeconds = timeRatio*engine["hours"]*3600
+            totalDoneRatioAgainstIdeal = Bank::getValue(engine["uuid"]).to_f/idealDoneTimeInSeconds
+
+            if Time.new.to_i >= engine["endUnixtime"] and totalDoneRatioAgainstIdeal >= 1 then
+                return 1
+            end
+
+            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
+            dailyLoadInSeconds = (engine["hours"]*3600).to_f/periodInDays
+            doneTodayInSeconds = Bank::getValueAtDate(engine["uuid"], CommonUtils::today())
+            doneTodayRatio = doneTodayInSeconds.to_f/dailyLoadInSeconds
+
+            return [totalDoneRatioAgainstIdeal, doneTodayInSeconds].min # strength
+        end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44)"
     end
 
@@ -124,7 +142,12 @@ class TxEngines
         return "" if item["engine-0916"].nil?
         engine = item["engine-0916"]
         if engine["type"] == "orbital" then
-            return "(engine today: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
+            return "(orbital: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
+        end
+        if engine["type"] == "booster" then
+            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
+            dailyLoadInHours = engine["hours"].to_f/periodInDays
+            return "(booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours) ".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end

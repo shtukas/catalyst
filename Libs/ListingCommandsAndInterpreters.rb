@@ -348,6 +348,11 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
+            if !["TxCore", "NxTask", "NxOndate"].include?(item["mikuType"]) then
+                puts "At the moment we are only doing engines for TxCore, NxTask and NxOndate"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
             Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
@@ -358,6 +363,11 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if !["TxCore", "NxTask", "NxOndate"].include?(item["mikuType"]) then
+                puts "At the moment we are only doing engines for TxCore, NxTask and NxOndate"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
             Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
