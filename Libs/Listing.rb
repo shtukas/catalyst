@@ -162,7 +162,7 @@ class Listing
             NxOndates::listingItems(),
             NxTasks::orphansNonEngined(),
             NxTasks::orphansEngined().select{|task| TxEngines::dailyRelativeCompletionRatio(task["engine-0916"]) < 1 },
-            TxCores::listingItems()
+            TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
         ]
             .flatten
