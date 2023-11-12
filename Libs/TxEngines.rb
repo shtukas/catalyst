@@ -4,24 +4,25 @@ class TxEngines
     # -----------------------------------------------
     # Build
 
-    # TxEngines::make(hours)
-    def self.make(hours)
-        {
-            "uuid"          => SecureRandom.uuid,
-            "mikuType"      => "TxEngine",
-            "hours"         => hours,
-            "lastResetTime" => Time.new.to_i,
-            "capsule"       => SecureRandom.hex
-        }
-    end
-
     # TxEngines::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
-        return nil if hours == ""
-        hours = hours.to_f
-        return nil if hours == 0
-        TxEngines::make(hours)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital"])
+        return nil if option.nil?
+        if type == "orbital" then
+            hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
+            return nil if hours == ""
+            hours = hours.to_f
+            return nil if hours == 0
+            {
+                "uuid"          => SecureRandom.uuid,
+                "mikuType"      => "TxEngine",
+                "type"          => "orbital",
+                "hours"         => hours,
+                "lastResetTime" => Time.new.to_i,
+                "capsule"       => SecureRandom.hex
+            }
+        end
+        raise "(error: 00280bd0-0cd9-4954-a8e9-efa3ed9d50de)"
     end
 
     # -----------------------------------------------

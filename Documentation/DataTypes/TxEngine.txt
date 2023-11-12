@@ -2,6 +2,8 @@
 TxEngine
     "uuid"          : String
     "mikuType"      : "TxEngine"
+    "type"          : "orbital"
     "hours"         : Float
     "lastResetTime" : Unixtime
     "capsule"       : String
+
