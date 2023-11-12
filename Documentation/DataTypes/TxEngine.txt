@@ -7,3 +7,10 @@ TxEngine
     "lastResetTime" : Unixtime
     "capsule"       : String
 
+TxEngine
+    "uuid"          : String
+    "mikuType"      : "TxEngine"
+    "type"          : "booster"
+    "startUnixtime" : Integer
+    "endUnixtime"   : Integer
+    "hours"         : Float

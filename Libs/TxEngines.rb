@@ -6,14 +6,14 @@ class TxEngines
 
     # TxEngines::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster"])
         return nil if option.nil?
         if type == "orbital" then
             hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
             return nil if hours == ""
             hours = hours.to_f
             return nil if hours == 0
-            {
+            return {
                 "uuid"          => SecureRandom.uuid,
                 "mikuType"      => "TxEngine",
                 "type"          => "orbital",
@@ -22,7 +22,24 @@ class TxEngines
                 "capsule"       => SecureRandom.hex
             }
         end
-        raise "(error: 00280bd0-0cd9-4954-a8e9-efa3ed9d50de)"
+        if type == "booster" then
+            startUnixtime = Time.new.to_i
+            endUnixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+            return nil if endUnixtime.nil?
+            hours = LucilleCore::askQuestionAnswerAsString("period hours (empty for abort): ")
+            return nil if hours == ""
+            hours = hours.to_f
+            return nil if hours == 0
+            return {
+                "uuid"          => SecureRandom.uuid,
+                "mikuType"      => "TxEngine",
+                "type"          => "booster",
+                "startUnixtime" => startUnixtime,
+                "endUnixtime"   => endUnixtime,
+                "hours"         => hours
+            }
+        end
+        raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
     end
 
     # -----------------------------------------------
