@@ -15,7 +15,7 @@ class ListingCommandsAndInterpreters
             "   - NxOndate : redate (*)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop | pile | hours of",
-            "divings       : anniversaries | ondates | waves | desktop | cores",
+            "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # push intelligently",
         ].join("\n")
@@ -493,6 +493,14 @@ class ListingCommandsAndInterpreters
             cores = Catalyst::mikuType("TxCore")
                         .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
             Catalyst::program2(cores)
+            return
+        end
+
+        if Interpreting::match("engined", input) then
+            items = Catalyst::catalystItems()
+                        .select{|item| item["engine-0916"] }
+                        .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+            Catalyst::program2(items)
             return
         end
 

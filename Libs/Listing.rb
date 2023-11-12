@@ -161,7 +161,7 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             NxTasks::orphansNonEngined(),
-            NxTasks::orphansEngined().select{|task| TxEngines::dailyRelativeCompletionRatio(task["engine-0916"]) < 1 },
+            TxEngines::listingItems(),
             TxCores::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] }
         ]

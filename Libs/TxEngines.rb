@@ -54,7 +54,7 @@ class TxEngines
         end
         if engine["type"] == "booster" then
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
-            timeSpanSinceStartInDays = (Time.new.to_f - engine["startUnixtime"]).to_f/86400
+            timeSpanSinceStartInDays = (CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - engine["startUnixtime"]).to_f/86400
             timeRatio = [timeSpanSinceStartInDays.to_f/periodInDays, 1].min
             idealDoneTimeInSeconds = timeRatio*engine["hours"]*3600
             totalDoneRatioAgainstIdeal = Bank::getValue(engine["uuid"]).to_f/idealDoneTimeInSeconds
@@ -112,6 +112,15 @@ class TxEngines
             return strings.join()
         end
         raise "(error: 3127be8e-cf0f-466d-a29c-3b35a3aab4bb)"
+    end
+
+    # TxEngines::listingItems()
+    def self.listingItems()
+        Catalyst::catalystItems()
+            .select{|item| item["engine-0916"] }
+            .reject{|item| item["mikuType"] == "TxCore" }
+            .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
+            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
     end
 
     # -----------------------------------------------
