@@ -30,44 +30,53 @@ class TxEngines
 
     # TxEngines::dailyRelativeCompletionRatio(engine)
     def self.dailyRelativeCompletionRatio(engine)
-        return 1 if TxEngines::periodCompletionRatio(engine) >= 1
-        return 1 if Bank::recoveredAverageHoursPerDay(engine["uuid"]) >= (engine["hours"].to_f/6)
-        (Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).to_f/(engine["hours"].to_f/6)
+        if engine["type"] == "orbital" then
+            return 1 if TxEngines::periodCompletionRatio(engine) >= 1
+            return 1 if Bank::recoveredAverageHoursPerDay(engine["uuid"]) >= (engine["hours"].to_f/6)
+            return (Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600).to_f/(engine["hours"].to_f/6)
+        end
+        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44)"
     end
 
     # TxEngines::periodCompletionRatio(engine)
     def self.periodCompletionRatio(engine)
-        Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
+        if engine["type"] == "orbital" then
+            return Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
+        end
+        raise "(error: 7e31bade-9db7-4e65-9da4-ccef7f70baa3)"
     end
 
     # TxEngines::toString(engine)
     def self.toString(engine)
-        strings = []
+        if engine["type"] == "orbital" then
+            strings = []
 
-        strings << "(daily: #{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %, period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
+            strings << "(daily: #{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %, period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
-        hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
-        timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
-        itHassBeenAWeek = timeSinceResetInDays >= 7
+            hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
+            timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
+            itHassBeenAWeek = timeSinceResetInDays >= 7
 
-        if hasReachedObjective and itHassBeenAWeek then
-            strings << ", awaiting data management)"
+            if hasReachedObjective and itHassBeenAWeek then
+                strings << ", awaiting data management)"
+            end
+
+            if hasReachedObjective and !itHassBeenAWeek then
+                strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
+            end
+
+            if !hasReachedObjective and !itHassBeenAWeek then
+                strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period)"
+            end
+
+            if !hasReachedObjective and itHassBeenAWeek then
+                strings << ", late by #{(timeSinceResetInDays-7).round(2)} days)"
+            end
+
+            strings << ""
+            return strings.join()
         end
-
-        if hasReachedObjective and !itHassBeenAWeek then
-            strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
-        end
-
-        if !hasReachedObjective and !itHassBeenAWeek then
-            strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period)"
-        end
-
-        if !hasReachedObjective and itHassBeenAWeek then
-            strings << ", late by #{(timeSinceResetInDays-7).round(2)} days)"
-        end
-
-        strings << ""
-        strings.join()
+        raise "(error: 3127be8e-cf0f-466d-a29c-3b35a3aab4bb)"
     end
 
     # -----------------------------------------------
@@ -75,26 +84,32 @@ class TxEngines
 
     # TxEngines::maintenance1(engine, description) # engine or null
     def self.maintenance1(engine, description)
-        return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
-        return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
-        puts "> I am about to reset engine for #{description}"
-        LucilleCore::pressEnterToContinue()
-        Bank::put(engine["capsule"], -engine["hours"]*3600)
-        if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
-            hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
-            if hours.size > 0 then
-                engine["hours"] = hours.to_f
+        if engine["type"] == "orbital" then
+            return nil if Bank::getValue(engine["capsule"]).to_f/3600 < engine["hours"]
+            return nil if (Time.new.to_i - engine["lastResetTime"]) < 86400*7
+            puts "> I am about to reset engine for #{description}"
+            LucilleCore::pressEnterToContinue()
+            Bank::put(engine["capsule"], -engine["hours"]*3600)
+            if !LucilleCore::askQuestionAnswerAsBoolean("> continue with #{engine["hours"]} hours ? ") then
+                hours = LucilleCore::askQuestionAnswerAsString("specify period load in hours (empty for the current value): ")
+                if hours.size > 0 then
+                    engine["hours"] = hours.to_f
+                end
             end
+            engine["lastResetTime"] = Time.new.to_i
+            return engine
         end
-        engine["lastResetTime"] = Time.new.to_i
-        engine
+        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end
 
     # TxEngines::prefix2(item)
     def self.prefix2(item)
         return "" if item["engine-0916"].nil?
         engine = item["engine-0916"]
-        "(engine today: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
+        if engine["type"] == "orbital" then
+            return "(engine today: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
+        end
+        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end
 
     # TxEngines::maintenance0924()
