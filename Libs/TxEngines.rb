@@ -6,8 +6,8 @@ class TxEngines
 
     # TxEngines::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster"])
-        return nil if option.nil?
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster"])
+        return nil if type.nil?
         if type == "orbital" then
             hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
             return nil if hours == ""
