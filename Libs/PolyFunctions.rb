@@ -40,21 +40,29 @@ class PolyFunctions
 
         if item["engine-0916"] then
             engine = item["engine-0916"]
-            accounts << {
-                "description" => "engine: #{engine["uuid"]}",
-                "number"      => engine["uuid"]
-            }
-            accounts << {
-                "description" => "capsule: #{engine["capsule"]}",
-                "number"      => engine["capsule"]
-            }
+            if engine["type"] == "orbital" then
+                accounts << {
+                    "description" => "engine: #{engine["uuid"]}",
+                    "number"      => engine["uuid"]
+                }
+                accounts << {
+                    "description" => "capsule: #{engine["capsule"]}",
+                    "number"      => engine["capsule"]
+                }
+            end
+            if engine["type"] == "booster" then
+                accounts << {
+                    "description" => "engine: #{engine["uuid"]}",
+                    "number"      => engine["uuid"]
+                }
+            end
         end
 
         if item["donation-1605"] then
-            i2 = Catalyst::itemOrNull(item["donation-1605"])
-            if i2 then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(i2)
-            end
+            targets = item["donation-1605"].map{|uuid| Catalyst::itemOrNull(uuid) }.compact
+            targets.each{|target|
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            }
         end
 
         accounts.reduce([]){|as, account|

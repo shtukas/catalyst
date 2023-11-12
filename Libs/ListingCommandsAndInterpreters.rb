@@ -197,7 +197,12 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "donation-1605", core["uuid"])
+            if item["donation-1605"].nil? then
+                donations = [core["uuid"]]
+            else
+                donations = (item["donation-1605"] + [core["uuid"]]).uniq.select{|uuid| !Catalyst::itemOrNull(uuid).nil? }
+            end
+            Updates::itemAttributeUpdate(item["uuid"], "donation-1605", donations)
             return
         end
 

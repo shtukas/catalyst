@@ -34,7 +34,7 @@ class TxCores
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        core = Catalyst::mikuType("TxCore")
+        cores = Catalyst::mikuType("TxCore")
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| PolyFunctions::toString(item) })
     end
 

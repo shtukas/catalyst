@@ -1,10 +1,10 @@
 Catalyst items are json object with at least a uuid ("uuid") and a miku type ("mikuType").
 
-Cross types conventions:
+Cross types conventions (all optional):
 
     - field11          : coredata reference string
     - doNotShowUntil   : null or unixtime
     - tmpskip1         : "YYYY-MM-DD" skipped for the entire day
     - open-cycle-1143  : uuid of the open cycle that this item represents
     - ordinal-1051     : Ox1
-    - donation-1605    : uuid of donation target
+    - donation-1605    : Array[String] uuids of donation target

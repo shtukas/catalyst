@@ -204,8 +204,8 @@ class Catalyst
     # Catalyst::donationpSuffix(item)
     def self.donationpSuffix(item)
         return "" if item["donation-1605"].nil?
-        target = Catalyst::itemOrNull(item["donation-1605"])
-        return "" if target.nil?
-        " (#{target["description"]})".green
+        targets = item["donation-1605"].map{|uuid| Catalyst::itemOrNull(uuid) }.compact
+        return "" if targets.empty?
+        " (#{targets.map{|target| target["description"]}.join(', ')})".green
     end
 end
