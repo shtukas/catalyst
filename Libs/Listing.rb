@@ -151,7 +151,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        [
+        items = [
             DropBox::items(),
             Desktop::listingItems(),
             NxLifters::listingItems(),
@@ -162,8 +162,8 @@ class Listing
             NxOndates::listingItems(),
             NxTasks::orphansNonEngined(),
             NxTasks::orphansEngined().select{|task| TxEngines::dailyRelativeCompletionRatio(task["engine-0916"]) < 1 },
-            TxCores::listingItems()
-            Waves::listingItems().select{|item| !item["interruption"] },
+            TxCores::listingItems(),
+            Waves::listingItems().select{|item| !item["interruption"] }
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -177,6 +177,12 @@ class Listing
             }
             .sort_by{|item| Listing::trajectoryToPosition(Listing::itemToTrajectory(item)) }
             .reverse
+
+        return items if items.size > 0
+
+        Catalyst::mikuType("TxCore")
+            .select{|item| Listing::listable(item) }
+            .sort_by{|core| TxEngines::periodCompletionRatio(core["engine-0916"]) }
     end
 
     # -----------------------------------------
