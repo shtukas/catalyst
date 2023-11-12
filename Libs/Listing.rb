@@ -111,7 +111,10 @@ class Listing
         # ListingTrajectory 
         #     unixtime : float, unixtime
         #     speed    : float, 0.1 per hour
-        if item["mikuType"] == "NxTask" then
+        if item["mikuType"] == "NxTask" and item["engine-0916"] then
+            return 2
+        end
+        if item["mikuType"] == "NxTask" and !item["engine-0916"] then
             return 1
         end
         if item["mikuType"] == "NxOndate" then
