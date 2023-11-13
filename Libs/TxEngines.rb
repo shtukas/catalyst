@@ -51,6 +51,7 @@ class TxEngines
             return [TxEngines::periodCompletionRatio(engine), Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)].max
         end
         if engine["type"] == "booster" then
+
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
             timeSpanSinceStartInDays = (CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - engine["startUnixtime"]).to_f/86400
             timeRatio = [timeSpanSinceStartInDays.to_f/periodInDays, 1].min
@@ -59,6 +60,10 @@ class TxEngines
 
             if Time.new.to_i >= engine["endUnixtime"] and totalDoneRatioAgainstIdeal >= 1 then
                 return 1
+            end
+
+            if Time.new.to_i > engine["endUnixtime"] then
+                return 0
             end
 
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
@@ -163,6 +168,9 @@ class TxEngines
             return "(orbital: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
         end
         if engine["type"] == "booster" then
+            if Time.new.to_i > engine["endUnixtime"] then
+                return "(booster: expired)".green
+            end
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
             dailyLoadInHours = engine["hours"].to_f/periodInDays
             return "(booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours) ".green

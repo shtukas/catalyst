@@ -417,6 +417,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("engined", input) then
             items = Catalyst::catalystItems()
                         .select{|item| item["engine-0916"] }
+                        .reject{|item| item["mikuType"] == "TxCore" }
                         .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
             Catalyst::program2(items)
             return
