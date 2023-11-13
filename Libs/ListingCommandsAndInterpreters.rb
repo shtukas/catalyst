@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "mikuTypes:",
             "   - NxOndate : redate (*)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop | pile | hours of",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop | pile",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # push intelligently",
@@ -118,17 +118,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxStrats::interactivelyPile(item)
-            return
-        end
-
-        if Interpreting::match("hours of", input) then
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            targetIndex = LucilleCore::askQuestionAnswerAsString("index: ").to_i
-            target = store.get(targetIndex)
-            return if target.nil?
-            item = NxLifters::issue(target["uuid"], hours)
-            puts JSON.pretty_generate(item)
-            Ox1s::markAtTop(item)
             return
         end
 

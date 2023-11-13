@@ -198,13 +198,6 @@ class PolyActions
     # PolyActions::naturalProgression(item)
     def self.naturalProgression(item)
 
-        if item["mikuType"] == "NxLifter" then
-            target = Catalyst::itemOrNull(item["targetuuid"])
-            return if target.nil?
-            PolyActions::naturalProgression(target)
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             PolyActions::access(item)
             return

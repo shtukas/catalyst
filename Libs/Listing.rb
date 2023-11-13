@@ -158,12 +158,16 @@ class Listing
         trajectory
     end
 
+    # Listing::itemToPosition(item)
+    def self.itemToPosition(item)
+        rand
+    end
+
     # Listing::items()
     def self.items()
         items = [
             DropBox::items(),
             Desktop::listingItems(),
-            NxLifters::listingItems(),
             PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
@@ -184,8 +188,15 @@ class Listing
                     selected + [item]
                 end
             }
-            .sort_by{|item| Listing::trajectoryToPosition(Listing::itemToTrajectory(item)) }
+            .map{|item|
+                {
+                    "item" => item,
+                    "position" => Listing::itemToPosition(item)
+                }
+            }
+            .sort_by{|packet| packet["position"] }
             .reverse
+            .map{|packet| packet["items"] }
 
         return items if items.size > 0
 
