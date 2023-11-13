@@ -142,6 +142,12 @@ class Listing
         #     speed    : float, 0.1 per hour
         return item["trajectory"] if item["trajectory"]
         item = Catalyst::itemOrNull(item["uuid"])
+        if item.nil? then
+            return {
+                "unixtime" => 0,
+                "speed"    => 1
+            }
+        end
         return item["trajectory"] if item["trajectory"]
         trajectory = {
             "unixtime" => Time.new.to_f,
