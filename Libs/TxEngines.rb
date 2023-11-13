@@ -141,7 +141,10 @@ class TxEngines
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
-        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
+        if engine["type"] == "booster" then
+            return nil
+        end
+        raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
     end
 
     # TxEngines::prefix2(item)
