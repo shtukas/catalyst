@@ -121,6 +121,14 @@ class TxEngines
             .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
     end
 
+    # TxEngines::listingItems2()
+    def self.listingItems2()
+        Catalyst::catalystItems()
+            .select{|item| item["engine-0916"] }
+            .reject{|item| item["mikuType"] == "TxCore" }
+            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+    end
+
     # -----------------------------------------------
     # Ops
 

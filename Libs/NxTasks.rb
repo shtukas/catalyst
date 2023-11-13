@@ -81,15 +81,8 @@ class NxTasks
         "#{item["active"] ? "🔺" : "🔹"} #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxTasks::orphansEngined()
-    def self.orphansEngined()
-        Catalyst::mikuType("NxTask")
-            .select{|item| item["coreX-2137"].nil? }
-            .select{|item| item["engine-0916"] }
-    end
-
-    # NxTasks::orphansNonEngined()
-    def self.orphansNonEngined()
+    # NxTasks::unattached()
+    def self.unattached()
         Catalyst::mikuType("NxTask")
             .select{|item| item["coreX-2137"].nil? }
             .select{|item| item["engine-0916"].nil? }

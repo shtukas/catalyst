@@ -81,9 +81,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
 
-        ordinalstring = item["isPrefix"] ? "       " : "(#{"%5.3f" % Listing::itemToPosition(item)})"
-
-        line = "#{ordinalstring} #{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{Catalyst::donationpSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{Catalyst::donationpSuffix(item)}#{TxCores::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -100,81 +98,22 @@ class Listing
         line
     end
 
-    # Listing::itemToPosition(item)
-    def self.itemToPosition(item)
-
-        getListingTimespanOfContinuousDisplay = lambda {|item|
-            data = XCache::getOrNull("a8b45162-13e0-4e2e-b35e-541a5149cc60:#{item["uuid"]}")
-            if data.nil? then
-                data = {
-                    "start" => Time.new.to_f,
-                    "ping"  => Time.new.to_f
-                }
-            else
-                data = JSON.parse(data)
-            end
-            if (Time.new.to_f - data["ping"]) > 3600*2 then
-                data = {
-                    "start" => Time.new.to_f,
-                    "ping"  => Time.new.to_f
-                }
-            end
-            data["ping"] = Time.new.to_f
-            XCache::set("a8b45162-13e0-4e2e-b35e-541a5149cc60:#{item["uuid"]}", JSON.generate(data))
-            Time.new.to_f - data["start"]
-        }
-
-        timespan = getListingTimespanOfContinuousDisplay.call(item)
-
-        if item["mikuType"] == "PhysicalTarget" then
-            return Math.atan(timespan.to_f/(3600*1))
-        end
-
-        if item["mikuType"] == "Wave" and item["interruption"] then
-            return Math.atan(timespan.to_f/(3600*1))
-        end
-
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            return Math.atan(timespan.to_f/(3600*24))
-        end
-
-        if item["mikuType"] == "Backup" then
-            return 0.5
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            return Math.atan(timespan.to_f/(3600*12))
-        end
-
-        if item["mikuType"] == "NxTask" and item["engine-0916"] then
-            return 1 - TxEngines::dailyRelativeCompletionRatio(item["engine-0916"])
-        end
-
-        if item["mikuType"] == "NxTask" and !item["engine-0916"] then
-            return Math.atan(timespan.to_f/(3600*24))
-        end
-
-        if item["mikuType"] == "TxCore" then
-            return 1 - TxEngines::dailyRelativeCompletionRatio(item["engine-0916"])
-        end
-
-        raise "(error: F2E2E68D-AD43-4029-898E-45F2D4FB3199) I don't know how to compute the listing position of mikuType: #{item["mikuType"]}"
-    end
-
     # Listing::items()
     def self.items()
-        items = [
+        [
             DropBox::items(),
             Desktop::listingItems(),
-            PhysicalTargets::listingItems(),
             Anniversaries::listingItems(),
+            PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
+            Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
-            NxTasks::orphansNonEngined(),
+            NxTasks::unattached(),
+            NxCurrentProjects::listingItems(),
             TxEngines::listingItems(),
             TxCores::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] }
+            TxEngines::listingItems2()
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -186,21 +125,6 @@ class Listing
                     selected + [item]
                 end
             }
-            .map{|item|
-                {
-                    "item" => item,
-                    "position" => Listing::itemToPosition(item)
-                }
-            }
-            .sort_by{|packet| packet["position"] }
-            .reverse
-            .map{|packet| packet["item"] }
-
-        return items if items.size > 0
-
-        Catalyst::mikuType("TxCore")
-            .select{|item| Listing::listable(item) }
-            .sort_by{|core| TxEngines::periodCompletionRatio(core["engine-0916"]) }
     end
 
     # -----------------------------------------
@@ -216,8 +140,7 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxTasks::orphansEngined()", lambda{ NxTasks::orphansEngined() })
-        spot.contest_entry("NxTasks::orphansNonEngined()", lambda{ NxTasks::orphansNonEngined() })
+        spot.contest_entry("NxTasks::unattached()", lambda{ NxTasks::unattached() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })

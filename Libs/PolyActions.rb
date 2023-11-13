@@ -39,6 +39,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCurrentProject" then
+            NxCurrentProjects::access(item)
+            return
+        end
+
         if item["mikuType"] == "NxStrat" then
             return
         end
@@ -91,6 +96,13 @@ class PolyActions
 
         if item["mikuType"] == "NxLong" then
             Catalyst::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxCurrentProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
             return
         end
 
@@ -157,6 +169,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCurrentProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Catalyst::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Catalyst::destroy(item["uuid"])
@@ -214,6 +233,13 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::done(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "NxCurrentProject" then
+            PolyFunctions::toString(item).green
+            NxBalls::start(item)
+            PolyActions::access(item)
             return
         end
 

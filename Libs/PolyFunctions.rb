@@ -93,6 +93,9 @@ class PolyFunctions
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
         end
+        if item["mikuType"] == "NxCurrentProject" then
+            return NxCurrentProjects::toString(item)
+        end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end

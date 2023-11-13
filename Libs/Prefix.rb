@@ -7,7 +7,7 @@ class Prefix
 
         stratification = NxStrats::stratification([items[0]])
                             .map{|item|
-                                item["isPrefix"] = true
+                                item["is-prefix-2200"] = true
                                 item
                             }
         if stratification.size > 1 then
@@ -20,7 +20,7 @@ class Prefix
                             .select{|i| Listing::listable(i) }
                             .first(1)
                             .map{|item|
-                                item["isPrefix"] = true
+                                item["is-prefix-2200"] = true
                                 item
                             }
             if children.size > 0 then

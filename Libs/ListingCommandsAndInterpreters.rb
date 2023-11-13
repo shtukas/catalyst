@@ -5,19 +5,15 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to core | active * | destroy (<n>)",
-            "",
-            "Transmutations:",
-            "              : (task)   >ondate (<n>)",
-            "              : (ondate) >task (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | trans * | core * | donation * | move * | move # multiple to core | active * | destroy (<n>)",
             "",
             "mikuTypes:",
             "   - NxOndate : redate (*)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | >> # push intelligently",
+            "misc          : search | speed | commands | edit <n> | move | trans * | >> # push intelligently",
         ].join("\n")
     end
 
@@ -47,69 +43,19 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">task", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >task on buffer in NxOndates"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            status = TxCores::interactivelySelectAndPutInCore(item)
-            return if !status
-            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            return
-        end
-
-        if Interpreting::match(">task *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxOndate" then
-                puts "For the moment we only run >task on buffer in NxOndates"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            status = TxCores::interactivelySelectAndPutInCore(item)
-            return if !status
-            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxTask")
-            return
-        end
-
-        if Interpreting::match(">ondate", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >ondate on NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Updates::itemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Updates::itemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
-            return
-        end
-
-        if Interpreting::match(">ondate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "For the moment we only run >ondate on NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Updates::itemAttributeUpdate(item["uuid"], "description", item["description"].gsub("(buffer-in)", "").strip)
-            Updates::itemAttributeUpdate(item["uuid"], "datetime", CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode())
-            Updates::itemAttributeUpdate(item["uuid"], "mikuType", "NxOndate")
-            return
-        end
-
         if Interpreting::match("active * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Updates::itemAttributeUpdate(item["uuid"], "active", true)
+            return
+        end
+
+        if Interpreting::match("trans * ", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutations::transmute(item)
             return
         end
 
@@ -250,10 +196,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("core", input) then
-            item = TxCores::interactivelyIssueNewOrNull()
+        if Interpreting::match("core *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
-            puts JSON.pretty_generate(item)
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", core["uuid"])
             return
         end
 
