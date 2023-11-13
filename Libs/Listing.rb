@@ -98,69 +98,65 @@ class Listing
         line
     end
 
-    # Listing::trajectoryToPosition(trajectory)
-    def self.trajectoryToPosition(trajectory)
-        # ListingTrajectory 
-        #     unixtime : float, unixtime
-        #     speed    : float, 0.1 per hour
-        trajectory["speed"] * (Time.new.to_f-trajectory["unixtime"]).to_f/3600
-    end
-
-    # Listing::itemToSpeed(item)
-    def self.itemToSpeed(item)
-        # ListingTrajectory 
-        #     unixtime : float, unixtime
-        #     speed    : float, 0.1 per hour
-        if item["mikuType"] == "NxTask" and item["engine-0916"] then
-            return 2
-        end
-        if item["mikuType"] == "NxTask" and !item["engine-0916"] then
-            return 1
-        end
-        if item["mikuType"] == "NxOndate" then
-            return 2
-        end
-        if item["mikuType"] == "TxCore" then
-            return 1
-        end
-        if item["mikuType"] == "Wave" and item["interruption"] then
-            return 4
-        end
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            return 0.2
-        end
-        if item["mikuType"] == "PhysicalTarget" then
-            return 5
-        end
-        raise "(error: 86a7-50641e6a2f7d) I don't know how to compute the speed for miku type: #{item["mikuType"]}"
-    end
-
-    # Listing::itemToTrajectory(item)
-    def self.itemToTrajectory(item)
-        # ListingTrajectory 
-        #     unixtime : float, unixtime
-        #     speed    : float, 0.1 per hour
-        return item["trajectory"] if item["trajectory"]
-        item = Catalyst::itemOrNull(item["uuid"])
-        if item.nil? then
-            return {
-                "unixtime" => 0,
-                "speed"    => 1
-            }
-        end
-        return item["trajectory"] if item["trajectory"]
-        trajectory = {
-            "unixtime" => Time.new.to_f,
-            "speed"    => Listing::itemToSpeed(item)
-        }
-        puts "New trajectory for '#{PolyFunctions::toString(item)}': #{trajectory}"
-        Updates::itemAttributeUpdate(item["uuid"], "trajectory", trajectory)
-        trajectory
-    end
-
     # Listing::itemToPosition(item)
     def self.itemToPosition(item)
-        rand
+
+        getListingTimespanOfContinuousDisplay = lambda {|item|
+            data = XCache::getOrNull("a8b45162-13e0-4e2e-b35e-541a5149cc60:#{item["uuid"]}")
+            if data.nil? then
+                data = {
+                    "start" => Time.new.to_f,
+                    "ping"  => Time.new.to_f
+                }
+            else
+                data = JSON.parse(data)
+            end
+            if (Time.new.to_f - data["ping"]) > 3600*2 then
+                data = {
+                    "start" => Time.new.to_f,
+                    "ping"  => Time.new.to_f
+                }
+            end
+            data["ping"] = Time.new.to_f
+            XCache::set("a8b45162-13e0-4e2e-b35e-541a5149cc60:#{item["uuid"]}", JSON.generate(data))
+            Time.new.to_f - data["start"]
+        }
+
+        timespan = getListingTimespanOfContinuousDisplay.call(item)
+
+        if item["mikuType"] == "PhysicalTarget" then
+            return Math.atan(timespan.to_f/(3600*1))
+        end
+
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return Math.atan(timespan.to_f/(3600*1))
+        end
+
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return Math.atan(timespan.to_f/(3600*24))
+        end
+
+        if item["mikuType"] == "Backup" then
+            return 0.5
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            return Math.atan(timespan.to_f/(3600*12))
+        end
+
+        if item["mikuType"] == "NxTask" and item["engine-0916"] then
+            return 1 - TxEngines::dailyRelativeCompletionRatio(item["engine-0916"])
+        end
+
+        if item["mikuType"] == "NxTask" and !item["engine-0916"] then
+            return Math.atan(timespan.to_f/(3600*24))
+        end
+
+        if item["mikuType"] == "TxCore" then
+            return 1 - TxEngines::dailyRelativeCompletionRatio(item["engine-0916"])
+        end
+
+        raise "(error: F2E2E68D-AD43-4029-898E-45F2D4FB3199) I don't know how to compute the listing position of mikuType: #{item["mikuType"]}"
     end
 
     # Listing::items()
@@ -196,7 +192,7 @@ class Listing
             }
             .sort_by{|packet| packet["position"] }
             .reverse
-            .map{|packet| packet["items"] }
+            .map{|packet| packet["item"] }
 
         return items if items.size > 0
 
@@ -301,7 +297,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectRunningItems(Ox1s::organiseListing(Listing::items()), NxBalls::runningItems()))
+            items = Prefix::prefix(Listing::injectRunningItems(Listing::items(), NxBalls::runningItems()))
                         .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
 
             system("clear")

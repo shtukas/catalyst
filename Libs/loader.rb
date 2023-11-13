@@ -168,7 +168,6 @@ require_relative "TxCores.rb"
 require_relative "NxStrats.rb"
 
 require_relative "OpenCycles.rb"
-require_relative "Ox1s.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

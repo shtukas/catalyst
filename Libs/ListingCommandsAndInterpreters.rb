@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to core | active * | listing item * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | donation * | move * | move # multiple to core | active * | destroy (<n>)",
             "",
             "Transmutations:",
             "              : (task)   >ondate (<n>)",
@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
             "mikuTypes:",
             "   - NxOndate : redate (*)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop | pile",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | core | desktop",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | >> # push intelligently",
@@ -439,18 +439,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("listing item *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            listingItem = Catalyst::mikuType("ListingItem").select{|li| li["targetuuid"] == item["uuid"] }.first
-            return if listingItem.nil?
-            puts JSON.pretty_generate(listingItem)
-            puts "position: #{Listing::trajectoryToPosition(listingItem["trajectory"])}"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if Interpreting::match("program", input) then
             item = store.getDefault()
             return if item.nil?
@@ -519,29 +507,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            return
-        end
-
-        if Interpreting::match("pile", input) then
-            text = CommonUtils::editTextSynchronously("").strip
-            return if text == ""
-            text
-                .lines
-                .map{|line| line.strip }
-                .reverse
-                .each{|line|
-                    task = NxTasks::descriptionToTask1(SecureRandom.uuid, line)
-                    puts JSON.pretty_generate(task)
-                    Ox1s::markAtTop(task["uuid"])
-                }
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            selected, _ = LucilleCore::selectZeroOrMore("ordering", [], store.items(), lambda {|item| PolyFunctions::toString(item) })
-            selected.reverse.each{|item|
-                Ox1s::markAtTop(item["uuid"])
-            }
             return
         end
 
