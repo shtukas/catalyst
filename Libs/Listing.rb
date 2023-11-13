@@ -113,7 +113,8 @@ class Listing
             NxCurrentProjects::listingItems(),
             TxEngines::listingItems(),
             TxCores::listingItems(),
-            TxEngines::listingItems2()
+            TxEngines::listingItems2(),
+            TxCores::listingItems2(),
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
