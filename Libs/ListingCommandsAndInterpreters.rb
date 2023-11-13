@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | unstack * | pile * | engine * | trans * | core * | donation * | move * | move # multiple to core | active * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | destroy (<n>)",
             "",
             "mikuTypes:",
             "   - NxOndate : redate (*)",
@@ -13,7 +13,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | trans * | >> # push intelligently",
+            "misc          : search | speed | commands | edit <n> | move | trans * | >> # push intelligently | move # multiple to core",
         ].join("\n")
     end
 
@@ -47,7 +47,9 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "active", true)
+            engine = TxEngines::interactivelyMakeNewOrNull()
+            return if engine.nil?
+            Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
             return
         end
 
@@ -291,11 +293,6 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("engine", input) then
             item = store.getDefault()
             return if item.nil?
-            if !["TxCore", "NxTask", "NxOndate"].include?(item["mikuType"]) then
-                puts "At the moment we are only doing engines for TxCore, NxTask and NxOndate"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
             Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
@@ -306,11 +303,6 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["TxCore", "NxTask", "NxOndate"].include?(item["mikuType"]) then
-                puts "At the moment we are only doing engines for TxCore, NxTask and NxOndate"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
             Updates::itemAttributeUpdate(item["uuid"], "engine-0916", engine)
@@ -471,14 +463,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            return
-        end
-
-        if Interpreting::match("unstack *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
             return
         end
 
