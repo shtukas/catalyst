@@ -60,7 +60,11 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
+
+        if Catalyst::itemOrNull(item["uuid"]) then
+            # The update would fail for a `Backup`
+            Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
+        end
 
         # order: alphabetical order
 
