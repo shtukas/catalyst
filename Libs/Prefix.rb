@@ -6,6 +6,10 @@ class Prefix
         return [] if items.empty?
 
         stratification = NxStrats::stratification([items[0]])
+                            .map{|item|
+                                item["isPrefix"] = true
+                                item
+                            }
         if stratification.size > 1 then
             return stratification.take(stratification.size-1) + items
         end
@@ -15,6 +19,10 @@ class Prefix
                             .select{|i| i["engine-0916"].nil? or TxEngines::dailyRelativeCompletionRatio(i["engine-0916"]) < 1 }
                             .select{|i| Listing::listable(i) }
                             .first(1)
+                            .map{|item|
+                                item["isPrefix"] = true
+                                item
+                            }
             if children.size > 0 then
                 return Prefix::prefix(children + items)
             end
