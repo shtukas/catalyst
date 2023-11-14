@@ -194,7 +194,7 @@ class TxEngines
             return "(booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours) ".green
         end
         if engine["type"] == "daily-work" then
-            return "(daily) (do, tw * | destroy *) ".green
+            return "(daily) (do, tw | destroy) ".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end
