@@ -169,7 +169,7 @@ class TxEngines
         end
         if engine["type"] == "booster" then
             if Time.new.to_i > engine["endUnixtime"] then
-                return "(booster: expired)".green
+                return "(booster: expired) ".green
             end
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
             dailyLoadInHours = engine["hours"].to_f/periodInDays
