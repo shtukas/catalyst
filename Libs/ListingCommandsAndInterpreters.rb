@@ -7,9 +7,6 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | destroy (<n>)",
             "",
-            "mikuTypes:",
-            "   - NxOndate : redate (*)",
-            "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -491,6 +488,18 @@ class ListingCommandsAndInterpreters
             end
             NxBalls::stop(item)
             NxOndates::redate(item)
+            return
+        end
+
+        if Interpreting::match("tw *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["engine-0916"].nil?
+            return if item["engine-0916"]["type"] != "daily-work"
+            NxBalls::stop(item)
+            item["engine-0916"]["return-on"] = CommonUtils::nDaysInTheFuture(1)
+            Updates::itemAttributeUpdate(item["uuid"], "engine-0916", item["engine-0916"])
             return
         end
 

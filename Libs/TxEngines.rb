@@ -6,7 +6,7 @@ class TxEngines
 
     # TxEngines::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster", "daily-work"])
         return nil if type.nil?
         if type == "orbital" then
             hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
@@ -37,6 +37,14 @@ class TxEngines
                 "startUnixtime" => startUnixtime,
                 "endUnixtime"   => endUnixtime,
                 "hours"         => hours
+            }
+        end
+        if type == "daily-work" then
+            return {
+                "uuid"      => SecureRandom.uuid,
+                "mikuType"  => "TxEngine",
+                "type"      => "daily-work",
+                "return-on" => CommonUtils::today()
             }
         end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
@@ -73,6 +81,13 @@ class TxEngines
 
             return [totalDoneRatioAgainstIdeal, doneTodayInSeconds].min # strength
         end
+        if engine["type"] == "daily-work" then
+            if engine["return-on"] <= CommonUtils::today() then
+                return 0
+            else
+                return 1
+            end
+        end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44)"
     end
 
@@ -84,12 +99,12 @@ class TxEngines
         raise "(error: 7e31bade-9db7-4e65-9da4-ccef7f70baa3)"
     end
 
-    # TxEngines::toString(engine)
-    def self.toString(engine)
+    # TxEngines::toStringSuffix(engine)
+    def self.toStringSuffix(engine)
         if engine["type"] == "orbital" then
             strings = []
 
-            strings << "(daily: #{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %, period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
+            strings << " (daily: #{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %, period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
 
             hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
             timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
@@ -157,6 +172,9 @@ class TxEngines
         if engine["type"] == "booster" then
             return nil
         end
+        if engine["type"] == "daily-work" then
+            return nil
+        end
         raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
     end
 
@@ -174,6 +192,9 @@ class TxEngines
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
             dailyLoadInHours = engine["hours"].to_f/periodInDays
             return "(booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours) ".green
+        end
+        if engine["type"] == "daily-work" then
+            return "(daily) (do, tw * | destroy *) ".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end
