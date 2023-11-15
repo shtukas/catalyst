@@ -132,11 +132,28 @@ class TxEngines
         raise "(error: 3127be8e-cf0f-466d-a29c-3b35a3aab4bb)"
     end
 
+    # TxEngines::shouldShowInListing(item)
+    def self.shouldShowInListing(item)
+        return true if item["engine-0916"].nil?
+        engine = item["engine-0916"]
+        if engine["type"] == "orbital" then
+            return true
+        end
+        if engine["type"] == "booster" then
+            return true
+        end
+        if engine["type"] == "daily-work" then
+            return engine["return-on"] <= CommonUtils::today()
+        end
+        raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
+    end
+
     # TxEngines::listingItems()
     def self.listingItems()
         Catalyst::catalystItems()
             .select{|item| item["engine-0916"] }
             .reject{|item| item["mikuType"] == "TxCore" }
+            .select{|item| TxEngines::shouldShowInListing(item) }
             .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
             .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
     end
@@ -146,6 +163,7 @@ class TxEngines
         Catalyst::catalystItems()
             .select{|item| item["engine-0916"] }
             .reject{|item| item["mikuType"] == "TxCore" }
+            .select{|item| TxEngines::shouldShowInListing(item) }
             .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
     end
 
