@@ -32,4 +32,20 @@ class Cubes
         Cubes::createFile(filepath, uuid)
     end
 
+    # Cubes::getBlobOrNull(uuid, nhash)
+    def self.getBlobOrNull(uuid, nhash)
+        filepath = Cubes::filepath(uuid)
+        return nil if !File.exist?(filepath)
+        blob = nil
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from _cube_ where _name_=?", [nhash]) do |row|
+            blob = row["_value_"]
+        end
+        db.close
+        blob
+    end
+
 end
