@@ -1,9 +1,9 @@
 
-create table _datalog_ (_recorduuid_ text primary key, _recordTime_ float, _recordType_ string, _data_ blob)
+create table _cube_ (_recorduuid_ text primary key, _recordTime_ float, _recordType_ string, _name_ text, _value_ blob)
 
 Rules:
 
     0. _recordTime_ is epoch time float
     1. _recordType_ takes the two values: "datablob" and "attribute"
     2. In the case of attribute we expect a json encodable value that is going to be json encoded.
-    3. In the case of a datablob, the nhash is the recorduuid
+    3. In the case of a datablob, the name is the nhash

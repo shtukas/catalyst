@@ -156,7 +156,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("sort", input) then
             selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
-            selected.each{|item|
+            selected.reverse.each{|item|
                 Ox1::putAtTop(item)
             }
             return
