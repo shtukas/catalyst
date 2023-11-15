@@ -65,6 +65,7 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
+        Ox1::detach(item)
 
         if Catalyst::itemOrNull(item["uuid"]) then
             # The update would fail for a `Backup`

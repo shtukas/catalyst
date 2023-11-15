@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | trans * | >> # push intelligently | move # multiple to core",
+            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move # multiple to core",
         ].join("\n")
     end
 
@@ -151,6 +151,14 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             TxCores::interactivelySelectAndPutInCore(item)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
+            selected.each{|item|
+                Ox1::putAtTop(item)
+            }
             return
         end
 

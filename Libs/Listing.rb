@@ -187,15 +187,15 @@ class Listing
         end
     end
 
-    # Listing::injectRunningItems(items, runningItems)
-    def self.injectRunningItems(items, runningItems)
+    # Listing::injectMissingRunningItems(items, runningItems)
+    def self.injectMissingRunningItems(items, runningItems)
         if runningItems.empty? then
             return items
         else
             if items.take(20).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
-                return Listing::injectRunningItems(items, runningItems.drop(1))
+                return Listing::injectMissingRunningItems(items, runningItems.drop(1))
             else
-                return Listing::injectRunningItems(runningItems.take(1) + items, runningItems.drop(1))
+                return Listing::injectMissingRunningItems(runningItems.take(1) + items, runningItems.drop(1))
             end
         end
     end
@@ -223,7 +223,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectRunningItems(Listing::items(), NxBalls::runningItems()))
+            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::runningItems()))
                         .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
 
             system("clear")
