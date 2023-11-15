@@ -21,17 +21,14 @@ class NxCurrentProjects
 
     # NxCurrentProjects::toString(item)
     def self.toString(item)
-        "⚙️  #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "⚙️ #{TxEngines::string1(item)} #{item["description"]}#{TxEngines::string2(item)}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxCurrentProjects::listingItems()
     def self.listingItems()
         items = Catalyst::mikuType("NxCurrentProject")
         i1, i2 = items.partition{|item| item["engine-0916"] }
-        [
-            i1.select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 },
-            i2
-        ].flatten
+        i2
     end
 
     # ------------------

@@ -78,7 +78,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{item["active"] ? "🔺" : "🔹"} #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "#{item["active"] ? "🔺" : "🔹"}#{TxEngines::string1(item)} #{item["description"]}#{TxEngines::string2(item)}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::unattached()

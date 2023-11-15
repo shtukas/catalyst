@@ -37,7 +37,7 @@ class NxOndates
 
     # NxOndates::toString(item)
     def self.toString(item)
-        "🗓️  (#{item["datetime"][0, 10]}) #{"(done, trans, redate)".green} #{TxEngines::prefix2(item)}#{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "🗓️  (#{item["datetime"][0, 10]}) #{"(done, trans, redate)".green}#{TxEngines::string1(item)} #{item["description"]}#{TxEngines::string2(item)}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxOndates::ondatesInOrder()

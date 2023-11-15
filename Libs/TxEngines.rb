@@ -71,7 +71,7 @@ class TxEngines
             end
 
             if Time.new.to_i > engine["endUnixtime"] then
-                return 0
+                return -1
             end
 
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
@@ -83,7 +83,7 @@ class TxEngines
         end
         if engine["type"] == "daily-work" then
             if engine["return-on"] <= CommonUtils::today() then
-                return 0
+                return -0.5
             else
                 return 1
             end
@@ -99,8 +99,29 @@ class TxEngines
         raise "(error: 7e31bade-9db7-4e65-9da4-ccef7f70baa3)"
     end
 
-    # TxEngines::toStringSuffix(engine)
-    def self.toStringSuffix(engine)
+    # TxEngines::string1(item)
+    def self.string1(item)
+        return "" if item["engine-0916"].nil?
+        engine = item["engine-0916"]
+        if engine["type"] == "orbital" then
+            return " (#{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %)".green
+        end
+        if engine["type"] == "booster" then
+            if Time.new.to_i > engine["endUnixtime"] then
+                return " ( ------ )".green
+            end
+            return " (#{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %)".green
+        end
+        if engine["type"] == "daily-work" then
+            return " ( ------ )".green
+        end
+        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
+    end
+
+    # TxEngines::string2(item)
+    def self.string2(item)
+        return "" if item["engine-0916"].nil?
+        engine = item["engine-0916"]
         if engine["type"] == "orbital" then
             strings = []
 
@@ -128,6 +149,17 @@ class TxEngines
 
             strings << ""
             return strings.join()
+        end
+        if engine["type"] == "booster" then
+            if Time.new.to_i > engine["endUnixtime"] then
+                return " (booster: expired)".green
+            end
+            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
+            dailyLoadInHours = engine["hours"].to_f/periodInDays
+            return " (booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours)".green
+        end
+        if engine["type"] == "daily-work" then
+            return " (daily: done * | destroy *)".green
         end
         raise "(error: 3127be8e-cf0f-466d-a29c-3b35a3aab4bb)"
     end
@@ -185,27 +217,6 @@ class TxEngines
             return nil
         end
         raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
-    end
-
-    # TxEngines::prefix2(item)
-    def self.prefix2(item)
-        return "" if item["engine-0916"].nil?
-        engine = item["engine-0916"]
-        if engine["type"] == "orbital" then
-            return "(orbital: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % (engine["hours"].to_f/6)} hours) ".green
-        end
-        if engine["type"] == "booster" then
-            if Time.new.to_i > engine["endUnixtime"] then
-                return "(booster: expired) ".green
-            end
-            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
-            dailyLoadInHours = engine["hours"].to_f/periodInDays
-            return "(booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours) ".green
-        end
-        if engine["type"] == "daily-work" then
-            return "(daily) (do, tw | destroy) ".green
-        end
-        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end
 
     # TxEngines::maintenance0924()

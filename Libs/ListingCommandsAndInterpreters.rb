@@ -19,7 +19,6 @@ class ListingCommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 return
             end
@@ -532,7 +531,6 @@ class ListingCommandsAndInterpreters
             if item["ordinal-1051"] then
                 Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
             end
-            Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
             NxBalls::stop(item)
             return
         end
@@ -544,7 +542,6 @@ class ListingCommandsAndInterpreters
             if item["ordinal-1051"] then
                 Updates::itemAttributeUpdate(item["uuid"], "ordinal-1051", nil)
             end
-            Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
             NxBalls::stop(item)
             return
         end

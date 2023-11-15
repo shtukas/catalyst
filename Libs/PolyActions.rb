@@ -67,9 +67,9 @@ class PolyActions
         NxBalls::stop(item)
         Ox1::detach(item)
 
-        if Catalyst::itemOrNull(item["uuid"]) then
-            # The update would fail for a `Backup`
-            Updates::itemAttributeUpdate(item["uuid"], "trajectory", nil)
+        if item["engine-0916"] then
+            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone("GMT"))
+            return
         end
 
         # order: alphabetical order

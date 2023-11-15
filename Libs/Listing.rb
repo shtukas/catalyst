@@ -80,8 +80,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        s1 = Ox1::activePositionOrNull(item) ? " (ox1)" : ""
-        line = "#{storePrefix}#{s1} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{Catalyst::donationpSuffix(item)}#{TxCores::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{OpenCycles::suffix(item)}#{Catalyst::donationpSuffix(item)}#{TxCores::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
