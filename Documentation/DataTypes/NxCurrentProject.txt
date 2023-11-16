@@ -1,9 +1,0 @@
-
-NxCurrentProject
-    - uuid        : uuid
-    - mikuType    : "NxCurrentProject"
-    - unixtime    : Float
-    - datetime    : DateTime Iso 8601 UTC Zulu
-    - description : description,
-    - field11     : coredataref
-    - engine-0916 : (optional) TxEngine

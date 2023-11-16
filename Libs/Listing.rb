@@ -110,7 +110,6 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             NxTasks::unattached(),
-            NxCurrentProjects::listingItems(),
             TxEngines::listingItems(),
             TxCores::listingItems()
         ]
