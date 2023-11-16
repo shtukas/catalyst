@@ -42,4 +42,9 @@ class Ox1
         return if Ox1::activePositionOrNull(item).nil?
         Updates::itemAttributeUpdate(item["uuid"], "ox1-0656", nil)
     end
+
+    # Ox1::items()
+    def self.items()
+        Catalyst::catalystItems().select{|item| Ox1::activePositionOrNull(item) }
+    end
 end

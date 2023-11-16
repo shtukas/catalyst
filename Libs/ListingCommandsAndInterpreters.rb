@@ -7,7 +7,7 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move # multiple to core",
@@ -57,7 +57,45 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile * ", input) then
+        if Interpreting::match("top", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            line = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if line == ""
+            task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+            puts JSON.pretty_generate(task)
+            Ox1::putAtTop(task)
+            TxCores::interactivelySelectAndPutInCore(task)
+            NxBalls::activeItems().each{|i1|
+                NxBalls::pause(i1)
+            }
+            if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
+                NxBalls::start(task)
+            end
+            return
+        end
+
+        if Interpreting::match("pile", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text
+                .lines
+                .map{|line| line.strip }
+                .reverse
+                .each{|line|
+                    task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                    puts JSON.pretty_generate(task)
+                    Ox1::putAtTop(task)
+                }
+            return
+        end
+
+        if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?

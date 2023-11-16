@@ -100,6 +100,7 @@ class Listing
     # Listing::items()
     def self.items()
         [
+            Ox1::items(),
             DropBox::items(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
@@ -136,7 +137,7 @@ class Listing
         spot.start_contest()
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
-        spot.contest_entry("NxBalls::runningItems()", lambda{ NxBalls::runningItems() })
+        spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxTasks::unattached()", lambda{ NxTasks::unattached() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
@@ -220,7 +221,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::runningItems()))
+            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
                         .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
 
             system("clear")

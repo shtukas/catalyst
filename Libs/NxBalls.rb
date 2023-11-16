@@ -182,8 +182,8 @@ class NxBalls
         " #{NxBalls::nxBallToString(nxball)}"
     end
 
-    # NxBalls::runningItems()
-    def self.runningItems()
+    # NxBalls::activeItems()
+    def self.activeItems()
         NxBalls::all()
             .sort_by{|item| item["unixtime"] }
             .reverse
