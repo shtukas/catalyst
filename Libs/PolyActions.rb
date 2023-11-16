@@ -241,6 +241,10 @@ class PolyActions
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("move to tomorrow ?: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone("GMT"))
+            end
             return
         end
 
