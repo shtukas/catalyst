@@ -28,8 +28,9 @@ class Cubes
     # Cubes::ensureFile(uuid)
     def self.ensureFile(uuid)
         filepath = Cubes::filepath(uuid)
-        return if File.exist?(filepath)
+        return filepath if File.exist?(filepath)
         Cubes::createFile(filepath, uuid)
+        filepath
     end
 
     # Cubes::getBlobOrNull(uuid, nhash)
@@ -48,4 +49,17 @@ class Cubes
         blob
     end
 
+    # Cubes::putBlob(uuid, blob)
+    def self.putBlob(uuid, blob) # nhash
+        nhash = "SHA256-#{Digest::SHA256.hexdigest(blob)}"
+        filepath = Cubes::ensureFile(uuid)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute "delete from _cube_ where _name_=?", [nhash]
+        db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "datablob", nhash, blob]
+        db.close
+        nhash
+    end
 end
