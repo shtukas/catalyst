@@ -57,11 +57,12 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("top", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            line = LucilleCore::askQuestionAnswerAsString("description: ")
+        if input.start_with?("top") then
+            if input.start_with?("top:") then
+                line = input[4, input.size].strip
+            else
+                line = LucilleCore::askQuestionAnswerAsString("description: ")
+            end
             return if line == ""
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
             puts JSON.pretty_generate(task)
