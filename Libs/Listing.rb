@@ -97,9 +97,33 @@ class Listing
         line
     end
 
+    # Listing::isParentChild(item1, item2)
+    def self.isParentChild(item1, item2)
+        item1["uuid"] == item2["coreX-2137"]
+    end
+
+    # Listing::ensureChildrenComeBeforeParents(array1, array2)
+    def self.ensureChildrenComeBeforeParents(array1, array2)
+        if array2.empty? then
+            return array1
+        end
+        if array1.empty? then
+            x = array2.shift
+            return Listing::ensureChildrenComeBeforeParents([x], array2)
+        end
+        x = array1.pop
+        if array2.any?{|i| Listing::isParentChild(x, i) } then
+            ys, array2 = array2.partition{|i| Listing::isParentChild(x, i) }
+            return Listing::ensureChildrenComeBeforeParents(array1 + ys + [x], array2)
+        else
+            y = array2.shift
+            return Listing::ensureChildrenComeBeforeParents(array1 + [x] + [y], array2)
+        end
+    end
+
     # Listing::items()
     def self.items()
-        [
+        items = [
             Ox1::items(),
             DropBox::items(),
             Desktop::listingItems(),
@@ -111,8 +135,8 @@ class Listing
             NxOndates::listingItems(),
             NxOpenCycleAutos::listingItems(),
             NxTasks::unattached(),
-            TxEngines::listingItems(),
-            TxCores::listingItems()
+            TxCores::listingItems(),
+            TxEngines::listingItems()
         ]
             .flatten
             .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
@@ -124,6 +148,23 @@ class Listing
                     selected + [item]
                 end
             }
+
+        i1, i2 = items.partition{|item| item["engine-0916"].nil? }
+
+        i2, i3 = i2.partition{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
+
+        i2 = i2
+            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+        i2 = Listing::ensureChildrenComeBeforeParents([], i2)
+
+        i3 = i3
+            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+
+        # i1: non engine items
+        # i2: engined items less than 1 in order, with kids coming before their parents.
+        # i3: engined items more than 1 in order
+
+        i1 + i2 + i3
     end
 
     # -----------------------------------------

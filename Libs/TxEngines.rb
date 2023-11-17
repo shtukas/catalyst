@@ -205,8 +205,6 @@ class TxEngines
             .select{|item| item["engine-0916"] }
             .reject{|item| item["mikuType"] == "TxCore" }
             .select{|item| TxEngines::shouldShowInListing(item) }
-            .select{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
-            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
     end
 
     # -----------------------------------------------
