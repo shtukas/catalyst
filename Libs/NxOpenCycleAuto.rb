@@ -49,6 +49,7 @@ class NxOpenCycleAutos
         }
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
             next if !File.directory?(location)
+            next if File.basename(location).start_with?('.')
             markerfile = "#{location}/.marker-709b82a0903b"
             if !File.exist?(markerfile) then
                 uuid = SecureRandom.uuid
