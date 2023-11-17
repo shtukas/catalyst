@@ -14,3 +14,14 @@ TxEngine
     "startUnixtime" : Integer
     "endUnixtime"   : Integer
     "hours"         : Float
+
+TxEngine
+    "uuid"          : String
+    "mikuType"      : "TxEngine"
+    "type"          : "daily-work"
+    "return-on"     : YYYY-MM-DD
+
+TxEngine
+    "uuid"          : String
+    "mikuType"      : "TxEngine"
+    "type"          : "invisible"

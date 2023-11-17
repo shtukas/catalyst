@@ -109,6 +109,7 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
+            NxOpenCycleAutos::listingItems(),
             NxTasks::unattached(),
             TxEngines::listingItems(),
             TxCores::listingItems()

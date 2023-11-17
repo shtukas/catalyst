@@ -96,6 +96,9 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
+        if item["mikuType"] == "NxOpenCycleAuto" then
+            return NxOpenCycleAutos::toString(item)
+        end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end

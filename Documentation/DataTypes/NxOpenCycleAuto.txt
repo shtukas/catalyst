@@ -1,0 +1,9 @@
+
+NxOpenCycleAuto:
+    - uuid            : String
+    - mikuType        : "NxOpenCycleAuto"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - coreX-2137      : (optional) uuid of TxCore
+    - engine-0916     : (optional) TxEngine

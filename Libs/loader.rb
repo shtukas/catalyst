@@ -166,6 +166,7 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
+require_relative "NxOpenCycleAuto.rb"
 
 require_relative "OpenCycles.rb"
 require_relative "Ox1.rb"

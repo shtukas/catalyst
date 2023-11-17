@@ -6,7 +6,7 @@ class TxEngines
 
     # TxEngines::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster", "daily-work"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster", "daily-work", "invisible"])
         return nil if type.nil?
         if type == "orbital" then
             hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
@@ -45,6 +45,13 @@ class TxEngines
                 "mikuType"  => "TxEngine",
                 "type"      => "daily-work",
                 "return-on" => CommonUtils::today()
+            }
+        end
+        if type == "invisible" then
+            return {
+                "uuid"      => SecureRandom.uuid,
+                "mikuType"  => "TxEngine",
+                "type"      => "invisible"
             }
         end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
@@ -88,6 +95,9 @@ class TxEngines
                 return 1
             end
         end
+        if engine["type"] == "invisible" then
+            return 1
+        end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44)"
     end
 
@@ -99,7 +109,7 @@ class TxEngines
         raise "(error: 7e31bade-9db7-4e65-9da4-ccef7f70baa3)"
     end
 
-    # TxEngines::string1(item)
+    # TxEngines::string1WithPrefix(item)
     def self.string1(item)
         return "" if item["engine-0916"].nil?
         engine = item["engine-0916"]
@@ -114,6 +124,9 @@ class TxEngines
         end
         if engine["type"] == "daily-work" then
             return " ( ------ )".green
+        end
+        if engine["type"] == "invisible" then
+            return ""
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
     end
@@ -161,6 +174,9 @@ class TxEngines
         if engine["type"] == "daily-work" then
             return " (daily: done * | destroy *)".green
         end
+        if engine["type"] == "invisible" then
+            return ""
+        end
         raise "(error: 3127be8e-cf0f-466d-a29c-3b35a3aab4bb)"
     end
 
@@ -176,6 +192,9 @@ class TxEngines
         end
         if engine["type"] == "daily-work" then
             return engine["return-on"] <= CommonUtils::today()
+        end
+        if engine["type"] == "invisible" then
+            return false
         end
         raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
     end
@@ -214,6 +233,9 @@ class TxEngines
             return nil
         end
         if engine["type"] == "daily-work" then
+            return nil
+        end
+        if engine["type"] == "invisible" then
             return nil
         end
         raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
