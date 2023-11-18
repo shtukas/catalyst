@@ -168,7 +168,6 @@ require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
 require_relative "NxOpenCycleAuto.rb"
 
-require_relative "OpenCycles.rb"
 require_relative "Ox1.rb"
 
 require_relative "ProgrammableBooleans.rb"
