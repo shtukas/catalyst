@@ -10,8 +10,8 @@ class Cubes
         filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
         filepath2 = "#{File.dirname(filepath1)}/#{filename2}"
         return if (filepath1 == filepath2)
-        puts "filepath1: #{filepath1}".yellow
-        puts "filepath2: #{filepath2}".yellow
+        #puts "filepath1: #{filepath1}".yellow
+        #puts "filepath2: #{filepath2}".yellow
         FileUtils.mv(filepath1, filepath2)
     end
 
@@ -60,6 +60,7 @@ class Cubes
         end
         filename = "#{SecureRandom.hex}.catalyst-cube"
         filepath = "#{folder}/#{filename}"
+        puts "> create item file: #{filepath}".yellow
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -78,38 +79,66 @@ class Cubes
         filepath
     end
 
-    # Cubes::destroy(uuid)
-    def self.destroy(uuid)
-        filepath = Cubes::existingFilepathOrNull(uuid)
-        return if filepath.nil?
-        FileUtils.rm(filepath)
-    end
-
     # Cubes::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)
         Cubes::createFile(uuid)
         Cubes::setAttribute(uuid, "mikuType", mikuType)
-        Cubes::registerUUIDToMikuType(uuid, mikuType)
+        Cubes::registerUUIDToMikuType(mikuType, uuid)
     end
 
-    # Cubes::registerUUIDToMikuType(uuid, mikuType)
-    def self.registerUUIDToMikuType(uuid, mikuType)
+    # Cubes::registerUUIDToMikuType(mikuType, uuid)
+    def self.registerUUIDToMikuType(mikuType, uuid)
         folderpath = "/Users/pascalhonore/Galaxy/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
         if !File.exist?(folderpath) then
             FileUtils.mkpath(folderpath)
         end
-        filepaths = LucilleCore::locationsAtFolder(folderpath).select{|location| location[-4, 4] == ".txt" }
+        filepaths = LucilleCore::locationsAtFolder(folderpath).select{|location| location[-5, 5] == ".json" }
         uuids = filepaths
-            .reduce([uuid]){|uuids, filepath|
-                uuids + JSON.parse(IO.read(filepath))
-            }
-            .uniq
-            .sort
-        filepath = "#{folderpath}/#{SecureRandom.hex}.txt"
+                    .reduce([uuid]){|uuids, filepath|
+                        uuids + JSON.parse(IO.read(filepath))
+                    }
+                    .uniq
+                    .sort
+        filepath = "#{folderpath}/#{SecureRandom.hex}.json"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(uuids)) }
         filepaths.each{|filepath|
             FileUtils.rm(filepath)
         }
+    end
+
+    # Cubes::rewriteMikuTypeWithoutUUID(mikuType, uuid)
+    def self.rewriteMikuTypeWithoutUUID(mikuType, uuid)
+        folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
+        return if !File.exist?(folderpath)
+
+        filepaths = LucilleCore::locationsAtFolder(folderpath)
+                    .select{|location| location[-5, 5] == ".json" }
+
+        uuids = filepaths
+            .reduce([]){|uuids, filepath|
+                uuids + JSON.parse(IO.read(filepath))
+            }
+            .uniq
+            .sort
+
+        return if !uuids.include?(uuid)
+
+        filepath = "#{folderpath}/#{SecureRandom.hex}.json"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(uuids)) }
+        filepaths.each{|filepath|
+            FileUtils.rm(filepath)
+        }
+    end
+
+    # Cubes::destroy(uuid)
+    def self.destroy(uuid)
+        Cubes::mikuTypes().each{|mikuType|
+            Cubes::rewriteMikuTypeWithoutUUID(mikuType, uuid)
+        }
+        filepath = Cubes::existingFilepathOrNull(uuid)
+        return if filepath.nil?
+        puts "> delete item file: #{filepath}".yellow
+        FileUtils.rm(filepath)
     end
 
     # ----------------------------------------
@@ -171,6 +200,11 @@ class Cubes
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
         db.close
         Cubes::renameFile(filepath)
+
+        if attrname == "mikuType" then
+            Cubes::registerUUIDToMikuType(attrvalue, uuid)
+        end
+
         nil
     end
 
@@ -228,8 +262,15 @@ class Cubes
         items = InMemoryCache::getOrNull("083edde1-8eed-4a2a-96f7-8d334c496d3a:#{trace}")
         return items if items
 
+        items = XCache::getOrNull("f5707241-d624-4547-aa92-5b23f82552ce:#{trace}")
+        if items then
+            items = JSON.parse(items)
+            InMemoryCache::set("083edde1-8eed-4a2a-96f7-8d334c496d3a:#{trace}", items)
+            return items
+        end
+
         items = LucilleCore::locationsAtFolder(folderpath)
-                    .select{|location| location[-4, 4] == ".txt" }
+                    .select{|location| location[-5, 5] == ".json" }
                     .reduce([]){|uuids, filepath| uuids + JSON.parse(IO.read(filepath)) }
                     .uniq
                     .map{|uuid| Cubes::itemOrNull(uuid) }
@@ -237,19 +278,24 @@ class Cubes
                     .select{|item| item["mikuType"] == mikuType }
 
         InMemoryCache::set("083edde1-8eed-4a2a-96f7-8d334c496d3a:#{trace}", items)
+        XCache::set("f5707241-d624-4547-aa92-5b23f82552ce:#{trace}", JSON.generate(items))
 
         items
     end
 
+    # Cubes::mikuTypes()
+    def self.mikuTypes()
+        folderpath = "/Users/pascalhonore/Galaxy/DataHub/catalyst/Cubes/mikuTypes"
+        LucilleCore::locationsAtFolder(folderpath)
+            .select{|location|
+                !File.basename(location).start_with?('.')
+            }
+            .map{|location| File.basename(location) }
+    end
+
     # Cubes::catalystItems()
     def self.catalystItems()
-        folderpath = "/Users/pascalhonore/Galaxy/DataHub/catalyst/Cubes/mikuTypes"
-        mikuTypes = LucilleCore::locationsAtFolder(folderpath)
-                        .select{|location|
-                            !File.basename(location).start_with?('.')
-                        }
-                        .map{|location| File.basename(location) }
-        mikuTypes
+        Cubes::mikuTypes()
             .map{|mikuType| Cubes::mikuType(mikuType) }
             .flatten
     end
