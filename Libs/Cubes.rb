@@ -6,7 +6,7 @@ class Cubes
     def self.filepath(uuid)
         sha1 = Digest::SHA1.hexdigest(uuid)
         nhash = "SHA1-#{sha1}"
-        filename = "#{nhash}.cube"
+        filename = "#{nhash}.catalyst-cube"
         folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository/#{sha1[0, 2]}/#{sha1[2, 2]}"
         if !File.exist?(folderpath) then
             FileUtils.mkpath(folderpath)
