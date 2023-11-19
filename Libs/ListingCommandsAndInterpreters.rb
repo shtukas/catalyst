@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move # multiple to core",
+            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move # multiple to core | random",
         ].join("\n")
     end
 
@@ -196,6 +196,30 @@ class ListingCommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
             selected.reverse.each{|item|
                 Ox1::putAtTop(item)
+            }
+            return
+        end
+
+        if Interpreting::match("random", input) then
+            x1, x2 = store.items().partition{|item| item["mikuType"] == "Wave" and item["interruption"] }
+            engined, a1 = x2.partition{|item| item["engine-0916"] }
+            if x1.size > 0 then
+                x1
+                    .each{|item|
+                        position = 0.5*rand
+                        Ox1::putAtPosition(item, position)
+                    }
+            end
+            if engined.size > 0 then
+                engined
+                    .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+                    .each_with_index{|item, indx|
+                        position = 0.5 + 0.5*indx.to_f/(engined.size)
+                        Ox1::putAtPosition(item, position)
+                    }
+            end
+            a1.each{|item|
+                Ox1::putAtPosition(item, 0.5 + 0.5*rand)
             }
             return
         end

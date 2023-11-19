@@ -21,13 +21,18 @@ class Ox1
         }
     end
 
-    # Ox1::putAtTop(item)
-    def self.putAtTop(item)
+    # Ox1::putAtPosition(item, position)
+    def self.putAtPosition(item, position)
         ox1 = {
             "date"     => CommonUtils::today(),
-            "position" => Ox1::getTopPostion() - 1
+            "position" => position
         }
         Updates::itemAttributeUpdate(item["uuid"], "ox1-0656", ox1)
+    end
+
+    # Ox1::putAtTop(item)
+    def self.putAtTop(item)
+        Ox1::putAtPosition(item, Ox1::getTopPostion() - 1)
     end
 
     # Ox1::organiseListing(items)
