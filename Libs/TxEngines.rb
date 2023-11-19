@@ -201,7 +201,7 @@ class TxEngines
 
     # TxEngines::listingItems()
     def self.listingItems()
-        Catalyst::catalystItems()
+        Cubes::catalystItems()
             .select{|item| item["engine-0916"] }
             .reject{|item| item["mikuType"] == "TxCore" }
             .select{|item| TxEngines::shouldShowInListing(item) }
@@ -241,12 +241,12 @@ class TxEngines
 
     # TxEngines::maintenance0924()
     def self.maintenance0924()
-        Catalyst::catalystItems().each{|item|
+        Cubes::catalystItems().each{|item|
             next if item["mikuType"] == "NxThePhantomMenace"
             next if item["engine-0916"].nil?
             e2 = TxEngines::maintenance1(item["engine-0916"], PolyFunctions::toString(item))
             next if e2.nil?
-            Updates::itemAttributeUpdate(item["uuid"], "engine-0916", e2)
+            Cubes::setAttribute(item["uuid"], "engine-0916", e2)
         }
     end
 end

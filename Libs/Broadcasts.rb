@@ -102,7 +102,7 @@ class Broadcasts
 
     # Broadcasts::publishItem(uuid)
     def self.publishItem(uuid)
-        item = Catalyst::itemOrNull(uuid)
+        item = Cubes::itemOrNull(uuid)
         return if item.nil?
         Broadcasts::publish(Broadcasts::makeItem(item))
     end

@@ -4,13 +4,13 @@ class NxStrats
     # NxStrats::issue(description, bottomuuid)
     def self.issue(description, bottomuuid)
         uuid = SecureRandom.uuid
-        Updates::itemInit(uuid, "NxStrat")
-        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "bottom", bottomuuid)
+        Cubes::itemInit(uuid, "NxStrat")
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "bottom", bottomuuid)
         Broadcasts::publishItem(uuid)
-        Catalyst::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # ------------------
@@ -23,7 +23,7 @@ class NxStrats
 
     # NxStrats::parentOrNull(cursor)
     def self.parentOrNull(cursor)
-        Catalyst::mikuType("NxStrat")
+        Cubes::mikuType("NxStrat")
             .select{|item| item["bottom"] == cursor["uuid"] }
             .sort_by{|item| item["unixtime"] }
             .last

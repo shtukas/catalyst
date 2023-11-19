@@ -63,7 +63,7 @@ class EventsTimelineProcessor
             # We need to deal with attributes and instructions appearing out of order
             # In particular we could have created a phantom item when we received the attribute update, before the init
 
-            item = Catalyst::itemOrNull(uuid)
+            item = Cubes::itemOrNull(uuid)
             if item.nil? then
                 item = {
                     "uuid"     => uuid,
@@ -93,7 +93,7 @@ class EventsTimelineProcessor
             itemuuid = event["payload"]["itemuuid"]
             attname  = event["payload"]["attname"]
             attvalue = event["payload"]["attvalue"]
-            item = Catalyst::itemOrNull(itemuuid)
+            item = Cubes::itemOrNull(itemuuid)
             if item.nil? then
                 puts "Generating a Phantom"
                 item = {

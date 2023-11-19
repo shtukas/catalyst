@@ -7,50 +7,61 @@ class Fsck
             return
         end
         if item["mikuType"] == "NxIce" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
             return
         end
         if item["mikuType"] == "NxOndate" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
             return
         end
         if item["mikuType"] == "NxPool" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
             return
         end
         if item["mikuType"] == "NxTask" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
             return
         end
         if item["mikuType"] == "PhysicalTarget" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
             return
         end
         if item["mikuType"] == "TxCore" then
             return
-        end 
+        end
         if item["mikuType"] == "Wave" then
-            if item["field11"] then
-                CoreDataRefStrings::fsck(item)
-            end
             return
-        end 
+        end
+        if item["mikuType"] == "NxIce" then
+            return
+        end
+        if item["mikuType"] == "NxStrat" then
+            return
+        end
+        if item["mikuType"] == "NxOpenCycleAuto" then
+            return
+        end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 
-    # Fsck::run_all()
-    def self.run_all()
-        Catalyst::catalystItems().each{|item|
+    # Fsck::runAll()
+    def self.runAll()
+        Cubes::catalystItems().each{|item|
+            puts JSON.pretty_generate(item)
+            if item["mikuType"] == "Nx101" then
+                Cubes::destroy(item["uuid"])
+                next
+            end
+            if item["mikuType"] == "NxThePhantomMenace" then
+                Cubes::destroy(item["uuid"])
+                next
+            end
+            if item["mikuType"] == "DxStackItem" then
+                Cubes::destroy(item["uuid"])
+                next
+            end
+            if item["mikuType"] == "NxAvaldi" then
+                Cubes::destroy(item["uuid"])
+                next
+            end
+            if item["field11"] then
+                CoreDataRefStrings::fsck(item)
+            end
             Fsck::fsckOrError(item)
         }
     end

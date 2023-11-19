@@ -12,7 +12,7 @@ class Ox1
 
     # Ox1::getTopPostion()
     def self.getTopPostion()
-        Catalyst::catalystItems().reduce(0) {|position, item|
+        Cubes::catalystItems().reduce(0) {|position, item|
             if (pos = Ox1::activePositionOrNull(item)) then
                 [position, pos].min
             else
@@ -27,7 +27,7 @@ class Ox1
             "date"     => CommonUtils::today(),
             "position" => position
         }
-        Updates::itemAttributeUpdate(item["uuid"], "ox1-0656", ox1)
+        Cubes::setAttribute(item["uuid"], "ox1-0656", ox1)
     end
 
     # Ox1::putAtTop(item)
@@ -45,11 +45,11 @@ class Ox1
     # Ox1::detach(item)
     def self.detach(item)
         return if Ox1::activePositionOrNull(item).nil?
-        Updates::itemAttributeUpdate(item["uuid"], "ox1-0656", nil)
+        Cubes::setAttribute(item["uuid"], "ox1-0656", nil)
     end
 
     # Ox1::items()
     def self.items()
-        Catalyst::catalystItems().select{|item| Ox1::activePositionOrNull(item) }
+        Cubes::catalystItems().select{|item| Ox1::activePositionOrNull(item) }
     end
 end

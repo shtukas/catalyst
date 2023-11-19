@@ -19,7 +19,7 @@ class CoreDataRefStrings
         if !File.exist?(location) then
             raise "(error: c1d975c5-8d18-4f28-abde-9a32869af017) CoreDataRefStrings::locationToAionPointCoreDataReference, location: '#{location}' does not exist."
         end
-        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
         "aion-point:#{nhash}"
     end
 
@@ -33,12 +33,12 @@ class CoreDataRefStrings
         end
         if referencetype == "text" then
             text = CommonUtils::editTextSynchronously("")
-            nhash = Datablobs::putBlob(text)
+            nhash = Cubes::putBlob(uuid, text)
             return "text:#{nhash}"
         end
         if referencetype == "url" then
             url = LucilleCore::askQuestionAnswerAsString("url: ")
-            nhash = Datablobs::putBlob(url)
+            nhash = Cubes::putBlob(uuid, url)
             return "url:#{nhash}"
         end
         if referencetype == "aion point" then
@@ -117,21 +117,21 @@ class CoreDataRefStrings
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Datablobs::getBlobOrNull(nhash)
+            text = Cubes::getBlobOrNull(nhash)
             puts "--------------------------------------------------------------"
             puts text
             puts "--------------------------------------------------------------"
             if LucilleCore::askQuestionAnswerAsBoolean("edit ? ") then
                 text = CommonUtils::editTextSynchronously(text)
-                nhash = Datablobs::putBlob(text)
-                Updates::itemAttributeUpdate(uuid, "field11", "text:#{nhash}")
+                nhash = Cubes::putBlob(uuid, text)
+                Cubes::setAttribute(uuid, "field11", "text:#{nhash}")
             end
             LucilleCore::pressEnterToContinue()
             return
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = Datablobs::getBlobOrNull(nhash)
+            url = Cubes::getBlobOrNull(nhash)
             if url.nil? then
                 puts "(error) I could not retrieve url for reference string: #{referenceString}"
                 LucilleCore::pressEnterToContinue()
@@ -149,7 +149,7 @@ class CoreDataRefStrings
             exportFoldername = "aion-point-#{exportId}"
             exportFolder = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolder)
-            AionCore::exportHashAtFolder(Elizabeth.new(), nhash, exportFolder)
+            AionCore::exportHashAtFolder(Elizabeth.new(uuid), nhash, exportFolder)
             system("open '#{exportFolder}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -191,7 +191,7 @@ class CoreDataRefStrings
         end
         if referenceString.start_with?("text") then
             nhash = referenceString.split(":")[1]
-            text = Elizabeth.new().getBlobOrNull(nhash)
+            text = Elizabeth.new(uuid).getBlobOrNull(nhash)
             if text.nil? then
                 raise "CoreDataRefStrings::fsck: could not extract text for uuid: #{uuid}, reference string: #{referenceString}"
             end
@@ -199,7 +199,7 @@ class CoreDataRefStrings
         end
         if referenceString.start_with?("url") then
             nhash = referenceString.split(":")[1]
-            url = Elizabeth.new().getBlobOrNull(nhash)
+            url = Elizabeth.new(uuid).getBlobOrNull(nhash)
             if url.nil? then
                 raise "CoreDataRefStrings::fsck: could not extract url for uuid: #{uuid}, reference string: #{referenceString}"
             end
@@ -207,7 +207,7 @@ class CoreDataRefStrings
         end
         if referenceString.start_with?("aion-point") then
             nhash = referenceString.split(":")[1]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(uuid), nhash)
             return
         end
         if referenceString.start_with?("open-cycle") then

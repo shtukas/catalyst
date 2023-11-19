@@ -42,7 +42,22 @@ class Bank
 
     # Bank::put(uuid, value)
     def self.put(uuid, value)
-        Updates::bankDeposit(uuid, CommonUtils::today(), value)
+        Bank::bankDeposit(uuid, CommonUtils::today(), value)
+    end
+
+    # Bank::bankDeposit(uuid, date, value)
+    def self.bankDeposit(uuid, date, value)
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, date, value]
+        db.close
+
+        $BankOperator.deposit(uuid, date, value)
+
+        Broadcasts::publish(Broadcasts::makeBankDeposit(uuid, date, value))
     end
 
     # ----------------------------------

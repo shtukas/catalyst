@@ -5,6 +5,16 @@ class Cubes
     # ----------------------------------------
     # File Management
 
+    # Cubes::renameFile(filepath1)
+    def self.renameFile(filepath1)
+        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
+        filepath2 = "#{File.dirname(filepath1)}/#{filename2}"
+        return if (filepath1 == filepath2)
+        puts "filepath1: #{filepath1}".yellow
+        puts "filepath2: #{filepath2}".yellow
+        FileUtils.mv(filepath1, filepath2)
+    end
+
     # Cubes::readUUIDFromFile(filepath)
     def self.readUUIDFromFile(filepath)
         if !File.exist?(filepath) then
@@ -75,13 +85,40 @@ class Cubes
         FileUtils.rm(filepath)
     end
 
+    # Cubes::itemInit(uuid, mikuType)
+    def self.itemInit(uuid, mikuType)
+        Cubes::createFile(uuid)
+        Cubes::setAttribute(uuid, "mikuType", mikuType)
+        Cubes::registerUUIDToMikuType(uuid, mikuType)
+    end
+
+    # Cubes::registerUUIDToMikuType(uuid, mikuType)
+    def self.registerUUIDToMikuType(uuid, mikuType)
+        folderpath = "/Users/pascalhonore/Galaxy/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
+        if !File.exist?(folderpath) then
+            FileUtils.mkpath(folderpath)
+        end
+        filepaths = LucilleCore::locationsAtFolder(folderpath).select{|location| location[-4, 4] == ".txt" }
+        uuids = filepaths
+            .reduce([uuid]){|uuids, filepath|
+                uuids + JSON.parse(IO.read(filepath))
+            }
+            .uniq
+            .sort
+        filepath = "#{folderpath}/#{SecureRandom.hex}.txt"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(uuids)) }
+        filepaths.each{|filepath|
+            FileUtils.rm(filepath)
+        }
+    end
+
     # ----------------------------------------
     # Blobs
 
     # Cubes::getBlobOrNull(uuid, nhash)
     def self.getBlobOrNull(uuid, nhash)
         filepath = Cubes::existingFilepathOrNull(uuid)
-        return nil if !File.exist?(filepath)
+        return nil if filepath.nil?
         blob = nil
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -116,6 +153,7 @@ class Cubes
         # Also, treating these files as happen only ensure that we can merge them without logical issues.
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "datablob", nhash, blob]
         db.close
+        Cubes::renameFile(filepath)
         nhash
     end
 
@@ -132,6 +170,7 @@ class Cubes
         db.results_as_hash = true
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
         db.close
+        Cubes::renameFile(filepath)
         nil
     end
 
@@ -150,5 +189,106 @@ class Cubes
         end
         db.close
         value
+    end
+
+
+    # ----------------------------------------
+    # Items
+
+    # Cubes::readFileToItem(filepath)
+    def self.readFileToItem(filepath)
+        raise "(error: 20013646-0111-4434-9d8f-9c90baca90a6)" if !File.exist?(filepath)
+        return nil if filepath.nil?
+        item = {}
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        # We extract the most recent value
+        db.execute("select * from _cube_ where _recordType_=? order by _recordTime_", ["attribute"]) do |row|
+            item[row["_name_"]] = JSON.parse(row["_value_"])
+        end
+        db.close
+        item
+    end
+
+    # Cubes::itemOrNull(uuid)
+    def self.itemOrNull(uuid)
+        filepath = Cubes::existingFilepathOrNull(uuid)
+        return nil if filepath.nil?
+        Cubes::readFileToItem(filepath)
+    end
+
+    # Cubes::mikuType(mikuType)
+    def self.mikuType(mikuType)
+        folderpath = "/Users/pascalhonore/Galaxy/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
+        return [] if !File.exist?(folderpath)
+
+        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
+        items = InMemoryCache::getOrNull("083edde1-8eed-4a2a-96f7-8d334c496d3a:#{trace}")
+        return items if items
+
+        items = LucilleCore::locationsAtFolder(folderpath)
+                    .select{|location| location[-4, 4] == ".txt" }
+                    .reduce([]){|uuids, filepath| uuids + JSON.parse(IO.read(filepath)) }
+                    .uniq
+                    .map{|uuid| Cubes::itemOrNull(uuid) }
+                    .compact
+                    .select{|item| item["mikuType"] == mikuType }
+
+        InMemoryCache::set("083edde1-8eed-4a2a-96f7-8d334c496d3a:#{trace}", items)
+
+        items
+    end
+
+    # Cubes::catalystItems()
+    def self.catalystItems()
+        folderpath = "/Users/pascalhonore/Galaxy/DataHub/catalyst/Cubes/mikuTypes"
+        mikuTypes = LucilleCore::locationsAtFolder(folderpath)
+                        .select{|location|
+                            !File.basename(location).start_with?('.')
+                        }
+                        .map{|location| File.basename(location) }
+        mikuTypes
+            .map{|mikuType| Cubes::mikuType(mikuType) }
+            .flatten
+    end
+end
+
+class Elizabeth
+
+    def initialize(uuid)
+        @uuid = uuid
+    end
+
+    def putBlob(datablob) # nhash
+        Cubes::putBlob(@uuid, datablob)
+    end
+
+    def filepathToContentHash(filepath)
+        "SHA256-#{Digest::SHA256.file(filepath).hexdigest}"
+    end
+
+    def getBlobOrNull(nhash)
+        Cubes::getBlobOrNull(@uuid, nhash)
+    end
+
+    def readBlobErrorIfNotFound(nhash)
+        blob = getBlobOrNull(nhash)
+        return blob if blob
+        raise "(error: ff339aa3-b7ea-4b92-a211-5fc1048c048b, nhash: #{nhash})"
+    end
+
+    def datablobCheck(nhash)
+        begin
+            blob = readBlobErrorIfNotFound(nhash)
+            status = ("SHA256-#{Digest::SHA256.hexdigest(blob)}" == nhash)
+            if !status then
+                puts "(error: 900a9a53-66a3-4860-be5e-dffa7a88c66d) incorrect blob, exists but doesn't have the right nhash: #{nhash}"
+            end
+            return status
+        rescue
+            false
+        end
     end
 end

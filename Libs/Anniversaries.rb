@@ -107,16 +107,16 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Updates::itemInit(uuid, "NxAnniversary")
-        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "startdate", startdate)
-        Updates::itemAttributeUpdate(uuid, "repeatType", repeatType)
-        Updates::itemAttributeUpdate(uuid, "lastCelebrationDate", lastCelebrationDate)
+        Cubes::itemInit(uuid, "NxAnniversary")
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "startdate", startdate)
+        Cubes::setAttribute(uuid, "repeatType", repeatType)
+        Cubes::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
 
         Broadcasts::publishItem(uuid)
-        Catalyst::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]
@@ -137,7 +137,7 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        Catalyst::mikuType("NxAnniversary")
+        Cubes::mikuType("NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end
 
@@ -146,14 +146,14 @@ class Anniversaries
 
     # Anniversaries::done(uuid)
     def self.done(uuid)
-        Updates::itemAttributeUpdate(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
+        Cubes::setAttribute(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::accessAndDone(anniversary)
     def self.accessAndDone(anniversary)
         puts Anniversaries::toString(anniversary)
         if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            Updates::itemAttributeUpdate(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
+            Cubes::setAttribute(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
         end
     end
 
@@ -166,12 +166,12 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                Updates::itemAttributeUpdate(item["uuid"], "description", description)
+                Cubes::setAttribute(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                Updates::itemAttributeUpdate(item["uuid"], "startdate", startdate)
+                Cubes::setAttribute(item["uuid"], "startdate", startdate)
             end
         }
     end
@@ -179,7 +179,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Catalyst::mikuType("NxAnniversary")
+            anniversaries = Cubes::mikuType("NxAnniversary")
                               .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?

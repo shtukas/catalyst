@@ -143,7 +143,6 @@ require_relative "DoNotShowUntil.rb"
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
-require_relative "Datablobs.rb"
 require_relative "Dives.rb"
 require_relative "DataOperators.rb"
 
@@ -182,8 +181,6 @@ require_relative "TmpSkip1.rb"
 require_relative "TxEngines.rb"
 require_relative "TxCores.rb"
 require_relative "Transmutations.rb"
-
-require_relative "Updates.rb"
 
 require_relative "Waves.rb"
 

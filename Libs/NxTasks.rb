@@ -12,17 +12,17 @@ class NxTasks
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        Updates::itemInit(uuid, "NxTask")
+        Cubes::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "field11", coredataref)
 
         Broadcasts::publishItem(uuid)
-        Catalyst::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::urlToTask(url)
@@ -30,18 +30,18 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Updates::itemInit(uuid, "NxTask")
+        Cubes::itemInit(uuid, "NxTask")
 
-        nhash = Datablobs::putBlob(url)
+        nhash = Cubes::putBlob(uuid, url)
         coredataref = "url:#{nhash}"
 
-        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "field11", coredataref)
 
         Broadcasts::publishItem(uuid)
-        Catalyst::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::bufferInLocationToTask(location)
@@ -49,28 +49,28 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Updates::itemInit(uuid, "NxTask")
+        Cubes::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
-        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Updates::itemAttributeUpdate(uuid, "description", description)
-        Updates::itemAttributeUpdate(uuid, "field11", coredataref)
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "field11", coredataref)
 
         Broadcasts::publishItem(uuid)
-        Catalyst::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask1(uuid, description)
     def self.descriptionToTask1(uuid, description)
-        Updates::itemInit(uuid, "NxTask")
-        Updates::itemAttributeUpdate(uuid, "unixtime", Time.new.to_i)
-        Updates::itemAttributeUpdate(uuid, "datetime", Time.new.utc.iso8601)
-        Updates::itemAttributeUpdate(uuid, "description", description)
+        Cubes::itemInit(uuid, "NxTask")
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
 
         Broadcasts::publishItem(uuid)
-        Catalyst::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -83,7 +83,7 @@ class NxTasks
 
     # NxTasks::unattached()
     def self.unattached()
-        Catalyst::mikuType("NxTask")
+        Cubes::mikuType("NxTask")
             .select{|item| item["coreX-2137"].nil? }
             .select{|item| item["engine-0916"].nil? }
     end
@@ -99,18 +99,18 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
 
-        Catalyst::mikuType("NxTask")
+        Cubes::mikuType("NxTask")
             .each{|item|
                 next if item["coreX-2137"].nil?
-                core = Catalyst::itemOrNull(item["coreX-2137"])
+                core = Cubes::itemOrNull(item["coreX-2137"])
                 if core.nil? or (core["mikuType"] != "TxCore") then
-                    Updates::itemAttributeUpdate(item["uuid"], "coreX-2137", nil)
+                    Cubes::setAttribute(item["uuid"], "coreX-2137", nil)
                 end
             }
 
         # Feed Infinity using NxIce
-        if Catalyst::mikuType("NxTask").size < 100 then
-            Catalyst::mikuType("NxIce").take(10).each{|item|
+        if Cubes::mikuType("NxTask").size < 100 then
+            Cubes::mikuType("NxIce").take(10).each{|item|
 
             }
         end
@@ -118,7 +118,7 @@ class NxTasks
 
     # NxTasks::fsck()
     def self.fsck()
-        Catalyst::mikuType("NxTask").each{|item|
+        Cubes::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end
