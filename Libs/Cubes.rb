@@ -68,6 +68,13 @@ class Cubes
         filepath
     end
 
+    # Cubes::destroy(uuid)
+    def self.destroy(uuid)
+        filepath = Cubes::existingFilepathOrNull(uuid)
+        return if filepath.nil?
+        FileUtils.rm(filepath)
+    end
+
     # ----------------------------------------
     # Blobs
 

@@ -8,6 +8,7 @@ class Datablobs
 
     # Datablobs::putBlob(datablob) # nhash
     def self.putBlob(datablob) # nhash
+
         nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
         fragment = "#{nhash[7, 2]}/#{nhash[9, 2]}"
         filename = "#{nhash}.blob"

@@ -19,6 +19,9 @@ class Updates
 
     # Updates::itemAttributeUpdate(itemuuid, attname, attvalue)
     def self.itemAttributeUpdate(itemuuid, attname, attvalue)
+
+        Cubes::setAttribute(itemuuid, attname, attvalue)
+
         item = Catalyst::itemOrNull(itemuuid)
         if item.nil? then
             raise "(error 1219) Updates::itemAttributeUpdate(#{itemuuid}, #{attname}, #{attvalue})"
@@ -40,6 +43,8 @@ class Updates
 
     # Updates::itemDestroy(itemuuid)
     def self.itemDestroy(itemuuid)
+        Cubes::destroy(itemuuid)
+
         filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Items.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -55,6 +60,8 @@ class Updates
 
     # Updates::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)
+        Cubes::createFile(uuid)
+
         item = {
             "uuid"     => uuid,
             "mikuType" => mikuType
