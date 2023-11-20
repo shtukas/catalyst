@@ -90,6 +90,16 @@ class Cubes
     def self.destroy(uuid)
         filepath = Cubes::existingFilepathOrNull(uuid)
         return if filepath.nil?
+
+        item = Cubes::filepathToItem(filepath)
+        if item and item["mikuType"] then
+            folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{item["mikuType"]}"
+            if File.exist?(folderpath) then
+                filepath = "#{folderpath}/#{SecureRandom.hex}.json"
+                File.open(filepath, "w"){|f| f.puts("[]") }
+            end
+        end
+
         puts "> delete item file: #{filepath}".yellow
         FileUtils.rm(filepath)
     end
@@ -139,7 +149,6 @@ class Cubes
         nhash
     end
 
-
     # ----------------------------------------
     # Attributes
 
@@ -155,7 +164,7 @@ class Cubes
 
         # ----------------------------------------------------------------------
         filepath = Cubes::renameFile(filepath)
-        item = Cubes::readFileToItem(filepath)
+        item = Cubes::filepathToItem(filepath)
         return if item["mikuType"].nil?
         datum = {
             "item" => item,
@@ -188,7 +197,6 @@ class Cubes
         value
     end
 
-
     # ----------------------------------------
     # Items
 
@@ -196,14 +204,12 @@ class Cubes
     def self.mikuTypes()
         folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes"
         LucilleCore::locationsAtFolder(folderpath)
-            .select{|location|
-                !File.basename(location).start_with?('.')
-            }
+            .select{|location| !File.basename(location).start_with?('.') }
             .map{|location| File.basename(location) }
     end
 
-    # Cubes::readFileToItem(filepath)
-    def self.readFileToItem(filepath)
+    # Cubes::filepathToItem(filepath)
+    def self.filepathToItem(filepath)
         raise "(error: 20013646-0111-4434-9d8f-9c90baca90a6)" if !File.exist?(filepath)
         return nil if filepath.nil?
         item = {}
@@ -223,7 +229,7 @@ class Cubes
     def self.itemOrNull(uuid)
         filepath = Cubes::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
-        Cubes::readFileToItem(filepath)
+        Cubes::filepathToItem(filepath)
     end
 
     # Cubes::issueCompleteMikuTypeFile(mikuType)
@@ -231,7 +237,7 @@ class Cubes
         data = []
         Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository") do |path|
             next if !path.include?(".catalyst-cube")
-            item = Cubes::readFileToItem(path)
+            item = Cubes::filepathToItem(path)
             next if item["mikuType"] != mikuType
             data << {
                 "item" => item,
@@ -248,8 +254,8 @@ class Cubes
     # Cubes::mikuType(mikuType)
     def self.mikuType(mikuType)
         folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
-        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
 
+        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
         items = InMemoryCache::getOrNull("9f2bc1a0-69c2-41ca-a257-882c3c0d51ef:#{trace}")
         return items if items
 
@@ -277,6 +283,7 @@ class Cubes
             }
             .flatten
 
+        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
         InMemoryCache::set("9f2bc1a0-69c2-41ca-a257-882c3c0d51ef:#{trace}", items)
 
         items
