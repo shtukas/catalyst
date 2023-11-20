@@ -264,24 +264,15 @@ class Cubes
         items = LucilleCore::locationsAtFolder(folderpath)
             .select{|location| location[-5, 5] == ".json" }
             .map{|filepath1|
-                data1 = JSON.parse(IO.read(filepath1))
-                data2 = data1
-                            .map{|datum|
-                                if File.exist?(datum["filepath"]) then
-                                    datum
-                                else
-                                    nil
-                                end
-                            }
-                            .compact
-                if data2.size < data1.size then
-                    filecontents2 = JSON.pretty_generate(data2)
-                    filename2 = "#{Digest::SHA1.hexdigest(filecontents2)}.json"
-                    filepath2 = "#{folderpath}/#{filename2}"
-                    File.open(filepath2, "w"){|f| f.puts(filecontents2) }
-                    FileUtils.rm(filepath1)
-                end
-                data2.map{|datum| datum["item"] }
+                JSON.parse(IO.read(filepath1))
+                    .map{|datum|
+                        if File.exist?(datum["filepath"]) then
+                            datum["item"]
+                        else
+                            nil
+                        end
+                    }
+                    .compact
             }
             .flatten
 
