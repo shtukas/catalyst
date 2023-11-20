@@ -5,7 +5,6 @@ class DataCenter
 
     # DataCenter::loadCatalystItems()
     def self.loadCatalystItems()
-        puts "loading catalyst items from disk".yellow
         $DataCenterCatalystItems = Cubes::items()
     end
 

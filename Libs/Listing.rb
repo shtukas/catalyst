@@ -245,6 +245,16 @@ class Listing
 
         latestCodeTrace = initialCodeTrace
 
+        $DataCenterCatalystItems = Listing::items()
+
+        Thread.new {
+            loop {
+                sleep 3600
+                DataCenter::loadCatalystItems()
+                $DataCenterCatalystItems = Listing::items()
+            }
+        }
+
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then

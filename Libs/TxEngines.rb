@@ -73,10 +73,6 @@ class TxEngines
             idealDoneTimeInSeconds = timeRatio*engine["hours"]*3600
             totalDoneRatioAgainstIdeal = Bank::getValue(engine["uuid"]).to_f/idealDoneTimeInSeconds
 
-            if Time.new.to_i >= engine["endUnixtime"] and totalDoneRatioAgainstIdeal >= 1 then
-                return 1
-            end
-
             if Time.new.to_i > engine["endUnixtime"] then
                 return -1
             end
@@ -164,6 +160,9 @@ class TxEngines
             return strings.join()
         end
         if engine["type"] == "booster" then
+            if Time.new.to_i > engine["endUnixtime"] then
+                return " (booster: expired)".green
+            end
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
             dailyLoadInHours = engine["hours"].to_f/periodInDays
             return " (booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours)".green
