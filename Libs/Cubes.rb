@@ -5,17 +5,6 @@ class Cubes
     # ----------------------------------------
     # File Management
 
-    # Cubes::renameFile(filepath1)
-    def self.renameFile(filepath1)
-        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
-        filepath2 = "#{File.dirname(filepath1)}/#{filename2}"
-        return filepath1 if (filepath1 == filepath2)
-        puts "filepath1: #{filepath1}".yellow
-        puts "filepath2: #{filepath2}".yellow
-        FileUtils.mv(filepath1, filepath2)
-        filepath2
-    end
-
     # Cubes::uuidFromFile(filepath)
     def self.uuidFromFile(filepath)
         if !File.exist?(filepath) then
@@ -36,32 +25,78 @@ class Cubes
         uuid
     end
 
+    # Cubes::filepathToItem(filepath)
+    def self.filepathToItem(filepath)
+        raise "(error: 20013646-0111-4434-9d8f-9c90baca90a6)" if !File.exist?(filepath)
+        return nil if filepath.nil?
+        item = {}
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        # We extract the most recent value
+        db.execute("select * from _cube_ where _recordType_=? order by _recordTime_", ["attribute"]) do |row|
+            item[row["_name_"]] = JSON.parse(row["_value_"])
+        end
+        db.close
+        item
+    end
+
+    # Cubes::itemOrNull(uuid)
+    def self.itemOrNull(uuid)
+        filepath = Cubes::existingFilepathOrNull(uuid)
+        return nil if filepath.nil?
+        Cubes::filepathToItem(filepath)
+    end
+
+    # Cubes::relocate(filepath1)
+    def self.relocate(filepath1)
+        item = Cubes::filepathToItem(filepath1)
+        mikuType = item["mikuType"]
+        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
+        filepath2 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}/#{filename2}"
+        return filepath1 if (filepath1 == filepath2)
+        puts "filepath1: #{filepath1}".yellow
+        puts "filepath2: #{filepath2}".yellow
+        FileUtils.mv(filepath1, filepath2)
+        filepath2
+    end
+
     # Cubes::existingFilepathOrNull(uuid)
     def self.existingFilepathOrNull(uuid)
-        sha1 = Digest::SHA1.hexdigest(uuid)
-        nhash = "SHA1-#{sha1}"
-        folder = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository/#{sha1[0, 2]}/#{sha1[2, 2]}"
-        return nil if !File.exist?(folder)
-        Find.find(folder) do |path|
+        filepath = XCache::getOrNull("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}")
+        if filepath and File.exist?(filepath) then
+            # We do not need to check the uuid of the file because of content addressing
+            return filepath
+        end
+
+        if filepath and !File.exist?(filepath) then
+            # The file could have been renamed in the same miku type
+            Find.find(File.dirname(filepath)) do |path|
+                next if !path.include?(".catalyst-cube")
+                next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
+                if Cubes::uuidFromFile(path) == uuid then
+                    XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", path)
+                    return path
+                end
+            end
+        end
+
+        Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             if Cubes::uuidFromFile(path) == uuid then
+                XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", path)
                 return path
             end
         end
+
         nil
     end
 
-    # Cubes::createFile(uuid)
-    def self.createFile(uuid)
-        sha1 = Digest::SHA1.hexdigest(uuid)
-        nhash = "SHA1-#{sha1}"
-        folder = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository/#{sha1[0, 2]}/#{sha1[2, 2]}"
-        if !File.exist?(folder) then
-            FileUtils::mkpath(folder)
-        end
-        filename = "#{SecureRandom.hex}.catalyst-cube"
-        filepath = "#{folder}/#{filename}"
+    # Cubes::itemInit(uuid, mikuType)
+    def self.itemInit(uuid, mikuType)
+        filepath = "/tmp/#{SecureRandom.hex}"
         puts "> create item file: #{filepath}".yellow
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -69,38 +104,15 @@ class Cubes
         db.results_as_hash = true
         db.execute("create table _cube_ (_recorduuid_ text primary key, _recordTime_ float, _recordType_ string, _name_ text, _value_ blob)", [])
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "uuid", JSON.generate(uuid)]
+        db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "mikuType", JSON.generate(mikuType)]
         db.close
-        filepath
-    end
-
-    # Cubes::getFilepathCreateIfNeeded(uuid)
-    def self.getFilepathCreateIfNeeded(uuid)
-        filepath = Cubes::existingFilepathOrNull(uuid)
-        return filepath if filepath
-        filepath = Cubes::createFile(uuid)
-        filepath
-    end
-
-    # Cubes::itemInit(uuid, mikuType)
-    def self.itemInit(uuid, mikuType)
-        Cubes::createFile(uuid)
-        Cubes::setAttribute(uuid, "mikuType", mikuType)
+        Cubes::relocate(filepath)
     end
 
     # Cubes::destroy(uuid)
     def self.destroy(uuid)
         filepath = Cubes::existingFilepathOrNull(uuid)
         return if filepath.nil?
-
-        item = Cubes::filepathToItem(filepath)
-        if item and item["mikuType"] then
-            folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{item["mikuType"]}"
-            if File.exist?(folderpath) then
-                f2 = "#{folderpath}/#{SecureRandom.hex}.json"
-                File.open(f2, "w"){|f| f.puts("[]") }
-            end
-        end
-
         puts "> delete item file: #{filepath}".yellow
         FileUtils.rm(filepath)
     end
@@ -136,7 +148,10 @@ class Cubes
         if bx = Cubes::getBlobOrNull(uuid, nhash) then
             return nhash
         end
-        filepath = Cubes::getFilepathCreateIfNeeded(uuid)
+        filepath = Cubes::existingFilepathOrNull(uuid)
+        if filepath.nil? then
+            raise "(error: e6cea94f-1b92-46ad-96af-adf9ecbded1d); uuid: #{uuid}"
+        end
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -146,7 +161,7 @@ class Cubes
         # Also, treating these files as happen only ensure that we can merge them without logical issues.
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "datablob", nhash, blob]
         db.close
-        Cubes::renameFile(filepath)
+        Cubes::relocate(filepath)
         nhash
     end
 
@@ -155,29 +170,17 @@ class Cubes
 
     # Cubes::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        filepath = Cubes::getFilepathCreateIfNeeded(uuid)
+        filepath = Cubes::existingFilepathOrNull(uuid)
+        if filepath.nil? then
+            raise "(error: b2a27beb-7b23-4077-af2f-ba408ed37748); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
+        end
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
         db.close
-
-        # ----------------------------------------------------------------------
-        filepath = Cubes::renameFile(filepath)
-        item = Cubes::filepathToItem(filepath)
-        return if item["mikuType"].nil?
-        datum = {
-            "item" => item,
-            "filepath" => filepath
-        }
-        folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{item["mikuType"]}"
-        filecontents = JSON.pretty_generate([datum])
-        filename = "#{Digest::SHA1.hexdigest(filecontents)}.json"
-        filepath = "#{folderpath}/#{filename}"
-        File.open(filepath, "w"){|f| f.puts(filecontents) }
-        # ----------------------------------------------------------------------
-
+        Cubes::relocate(filepath)
         nil
     end
 
@@ -209,80 +212,31 @@ class Cubes
             .map{|location| File.basename(location) }
     end
 
-    # Cubes::filepathToItem(filepath)
-    def self.filepathToItem(filepath)
-        raise "(error: 20013646-0111-4434-9d8f-9c90baca90a6)" if !File.exist?(filepath)
-        return nil if filepath.nil?
-        item = {}
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        # We extract the most recent value
-        db.execute("select * from _cube_ where _recordType_=? order by _recordTime_", ["attribute"]) do |row|
-            item[row["_name_"]] = JSON.parse(row["_value_"])
-        end
-        db.close
-        item
-    end
-
-    # Cubes::itemOrNull(uuid)
-    def self.itemOrNull(uuid)
-        filepath = Cubes::existingFilepathOrNull(uuid)
-        return nil if filepath.nil?
-        Cubes::filepathToItem(filepath)
-    end
-
-    # Cubes::generateCompleteMikuTypeFile(mikuType)
-    def self.generateCompleteMikuTypeFile(mikuType)
-        puts "generate mikutype file from zero: #{mikuType}".yellow
-        data = []
-        Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository") do |path|
-            next if !path.include?(".catalyst-cube")
-            next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
-            item = Cubes::filepathToItem(path)
-            next if item["mikuType"] != mikuType
-            data << {
-                "uuid" => item["uuid"],
-                "item" => item,
-                "filepath" => path
-            }
-        end
-        data
-    end
-
     # Cubes::mikuType(mikuType)
     def self.mikuType(mikuType)
         folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
-        filepath = "#{folderpath}/#{Config::thisInstanceId()}.json"
-        if !File.exist?(filepath) then
-            data = Cubes::generateCompleteMikuTypeFile(mikuType)
-            File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
+
+        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
+        items = InMemoryCache::getOrNull("d513f126-5e2f-4949-bd5b-e270bd445f76:#{trace}")
+        return items if items
+
+        items = XCache::getOrNull("7ab62687-dd7d-4398-9060-65a8157fe067:#{trace}")
+        if items then
+            items = JSON.parse(items)
+            InMemoryCache::set("d513f126-5e2f-4949-bd5b-e270bd445f76:#{trace}", items)
+            return items
         end
-        data = JSON.parse(IO.read(filepath))
-        if data.any?{|datum| !File.exist?(datum["filepath"]) } then
-            data = data
-                .map{|datum|
-                    if File.exist?(datum["filepath"]) then
-                        datum
-                    else
-                        f1 = Cubes::existingFilepathOrNull(datum["uuid"])
-                        if f1 then
-                            item = Cubes::filepathToItem(f1)
-                            {
-                                "uuid" => item["uuid"],
-                                "item" => item,
-                                "filepath" => f1
-                            }
-                        else
-                            nil
-                        end
-                    end
-                }
-                .compact
-            File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
-        end
-        data.map{|datum| datum["item"] }
+
+        items = LucilleCore::locationsAtFolder(folderpath)
+                    .select{|location|
+                        location.include?(".catalyst-cube") and !File.basename(location).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp
+                    }
+                    .map{|filepath| Cubes::filepathToItem(filepath) }
+
+        XCache::set("7ab62687-dd7d-4398-9060-65a8157fe067:#{trace}", JSON.generate(items))
+        InMemoryCache::set("d513f126-5e2f-4949-bd5b-e270bd445f76:#{trace}", items)
+
+        items
     end
 
     # Cubes::catalystItems()
