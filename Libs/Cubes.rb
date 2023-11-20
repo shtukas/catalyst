@@ -233,8 +233,9 @@ class Cubes
         Cubes::filepathToItem(filepath)
     end
 
-    # Cubes::issueCompleteMikuTypeFile(mikuType)
-    def self.issueCompleteMikuTypeFile(mikuType)
+    # Cubes::generateCompleteMikuTypeFile(mikuType)
+    def self.generateCompleteMikuTypeFile(mikuType)
+        puts "generate mikutype file from zero: #{mikuType}".yellow
         data = []
         Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository") do |path|
             next if !path.include?(".catalyst-cube")
@@ -246,40 +247,39 @@ class Cubes
                 "filepath" => path
             }
         end
-        folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
-        filecontents = JSON.pretty_generate(data)
-        filename = "#{Digest::SHA1.hexdigest(filecontents)}.json"
-        filepath = "#{folderpath}/#{filename}"
-        File.open(filepath, "w"){|f| f.puts(filecontents) }
+        data
     end
 
     # Cubes::mikuType(mikuType)
     def self.mikuType(mikuType)
         folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{mikuType}"
-
-        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
-        items = InMemoryCache::getOrNull("9f2bc1a0-69c2-41ca-a257-882c3c0d51ef:#{trace}")
-        return items if items
-
-        items = LucilleCore::locationsAtFolder(folderpath)
-            .select{|location| location[-5, 5] == ".json" }
-            .map{|filepath1|
-                JSON.parse(IO.read(filepath1))
-                    .map{|datum|
-                        if File.exist?(datum["filepath"]) then
-                            datum["item"]
+        filepath = "#{folderpath}/#{Config::thisInstanceId()}.json"
+        if !File.exist?(filepath) then
+            data = Cubes::generateCompleteMikuTypeFile(mikuType)
+            File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
+        end
+        data = JSON.parse(IO.read(filepath))
+        if data.any?{|datum| !File.exist?(datum["filepath"]) } then
+            data = data
+                .map{|datum|
+                    if File.exist?(datum["filepath"]) then
+                        datum
+                    else
+                        filepath = Cubes::existingFilepathOrNull(uuid)
+                        if filepath then
+                            {
+                                "item" => Cubes::filepathToItem(filepath),
+                                "filepath" => filepath
+                            }
                         else
                             nil
                         end
-                    }
-                    .compact
-            }
-            .flatten
-
-        trace = LucilleCore::locationsAtFolder(folderpath).join(":")
-        InMemoryCache::set("9f2bc1a0-69c2-41ca-a257-882c3c0d51ef:#{trace}", items)
-
-        items
+                    end
+                }
+                .compact
+            File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
+        end
+        data.map{|datum| datum["item"] }
     end
 
     # Cubes::catalystItems()
