@@ -243,6 +243,7 @@ class Cubes
             item = Cubes::filepathToItem(path)
             next if item["mikuType"] != mikuType
             data << {
+                "uuid" => item["uuid"],
                 "item" => item,
                 "filepath" => path
             }
@@ -265,10 +266,12 @@ class Cubes
                     if File.exist?(datum["filepath"]) then
                         datum
                     else
-                        filepath = Cubes::existingFilepathOrNull(uuid)
+                        filepath = Cubes::existingFilepathOrNull(datum["uuid"])
                         if filepath then
+                            item = Cubes::filepathToItem(filepath)
                             {
-                                "item" => Cubes::filepathToItem(filepath),
+                                "uuid" => item["uuid"],
+                                "item" => item,
                                 "filepath" => filepath
                             }
                         else
