@@ -125,7 +125,6 @@ class Waves
         Cubes::setAttribute(uuid, "field11", coredataref)
         Cubes::setAttribute(uuid, "interruption", interruption)
 
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 

@@ -115,7 +115,6 @@ class Anniversaries
         Cubes::setAttribute(uuid, "repeatType", repeatType)
         Cubes::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
 
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 

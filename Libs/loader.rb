@@ -122,14 +122,11 @@ require_relative "Config.rb"
 
 # ------------------------------------------------------------
 
-checkLocation.call("#{ENV['HOME']}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}")
-
 require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
 require_relative "Backups.rb"
-require_relative "Broadcasts.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
@@ -144,9 +141,6 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Dives.rb"
-require_relative "DataOperators.rb"
-
-require_relative "EventsTimelineProcessor.rb"
 
 require_relative "Fsck.rb"
 
@@ -185,10 +179,3 @@ require_relative "Transmutations.rb"
 require_relative "Waves.rb"
 
 # ------------------------------------------------------------
-
-$BankOperator = BankOperator.new()
-
-$DoNotShowUntilOperator = DoNotShowUntilOperator.new()
-
-$ItemsOperator = ItemsOperator.new()
-

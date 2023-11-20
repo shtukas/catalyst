@@ -95,8 +95,8 @@ class Cubes
         if item and item["mikuType"] then
             folderpath = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/mikuTypes/#{item["mikuType"]}"
             if File.exist?(folderpath) then
-                filepath = "#{folderpath}/#{SecureRandom.hex}.json"
-                File.open(filepath, "w"){|f| f.puts("[]") }
+                f2 = "#{folderpath}/#{SecureRandom.hex}.json"
+                File.open(f2, "w"){|f| f.puts("[]") }
             end
         end
 

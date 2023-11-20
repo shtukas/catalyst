@@ -1,9 +1,0 @@
-
-DoNotShowUntil.sqlite3
-create table DoNotShowUntil (_id_ string primary key, _unixtime_ float);
-
-Items.sqlite3
-create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string);
-
-Bank.sqlite3
-create table Bank (_recorduuid_ string primary key, _id_ string, _date_ string, _value_ float);

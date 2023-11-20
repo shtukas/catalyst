@@ -5,59 +5,71 @@ class Bank
     # ----------------------------------
     # Interface
 
+    # Bank::instanceFilepath()
+    def self.instanceFilepath()
+        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Bank/Bank-#{Config::thisInstanceId()}.sqlite3"
+        if !File.exist?(filepath) then
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute("create table Bank (_recorduuid_ string primary key, _id_ string, _date_ string, _value_ float)")
+            db.close
+        end
+        filepath
+    end
+
+    # Bank::filepaths()
+    def self.filepaths()
+        LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Bank")
+            .select{|location| location[-8, 8] == ".sqlite3" }
+    end
+
     # Bank::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
-
-        return $BankOperator.getValueAtDate(uuid, date)
-
-        value = 0
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from Bank where _id_=? and _date_=?", [uuid, date]) do |row|
-            value = value + row["_value_"]
-        end
-        db.close
-        value
+        Bank::filepaths()
+            .map{|filepath|
+                value = 0
+                db = SQLite3::Database.new(filepath)
+                db.busy_timeout = 117
+                db.busy_handler { |count| true }
+                db.results_as_hash = true
+                db.execute("select * from Bank where _id_=? and _date_=?", [uuid, date]) do |row|
+                    value = value + row["_value_"]
+                end
+                db.close
+                value
+            }
+            .inject(0, :+)
     end
 
     # Bank::getValue(uuid)
     def self.getValue(uuid)
-        return $BankOperator.getValue(uuid)
-
-        value = 0
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from Bank where _id_=?", [uuid]) do |row|
-            value = value + row["_value_"]
-        end
-        db.close
-        value
+        Bank::filepaths()
+            .map{|filepath|
+                value = 0
+                db = SQLite3::Database.new(filepath)
+                db.busy_timeout = 117
+                db.busy_handler { |count| true }
+                db.results_as_hash = true
+                db.execute("select * from Bank where _id_=?", [uuid]) do |row|
+                    value = value + row["_value_"]
+                end
+                db.close
+                value
+            }
+            .inject(0, :+)
     end
 
     # Bank::put(uuid, value)
     def self.put(uuid, value)
-        Bank::bankDeposit(uuid, CommonUtils::today(), value)
-    end
-
-    # Bank::bankDeposit(uuid, date, value)
-    def self.bankDeposit(uuid, date, value)
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Instance-Data-Directories/#{Config::thisInstanceId()}/databases/Bank.sqlite3"
+        filepath = Bank::instanceFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, date, value]
+        db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, CommonUtils::today(), value]
         db.close
-
-        $BankOperator.deposit(uuid, date, value)
-
-        Broadcasts::publish(Broadcasts::makeBankDeposit(uuid, date, value))
     end
 
     # ----------------------------------

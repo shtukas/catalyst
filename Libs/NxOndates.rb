@@ -13,7 +13,6 @@ class NxOndates
         Cubes::setAttribute(uuid, "datetime", datetime)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 
@@ -28,7 +27,6 @@ class NxOndates
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 

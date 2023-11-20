@@ -32,7 +32,6 @@ class NxOpenCycleAutos
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "engine-0916", engine)
-        Broadcasts::publishItem(uuid)
         item = Cubes::itemOrNull(uuid)
         TxCores::interactivelySelectAndPutInCore(item)
         item

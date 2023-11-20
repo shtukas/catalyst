@@ -19,7 +19,6 @@ class TxCores
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "engine-0916", engine)
 
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 

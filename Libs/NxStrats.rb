@@ -9,7 +9,6 @@ class NxStrats
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "bottom", bottomuuid)
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 

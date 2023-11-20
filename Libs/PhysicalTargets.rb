@@ -18,7 +18,6 @@ class PhysicalTargets
         Cubes::setAttribute(uuid, "counter", 0)
         Cubes::setAttribute(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
 
-        Broadcasts::publishItem(uuid)
         Cubes::itemOrNull(uuid)
     end
 
