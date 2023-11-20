@@ -27,23 +27,23 @@ class NxOpenCycleAutos
     # NxOpenCycleAutos::interactivelyIssueNew(uuid, description)
     def self.interactivelyIssueNew(uuid, description)
         engine = TxEngines::interactivelyMakeNewOrNull()
-        Cubes::itemInit(uuid, "NxOpenCycleAuto")
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "engine-0916", engine)
-        item = Cubes::itemOrNull(uuid)
+        DataCenter::itemInit(uuid, "NxOpenCycleAuto")
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "description", description)
+        DataCenter::setAttribute(uuid, "engine-0916", engine)
+        item = DataCenter::itemOrNull(uuid)
         TxCores::interactivelySelectAndPutInCore(item)
         item
     end
 
     # NxOpenCycleAutos::sync()
     def self.sync()
-        Cubes::mikuType("NxOpenCycleAuto").each{|item|
+        DataCenter::mikuType("NxOpenCycleAuto").each{|item|
             uuid = item["uuid"]
             if NxOpenCycleAutos::getDirectoryPathByMarkerOrNull(uuid).nil? then
                 NxBalls::stop(item)
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
         }
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
@@ -71,7 +71,7 @@ class NxOpenCycleAutos
     # NxOpenCycleAutos::listingItems()
     def self.listingItems()
         NxOpenCycleAutos::sync()
-        Cubes::mikuType("NxOpenCycleAuto")
+        DataCenter::mikuType("NxOpenCycleAuto")
             .select{|item| TxEngines::shouldShowInListing(item) }
             .sort_by{|item| item["unixtime"] }
     end

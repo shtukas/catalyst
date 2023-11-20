@@ -12,14 +12,14 @@ class TxCores
         engine = TxEngines::interactivelyMakeNewOrNull()
 
         uuid = SecureRandom.uuid
-        Cubes::itemInit(uuid, "TxCore")
+        DataCenter::itemInit(uuid, "TxCore")
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "engine-0916", engine)
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "description", description)
+        DataCenter::setAttribute(uuid, "engine-0916", engine)
 
-        Cubes::itemOrNull(uuid)
+        DataCenter::itemOrNull(uuid)
     end
 
     # -----------------------------------------------
@@ -33,18 +33,18 @@ class TxCores
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        cores = Cubes::mikuType("TxCore")
+        cores = DataCenter::mikuType("TxCore")
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # TxCores::listingItems()
     def self.listingItems()
-        Cubes::mikuType("TxCore")
+        DataCenter::mikuType("TxCore")
     end
 
     # TxCores::children(core)
     def self.children(core)
-        Cubes::mikuType("NxTask")
+        DataCenter::mikuType("NxTask")
                 .select{|item| item["coreX-2137"] == core["uuid"] }
     end
 
@@ -69,7 +69,7 @@ class TxCores
     # TxCores::suffix(item)
     def self.suffix(item)
         return "" if item["coreX-2137"].nil?
-        parent = Cubes::itemOrNull(item["coreX-2137"])
+        parent = DataCenter::itemOrNull(item["coreX-2137"])
         return "" if parent.nil?
         " (#{parent["description"]})".green
     end
@@ -81,7 +81,7 @@ class TxCores
     def self.program1(core)
         loop {
 
-            core = Cubes::itemOrNull(core["uuid"])
+            core = DataCenter::itemOrNull(core["uuid"])
             return if core.nil?
 
             system("clear")
@@ -109,7 +109,7 @@ class TxCores
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Cubes::setAttribute(task["uuid"], "coreX-2137", core["uuid"])
+                DataCenter::setAttribute(task["uuid"], "coreX-2137", core["uuid"])
                 next
             end
 
@@ -127,7 +127,7 @@ class TxCores
     def self.interactivelySelectAndPutInCore(item)
         core = TxCores::interactivelySelectOneOrNull()
         return false if core.nil?
-        Cubes::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+        DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
         true
     end
 end

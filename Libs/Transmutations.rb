@@ -9,8 +9,8 @@ class Transmutations
             if option == "NxTask" then
                 engine = TxEngines::interactivelyMakeNewOrNull()
                 return if engine.nil?
-                Cubes::setAttribute(item["uuid"], "engine-0916", engine)
-                Cubes::setAttribute(item["uuid"], "mikuType", "NxTask")
+                DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
+                DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
             end
         end
     end

@@ -12,16 +12,16 @@ class NxTasks
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        Cubes::itemInit(uuid, "NxTask")
+        DataCenter::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "description", description)
+        DataCenter::setAttribute(uuid, "field11", coredataref)
 
-        Cubes::itemOrNull(uuid)
+        DataCenter::itemOrNull(uuid)
     end
 
     # NxTasks::urlToTask(url)
@@ -29,17 +29,17 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Cubes::itemInit(uuid, "NxTask")
+        DataCenter::itemInit(uuid, "NxTask")
 
         nhash = Cubes::putBlob(uuid, url)
         coredataref = "url:#{nhash}"
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "description", description)
+        DataCenter::setAttribute(uuid, "field11", coredataref)
 
-        Cubes::itemOrNull(uuid)
+        DataCenter::itemOrNull(uuid)
     end
 
     # NxTasks::bufferInLocationToTask(location)
@@ -47,26 +47,26 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Cubes::itemInit(uuid, "NxTask")
+        DataCenter::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "description", description)
+        DataCenter::setAttribute(uuid, "field11", coredataref)
 
-        Cubes::itemOrNull(uuid)
+        DataCenter::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask1(uuid, description)
     def self.descriptionToTask1(uuid, description)
-        Cubes::itemInit(uuid, "NxTask")
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
+        DataCenter::itemInit(uuid, "NxTask")
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "description", description)
 
-        Cubes::itemOrNull(uuid)
+        DataCenter::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -79,7 +79,7 @@ class NxTasks
 
     # NxTasks::unattached()
     def self.unattached()
-        Cubes::mikuType("NxTask")
+        DataCenter::mikuType("NxTask")
             .select{|item| item["coreX-2137"].nil? }
             .select{|item| item["engine-0916"].nil? }
     end
@@ -95,18 +95,18 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
 
-        Cubes::mikuType("NxTask")
+        DataCenter::mikuType("NxTask")
             .each{|item|
                 next if item["coreX-2137"].nil?
-                core = Cubes::itemOrNull(item["coreX-2137"])
+                core = DataCenter::itemOrNull(item["coreX-2137"])
                 if core.nil? or (core["mikuType"] != "TxCore") then
-                    Cubes::setAttribute(item["uuid"], "coreX-2137", nil)
+                    DataCenter::setAttribute(item["uuid"], "coreX-2137", nil)
                 end
             }
 
         # Feed Infinity using NxIce
-        if Cubes::mikuType("NxTask").size < 100 then
-            Cubes::mikuType("NxIce").take(10).each{|item|
+        if DataCenter::mikuType("NxTask").size < 100 then
+            DataCenter::mikuType("NxIce").take(10).each{|item|
 
             }
         end
@@ -114,7 +114,7 @@ class NxTasks
 
     # NxTasks::fsck()
     def self.fsck()
-        Cubes::mikuType("NxTask").each{|item|
+        DataCenter::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

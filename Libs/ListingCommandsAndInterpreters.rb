@@ -45,7 +45,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0916", engine)
+            DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
             return
         end
 
@@ -133,9 +133,9 @@ class ListingCommandsAndInterpreters
             if item["donation-1605"].nil? then
                 donations = [core["uuid"]]
             else
-                donations = (item["donation-1605"] + [core["uuid"]]).uniq.select{|uuid| !Cubes::itemOrNull(uuid).nil? }
+                donations = (item["donation-1605"] + [core["uuid"]]).uniq.select{|uuid| !DataCenter::itemOrNull(uuid).nil? }
             end
-            Cubes::setAttribute(item["uuid"], "donation-1605", donations)
+            DataCenter::setAttribute(item["uuid"], "donation-1605", donations)
             return
         end
 
@@ -156,7 +156,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Cubes::setAttribute(item["uuid"], "tmpskip1", CommonUtils::today())
+            DataCenter::setAttribute(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -164,7 +164,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Cubes::setAttribute(item["uuid"], "tmpskip1", CommonUtils::today())
+            DataCenter::setAttribute(item["uuid"], "tmpskip1", CommonUtils::today())
             return
         end
 
@@ -177,19 +177,19 @@ class ListingCommandsAndInterpreters
             if option == "core" then
                 core = TxCores::interactivelySelectOneOrNull()
                 if core then
-                    Cubes::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+                    DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
                 end
             end
             if option == "engine" then
                 engine = TxEngines::interactivelyMakeNewOrNull()
                 if engine then
-                    Cubes::setAttribute(item["uuid"], "engine-0916", engine)
+                    DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
                 end
             end
             if option == "ondate" then
                 datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-                Cubes::setAttribute(item["uuid"], "datetime", datetime)
-                Cubes::setAttribute(item["uuid"], "mikuType", "NxOndate")
+                DataCenter::setAttribute(item["uuid"], "datetime", datetime)
+                DataCenter::setAttribute(item["uuid"], "mikuType", "NxOndate")
             end
             return
         end
@@ -200,7 +200,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Cubes::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+            DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
             return
         end
 
@@ -243,7 +243,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Cubes::setAttribute(item["uuid"], "field11", reference)
+            DataCenter::setAttribute(item["uuid"], "field11", reference)
             return
         end
 
@@ -253,7 +253,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Cubes::setAttribute(item["uuid"], "field11", reference)
+            DataCenter::setAttribute(item["uuid"], "field11", reference)
             return
         end
 
@@ -291,7 +291,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0916", engine)
+            DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
             return
         end
 
@@ -301,7 +301,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             engine = TxEngines::interactivelyMakeNewOrNull()
             return if engine.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0916", engine)
+            DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
             return
         end
 
@@ -404,14 +404,14 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("cores", input) then
-            cores = Cubes::mikuType("TxCore")
+            cores = DataCenter::mikuType("TxCore")
                         .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
             Catalyst::program2(cores)
             return
         end
 
         if Interpreting::match("engined", input) then
-            items = Cubes::catalystItems()
+            items = DataCenter::catalystItems()
                         .select{|item| item["engine-0916"] }
                         .reject{|item| item["mikuType"] == "TxCore" }
                         .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
@@ -420,14 +420,14 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("actives", input) then
-            items = Cubes::catalystItems()
+            items = DataCenter::catalystItems()
                         .select{|item| item["active"] }
             Catalyst::program2(items)
             return
         end
 
         if Interpreting::match("ondates", input) then
-            items = Cubes::mikuType("NxOndate")
+            items = DataCenter::mikuType("NxOndate")
                         .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
             Catalyst::program2(items)
             return
@@ -498,7 +498,7 @@ class ListingCommandsAndInterpreters
             return if item["engine-0916"]["type"] != "daily-work"
             NxBalls::stop(item)
             item["engine-0916"]["return-on"] = CommonUtils::nDaysInTheFuture(1)
-            Cubes::setAttribute(item["uuid"], "engine-0916", item["engine-0916"])
+            DataCenter::setAttribute(item["uuid"], "engine-0916", item["engine-0916"])
             return
         end
 
@@ -521,7 +521,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["ordinal-1051"] then
-                Cubes::setAttribute(item["uuid"], "ordinal-1051", nil)
+                DataCenter::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
@@ -532,7 +532,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if item["ordinal-1051"] then
-                Cubes::setAttribute(item["uuid"], "ordinal-1051", nil)
+                DataCenter::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
@@ -551,7 +551,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             item = NxOndates::interactivelyIssueNewTodayOrNull()
             return if item.nil?
-            Cubes::setAttribute(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            DataCenter::setAttribute(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
             return
         end
 

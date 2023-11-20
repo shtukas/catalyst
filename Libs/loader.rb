@@ -141,6 +141,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Dives.rb"
+require_relative "DataCenter.rb"
 
 require_relative "Fsck.rb"
 
@@ -177,3 +178,5 @@ require_relative "Transmutations.rb"
 require_relative "Waves.rb"
 
 # ------------------------------------------------------------
+
+DataCenter::loadCatalystItems()

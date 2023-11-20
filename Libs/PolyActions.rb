@@ -90,20 +90,20 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLong" then
-            Cubes::destroy(item["uuid"])
+            DataCenter::destroy(item["uuid"])
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
@@ -111,7 +111,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
@@ -145,21 +145,21 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
@@ -167,7 +167,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
@@ -179,14 +179,14 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
@@ -239,7 +239,7 @@ class PolyActions
             end
             return if NxBalls::itemIsActive(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
             else
                 if item["coreX-2137"].nil? then
                     TxCores::interactivelySelectAndPutInCore(item)
@@ -324,6 +324,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Cubes::setAttribute(item["uuid"], "description", description)
+        DataCenter::setAttribute(item["uuid"], "description", description)
     end
 end

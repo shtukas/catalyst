@@ -124,7 +124,7 @@ class CoreDataRefStrings
             if LucilleCore::askQuestionAnswerAsBoolean("edit ? ") then
                 text = CommonUtils::editTextSynchronously(text)
                 nhash = Cubes::putBlob(uuid, text)
-                Cubes::setAttribute(uuid, "field11", "text:#{nhash}")
+                DataCenter::setAttribute(uuid, "field11", "text:#{nhash}")
             end
             LucilleCore::pressEnterToContinue()
             return

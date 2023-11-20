@@ -16,7 +16,7 @@ class PolyFunctions
         # Types
 
         if item["mikuType"] == "NxStrat" then
-            bottom = Cubes::itemOrNull(item["bottom"])
+            bottom = DataCenter::itemOrNull(item["bottom"])
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
@@ -25,7 +25,7 @@ class PolyFunctions
         # Special Features
 
         if item["coreX-2137"] then
-            clique = Cubes::itemOrNull(item["coreX-2137"])
+            clique = DataCenter::itemOrNull(item["coreX-2137"])
             if clique then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(clique)
             end
@@ -52,7 +52,7 @@ class PolyFunctions
         end
 
         if item["donation-1605"] then
-            targets = item["donation-1605"].map{|uuid| Cubes::itemOrNull(uuid) }.compact
+            targets = item["donation-1605"].map{|uuid| DataCenter::itemOrNull(uuid) }.compact
             targets.each{|target|
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             }

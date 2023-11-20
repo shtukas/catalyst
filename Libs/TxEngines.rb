@@ -164,9 +164,6 @@ class TxEngines
             return strings.join()
         end
         if engine["type"] == "booster" then
-            if Time.new.to_i > engine["endUnixtime"] then
-                return " (booster: expired)".green
-            end
             periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
             dailyLoadInHours = engine["hours"].to_f/periodInDays
             return " (booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours)".green
@@ -201,7 +198,7 @@ class TxEngines
 
     # TxEngines::listingItems()
     def self.listingItems()
-        Cubes::catalystItems()
+        DataCenter::catalystItems()
             .select{|item| item["engine-0916"] }
             .reject{|item| item["mikuType"] == "TxCore" }
             .select{|item| TxEngines::shouldShowInListing(item) }
@@ -241,12 +238,12 @@ class TxEngines
 
     # TxEngines::maintenance0924()
     def self.maintenance0924()
-        Cubes::catalystItems().each{|item|
+        DataCenter::catalystItems().each{|item|
             next if item["mikuType"] == "NxThePhantomMenace"
             next if item["engine-0916"].nil?
             e2 = TxEngines::maintenance1(item["engine-0916"], PolyFunctions::toString(item))
             next if e2.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0916", e2)
+            DataCenter::setAttribute(item["uuid"], "engine-0916", e2)
         }
     end
 end

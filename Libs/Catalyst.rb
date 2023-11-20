@@ -6,7 +6,7 @@ class Catalyst
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
-            Cubes::setAttribute(item["uuid"], key, value)
+            DataCenter::setAttribute(item["uuid"], key, value)
         }
     end
 
@@ -14,7 +14,7 @@ class Catalyst
     def self.program2(elements)
         loop {
 
-            elements = elements.map{|item| Cubes::itemOrNull(item["uuid"]) }.compact
+            elements = elements.map{|item| DataCenter::itemOrNull(item["uuid"]) }.compact
             return if elements.empty?
 
             system("clear")
@@ -123,13 +123,13 @@ class Catalyst
         core = TxCores::interactivelySelectOneOrNull()
         return if core.nil?
         selected.each{|item|
-            Cubes::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+            DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
         }
     end
 
     # Catalyst::maintenance3()
     def self.maintenance3()
-        padding = (Cubes::mikuType("TxCore").map{|item| item["description"].size } + [0]).max
+        padding = (DataCenter::mikuType("TxCore").map{|item| item["description"].size } + [0]).max
         XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
     end
 
@@ -146,7 +146,7 @@ class Catalyst
     # Catalyst::donationSuffix(item)
     def self.donationSuffix(item)
         return "" if item["donation-1605"].nil?
-        targets = item["donation-1605"].map{|uuid| Cubes::itemOrNull(uuid) }.compact
+        targets = item["donation-1605"].map{|uuid| DataCenter::itemOrNull(uuid) }.compact
         return "" if targets.empty?
         " (#{targets.map{|target| target["description"]}.join(', ')})".green
     end

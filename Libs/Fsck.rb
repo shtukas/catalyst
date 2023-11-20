@@ -41,22 +41,22 @@ class Fsck
 
     # Fsck::runAll()
     def self.runAll()
-        Cubes::catalystItems().each{|item|
+        DataCenter::catalystItems().each{|item|
             puts JSON.pretty_generate(item)
             if item["mikuType"] == "Nx101" then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
                 next
             end
             if item["mikuType"] == "NxThePhantomMenace" then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
                 next
             end
             if item["mikuType"] == "DxStackItem" then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
                 next
             end
             if item["mikuType"] == "NxAvaldi" then
-                Cubes::destroy(item["uuid"])
+                DataCenter::destroy(item["uuid"])
                 next
             end
             if item["field11"] then
