@@ -266,13 +266,13 @@ class Cubes
                     if File.exist?(datum["filepath"]) then
                         datum
                     else
-                        filepath = Cubes::existingFilepathOrNull(datum["uuid"])
-                        if filepath then
-                            item = Cubes::filepathToItem(filepath)
+                        f1 = Cubes::existingFilepathOrNull(datum["uuid"])
+                        if f1 then
+                            item = Cubes::filepathToItem(f1)
                             {
                                 "uuid" => item["uuid"],
                                 "item" => item,
-                                "filepath" => filepath
+                                "filepath" => f1
                             }
                         else
                             nil
