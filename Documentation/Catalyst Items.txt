@@ -7,4 +7,3 @@ Cross types conventions (all optional):
     - tmpskip1            : "YYYY-MM-DD" skipped for the entire day
     - open-cycle-1143     : uuid of the open cycle that this item represents
     - donation-1605       : Array[String] uuids of donation target
-    - ox1-0656            : Ox1

@@ -45,7 +45,6 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
-            Ox1::detach(item)
             return
         end
 
@@ -61,7 +60,6 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        Ox1::detach(item)
 
         if item["engine-0916"] then
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone("GMT"))
@@ -253,7 +251,6 @@ class PolyActions
         if item["mikuType"] == "PhysicalTarget" then
             PolyFunctions::toString(item).green
             PhysicalTargets::access(item)
-            Ox1::detach(item)
             return
         end
 

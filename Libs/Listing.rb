@@ -124,7 +124,6 @@ class Listing
     # Listing::items()
     def self.items()
         items = [
-            Ox1::items(),
             DropBox::items(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
@@ -260,7 +259,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
+            items = Prefix::prefix(Listing::injectMissingRunningItems(Listing::items(), NxBalls::activeItems()))
                         .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
 
             system("clear")
