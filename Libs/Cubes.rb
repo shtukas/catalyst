@@ -44,6 +44,7 @@ class Cubes
         return nil if !File.exist?(folder)
         Find.find(folder) do |path|
             next if !path.include?(".catalyst-cube")
+            next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             if Cubes::uuidFromFile(path) == uuid then
                 return path
             end
@@ -237,6 +238,7 @@ class Cubes
         data = []
         Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/repository") do |path|
             next if !path.include?(".catalyst-cube")
+            next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             item = Cubes::filepathToItem(path)
             next if item["mikuType"] != mikuType
             data << {
