@@ -31,22 +31,17 @@ class PolyFunctions
 
         if item["engine-0916"] then
             engine = item["engine-0916"]
+            accounts << {
+                "description" => "engine: #{engine["uuid"]}",
+                "number"      => engine["uuid"]
+            }
             if engine["type"] == "orbital" then
-                accounts << {
-                    "description" => "engine: #{engine["uuid"]}",
-                    "number"      => engine["uuid"]
-                }
                 accounts << {
                     "description" => "capsule: #{engine["capsule"]}",
                     "number"      => engine["capsule"]
                 }
             end
-            if engine["type"] == "booster" then
-                accounts << {
-                    "description" => "engine: #{engine["uuid"]}",
-                    "number"      => engine["uuid"]
-                }
-            end
+
         end
 
         if item["donation-1605"] then

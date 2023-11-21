@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | bank accounts * |destroy (<n>)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
@@ -54,6 +54,15 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute(item)
+            return
+        end
+
+        if Interpreting::match("bank accounts *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
+            LucilleCore::pressEnterToContinue()
             return
         end
 
