@@ -16,7 +16,7 @@ class Prefix
 
         if items[0]["mikuType"] == "TxCore" then
             children = TxCores::childrenInOrder(items[0])
-                            .select{|i| i["engine-0916"].nil? or TxEngines::dailyRelativeCompletionRatio(i["engine-0916"]) < 1 }
+                            .select{|i| i["engine-0916"].nil? or TxEngines::dayCompletionRatio(i["engine-0916"]) < 1 }
                             .select{|i| Listing::listable(i) }
                             .first(1)
                             .map{|item|

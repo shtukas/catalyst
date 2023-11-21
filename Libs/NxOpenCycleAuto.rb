@@ -65,7 +65,7 @@ class NxOpenCycleAutos
 
     # NxOpenCycleAutos::toString(item)
     def self.toString(item)
-        "📂#{TxEngines::string1(item)} #{item["description"]}#{TxEngines::string2(item)}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "📂#{TxEngines::string1(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxOpenCycleAutos::listingItems()

@@ -28,7 +28,7 @@ class TxCores
     # TxCores::toString(item)
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
-        "⏱️ #{TxEngines::string1(item).green} #{item["description"].ljust(padding)}#{TxEngines::string2(item).green}"
+        "⏱️ #{TxEngines::string1(item).green} #{item["description"].ljust(padding)}"
     end
 
     # TxCores::interactivelySelectOneOrNull()
@@ -55,13 +55,13 @@ class TxCores
             return TxCores::children(core).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         end
         a, b = TxCores::children(core).partition{|item| item["engine-0916"] }
-        a1, a2 = a.partition{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
+        a1, a2 = a.partition{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) < 1 }
         b1, b2 = b.partition{|item| item["active"] }
         [
-            a1.sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) },
+            a1.sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) },
             b1.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) },
             b2.sort_by{|item| item["unixtime"] },
-            a2.sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+            a2.sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
         ]
             .flatten
     end

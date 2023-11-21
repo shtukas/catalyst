@@ -172,25 +172,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine", "ondate"])
-            return if option.nil?
-            if option == "core" then
-                core = TxCores::interactivelySelectOneOrNull()
-                if core then
-                    DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
-                end
-            end
-            if option == "engine" then
-                engine = TxEngines::interactivelyMakeNewOrNull()
-                if engine then
-                    DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
-                end
-            end
-            if option == "ondate" then
-                datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-                DataCenter::setAttribute(item["uuid"], "datetime", datetime)
-                DataCenter::setAttribute(item["uuid"], "mikuType", "NxOndate")
-            end
+            NxTasks::setTaskMode(item)
             return
         end
 
@@ -405,7 +387,7 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             cores = DataCenter::mikuType("TxCore")
-                        .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+                        .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
             Catalyst::program2(cores)
             return
         end
@@ -414,7 +396,7 @@ class ListingCommandsAndInterpreters
             items = DataCenter::catalystItems()
                         .select{|item| item["engine-0916"] }
                         .reject{|item| item["mikuType"] == "TxCore" }
-                        .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+                        .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
             Catalyst::program2(items)
             return
         end

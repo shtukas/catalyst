@@ -74,7 +74,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹#{TxEngines::string1(item)} #{item["description"]}#{TxEngines::string2(item)}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "🔹#{TxEngines::string1(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::unattached()
@@ -117,5 +117,28 @@ class NxTasks
         DataCenter::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
+    end
+
+    # NxTasks::setTaskMode(item)
+    def self.setTaskMode(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["core", "engine", "ondate"])
+        return if option.nil?
+        if option == "core" then
+            core = TxCores::interactivelySelectOneOrNull()
+            if core then
+                DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+            end
+        end
+        if option == "engine" then
+            engine = TxEngines::interactivelyMakeNewOrNull()
+            if engine then
+                DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
+            end
+        end
+        if option == "ondate" then
+            datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+            DataCenter::setAttribute(item["uuid"], "datetime", datetime)
+            DataCenter::setAttribute(item["uuid"], "mikuType", "NxOndate")
+        end
     end
 end

@@ -6,7 +6,7 @@ class TxEngines
 
     # TxEngines::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "booster", "daily-work", "invisible"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["orbital", "daily-contribution-until-done", "weekly-contribution-until-done", "invisible"])
         return nil if type.nil?
         if type == "orbital" then
             hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
@@ -22,29 +22,29 @@ class TxEngines
                 "capsule"       => SecureRandom.hex
             }
         end
-        if type == "booster" then
-            startUnixtime = Time.new.to_i
-            endUnixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            return nil if endUnixtime.nil?
-            hours = LucilleCore::askQuestionAnswerAsString("period hours (empty for abort): ")
+        if type == "daily-contribution-until-done" then
+            hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
             return nil if hours == ""
             hours = hours.to_f
             return nil if hours == 0
             return {
                 "uuid"          => SecureRandom.uuid,
                 "mikuType"      => "TxEngine",
-                "type"          => "booster",
-                "startUnixtime" => startUnixtime,
-                "endUnixtime"   => endUnixtime,
+                "type"          => "daily-contribution-until-done",
                 "hours"         => hours
             }
         end
-        if type == "daily-work" then
+        if type == "weekly-contribution-until-done" then
+            hours = LucilleCore::askQuestionAnswerAsString("weekly hours (empty for abort): ")
+            return nil if hours == ""
+            hours = hours.to_f
+            return nil if hours == 0
             return {
-                "uuid"      => SecureRandom.uuid,
-                "mikuType"  => "TxEngine",
-                "type"      => "daily-work",
-                "return-on" => CommonUtils::today()
+                "uuid"          => SecureRandom.uuid,
+                "mikuType"      => "TxEngine",
+                "type"          => "weekly-contribution-until-done",
+                "startunixtime" => Time.new.to_f,
+                "hours"         => hours
             }
         end
         if type == "invisible" then
@@ -60,139 +60,52 @@ class TxEngines
     # -----------------------------------------------
     # Data
 
-    # TxEngines::dailyRelativeCompletionRatio(engine)
-    def self.dailyRelativeCompletionRatio(engine)
+    # TxEngines::dayCompletionRatio(engine)
+    def self.dayCompletionRatio(engine)
         if engine["type"] == "orbital" then
-            return [TxEngines::periodCompletionRatio(engine), Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)].max
-        end
-        if engine["type"] == "booster" then
-
-            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
-            timeSpanSinceStartInDays = (CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - engine["startUnixtime"]).to_f/86400
-            timeRatio = [timeSpanSinceStartInDays.to_f/periodInDays, 1].min
-            idealDoneTimeInSeconds = timeRatio*engine["hours"]*3600
-            totalDoneRatioAgainstIdeal = Bank::getValue(engine["uuid"]).to_f/idealDoneTimeInSeconds
-
-            if Time.new.to_i > engine["endUnixtime"] then
-                return -1
-            end
-
-            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
-            dailyLoadInSeconds = (engine["hours"]*3600).to_f/periodInDays
-            doneTodayInSeconds = Bank::getValueAtDate(engine["uuid"], CommonUtils::today())
-            doneTodayRatio = doneTodayInSeconds.to_f/dailyLoadInSeconds
-
-            return [totalDoneRatioAgainstIdeal, doneTodayInSeconds].min # strength
-        end
-        if engine["type"] == "daily-work" then
-            if engine["return-on"] <= CommonUtils::today() then
-                return -0.5
-            else
-                return 1
-            end
+            return [Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600), Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)].compact.max
         end
         if engine["type"] == "invisible" then
             return 1
         end
+        if engine["type"] == "daily-contribution-until-done" then
+            return Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/(engine["hours"]*3600)
+        end
+        if engine["type"] == "weekly-contribution-until-done" then
+            cursorUnixtime = CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())
+            timeSinceStartInWeeks = (cursorUnixtime - engine["startunixtime"]).to_f/(86400*7)
+            idealBankInSeconds = timeSinceStartInWeeks * engine["hours"] * 3600
+            return Bank::getValue(engine["uuid"]).to_f/idealBankInSeconds
+        end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44)"
     end
 
-    # TxEngines::periodCompletionRatio(engine)
-    def self.periodCompletionRatio(engine)
-        if engine["type"] == "orbital" then
-            return Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600)
-        end
-        raise "(error: 7e31bade-9db7-4e65-9da4-ccef7f70baa3)"
-    end
-
-    # TxEngines::string1WithPrefix(item)
+    # TxEngines::string1(item)
     def self.string1(item)
         return "" if item["engine-0916"].nil?
         engine = item["engine-0916"]
         if engine["type"] == "orbital" then
-            return " (#{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %)".green
-        end
-        if engine["type"] == "booster" then
-            if Time.new.to_i > engine["endUnixtime"] then
-                return " ( ------ )".green
-            end
-            return " (#{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %)".green
-        end
-        if engine["type"] == "daily-work" then
-            return " ( ------ )".green
+            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
         end
         if engine["type"] == "invisible" then
             return ""
+        end
+        if engine["type"] == "daily-contribution-until-done" then
+            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+        end
+        if engine["type"] == "weekly-contribution-until-done" then
+            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
-    end
-
-    # TxEngines::string2(item)
-    def self.string2(item)
-        return "" if item["engine-0916"].nil?
-        engine = item["engine-0916"]
-        if engine["type"] == "orbital" then
-            strings = []
-
-            strings << " (daily: #{"%6.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} %, period: #{"#{"%6.2f" % (100*TxEngines::periodCompletionRatio(engine))}%".green} of #{"%5.2f" % engine["hours"]} hours"
-
-            hasReachedObjective = Bank::getValue(engine["capsule"]) >= engine["hours"]*3600
-            timeSinceResetInDays = (Time.new.to_i - engine["lastResetTime"]).to_f/86400
-            itHassBeenAWeek = timeSinceResetInDays >= 7
-
-            if hasReachedObjective and itHassBeenAWeek then
-                strings << ", awaiting data management)"
-            end
-
-            if hasReachedObjective and !itHassBeenAWeek then
-                strings << ", objective met, #{(7 - timeSinceResetInDays).round(2)} days before reset)"
-            end
-
-            if !hasReachedObjective and !itHassBeenAWeek then
-                strings << ", #{(engine["hours"] - Bank::getValue(engine["capsule"]).to_f/3600).round(2)} hours to go, #{(7 - timeSinceResetInDays).round(2)} days left in period)"
-            end
-
-            if !hasReachedObjective and itHassBeenAWeek then
-                strings << ", late by #{(timeSinceResetInDays-7).round(2)} days)"
-            end
-
-            strings << ""
-            return strings.join()
-        end
-        if engine["type"] == "booster" then
-            if Time.new.to_i > engine["endUnixtime"] then
-                return " (booster: expired)".green
-            end
-            periodInDays = (engine["endUnixtime"] - engine["startUnixtime"]).to_f/86400
-            dailyLoadInHours = engine["hours"].to_f/periodInDays
-            return " (booster: #{"%5.2f" % (100*TxEngines::dailyRelativeCompletionRatio(engine))} % of #{"%4.2f" % dailyLoadInHours} hours)".green
-        end
-        if engine["type"] == "daily-work" then
-            return " (daily: done * | destroy *)".green
-        end
-        if engine["type"] == "invisible" then
-            return ""
-        end
-        raise "(error: 3127be8e-cf0f-466d-a29c-3b35a3aab4bb)"
     end
 
     # TxEngines::shouldShowInListing(item)
     def self.shouldShowInListing(item)
         return true if item["engine-0916"].nil?
-        engine = item["engine-0916"]
-        if engine["type"] == "orbital" then
-            return true
-        end
-        if engine["type"] == "booster" then
-            return true
-        end
-        if engine["type"] == "daily-work" then
-            return engine["return-on"] <= CommonUtils::today()
-        end
-        if engine["type"] == "invisible" then
+        if item["engine-0916"]["type"] == "invisible" then
             return false
         end
-        raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"
+        true
     end
 
     # TxEngines::listingItems()
@@ -223,13 +136,13 @@ class TxEngines
             engine["lastResetTime"] = Time.new.to_i
             return engine
         end
-        if engine["type"] == "booster" then
-            return nil
-        end
-        if engine["type"] == "daily-work" then
-            return nil
-        end
         if engine["type"] == "invisible" then
+            return nil
+        end
+        if engine["type"] == "daily-contribution-until-done" then
+            return nil
+        end
+        if engine["type"] == "weekly-contribution-until-done" then
             return nil
         end
         raise "(error: 808b0460-793b-40cb-b919-27b813c2c37c)"

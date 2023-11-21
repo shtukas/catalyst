@@ -149,14 +149,14 @@ class Listing
 
         i1, i2 = items.partition{|item| item["engine-0916"].nil? }
 
-        i2, i3 = i2.partition{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) < 1 }
+        i2, i3 = i2.partition{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) < 1 }
 
         i2 = i2
-            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+            .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
         i2 = Listing::ensureChildrenComeBeforeParents([], i2)
 
         i3 = i3
-            .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+            .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
 
         # i1: non engine items
         # i2: engined items less than 1 in order, with kids coming before their parents.
