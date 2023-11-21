@@ -286,7 +286,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = $DataCenterListingItems.values
+            items = $DataCenterListingItems.values.select{|item| Listing::listable(item) }
             items = Listing::injectMissingRunningItems(items, NxBalls::activeItems())
             items = items
                         .map{|item| Prefix::prefix([item]) }
