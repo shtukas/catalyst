@@ -244,6 +244,34 @@ class Listing
 
         latestCodeTrace = initialCodeTrace
 
+        $DataCenterCatalystItems = JSON.parse(XCache::getOrDefaultValue("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", "{}"))
+        $DataCenterListingItems = JSON.parse(XCache::getOrDefaultValue("6d02e327-e07a-4168-be13-d9e7f367c6f8", "{}"))
+
+        Thread.new {
+            loop {
+                sleep 10
+
+                data = {}
+                Cubes::items()
+                    .each{|item|
+                        data[item["uuid"]] = item
+                    }
+                $DataCenterCatalystItems = data
+                XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
+
+                data = {} 
+                Listing::items()
+                    .first(50)
+                    .each{|item|
+                        data[item["uuid"]] = item
+                    }
+                $DataCenterListingItems = data
+                XCache::set("6d02e327-e07a-4168-be13-d9e7f367c6f8", JSON.generate($DataCenterListingItems))
+
+                sleep 1200
+            }
+        }
+
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -258,7 +286,8 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Listing::injectMissingRunningItems(Listing::items(), NxBalls::activeItems())
+            items = $DataCenterListingItems.values
+            items = Listing::injectMissingRunningItems(items, NxBalls::activeItems())
             items = items
                         .map{|item| Prefix::prefix([item]) }
                         .flatten

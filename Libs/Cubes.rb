@@ -72,10 +72,12 @@ class Cubes
         Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
-            if Cubes::uuidFromFile(path) == uuid then
-                XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", path)
+            u1 = Cubes::uuidFromFile(path)
+            XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{u1}", path)
+            if u1 == uuid then
                 return path
             end
+            
         end
 
         nil

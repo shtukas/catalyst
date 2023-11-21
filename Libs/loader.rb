@@ -178,5 +178,3 @@ require_relative "Transmutations.rb"
 require_relative "Waves.rb"
 
 # ------------------------------------------------------------
-
-DataCenter::loadCatalystItems()
