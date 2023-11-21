@@ -4,8 +4,6 @@ class PolyFunctions
     # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
     def self.itemToBankingAccounts(item)
 
-        return [] if item["mikuType"] == "NxThePhantomMenace"
-
         accounts = []
 
         accounts << {

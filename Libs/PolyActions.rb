@@ -102,6 +102,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxStrat" then
+            if parent = NxStrats::parentOrNull(item) then
+                puts "You cannot done NxStrat '#{PolyFunctions::toString(item).green}' as it has a parent: '#{PolyFunctions::toString(parent).green}'"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
             end

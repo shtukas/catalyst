@@ -47,10 +47,6 @@ class Fsck
                 DataCenter::destroy(item["uuid"])
                 next
             end
-            if item["mikuType"] == "NxThePhantomMenace" then
-                DataCenter::destroy(item["uuid"])
-                next
-            end
             if item["mikuType"] == "DxStackItem" then
                 DataCenter::destroy(item["uuid"])
                 next

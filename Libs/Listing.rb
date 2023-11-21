@@ -138,7 +138,6 @@ class Listing
             TxEngines::listingItems()
         ]
             .flatten
-            .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
@@ -245,16 +244,6 @@ class Listing
 
         latestCodeTrace = initialCodeTrace
 
-        $DataCenterCatalystItems = Listing::items()
-
-        Thread.new {
-            loop {
-                sleep 3600
-                DataCenter::loadCatalystItems()
-                $DataCenterCatalystItems = Listing::items()
-            }
-        }
-
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -269,8 +258,10 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectMissingRunningItems(Listing::items(), NxBalls::activeItems()))
-                        .reject{|item| item["mikuType"] == "NxThePhantomMenace" }
+            items = Listing::injectMissingRunningItems(Listing::items(), NxBalls::activeItems())
+            items = items
+                        .map{|item| Prefix::prefix([item]) }
+                        .flatten
 
             system("clear")
 

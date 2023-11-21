@@ -205,6 +205,11 @@ class Cubes
         end
         items
     end
+
+    # Cubes::mikuType(mikuType)
+    def self.mikuType(mikuType)
+        Cubes::items().select{|item| item["mikuType"] == mikuType }
+    end
 end
 
 class Elizabeth
