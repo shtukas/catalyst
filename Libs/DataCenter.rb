@@ -5,45 +5,44 @@ class DataCenter
 
     # DataCenter::loadCatalystItems()
     def self.loadCatalystItems()
-        $DataCenterCatalystItems = Cubes::items()
+        $DataCenterCatalystItems = {}
+        Cubes::items()
+            .each{|item|
+                $DataCenterCatalystItems[item["uuid"]] = item
+            }
     end
 
     # DataCenter::mikuTypes()
     def self.mikuTypes()
-        $DataCenterCatalystItems.map{|item| item["mikuType"] }.uniq
+        $DataCenterCatalystItems.values.map{|item| item["mikuType"] }.uniq
     end
 
     # DataCenter::mikuType(mikuType)
     def self.mikuType(mikuType)
-        $DataCenterCatalystItems.select{|item| item["mikuType"] == mikuType }
+        $DataCenterCatalystItems.values.select{|item| item["mikuType"] == mikuType }
     end
 
     # DataCenter::catalystItems()
     def self.catalystItems()
-        $DataCenterCatalystItems
+        $DataCenterCatalystItems.values
     end
 
     # DataCenter::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        $DataCenterCatalystItems.select{|item| item["uuid"] == uuid }.first
+        $DataCenterCatalystItems[uuid]
     end
 
     # DataCenter::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
         Cubes::setAttribute(uuid, attrname, attrvalue)
-        $DataCenterCatalystItems = $DataCenterCatalystItems.map{|item|
-            if item["uuid"] == uuid then
-                item[attrname] = attrvalue
-            end
-            item
-        }
+        $DataCenterCatalystItems[uuid][attrname] = attrvalue
         nil
     end
 
     # DataCenter::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)
         Cubes::itemInit(uuid, mikuType)
-        $DataCenterCatalystItems << {
+        $DataCenterCatalystItems[uuid] = {
             "uuid" => uuid,
             "mikuType" => mikuType
         }
@@ -52,6 +51,6 @@ class DataCenter
     # DataCenter::destroy(uuid)
     def self.destroy(uuid)
         Cubes::destroy(uuid)
-        $DataCenterCatalystItems = $DataCenterCatalystItems.reject{|item| item["uuid"] == uuid }
+        $DataCenterCatalystItems.delete(uuid)
     end
 end
