@@ -33,7 +33,7 @@ class NxOpenCycleAutos
         DataCenter::setAttribute(uuid, "description", description)
         DataCenter::setAttribute(uuid, "engine-0916", engine)
         item = DataCenter::itemOrNull(uuid)
-        TxCores::interactivelySelectAndPutInCore(item)
+        TxCores::interactivelySelectAAndPutInCore(item)
         item
     end
 

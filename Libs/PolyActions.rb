@@ -249,7 +249,7 @@ class PolyActions
                 DataCenter::destroy(item["uuid"])
             else
                 if item["coreX-2137"].nil? then
-                    TxCores::interactivelySelectAndPutInCore(item)
+                    TxCores::interactivelySelectAAndPutInCore(item)
                 end
             end
             return

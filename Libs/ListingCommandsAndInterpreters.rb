@@ -76,7 +76,7 @@ class ListingCommandsAndInterpreters
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
             puts JSON.pretty_generate(task)
             Ox1::putAtTop(task)
-            TxCores::interactivelySelectAndPutInCore(task)
+            TxCores::interactivelySelectAAndPutInCore(task)
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
@@ -197,7 +197,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxCores::interactivelySelectAndPutInCore(item)
+            TxCores::interactivelySelectAAndPutInCore(item)
             return
         end
 

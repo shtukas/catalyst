@@ -65,6 +65,45 @@ class TxCores
         " (#{parent["description"]})".green
     end
 
+    # TxCores::topPositionInCore(core)
+    def self.topPositionInCore(core)
+        TxCores::childrenInGlobalPositioningOrder(core)
+            .reduce(0){|topPosition, item|
+                [topPosition, item["global-positioning"] || 0].min
+            }
+    end
+
+    # TxCores::lastPositionInCore(core)
+    def self.lastPositionInCore(core)
+        TxCores::childrenInGlobalPositioningOrder(core)
+            .reduce(0){|topPosition, item|
+                [topPosition, item["global-positioning"] || 0].max
+            }
+    end
+
+    # TxCores::interactivelySelectPositionInCore(core)
+    def self.interactivelySelectPositionInCore(core)
+        if core["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
+            # In the case of "Perfection" we return this:
+            return rand
+        end
+        puts 
+        TxCores::childrenInGlobalPositioningOrder(core).first(20).each{|task|
+            puts "- #{TxCores::toString(task)}"
+        }
+        input = LucilleCore::askQuestionAnswerAsString("top (default) | next | position")
+        if input == "" then
+            return TxCores::topPositionInCore(core) - 1
+        end
+        if input == "top" then
+            return TxCores::topPositionInCore(core) - 1
+        end
+        if input == "last" then
+            return TxCores::lastPositionInCore(core) + 1
+        end
+        input.to_f
+    end
+
     # -----------------------------------------------
     # Ops
 
@@ -180,11 +219,13 @@ class TxCores
         }
     end
 
-    # TxCores::interactivelySelectAndPutInCore(item) # boolean
-    def self.interactivelySelectAndPutInCore(item)
+    # TxCores::interactivelySelectAAndPutInCore(item) # boolean
+    def self.interactivelySelectAAndPutInCore(item)
         core = TxCores::interactivelySelectOneOrNull()
         return false if core.nil?
         DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+        position = TxCores::interactivelySelectPositionInCore(core)
+        DataCenter::setAttribute(task["uuid"], "global-positioning", position)
         true
     end
 end
