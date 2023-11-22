@@ -12,7 +12,7 @@ class Ox1
 
     # Ox1::getTopPostion()
     def self.getTopPostion()
-        Cubes::catalystItems().reduce(0) {|position, item|
+        DataCenter::catalystItems().reduce(0) {|position, item|
             if (pos = Ox1::activePositionOrNull(item)) then
                 [position, pos].min
             else
@@ -27,7 +27,7 @@ class Ox1
             "date"     => CommonUtils::today(),
             "position" => position
         }
-        Cubes::setAttribute(item["uuid"], "ox1-0656", ox1)
+        DataCenter::setAttribute(item["uuid"], "ox1-0656", ox1)
     end
 
     # Ox1::putAtTop(item)
@@ -45,11 +45,11 @@ class Ox1
     # Ox1::detach(item)
     def self.detach(item)
         return if Ox1::activePositionOrNull(item).nil?
-        Cubes::setAttribute(item["uuid"], "ox1-0656", nil)
+        DataCenter::setAttribute(item["uuid"], "ox1-0656", nil)
     end
 
     # Ox1::items()
     def self.items()
-        Cubes::catalystItems().select{|item| Ox1::activePositionOrNull(item) }
+        DataCenter::catalystItems().select{|item| Ox1::activePositionOrNull(item) }
     end
 end
