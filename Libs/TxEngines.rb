@@ -77,7 +77,7 @@ class TxEngines
             idealBankInSeconds = timeSinceStartInWeeks * engine["hours"] * 3600
             return Bank::getValue(engine["uuid"]).to_f/idealBankInSeconds
         end
-        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44)"
+        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): engine: #{engine}"
     end
 
     # TxEngines::string1(item)
