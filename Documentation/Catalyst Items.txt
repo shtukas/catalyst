@@ -8,3 +8,5 @@ Cross types conventions (all optional):
     - open-cycle-1143     : uuid of the open cycle that this item represents
     - donation-1605       : Array[String] uuids of donation target
     - ox1-0656            : Ox1
+    - global-positioning  : Float or null # used for ordering and sorting
+                            within the children of a core.

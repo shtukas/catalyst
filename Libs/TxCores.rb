@@ -48,22 +48,13 @@ class TxCores
                 .select{|item| item["coreX-2137"] == core["uuid"] }
     end
 
-    # TxCores::childrenInOrder(core)
-    def self.childrenInOrder(core)
+    # TxCores::childrenInGlobalPositioningOrder(core)
+    def self.childrenInGlobalPositioningOrder(core)
         if core["uuid"] == "3d4a56c7-0215-4298-bd05-086113947dd2" then
             # In the case of "Perfection" we return this:
             return TxCores::children(core).sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) }
         end
-        a, b = TxCores::children(core).partition{|item| item["engine-0916"] }
-        a1, a2 = a.partition{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) < 1 }
-        b1, b2 = b.partition{|item| item["active"] }
-        [
-            a1.sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) },
-            b1.sort_by{|item| Bank::recoveredAverageHoursPerDay(item["uuid"]) },
-            b2.sort_by{|item| item["unixtime"] },
-            a2.sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
-        ]
-            .flatten
+        TxCores::children(core).sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # TxCores::suffix(item)
@@ -93,14 +84,15 @@ class TxCores
             puts  Listing::toString2(store, core)
             puts  ""
 
-            TxCores::childrenInOrder(core)
+            children = Prefix::prefix(TxCores::childrenInGlobalPositioningOrder(core))
+            children
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString2(store, item)
                 }
 
             puts ""
-            puts "task | move"
+            puts "task | pile (*) | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -113,8 +105,73 @@ class TxCores
                 next
             end
 
+            if input == "pile" then
+                text = CommonUtils::editTextSynchronously("").strip
+                next if text == ""
+                topPosition = children
+                                .reduce(0){|topPosition, item|
+                                    [topPosition, item["global-positioning"] || 0].min
+                                }
+                text
+                    .lines
+                    .map{|line| line.strip }
+                    .reverse
+                    .each{|line|
+                        task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                        puts JSON.pretty_generate(task)
+                        DataCenter::setAttribute(task["uuid"], "coreX-2137", core["uuid"])
+                        topPosition = topPosition - 1
+                        DataCenter::setAttribute(task["uuid"], "global-positioning", topPosition)
+                    }
+                next
+            end
+
+            if input.start_with?("pile") then
+                position = input[4, input.size].strip
+                next if position == ""
+                position = position.to_i
+                if position == 1 then
+                    text = CommonUtils::editTextSynchronously("").strip
+                    next if text == ""
+                    topPosition = children
+                                    .reduce(0){|topPosition, item|
+                                        [topPosition, item["global-positioning"] || 0].min
+                                    }
+                    text
+                        .lines
+                        .map{|line| line.strip }
+                        .reverse
+                        .each{|line|
+                            task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                            puts JSON.pretty_generate(task)
+                            DataCenter::setAttribute(task["uuid"], "coreX-2137", core["uuid"])
+                            topPosition = topPosition - 1
+                            DataCenter::setAttribute(task["uuid"], "global-positioning", topPosition)
+                        }
+                else
+                    next if children.empty?
+                    puts JSON.pretty_generate(children[position-1])
+                    NxStrats::interactivelyPile(children[position-1])
+                end
+                next
+            end
+
+            if input == "sort" then
+                topPosition = children
+                                .reduce(0){|topPosition, item|
+                                    [topPosition, item["global-positioning"] || 0].min
+                                }
+                children = children
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], children, lambda{|item| PolyFunctions::toString(item) })
+                selected.reverse.each{|item|
+                    topPosition = topPosition - 1
+                    DataCenter::setAttribute(item["uuid"], "global-positioning", topPosition)
+                }
+                next
+            end
+
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedCore(TxCores::childrenInOrder())
+                Catalyst::selectSubsetAndMoveToSelectedCore(TxCores::childrenInGlobalPositioningOrder())
                 next
             end
 
