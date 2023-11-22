@@ -96,7 +96,7 @@ class TxEngines
         if engine["type"] == "weekly-contribution-until-done" then
             return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
         end
-        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154)"
+        raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154) engine: #{engine}"
     end
 
     # TxEngines::shouldShowInListing(item)
