@@ -17,7 +17,7 @@ class NxStrats
 
     # NxStrats::toString(item)
     def self.toString(item)
-        "✨ #{item["description"]}"
+        "✨                     #{item["description"]}"
     end
 
     # NxStrats::parentOrNull(cursor)

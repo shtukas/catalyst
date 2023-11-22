@@ -28,7 +28,7 @@ class TxCores
     # TxCores::toString(item)
     def self.toString(item)
         padding = XCache::getOrDefaultValue("b1bd5d84-2051-432a-83d1-62ece0bf54f7", "0").to_i
-        "⏱️ #{TxEngines::string1(item).green} #{item["description"].ljust(padding)}"
+        "⏱️           #{TxEngines::string1(item).green} #{item["description"].ljust(padding)}"
     end
 
     # TxCores::interactivelySelectOneOrNull()

@@ -82,19 +82,19 @@ class TxEngines
 
     # TxEngines::string1(item)
     def self.string1(item)
-        return "" if item["engine-0916"].nil?
+        return "          " if item["engine-0916"].nil?
         engine = item["engine-0916"]
         if engine["type"] == "orbital" then
-            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
         end
         if engine["type"] == "invisible" then
             return ""
         end
         if engine["type"] == "daily-contribution-until-done" then
-            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
         end
         if engine["type"] == "weekly-contribution-until-done" then
-            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154) engine: #{engine}"
     end

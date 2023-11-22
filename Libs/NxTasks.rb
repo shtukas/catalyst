@@ -74,7 +74,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{"%6.2f" % (item["global-positioning"] || 0)} #{TxEngines::string1(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "🔹 [#{"%6.2f" % (item["global-positioning"] || 0)}] #{TxEngines::string1(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::unattached()
