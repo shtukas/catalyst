@@ -124,6 +124,7 @@ class Listing
     # Listing::items()
     def self.items()
         items = [
+            Ox1::items(),
             DropBox::items(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
@@ -291,7 +292,7 @@ class Listing
             store = ItemStore.new()
 
             items = $DataCenterListingItems.values.select{|item| Listing::listable(item) }
-            items = Listing::injectMissingRunningItems(items, NxBalls::activeItems())
+            items = Listing::injectMissingRunningItems(Ox1::organiseListing(items), NxBalls::activeItems())
             items = items
                         .map{|item| Prefix::prefix([item]) }
                         .flatten

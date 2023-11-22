@@ -1,0 +1,6 @@
+Indicates the position in the listing. Valid for a day but destroyed when `done` or `do not display`
+
+Ox1 {
+    "date"     : "YYYY-MM-DD",
+    "position" : Float
+}

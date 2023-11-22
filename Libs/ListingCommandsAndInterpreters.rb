@@ -7,10 +7,10 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | bank accounts * |destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile",
             "divings       : anniversaries | ondates | waves | desktop | cores | engined",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | >> # push intelligently | move # multiple to core | random",
+            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move # multiple to core | random",
         ].join("\n")
     end
 
@@ -63,6 +63,45 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if input.start_with?("top") then
+            if input.start_with?("top:") then
+                line = input[4, input.size].strip
+            else
+                line = LucilleCore::askQuestionAnswerAsString("description: ")
+            end
+            return if line == ""
+            task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+            puts JSON.pretty_generate(task)
+            Ox1::putAtTop(task)
+            TxCores::interactivelySelectAndPutInCore(task)
+            NxBalls::activeItems().each{|i1|
+                NxBalls::pause(i1)
+            }
+            if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
+                NxBalls::start(task)
+            end
+            return
+        end
+
+        if Interpreting::match("pile", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text
+                .lines
+                .map{|line| line.strip }
+                .reverse
+                .each{|line|
+                    task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                    puts JSON.pretty_generate(task)
+                    Ox1::putAtTop(task)
+                }
             return
         end
 
@@ -159,6 +198,38 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             TxCores::interactivelySelectAndPutInCore(item)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
+            selected.reverse.each{|item|
+                Ox1::putAtTop(item)
+            }
+            return
+        end
+
+        if Interpreting::match("random", input) then
+            x1, x2 = store.items().partition{|item| item["mikuType"] == "Wave" and item["interruption"] }
+            engined, a1 = x2.partition{|item| item["engine-0916"] }
+            if x1.size > 0 then
+                x1
+                    .each{|item|
+                        position = 0.5*rand
+                        Ox1::putAtPosition(item, position)
+                    }
+            end
+            if engined.size > 0 then
+                engined
+                    .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
+                    .each_with_index{|item, indx|
+                        position = 0.5 + 0.5*indx.to_f/(engined.size)
+                        Ox1::putAtPosition(item, position)
+                    }
+            end
+            a1.each{|item|
+                Ox1::putAtPosition(item, 0.5 + 0.5*rand)
+            }
             return
         end
 

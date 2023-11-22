@@ -59,6 +59,10 @@ class DoNotShowUntil
 
     # DoNotShowUntil::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
+        item = Cubes::itemOrNull(id)
+        if item then
+            Ox1::detach(item)
+        end
         DoNotShowUntil::set(id, unixtime)
         XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", unixtime)
         puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}".yellow
