@@ -134,7 +134,7 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             NxOpenCycleAutos::listingItems(),
-            NxTasks::unattached(),
+            NxTasks::unattachedForListing(),
             TxCores::listingItems(),
             TxEngines::listingItems()
         ]

@@ -84,6 +84,14 @@ class NxTasks
             .select{|item| item["engine-0916"].nil? }
     end
 
+    # NxTasks::unattachedForListing()
+    def self.unattachedForListing()
+        $DataCenterListingItems
+            .select{|item| item["mikuType"] == "NxTask" }
+            .select{|item| item["coreX-2137"].nil? }
+            .select{|item| item["engine-0916"].nil? }
+    end
+
     # --------------------------------------------------
     # Operations
 
