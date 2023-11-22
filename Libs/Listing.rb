@@ -283,6 +283,10 @@ class Listing
                 Catalyst::listing_maintenance()
             end
 
+            if Config::isPrimaryInstance() then
+                NxOpenCycleAutos::sync()
+            end
+
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 

@@ -70,7 +70,6 @@ class NxOpenCycleAutos
 
     # NxOpenCycleAutos::listingItems()
     def self.listingItems()
-        NxOpenCycleAutos::sync()
         DataCenter::mikuType("NxOpenCycleAuto")
             .select{|item| TxEngines::shouldShowInListing(item) }
             .sort_by{|item| item["unixtime"] }
