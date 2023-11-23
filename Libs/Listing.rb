@@ -291,7 +291,10 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = $DataCenterListingItems.values.select{|item| Listing::listable(item) }
+            items = $DataCenterListingItems
+                        .values
+                        .select{|item| Listing::listable(item) }
+                        .select{|item| item["mikuType"] != "NxAnniversary" or Anniversaries::isOpenToAcknowledgement(item) }
             items = Listing::injectMissingRunningItems(Ox1::organiseListing(items), NxBalls::activeItems())
             items = items
                         .map{|item| Prefix::prefix([item]) }
