@@ -43,6 +43,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxSticky" then
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             Ox1::detach(item)
@@ -135,6 +139,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxSticky" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done for the day: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())+3600*6)
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -175,6 +186,13 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
+                DataCenter::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxSticky" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
             end
             return
@@ -257,6 +275,13 @@ class PolyActions
             PolyFunctions::toString(item).green
             PhysicalTargets::access(item)
             Ox1::detach(item)
+            return
+        end
+
+        if item["mikuType"] == "NxSticky" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done for the day: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())+3600*6)
+            end
             return
         end
 

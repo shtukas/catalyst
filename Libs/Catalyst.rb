@@ -124,4 +124,12 @@ class Catalyst
             TxEngines::maintenance0924()
         end
     end
+
+    # Catalyst::donationSuffix(item)
+    def self.donationSuffix(item)
+        return "" if item["donation-1751"].nil?
+        target = DataCenter::itemOrNull(item["donation-1751"])
+        return "" if target.nil?
+        " (#{target["description"]})".green
+    end
 end

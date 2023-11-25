@@ -29,6 +29,13 @@ class PolyFunctions
             end
         end
 
+        if item["donation-1751"] then
+            parent = DataCenter::itemOrNull(item["donation-1751"])
+            if parent then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+            end
+        end
+
         if item["engine-0916"] then
             engine = item["engine-0916"]
             accounts << {
@@ -83,6 +90,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxShip" then
             return NxShips::toString(item)
+        end
+        if item["mikuType"] == "NxSticky" then
+            return NxStickys::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

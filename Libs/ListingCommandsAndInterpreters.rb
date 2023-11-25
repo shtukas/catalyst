@@ -5,12 +5,12 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | move * | active * | bank accounts * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky",
             "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move | reset",
+            "misc          : search | speed | commands | edit <n> | move | sort | pushs | move | reset",
         ].join("\n")
     end
 
@@ -49,11 +49,26 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("donate * ", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            ship = NxShips::interactivelySelectOneOrNull()
+            return if ship.nil?
+            DataCenter::setAttribute(item["uuid"], "donation-1751", ship["uuid"])
+            return
+        end
+
         if Interpreting::match("trans * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute(item)
+            return
+        end
+
+        if Interpreting::match("sticky", input) then
+            NxStickys::interactivelyIssueNewOrNull()
             return
         end
 
@@ -127,55 +142,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-
-            getNextManagedCursor = (lambda {
-                cursor = XCache::getOrNull("0c441bf5-b565-4207-acb4-1a6b2e6817d3")
-                if cursor.nil? then
-                    cursor = Time.new.to_f
-                else
-                    cursor = cursor.to_f
-                end
-                cursor = cursor + 3600*3
-                loop {
-                    time = Time.at(cursor)
-                    if time.hour < 8 then
-                        cursor = cursor + 3600
-                        next
-                    end
-                    if time.hour > 21 then
-                        cursor = cursor + 3600
-                        next
-                    end
-                    break
-                }
-                XCache::set("0c441bf5-b565-4207-acb4-1a6b2e6817d3", cursor)
-                return cursor
-            })
-
-            cursor = (lambda {|item|
-                if item["mikuType"] == "PhysicalTarget" then
-                    return Time.new.to_f + 3600 + rand*3600
-                end
-                if item["mikuType"] == "Wave" and item["interruption"] then
-                    return Time.new.to_f + 3600 + rand*3600
-                end
-                if item["mikuType"] == "Wave" and !item["interruption"] then
-                    return getNextManagedCursor.call()
-                end
-                if item["mikuType"] == "NxOndate" then
-                    return getNextManagedCursor.call()
-                end
-                if item["mikuType"] == "NxTask" then
-                    return getNextManagedCursor.call()
-                end
-                raise "I don't know how to >> mikuType: #{item["mikuType"].green}"
-            }).call(item)
-
-            puts "Pushing '#{PolyFunctions::toString(item).green}' to #{Time.at(cursor).utc.iso8601}"
-            DoNotShowUntil::setUnixtime(item["uuid"], cursor)
+        if Interpreting::match("pushs", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
+            selected.each{|item|
+                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+            }
             return
         end
 

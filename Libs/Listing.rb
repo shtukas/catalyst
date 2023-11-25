@@ -80,7 +80,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -108,6 +108,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
+            NxStickys::listingItems(),
             NxOndates::listingItems(),
             NxTasks::orphan(),
             Prefix::prefix(NxShips::listingItems())
@@ -158,20 +159,6 @@ class Listing
         store = ItemStore.new()
 
         LucilleCore::pressEnterToContinue()
-    end
-
-    # Listing::launchNxBallMonitor()
-    def self.launchNxBallMonitor()
-        Thread.new {
-            loop {
-                sleep 60
-                NxBalls::all()
-                    .select{|ball| ball["type"] == "running" }
-                    .select{|ball| (Time.new.to_f - ball["startunixtime"]) > 3600 }
-                    .take(1)
-                    .each{ CommonUtils::onScreenNotification("catalyst", "NxBall running for more than one hour") }
-            }
-        }
     end
 
     # Listing::checkForCodeUpdates()
@@ -235,7 +222,7 @@ class Listing
                 NxShips::openCyclesSync()
             end
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 6)
             store = ItemStore.new()
 
             items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
@@ -244,14 +231,15 @@ class Listing
 
             spacecontrol.putsline ""
 
+            items = items
+                        .reduce([]){|selected, item|
+                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                                selected
+                            else
+                                selected + [item]
+                            end
+                        }
             items
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
