@@ -97,27 +97,6 @@ class Listing
         line
     end
 
-    # Listing::toString3(store, item, unixtime)
-    def self.toString3(store, item, unixtime)
-        return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} [#{"%3d" % (Catalyst::expectedTimeToCompletionInSeconds(item).to_f/60)}, #{Time.at(unixtime).strftime("%H:%M")}] #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
-
-        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
-    end
-
     # Listing::items()
     def self.items()
         [
@@ -252,19 +231,14 @@ class Listing
 
             spacecontrol.putsline ""
 
-            times = items
-                        .reduce([]){|selected, item|
-                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                                selected
-                            else
-                                selected + [item]
-                            end
-                        }
-
-            time = Time.new.to_i + Catalyst::cumulatedTimeInSeconds(items)
-
-            cursorTime = Time.new.to_i
             items
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString3(store, item, cursorTime)
@@ -273,13 +247,6 @@ class Listing
                     break if !status
                 }
 
-            puts ""
-            et = Time.at(time).to_s
-            t22 = "#{CommonUtils::today()} 22:00:00"
-            if et > t22 then
-                ts = " (!! LATE !!)".green
-            end
-            puts "Estimated end: #{Time.at(time).to_s}#{ts}"
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"

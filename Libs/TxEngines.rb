@@ -83,23 +83,23 @@ class TxEngines
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): engine: #{engine}"
     end
 
-    # TxEngines::string1(item)
-    def self.string1(item)
+    # TxEngines::suffix(item)
+    def self.suffix(item)
         if item["engine-0916"].nil? then
-            return "                         "
+            return ""
         end
         engine = item["engine-0916"]
         if engine["type"] == "invisible" then
-            return "                         "
+            return ""
         end
         if engine["type"] == "orbital" then
-            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
+            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
         end
         if engine["type"] == "daily-contribution-until-done" then
-            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % engine["hours"]} hours)".green
+            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % engine["hours"]} hours)".green
         end
         if engine["type"] == "weekly-contribution-until-done" then
-            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
+            return " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154) engine: #{engine}"
     end

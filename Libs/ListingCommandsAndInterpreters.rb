@@ -7,7 +7,7 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | sticky",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky",
             "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | sort | pushs | move | reset",
@@ -98,6 +98,13 @@ class ListingCommandsAndInterpreters
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(task)
             end
+            return
+        end
+
+        if Interpreting::match("ship", input) then
+            ship = NxShips::interactivelyIssueNewOrNull()
+            return if ship.nil?
+            puts JSON.pretty_generate(ship)
             return
         end
 
