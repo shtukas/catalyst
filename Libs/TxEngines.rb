@@ -63,7 +63,10 @@ class TxEngines
     # TxEngines::dayCompletionRatio(engine)
     def self.dayCompletionRatio(engine)
         if engine["type"] == "orbital" then
-            return [Bank::getValue(engine["capsule"]).to_f/(engine["hours"]*3600), Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)].compact.max
+            if Bank::getValue(engine["capsule"]) >= 3600*engine["hours"] then
+                return Bank::getValue(engine["capsule"]).to_f/(3600*engine["hours"])
+            end
+            return Bank::recoveredAverageHoursPerDay(engine["uuid"]).to_f/(engine["hours"].to_f/6)
         end
         if engine["type"] == "invisible" then
             return 1
@@ -82,19 +85,19 @@ class TxEngines
 
     # TxEngines::string1(item)
     def self.string1(item)
-        return "          " if item["engine-0916"].nil?
+        return "                         " if item["engine-0916"].nil?
         engine = item["engine-0916"]
         if engine["type"] == "orbital" then
-            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
         end
         if engine["type"] == "invisible" then
             return ""
         end
         if engine["type"] == "daily-contribution-until-done" then
-            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % engine["hours"]} hours)".green
         end
         if engine["type"] == "weekly-contribution-until-done" then
-            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} %)".green
+            return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
         end
         raise "(error: 4b7edb83-5a10-4907-b88f-53a5e7777154) engine: #{engine}"
     end
