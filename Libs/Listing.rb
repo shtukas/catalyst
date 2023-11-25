@@ -80,7 +80,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{TxCores::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -97,33 +97,9 @@ class Listing
         line
     end
 
-    # Listing::isParentChild(item1, item2)
-    def self.isParentChild(item1, item2)
-        item1["uuid"] == item2["coreX-2137"]
-    end
-
-    # Listing::ensureChildrenComeBeforeParents(array1, array2)
-    def self.ensureChildrenComeBeforeParents(array1, array2)
-        if array2.empty? then
-            return array1
-        end
-        if array1.empty? then
-            x = array2.shift
-            return Listing::ensureChildrenComeBeforeParents([x], array2)
-        end
-        x = array1.pop
-        if array2.any?{|i| Listing::isParentChild(x, i) } then
-            ys, array2 = array2.partition{|i| Listing::isParentChild(x, i) }
-            return Listing::ensureChildrenComeBeforeParents(array1 + ys + [x], array2)
-        else
-            y = array2.shift
-            return Listing::ensureChildrenComeBeforeParents(array1 + [x] + [y], array2)
-        end
-    end
-
     # Listing::items()
     def self.items()
-        items = [
+        [
             Ox1::items(),
             DropBox::items(),
             Desktop::listingItems(),
@@ -133,10 +109,8 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
-            NxOpenCycleAutos::listingItems(),
-            NxTasks::unattachedForListing(),
-            TxCores::listingItems(),
-            TxEngines::listingItems()
+            NxTasks::orphan(),
+            Prefix::prefix(NxShips::listingItems())
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -147,23 +121,6 @@ class Listing
                     selected + [item]
                 end
             }
-
-        i1, i2 = items.partition{|item| item["engine-0916"].nil? }
-
-        i2, i3 = i2.partition{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) < 1 }
-
-        i2 = i2
-            .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
-        i2 = Listing::ensureChildrenComeBeforeParents([], i2)
-
-        i3 = i3
-            .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
-
-        # i1: non engine items
-        # i2: engined items less than 1 in order, with kids coming before their parents.
-        # i3: engined items more than 1 in order
-
-        i1 + i2 + i3
     end
 
     # -----------------------------------------
@@ -179,8 +136,8 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
-        spot.contest_entry("NxTasks::unattached()", lambda{ NxTasks::unattached() })
-        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
+        spot.contest_entry("NxTasks::orphan()", lambda{ NxTasks::orphan() })
+        spot.contest_entry("NxShips::listingItems()", lambda{ NxShips::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()
@@ -246,7 +203,6 @@ class Listing
         latestCodeTrace = initialCodeTrace
 
         $DataCenterCatalystItems = JSON.parse(XCache::getOrDefaultValue("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", "{}"))
-        $DataCenterListingItems = JSON.parse(XCache::getOrDefaultValue("6d02e327-e07a-4168-be13-d9e7f367c6f8", "{}"))
 
         Thread.new {
             loop {
@@ -259,15 +215,6 @@ class Listing
                     }
                 $DataCenterCatalystItems = data
                 XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
-
-                data = {} 
-                Listing::items()
-                    .first(50)
-                    .each{|item|
-                        data[item["uuid"]] = item
-                    }
-                $DataCenterListingItems = data
-                XCache::set("6d02e327-e07a-4168-be13-d9e7f367c6f8", JSON.generate($DataCenterListingItems))
 
                 sleep 1200
             }
@@ -285,20 +232,13 @@ class Listing
             end
 
             if Config::isPrimaryInstance() then
-                NxOpenCycleAutos::sync()
+                NxShips::openCyclesSync()
             end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = $DataCenterListingItems
-                        .values
-                        .select{|item| Listing::listable(item) }
-                        .select{|item| item["mikuType"] != "NxAnniversary" or Anniversaries::isOpenToAcknowledgement(item) }
-            items = Listing::injectMissingRunningItems(Ox1::organiseListing(items), NxBalls::activeItems())
-            items = items
-                        .map{|item| Prefix::prefix([item]) }
-                        .flatten
+            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
 
             system("clear")
 

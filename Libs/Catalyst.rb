@@ -54,7 +54,7 @@ class Catalyst
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedCore(elements)
+                NxShips::selectSubsetAndMoveToSelectedShip(elements)
                 next
             end
 
@@ -107,30 +107,13 @@ class Catalyst
             end
 
             if input == "move" then
-                Catalyst::selectSubsetAndMoveToSelectedCore(elements)
+                NxShips::selectSubsetAndMoveToSelectedShip(elements)
                 next
             end
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
-    end
-
-    # Catalyst::selectSubsetAndMoveToSelectedCore(items)
-    def self.selectSubsetAndMoveToSelectedCore(items)
-        selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
-        return if selected.size == 0
-        core = TxCores::interactivelySelectOneOrNull()
-        return if core.nil?
-        selected.each{|item|
-            DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
-        }
-    end
-
-    # Catalyst::maintenance3()
-    def self.maintenance3()
-        padding = (DataCenter::mikuType("TxCore").map{|item| item["description"].size } + [0]).max
-        XCache::set("b1bd5d84-2051-432a-83d1-62ece0bf54f7", padding)
     end
 
     # Catalyst::listing_maintenance()
@@ -140,14 +123,5 @@ class Catalyst
             NxTasks::maintenance()
             TxEngines::maintenance0924()
         end
-        Catalyst::maintenance3()
-    end
-
-    # Catalyst::donationSuffix(item)
-    def self.donationSuffix(item)
-        return "" if item["donation-1605"].nil?
-        targets = item["donation-1605"].map{|uuid| DataCenter::itemOrNull(uuid) }.compact
-        return "" if targets.empty?
-        " (#{targets.map{|target| target["description"]}.join(', ')})".green
     end
 end

@@ -45,25 +45,22 @@ class DoNotShowUntil
         unixtime
     end
 
-    # DoNotShowUntil::set(itemuuid, unixtime)
-    def self.set(itemuuid, unixtime)
-        filepath = DoNotShowUntil::instanceFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "delete from DoNotShowUntil where _id_=?", [itemuuid]
-        db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [itemuuid, unixtime]
-        db.close
-    end
-
     # DoNotShowUntil::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
         item = Cubes::itemOrNull(id)
         if item then
             Ox1::detach(item)
         end
-        DoNotShowUntil::set(id, unixtime)
+
+        filepath = DoNotShowUntil::instanceFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute "delete from DoNotShowUntil where _id_=?", [id]
+        db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [id, unixtime]
+        db.close
+
         XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", unixtime)
         puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}".yellow
     end

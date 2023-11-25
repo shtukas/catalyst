@@ -112,7 +112,6 @@ class TxEngines
     def self.listingItems()
         DataCenter::catalystItems()
             .select{|item| item["engine-0916"] }
-            .reject{|item| item["mikuType"] == "TxCore" }
             .select{|item| TxEngines::shouldShowInListing(item) }
     end
 

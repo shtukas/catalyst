@@ -21,9 +21,6 @@ class Fsck
         if item["mikuType"] == "PhysicalTarget" then
             return
         end
-        if item["mikuType"] == "TxCore" then
-            return
-        end
         if item["mikuType"] == "Wave" then
             return
         end
@@ -33,7 +30,7 @@ class Fsck
         if item["mikuType"] == "NxStrat" then
             return
         end
-        if item["mikuType"] == "NxOpenCycleAuto" then
+        if item["mikuType"] == "NxShip" then
             return
         end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"

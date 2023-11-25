@@ -29,13 +29,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
+        if item["mikuType"] == "NxTask" then
+            NxTasks::access(item)
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            NxTasks::access(item)
+        if item["mikuType"] == "NxShip" then
+            NxShips::program1(item)
             return
         end
 
@@ -128,9 +128,10 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            puts "You cannot done a TxCore"
-            LucilleCore::pressEnterToContinue()
+        if item["mikuType"] == "NxShip" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done for the day: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+            end
             return
         end
 
@@ -179,21 +180,18 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            if TxCores::children(item).size > 0 then
-                puts "The core '#{PolyFunctions::toString(item).green}' cannot be deleted as it has #{TxCores::childrenInGlobalPositioningOrder(item).size} elements"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
+        if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
             end
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+        if item["mikuType"] == "NxShip" then
+            if NxShips::cargo(item).size > 0 then
+                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' because it still has #{NxShips::cargo(item).size} cargo items."
+                LucilleCore::pressEnterToContinue()
+                return
             end
             return
         end
@@ -248,8 +246,8 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
                 DataCenter::destroy(item["uuid"])
             else
-                if item["coreX-2137"].nil? then
-                    TxCores::interactivelySelectAAndPutInCore(item)
+                if item["parent-0810"].nil? then
+                    NxShips::interactivelySelectShipAndAddTo(item)
                 end
             end
             return
@@ -273,7 +271,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
+        if item["mikuType"] == "NxShip" then
             PolyActions::access(item)
             return
         end
@@ -297,6 +295,11 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             Catalyst::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "NxShip" then
+            NxShips::program1(item)
             return
         end
 

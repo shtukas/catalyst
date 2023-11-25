@@ -160,7 +160,7 @@ require_relative "NxOndates.rb"
 require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
-require_relative "NxOpenCycleAuto.rb"
+require_relative "NxShips.rb"
 
 require_relative "Ox1.rb"
 
@@ -174,7 +174,6 @@ require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxEngines.rb"
-require_relative "TxCores.rb"
 require_relative "Transmutations.rb"
 
 require_relative "Waves.rb"

@@ -22,10 +22,10 @@ class PolyFunctions
 
         # Special Features
 
-        if item["coreX-2137"] then
-            clique = DataCenter::itemOrNull(item["coreX-2137"])
-            if clique then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(clique)
+        if item["parent-0810"] then
+            parent = DataCenter::itemOrNull(item["parent-0810"])
+            if parent then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
         end
 
@@ -41,14 +41,6 @@ class PolyFunctions
                     "number"      => engine["capsule"]
                 }
             end
-
-        end
-
-        if item["donation-1605"] then
-            targets = item["donation-1605"].map{|uuid| DataCenter::itemOrNull(uuid) }.compact
-            targets.each{|target|
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            }
         end
 
         accounts.reduce([]){|as, account|
@@ -89,17 +81,14 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "NxOpenCycleAuto" then
-            return NxOpenCycleAutos::toString(item)
+        if item["mikuType"] == "NxShip" then
+            return NxShips::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
-        end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::toString(item)
         end
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)

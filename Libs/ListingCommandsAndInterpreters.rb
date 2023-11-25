@@ -5,12 +5,12 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | donation * | move * | active * | bank accounts * |destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | move * | active * | bank accounts * | destroy (<n>)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile",
-            "divings       : anniversaries | ondates | waves | desktop | cores | engined",
+            "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move # multiple to core | random",
+            "misc          : search | speed | commands | edit <n> | move | sort | >> # push intelligently | move | reset",
         ].join("\n")
     end
 
@@ -76,7 +76,7 @@ class ListingCommandsAndInterpreters
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
             puts JSON.pretty_generate(task)
             Ox1::putAtTop(task)
-            TxCores::interactivelySelectAAndPutInCore(task)
+            NxShips::interactivelySelectShipAndAddTo(task)
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
@@ -172,24 +172,9 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("donation *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            if item["donation-1605"].nil? then
-                donations = [core["uuid"]]
-            else
-                donations = (item["donation-1605"] + [core["uuid"]]).uniq.select{|uuid| !DataCenter::itemOrNull(uuid).nil? }
-            end
-            DataCenter::setAttribute(item["uuid"], "donation-1605", donations)
-            return
-        end
-
         if Interpreting::match("move", input) then
-            items = store.items().select{|i| ["NxTask", "TxCore"].include?(i["mikuType"])}
-            Catalyst::selectSubsetAndMoveToSelectedCore(items)
+            items = store.items().select{|i| i["mikuType"] == "NxTask"}
+            NxShips::selectSubsetAndMoveToSelectedShip(items)
             return
         end
 
@@ -197,7 +182,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxCores::interactivelySelectAAndPutInCore(item)
+            NxShips::interactivelySelectShipAndAddTo(item)
             return
         end
 
@@ -209,27 +194,14 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("random", input) then
-            x1, x2 = store.items().partition{|item| item["mikuType"] == "Wave" and item["interruption"] }
-            engined, a1 = x2.partition{|item| item["engine-0916"] }
-            if x1.size > 0 then
-                x1
-                    .each{|item|
-                        position = 0.5*rand
-                        Ox1::putAtPosition(item, position)
-                    }
-            end
-            if engined.size > 0 then
-                engined
-                    .sort_by{|item| TxEngines::dailyRelativeCompletionRatio(item["engine-0916"]) }
-                    .each_with_index{|item, indx|
-                        position = 0.5 + 0.5*indx.to_f/(engined.size)
-                        Ox1::putAtPosition(item, position)
-                    }
-            end
-            a1.each{|item|
-                Ox1::putAtPosition(item, 0.5 + 0.5*rand)
-            }
+        if Interpreting::match("reset", input) then
+            data = {}
+            Cubes::items()
+                .each{|item|
+                    data[item["uuid"]] = item
+                }
+            $DataCenterCatalystItems = data
+            XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
             return
         end
 
@@ -252,17 +224,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxTasks::setTaskMode(item)
-            return
-        end
-
-        if Interpreting::match("core *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            DataCenter::setAttribute(item["uuid"], "coreX-2137", core["uuid"])
+            NxShips::interactivelySelectShipAndAddTo(item)
             return
         end
 
@@ -462,22 +424,6 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("cores", input) then
-            cores = DataCenter::mikuType("TxCore")
-                        .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
-            Catalyst::program2(cores)
-            return
-        end
-
-        if Interpreting::match("engined", input) then
-            items = DataCenter::catalystItems()
-                        .select{|item| item["engine-0916"] }
-                        .reject{|item| item["mikuType"] == "TxCore" }
-                        .sort_by{|item| TxEngines::dayCompletionRatio(item["engine-0916"]) }
-            Catalyst::program2(items)
             return
         end
 

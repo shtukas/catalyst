@@ -74,23 +74,13 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 [#{"%6.2f" % (item["global-positioning"] || 0)}] #{TxEngines::string1(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "🔹 #{TxEngines::string1(item)} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxTasks::unattached()
-    def self.unattached()
+    # NxTasks::orphan()
+    def self.orphan()
         DataCenter::mikuType("NxTask")
-            .select{|item| item["coreX-2137"].nil? }
-            .select{|item| item["engine-0916"].nil? }
-    end
-
-    # NxTasks::unattachedForListing()
-    def self.unattachedForListing()
-        $DataCenterListingItems
-            .values
-            .select{|item| item["mikuType"] == "NxTask" }
-            .select{|item| item["coreX-2137"].nil? }
-            .select{|item| item["engine-0916"].nil? }
+            .select{|item| item["parent-0810"].nil? or DataCenter::itemOrNull(item["parent-0810"]).nil? }
     end
 
     # --------------------------------------------------
@@ -103,16 +93,6 @@ class NxTasks
 
     # NxTasks::maintenance()
     def self.maintenance()
-
-        DataCenter::mikuType("NxTask")
-            .each{|item|
-                next if item["coreX-2137"].nil?
-                core = DataCenter::itemOrNull(item["coreX-2137"])
-                if core.nil? or (core["mikuType"] != "TxCore") then
-                    DataCenter::setAttribute(item["uuid"], "coreX-2137", nil)
-                end
-            }
-
         # Feed Infinity using NxIce
         if DataCenter::mikuType("NxTask").size < 100 then
             DataCenter::mikuType("NxIce").take(10).each{|item|
@@ -126,23 +106,5 @@ class NxTasks
         DataCenter::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
-    end
-
-    # NxTasks::setTaskMode(item)
-    def self.setTaskMode(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["ondate", "task in core"])
-        return if option.nil?
-        if option == "ondate" then
-            datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            DataCenter::setAttribute(item["uuid"], "datetime", datetime)
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxOndate")
-        end
-        if option == "task in core" then
-            TxCores::interactivelySelectAAndPutInCore(item)
-            engine = TxEngines::interactivelyMakeNewOrNull()
-            if engine then
-                DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
-            end
-        end
     end
 end

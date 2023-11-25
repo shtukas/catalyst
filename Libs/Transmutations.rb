@@ -8,7 +8,7 @@ class Transmutations
             return if option.nil?
             if option == "NxTask" then
                 DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
-                NxTasks::setTaskMode(item)
+                NxShips::interactivelySelectShipAndAddTo(item)
             end
         end
     end

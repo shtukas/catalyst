@@ -10,16 +10,14 @@ TxEngine
 TxEngine
     "uuid"          : String
     "mikuType"      : "TxEngine"
-    "type"          : "booster"
-    "startUnixtime" : Integer
-    "endUnixtime"   : Integer
+    "type"          : "daily-contribution-until-done"
     "hours"         : Float
 
 TxEngine
     "uuid"          : String
     "mikuType"      : "TxEngine"
-    "type"          : "daily-work"
-    "return-on"     : YYYY-MM-DD
+    "type"          : "weekly-contribution-until-done"
+    "hours"         : Float
 
 TxEngine
     "uuid"          : String
