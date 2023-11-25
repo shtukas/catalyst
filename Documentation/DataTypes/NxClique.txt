@@ -1,0 +1,5 @@
+
+NxClique
+    - uuid        : uuid
+    - description : description
+    - engine      : TxEngine
