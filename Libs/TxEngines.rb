@@ -85,13 +85,15 @@ class TxEngines
 
     # TxEngines::string1(item)
     def self.string1(item)
-        return "                         " if item["engine-0916"].nil?
+        if item["engine-0916"].nil? then
+            return "                         "
+        end
         engine = item["engine-0916"]
+        if engine["type"] == "invisible" then
+            return "                         "
+        end
         if engine["type"] == "orbital" then
             return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % (engine["hours"].to_f/6)} hours)".green
-        end
-        if engine["type"] == "invisible" then
-            return ""
         end
         if engine["type"] == "daily-contribution-until-done" then
             return "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(engine))} % of #{"%5.2f" % engine["hours"]} hours)".green

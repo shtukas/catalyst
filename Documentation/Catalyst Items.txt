@@ -11,3 +11,5 @@ Cross types conventions (all optional):
                             within the children of a core.
     - parent-0810         : uuid of a parent, used to connect element to cores
                             and elements to NxShip
+    - time-to-completion  : integer # time in seconds
+    - donation-1751       : uuid

@@ -124,4 +124,41 @@ class Catalyst
             TxEngines::maintenance0924()
         end
     end
+
+    # Catalyst::expectedTimeToCompletionInSeconds(item)
+    def self.expectedTimeToCompletionInSeconds(item)
+        if item["mikuType"] == "NxSticky" then
+            return 0
+        end
+        if item["engine-0916"] then
+            return 3600
+        end
+        if item["time-to-completion-packet"] then
+            return item["time-to-completion-packet"]["time"]
+        end
+        timeInMinutes = LucilleCore::askQuestionAnswerAsString("'#{PolyFunctions::toString(item).green}' completion time in minutes: ").to_f
+        timeInSeconds = timeInMinutes*60
+        packet = {
+            "time"     => timeInSeconds,
+            "unixtime" => Time.new.to_i
+        }
+        DataCenter::setAttribute(item["uuid"], "time-to-completion-packet", packet)
+        timeInSeconds
+    end
+
+    # Catalyst::cumulatedTimeInSeconds(items)
+    def self.cumulatedTimeInSeconds(items)
+        items
+            .reduce(0){|time, item|
+                time + Catalyst::expectedTimeToCompletionInSeconds(item)
+            }
+    end
+
+    # Catalyst::donationSuffix(item)
+    def self.donationSuffix(item)
+        return "" if item["donation-1751"].nil?
+        target = DataCenter::itemOrNull(item["donation-1751"])
+        return "" if target.nil?
+        " (#{target["description"]})".green
+    end
 end
