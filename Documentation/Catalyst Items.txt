@@ -2,13 +2,13 @@ Catalyst items are json object with at least a uuid ("uuid") and a miku type ("m
 
 Cross types conventions (all optional):
 
-    - field11             : coredata reference string
-    - doNotShowUntil      : null or unixtime
-    - tmpskip1            : "YYYY-MM-DD" skipped for the entire day
-    - open-cycle-1143     : uuid of the open cycle that this item represents
-    - ox1-0656            : Ox1
-    - global-positioning  : Float or null # used for ordering and sorting
-                            within the children of a core.
-    - parent-0810         : uuid of a parent, used to connect element to cores
-                            and elements to NxShip
-    - donation-1751       : uuid
+    - field11               : coredata reference string
+    - doNotShowUntil        : null or unixtime
+    - tmpskip1              : "YYYY-MM-DD" skipped for the entire day
+    - open-cycle-1143       : uuid of the open cycle that this item represents
+    - ox1-0656              : Ox1
+    - global-positioning    : Float or null # used for ordering and sorting
+                              within the children of a core.
+    - parent-0810           : uuid of a parent, used to connect element to cores
+                              and elements to NxShip
+    - donation-1751         : uuid

@@ -67,11 +67,6 @@ class PolyActions
         NxBalls::stop(item)
         Ox1::detach(item)
 
-        if item["engine-0916"] then
-            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone("GMT"))
-            return
-        end
-
         # order: alphabetical order
 
         if item["mikuType"] == "DropBox" then

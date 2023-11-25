@@ -5,9 +5,9 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | engine * | trans * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | trans * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | clique",
             "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | sort | pushs | move | reset",
@@ -36,16 +36,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::naturalProgression(item)
-            return
-        end
-
-        if Interpreting::match("active * ", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            engine = TxEngines::interactivelyMakeNewOrNull()
-            return if engine.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
             return
         end
 
@@ -105,6 +95,12 @@ class ListingCommandsAndInterpreters
             ship = NxShips::interactivelyIssueNewOrNull()
             return if ship.nil?
             puts JSON.pretty_generate(ship)
+            return
+        end
+
+        if Interpreting::match("ships", input) then
+            ships = DataCenter::mikuType("NxShip").sort_by{|item| TxCores::dayCompletionRatio2(item) }
+            Catalyst::program2(ships)
             return
         end
 
@@ -288,22 +284,16 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engine", input) then
-            item = store.getDefault()
-            return if item.nil?
-            engine = TxEngines::interactivelyMakeNewOrNull()
+        if Interpreting::match("clique", input) then
+            ships, _ = LucilleCore::selectZeroOrMore("ships", [], DataCenter::mikuType("NxShip"), lambda {|item| PolyFunctions::toString(item) })
+            return if ships.empty?
+            engine = TxCores::interactivelyMakeNewOrNull()
             return if engine.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
-            return
-        end
-
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            engine = TxEngines::interactivelyMakeNewOrNull()
-            return if engine.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0916", engine)
+            ships.each{|item|
+                array = item["engine-multicore-2257"] || []
+                array = array + [ engine ]
+                DataCenter::setAttribute(item["uuid"], "engine-multicore-2257", array)
+            }
             return
         end
 
@@ -473,18 +463,6 @@ class ListingCommandsAndInterpreters
             end
             NxBalls::stop(item)
             NxOndates::redate(item)
-            return
-        end
-
-        if Interpreting::match("tw *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["engine-0916"].nil?
-            return if item["engine-0916"]["type"] != "daily-work"
-            NxBalls::stop(item)
-            item["engine-0916"]["return-on"] = CommonUtils::nDaysInTheFuture(1)
-            DataCenter::setAttribute(item["uuid"], "engine-0916", item["engine-0916"])
             return
         end
 

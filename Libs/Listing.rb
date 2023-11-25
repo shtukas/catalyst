@@ -241,8 +241,7 @@ class Listing
                 }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString3(store, item, cursorTime)
-                    cursorTime = cursorTime + Catalyst::expectedTimeToCompletionInSeconds(item)
+                    line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }

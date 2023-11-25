@@ -121,7 +121,6 @@ class Catalyst
         if Config::isPrimaryInstance() then
             puts "> Catalyst::listing_maintenance() on primary instance"
             NxTasks::maintenance()
-            TxEngines::maintenance0924()
         end
     end
 

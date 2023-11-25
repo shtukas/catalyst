@@ -36,18 +36,13 @@ class PolyFunctions
             end
         end
 
-        if item["engine-0916"] then
-            engine = item["engine-0916"]
-            accounts << {
-                "description" => "engine: #{engine["uuid"]}",
-                "number"      => engine["uuid"]
-            }
-            if engine["type"] == "orbital" then
+        if item["engine-multicore-2257"] then
+            item["engine-multicore-2257"].each{|core|
                 accounts << {
-                    "description" => "capsule: #{engine["capsule"]}",
-                    "number"      => engine["capsule"]
+                    "description" => "core: #{core["uuid"]}",
+                    "number"      => core["uuid"]
                 }
-            end
+            }
         end
 
         accounts.reduce([]){|as, account|

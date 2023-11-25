@@ -23,7 +23,7 @@ class NxShips
 
     # NxShips::toString(item)
     def self.toString(item)
-        "⛵️ #{item["description"]}#{TxEngines::suffix(item)} "
+        "⛵️ #{TxCores::string1(item)} #{item["description"]}"
     end
 
     # NxShips::cargo(ship)
@@ -44,8 +44,7 @@ class NxShips
     # NxShips::listingItems()
     def self.listingItems()
         DataCenter::mikuType("NxShip")
-            .select{|item| TxEngines::shouldShowInListing(item) }
-            .sort_by{|item| item["engine-0916"] ? TxEngines::dayCompletionRatio(item["engine-0916"]) : 0 }
+            .sort_by{|item| TxCores::dayCompletionRatio2(item) }
     end
 
     # NxShips::interactivelySelectOneOrNull()

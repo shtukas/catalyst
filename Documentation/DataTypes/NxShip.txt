@@ -1,9 +1,8 @@
 
 NxShip:
-    - uuid            : String
-    - mikuType        : "NxShip"
-    - unixtime        : Float
-    - datetime        : DateTime Iso 8601 UTC Zulu
-    - description     : String
-    - engine-0916     : (optional) TxEngine
-    - cliques-2044    : null | Array[NxClique]
+    - uuid                  : String
+    - mikuType              : "NxShip"
+    - unixtime              : Float
+    - datetime              : DateTime Iso 8601 UTC Zulu
+    - description           : String
+    - engine-multicore-2257 : Array[TxCore]
