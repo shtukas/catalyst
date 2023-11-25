@@ -20,9 +20,10 @@ class NxShips
     # ------------------
     # Data
 
+
     # NxShips::toString(item)
     def self.toString(item)
-        "⛵️ #{TxEngines::string1(item)} #{item["description"]}"
+        "⛵️ #{item["description"]}#{TxEngines::suffix(item)} "
     end
 
     # NxShips::cargo(ship)
