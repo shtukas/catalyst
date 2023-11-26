@@ -107,13 +107,12 @@ class Waves
         "#{item["type"]}: #{item["value"]}"
     end
 
-    # Waves::issueNewWaveInteractivelyOrNull()
-    def self.issueNewWaveInteractivelyOrNull()
+    # Waves::issueNewWaveInteractivelyOrNull(uuid)
+    def self.issueNewWaveInteractivelyOrNull(uuid)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
-        uuid = SecureRandom.uuid
         DataCenter::itemInit(uuid, "Wave")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")

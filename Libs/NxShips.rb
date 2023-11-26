@@ -74,23 +74,6 @@ class NxShips
     # ------------------
     # Ops
 
-    # NxShips::openCyclesSync()
-    def self.openCyclesSync()
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
-            next if !File.directory?(location)
-            next if File.basename(location).start_with?('.')
-            markerfile = "#{location}/.marker-709b82a0903b"
-            if !File.exist?(markerfile) then
-                uuid = SecureRandom.uuid
-                File.open(markerfile, "w"){|f| f.puts(uuid) }
-                puts "Generating #{"NxShip".green} for '#{File.basename(location).green}'"
-                LucilleCore::pressEnterToContinue()
-                NxShips::issue(uuid, File.basename(location))
-                next
-            end
-        }
-    end
-
     # NxShips::program1(ship)
     def self.program1(ship)
         loop {

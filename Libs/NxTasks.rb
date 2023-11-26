@@ -97,16 +97,6 @@ class NxTasks
         CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
     end
 
-    # NxTasks::maintenance()
-    def self.maintenance()
-        # Feed Infinity using NxIce
-        if DataCenter::mikuType("NxTask").size < 100 then
-            DataCenter::mikuType("NxIce").take(10).each{|item|
-
-            }
-        end
-    end
-
     # NxTasks::fsck()
     def self.fsck()
         DataCenter::mikuType("NxTask").each{|item|

@@ -389,7 +389,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondate", input) then
-            item = NxOndates::interactivelyIssueNewOrNull()
+            item = NxOndates::interactivelyIssueNewOrNull(SecureRandom.uuid)
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -520,7 +520,7 @@ class ListingCommandsAndInterpreters
         end
 
         if input == "wave" then
-            item = Waves::issueNewWaveInteractivelyOrNull()
+            item = Waves::issueNewWaveInteractivelyOrNull(SecureRandom.uuid)
             return if item.nil?
             puts JSON.pretty_generate(item)
             return

@@ -1,12 +1,11 @@
 
 class NxOndates
 
-    # NxOndates::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # NxOndates::interactivelyIssueNewOrNull(uuid)
+    def self.interactivelyIssueNewOrNull(uuid)
         datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        uuid = SecureRandom.uuid
         DataCenter::itemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)

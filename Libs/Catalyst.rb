@@ -116,11 +116,16 @@ class Catalyst
         }
     end
 
-    # Catalyst::listing_maintenance()
-    def self.listing_maintenance()
+    # Catalyst::periodicPrimaryInstanceMaintenance()
+    def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
-            puts "> Catalyst::listing_maintenance() on primary instance"
-            NxTasks::maintenance()
+            puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
+
+            if DataCenter::mikuType("NxTask").size < 100 then
+                DataCenter::mikuType("NxIce").take(10).each{|item|
+
+                }
+            end
         end
     end
 
@@ -130,5 +135,54 @@ class Catalyst
         target = DataCenter::itemOrNull(item["donation-1751"])
         return "" if target.nil?
         " (#{target["description"]})".green
+    end
+
+    # Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
+    def self.interactivelyIssueCatalystItemForOpenCycle(uuid)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["wave", "ondate", "sticky", "ship"])
+        return if option.nil?
+        if option == "wave" then
+            Waves::issueNewWaveInteractivelyOrNull(uuid)
+        end
+        if option == "ondate" then
+            NxOndates::interactivelyIssueNewOrNull(uuid)
+        end
+        if option == "sticky" then
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            NxStickys::issue(uuid, description)
+        end
+        if option == "ship" then
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            NxShips::issue(uuid, description)
+        end
+    end
+
+    # Catalyst::openCyclesSync()
+    def self.openCyclesSync()
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
+            next if !File.directory?(location)
+            next if File.basename(location).start_with?('.')
+            markerfile = "#{location}/.marker-709b82a0903b"
+            if !File.exist?(markerfile) then
+                uuid = SecureRandom.uuid
+                File.open(markerfile, "w"){|f| f.puts(uuid) }
+                puts "Generating item for '#{File.basename(location).green}'"
+                LucilleCore::pressEnterToContinue()
+                Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
+                next
+            end
+            uuid = IO.read(markerfile).strip
+            item = DataCenter::itemOrNull(IO.read(markerfile).strip).nil?
+            if item.nil? then
+                uuid = SecureRandom.uuid
+                File.open(markerfile, "w"){|f| f.puts(uuid) }
+                puts "Generating item for '#{File.basename(location).green}'"
+                LucilleCore::pressEnterToContinue()
+                Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
+                next
+            end
+        }
     end
 end

@@ -20,7 +20,10 @@ class DataCenter
 
     # DataCenter::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        $DataCenterCatalystItems[uuid]
+        item = Cubes::itemOrNull(uuid)
+        return nil if item.nil?
+        $DataCenterCatalystItems[uuid] = item
+        item
     end
 
     # DataCenter::setAttribute(uuid, attrname, attrvalue)
