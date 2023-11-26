@@ -174,7 +174,7 @@ class Listing
         if runningItems.empty? then
             return items
         else
-            if items.take(20).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
+            if items.take(CommonUtils::screenHeight()-4).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
                 return Listing::injectMissingRunningItems(items, runningItems.drop(1))
             else
                 return Listing::injectMissingRunningItems(runningItems.take(1) + items, runningItems.drop(1))
@@ -222,7 +222,7 @@ class Listing
                 NxShips::openCyclesSync()
             end
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 6)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
             items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
