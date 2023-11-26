@@ -1,0 +1,7 @@
+NxPoint:
+    - uuid        : String
+    - mikuType    : "NxPoint"
+    - unixtime    : Float
+    - datetime    : DateTime Iso 8601 UTC Zulu
+    - description : String
+    - field11     : coredata reference string

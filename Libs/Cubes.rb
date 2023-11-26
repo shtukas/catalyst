@@ -3,7 +3,62 @@
 class Cubes
 
     # ----------------------------------------
-    # File Management
+    # File Management (1)
+
+    # Cubes::itemInit(uuid, mikuType)
+    def self.itemInit(uuid, mikuType)
+        filepath = "/tmp/#{SecureRandom.hex}"
+        puts "> create item file: #{filepath}".yellow
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("create table _cube_ (_recorduuid_ text primary key, _recordTime_ float, _recordType_ string, _name_ text, _value_ blob)", [])
+        db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "uuid", JSON.generate(uuid)]
+        db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "mikuType", JSON.generate(mikuType)]
+        db.close
+        Cubes::relocate(filepath)
+    end
+
+    # Cubes::existingFilepathOrNull(uuid)
+    def self.existingFilepathOrNull(uuid)
+        filepath = XCache::getOrNull("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}")
+        if filepath and File.exist?(filepath) then
+            # We do not need to check the uuid of the file because of content addressing
+            return filepath
+        end
+
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes")
+            .select{|location| location[-14, 14] == ".catalyst-cube" }
+            .each{|filepath|
+                u1 = Cubes::uuidFromFile(filepath)
+                XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{u1}", filepath)
+                if u1 == uuid then
+                    return filepath
+                end
+            }
+
+        nil
+    end
+
+    # Cubes::relocate(filepath1)
+    def self.relocate(filepath1)
+        folderpath2 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes"
+        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
+        filepath2 = "#{folderpath2}/#{filename2}"
+        return filepath1 if (filepath1 == filepath2)
+        puts "filepath1: #{filepath1}".yellow
+        puts "filepath2: #{filepath2}".yellow
+        FileUtils.mv(filepath1, filepath2)
+
+        uuid = Cubes::uuidFromFile(filepath2)
+        XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", filepath2)
+
+        filepath2
+    end
+
+    # ----------------------------------------
+    # File Management (2)
 
     # Cubes::uuidFromFile(filepath)
     def self.uuidFromFile(filepath)
@@ -42,64 +97,8 @@ class Cubes
         item
     end
 
-    # Cubes::relocate(filepath1)
-    def self.relocate(filepath1)
-        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
-        folderpath2 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes/#{filename2[0, 2]}"
-        if !File.exist?(folderpath2) then
-            FileUtils.mkdir(folderpath2)
-        end
-        filepath2 = "#{folderpath2}/#{filename2}"
-        return filepath1 if (filepath1 == filepath2)
-        puts "filepath1: #{filepath1}".yellow
-        puts "filepath2: #{filepath2}".yellow
-        FileUtils.mv(filepath1, filepath2)
-
-        uuid = Cubes::uuidFromFile(filepath2)
-        XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", filepath2)
-
-        filepath2
-    end
-
-    # Cubes::existingFilepathOrNull(uuid)
-    def self.existingFilepathOrNull(uuid)
-        filepath = XCache::getOrNull("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}")
-        if filepath and File.exist?(filepath) then
-            # We do not need to check the uuid of the file because of content addressing
-            return filepath
-        end
-
-        Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
-            next if !path.include?(".catalyst-cube")
-            next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
-            u1 = Cubes::uuidFromFile(path)
-            XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{u1}", path)
-            if u1 == uuid then
-                return path
-            end
-            
-        end
-
-        nil
-    end
-
     # ----------------------------------------
     # Items
-
-    # Cubes::itemInit(uuid, mikuType)
-    def self.itemInit(uuid, mikuType)
-        filepath = "/tmp/#{SecureRandom.hex}"
-        puts "> create item file: #{filepath}".yellow
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("create table _cube_ (_recorduuid_ text primary key, _recordTime_ float, _recordType_ string, _name_ text, _value_ blob)", [])
-        db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "uuid", JSON.generate(uuid)]
-        db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "mikuType", JSON.generate(mikuType)]
-        db.close
-        Cubes::relocate(filepath)
-    end
 
     # Cubes::itemOrNull(uuid)
     def self.itemOrNull(uuid)
