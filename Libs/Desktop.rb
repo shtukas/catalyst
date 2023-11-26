@@ -30,4 +30,11 @@ class Desktop
             "announce" => Desktop::announce()
         }]
     end
+
+    # Desktop::done()
+    def self.done()
+        text = IO.read(Desktop::filepath())
+        text = SectionsType0141::applyNextTransformationToText(text)
+        File.open(Desktop::filepath(), "w"){|f| f.puts(text) }
+    end
 end

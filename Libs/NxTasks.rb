@@ -74,7 +74,13 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "🔹 #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
+        icon = (lambda {|item|
+            if item["parent-0810"].nil? or DataCenter::itemOrNull(item["parent-0810"]).nil? then
+                return "◽️"
+            end
+            "🔹"
+        }).call(item)
+        "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
     # NxTasks::orphan()

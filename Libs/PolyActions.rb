@@ -69,6 +69,11 @@ class PolyActions
 
         # order: alphabetical order
 
+        if item["mikuType"] == "DesktopTx1" then
+            Desktop::done()
+            return
+        end
+
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
