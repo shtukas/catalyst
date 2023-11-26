@@ -174,7 +174,8 @@ class Listing
         if runningItems.empty? then
             return items
         else
-            if items.take(CommonUtils::screenHeight()-4).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
+            capacity = CommonUtils::screenHeight() - 4 - Desktop::announce().lines.size
+            if items.take(capacity).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
                 return Listing::injectMissingRunningItems(items, runningItems.drop(1))
             else
                 return Listing::injectMissingRunningItems(runningItems.take(1) + items, runningItems.drop(1))
