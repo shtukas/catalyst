@@ -248,6 +248,11 @@ class CommonUtils
         Time.new.utc.iso8601
     end
 
+    # CommonUtils::nowPlusOneDayDatetimeIso8601()
+    def self.nowPlusOneDayDatetimeIso8601()
+        Time.at(Time.new.to_i+86400).utc.iso8601
+    end
+
     # CommonUtils::editDatetimeWithANewDate(datetime, date)
     def self.editDatetimeWithANewDate(datetime, date)
         datetime = "#{date}#{datetime[10, 99]}"

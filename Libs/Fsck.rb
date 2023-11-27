@@ -9,9 +9,6 @@ class Fsck
         if item["mikuType"] == "NxIce" then
             return
         end
-        if item["mikuType"] == "NxOndate" then
-            return
-        end
         if item["mikuType"] == "NxPool" then
             return
         end

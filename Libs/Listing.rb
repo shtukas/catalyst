@@ -108,10 +108,11 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
+            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }),
             NxStickys::listingItems(),
-            NxOndates::listingItems(),
             NxTasks::orphan(),
-            Prefix::prefix(NxShips::listingItems())
+            NxEffects::listingItems(lambda{|item| true }),
+            Prefix::prefix(NxShips::listingItems()),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -136,7 +137,7 @@ class Listing
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxEffects::listingItems(true)", lambda{ NxEffects::listingItems(lambda{|item| true }) })
         spot.contest_entry("NxTasks::orphan()", lambda{ NxTasks::orphan() })
         spot.contest_entry("NxShips::listingItems()", lambda{ NxShips::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })

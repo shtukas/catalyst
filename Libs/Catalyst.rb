@@ -63,59 +63,6 @@ class Catalyst
         }
     end
 
-    # Catalyst::program3(selector)
-    def self.program3(selector)
-        loop {
-
-            elements = selector.call()
-            return if elements.empty?
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts  ""
-
-            elements
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts  Listing::toString2(store, item)
-                }
-
-            puts ""
-            puts "task | pile | sort | move"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "task" then
-                puts "task is not defined in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "pile" then
-                puts "pile is not defined in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "sort" then
-                puts "sort is not defined in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "move" then
-                NxShips::selectSubsetAndMoveToSelectedShip(elements)
-                next
-            end
-
-            puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
@@ -139,24 +86,7 @@ class Catalyst
 
     # Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
     def self.interactivelyIssueCatalystItemForOpenCycle(uuid)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["wave", "ondate", "sticky", "ship"])
-        return if option.nil?
-        if option == "wave" then
-            Waves::issueNewWaveInteractivelyOrNull(uuid)
-        end
-        if option == "ondate" then
-            NxOndates::interactivelyIssueNewOrNull(uuid)
-        end
-        if option == "sticky" then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            NxStickys::issue(uuid, description)
-        end
-        if option == "ship" then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            NxShips::issue(uuid, description)
-        end
+        NxEffects::interactivelyIssueNewOrNull2(uuid)
     end
 
     # Catalyst::openCyclesSync()

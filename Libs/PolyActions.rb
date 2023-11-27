@@ -24,8 +24,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
-            NxOndates::access(item)
+        if item["mikuType"] == "NxEffect" then
+            NxEffects::access(item)
             return
         end
 
@@ -100,10 +100,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
-            end
+        if item["mikuType"] == "NxEffect" then
+            NxEffects::done(item)
             return
         end
 
@@ -169,7 +167,12 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
+        if item["mikuType"] == "NxEffect" then
+            if item["items"].size > 0 then
+                puts "You cannot delete '#{PolyFunctions::toString(item).green}' because the stack is not empty"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
             end
@@ -247,7 +250,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
+        if item["mikuType"] == "NxEffect" then
             PolyFunctions::toString(item).green
             NxBalls::start(item)
             PolyActions::access(item)

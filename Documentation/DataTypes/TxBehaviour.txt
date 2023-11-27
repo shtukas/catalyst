@@ -1,0 +1,6 @@
+
+TxBehaviour
+    "uuid"     : String
+    "mikuType" : "TxBehaviour"
+    "type"     : "ondate"
+    "datetime" : DateTime

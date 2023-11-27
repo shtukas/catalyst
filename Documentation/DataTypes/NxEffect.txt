@@ -1,0 +1,10 @@
+
+NxEffect:
+    - uuid            : String
+    - mikuType        : "NxEffect"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - behaviour       : TxBehaviour
+    - description     : String
+    - field11         : null or CoreData reference string
+    - stack           : Array[String] # uuid of NxPoints

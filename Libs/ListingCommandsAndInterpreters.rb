@@ -5,9 +5,9 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | trans * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | clique",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | clique | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | move | sort | pushs | move | reset",
@@ -49,16 +49,13 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("trans * ", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute(item)
+        if Interpreting::match("sticky", input) then
+            NxStickys::interactivelyIssueNewOrNull()
             return
         end
 
-        if Interpreting::match("sticky", input) then
-            NxStickys::interactivelyIssueNewOrNull()
+        if Interpreting::match("todo", input) then
+            NxEffects::interactivelyIssueNewOrNull()
             return
         end
 
@@ -132,9 +129,12 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            item = NxOndates::interactivelyIssueNewTodayOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            behaviour = TxBehaviours::makeOnDateToday()
+            uuid = SecureRandom::uuid
+            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+            NxEffects::issue(uuid, description, behaviour, coredataref)
             return
         end
 
@@ -389,9 +389,12 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondate", input) then
-            item = NxOndates::interactivelyIssueNewOrNull(SecureRandom.uuid)
-            return if item.nil?
-            puts JSON.pretty_generate(item)
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            behaviour = TxBehaviours::interactivelyMakeNewOnNull()
+            return if behavior.nil?
+            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+            NxEffects::issue(uuid, description, behaviour, coredataref)
             return
         end
 
@@ -403,9 +406,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            items = DataCenter::mikuType("NxOndate")
-                        .sort{|i1, i2| i1["datetime"] <=> i2["datetime"] }
-            Catalyst::program2(items)
+            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] })
             return
         end
 
@@ -439,30 +440,17 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("redate", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if item["mikuType"] != "NxOndate" then
-                puts "redate is reserved for NxOndates"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            NxBalls::stop(item)
-            NxOndates::redate(item)
-            return
-        end
-
         if Interpreting::match("redate *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxOndate" then
-                puts "redate is reserved for NxOndates"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             NxBalls::stop(item)
-            NxOndates::redate(item)
+            return if item["mikuType"] != "NxEffect"
+            behaviour = item["behaviour"]
+            return if behaviour["type"] != "ondate"
+            datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+            behaviour["datetime"] = datetime
+            DataCenter::setAttribute(item["uuid"], "behaviour", behaviour)
             return
         end
 
@@ -513,9 +501,11 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("tomorrow", input) then
-            item = NxOndates::interactivelyIssueNewTodayOrNull()
-            return if item.nil?
-            DataCenter::setAttribute(item["uuid"], "datetime", "#{CommonUtils::nDaysInTheFuture(1)} 07:00:00+00:00")
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            behaviour = TxBehaviours::makeOnDateTomorrow()
+            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+            NxEffects::issue(uuid, description, behaviour, coredataref)
             return
         end
 
