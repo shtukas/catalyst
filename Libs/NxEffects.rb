@@ -103,9 +103,7 @@ class NxEffects
                 return
             end
         end
-        if NxEffects::stack(item).size > 0 then
-            NxEffects::program1(item)
-        end
+        NxEffects::program1(item)
     end
 
     # NxEffects::program1(effect)
