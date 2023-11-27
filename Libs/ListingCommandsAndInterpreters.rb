@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | active * | bank accounts * | donate * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | active * | bank accounts * | donation * | destroy (<n>)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop",
@@ -39,7 +39,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("donate * ", input) then
+        if Interpreting::match("donation * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
@@ -91,6 +91,7 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
+            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
@@ -139,6 +140,7 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
+            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
@@ -378,6 +380,7 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
+            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
@@ -495,6 +498,7 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
+            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
