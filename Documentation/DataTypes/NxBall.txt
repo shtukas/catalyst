@@ -6,7 +6,6 @@ NxBall
     "startunixtime" : Unixtime
     "accounts"      : Array[Account],
     "sequencestart" : null or Unixtime
-
 }
 
 Account {

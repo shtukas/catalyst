@@ -5,12 +5,12 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | move * | active * | bank accounts * | donate * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | active * | bank accounts * | donate * | destroy (<n>)",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | clique | todo (stack)",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | sort | pushs | move | reset",
+            "misc          : search | speed | commands | edit <n> | sort | pushs | move | reset",
         ].join("\n")
     end
 
@@ -27,7 +27,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::naturalProgression(item)
+            PolyActions::access(item)
             return
         end
 
@@ -35,7 +35,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::naturalProgression(item)
+            PolyActions::access(item)
             return
         end
 
@@ -43,7 +43,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            ship = NxShips::interactivelySelectOneOrNull()
+            ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
             return if ship.nil?
             DataCenter::setAttribute(item["uuid"], "donation-1751", ship["uuid"])
             return
@@ -78,7 +78,6 @@ class ListingCommandsAndInterpreters
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
             puts JSON.pretty_generate(task)
             Ox1::putAtTop(task)
-            NxShips::interactivelySelectShipAndAddTo(task)
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
@@ -89,15 +88,22 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ship", input) then
-            ship = NxShips::interactivelyIssueNewOrNull()
-            return if ship.nil?
-            puts JSON.pretty_generate(ship)
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            behaviour = {
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "TxBehaviour",
+                "type"     => "ship",
+                "cores"    => [TxCores::interactivelyMakeNewOrNull()].compact
+            }
+            uuid = SecureRandom::uuid
+            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+            NxEffects::issue(uuid, description, behaviour, coredataref)
             return
         end
 
         if Interpreting::match("ships", input) then
-            ships = DataCenter::mikuType("NxShip").sort_by{|item| TxCores::dayCompletionRatio2(item) }
-            Catalyst::program2(ships)
+            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::engineDayCompletionRatio3(item["behaviour"]["engine"]) })
             return
         end
 
@@ -131,7 +137,12 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("today", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            behaviour = TxBehaviours::makeOnDateToday()
+            behaviour = {
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "TxBehaviour",
+                "type"     => "ondate",
+                "datetime" => CommonUtils::nowDatetimeIso8601()
+            }
             uuid = SecureRandom::uuid
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issue(uuid, description, behaviour, coredataref)
@@ -143,20 +154,6 @@ class ListingCommandsAndInterpreters
             selected.each{|item|
                 DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
             }
-            return
-        end
-
-        if Interpreting::match("move", input) then
-            items = store.items().select{|i| i["mikuType"] == "NxTask"}
-            NxShips::selectSubsetAndMoveToSelectedShip(items)
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxShips::interactivelySelectShipAndAddTo(item)
             return
         end
 
@@ -198,7 +195,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxShips::interactivelySelectShipAndAddTo(item)
+            NxEffects::interactivelySelectShipAndAddTo(item, lambda{|item| item["behaviour"]["type"] == "ship" })
             return
         end
 
@@ -281,19 +278,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::editItem(item)
-            return
-        end
-
-        if Interpreting::match("clique", input) then
-            ships, _ = LucilleCore::selectZeroOrMore("ships", [], DataCenter::mikuType("NxShip"), lambda {|item| PolyFunctions::toString(item) })
-            return if ships.empty?
-            engine = TxCores::interactivelyMakeNewOrNull()
-            return if engine.nil?
-            ships.each{|item|
-                array = item["engine-multicore-2257"] || []
-                array = array + [ engine ]
-                DataCenter::setAttribute(item["uuid"], "engine-multicore-2257", array)
-            }
             return
         end
 
@@ -503,7 +487,12 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            behaviour = TxBehaviours::makeOnDateTomorrow()
+            behaviour = {
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "TxBehaviour",
+                "type"     => "ondate",
+                "datetime" => CommonUtils::nowPlusOneDayDatetimeIso8601()
+            }
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issue(uuid, description, behaviour, coredataref)
             return

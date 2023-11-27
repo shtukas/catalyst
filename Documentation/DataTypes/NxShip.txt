@@ -1,8 +1,0 @@
-
-NxShip:
-    - uuid                  : String
-    - mikuType              : "NxShip"
-    - unixtime              : Float
-    - datetime              : DateTime Iso 8601 UTC Zulu
-    - description           : String
-    - engine-multicore-2257 : Array[TxCore]

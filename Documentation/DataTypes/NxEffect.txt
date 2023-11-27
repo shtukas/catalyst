@@ -7,4 +7,3 @@ NxEffect:
     - behaviour       : TxBehaviour
     - description     : String
     - field11         : null or CoreData reference string
-    - stack           : Array[String] # uuid of NxPoints

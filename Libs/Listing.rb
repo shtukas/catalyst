@@ -105,14 +105,14 @@ class Listing
             Desktop::listingItems(),
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
-            Waves::listingItems().select{|item| item["interruption"] },
-            Waves::listingItems().select{|item| !item["interruption"] },
+            #Waves::listingItems().select{|item| item["interruption"] },
+            #Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }),
+            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
             NxStickys::listingItems(),
-            NxTasks::orphan(),
-            NxEffects::listingItems(lambda{|item| true }),
-            Prefix::prefix(NxShips::listingItems()),
+            #NxTasks::orphan(),
+            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::engineDayCompletionRatio3(item["behaviour"]["engine"]) }),
+            NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -137,9 +137,8 @@ class Listing
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxEffects::listingItems(true)", lambda{ NxEffects::listingItems(lambda{|item| true }) })
+        spot.contest_entry("NxEffects::listingItems(true)", lambda{ NxEffects::listingItems(lambda{|item| true }, lambda{|item| 0 }) })
         spot.contest_entry("NxTasks::orphan()", lambda{ NxTasks::orphan() })
-        spot.contest_entry("NxShips::listingItems()", lambda{ NxShips::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()
@@ -227,7 +226,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
+            items = Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems())
 
             system("clear")
 

@@ -4,3 +4,9 @@ TxBehaviour
     "mikuType" : "TxBehaviour"
     "type"     : "ondate"
     "datetime" : DateTime
+
+TxBehaviour
+    "uuid"     : String
+    "mikuType" : "TxBehaviour"
+    "type"     : "ship"
+    "engine"   : Array[TxCore]

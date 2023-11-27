@@ -22,8 +22,8 @@ class PolyFunctions
 
         # Special Features
 
-        if item["parent-0810"] then
-            parent = DataCenter::itemOrNull(item["parent-0810"])
+        if item["stackuuid"] then
+            parent = DataCenter::itemOrNull(item["stackuuid"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
@@ -82,9 +82,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
-        end
-        if item["mikuType"] == "NxShip" then
-            return NxShips::toString(item)
         end
         if item["mikuType"] == "NxSticky" then
             return NxStickys::toString(item)

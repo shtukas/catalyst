@@ -30,33 +30,9 @@ class Catalyst
                 }
 
             puts ""
-            puts "task | pile | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
-
-            if input == "task" then
-                puts "task is not defined in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "pile" then
-                puts "pile is not defined in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "sort" then
-                puts "sort is not defined in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "move" then
-                NxShips::selectSubsetAndMoveToSelectedShip(elements)
-                next
-            end
 
             puts ""
             ListingCommandsAndInterpreters::interpreter(input, store)

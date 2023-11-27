@@ -27,9 +27,6 @@ class Fsck
         if item["mikuType"] == "NxStrat" then
             return
         end
-        if item["mikuType"] == "NxShip" then
-            return
-        end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 

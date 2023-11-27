@@ -42,35 +42,40 @@ class TxCores
     # -----------------------------------------------
     # Data
 
-    # TxCores::dayCompletionRatio(engine)
-    def self.dayCompletionRatio(engine)
-        if engine["type"] == "weekly-hours" then
-            doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank::getValueAtDate(engine["uuid"], date) }
+    # TxCores::coreDayCompletionRatio(core)
+    def self.coreDayCompletionRatio(core)
+        if core["type"] == "weekly-hours" then
+            doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank::getValueAtDate(core["uuid"], date) }
             doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
-            return 1 if doneSinceLastSaturdayInHours >= engine["hours"]
+            return 1 if doneSinceLastSaturdayInHours >= core["hours"]
 
-            dailyHours = engine["hours"].to_f/7
-            todayhours = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
+            dailyHours = core["hours"].to_f/7
+            todayhours = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
             return todayhours.to_f/dailyHours
         end
-        if engine["type"] == "daily-hours" then
-            dailyHours = engine["hours"]
-            todayhours = Bank::getValueAtDate(engine["uuid"], CommonUtils::today()).to_f/3600
+        if core["type"] == "daily-hours" then
+            dailyHours = core["hours"]
+            todayhours = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
             return todayhours.to_f/dailyHours
         end
-        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): engine: #{engine}"
+        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
 
     # TxCores::dayCompletionRatio2(item)
     def self.dayCompletionRatio2(item)
         return 0 if item["engine-multicore-2257"].nil?
         item["engine-multicore-2257"].reduce(1){|m, core|
-            [m, TxCores::dayCompletionRatio(core)].min
+            [m, TxCores::coreDayCompletionRatio(core)].min
         }
     end
 
-    # TxCores::string1(item)
-    def self.string1(item)
-        "(#{"%6.2f" % (100*TxCores::dayCompletionRatio2(item))} %)".green
+    # TxCores::engineDayCompletionRatio3(engine)
+    def self.engineDayCompletionRatio3(engine)
+        ([0] + engine.map{|core| TxCores::coreDayCompletionRatio(core) }).max
+    end
+
+    # TxCores::string1(engine)
+    def self.string1(engine)
+        "(#{"%6.2f" % (100*TxCores::engineDayCompletionRatio3(engine))} %)".green
     end
 end

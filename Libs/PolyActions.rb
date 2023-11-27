@@ -34,11 +34,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
-            NxShips::program1(item)
-            return
-        end
-
         if item["mikuType"] == "NxStrat" then
             return
         end
@@ -130,13 +125,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done for the day: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
-            end
-            return
-        end
-
         if item["mikuType"] == "NxSticky" then
             if LucilleCore::askQuestionAnswerAsBoolean("done for the day: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())+3600*6)
@@ -208,104 +196,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
-            if NxShips::cargo(item).size > 0 then
-                puts "You cannot destroy '#{PolyFunctions::toString(item).green}' because it still has #{NxShips::cargo(item).size} cargo items."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            return
-        end
-
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
-    end
-
-    # PolyActions::naturalProgression(item)
-    def self.naturalProgression(item)
-
-        if item["mikuType"] == "NxAnniversary" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxLambda" then
-            item["lambda"].call()
-            return
-        end
-
-        if item["mikuType"] == "Backup" then
-            puts "starting '#{PolyFunctions::toString(item).green}'"
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                PolyActions::done(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxEffect" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxBalls::stop(item)
-            end
-            return if NxBalls::itemIsActive(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
-                DataCenter::destroy(item["uuid"])
-            else
-                if item["parent-0810"].nil? then
-                    NxShips::interactivelySelectShipAndAddTo(item)
-                end
-            end
-            return
-        end
-
-        if item["mikuType"] == "PhysicalTarget" then
-            PolyFunctions::toString(item).green
-            PhysicalTargets::access(item)
-            Ox1::detach(item)
-            return
-        end
-
-        if item["mikuType"] == "NxSticky" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done for the day: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())+3600*6)
-            end
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            PolyFunctions::toString(item).green
-            NxBalls::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{Waves::toString(item).green} ? '", true) then
-                NxBalls::stop(item)
-                Waves::performWaveDone(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxShip" then
-            PolyActions::access(item)
-            return
-        end
-
-        puts "I don't know how to doubleDots '#{item["mikuType"]}'"
-        LucilleCore::pressEnterToContinue()
     end
 
     # PolyActions::program(item)
@@ -323,11 +215,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             Catalyst::program1(item)
-            return
-        end
-
-        if item["mikuType"] == "NxShip" then
-            NxShips::program1(item)
             return
         end
 

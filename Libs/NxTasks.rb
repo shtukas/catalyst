@@ -75,7 +75,7 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = (lambda {|item|
-            if item["parent-0810"].nil? or DataCenter::itemOrNull(item["parent-0810"]).nil? then
+            if item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil? then
                 return "◽️"
             end
             "🔹"
@@ -86,7 +86,7 @@ class NxTasks
     # NxTasks::orphan()
     def self.orphan()
         DataCenter::mikuType("NxTask")
-            .select{|item| item["parent-0810"].nil? or DataCenter::itemOrNull(item["parent-0810"]).nil? }
+            .select{|item| item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil? }
     end
 
     # --------------------------------------------------

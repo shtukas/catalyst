@@ -159,9 +159,7 @@ require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
-require_relative "NxShips.rb"
 require_relative "NxSticky.rb"
-require_relative "NxPoints.rb"
 require_relative "NxEffects.rb"
 
 require_relative "Ox1.rb"
@@ -170,7 +168,6 @@ require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 require_relative "PhysicalTargets.rb"
-require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
 

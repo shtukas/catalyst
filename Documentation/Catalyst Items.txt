@@ -9,6 +9,4 @@ Cross types conventions (all optional):
     - ox1-0656              : Ox1
     - global-positioning    : Float or null # used for ordering and sorting
                               within the children of a core.
-    - parent-0810           : uuid of a parent, used to connect element to cores
-                              and elements to NxShip
     - donation-1751         : uuid
