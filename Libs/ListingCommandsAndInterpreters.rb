@@ -96,11 +96,10 @@ class ListingCommandsAndInterpreters
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "ship",
-                "cores"    => [TxCores::interactivelyMakeNewOrNull()].compact
+                "engine"   => [TxCores::interactivelyMakeNewOrNull()].compact
             }
             uuid = SecureRandom::uuid
-            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issue(uuid, description, behaviour, coredataref)
+            NxEffects::issue(uuid, description, behaviour, nil)
             return
         end
 

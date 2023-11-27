@@ -2,7 +2,6 @@
 TxCore
     "uuid"          : String
     "mikuType"      : "TxCore"
-    "description"   : string
     "type"          : "daily-hours"
     "hours"         : Float
 
@@ -10,7 +9,6 @@ TxCore
 TxCore
     "uuid"          : String
     "mikuType"      : "TxCore"
-    "description"   : string
     "type"          : "weekly-hours"
     "hours"         : Float
 

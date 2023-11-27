@@ -6,8 +6,6 @@ class TxCores
 
     # TxCores::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
         type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["daily-hours", "weekly-hours"])
         return nil if type.nil?
         if type == "daily-hours" then
@@ -18,7 +16,6 @@ class TxCores
             return {
                 "uuid"          => SecureRandom.uuid,
                 "mikuType"      => "TxCore",
-                "description"   => description,
                 "type"          => "daily-hours",
                 "hours"         => hours,
             }
@@ -31,7 +28,6 @@ class TxCores
             return {
                 "uuid"          => SecureRandom.uuid,
                 "mikuType"      => "TxCore",
-                "description"   => description,
                 "type"          => "weekly-hours",
                 "hours"         => hours
             }
