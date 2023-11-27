@@ -83,12 +83,6 @@ class NxTasks
         "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
-    # NxTasks::orphan()
-    def self.orphan()
-        DataCenter::mikuType("NxTask")
-            .select{|item| item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil? }
-    end
-
     # --------------------------------------------------
     # Operations
 

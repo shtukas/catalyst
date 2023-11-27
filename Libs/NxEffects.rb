@@ -52,6 +52,10 @@ class NxEffects
 
     # NxEffects::stack(effect)
     def self.stack(effect)
+        if effect["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+            return DataCenter::mikuType("NxTask")
+                    .select{|item| item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil? }
+        end
         DataCenter::mikuType("NxTask")
             .select{|item| item["stackuuid"] == effect["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
