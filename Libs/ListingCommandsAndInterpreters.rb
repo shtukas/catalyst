@@ -90,6 +90,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("ship", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
+            uuid = SecureRandom.uuid
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
@@ -137,6 +138,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("today", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
+            uuid = SecureRandom.uuid
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
@@ -375,8 +377,13 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("ondate", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            behaviour = TxBehaviours::interactivelyMakeNewOnNull()
-            return if behavior.nil?
+            uuid = SecureRandom.uuid
+            behaviour = {
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "TxBehaviour",
+                "type"     => "ondate",
+                "datetime" => CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+            }
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issue(uuid, description, behaviour, coredataref)
             return
@@ -487,6 +494,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
+            uuid = SecureRandom.uuid
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
