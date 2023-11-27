@@ -66,16 +66,11 @@ class TxBehaviours
             return behaviour["datetime"][0, 10] <= CommonUtils::today()
         end
         if behaviour["type"] == "ship" then
-            return TxCores::engineDayCompletionRatio3(behaviour["engine"]) < 1
+            return true
         end
         if behaviour["type"] == "sticky" then
             return true
         end
         raise "(error 456d4952-f1fa-4f28-9f0d-2d80b32d2827) behaviour: #{behaviour}"
     end
-
-    # ----------------------------------
-    # Ops
-
-
 end

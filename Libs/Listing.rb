@@ -111,7 +111,6 @@ class Listing
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::engineDayCompletionRatio3(item["behaviour"]["engine"]) }),
-
             NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
