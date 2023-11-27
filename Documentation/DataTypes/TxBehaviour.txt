@@ -10,3 +10,8 @@ TxBehaviour
     "mikuType" : "TxBehaviour"
     "type"     : "ship"
     "engine"   : Array[TxCore]
+
+TxBehaviour
+    "uuid"     : String
+    "mikuType" : "TxBehaviour"
+    "type"     : "sticky"

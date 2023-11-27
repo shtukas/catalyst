@@ -3,6 +3,16 @@ $DataCenterCatalystItems = {}
 
 class DataCenter
 
+    # DataCenter::reload()
+    def self.reload()
+        data = {}
+        Cubes::items()
+            .each{|item|
+                data[item["uuid"]] = item
+            }
+        $DataCenterCatalystItems = data
+    end
+
     # DataCenter::mikuTypes()
     def self.mikuTypes()
         $DataCenterCatalystItems.values.map{|item| item["mikuType"] }.uniq
@@ -27,7 +37,6 @@ class DataCenter
     def self.setAttribute(uuid, attrname, attrvalue)
         Cubes::setAttribute(uuid, attrname, attrvalue)
         $DataCenterCatalystItems[uuid][attrname] = attrvalue
-        XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
         nil
     end
 
@@ -38,13 +47,11 @@ class DataCenter
             "uuid" => uuid,
             "mikuType" => mikuType
         }
-        XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
     end
 
     # DataCenter::destroy(uuid)
     def self.destroy(uuid)
         Cubes::destroy(uuid)
         $DataCenterCatalystItems.delete(uuid)
-        XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
     end
 end

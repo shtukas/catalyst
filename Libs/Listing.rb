@@ -109,8 +109,9 @@ class Listing
             Waves::listingItems().select{|item| !item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
-            NxStickys::listingItems(),
+            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::engineDayCompletionRatio3(item["behaviour"]["engine"]) }),
+
             NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
@@ -188,21 +189,20 @@ class Listing
 
         latestCodeTrace = initialCodeTrace
 
-        $DataCenterCatalystItems = JSON.parse(XCache::getOrDefaultValue("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", "{}"))
+        DataCenter::reload()
+
+        DataCenter::mikuType("NxEffect").each{|item|
+            if item["behaviour"].nil? then
+                puts JSON.pretty_generate(item)
+                LucilleCore::pressEnterToContinue()
+                DataCenter::destroy(item["uuid"])
+            end
+        }
 
         Thread.new {
             loop {
-                sleep 10
-
-                data = {}
-                Cubes::items()
-                    .each{|item|
-                        data[item["uuid"]] = item
-                    }
-                $DataCenterCatalystItems = data
-                XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
-
                 sleep 1200
+                DataCenter::reload()
             }
         }
 

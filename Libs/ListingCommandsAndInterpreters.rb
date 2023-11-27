@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | pushs | move | reset",
+            "misc          : search | speed | commands | edit <n> | sort | pushs | move",
         ].join("\n")
     end
 
@@ -50,7 +50,16 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sticky", input) then
-            NxStickys::interactivelyIssueNewOrNull()
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            uuid = SecureRandom.uuid
+            Cubes::itemInit(uuid, "NxEffect")
+            behaviour = {
+                "uuid"     => SecureRandom.uuid,
+                "mikuType" => "TxBehaviour",
+                "type"     => "sticky"
+            }
+            NxEffects::issue(uuid, description, behaviour, nil)
             return
         end
 
@@ -98,7 +107,6 @@ class ListingCommandsAndInterpreters
                 "type"     => "ship",
                 "engine"   => [TxCores::interactivelyMakeNewOrNull()].compact
             }
-            uuid = SecureRandom::uuid
             NxEffects::issue(uuid, description, behaviour, nil)
             return
         end
@@ -146,7 +154,6 @@ class ListingCommandsAndInterpreters
                 "type"     => "ondate",
                 "datetime" => CommonUtils::nowDatetimeIso8601()
             }
-            uuid = SecureRandom::uuid
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issue(uuid, description, behaviour, coredataref)
             return
@@ -165,17 +172,6 @@ class ListingCommandsAndInterpreters
             selected.reverse.each{|item|
                 Ox1::putAtTop(item)
             }
-            return
-        end
-
-        if Interpreting::match("reset", input) then
-            data = {}
-            Cubes::items()
-                .each{|item|
-                    data[item["uuid"]] = item
-                }
-            $DataCenterCatalystItems = data
-            XCache::set("1a777efb-c8a3-47d0-bf9f-67acecf06dc6", JSON.generate($DataCenterCatalystItems))
             return
         end
 

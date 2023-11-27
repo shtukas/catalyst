@@ -236,6 +236,13 @@ class NxEffects
             LucilleCore::pressEnterToContinue()
             return
         end
+        if item["behaviour"]["type"] == "ship" then
+            return
+        end
+        if item["behaviour"]["type"] == "sticky" then
+            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+            return
+        end
         raise "(error: 8e77b5e6-43e7-49ee-a1ac-d76a8c74300d) item: #{item}"
     end
 end
