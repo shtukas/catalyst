@@ -123,21 +123,20 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("pile", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
+            item = store.items().first
             return if item.nil?
 
-            text = CommonUtils::editTextSynchronously("").strip
-            return if text == ""
-            text
-                .lines
-                .map{|line| line.strip }
-                .reverse
-                .each{|line|
-                    task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
-                    puts JSON.pretty_generate(task)
-                    Ox1::putAtTop(task)
-                }
+            if item["mikuType"] == "NxTask" then
+                if item["stackuuid"] then
+                    effect = DataCenter::itemOrNull(item["stackuuid"])
+                    if effect then
+                        NxEffects::pile(effect)
+                        return
+                    end
+                end
+            end
+
+            NxStrats::interactivelyPile(item)
             return
         end
 

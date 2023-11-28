@@ -116,6 +116,22 @@ class NxEffects
         NxEffects::program1(item)
     end
 
+    # NxEffects::pile(effect)
+    def self.pile(effect)
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .reverse
+            .each{|line|
+                task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                puts JSON.pretty_generate(task)
+                DataCenter::setAttribute(task["uuid"], "stackuuid", effect["uuid"])
+                DataCenter::setAttribute(task["uuid"], "global-positioning", NxEffects::topPosition(effect) - 1)
+            }
+    end
+
     # NxEffects::program1(effect)
     def self.program1(effect)
         loop {
@@ -163,18 +179,7 @@ class NxEffects
             end
 
             if input == "pile" then
-                text = CommonUtils::editTextSynchronously("").strip
-                next if text == ""
-                text
-                    .lines
-                    .map{|line| line.strip }
-                    .reverse
-                    .each{|line|
-                        task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
-                        puts JSON.pretty_generate(task)
-                        DataCenter::setAttribute(task["uuid"], "stackuuid", effect["uuid"])
-                        DataCenter::setAttribute(task["uuid"], "global-positioning", NxEffects::topPosition(effect) - 1)
-                    }
+                NxEffects::pile(effect)
                 next
             end
 
