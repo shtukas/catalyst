@@ -88,12 +88,8 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if input.start_with?("top") then
-            if input.start_with?("top:") then
-                line = input[4, input.size].strip
-            else
-                line = LucilleCore::askQuestionAnswerAsString("description: ")
-            end
+        if Interpreting::match("top", input) then
+            line = LucilleCore::askQuestionAnswerAsString("description: ")
             return if line == ""
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
             puts JSON.pretty_generate(task)

@@ -139,7 +139,7 @@ class NxEffects
                 }
 
             puts ""
-            puts "task | pile | sort | move"
+            puts "task | top | pile | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -149,6 +149,16 @@ class NxEffects
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 DataCenter::setAttribute(task["uuid"], "stackuuid", effect["uuid"])
+                next
+            end
+
+            if input == "top" then
+                line = LucilleCore::askQuestionAnswerAsString("description: ")
+                next if line == ""
+                task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                puts JSON.pretty_generate(task)
+                DataCenter::setAttribute(task["uuid"], "stackuuid", effect["uuid"])
+                DataCenter::setAttribute(task["uuid"], "global-positioning", NxEffects::topPosition(effect) - 1)
                 next
             end
 
