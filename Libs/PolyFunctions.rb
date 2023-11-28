@@ -36,15 +36,6 @@ class PolyFunctions
             end
         end
 
-        if item["engine-multicore-2257"] then
-            item["engine-multicore-2257"].each{|core|
-                accounts << {
-                    "description" => "core: #{core["uuid"]}",
-                    "number"      => core["uuid"]
-                }
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

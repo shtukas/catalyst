@@ -33,7 +33,7 @@ class NxEffects
 
     # NxEffects::toString(item)
     def self.toString(item)
-        "#{TxBehaviours::toIcon(item["behaviour"])} #{TxBehaviours::toString(item["behaviour"])} #{item["description"]}"
+        "#{TxBehaviours::toIcon(item["behaviour"])} #{TxBehaviours::toString1(item["behaviour"])} #{item["description"]}#{TxBehaviours::toString2(item["behaviour"])}"
     end
 
     # NxEffects::listingItems(selector, order)

@@ -9,7 +9,7 @@ TxBehaviour
     "uuid"     : String
     "mikuType" : "TxBehaviour"
     "type"     : "ship"
-    "engine"   : Array[TxCore]
+    "engine"   : TxCore
 
 TxBehaviour
     "uuid"     : String

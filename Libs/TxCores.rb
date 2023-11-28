@@ -35,6 +35,13 @@ class TxCores
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
     end
 
+    # TxCores::interactivelyMakeNew()
+    def self.interactivelyMakeNew()
+        core = TxCores::interactivelyMakeNewOrNull()
+        return core if core
+        TxCores::interactivelyMakeNew()
+    end
+
     # -----------------------------------------------
     # Data
 
@@ -57,21 +64,13 @@ class TxCores
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
 
-    # TxCores::dayCompletionRatio2(item)
-    def self.dayCompletionRatio2(item)
-        return 0 if item["engine-multicore-2257"].nil?
-        item["engine-multicore-2257"].reduce(1){|m, core|
-            [m, TxCores::coreDayCompletionRatio(core)].min
-        }
+    # TxCores::string1(core)
+    def self.string1(core)
+        "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %)".green
     end
 
-    # TxCores::engineDayCompletionRatio3(engine)
-    def self.engineDayCompletionRatio3(engine)
-        ([0] + engine.map{|core| TxCores::coreDayCompletionRatio(core) }).max
-    end
-
-    # TxCores::string1(engine)
-    def self.string1(engine)
-        "(#{"%6.2f" % (100*TxCores::engineDayCompletionRatio3(engine))} %)".green
+    # TxCores::string2(core)
+    def self.string2(core)
+        "(#{core["type"]}: #{core["hours"]})"
     end
 end

@@ -105,14 +105,14 @@ class ListingCommandsAndInterpreters
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "ship",
-                "engine"   => [TxCores::interactivelyMakeNewOrNull()].compact
+                "engine"   => TxCores::interactivelyMakeNew()
             }
             NxEffects::issue(uuid, description, behaviour, nil)
             return
         end
 
         if Interpreting::match("ships", input) then
-            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::engineDayCompletionRatio3(item["behaviour"]["engine"]) })
+            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })
             return
         end
 

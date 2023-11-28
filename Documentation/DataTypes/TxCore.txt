@@ -5,10 +5,8 @@ TxCore
     "type"          : "daily-hours"
     "hours"         : Float
 
-
 TxCore
     "uuid"          : String
     "mikuType"      : "TxCore"
     "type"          : "weekly-hours"
     "hours"         : Float
-

@@ -22,7 +22,7 @@ class TxBehaviours
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "ship",
-                "engine"   => [TxCores::interactivelyMakeNewOrNull()].compact
+                "engine"   => TxCores::interactivelyMakeNew()
             }
         end
         if option == "sticky" then
@@ -46,8 +46,8 @@ class TxBehaviours
         raise "(error: d797c408-8682-48b9-92d5-b194c6a431be) behaviour: #{behaviour}"
     end
 
-    # TxBehaviours::toString(behaviour)
-    def self.toString(behaviour)
+    # TxBehaviours::toString1(behaviour)
+    def self.toString1(behaviour)
         if behaviour["type"] == "ondate" then
             return "(ondate: #{behaviour["datetime"][0, 10]})"
         end
@@ -58,6 +58,20 @@ class TxBehaviours
             return "(sticky)"
         end
         raise "(error: 7efeb635-21ba-4b9f-bacb-95f747c18eb2) behaviour: #{behaviour}"
+    end
+
+    # TxBehaviours::toString2(behaviour)
+    def self.toString2(behaviour)
+        if behaviour["type"] == "ondate" then
+            return ""
+        end
+        if behaviour["type"] == "ship" then
+            return " #{TxCores::string2(behaviour["engine"])}".yellow
+        end
+        if behaviour["type"] == "sticky" then
+            return ""
+        end
+        raise "(error: d518ac2f-1df1-4d82-89b4-6d615a87b102) behaviour: #{behaviour}"
     end
 
     # TxBehaviours::shouldDisplayInListing(behaviour)
