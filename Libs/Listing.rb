@@ -97,6 +97,12 @@ class Listing
         line
     end
 
+    # Listing::runningItemsFirst(items)
+    def self.runningItemsFirst(items)
+        i1, i2 = items.partition{|item| NxBalls::itemIsRunning(item) }
+        i1 + i2
+    end
+
     # Listing::items()
     def self.items()
         [
@@ -110,7 +116,7 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
-            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }),
+            Listing::runningItemsFirst(NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })),
             NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
@@ -223,7 +229,7 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems())
+            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
 
             system("clear")
 
