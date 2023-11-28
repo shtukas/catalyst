@@ -20,6 +20,17 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxEffect" then
+            behaviour = item["behaviour"]
+            if behaviour["type"] == "ship" then
+                core = behaviour["engine"] # the engine is a single core at the moment
+                accounts << {
+                    "description" => "core: #{core["uuid"]}",
+                    "number"      => core["uuid"]
+                }
+            end
+        end
+
         # Special Features
 
         if item["stackuuid"] then
