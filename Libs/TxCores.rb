@@ -50,11 +50,9 @@ class TxCores
         if core["type"] == "weekly-hours" then
             doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank::getValueAtDate(core["uuid"], date) }
             doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
-            return 1 if doneSinceLastSaturdayInHours >= core["hours"]
-
+            return doneSinceLastSaturdayInHours.to_f/core["hours"] if doneSinceLastSaturdayInHours >= core["hours"]
             dailyHours = core["hours"].to_f/7
-            todayhours = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
-            return todayhours.to_f/dailyHours
+            return Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
         end
         if core["type"] == "daily-hours" then
             dailyHours = core["hours"]
