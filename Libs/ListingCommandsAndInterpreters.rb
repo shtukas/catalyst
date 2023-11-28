@@ -383,14 +383,14 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("ondate", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            uuid = SecureRandom.uuid
-            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "ondate",
                 "datetime" => CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             }
+            uuid = SecureRandom.uuid
+            DataCenter::itemInit(uuid, "NxEffect")
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issueWithoutInit(uuid, description, behaviour, coredataref)
             return
@@ -501,14 +501,14 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("tomorrow", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            uuid = SecureRandom.uuid
-            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "ondate",
                 "datetime" => CommonUtils::nowPlusOneDayDatetimeIso8601()
             }
+            uuid = SecureRandom.uuid
+            DataCenter::itemInit(uuid, "NxEffect")
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issueWithoutInit(uuid, description, behaviour, coredataref)
             return
