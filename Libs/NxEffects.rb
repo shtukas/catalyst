@@ -132,7 +132,7 @@ class NxEffects
             puts  Listing::toString2(store, effect)
             puts  ""
 
-            NxEffects::stack(effect)
+            Prefix::prefix(NxEffects::stack(effect))
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString2(store, item)
