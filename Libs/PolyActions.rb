@@ -145,7 +145,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxEffect" then
-            if item["items"].size > 0 then
+            if NxEffects::stack(item).size > 0 then
                 puts "You cannot delete '#{PolyFunctions::toString(item).green}' because the stack is not empty"
                 LucilleCore::pressEnterToContinue()
                 return
