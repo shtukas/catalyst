@@ -1,9 +1,19 @@
 
 class NxEffects
 
-    # NxEffects::issue(uuid, description, behaviour, coredataReference)
-    def self.issue(uuid, description, behaviour, coredataReference)
+    # NxEffects::issueWithInit(uuid, description, behaviour, coredataReference)
+    def self.issueWithInit(uuid, description, behaviour, coredataReference)
         DataCenter::itemInit(uuid, "NxEffect")
+        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
+        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        DataCenter::setAttribute(uuid, "behaviour", behaviour)
+        DataCenter::setAttribute(uuid, "description", description)
+        DataCenter::setAttribute(uuid, "field11", coredataReference)
+        DataCenter::itemOrNull(uuid)
+    end
+
+    # NxEffects::issueWithoutInit(uuid, description, behaviour, coredataReference)
+    def self.issueWithoutInit(uuid, description, behaviour, coredataReference)
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         DataCenter::setAttribute(uuid, "behaviour", behaviour)
@@ -25,7 +35,7 @@ class NxEffects
         behaviour = TxBehaviours::interactivelyMakeNewOnNull()
         return if behaviour.nil?
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        NxEffects::issue(uuid, description, behaviour, coredataref)
+        NxEffects::issueWithInit(uuid, description, behaviour, coredataref)
     end
 
     # ------------------

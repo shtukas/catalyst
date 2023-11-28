@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | active * | bank accounts * | donation * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy (<n>)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop",
@@ -54,13 +54,12 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
-            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "sticky"
             }
-            NxEffects::issue(uuid, description, behaviour, nil)
+            NxEffects::issueWithInit(uuid, description, behaviour, nil)
             return
         end
 
@@ -75,6 +74,17 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("behaviour *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxEffect"
+            behaviour = TxBehaviours::interactivelyMakeNewOnNull()
+            return if behaviour.nil?
+            DataCenter::setAttribute(item["uuid"], "behaviour", behaviour)
             return
         end
 
@@ -101,14 +111,13 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
-            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "ship",
                 "engine"   => TxCores::interactivelyMakeNew()
             }
-            NxEffects::issue(uuid, description, behaviour, nil)
+            NxEffects::issueWithInit(uuid, description, behaviour, nil)
             return
         end
 
@@ -148,7 +157,6 @@ class ListingCommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
             uuid = SecureRandom.uuid
-            Cubes::itemInit(uuid, "NxEffect")
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
@@ -156,7 +164,7 @@ class ListingCommandsAndInterpreters
                 "datetime" => CommonUtils::nowDatetimeIso8601()
             }
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issue(uuid, description, behaviour, coredataref)
+            NxEffects::issueWithInit(uuid, description, behaviour, coredataref)
             return
         end
 
@@ -384,7 +392,7 @@ class ListingCommandsAndInterpreters
                 "datetime" => CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             }
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issue(uuid, description, behaviour, coredataref)
+            NxEffects::issueWithoutInit(uuid, description, behaviour, coredataref)
             return
         end
 
@@ -502,7 +510,7 @@ class ListingCommandsAndInterpreters
                 "datetime" => CommonUtils::nowPlusOneDayDatetimeIso8601()
             }
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issue(uuid, description, behaviour, coredataref)
+            NxEffects::issueWithoutInit(uuid, description, behaviour, coredataref)
             return
         end
 
