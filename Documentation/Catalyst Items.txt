@@ -9,4 +9,4 @@ Cross types conventions (all optional):
     - ox1-0656              : Ox1
     - global-positioning    : Float or null # used for ordering and sorting
                               within the children of a core.
-    - donation-1751         : uuid
+    - donation-1752         : Array[String]

@@ -54,10 +54,8 @@ class Catalyst
 
     # Catalyst::donationSuffix(item)
     def self.donationSuffix(item)
-        return "" if item["donation-1751"].nil?
-        target = DataCenter::itemOrNull(item["donation-1751"])
-        return "" if target.nil?
-        " (#{target["description"]})".green
+        return "" if item["donation-1752"].nil?
+        " (#{item["donation-1752"].map{|uuid| DataCenter::itemOrNull(uuid)}.compact.map{|target| target["description"]}.join(", ")})".green
     end
 
     # Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)

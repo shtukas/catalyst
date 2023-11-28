@@ -29,11 +29,13 @@ class PolyFunctions
             end
         end
 
-        if item["donation-1751"] then
-            parent = DataCenter::itemOrNull(item["donation-1751"])
-            if parent then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
-            end
+        if item["donation-1752"] then
+            item["donation-1752"].each {|targetuuid|
+                target = DataCenter::itemOrNull(targetuuid)
+                if target then
+                    accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+                end
+            }
         end
 
         accounts.reduce([]){|as, account|

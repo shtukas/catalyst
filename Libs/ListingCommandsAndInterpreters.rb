@@ -45,7 +45,8 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
             return if ship.nil?
-            DataCenter::setAttribute(item["uuid"], "donation-1751", ship["uuid"])
+            donation = (item["donation-1752"] || []) + [ship["uuid"]]
+            DataCenter::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
 
