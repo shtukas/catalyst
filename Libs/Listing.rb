@@ -97,12 +97,6 @@ class Listing
         line
     end
 
-    # Listing::runningItemsFirst(items)
-    def self.runningItemsFirst(items)
-        i1, i2 = items.partition{|item| NxBalls::itemIsRunning(item) }
-        i1 + i2
-    end
-
     # Listing::items()
     def self.items()
         [
@@ -116,9 +110,9 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
-            Listing::runningItemsFirst(NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) < 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })),
+            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) < 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }),
             Waves::listingItems().select{|item| !item["interruption"] },
-            Listing::runningItemsFirst(NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) >= 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })),
+            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) >= 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }),
             NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
