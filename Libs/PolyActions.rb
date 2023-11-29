@@ -159,34 +159,42 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxEffect" then
-            NxBalls::start(item)
             PolyActions::access(item)
-            NxBalls::stop(item)
             return
         end
 
         if item["mikuType"] == "NxStrat" then
-            NxBalls::start(item)
-            if parent = NxStrats::parentOrNull(item) then
-                puts "You cannot done NxStrat '#{PolyFunctions::toString(item).green}' as it has a parent: '#{PolyFunctions::toString(parent).green}'"
-                LucilleCore::pressEnterToContinue()
+            if !NxBalls::itemIsActive(item) then
+                NxBalls::start(item)
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+            if NxBalls::itemIsActive(item) then
+                NxBalls::stop(item)
+                if NxStrats::parentOrNull(item) then
+                    return
+                end
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    DataCenter::destroy(item["uuid"])
+                end
+                return
             end
-            NxBalls::stop(item)
-            return
+
         end
 
         if item["mikuType"] == "NxTask" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                DataCenter::destroy(item["uuid"])
+            if !NxBalls::itemIsActive(item) then
+                NxBalls::start(item)
+                PolyActions::access(item)
+                return
             end
-            NxBalls::stop(item)
+            if NxBalls::itemIsActive(item) then
+                NxBalls::stop(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
+                    DataCenter::destroy(item["uuid"])
+                end
+                return
+            end
             return
         end
 
@@ -196,12 +204,18 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Waves::performWaveDone(item)
+            if !NxBalls::itemIsActive(item) then
+                NxBalls::start(item)
+                PolyActions::access(item)
+                return
             end
-            NxBalls::stop(item)
+            if NxBalls::itemIsActive(item) then
+                if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+                    NxBalls::stop(item)
+                    Waves::performWaveDone(item)
+                end
+                return
+            end
             return
         end
 
