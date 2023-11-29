@@ -13,11 +13,13 @@ class Prefix
         if items[0]["mikuType"] == "NxEffect" then
             item = items[0]
             if item["behaviour"]["type"] == "ship" then
-                children = NxEffects::stack(item)
-                            .select{|i| Listing::listable(i) }
-                            .first(6)
-                if children.size > 0 then
-                    return Prefix::prefix(children + items)
+                if NxBalls::itemIsActive(item) then
+                    children = NxEffects::stack(item)
+                                .select{|i| Listing::listable(i) }
+                                .first(6)
+                    if children.size > 0 then
+                        return Prefix::prefix(children + items)
+                    end
                 end
             end
         end
