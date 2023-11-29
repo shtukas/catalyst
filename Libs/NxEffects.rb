@@ -43,6 +43,13 @@ class NxEffects
 
     # NxEffects::toString(item)
     def self.toString(item)
+        if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+            count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
+            if count then
+                return "#{TxBehaviours::toIcon(item["behaviour"])} #{TxBehaviours::toString1(item["behaviour"])} special circusmtances: DataHub/Buffer-In#{TxBehaviours::toString2(item["behaviour"])}"
+            end
+        end
+
         "#{TxBehaviours::toIcon(item["behaviour"])} #{TxBehaviours::toString1(item["behaviour"])} #{item["description"]}#{TxBehaviours::toString2(item["behaviour"])}"
     end
 
