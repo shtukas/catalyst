@@ -86,11 +86,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLong" then
-            DataCenter::destroy(item["uuid"])
-            return
-        end
-
         if item["mikuType"] == "NxEffect" then
             NxEffects::done(item)
             return
@@ -125,6 +120,86 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
+            return
+        end
+
+        puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
+        raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
+    end
+
+    # PolyActions::natural(item)
+    def self.natural(item)
+
+        # order: alphabetical order
+
+        if item["mikuType"] == "DesktopTx1" then
+            Desktop::done()
+            return
+        end
+
+        if item["mikuType"] == "DropBox" then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+                DropBox::done(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "Backup" then
+            XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+            return
+        end
+
+        if item["mikuType"] == "NxLambda" then
+            return
+        end
+
+        if item["mikuType"] == "NxAnniversary" then
+            Anniversaries::done(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxEffect" then
+            NxBalls::start(item)
+            NxEffects::done(item)
+            NxBalls::stop(item)
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
+            NxBalls::start(item)
+            if parent = NxStrats::parentOrNull(item) then
+                puts "You cannot done NxStrat '#{PolyFunctions::toString(item).green}' as it has a parent: '#{PolyFunctions::toString(parent).green}'"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DataCenter::destroy(item["uuid"])
+            end
+            NxBalls::stop(item)
+            return
+        end
+
+        if item["mikuType"] == "NxTask" then
+            NxBalls::start(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
+                DataCenter::destroy(item["uuid"])
+            end
+            NxBalls::stop(item)
+            return
+        end
+
+        if item["mikuType"] == "PhysicalTarget" then
+            PhysicalTargets::performUpdate(item)
+            return
+        end
+
+        if item["mikuType"] == "Wave" then
+            NxBalls::start(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Waves::performWaveDone(item)
+            end
+            NxBalls::stop(item)
             return
         end
 
