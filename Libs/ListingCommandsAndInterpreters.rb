@@ -187,7 +187,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            DataCenter::setAttribute(item["uuid"], "tmpskip1", CommonUtils::today())
+            DataCenter::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -195,7 +195,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DataCenter::setAttribute(item["uuid"], "tmpskip1", CommonUtils::today())
+            DataCenter::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
