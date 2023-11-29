@@ -8,7 +8,7 @@ class ListingCommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy (<n>)",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
-            "divings       : anniversaries | ondates | waves | desktop",
+            "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | pushs | move",
         ].join("\n")
@@ -119,6 +119,11 @@ class ListingCommandsAndInterpreters
 
         if Interpreting::match("ships", input) then
             NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })
+            return
+        end
+
+        if Interpreting::match("stickies", input) then
+            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] })
             return
         end
 
