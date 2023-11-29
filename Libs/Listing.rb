@@ -112,11 +112,13 @@ class Listing
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-            Waves::listingItems().select{|item| !item["interruption"] },
+
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
-            Listing::runningItemsFirst(NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })),
+            Listing::runningItemsFirst(NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) < 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })),
+            Waves::listingItems().select{|item| !item["interruption"] },
+            Listing::runningItemsFirst(NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) >= 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })),
             NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
