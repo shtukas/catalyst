@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy (<n>)",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
@@ -306,13 +306,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item)
-            return
-        end
-
-        if Interpreting::match("destroy", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::destroy(item)
             return
         end
 
