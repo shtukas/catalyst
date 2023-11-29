@@ -10,6 +10,13 @@ class Ox1
         item["ox1-0656"]["position"]
     end
 
+    # Ox1::suffix(item)
+    def self.suffix(item)
+        position = Ox1::activePositionOrNull(item)
+        return "" if position.nil?
+        return " [stack]"
+    end
+
     # Ox1::getTopPostion()
     def self.getTopPostion()
         DataCenter::catalystItems().reduce(0) {|position, item|

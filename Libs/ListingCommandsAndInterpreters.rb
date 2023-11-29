@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | pushs | move",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack | interrupt",
         ].join("\n")
     end
 
@@ -88,7 +88,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("top", input) then
+        if Interpreting::match("interrupt", input) then
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             return if line == ""
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
@@ -97,6 +97,7 @@ class ListingCommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
+            NxEffects::interactivelySelectShipAndAddTo(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(task)
             end
@@ -127,29 +128,32 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile", input) then
-            item = store.items().first
-            return if item.nil?
-
-            if item["mikuType"] == "NxTask" then
-                if item["stackuuid"] then
-                    effect = DataCenter::itemOrNull(item["stackuuid"])
-                    if effect then
-                        NxEffects::pile(effect)
-                        return
-                    end
-                end
-            end
-
-            NxStrats::interactivelyPile(item)
-            return
-        end
-
         if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             NxStrats::interactivelyPile(item)
+            return
+        end
+
+        if Interpreting::match("stack", input) then
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text.lines.reverse.each{|line|
+                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
+                Ox1::putAtTop(task)
+                ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
+                if ship then
+                    DataCenter::setAttribute(task["uuid"], "stackuuid", ship["uuid"])
+                end
+            }
+            return
+        end
+
+        if Interpreting::match("unstack", input) then
+            item = store.items().first
+            return if item.nil?
+            Ox1::detach(item)
             return
         end
 
@@ -165,14 +169,6 @@ class ListingCommandsAndInterpreters
             }
             coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
             NxEffects::issueWithInit(uuid, description, behaviour, coredataref)
-            return
-        end
-
-        if Interpreting::match("pushs", input) then
-            selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
-            selected.each{|item|
-                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
-            }
             return
         end
 
@@ -203,7 +199,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxEffects::interactivelySelectShipAndAddTo(item, lambda{|item| item["behaviour"]["type"] == "ship" })
+            NxEffects::interactivelySelectShipAndAddTo(item)
             return
         end
 

@@ -85,8 +85,9 @@ class NxEffects
         LucilleCore::selectEntityFromListOfEntitiesOrNull("effect", effects, lambda{|item| NxEffects::toString(item) })
     end
 
-    # NxEffects::interactivelySelectShipAndAddTo(item, selector)
-    def self.interactivelySelectShipAndAddTo(item, selector)
+    # NxEffects::interactivelySelectShipAndAddTo(item)
+    def self.interactivelySelectShipAndAddTo(item)
+        selector = lambda{|item| item["behaviour"]["type"] == "ship" }
         ship = NxEffects::interactivelySelectOneOrNull(selector)
         return if ship.nil?
         DataCenter::setAttribute(item["uuid"], "stackuuid", ship["uuid"])
