@@ -160,7 +160,7 @@ class PolyActions
 
         if item["mikuType"] == "NxEffect" then
             NxBalls::start(item)
-            NxEffects::done(item)
+            PolyActions::access(item)
             NxBalls::stop(item)
             return
         end
@@ -181,6 +181,7 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
+            PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 DataCenter::destroy(item["uuid"])
@@ -196,6 +197,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             NxBalls::start(item)
+            PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
