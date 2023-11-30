@@ -142,6 +142,7 @@ class ListingCommandsAndInterpreters
             text.lines.reverse.each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
+                puts "> deciding ship for task: '#{PolyFunctions::toString(task)}'"
                 ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
                 if ship then
                     DataCenter::setAttribute(task["uuid"], "stackuuid", ship["uuid"])
