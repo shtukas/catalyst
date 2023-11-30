@@ -145,7 +145,7 @@ class ListingCommandsAndInterpreters
                 puts "> deciding ship for task: '#{PolyFunctions::toString(task)}'"
                 ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
                 if ship then
-                    DataCenter::setAttribute(task["uuid"], "stackuuid", ship["uuid"])
+                    DataCenter::setAttribute(task["uuid"], "donation-1752", [ship["uuid"]])
                 end
             }
             return
