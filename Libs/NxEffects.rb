@@ -124,6 +124,32 @@ class NxEffects
         NxEffects::program1(item)
     end
 
+    # NxEffects::natural(item)
+    def self.natural(item)
+        NxBalls::start(item)
+        if item["field11"] then
+            CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
+        end
+        if item["behaviour"]["type"] == "ondate" then
+            if NxEffects::stack(item).size == 0 then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{NxEffects::toString(item).green}' ? ", true) then
+                    DataCenter::destroy(item["uuid"])
+                end
+            else
+                NxEffects::program1(effect)
+            end
+        end
+        if item["behaviour"]["type"] == "ship" then
+            if NxEffects::stack(item).size > 0 then
+                NxEffects::program1(effect)
+            end
+        end
+        if item["behaviour"]["type"] == "sticky" then
+            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+        end
+        NxBalls::stop(item)
+    end
+
     # NxEffects::pile(effect)
     def self.pile(effect)
         text = CommonUtils::editTextSynchronously("").strip

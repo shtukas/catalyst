@@ -159,7 +159,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxEffect" then
-            PolyActions::access(item)
+            PolyActions::natural(item)
             return
         end
 
@@ -184,16 +184,12 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if !NxBalls::itemIsActive(item) then
                 NxBalls::start(item)
-                PolyActions::access(item)
-                return
             end
-            if NxBalls::itemIsActive(item) then
-                NxBalls::stop(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                    DataCenter::destroy(item["uuid"])
-                end
-                return
+            PolyActions::access(item)
+            NxBalls::stop(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
+                DataCenter::destroy(item["uuid"])
             end
             return
         end
@@ -206,15 +202,11 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if !NxBalls::itemIsActive(item) then
                 NxBalls::start(item)
-                PolyActions::access(item)
-                return
             end
-            if NxBalls::itemIsActive(item) then
-                if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                    NxBalls::stop(item)
-                    Waves::performWaveDone(item)
-                end
-                return
+            PolyActions::access(item)
+            NxBalls::stop(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Waves::performWaveDone(item)
             end
             return
         end
