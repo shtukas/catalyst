@@ -53,13 +53,15 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("sticky", input) then
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ""
-            uuid = SecureRandom.uuid
             behaviour = {
                 "uuid"     => SecureRandom.uuid,
                 "mikuType" => "TxBehaviour",
                 "type"     => "sticky"
             }
-            NxEffects::issueWithInit(uuid, description, behaviour, nil)
+            uuid = SecureRandom.uuid
+            DataCenter::itemInit(uuid, "NxEffect")
+            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+            NxEffects::issueWithInit(uuid, description, behaviour, coredataref)
             return
         end
 

@@ -50,7 +50,7 @@ class NxEffects
             end
         end
 
-        "#{TxBehaviours::toIcon(item["behaviour"])} #{TxBehaviours::toString1(item["behaviour"])} #{item["description"]}#{TxBehaviours::toString2(item["behaviour"])}"
+        "#{TxBehaviours::toIcon(item["behaviour"])} #{TxBehaviours::toString1(item["behaviour"])} #{item["description"]}#{TxBehaviours::toString2(item["behaviour"])}#{CoreDataRefStrings::itemToSuffixString(item).red}"
     end
 
     # NxEffects::listingItems(selector, order)
