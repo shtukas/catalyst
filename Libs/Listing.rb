@@ -106,7 +106,6 @@ class Listing
             Anniversaries::listingItems(),
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
-
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
             NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
