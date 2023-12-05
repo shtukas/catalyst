@@ -45,6 +45,17 @@ class TxCores
     # -----------------------------------------------
     # Data
 
+    # TxCores::coreDayHours(core)
+    def self.coreDayHours(core)
+        if core["type"] == "weekly-hours" then
+            return core["hours"].to_f/7
+        end
+        if core["type"] == "daily-hours" then
+            return core["hours"]
+        end
+        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
+    end
+
     # TxCores::coreDayCompletionRatio(core)
     def self.coreDayCompletionRatio(core)
         if core["type"] == "weekly-hours" then
@@ -64,7 +75,7 @@ class TxCores
 
     # TxCores::string1(core)
     def self.string1(core)
-        "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %)".green
+        "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
     end
 
     # TxCores::string2(core)
