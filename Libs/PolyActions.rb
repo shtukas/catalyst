@@ -159,7 +159,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxEffect" then
-            PolyActions::natural(item)
+            NxEffects::natural(item)
             return
         end
 

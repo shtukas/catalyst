@@ -115,10 +115,9 @@ class NxEffects
     # NxEffects::access(item)
     def self.access(item)
         if item["field11"] then
-            answer = LucilleCore::askQuestionAnswerAsBoolean("Would you like to start the effect itself (it has a field11) ? ")
+            answer = LucilleCore::askQuestionAnswerAsBoolean("Would you like to acess the field11 ? ", true)
             if answer then
                 CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
-                return
             end
         end
         NxEffects::program1(item)
@@ -141,11 +140,13 @@ class NxEffects
         end
         if item["behaviour"]["type"] == "ship" then
             if NxEffects::stack(item).size > 0 then
-                NxEffects::program1(effect)
+                NxEffects::program1(item)
             end
         end
         if item["behaviour"]["type"] == "sticky" then
-            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+            if LucilleCore::askQuestionAnswerAsBoolean("push to tomorrow: '#{NxEffects::toString(item).green}' ? ", true) then
+                DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+            end
         end
         NxBalls::stop(item)
     end
