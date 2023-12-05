@@ -85,6 +85,14 @@ class NxEffects
         LucilleCore::selectEntityFromListOfEntitiesOrNull("effect", effects, lambda{|item| NxEffects::toString(item) })
     end
 
+    # NxEffects::selectZeroOrMore(selector)
+    def self.selectZeroOrMore(selector)
+        effects = DataCenter::mikuType("NxEffect")
+                    .select{|item| selector.call(item) }
+        selected, _ = LucilleCore::selectZeroOrMore("effect", [], effects, lambda{|item| NxEffects::toString(item) })
+        selected
+    end
+
     # NxEffects::interactivelySelectShipAndAddTo(item)
     def self.interactivelySelectShipAndAddTo(item)
         selector = lambda{|item| item["behaviour"]["type"] == "ship" }

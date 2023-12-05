@@ -43,9 +43,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
-            return if ship.nil?
-            donation = (item["donation-1752"] || []) + [ship["uuid"]]
+            ships = NxEffects::selectZeroOrMore(lambda{|item| item["behaviour"]["type"] == "ship" })
+            donation = (item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }
             DataCenter::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
@@ -134,6 +133,10 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["mikuType"] == "NxEffect" and item["behaviour"]["type"] == "ship" then
+                NxEffects::pile(item)
+                return
+            end
             NxStrats::interactivelyPile(item)
             return
         end
