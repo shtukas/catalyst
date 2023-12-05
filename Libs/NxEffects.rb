@@ -264,7 +264,6 @@ class NxEffects
                 }
 
             puts ""
-            puts ".. *"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
