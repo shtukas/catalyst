@@ -85,10 +85,11 @@ class NxEffects
         LucilleCore::selectEntityFromListOfEntitiesOrNull("effect", effects, lambda{|item| NxEffects::toString(item) })
     end
 
-    # NxEffects::selectZeroOrMore(selector)
-    def self.selectZeroOrMore(selector)
+    # NxEffects::selectZeroOrMore(selector, ordering)
+    def self.selectZeroOrMore(selector, ordering)
         effects = DataCenter::mikuType("NxEffect")
                     .select{|item| selector.call(item) }
+                    .sort_by{|item| ordering.call(item) }
         selected, _ = LucilleCore::selectZeroOrMore("effect", [], effects, lambda{|item| NxEffects::toString(item) })
         selected
     end

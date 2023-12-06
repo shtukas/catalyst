@@ -43,8 +43,11 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            ships = NxEffects::selectZeroOrMore(lambda{|item| item["behaviour"]["type"] == "ship" })
-            donation = (item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }
+            ships = NxEffects::selectZeroOrMore(
+                lambda{|item| item["behaviour"]["type"] == "ship" },
+                lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }
+            )
+            donation = ((item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }).uniq
             DataCenter::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
