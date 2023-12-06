@@ -160,6 +160,7 @@ require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
 require_relative "NxEffects.rb"
+require_relative "Notes.rb"
 
 require_relative "Ox1.rb"
 

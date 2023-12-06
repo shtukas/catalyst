@@ -78,10 +78,11 @@ class NxEffects
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxEffects::interactivelySelectOneOrNull(selector)
-    def self.interactivelySelectOneOrNull(selector)
+    # NxEffects::interactivelySelectOneOrNull(selector, ordering)
+    def self.interactivelySelectOneOrNull(selector, ordering)
         effects = DataCenter::mikuType("NxEffect")
                     .select{|item| selector.call(item) }
+                    .sort_by{|item| ordering.call(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("effect", effects, lambda{|item| NxEffects::toString(item) })
     end
 
@@ -97,7 +98,8 @@ class NxEffects
     # NxEffects::interactivelySelectShipAndAddTo(item)
     def self.interactivelySelectShipAndAddTo(item)
         selector = lambda{|item| item["behaviour"]["type"] == "ship" }
-        ship = NxEffects::interactivelySelectOneOrNull(selector)
+        ordering = lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }
+        ship = NxEffects::interactivelySelectOneOrNull(selector, ordering)
         return if ship.nil?
         DataCenter::setAttribute(item["uuid"], "stackuuid", ship["uuid"])
     end
@@ -106,7 +108,10 @@ class NxEffects
     def self.selectSubsetAndMoveToSelectedShip(items, selector)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        effect = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
+        effect = NxEffects::interactivelySelectOneOrNull(
+            lambda{|item| item["behaviour"]["type"] == "ship" },
+            lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }
+        )
         return if effect.nil?
         selected.each{|item|
             DataCenter::setAttribute(item["uuid"], "stackuuid", effect["uuid"])

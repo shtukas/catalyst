@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
@@ -132,6 +132,16 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("note *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            note = item["note-1531"] || ""
+            note = CommonUtils::editTextSynchronously(note)
+            DataCenter::setAttribute(item["uuid"], "note-1531", note)
+            return
+        end
+
         if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -151,7 +161,10 @@ class ListingCommandsAndInterpreters
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding ship for task: '#{PolyFunctions::toString(task)}'"
-                ship = NxEffects::interactivelySelectOneOrNull(lambda{|item| item["behaviour"]["type"] == "ship" })
+                ship = NxEffects::interactivelySelectOneOrNull(
+                    lambda{|item| item["behaviour"]["type"] == "ship" },
+                    lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }
+                )
                 if ship then
                     DataCenter::setAttribute(task["uuid"], "donation-1752", [ship["uuid"]])
                 end
