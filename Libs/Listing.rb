@@ -246,7 +246,7 @@ class Listing
                     status = spacecontrol.putsline line
                     break if !status
                 }
-            puts "performance: #{performance}".yellow
+            puts "performance: #{performance.to_i} %".yellow
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
