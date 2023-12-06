@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
@@ -139,6 +139,14 @@ class ListingCommandsAndInterpreters
             note = item["note-1531"] || ""
             note = CommonUtils::editTextSynchronously(note)
             DataCenter::setAttribute(item["uuid"], "note-1531", note)
+            return
+        end
+
+        if Interpreting::match("transmute *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutations::transmute(item)
             return
         end
 
