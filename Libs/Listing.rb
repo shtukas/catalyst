@@ -168,18 +168,10 @@ class Listing
         end
     end
 
-    # Listing::injectMissingRunningItems(items, runningItems)
-    def self.injectMissingRunningItems(items, runningItems)
-        if runningItems.empty? then
-            return items
-        else
-            capacity = CommonUtils::screenHeight() - 4 - Desktop::announce().lines.size
-            if items.take(capacity).map{|i| i["uuid"] }.include?(runningItems[0]["uuid"]) then
-                return Listing::injectMissingRunningItems(items, runningItems.drop(1))
-            else
-                return Listing::injectMissingRunningItems(runningItems.take(1) + items, runningItems.drop(1))
-            end
-        end
+    # Listing::injectActiveItems(items, runningItems)
+    def self.injectActiveItems(items, runningItems)
+        activeItems, pausedItems = runningItems.partition{|item| NxBalls::itemIsRunning(item) }
+        activeItems + pausedItems + items
     end
 
     # Listing::main()
@@ -224,21 +216,20 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 5)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectMissingRunningItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
+            items = Prefix::prefix(Listing::injectActiveItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
+            items = items
+                        .reduce([]){|selected, item|
+                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                                selected
+                            else
+                                selected + [item]
+                            end
+                        }
 
             system("clear")
 
             spacecontrol.putsline ""
 
-            items
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
-            performance = Performance::updateDataFileAndGetPerformamce(items)
             items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -246,6 +237,8 @@ class Listing
                     status = spacecontrol.putsline line
                     break if !status
                 }
+
+            performance = Performance::updateDataFileAndGetPerformamce(items)
             puts "performance: #{performance.to_i} %".yellow
 
             puts ""
