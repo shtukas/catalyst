@@ -7,10 +7,10 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | pile | ship | sticky | todo (stack)",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | pile | ship | sticky | priority",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack | interrupt",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack",
         ].join("\n")
     end
 
@@ -67,11 +67,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo", input) then
-            NxEffects::interactivelyIssueNewOrNull()
-            return
-        end
-
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -92,7 +87,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("interrupt", input) then
+        if Interpreting::match("priority", input) then
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             return if line == ""
             task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
@@ -225,7 +220,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("task", input) then
+        if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
