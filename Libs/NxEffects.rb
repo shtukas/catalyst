@@ -123,6 +123,11 @@ class NxEffects
         ([0] + NxEffects::stack(effect).map{|task| task["global-positioning"] || 0 }).min
     end
 
+    # NxEffects::requiredTimeInSeconds(effect)
+    def self.requiredTimeInSeconds(effect)
+        TxBehaviours::requiredTimeInSeconds(effect["behaviour"])
+    end
+
     # ------------------
     # Ops
 

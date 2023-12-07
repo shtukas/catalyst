@@ -30,6 +30,9 @@ class Performance
 
     # Performance::itemPrediction(item)
     def self.itemPrediction(item)
+        if item["mikuType"] == "NxEffect" then
+            return NxEffects::requiredTimeInSeconds(item)
+        end
         10*60 # 10 mins
     end
 

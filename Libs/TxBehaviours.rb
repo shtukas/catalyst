@@ -87,4 +87,18 @@ class TxBehaviours
         end
         raise "(error 456d4952-f1fa-4f28-9f0d-2d80b32d2827) behaviour: #{behaviour}"
     end
+
+    # TxBehaviours::requiredTimeInSeconds(behaviour)
+    def self.requiredTimeInSeconds(behaviour)
+        if behaviour["type"] == "ondate" then
+            return 600
+        end
+        if behaviour["type"] == "ship" then
+            return TxCores::requiredTimeInSeconds(behaviour["engine"])
+        end
+        if behaviour["type"] == "sticky" then
+            return 60
+        end
+        raise "(error 05fcff57-5648-4687-912e-5228589b34e1) behaviour: #{behaviour}"
+    end
 end
