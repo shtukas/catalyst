@@ -4,7 +4,7 @@ class TmpSkip1
 
     # TmpSkip1::isSkipped(item)
     def self.isSkipped(item)
-        item["skip-0843"] and item["skip-0843"] <= Time.new.to_i
+        item["skip-0843"] and item["skip-0843"] > Time.new.to_i
     end
 
     # TmpSkip1::skipSuffix(item)
