@@ -169,7 +169,6 @@ require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 require_relative "PhysicalTargets.rb"
 require_relative "Prefix.rb"
-require_relative "Performance.rb"
 
 require_relative "SectionsType0141.rb"
 

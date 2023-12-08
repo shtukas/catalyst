@@ -213,7 +213,7 @@ class Listing
                 Catalyst::openCyclesSync()
             end
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 5)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
             items = Prefix::prefix(Listing::injectActiveItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
@@ -237,9 +237,6 @@ class Listing
                     status = spacecontrol.putsline line
                     break if !status
                 }
-
-            performance = Performance::updateDataFileAndGetPerformamce(items)
-            puts "performance: #{performance.to_i} %".yellow
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")

@@ -67,8 +67,10 @@ class TxCores
         end
         if core["type"] == "daily-hours" then
             dailyHours = core["hours"]
-            todayhours = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
-            return todayhours.to_f/dailyHours
+            hoursDoneToday = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
+            x1 = hoursDoneToday.to_f/dailyHours
+            x2 = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
+            return [0.8*x1 + 0.2*x2, x1].max
         end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
