@@ -278,7 +278,7 @@ class Listing
 
             contextcommands = lambda{|item|
                 if item["mikuType"] == "PhysicalTarget" then
-                    return ["access", "push"]
+                    return ["access", "push", "exit"]
                 end
                 if NxBalls::itemIsRunning(item) then
                     return ["done", "stop", "pause", "exit", "command"]
