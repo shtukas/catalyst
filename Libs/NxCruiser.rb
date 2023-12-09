@@ -123,14 +123,10 @@ class NxCruisers
 
     # NxCruisers::natural(item)
     def self.natural(item)
-        NxBalls::start(item)
         if item["field11"] then
             CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
         end
-        if NxCruisers::stack(item).size > 0 then
-            NxCruisers::program1(item)
-        end
-        NxBalls::stop(item)
+        NxCruisers::program1(item)
     end
 
     # NxCruisers::pile(item)

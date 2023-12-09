@@ -267,12 +267,18 @@ class Listing
             end
 
             item = Listing::items2().first
+
+            if item["mikuType"] == "NxCruiser" then
+                NxCruisers::natural(item)
+                next
+            end
+
             store = ItemStore.new()
             store.register(item, true)
 
             contextcommands = lambda{|item|
                 if item["mikuType"] == "PhysicalTarget" then
-                    return ["access"]
+                    return ["access", "push"]
                 end
                 if NxBalls::itemIsRunning(item) then
                     return ["done", "stop", "pause", "exit", "command"]
@@ -327,6 +333,11 @@ class Listing
                 NxBalls::stop(item)
                 Ox1::detach(item)
                 PolyActions::done(item, true)
+                next
+            end
+
+            if input == "push" then
+                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + 3600)
                 next
             end
 

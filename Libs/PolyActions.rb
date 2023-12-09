@@ -188,7 +188,6 @@ class PolyActions
                 end
                 return
             end
-
         end
 
         if item["mikuType"] == "NxOndate" then
