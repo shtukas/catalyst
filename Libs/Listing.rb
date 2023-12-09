@@ -206,13 +206,13 @@ class Listing
             }
         }
         loop {
-            Listing::focus()
-            Listing::listing()
+            Listing::focus(initialCodeTrace)
+            Listing::listing(initialCodeTrace)
         }
     end
 
-    # Listing::listing()
-    def self.listing()
+    # Listing::listing(initialCodeTrace)
+    def self.listing(initialCodeTrace)
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -251,12 +251,10 @@ class Listing
         }
     end
 
-    # Listing::focus()
-    def self.focus()
+    # Listing::focus(initialCodeTrace)
+    def self.focus(initialCodeTrace)
 
         counter = 0
-
-        initialCodeTrace = CommonUtils::catalystTraceCode()
 
         loop {
             system('clear')
