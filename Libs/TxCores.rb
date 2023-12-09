@@ -84,9 +84,4 @@ class TxCores
     def self.string2(core)
         "(#{core["type"]}: #{core["hours"]})"
     end
-
-    # TxCores::requiredTimeInSeconds(core)
-    def self.requiredTimeInSeconds(core)
-        TxCores::coreDayHours(core)*3600 - Bank::getValueAtDate(core["uuid"], CommonUtils::today())
-    end
 end

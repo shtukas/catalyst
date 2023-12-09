@@ -7,6 +7,10 @@
 
 0.80 : PhysicalTarget
 
+0.70 : boosted ratio 0.0
+
+0.60 : boosted ratio 1.0
+
 0.50 : NxCruiser ratio: 0.0
 
 0.45 : ondate
@@ -43,6 +47,11 @@ class Metrics
 
     # Metrics::metric1(item)
     def self.metric1(item)
+        if TxBoosters::hasActiveBooster(item) then
+            ratio = TxBoosters::completionRatio(item["booster-1521"])
+            return 0.60 + 0.10 * (1-ratio)
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             return 0.80
         end

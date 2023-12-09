@@ -30,6 +30,14 @@ class PolyFunctions
 
         # Special Features
 
+        if TxBoosters::hasActiveBooster(item) then
+            booster = item["booster-1521"]
+            accounts << {
+                "description" => "booster: #{booster["uuid"]}",
+                "number"      => booster["uuid"]
+            }
+        end
+
         if item["stackuuid"] then
             parent = DataCenter::itemOrNull(item["stackuuid"])
             if parent then

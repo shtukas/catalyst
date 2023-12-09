@@ -5,9 +5,9 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | bank accounts * | donation * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | bank accounts * | donation * | booster * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | pile | ship | sticky | priority | stack",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | pile | ship | sticky | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack",
@@ -178,6 +178,26 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             DataCenter::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            return
+        end
+
+        if Interpreting::match("booster *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            booster = TxBoosters::interactivelyMakeNewOrNull()
+            return if booster.nil?
+            DataCenter::setAttribute(item["uuid"], "booster-1521", booster)
+            return
+        end
+
+        if Interpreting::match("todo+booster", input) then
+            task = NxTasks::interactivelyIssueNewOrNull()
+            return if task.nil?
+            booster = TxBoosters::interactivelyMakeNewOrNull()
+            return if booster.nil?
+            DataCenter::setAttribute(task["uuid"], "booster-1521", booster)
+            NxCruisers::interactivelySelectShipAndAddTo(task)
             return
         end
 

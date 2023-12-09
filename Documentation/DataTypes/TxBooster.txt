@@ -1,0 +1,6 @@
+
+TxBooster
+    - "uuid"     : String
+    - "mikuType" : "TxBooster"
+    - "date"     : YYYY-MM-DD
+    - "hours"    : Float
