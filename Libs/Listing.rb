@@ -80,7 +80,8 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{Ox1::suffix(item)}"
+        positionstr = Ox1::activePositionOrNull(item) ? "stack" : "#{"%.3f" % Metrics::metric2(item)}"
+        line = "#{storePrefix} #{positionstr} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -107,12 +108,10 @@ class Listing
             PhysicalTargets::listingItems(),
             Waves::listingItems().select{|item| item["interruption"] },
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
-            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] }),
-            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] }),
-            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) < 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }),
+            NxOndates::listingItems(),
+            NxStickies::listingItems(),
+            NxCruisers::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
-            NxEffects::listingItems(lambda{|item| item["behaviour"]["type"] == "ship" and TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) >= 0.5 }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }),
-            NxEffects::listingItems(lambda{|item| true }, lambda{|item| item["unixtime"] }),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -137,7 +136,7 @@ class Listing
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxEffects::listingItems(true)", lambda{ NxEffects::listingItems(lambda{|item| true }, lambda{|item| 0 }) })
+        spot.contest_entry("NxCruisers::listingItems()", lambda{ NxCruisers::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()
@@ -182,14 +181,6 @@ class Listing
         latestCodeTrace = initialCodeTrace
 
         DataCenter::reload()
-
-        DataCenter::mikuType("NxEffect").each{|item|
-            if item["behaviour"].nil? then
-                puts JSON.pretty_generate(item)
-                LucilleCore::pressEnterToContinue()
-                DataCenter::destroy(item["uuid"])
-            end
-        }
 
         Thread.new {
             loop {

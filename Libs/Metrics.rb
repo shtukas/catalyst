@@ -7,17 +7,17 @@
 
 0.80 : PhysicalTarget
 
-0.50 : ship (ub)
+0.50 : NxCruiser ratio: 0.0
 
 0.45 : ondate
 
 0.43 : sticky
 
-0.40 : ship ratio: 0.5
+0.40 : NxCruiser ratio: 0.5
 
 0.32 : wave !interruption
 
-0.30 : ship (lb)
+0.30 : NxCruiser ratio: 1.0
 
 =end
 
@@ -52,13 +52,13 @@ class Metrics
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return 0.32
         end
-        if item["mikuType"] == "NxEffect" and item["behaviour"]["type"] == "ship" then
-            return 0.30 + 0.20 * (1-TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]))
+        if item["mikuType"] == "NxCruiser" then
+            return 0.30 + 0.20 * (1-TxCores::coreDayCompletionRatio(item["engine"]))
         end
-        if item["mikuType"] == "NxEffect" and item["behaviour"]["type"] == "ondate" then
+        if item["mikuType"] == "NxOndate" then
             return 0.45
         end
-        if item["mikuType"] == "NxEffect" and item["behaviour"]["type"] == "sticky" then
+        if item["mikuType"] == "NxSticky" then
             return 0.43
         end
         raise "(error: 3b6f749b-a256-417d-a5a2-9c06aa0344ab) I do not how to metric: #{JSON.pretty_generate(item)}"

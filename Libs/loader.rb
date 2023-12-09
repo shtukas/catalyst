@@ -161,8 +161,10 @@ require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
-require_relative "NxEffects.rb"
 require_relative "Notes.rb"
+require_relative "NxCruiser.rb"
+require_relative "NxOndate.rb"
+require_relative "NxStickies.rb"
 
 require_relative "Ox1.rb"
 
@@ -176,7 +178,6 @@ require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "TxCores.rb"
-require_relative "TxBehaviours.rb"
 require_relative "Transmutations.rb"
 
 require_relative "Waves.rb"

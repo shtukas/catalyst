@@ -10,16 +10,14 @@ class Prefix
             return stratification.take(stratification.size-1) + items
         end
 
-        if items[0]["mikuType"] == "NxEffect" then
+        if items[0]["mikuType"] == "NxCruiser" then
             item = items[0]
-            if item["behaviour"]["type"] == "ship" then
-                if NxBalls::itemIsActive(item) then
-                    children = NxEffects::stack(item)
-                                .select{|i| Listing::listable(i) }
-                                .first(6)
-                    if children.size > 0 then
-                        return Prefix::prefix(children + items)
-                    end
+            if NxBalls::itemIsActive(item) then
+                children = NxCruisers::stack(item)
+                            .select{|i| Listing::listable(i) }
+                            .first(6)
+                if children.size > 0 then
+                    return Prefix::prefix(children + items)
                 end
             end
         end

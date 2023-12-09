@@ -1,9 +1,8 @@
 
-NxEffect:
+NxSticky:
     - uuid            : String
-    - mikuType        : "NxEffect"
+    - mikuType        : "NxSticky"
     - unixtime        : Float
     - datetime        : DateTime Iso 8601 UTC Zulu
-    - behaviour       : TxBehaviour
     - description     : String
     - field11         : null or CoreData reference string

@@ -3,16 +3,11 @@ class Transmutations
 
     # Transmutations::transmute(item)
     def self.transmute(item)
-        if item["mikuType"] == "NxEffect" and item["behaviour"]["type"] == "ondate" then
+        if item["mikuType"] == "NxOndate" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["sticky" ,"task"])
             return if option.nil?
             if option == "sticky" then
-                behaviour = {
-                    "uuid"     => SecureRandom.uuid,
-                    "mikuType" => "TxBehaviour",
-                    "type"     => "sticky"
-                }
-                DataCenter::setAttribute(item["uuid"], "behaviour", behaviour)
+                DataCenter::setAttribute(item["uuid"], "mikuType", "NxSticky")
                 item = DataCenter::itemOrNull(item["uuid"])
                 puts JSON.pretty_generate(item)
             end
@@ -20,7 +15,7 @@ class Transmutations
                 DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
                 item = DataCenter::itemOrNull(item["uuid"])
                 puts JSON.pretty_generate(item)
-                NxEffects::interactivelySelectShipAndAddTo(item)
+                NxCruisers::interactivelySelectShipAndAddTo(item)
             end
             return
         end

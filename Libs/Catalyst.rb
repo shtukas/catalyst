@@ -58,11 +58,6 @@ class Catalyst
         " (#{item["donation-1752"].map{|uuid| DataCenter::itemOrNull(uuid)}.compact.map{|target| target["description"]}.join(", ")})".green
     end
 
-    # Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
-    def self.interactivelyIssueCatalystItemForOpenCycle(uuid)
-        NxEffects::interactivelyIssueNewOrNull2(uuid)
-    end
-
     # Catalyst::openCyclesSync()
     def self.openCyclesSync()
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
@@ -74,7 +69,7 @@ class Catalyst
                 File.open(markerfile, "w"){|f| f.puts(uuid) }
                 puts "Generating item for '#{File.basename(location).green}'"
                 LucilleCore::pressEnterToContinue()
-                Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
+                NxStickies::interactivelyIssueNew2(uuid, "(auto) #{File.basename(location)}")
                 next
             end
             uuid = IO.read(markerfile).strip
@@ -84,7 +79,7 @@ class Catalyst
                 File.open(markerfile, "w"){|f| f.puts(uuid) }
                 puts "Generating item for '#{File.basename(location).green}'"
                 LucilleCore::pressEnterToContinue()
-                Catalyst::interactivelyIssueCatalystItemForOpenCycle(uuid)
+                NxStickies::interactivelyIssueNew2(uuid, "(auto) #{File.basename(location)}")
                 next
             end
         }

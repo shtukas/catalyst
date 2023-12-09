@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | behaviour * (NxEffect only) | bank accounts * | donation * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | bank accounts * | donation * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | pile | ship | sticky | priority",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
@@ -43,27 +43,16 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            ships = NxEffects::selectZeroOrMore(
-                lambda{|item| item["behaviour"]["type"] == "ship" },
-                lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }
-            )
+            ships = NxCruisers::selectZeroOrMore()
             donation = ((item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }).uniq
             DataCenter::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
 
         if Interpreting::match("sticky", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            behaviour = {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "TxBehaviour",
-                "type"     => "sticky"
-            }
-            uuid = SecureRandom.uuid
-            DataCenter::itemInit(uuid, "NxEffect")
-            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issueWithInit(uuid, description, behaviour, coredataref)
+            item = NxStickies::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -76,17 +65,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("behaviour *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["mikuType"] != "NxEffect"
-            behaviour = TxBehaviours::interactivelyMakeNewOnNull()
-            return if behaviour.nil?
-            DataCenter::setAttribute(item["uuid"], "behaviour", behaviour)
-            return
-        end
-
         if Interpreting::match("priority", input) then
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             return if line == ""
@@ -96,7 +74,7 @@ class ListingCommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxEffects::interactivelySelectShipAndAddTo(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(task)
             end
@@ -104,26 +82,20 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ship", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            behaviour = {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "TxBehaviour",
-                "type"     => "ship",
-                "engine"   => TxCores::interactivelyMakeNew()
-            }
-            NxEffects::issueWithInit(uuid, description, behaviour, nil)
+            item = NxCruisers::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("ships", input) then
-            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ship" }, lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) })
+            NxCruisers::program2()
             return
         end
 
         if Interpreting::match("stickies", input) then
-            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "sticky" }, lambda{|item| item["unixtime"] })
+            items = DataCenter::mikuType("NxSticky").sort_by{|item| item["datetime"] }
+            Catalyst::program2(items)
             return
         end
 
@@ -149,8 +121,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxEffect" and item["behaviour"]["type"] == "ship" then
-                NxEffects::pile(item)
+            if item["mikuType"] == "NxCruiser" then
+                NxCruisers::pile(item)
                 return
             end
             NxStrats::interactivelyPile(item)
@@ -164,10 +136,7 @@ class ListingCommandsAndInterpreters
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding ship for task: '#{PolyFunctions::toString(task)}'"
-                ship = NxEffects::interactivelySelectOneOrNull(
-                    lambda{|item| item["behaviour"]["type"] == "ship" },
-                    lambda{|item| TxCores::coreDayCompletionRatio(item["behaviour"]["engine"]) }
-                )
+                ship = NxCruisers::interactivelySelectOneOrNull()
                 if ship then
                     DataCenter::setAttribute(task["uuid"], "donation-1752", [ship["uuid"]])
                 end
@@ -183,17 +152,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            uuid = SecureRandom.uuid
-            behaviour = {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "TxBehaviour",
-                "type"     => "ondate",
-                "datetime" => CommonUtils::nowDatetimeIso8601()
-            }
-            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issueWithInit(uuid, description, behaviour, coredataref)
+            item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -224,7 +185,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxEffects::interactivelySelectShipAndAddTo(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item)
             return
         end
 
@@ -395,18 +356,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondate", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            behaviour = {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "TxBehaviour",
-                "type"     => "ondate",
-                "datetime" => CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            }
-            uuid = SecureRandom.uuid
-            DataCenter::itemInit(uuid, "NxEffect")
-            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issueWithoutInit(uuid, description, behaviour, coredataref)
+            item = NxOndates::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
@@ -418,7 +370,8 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            NxEffects::program(lambda{|item| item["behaviour"]["type"] == "ondate" }, lambda{|item| item["behaviour"]["datetime"] })
+            elements = DataCenter::mikuType("NxOndate").sort_by{|item| item["datetime"] }
+            Catalyst::program2(elements)
             return
         end
 
@@ -457,12 +410,8 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::stop(item)
-            return if item["mikuType"] != "NxEffect"
-            behaviour = item["behaviour"]
-            return if behaviour["type"] != "ondate"
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            behaviour["datetime"] = datetime
-            DataCenter::setAttribute(item["uuid"], "behaviour", behaviour)
+            DataCenter::setAttribute(item["uuid"], "datetime", datetime)
             return
         end
 
@@ -513,18 +462,9 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("tomorrow", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            behaviour = {
-                "uuid"     => SecureRandom.uuid,
-                "mikuType" => "TxBehaviour",
-                "type"     => "ondate",
-                "datetime" => CommonUtils::nowPlusOneDayDatetimeIso8601()
-            }
-            uuid = SecureRandom.uuid
-            DataCenter::itemInit(uuid, "NxEffect")
-            coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-            NxEffects::issueWithoutInit(uuid, description, behaviour, coredataref)
+            item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::tomorrow())
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 

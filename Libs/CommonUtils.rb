@@ -216,6 +216,11 @@ class CommonUtils
         Time.new.to_s[0, 10]
     end
 
+    # CommonUtils::tomorrow()
+    def self.tomorrow()
+        "#{CommonUtils::nDaysInTheFuture(1)}T01:00:00Z"
+    end
+
     # CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtLastMidnightAtGivenTimeZone(timezone)
         supportedTimeZones = ["BST", "GMT"]

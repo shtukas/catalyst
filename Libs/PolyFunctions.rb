@@ -20,15 +20,12 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxEffect" then
-            behaviour = item["behaviour"]
-            if behaviour["type"] == "ship" then
-                core = behaviour["engine"] # the engine is a single core at the moment
-                accounts << {
-                    "description" => "core: #{core["uuid"]}",
-                    "number"      => core["uuid"]
-                }
-            end
+        if item["mikuType"] == "NxCruiser" then
+            core = item["engine"] # the engine is a single core at the moment
+            accounts << {
+                "description" => "core: #{core["uuid"]}",
+                "number"      => core["uuid"]
+            }
         end
 
         # Special Features
@@ -78,8 +75,14 @@ class PolyFunctions
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
-        if item["mikuType"] == "NxEffect" then
-            return NxEffects::toString(item)
+        if item["mikuType"] == "NxCruiser" then
+            return NxCruisers::toString(item)
+        end
+        if item["mikuType"] == "NxOndate" then
+            return NxOndates::toString(item)
+        end
+        if item["mikuType"] == "NxSticky" then
+            return NxStickies::toString(item)
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
