@@ -257,7 +257,6 @@ class Listing
         counter = 0
 
         loop {
-            system('clear')
 
             counter = counter + 1
 
@@ -265,6 +264,8 @@ class Listing
                 puts "Code change detected"
                 exit
             end
+
+            system('clear')
 
             item = Listing::items2().first
 
