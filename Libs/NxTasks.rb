@@ -75,7 +75,7 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = (lambda {|item|
-            if item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil? then
+            if NxTasks::isOrphan(item) then
                 return "◽️"
             end
             "🔹"
@@ -87,6 +87,11 @@ class NxTasks
     def self.boosted()
         DataCenter::mikuType("NxTask")
             .select{|item| TxBoosters::hasActiveBooster(item) }
+    end
+
+    # NxTasks::isOrphan(item)
+    def self.isOrphan(item)
+        item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil?
     end
 
     # --------------------------------------------------

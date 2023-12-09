@@ -44,5 +44,14 @@ class NxOndates
     def self.listingItems()
         DataCenter::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
+            .map{|item|
+                if !TxBoosters::hasActiveBooster(item) then
+                    puts "I need a booster for #{NxOndates::toString(item).green}"
+                    booster = TxBoosters::interactivelyMakeNewOrNull()
+                    DataCenter::setAttribute(item["uuid"], "booster-1521", booster)
+                    item["booster-1521"] = booster
+                end
+                item
+            }
     end
 end

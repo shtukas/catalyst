@@ -43,7 +43,7 @@ class NxCruisers
 
     # NxCruisers::toString(item)
     def self.toString(item)
-        if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+        if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
                 return "⛵️ #{TxCores::string1(item["engine"])} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine"]).yellow}#{CoreDataRefStrings::itemToSuffixString(item).red}"
@@ -59,10 +59,16 @@ class NxCruisers
 
     # NxCruisers::stack(item)
     def self.stack(item)
-        if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+        if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             return DataCenter::mikuType("NxTask")
-                    .select{|item| item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil? }
+                    .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
+        end
+        if item["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption
+            return Waves::listingItems().select{|item| !item["interruption"] }
+        end
+        if item["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
+            return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
         DataCenter::mikuType("NxTask")
             .select{|item| item["stackuuid"] == item["uuid"] }
@@ -219,6 +225,7 @@ class NxCruisers
         loop {
 
             items = DataCenter::mikuType("NxCruiser")
+                        .sort_by{|item| Metrics::metric2(item) }
             return if items.empty?
 
             system("clear")

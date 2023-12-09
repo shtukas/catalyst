@@ -105,14 +105,12 @@ class Listing
             DropBox::items(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
-            PhysicalTargets::listingItems(),
+            Config::isPrimaryInstance() ? PhysicalTargets::listingItems() : [],
             Waves::listingItems().select{|item| item["interruption"] },
-            Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             NxStickies::listingItems(),
             NxTasks::boosted(),
             NxCruisers::listingItems(),
-            Waves::listingItems().select{|item| !item["interruption"] },
         ]
             .flatten
             .select{|item| Listing::listable(item) }
