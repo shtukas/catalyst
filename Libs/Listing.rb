@@ -125,6 +125,24 @@ class Listing
             }
     end
 
+    # Listing::items2()
+    def self.items2()
+        items = Listing::items()
+        items = Metrics::order(Listing::items())
+        items = Ox1::organiseListing(items)
+        runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
+        items = runningItems + pausedItems + items
+        items = Prefix::prefix(items)
+        items
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -208,26 +226,11 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Listing::items()
-            items = Metrics::order(Listing::items())
-            items = Ox1::organiseListing(items)
-            runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
-            items = runningItems + pausedItems + items
-            items = Prefix::prefix(items)
-            items = items
-                        .reduce([]){|selected, item|
-                            if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                                selected
-                            else
-                                selected + [item]
-                            end
-                        }
-
             system("clear")
 
             spacecontrol.putsline ""
 
-            items
+            Listing::items2()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
@@ -240,6 +243,14 @@ class Listing
             return if input == "exit"
 
             ListingCommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # Listing::focus()
+    def self.focus()
+        loop {
+            item = Listing::items2().first
+            Catalyst::program2([item])
         }
     end
 end

@@ -23,6 +23,8 @@
 
 0.30 : NxCruiser ratio: 1.0
 
+0.10 : completed boosted
+
 =end
 
 $ShiftsMemory = {}
@@ -49,6 +51,9 @@ class Metrics
     def self.metric1(item)
         if TxBoosters::hasActiveBooster(item) then
             ratio = TxBoosters::completionRatio(item["booster-1521"])
+            if ratio >= 1 then
+                return 0.1
+            end
             return 0.60 + 0.10 * (1-ratio)
         end
 
