@@ -54,4 +54,19 @@ class NxOndates
                 item
             }
     end
+
+    # NxOndates::item(item)
+    def self.item(item)
+        ratio = TxBoosters::completionRatio(item["booster-1521"])
+        hours = item["booster-1521"]["hours"]
+        [(1-ratio), 0].max * hours * 3600
+    end
+
+    # NxOndates::eta()
+    def self.eta()
+        NxOndates::listingItems()
+            .select{|item| Listing::listable(item) }
+            .map{|item| NxCruisers::itemEta(item) }
+            .inject(0, :+)
+    end
 end

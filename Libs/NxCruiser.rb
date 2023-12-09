@@ -34,10 +34,10 @@ class NxCruisers
         if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
-                return "⛵️ #{TxCores::string1(item["engine"])} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine"]).yellow}#{CoreDataRefStrings::itemToSuffixString(item).red}"
+                return "⛵️ #{TxCores::string1(item["engine"])} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine"]).yellow}"
             end
         end
-        "⛵️ #{TxCores::string1(item["engine"])} #{item["description"]} #{TxCores::string2(item["engine"]).yellow}#{CoreDataRefStrings::itemToSuffixString(item).red}"
+        "⛵️ #{TxCores::string1(item["engine"])} #{item["description"]} #{TxCores::string2(item["engine"]).yellow}"
     end
 
     # NxCruisers::listingItems()
@@ -99,6 +99,26 @@ class NxCruisers
     # NxCruisers::topPosition(item)
     def self.topPosition(item)
         ([0] + NxCruisers::stack(item).map{|task| task["global-positioning"] || 0 }).min
+    end
+
+    # NxCruisers::itemEta(item)
+    def self.itemEta(item)
+        dataL = lambda{|item|
+            if TxBoosters::hasActiveBooster(item) then
+                return [TxBoosters::completionRatio(item["booster-1521"]), item["booster-1521"]["hours"]]
+            end
+            [TxCores::coreDayCompletionRatio(item["engine"]), TxCores::coreDayHours(item["engine"])]
+        }
+        ratio, hours = dataL.call(item)
+        [(1-ratio), 0].max * hours * 3600
+    end
+
+    # NxCruisers::eta()
+    def self.eta()
+        DataCenter::mikuType("NxCruiser")
+            .select{|item| Listing::listable(item) }
+            .map{|item| NxCruisers::itemEta(item) }
+            .inject(0, :+)
     end
 
     # ------------------

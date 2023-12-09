@@ -132,6 +132,7 @@ class Listing
         items = runningItems + pausedItems + items
         items = Prefix::prefix(items)
         items
+            .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -237,13 +238,30 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Listing::items2()
+            items = Listing::items2()
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }
+
+            # ------------------------------------------------------------------
+            todayAt22 = "#{CommonUtils::today()} 22:00:00"
+            etaToDateTime = lambda{|eta| Time.at(Time.new.to_i + eta).to_s }
+            eta = NxCruisers::eta() + NxOndates::eta()
+            if etaToDateTime.call(eta) > todayAt22 then
+                system("clear")
+                puts "We are running late, please select element(s) to postpone"
+                elements = items.select{|item| ["NxCruiser", "NxOndate"].include?(item["mikuType"]) }
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], elements, lambda{|item| PolyFunctions::toString(item) })
+                selected.each{|item|
+                    DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + 3600)
+                }
+                next
+            end
+            # ------------------------------------------------------------------
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
