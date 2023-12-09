@@ -197,8 +197,6 @@ class Listing
 
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
-        latestCodeTrace = initialCodeTrace
-
         DataCenter::reload()
 
         Thread.new {
@@ -207,7 +205,14 @@ class Listing
                 DataCenter::reload()
             }
         }
+        loop {
+            Listing::focus()
+            Listing::listing()
+        }
+    end
 
+    # Listing::listing()
+    def self.listing()
         loop {
 
             if CommonUtils::catalystTraceCode() != initialCodeTrace then
@@ -248,30 +253,83 @@ class Listing
 
     # Listing::focus()
     def self.focus()
-        system('clear')
+
+        counter = 0
+
+        initialCodeTrace = CommonUtils::catalystTraceCode()
+
         loop {
+            system('clear')
+
+            counter = counter + 1
+
+            if CommonUtils::catalystTraceCode() != initialCodeTrace then
+                puts "Code change detected"
+                exit
+            end
+
             item = Listing::items2().first
             store = ItemStore.new()
             store.register(item, true)
-            if NxBalls::itemIsRunning(item) then
-                LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to stop".green}] ")
-                NxBalls::stop(item)
-                if item["mikuType"] == "NxTask" then
-                    if LucilleCore::askQuestionAnswerAsBoolean("done/destroy: '#{PolyFunctions::toString(item).green} ? '") then
-                        PolyActions::destroy(item)
-                    end
-                    next
+
+            contextcommands = lambda{|item|
+                if NxBalls::itemIsRunning(item) then
+                    return ["done", "stop", "pause", "exit", "command"]
                 end
-                raise "I don't know how to end focus running of #{JSON.pretty_generate(item)}"
+                if NxBalls::itemIsActive(item) then
+                    return ["done", "pursue", "exit", "command"]
+                end
+                ["start", "done", "exit", "command"]
+            }
+
+            commands = contextcommands.call(item)
+
+            input = LucilleCore::askQuestionAnswerAsString("[#{counter}] #{Listing::toString2(store, item)} : #{commands.join(', ').green} ")
+
+            if input == "" then
+                next
             end
-            if NxBalls::itemIsActive(item) then
-                # At this point we know it's paused
-                LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to pursue".green}] ")
+
+            if !commands.include?(input) then
+                puts "command: #{input} is not available in this context"
+                LucilleCore::pressEnterToContinue()
+                next
+            end
+
+            if input == "exit" then
+                return
+            end
+
+            if input == "command" then
+                input = LucilleCore::askQuestionAnswerAsString("> ")
+                ListingCommandsAndInterpreters::interpreter(input, store)
+                next
+            end
+
+            if input == "start" then
+                NxBalls::start(item)
+                next
+            end
+
+            if input == "stop" then
+                NxBalls::stop(item)
+                Ox1::detach(item)
+                next
+            end
+
+            if input == "done" then
+                NxBalls::stop(item)
+                Ox1::detach(item)
+                PolyActions::done(item, true)
+                next
+            end
+
+            if input == "pursue" then
                 NxBalls::pursue(item)
                 next
             end
-            LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to start".green}] ")
-            PolyActions::start(item)
+
+            raise "(error: 22a823c7-0d5b-4d0c-a3a9-b0bb75ebd445) command not interpreted 🤔"
         }
     end
 end
