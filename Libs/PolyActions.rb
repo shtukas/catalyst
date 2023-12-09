@@ -257,6 +257,7 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
             end
+            return
         end
 
         if item["mikuType"] == "NxAnniversary" then
