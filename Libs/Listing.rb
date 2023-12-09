@@ -250,7 +250,24 @@ class Listing
     def self.focus()
         loop {
             item = Listing::items2().first
-            Catalyst::program2([item])
+            store = ItemStore.new()
+            store.register(item, true)
+            if NxBalls::itemIsRunning(item) then
+                LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to stop".green}] ")
+                PolyActions::stop(item)
+                if item["mikuType"] == "NxTask" then
+                    if LucilleCore::askQuestionAnswerAsBoolean("done/destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                        PolyActions::destroy(item)
+                    end
+                    next
+                end
+                raise "I don't know how to end focus running of #{JSON.pretty_generate(item)}"
+            end
+            if !NxBalls::itemIsRunning(item) then
+                LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to start".green}] ")
+                PolyActions::start(item)
+                next
+            end
         }
     end
 end
