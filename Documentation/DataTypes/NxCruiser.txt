@@ -6,4 +6,3 @@ NxCruiser:
     - datetime        : DateTime Iso 8601 UTC Zulu
     - description     : String
     - engine          : TxCore
-    - field11         : null or CoreData reference string

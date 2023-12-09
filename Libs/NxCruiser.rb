@@ -1,24 +1,13 @@
 
 class NxCruisers
 
-    # NxCruisers::issueWithInit(uuid, description, engine, coredataReference)
-    def self.issueWithInit(uuid, description, engine, coredataReference)
+    # NxCruisers::issueWithInit(uuid, description, engine)
+    def self.issueWithInit(uuid, description, engine)
         DataCenter::itemInit(uuid, "NxCruiser")
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         DataCenter::setAttribute(uuid, "engine", engine)
         DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "field11", coredataReference)
-        DataCenter::itemOrNull(uuid)
-    end
-
-    # NxCruisers::issueWithoutInit(uuid, description, engine, coredataReference)
-    def self.issueWithoutInit(uuid, description, engine, coredataReference)
-        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
-        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "engine", engine)
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "field11", coredataReference)
         DataCenter::itemOrNull(uuid)
     end
 
@@ -28,8 +17,7 @@ class NxCruisers
         return if description == ""
         engine = TxCores::interactivelyMakeNewOrNull()
         return if engine.nil?
-        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        NxCruisers::issueWithInit(uuid, description, engine, coredataref)
+        NxCruisers::issueWithInit(uuid, description, engine)
     end
 
     # NxCruisers::interactivelyIssueNewOrNull()
@@ -118,20 +106,11 @@ class NxCruisers
 
     # NxCruisers::access(item)
     def self.access(item)
-        if item["field11"] then
-            answer = LucilleCore::askQuestionAnswerAsBoolean("Would you like to acess the field11 ? ", true)
-            if answer then
-                CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
-            end
-        end
         NxCruisers::program1(item)
     end
 
     # NxCruisers::natural(item)
     def self.natural(item)
-        if item["field11"] then
-            CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
-        end
         NxCruisers::program1(item)
     end
 
