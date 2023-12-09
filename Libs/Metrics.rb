@@ -15,6 +15,8 @@
 
 0.45 : ondate
 
+0.44 : Backups
+
 0.43 : sticky
 
 0.40 : NxCruiser ratio: 0.5
@@ -33,6 +35,7 @@ class Metrics
 
     # Metrics::infinitesimal(item)
     def self.infinitesimal(item)
+        return 0 if item["mikuType"] == "Backup"
         factor = 0.001
         if $ShiftsMemory[item["uuid"]] then
             return factor * $ShiftsMemory[item["uuid"]]
@@ -74,6 +77,9 @@ class Metrics
         end
         if item["mikuType"] == "NxSticky" then
             return 0.43
+        end
+        if item["mikuType"] == "Backup" then
+            return 0.44
         end
         raise "(error: 3b6f749b-a256-417d-a5a2-9c06aa0344ab) I do not how to metric: #{JSON.pretty_generate(item)}"
     end
