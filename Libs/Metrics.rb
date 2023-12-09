@@ -19,6 +19,8 @@
 
 0.43 : sticky
 
+0.42 : NxTask (orphans)
+
 0.40 : NxCruiser ratio: 0.5
 
 0.32 : wave !interruption
@@ -80,6 +82,9 @@ class Metrics
         end
         if item["mikuType"] == "Backup" then
             return 0.44
+        end
+        if item["mikuType"] == "NxTask" then
+            return 0.42
         end
         raise "(error: 3b6f749b-a256-417d-a5a2-9c06aa0344ab) I do not how to metric: #{JSON.pretty_generate(item)}"
     end

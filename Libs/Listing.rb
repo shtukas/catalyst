@@ -98,6 +98,27 @@ class Listing
         line
     end
 
+    # Listing::toString3(store, item)
+    def self.toString3(store, item)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
+        line = "#{storePrefix} #{TxBoosters::suffix(item)} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+
+        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
     # Listing::items()
     def self.items()
         [

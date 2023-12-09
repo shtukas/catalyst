@@ -29,13 +29,13 @@ class TxBoosters
     # TxBoosters::hasActiveBooster(item)
     def self.hasActiveBooster(item)
         return false if item["booster-1521"].nil?
-        item["booster-1521"]["date"] == CommonUtils::today()
+        [CommonUtils::today(), CommonUtils::nDaysInTheFuture(-1)].include?(item["booster-1521"]["date"])
     end
 
     # TxBoosters::suffix(item)
     def self.suffix(item)
         return "" if item["booster-1521"].nil?
-        return "" if item["booster-1521"]["date"] != CommonUtils::today()
+        return "" if ![CommonUtils::today(), CommonUtils::nDaysInTheFuture(-1)].include?(item["booster-1521"]["date"])
         booster = item["booster-1521"]
         " 🚀 (#{"%6.2f" % (100*TxBoosters::completionRatio(booster))} % of #{"%4.2f" % booster["hours"]} hours)".green
     end
