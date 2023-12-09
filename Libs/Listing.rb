@@ -271,18 +271,21 @@ class Listing
             store.register(item, true)
 
             contextcommands = lambda{|item|
+                if item["mikuType"] == "PhysicalTarget" then
+                    return ["access"]
+                end
                 if NxBalls::itemIsRunning(item) then
                     return ["done", "stop", "pause", "exit", "command"]
                 end
                 if NxBalls::itemIsActive(item) then
                     return ["done", "pursue", "exit", "command"]
                 end
-                ["start", "done", "exit", "command"]
+                ["start", "access", "done", "exit", "command"]
             }
 
             commands = contextcommands.call(item)
 
-            input = LucilleCore::askQuestionAnswerAsString("[#{counter}] #{Listing::toString2(store, item)} : #{commands.join(', ').green} ")
+            input = LucilleCore::askQuestionAnswerAsString("[#{counter}] #{Listing::toString2(store, item)} : #{commands.join(', ').green} : ")
 
             if input == "" then
                 next
@@ -306,6 +309,11 @@ class Listing
 
             if input == "start" then
                 NxBalls::start(item)
+                next
+            end
+
+            if input == "access" then
+                PolyActions::access(item)
                 next
             end
 
