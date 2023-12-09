@@ -248,13 +248,14 @@ class Listing
 
     # Listing::focus()
     def self.focus()
+        system('clear')
         loop {
             item = Listing::items2().first
             store = ItemStore.new()
             store.register(item, true)
             if NxBalls::itemIsRunning(item) then
                 LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to stop".green}] ")
-                PolyActions::stop(item)
+                NxBalls::stop(item)
                 if item["mikuType"] == "NxTask" then
                     if LucilleCore::askQuestionAnswerAsBoolean("done/destroy: '#{PolyFunctions::toString(item).green} ? '") then
                         PolyActions::destroy(item)
@@ -263,11 +264,14 @@ class Listing
                 end
                 raise "I don't know how to end focus running of #{JSON.pretty_generate(item)}"
             end
-            if !NxBalls::itemIsRunning(item) then
-                LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to start".green}] ")
-                PolyActions::start(item)
+            if NxBalls::itemIsActive(item) then
+                # At this point we know it's paused
+                LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to pursue".green}] ")
+                NxBalls::pursue(item)
                 next
             end
+            LucilleCore::pressEnterToContinue("#{Listing::toString2(store, item)} [#{"press to start".green}] ")
+            PolyActions::start(item)
         }
     end
 end
