@@ -231,10 +231,18 @@ class Listing
                 Catalyst::openCyclesSync()
             end
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 6)
             store = ItemStore.new()
 
             system("clear")
+
+            spacecontrol.putsline ""
+
+            # ------------------------------------------------------------------
+            etaToDateTime = lambda{|eta| Time.at(Time.new.to_i + eta).to_s }
+            eta = NxCruisers::eta() + NxOndates::eta()
+            puts "> fleet eta: #{etaToDateTime.call(eta)}"
+            # ------------------------------------------------------------------
 
             spacecontrol.putsline ""
 
@@ -246,22 +254,6 @@ class Listing
                     status = spacecontrol.putsline line
                     break if !status
                 }
-
-            # ------------------------------------------------------------------
-            todayAt22 = "#{CommonUtils::today()} 22:00:00"
-            etaToDateTime = lambda{|eta| Time.at(Time.new.to_i + eta).to_s }
-            eta = NxCruisers::eta() + NxOndates::eta()
-            if etaToDateTime.call(eta) > todayAt22 then
-                system("clear")
-                puts "We are running late, please select element(s) to postpone"
-                elements = items.select{|item| ["NxCruiser", "NxOndate"].include?(item["mikuType"]) }
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], elements, lambda{|item| PolyFunctions::toString(item) })
-                selected.each{|item|
-                    DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + 3600)
-                }
-                next
-            end
-            # ------------------------------------------------------------------
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
