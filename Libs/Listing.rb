@@ -206,8 +206,12 @@ class Listing
             }
         }
         loop {
-            Listing::focus(initialCodeTrace)
-            Listing::listing(initialCodeTrace)
+            mode = XCache::getOrDefaultValue("a297793a-a62e-4e2f-b7aa-72d494bdb206", "listing")
+            if mode == "listing" then
+                Listing::listing(initialCodeTrace)
+            else
+                Listing::focus(initialCodeTrace)
+            end
         }
     end
 
@@ -245,7 +249,10 @@ class Listing
 
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
+            if input == "exit" then
+                XCache::set("a297793a-a62e-4e2f-b7aa-72d494bdb206", "focus")
+                return
+            end
 
             ListingCommandsAndInterpreters::interpreter(input, store)
         }
@@ -306,6 +313,7 @@ class Listing
             end
 
             if input == "exit" then
+                XCache::set("a297793a-a62e-4e2f-b7aa-72d494bdb206", "listing")
                 return
             end
 
