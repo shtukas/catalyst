@@ -80,7 +80,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        positionstr = Ox1::activePositionOrNull(item) ? "stack" : "#{"%.3f" % Metrics::metric2(item)}"
+        positionstr = Ox1::activePositionOrNull(item) ? "stack".red : "#{"%.3f" % Metrics::metric2(item)}"
         line = "#{storePrefix} #{positionstr}#{TxBoosters::suffix(item)} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
@@ -110,6 +110,7 @@ class Listing
             Config::isPrimaryInstance() ? Backups::listingItems() : [],
             NxOndates::listingItems(),
             NxStickies::listingItems(),
+            NxTasks::boosted(),
             NxCruisers::listingItems(),
             Waves::listingItems().select{|item| !item["interruption"] },
         ]

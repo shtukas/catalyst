@@ -83,6 +83,12 @@ class NxTasks
         "#{icon} #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item)}"
     end
 
+    # NxTasks::boosted()
+    def self.boosted()
+        DataCenter::mikuType("NxTask")
+            .select{|item| TxBoosters::hasActiveBooster(item) }
+    end
+
     # --------------------------------------------------
     # Operations
 

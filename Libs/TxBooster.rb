@@ -37,6 +37,6 @@ class TxBoosters
         return "" if item["booster-1521"].nil?
         return "" if item["booster-1521"]["date"] != CommonUtils::today()
         booster = item["booster-1521"]
-        " (booster: #{"%6.2f" % (100*TxBoosters::completionRatio(booster))} % of #{"%4.2f" % booster["hours"]} hours)".green
+        " 🚀 (booster: #{"%6.2f" % (100*TxBoosters::completionRatio(booster))} % of #{"%4.2f" % booster["hours"]} hours)".green
     end
 end
