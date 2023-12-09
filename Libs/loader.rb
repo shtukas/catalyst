@@ -155,6 +155,8 @@ require_relative "ListingCommandsAndInterpreters.rb"
 
 require_relative "InMemoryCache.rb"
 
+require_relative "Metrics.rb"
+
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"

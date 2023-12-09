@@ -216,7 +216,12 @@ class Listing
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            items = Prefix::prefix(Listing::injectActiveItems(Ox1::organiseListing(Listing::items()), NxBalls::activeItems()))
+            items = Listing::items()
+            items = Metrics::order(Listing::items())
+            items = Ox1::organiseListing(items)
+            runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
+            items = runningItems + pausedItems + items
+            items = Prefix::prefix(items)
             items = items
                         .reduce([]){|selected, item|
                             if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
