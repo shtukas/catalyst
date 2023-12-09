@@ -265,7 +265,13 @@ class Listing
                 exit
             end
 
-            item = Listing::items2().first
+            items = Listing::items2()
+            item = items.first
+            items.drop(1).each{|item|
+                if NxBalls::itemIsRunning(item) then
+                    NxBalls::pause(item)
+                end
+            }
 
             system('clear')
 
