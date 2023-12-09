@@ -277,7 +277,7 @@ class Listing
                     return ["access", "push", "exit"]
                 end
                 if NxBalls::itemIsRunning(item) then
-                    return ["done", "stop", "pause", "exit", "command"]
+                    return ["done", "access", "stop", "pause", "exit", "command"]
                 end
                 if NxBalls::itemIsActive(item) then
                     return ["done", "pursue", "exit", "command"]
