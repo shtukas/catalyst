@@ -265,9 +265,9 @@ class Listing
                 exit
             end
 
-            system('clear')
-
             item = Listing::items2().first
+
+            system('clear')
 
             store = ItemStore.new()
             store.register(item, true)
