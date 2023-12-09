@@ -268,11 +268,6 @@ class Listing
 
             item = Listing::items2().first
 
-            if item["mikuType"] == "NxCruiser" then
-                NxCruisers::natural(item)
-                next
-            end
-
             store = ItemStore.new()
             store.register(item, true)
 
