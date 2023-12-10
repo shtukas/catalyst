@@ -1,4 +1,3 @@
-
 class TxCores
 
     # -----------------------------------------------
@@ -115,11 +114,6 @@ class TxCores
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
 
-    # TxCores::string1(core)
-    def self.string1(core)
-        "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
-    end
-
     # TxCores::string2(core)
     def self.string2(core)
         "(#{core["type"]}: #{core["hours"]})"
@@ -148,5 +142,20 @@ class TxCores
         return nil if core.nil?
         return nil if core["type"] != "booster"
         core
+    end
+
+    # TxCores::suffix1(core, context = nil)
+    def self.suffix1(core, context = nil)
+        if context == "listing" then
+            return ""
+        end
+        " (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
+    end
+
+    # TxCores::suffix2(item)
+    def self.suffix2(item)
+        core = TxCores::extractActiveCoreOrNull(item)
+        return "" if core.nil?
+        " #{TxCores::suffix1(core)}"
     end
 end

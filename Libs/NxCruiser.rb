@@ -29,15 +29,15 @@ class NxCruisers
     # ------------------
     # Data
 
-    # NxCruisers::toString(item)
-    def self.toString(item)
+    # NxCruisers::toString(item, context = nil)
+    def self.toString(item, context = nil)
         if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
-                return "⛵️ #{TxCores::string1(item["engine-0020"][0])} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"][0]).yellow}"
+                return "⛵️#{TxCores::suffix1(item["engine-0020"][0], context)} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"][0]).yellow}"
             end
         end
-        "⛵️ #{TxCores::string1(item["engine-0020"][0])} #{item["description"]} #{TxCores::string2(item["engine-0020"][0]).yellow}"
+        "⛵️#{TxCores::suffix1(item["engine-0020"][0], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"][0]).yellow}"
     end
 
     # NxCruisers::listingItems()
