@@ -149,7 +149,7 @@ class TxCores
         if context == "listing" then
             return ""
         end
-        " (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
+        "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
     end
 
     # TxCores::suffix2(item)
