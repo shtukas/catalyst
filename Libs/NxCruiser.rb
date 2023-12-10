@@ -43,6 +43,7 @@ class NxCruisers
     # NxCruisers::listingItems()
     def self.listingItems()
         DataCenter::mikuType("NxCruiser")
+            .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
     end
 
     # NxCruisers::stack(cruiser)
@@ -52,15 +53,19 @@ class NxCruisers
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
-        if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption
+        if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::listingItems().select{|item| !item["interruption"] }
         end
         if cruiser["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
             return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
-        DataCenter::mikuType("NxTask")
-            .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
-            .sort_by{|item| item["global-positioning"] || 0 }
+        items = DataCenter::catalystItems()
+                .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
+                .sort_by{|item| item["global-positioning"] || 0 }
+        i1, i2 = items.partition{|item| item["mikuType"] == "NxCruiser" }
+        i1 = i1.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
+        a1, a2 = i1.partition{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) < 0.5 }
+        a1 + i2.take(6) + a2 + i2.drop(6)
     end
 
     # NxCruisers::interactivelySelectOneOrNull()
@@ -167,26 +172,34 @@ class NxCruisers
                 }
 
             puts ""
-            puts "task | top | pile | sort | move"
+            puts "top | pile | todo | ship | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
-                task = NxTasks::interactivelyIssueNewOrNull()
-                next if task.nil?
-                puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+            if input == "todo" then
+                todo = NxTasks::interactivelyIssueNewOrNull()
+                next if todo.nil?
+                puts JSON.pretty_generate(todo)
+                DataCenter::setAttribute(todo["uuid"], "parentuuid-0032", item["uuid"])
+                next
+            end
+
+            if input == "ship" then
+                ship = NxCruisers::interactivelyIssueNewOrNull()
+                next if ship.nil?
+                puts JSON.pretty_generate(ship)
+                DataCenter::setAttribute(ship["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
             if input == "top" then
                 line = LucilleCore::askQuestionAnswerAsString("description: ")
                 next if line == ""
-                task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
-                puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                DataCenter::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
+                todo = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                puts JSON.pretty_generate(todo)
+                DataCenter::setAttribute(todo["uuid"], "parentuuid-0032", item["uuid"])
+                DataCenter::setAttribute(todo["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 next
             end
 

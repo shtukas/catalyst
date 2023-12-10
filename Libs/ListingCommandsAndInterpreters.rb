@@ -134,6 +134,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if input == "move" then
+            NxCruisers::selectSubsetAndMoveToSelectedShip(store.items())
+            return
+        end
+
         if Interpreting::match("stack", input) then
             text = CommonUtils::editTextSynchronously("").strip
             return if text == ""
