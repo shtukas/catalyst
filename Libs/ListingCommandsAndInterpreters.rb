@@ -93,6 +93,26 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("pile", input) then
+            item = store.items().first
+            return if item.nil?
+            if item["mikuType"] == "NxTask" then
+                parent = NxTasks::getParentOrNull(item)
+                if parent then
+                    if parent["mikuType"] == "NxCruiser" then
+                        NxCruisers::pile(parent)
+                        return
+                    end
+                end
+            end
+            if item["mikuType"] == "NxCruiser" then
+                NxCruisers::pile(item)
+                return
+            end
+            NxStrats::interactivelyPile(item)
+            return
+        end
+
         if Interpreting::match("stickies", input) then
             items = DataCenter::mikuType("NxSticky").sort_by{|item| item["datetime"] }
             Catalyst::program2(items)

@@ -89,9 +89,15 @@ class NxTasks
             .select{|item| TxCores::extractActiveCoreOrNull(item) }
     end
 
+    # NxTasks::getParentOrNull(item)
+    def self.getParentOrNull(item)
+        return nil if item["parentuuid-0032"].nil?
+        DataCenter::itemOrNull(item["parentuuid-0032"])
+    end
+
     # NxTasks::isOrphan(item)
     def self.isOrphan(item)
-        item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil?
+        NxTasks::getParentOrNull(item).nil?
     end
 
     # --------------------------------------------------
