@@ -12,7 +12,7 @@ class NxOndates
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", datetime)
         DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "field11", coredataReference)
+        DataCenter::setAttribute(uuid, "field11", coredataref)
         DataCenter::itemOrNull(uuid)
     end
 
@@ -26,7 +26,7 @@ class NxOndates
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", datetime)
         DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "field11", coredataReference)
+        DataCenter::setAttribute(uuid, "field11", coredataref)
         DataCenter::itemOrNull(uuid)
     end
 
@@ -60,13 +60,5 @@ class NxOndates
         ratio = TxCores::coreDayCompletionRatio(item["engine-0020"][0])
         hours = item["engine-0020"]["hours"]
         [(1-ratio), 0].max * hours * 3600
-    end
-
-    # NxOndates::eta()
-    def self.eta()
-        NxOndates::listingItems()
-            .select{|item| Listing::listable(item) }
-            .map{|item| NxCruisers::itemEta(item) }
-            .inject(0, :+)
     end
 end

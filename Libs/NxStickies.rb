@@ -11,7 +11,7 @@ class NxStickies
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "field11", coredataReference)
+        DataCenter::setAttribute(uuid, "field11", coredataref)
         DataCenter::itemOrNull(uuid)
     end
 

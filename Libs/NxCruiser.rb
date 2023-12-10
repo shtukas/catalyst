@@ -133,20 +133,6 @@ class NxCruisers
         ([0] + NxCruisers::stack(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
-    # NxCruisers::itemEta(item)
-    def self.itemEta(item)
-        ratio, hours = [TxCores::coreDayCompletionRatio(item["engine-0020"][0]), TxCores::coreDayHours(item["engine-0020"][0])]
-        [(1-ratio), 0].max * hours * 3600
-    end
-
-    # NxCruisers::eta()
-    def self.eta()
-        DataCenter::mikuType("NxCruiser")
-            .select{|item| Listing::listable(item) }
-            .map{|item| NxCruisers::itemEta(item) }
-            .inject(0, :+)
-    end
-
     # ------------------
     # Ops
 

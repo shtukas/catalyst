@@ -252,17 +252,10 @@ class Listing
                 Catalyst::openCyclesSync()
             end
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 6)
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
             system("clear")
-
-            spacecontrol.putsline ""
-
-            # ------------------------------------------------------------------
-            eta = NxCruisers::eta() + NxOndates::eta()
-            puts "> fleet eta: #{(eta.to_f/3600).round(2)} hours"
-            # ------------------------------------------------------------------
 
             spacecontrol.putsline ""
 
