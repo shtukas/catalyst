@@ -54,8 +54,9 @@ class Metrics
 
     # Metrics::metric1(item)
     def self.metric1(item)
-        if TxBoosters::hasActiveBooster(item) then
-            ratio = TxBoosters::completionRatio(item["booster-1521"])
+        core = TxCores::extractActiveBoosterOrNull(item)
+        if core then
+            ratio = TxCores::coreDayCompletionRatio(core)
             if ratio >= 1 then
                 return 0.1
             end
@@ -72,7 +73,7 @@ class Metrics
             return 0.32
         end
         if item["mikuType"] == "NxCruiser" then
-            return 0.30 + 0.20 * (1-TxCores::coreDayCompletionRatio(item["engine"]))
+            return 0.30 + 0.20 * (1-TxCores::coreDayCompletionRatio(item["engine-0020"][0]))
         end
         if item["mikuType"] == "NxOndate" then
             return 0.45

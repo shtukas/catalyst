@@ -81,7 +81,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         positionstr = Ox1::activePositionOrNull(item) ? "stack".red : "#{"%.3f" % Metrics::metric2(item)}"
-        line = "#{storePrefix} #{positionstr}#{TxBoosters::suffix(item)} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{positionstr} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -102,7 +102,7 @@ class Listing
     def self.toString3(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix} #{TxBoosters::suffix(item)} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -130,7 +130,7 @@ class Listing
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
             NxStickies::listingItems(),
-            NxTasks::boosted(),
+            NxTasks::engined(),
             NxCruisers::listingItems(),
         ]
             .flatten
@@ -260,9 +260,8 @@ class Listing
             spacecontrol.putsline ""
 
             # ------------------------------------------------------------------
-            etaToDateTime = lambda{|eta| Time.at(Time.new.to_i + eta).to_s }
             eta = NxCruisers::eta() + NxOndates::eta()
-            puts "> fleet eta: #{etaToDateTime.call(eta)}"
+            puts "> fleet eta: #{(eta.to_f/3600).round(2)} hours"
             # ------------------------------------------------------------------
 
             spacecontrol.putsline ""

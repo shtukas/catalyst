@@ -21,7 +21,7 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxCruiser" then
-            core = item["engine"] # the engine is a single core at the moment
+            core = item["engine-0020"][0]
             accounts << {
                 "description" => "core: #{core["uuid"]}",
                 "number"      => core["uuid"]
@@ -57,11 +57,10 @@ class PolyFunctions
 
         # Special Features
 
-        if TxBoosters::hasActiveBooster(item) then
-            booster = item["booster-1521"]
+        if core = TxCores::extractActiveCoreOrNull(item) then
             accounts << {
-                "description" => "booster: #{booster["uuid"]}",
-                "number"      => booster["uuid"]
+                "description" => "core: #{core["uuid"]}",
+                "number"      => core["uuid"]
             }
         end
 

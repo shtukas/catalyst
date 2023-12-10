@@ -6,7 +6,7 @@ class NxCruisers
         DataCenter::itemInit(uuid, "NxCruiser")
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "engine", engine)
+        DataCenter::setAttribute(uuid, "engine-0020", engine)
         DataCenter::setAttribute(uuid, "description", description)
         DataCenter::itemOrNull(uuid)
     end
@@ -15,9 +15,9 @@ class NxCruisers
     def self.interactivelyIssueNewOrNull2(uuid)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        engine = TxCores::interactivelyMakeNewOrNull()
-        return if engine.nil?
-        NxCruisers::issueWithInit(uuid, description, engine)
+        core = TxCores::interactivelyMakeNewOrNull()
+        return if core.nil?
+        NxCruisers::issueWithInit(uuid, description, [core])
     end
 
     # NxCruisers::interactivelyIssueNewOrNull()
@@ -34,10 +34,10 @@ class NxCruisers
         if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
-                return "⛵️ #{TxCores::string1(item["engine"])} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine"]).yellow}"
+                return "⛵️ #{TxCores::string1(item["engine-0020"][0])} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"][0]).yellow}"
             end
         end
-        "⛵️ #{TxCores::string1(item["engine"])} #{item["description"]} #{TxCores::string2(item["engine"]).yellow}"
+        "⛵️ #{TxCores::string1(item["engine-0020"][0])} #{item["description"]} #{TxCores::string2(item["engine-0020"][0]).yellow}"
     end
 
     # NxCruisers::listingItems()
@@ -66,14 +66,14 @@ class NxCruisers
     # NxCruisers::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         items = DataCenter::mikuType("NxCruiser")
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine"]) }
+                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", items, lambda{|item| NxCruisers::toString(item) })
     end
 
     # NxCruisers::selectZeroOrMore()
     def self.selectZeroOrMore()
         items = DataCenter::mikuType("NxCruiser")
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine"]) }
+                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
         selected, _ = LucilleCore::selectZeroOrMore("item", [], items, lambda{|item| NxCruisers::toString(item) })
         selected
     end
@@ -103,13 +103,7 @@ class NxCruisers
 
     # NxCruisers::itemEta(item)
     def self.itemEta(item)
-        dataL = lambda{|item|
-            if TxBoosters::hasActiveBooster(item) then
-                return [TxBoosters::completionRatio(item["booster-1521"]), item["booster-1521"]["hours"]]
-            end
-            [TxCores::coreDayCompletionRatio(item["engine"]), TxCores::coreDayHours(item["engine"])]
-        }
-        ratio, hours = dataL.call(item)
+        ratio, hours = [TxCores::coreDayCompletionRatio(item["engine-0020"][0]), TxCores::coreDayHours(item["engine-0020"][0])]
         [(1-ratio), 0].max * hours * 3600
     end
 

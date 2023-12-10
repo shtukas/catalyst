@@ -179,7 +179,6 @@ require_relative "SectionsType0141.rb"
 require_relative "TmpSkip1.rb"
 require_relative "TxCores.rb"
 require_relative "Transmutations.rb"
-require_relative "TxBooster.rb"
 
 require_relative "Waves.rb"
 

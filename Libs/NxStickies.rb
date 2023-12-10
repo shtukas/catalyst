@@ -10,7 +10,6 @@ class NxStickies
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "engine", engine)
         DataCenter::setAttribute(uuid, "description", description)
         DataCenter::setAttribute(uuid, "field11", coredataReference)
         DataCenter::itemOrNull(uuid)
@@ -21,7 +20,6 @@ class NxStickies
         DataCenter::itemInit(uuid, "NxSticky")
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "engine", engine)
         DataCenter::setAttribute(uuid, "description", description)
         DataCenter::itemOrNull(uuid)
     end

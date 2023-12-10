@@ -11,4 +11,4 @@ Cross types conventions (all optional):
                               within the children of a core.
     - donation-1752         : Array[String]
     - note-1531             : String
-    - booster-1521          : TxBooster
+    - engine-0020            : Array[TxCore]

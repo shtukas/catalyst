@@ -11,7 +11,6 @@ class NxOndates
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", datetime)
-        DataCenter::setAttribute(uuid, "engine", engine)
         DataCenter::setAttribute(uuid, "description", description)
         DataCenter::setAttribute(uuid, "field11", coredataReference)
         DataCenter::itemOrNull(uuid)
@@ -26,7 +25,6 @@ class NxOndates
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
         DataCenter::setAttribute(uuid, "datetime", datetime)
-        DataCenter::setAttribute(uuid, "engine", engine)
         DataCenter::setAttribute(uuid, "description", description)
         DataCenter::setAttribute(uuid, "field11", coredataReference)
         DataCenter::itemOrNull(uuid)
@@ -45,11 +43,14 @@ class NxOndates
         DataCenter::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .map{|item|
-                if !TxBoosters::hasActiveBooster(item) then
+                if !TxCores::extractActiveBoosterOrNull(item) then
                     puts "I need a booster for #{NxOndates::toString(item).green}"
-                    booster = TxBoosters::interactivelyMakeNewOrNull()
-                    DataCenter::setAttribute(item["uuid"], "booster-1521", booster)
-                    item["booster-1521"] = booster
+                    booster = TxCores::interactivelyMakeBoosterOrNull()
+                    if booster then
+                        engine = [booster] + (item["engine-0020"] || [])
+                        DataCenter::setAttribute(item["uuid"], "engine-0020", engine)
+                        item["engine-0020"] = engine
+                    end
                 end
                 item
             }
@@ -57,8 +58,8 @@ class NxOndates
 
     # NxOndates::item(item)
     def self.item(item)
-        ratio = TxBoosters::completionRatio(item["booster-1521"])
-        hours = item["booster-1521"]["hours"]
+        ratio = TxCores::coreDayCompletionRatio(item["engine-0020"][0])
+        hours = item["engine-0020"]["hours"]
         [(1-ratio), 0].max * hours * 3600
     end
 
