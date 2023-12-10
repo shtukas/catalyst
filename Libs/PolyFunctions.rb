@@ -64,8 +64,8 @@ class PolyFunctions
             }
         end
 
-        if item["stackuuid"] then
-            parent = DataCenter::itemOrNull(item["stackuuid"])
+        if item["parentuuid-0032"] then
+            parent = DataCenter::itemOrNull(item["parentuuid-0032"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end

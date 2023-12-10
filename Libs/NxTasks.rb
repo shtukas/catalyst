@@ -91,7 +91,7 @@ class NxTasks
 
     # NxTasks::isOrphan(item)
     def self.isOrphan(item)
-        item["stackuuid"].nil? or DataCenter::itemOrNull(item["stackuuid"]).nil?
+        item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil?
     end
 
     # --------------------------------------------------

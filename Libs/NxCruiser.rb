@@ -59,7 +59,7 @@ class NxCruisers
             return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
         DataCenter::mikuType("NxTask")
-            .select{|item| item["stackuuid"] == cruiser["uuid"] }
+            .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
@@ -82,7 +82,7 @@ class NxCruisers
     def self.interactivelySelectShipAndAddTo(item)
         ship = NxCruisers::interactivelySelectOneOrNull()
         return if ship.nil?
-        DataCenter::setAttribute(item["uuid"], "stackuuid", ship["uuid"])
+        DataCenter::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
     end
 
     # NxCruisers::selectSubsetAndMoveToSelectedShip(items)
@@ -92,7 +92,7 @@ class NxCruisers
         ship = NxCruisers::interactivelySelectOneOrNull()
         return if ship.nil?
         selected.each{|item|
-            DataCenter::setAttribute(item["uuid"], "stackuuid", ship["uuid"])
+            DataCenter::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
         }
     end
 
@@ -139,7 +139,7 @@ class NxCruisers
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "stackuuid", item["uuid"])
+                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 DataCenter::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
             }
     end
@@ -176,7 +176,7 @@ class NxCruisers
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "stackuuid", item["uuid"])
+                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -185,7 +185,7 @@ class NxCruisers
                 next if line == ""
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "stackuuid", item["uuid"])
+                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 DataCenter::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 next
             end
