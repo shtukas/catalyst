@@ -40,10 +40,39 @@ class NxCruisers
         "⛵️#{TxCores::suffix1(item["engine-0020"][0], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"][0]).yellow}"
     end
 
+    # NxCruisers::recursiveDescent(ships)
+    def self.recursiveDescent(ships)
+        ships
+            .map{|ship| NxCruisers::stack(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) } + [ship]}
+            .flatten
+    end
+
+    # NxCruisers::metric(item, indx)
+    def self.metric(item, indx)
+        core = item["engine-0020"][0]
+        if core["type"] == "blocking-until-done" then
+            return 0.75 + 0.01 * 1.to_f/(indx+1)
+        end
+        if core["type"] == "booster" then
+            ratio = TxCores::coreDayCompletionRatio(core)
+            if ratio >= 1 then
+                return 0.1
+            end
+            return 0.60 + 0.10 * (1-ratio)
+        end
+        0.30 + 0.20 * 1.to_f/(indx+1)
+    end
+
     # NxCruisers::listingItems()
     def self.listingItems()
-        DataCenter::mikuType("NxCruiser")
-            .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
+        topShips = DataCenter::mikuType("NxCruiser")
+                    .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
+                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
+        NxCruisers::recursiveDescent(topShips)
+            .map.with_index{|item, indx|
+                item[":metric:"] = NxCruisers::metric(item, indx)
+                item
+            }
     end
 
     # NxCruisers::stack(cruiser)

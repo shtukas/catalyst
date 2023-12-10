@@ -250,6 +250,21 @@ class ListingCommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("core *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            core = TxCores::interactivelyMakeNewOrNull()
+            return if core.nil?
+            if core["type"] == "booster" then
+                engine = [core] + (item["engine-0020"] || [])
+                DataCenter::setAttribute(item["uuid"], "engine-0020", engine)
+            else
+                DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
+            end
+            return
+        end
+
         if Interpreting::match("coredata", input) then
             item = store.getDefault()
             return if item.nil?

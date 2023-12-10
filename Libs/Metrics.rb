@@ -7,9 +7,11 @@
 
 0.80 : PhysicalTarget
 
-0.70 : boosted ratio 0.0
+0.75 : NxCruiser blocking-until-done (+ epsilon)
 
-0.60 : boosted ratio 1.0
+0.70 : NxCruiser boosted ratio 0.0
+
+0.60 : NxCruiser boosted ratio 1.0
 
 0.50 : NxCruiser ratio: 0.0
 
@@ -54,14 +56,9 @@ class Metrics
 
     # Metrics::metric1(item)
     def self.metric1(item)
-        core = TxCores::extractActiveBoosterOrNull(item)
-        if core then
-            ratio = TxCores::coreDayCompletionRatio(core)
-            if ratio >= 1 then
-                return 0.1
-            end
-            return 0.60 + 0.10 * (1-ratio)
-        end
+        # The ships' metrics are independently computed, and we get them as `:metric:`
+
+        return item[":metric:"] if item[":metric:"]
 
         if item["mikuType"] == "PhysicalTarget" then
             return 0.80
@@ -71,9 +68,6 @@ class Metrics
         end
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return 0.32
-        end
-        if item["mikuType"] == "NxCruiser" then
-            return 0.30 + 0.20 * (1-TxCores::coreDayCompletionRatio(item["engine-0020"][0]))
         end
         if item["mikuType"] == "NxOndate" then
             return 0.45
