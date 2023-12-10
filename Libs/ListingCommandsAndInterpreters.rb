@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | pile | ship | sticky | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack | focus",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack",
         ].join("\n")
     end
 
@@ -46,11 +46,6 @@ class ListingCommandsAndInterpreters
             ships = NxCruisers::selectZeroOrMore()
             donation = ((item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }).uniq
             DataCenter::setAttribute(item["uuid"], "donation-1752", donation)
-            return
-        end
-
-        if Interpreting::match("focus", input) then
-            Listing::focus()
             return
         end
 
