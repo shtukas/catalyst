@@ -43,13 +43,12 @@ class NxOndates
         DataCenter::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .map{|item|
-                if !TxCores::extractActiveBoosterOrNull(item) then
-                    puts "I need a booster for #{NxOndates::toString(item).green}"
-                    booster = TxCores::interactivelyMakeBoosterOrNull()
-                    if booster then
-                        engine = [booster] + (item["engine-0020"] || [])
-                        DataCenter::setAttribute(item["uuid"], "engine-0020", engine)
-                        item["engine-0020"] = engine
+                if item["engine-0020"].nil? or item["engine-0020"].empty? then
+                    puts "I need a core for #{NxOndates::toString(item).green}"
+                    core = TxCores::interactivelyMakeNewOrNull()
+                    if core then
+                        DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
+                        item["engine-0020"] = [core]
                     end
                 end
                 item

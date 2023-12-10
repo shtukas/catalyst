@@ -157,13 +157,21 @@ class TxCores
         core
     end
 
+    # TxCores::extractActiveBlockingOrNull(item)
+    def self.extractActiveBlockingOrNull(item)
+        core = TxCores::extractActiveCoreOrNull(item)
+        return nil if core.nil?
+        return nil if core["type"] != "blocking-until-done"
+        core
+    end
+
     # TxCores::suffix1(core, context = nil)
     def self.suffix1(core, context = nil)
         if context == "listing" then
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "( blocking until done )"
+            return "⏱️  (   blocking until done)".green
         end
         "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
     end
