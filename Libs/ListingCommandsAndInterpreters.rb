@@ -366,6 +366,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
+            NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
             return
         end
@@ -376,6 +377,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
+            NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
             return
         end
