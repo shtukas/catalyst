@@ -149,22 +149,6 @@ class TxCores
         engine[0]
     end
 
-    # TxCores::extractActiveBoosterOrNull(item)
-    def self.extractActiveBoosterOrNull(item)
-        core = TxCores::extractActiveCoreOrNull(item)
-        return nil if core.nil?
-        return nil if core["type"] != "booster"
-        core
-    end
-
-    # TxCores::extractActiveBlockingOrNull(item)
-    def self.extractActiveBlockingOrNull(item)
-        core = TxCores::extractActiveCoreOrNull(item)
-        return nil if core.nil?
-        return nil if core["type"] != "blocking-until-done"
-        core
-    end
-
     # TxCores::suffix1(core, context = nil)
     def self.suffix1(core, context = nil)
         if context == "listing" then
