@@ -61,11 +61,9 @@ class NxCruisers
         end
         items = DataCenter::catalystItems()
                 .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
-                .sort_by{|item| item["global-positioning"] || 0 }
+
         i1, i2 = items.partition{|item| item["mikuType"] == "NxCruiser" }
-        i1 = i1.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
-        a1, a2 = i1.partition{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) < 0.5 }
-        a1 + i2.take(6) + a2 + i2.drop(6)
+        i1.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) } + i2.sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # NxCruisers::interactivelySelectOneOrNull()
