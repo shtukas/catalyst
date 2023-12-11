@@ -40,13 +40,6 @@ class NxCruisers
         "⛵️#{TxCores::suffix1(item["engine-0020"][0], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"][0]).yellow}"
     end
 
-    # NxCruisers::recursiveDescent(ships)
-    def self.recursiveDescent(ships)
-        ships
-            .map{|ship| NxCruisers::stack(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) } + [ship]}
-            .flatten
-    end
-
     # NxCruisers::metric(item, indx)
     def self.metric(item, indx)
         core = item["engine-0020"][0]
@@ -63,6 +56,13 @@ class NxCruisers
         0.30 + 0.20 * 1.to_f/(indx+1)
     end
 
+    # NxCruisers::recursiveDescent(ships)
+    def self.recursiveDescent(ships)
+        ships
+            .map{|ship| NxCruisers::elements(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) } + [ship]}
+            .flatten
+    end
+
     # NxCruisers::listingItems()
     def self.listingItems()
         topShips = DataCenter::mikuType("NxCruiser")
@@ -75,8 +75,26 @@ class NxCruisers
             }
     end
 
-    # NxCruisers::stack(cruiser)
-    def self.stack(cruiser)
+    # NxCruisers::elements(cruiser)
+    def self.elements(cruiser)
+        if cruiser["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
+            return DataCenter::mikuType("NxTask")
+                    .select{|item| NxTasks::isOrphan(item) }
+                    .sort_by{|item| item["global-positioning"] || 0 }
+        end
+        if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
+            return Waves::listingItems().select{|item| !item["interruption"] }
+        end
+        if cruiser["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
+            return Config::isPrimaryInstance() ? Backups::listingItems() : []
+        end
+        DataCenter::catalystItems()
+            .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # NxCruisers::elementsForPrefix(cruiser)
+    def self.elementsForPrefix(cruiser)
         if cruiser["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             return DataCenter::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
@@ -130,7 +148,7 @@ class NxCruisers
 
     # NxCruisers::topPosition(item)
     def self.topPosition(item)
-        ([0] + NxCruisers::stack(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + NxCruisers::elements(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
     # ------------------
@@ -178,7 +196,7 @@ class NxCruisers
             puts  Listing::toString2(store, item)
             puts  ""
 
-            Prefix::prefix(NxCruisers::stack(item))
+            Prefix::prefix(NxCruisers::elements(item))
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString3(store, item)
@@ -222,15 +240,15 @@ class NxCruisers
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxCruisers::stack(item), lambda{|item| PolyFunctions::toString(item) })
-                selected.reverse.each{|item|
-                    DataCenter::setAttribute(item["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxCruisers::elements(item), lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|i|
+                    DataCenter::setAttribute(i["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 }
                 next
             end
 
             if input == "move" then
-                NxCruisers::selectSubsetAndMoveToSelectedShip(NxCruisers::stack(item))
+                NxCruisers::selectSubsetAndMoveToSelectedShip(NxCruisers::elements(item))
                 next
             end
 

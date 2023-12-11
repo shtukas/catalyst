@@ -60,6 +60,9 @@ class Metrics
 
         return item[":metric:"] if item[":metric:"]
 
+        if item["mikuType"] == "NxCruiser" then
+            return NxCruisers::metric(item, 0)
+        end
         if item["mikuType"] == "PhysicalTarget" then
             return 0.80
         end
