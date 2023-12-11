@@ -274,6 +274,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            puts "setting core for '#{PolyFunctions::toString(item).green}'"
             core = TxCores::interactivelyMakeNewOrNull()
             return if core.nil?
             if core["type"] == "booster" then

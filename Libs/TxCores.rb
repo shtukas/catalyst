@@ -5,7 +5,7 @@ class TxCores
 
     # TxCores::interactivelyMakeNewOrNull()
     def self.interactivelyMakeNewOrNull()
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done", "monitor"])
         return nil if type.nil?
         if type == "booster" then
             hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
@@ -52,6 +52,13 @@ class TxCores
                 "type"          => "blocking-until-done"
             }
         end
+        if type == "monitor" then
+            return {
+                "uuid"          => SecureRandom.uuid,
+                "mikuType"      => "TxCore",
+                "type"          => "monitor"
+            }
+        end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
     end
 
@@ -93,7 +100,10 @@ class TxCores
             return core["hours"]
         end
         if core["type"] == "blocking-until-done" then
-            return 1000000000
+            return 1
+        end
+        if core["type"] == "monitor" then
+            return 1
         end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
@@ -122,6 +132,9 @@ class TxCores
             return [0.8*x1 + 0.2*x2, x1].max
         end
         if core["type"] == "blocking-until-done" then
+            return 0
+        end
+        if core["type"] == "monitor" then
             return 0
         end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
@@ -155,9 +168,12 @@ class TxCores
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "⏱️  (   blocking until done)".green
+            return "⏱️  (  blcking til done )".green
         end
-        "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hours)".green
+        if core["type"] == "monitor" then
+            return "⏱️  (           monitor )".green
+        end
+        "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hs)".green
     end
 
     # TxCores::suffix2(item)

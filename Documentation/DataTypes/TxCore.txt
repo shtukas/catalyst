@@ -17,3 +17,13 @@ TxCore
     "type"          : "booster"
     "hours"         : Float
     "expiry"        : DateTime
+
+TxCore
+    "uuid"          : String
+    "mikuType"      : "TxCore"
+    "type"          : "blocking-until-done"
+
+TxCore
+    "uuid"          : String
+    "mikuType"      : "TxCore"
+    "type"          : "monitor"
