@@ -42,17 +42,6 @@ class NxOndates
     def self.listingItems()
         DataCenter::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
-            .map{|item|
-                if item["engine-0020"].nil? or item["engine-0020"].empty? then
-                    puts "I need a core for #{NxOndates::toString(item).green}"
-                    core = TxCores::interactivelyMakeNewOrNull()
-                    if core then
-                        DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
-                        item["engine-0020"] = [core]
-                    end
-                end
-                item
-            }
     end
 
     # NxOndates::item(item)
