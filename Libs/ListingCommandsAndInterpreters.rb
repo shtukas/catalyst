@@ -280,6 +280,7 @@ class ListingCommandsAndInterpreters
                 if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxCruiser ? ") then
                     Transmutations::transmute2(item, "NxCruiser")
                     item = DataCenter::itemOrNull(item["uuid"])
+                    return
                 end
             end
             core = TxCores::interactivelyMakeNewOrNull()
