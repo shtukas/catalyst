@@ -1,7 +1,11 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 
-Listing::checkForCodeUpdates()
+has_been_updated = Listing::checkForCodeUpdates()
+if has_been_updated then
+    puts "exiting because the code has been updated"
+    exit
+end
 
 Thread.new {
     loop {

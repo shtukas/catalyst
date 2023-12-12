@@ -202,8 +202,10 @@ class Listing
     def self.checkForCodeUpdates()
         if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
             puts "Attempting to download new code"
-            system("#{File.dirname(__FILE__)}/../pull-from-origin")
+            output = `#{File.dirname(__FILE__)}/../pull-from-origin`.strip
+            return (output == "Already up to date.")
         end
+        false
     end
 
     # Listing::injectActiveItems(items, runningItems)
