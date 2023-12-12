@@ -74,7 +74,7 @@ class ListingCommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxCruisers::interactivelySelectShipAndAddTo(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(task)
             end
@@ -133,7 +133,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Transmutations::transmute(item)
+            Transmutations::transmute1(item)
             return
         end
 
@@ -224,7 +224,7 @@ class ListingCommandsAndInterpreters
             if booster then
                 DataCenter::setAttribute(item["uuid"], "engine-0020", [booster])
             end
-            NxCruisers::interactivelySelectShipAndAddTo(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
 
@@ -232,7 +232,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxCruisers::interactivelySelectShipAndAddTo(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
 
@@ -275,14 +275,21 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "setting core for '#{PolyFunctions::toString(item).green}'"
+            if item["mikuType"] == "NxOndate" or item["mikuType"] == "NxSticky" then
+                puts "You are adding a core to a #{item["mikuType"]}"
+                if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxCruiser ? ") then
+                    Transmutations::transmute2(item, "NxCruiser")
+                    item = DataCenter::itemOrNull(item["uuid"])
+                end
+            end
             core = TxCores::interactivelyMakeNewOrNull()
             return if core.nil?
             if core["type"] == "booster" then
                 engine = [core] + (item["engine-0020"] || [])
                 DataCenter::setAttribute(item["uuid"], "engine-0020", engine)
-            else
-                DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
+                return
             end
+            DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
             return
         end
 

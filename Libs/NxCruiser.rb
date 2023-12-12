@@ -128,11 +128,11 @@ class NxCruisers
         selected
     end
 
-    # NxCruisers::interactivelySelectShipAndAddTo(item)
-    def self.interactivelySelectShipAndAddTo(item)
+    # NxCruisers::interactivelySelectShipAndAddTo(itemuuid)
+    def self.interactivelySelectShipAndAddTo(itemuuid)
         ship = NxCruisers::interactivelySelectOneOrNull()
         return if ship.nil?
-        DataCenter::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
+        DataCenter::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
     end
 
     # NxCruisers::selectSubsetAndMoveToSelectedShip(items)
