@@ -212,8 +212,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             booster = TxCores::interactivelyMakeBoosterOrNull()
             return if booster.nil?
-            engine = [booster] + (item["engine-0020"] || [])
-            DataCenter::setAttribute(item["uuid"], "engine-0020", engine)
+            DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
             return
         end
 
@@ -221,9 +220,7 @@ class ListingCommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             booster = TxCores::interactivelyMakeBoosterOrNull()
-            if booster then
-                DataCenter::setAttribute(item["uuid"], "engine-0020", [booster])
-            end
+            DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
@@ -285,12 +282,7 @@ class ListingCommandsAndInterpreters
             end
             core = TxCores::interactivelyMakeNewOrNull()
             return if core.nil?
-            if core["type"] == "booster" then
-                engine = [core] + (item["engine-0020"] || [])
-                DataCenter::setAttribute(item["uuid"], "engine-0020", engine)
-                return
-            end
-            DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
+            DataCenter::setAttribute(item["uuid"], "engine-0020", core)
             return
         end
 

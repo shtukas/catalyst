@@ -110,6 +110,7 @@ class TxCores
 
     # TxCores::coreDayCompletionRatio(core)
     def self.coreDayCompletionRatio(core)
+        return 0 if core.nil?
         if core["type"] == "weekly-hours" then
             doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank::getValueAtDate(core["uuid"], date) }
             doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
@@ -142,24 +143,8 @@ class TxCores
 
     # TxCores::string2(core)
     def self.string2(core)
+        return "(core not found)" if core.nil?
         "(#{core["type"]}: #{core["hours"]})"
-    end
-
-    # TxCores::extractActiveCoreOrNull(item)
-    def self.extractActiveCoreOrNull(item)
-        return nil if item["engine-0020"].nil?
-        return nil if item["engine-0020"].empty?
-        engine = item["engine-0020"]
-        if engine[0]["type"] == "booster" then
-            if Time.new.utc.iso8601 < engine[0]["expiry"] then
-                return engine[0]
-            else
-                engine = engine.drop(1)
-                Cubes::setAttribute(item["uuid"], "engine-0020", engine)
-                return engine.first
-            end
-        end
-        engine[0]
     end
 
     # TxCores::suffix1(core, context = nil)
@@ -178,8 +163,7 @@ class TxCores
 
     # TxCores::suffix2(item)
     def self.suffix2(item)
-        core = TxCores::extractActiveCoreOrNull(item)
-        return "" if core.nil?
-        " #{TxCores::suffix1(core)}"
+        return "" if item["engine-0020"].nil?
+        " #{TxCores::suffix1(item["engine-0020"])}"
     end
 end

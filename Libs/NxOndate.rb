@@ -46,7 +46,7 @@ class NxOndates
 
     # NxOndates::item(item)
     def self.item(item)
-        ratio = TxCores::coreDayCompletionRatio(item["engine-0020"][0])
+        ratio = TxCores::coreDayCompletionRatio(item["engine-0020"])
         hours = item["engine-0020"]["hours"]
         [(1-ratio), 0].max * hours * 3600
     end

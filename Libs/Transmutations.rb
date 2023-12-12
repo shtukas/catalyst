@@ -37,7 +37,7 @@ class Transmutations
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxCruiser" then
             core = TxCores::interactivelyMakeNew()
-            DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
+            DataCenter::setAttribute(item["uuid"], "engine-0020", core)
             DataCenter::setAttribute(item["uuid"], "mikuType", "NxCruiser")
             item = DataCenter::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
@@ -46,7 +46,7 @@ class Transmutations
         end
         if item["mikuType"] == "NxSticky" and targetMikuType == "NxCruiser" then
             core = TxCores::interactivelyMakeNew()
-            DataCenter::setAttribute(item["uuid"], "engine-0020", [core])
+            DataCenter::setAttribute(item["uuid"], "engine-0020", core)
             DataCenter::setAttribute(item["uuid"], "mikuType", "NxCruiser")
             item = DataCenter::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)

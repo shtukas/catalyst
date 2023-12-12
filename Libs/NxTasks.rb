@@ -86,7 +86,7 @@ class NxTasks
     # NxTasks::engined()
     def self.engined()
         DataCenter::mikuType("NxTask")
-            .select{|item| TxCores::extractActiveCoreOrNull(item) }
+            .select{|item| item["engine-0020"] }
     end
 
     # NxTasks::getParentOrNull(item)

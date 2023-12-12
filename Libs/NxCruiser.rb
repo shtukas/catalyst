@@ -34,15 +34,15 @@ class NxCruisers
         if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
-                return "⛵️#{TxCores::suffix1(item["engine-0020"][0], context)} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"][0]).yellow}"
+                return "⛵️#{TxCores::suffix1(item["engine-0020"], context)} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"]).yellow}"
             end
         end
-        "⛵️#{TxCores::suffix1(item["engine-0020"][0], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"][0]).yellow}"
+        "⛵️#{TxCores::suffix1(item["engine-0020"], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"]).yellow}"
     end
 
     # NxCruisers::metric(item, indx)
     def self.metric(item, indx)
-        core = item["engine-0020"][0]
+        core = item["engine-0020"]
         if core["type"] == "blocking-until-done" then
             return 0.75 + 0.01 * 1.to_f/(indx+1)
         end
@@ -59,7 +59,7 @@ class NxCruisers
     # NxCruisers::recursiveDescent(ships)
     def self.recursiveDescent(ships)
         ships
-            .map{|ship| NxCruisers::elements(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) } + [ship]}
+            .map{|ship| NxCruisers::elements(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) } + [ship]}
             .flatten
     end
 
@@ -67,7 +67,7 @@ class NxCruisers
     def self.listingItems()
         topShips = DataCenter::mikuType("NxCruiser")
                     .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
+                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         NxCruisers::recursiveDescent(topShips)
             .map.with_index{|item, indx|
                 item[":metric:"] = NxCruisers::metric(item, indx)
@@ -110,20 +110,20 @@ class NxCruisers
                 .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
 
         i1, i2 = items.partition{|item| item["mikuType"] == "NxCruiser" }
-        i1.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) } + i2.sort_by{|item| item["global-positioning"] || 0 }
+        i1.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) } + i2.sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # NxCruisers::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         items = DataCenter::mikuType("NxCruiser")
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
+                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", items, lambda{|item| NxCruisers::toString(item) })
     end
 
     # NxCruisers::selectZeroOrMore()
     def self.selectZeroOrMore()
         items = DataCenter::mikuType("NxCruiser")
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"][0]) }
+                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         selected, _ = LucilleCore::selectZeroOrMore("item", [], items, lambda{|item| NxCruisers::toString(item) })
         selected
     end
