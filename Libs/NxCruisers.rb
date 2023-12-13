@@ -79,7 +79,7 @@ class NxCruisers
     # NxCruisers::listingItems()
     def self.listingItems()
         NxCruisers::shipsInRecursiveDescent()
-            .select{|ship| TxCores::coreDayCompletionRatio(ship) < 1 }
+            .select{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) < 1 }
     end
 
     # NxCruisers::elements(cruiser)

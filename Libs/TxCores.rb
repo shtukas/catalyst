@@ -105,7 +105,7 @@ class TxCores
         if core["type"] == "monitor" then
             return 1
         end
-        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
+        raise "(error: 63cdeae4-d616-44d6-abbd-f53595dc7e73): core: #{core}"
     end
 
     # TxCores::coreDayCompletionRatio(core)
