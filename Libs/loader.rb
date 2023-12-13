@@ -144,6 +144,7 @@ require_relative "Dives.rb"
 require_relative "DataCenter.rb"
 
 require_relative "Fsck.rb"
+require_relative "FileSystemReferences.rb"
 
 require_relative "Galaxy.rb"
 

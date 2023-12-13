@@ -1,6 +1,8 @@
 
 =begin
 
+4.00 : NxStrat (symbolic)
+
 3.00 : running items
 
 0.90 : wave interruption
@@ -83,6 +85,9 @@ class Metrics
         end
         if item["mikuType"] == "NxTask" then
             return 0.42
+        end
+        if item["mikuType"] == "NxStrat" then
+            return 4
         end
         raise "(error: 3b6f749b-a256-417d-a5a2-9c06aa0344ab) I do not how to metric: #{JSON.pretty_generate(item)}"
     end

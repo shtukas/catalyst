@@ -5,9 +5,9 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | bank accounts * | donation * | booster * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | bank accounts * | donation * | booster * | cfsr * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | pile | ship | sticky | priority | stack",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | ship | sticky | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack",
@@ -93,29 +93,19 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile", input) then
-            item = store.items().first
-            return if item.nil?
-            if item["mikuType"] == "NxTask" then
-                parent = NxTasks::getParentOrNull(item)
-                if parent then
-                    if parent["mikuType"] == "NxCruiser" then
-                        NxCruisers::pile(parent)
-                        return
-                    end
-                end
-            end
-            if item["mikuType"] == "NxCruiser" then
-                NxCruisers::pile(item)
-                return
-            end
-            NxStrats::interactivelyPile(item)
-            return
-        end
-
         if Interpreting::match("stickies", input) then
             items = DataCenter::mikuType("NxSticky").sort_by{|item| item["datetime"] }
             Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("cfsr *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
+            return if reference.nil?
+            DataCenter::setAttribute(item["uuid"], "cfsr-20231213", reference)
             return
         end
 

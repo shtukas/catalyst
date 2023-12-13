@@ -3,13 +3,14 @@ Catalyst items are json object with at least a uuid ("uuid") and a miku type ("m
 Cross types conventions (all optional):
 
     - field11               : coredata reference string
-    - doNotShowUntil        : null or unixtime
+    - doNotShowUntil        : unixtime
     - skip-0843             : unixtime (skipped until this time)
     - open-cycle-1143       : uuid of the open cycle that this item represents
     - ox1-0656              : Ox1
-    - global-positioning    : Float or null # used for ordering and sorting
+    - global-positioning    : Float # used for ordering and sorting
                               within the children of a core.
     - donation-1752         : Array[String]
     - note-1531             : String
     - engine-0020           : Array[TxCore]
     - parentuuid-0032       : null or uuid of the parent
+    - cfsr-20231213         : string, the catalyst file system reference

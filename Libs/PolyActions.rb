@@ -8,6 +8,19 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["cfsr-20231213"] then
+            options = ["standard access (default)", "cfsr access"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            if option.nil? or option == "standard access (default)" then
+                # nothing to do here
+            end
+            if option == "cfsr access" then
+                # nothing to do here
+                FileSystemReferences::accessReference(item["cfsr-20231213"])
+                return
+            end
+        end
+
         # types in alphabetical order
 
         if item["mikuType"] == "NxAnniversary" then
