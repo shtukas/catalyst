@@ -129,7 +129,7 @@ class Listing
             Config::isPrimaryInstance() ? PhysicalTargets::listingItems() : [],
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            NxStickies::listingItems(),
+            NxMonitors::listingItems(),
             NxTasks::engined(),
             NxCruisers::listingItems(),
         ]
@@ -251,7 +251,7 @@ class Listing
             end
 
             if Config::isPrimaryInstance() then
-                Catalyst::openCyclesSync()
+                OpenCycles::sync()
             end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)

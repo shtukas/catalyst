@@ -50,7 +50,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sticky", input) then
-            item = NxStickies::interactivelyIssueNewOrNull()
+            item = NxMonitors::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -94,7 +94,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("stickies", input) then
-            items = DataCenter::mikuType("NxSticky").sort_by{|item| item["datetime"] }
+            items = DataCenter::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
             Catalyst::program2(items)
             return
         end
@@ -262,7 +262,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "setting core for '#{PolyFunctions::toString(item).green}'"
-            if item["mikuType"] == "NxOndate" or item["mikuType"] == "NxSticky" then
+            if item["mikuType"] == "NxOndate" or item["mikuType"] == "NxMonitor" then
                 puts "You are adding a core to a #{item["mikuType"]}"
                 if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxCruiser ? ") then
                     Transmutations::transmute2(item, "NxCruiser")

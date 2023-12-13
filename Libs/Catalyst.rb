@@ -57,31 +57,4 @@ class Catalyst
         return "" if item["donation-1752"].nil?
         " (#{item["donation-1752"].map{|uuid| DataCenter::itemOrNull(uuid)}.compact.map{|target| target["description"]}.join(", ")})".green
     end
-
-    # Catalyst::openCyclesSync()
-    def self.openCyclesSync()
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
-            next if !File.directory?(location)
-            next if File.basename(location).start_with?('.')
-            markerfile = "#{location}/.marker-709b82a0903b"
-            if !File.exist?(markerfile) then
-                uuid = SecureRandom.uuid
-                File.open(markerfile, "w"){|f| f.puts(uuid) }
-                puts "Generating item for '#{File.basename(location).green}'"
-                LucilleCore::pressEnterToContinue()
-                NxStickies::interactivelyIssueNew2(uuid, "(auto) #{File.basename(location)}")
-                next
-            end
-            uuid = IO.read(markerfile).strip
-            item = DataCenter::itemOrNull(IO.read(markerfile).strip).nil?
-            if item.nil? then
-                uuid = SecureRandom.uuid
-                File.open(markerfile, "w"){|f| f.puts(uuid) }
-                puts "Generating item for '#{File.basename(location).green}'"
-                LucilleCore::pressEnterToContinue()
-                NxStickies::interactivelyIssueNew2(uuid, "(auto) #{File.basename(location)}")
-                next
-            end
-        }
-    end
 end

@@ -77,7 +77,7 @@ class Metrics
         if item["mikuType"] == "NxOndate" then
             return 0.45
         end
-        if item["mikuType"] == "NxSticky" then
+        if item["mikuType"] == "NxMonitor" then
             return 0.43
         end
         if item["mikuType"] == "Backup" then

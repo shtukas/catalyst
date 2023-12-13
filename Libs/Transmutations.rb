@@ -7,7 +7,7 @@ class Transmutations
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["sticky" ,"task", "cruiser"])
             return if option.nil?
             if option == "sticky" then
-                Transmutations::transmute2(item, "NxSticky")
+                Transmutations::transmute2(item, "NxMonitor")
             end
             if option == "task" then
                 Transmutations::transmute2(item, "NxTask")
@@ -22,8 +22,8 @@ class Transmutations
 
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
-        if item["mikuType"] == "NxOndate" and targetMikuType == "NxSticky" then
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxSticky")
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxMonitor" then
+            DataCenter::setAttribute(item["uuid"], "mikuType", "NxMonitor")
             item = DataCenter::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
@@ -44,7 +44,7 @@ class Transmutations
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxSticky" and targetMikuType == "NxCruiser" then
+        if item["mikuType"] == "NxMonitor" and targetMikuType == "NxCruiser" then
             core = TxCores::interactivelyMakeNew()
             DataCenter::setAttribute(item["uuid"], "engine-0020", core)
             DataCenter::setAttribute(item["uuid"], "mikuType", "NxCruiser")

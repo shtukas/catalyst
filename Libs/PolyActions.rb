@@ -47,8 +47,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSticky" then
-            NxStickies::access(item)
+        if item["mikuType"] == "NxMonitor" then
+            NxMonitors::access(item)
             return
         end
 
@@ -113,7 +113,7 @@ class PolyActions
             return NxCruisers::done(item)
         end
 
-        if item["mikuType"] == "NxSticky" then
+        if item["mikuType"] == "NxMonitor" then
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
             return
         end
@@ -197,8 +197,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSticky" then
-            NxStickies::natural(item)
+        if item["mikuType"] == "NxMonitor" then
+            NxMonitors::natural(item)
             return
         end
 
@@ -303,7 +303,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSticky" then
+        if item["mikuType"] == "NxMonitor" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
             end

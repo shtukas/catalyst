@@ -1,6 +1,19 @@
 
 class FileSystemReferences
 
+    # FileSystemReferences::issueCfsrFileAtDirectory(dirlocation, id)
+    def self.issueCfsrFileAtDirectory(dirlocation, id)
+        lines = [
+            id,
+            "This is a Catalyst file system reference (a .cfsr-20231213 file)",
+            "The reference is the first line of this file" 
+        ]
+        contents = lines.join("\n")
+        filename = ".catalyst-file-system-reference-#{SecureRandom::hex(4)}.cfsr-20231213"
+        filepath = "#{dirlocation}/#{filename}"
+        File.open(filepath, "w"){|f| f.puts(contents) }
+    end
+
     # FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
     def self.interactivelyIssueFileSystemReferenceOrNull()
         options = ["enter string", "build from location's name", "generate file in directory"]
@@ -24,15 +37,7 @@ class FileSystemReferences
                 return nil
             end
             id = SecureRandom::uuid
-            lines = [
-                id,
-                "This is a Catalyst file system reference (a .cfsr-20231213 file)",
-                "The reference is the first line of this file" 
-            ]
-            contents = lines.join("\n")
-            filename = ".catalyst-file-system-reference-#{SecureRandom::hex(4)}.cfsr-20231213"
-            filepath = "#{location}/#{filename}"
-            File.open(filepath, "w"){|f| f.puts(contents) }
+            FileSystemReferences::issueCfsrFileAtDirectory(location, id)
             return id
         end
     end
@@ -49,6 +54,14 @@ class FileSystemReferences
         location = FileSystemReferences::determineReferenceLocationOrNull(reference)
         puts "FileSystemReferences::accessReference(reference) has not been implemented yet, but registering the request to access reference: #{reference}"
         LucilleCore::pressEnterToContinue()
+    end
+
+    # FileSystemReferences::locateCFSRfileInDirectory(location)
+    def self.locateCFSRfileInDirectory(location)
+        raise "error: a57f4952" if !File.directory?(location)
+        LucilleCore::locationsAtFolder(location)
+            .select{|loc| loc[-14, 14] == ".cfsr-20231213" }
+            .first
     end
 
     # FileSystemReferences::suffix(item)

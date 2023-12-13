@@ -165,9 +165,10 @@ require_relative "NxStrats.rb"
 require_relative "Notes.rb"
 require_relative "NxCruiser.rb"
 require_relative "NxOndate.rb"
-require_relative "NxStickies.rb"
+require_relative "NxMonitors.rb"
 
 require_relative "Ox1.rb"
+require_relative "OpenCycles.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
