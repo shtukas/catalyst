@@ -34,10 +34,10 @@ class NxCruisers
         if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
             count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
-                return "⛵️#{TxCores::suffix1(item["engine-0020"], context)} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"]).yellow}"
+                return "⛵️ #{TxCores::suffix1(item["engine-0020"], context)} special circusmtances: DataHub/Buffer-In #{TxCores::string2(item["engine-0020"]).yellow}"
             end
         end
-        "⛵️#{TxCores::suffix1(item["engine-0020"], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"]).yellow}"
+        "⛵️ #{TxCores::suffix1(item["engine-0020"], context)} #{item["description"]} #{TxCores::string2(item["engine-0020"]).yellow}"
     end
 
     # NxCruisers::metric(item, indx)
@@ -63,10 +63,15 @@ class NxCruisers
             .flatten
     end
 
+    # NxCruisers::topShips()
+    def self.topShips()
+        DataCenter::mikuType("NxCruiser")
+            .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
+    end
+
     # NxCruisers::shipsInRecursiveDescent()
     def self.shipsInRecursiveDescent()
-        topShips = DataCenter::mikuType("NxCruiser")
-                    .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
+        topShips = NxCruisers::topShips()
                     .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         NxCruisers::recursiveDescent(topShips)
     end
@@ -74,6 +79,7 @@ class NxCruisers
     # NxCruisers::listingItems()
     def self.listingItems()
         NxCruisers::shipsInRecursiveDescent()
+            .select{|ship| TxCores::coreDayCompletionRatio(core) < 1 }
     end
 
     # NxCruisers::elements(cruiser)
@@ -116,9 +122,35 @@ class NxCruisers
 
     # NxCruisers::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = DataCenter::mikuType("NxCruiser")
+        #items = DataCenter::mikuType("NxCruiser")
+        #            .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+        #LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", items, lambda{|item| NxCruisers::toString(item) })
+        NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull()
+    end
+
+    # NxCruisers::interactivelySelectOneTopShipOrNull()
+    def self.interactivelySelectOneTopShipOrNull()
+        topShips = NxCruisers::topShips()
                     .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", items, lambda{|item| NxCruisers::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", topShips, lambda{|item| NxCruisers::toString(item) })
+    end
+
+    # NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull(ship = nil)
+    def self.interactivelySelectShipUsingTopDownNavigationOrNull(ship = nil)
+        if ship.nil? then
+            ship = NxCruisers::interactivelySelectOneTopShipOrNull()
+            return nil if ship.nil?
+            return NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull(ship)
+        end
+        childrenships = NxCruisers::elements(ship).select{|item| item["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+        if childrenships.empty? then
+            return ship
+        end
+        selected = LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", [ship] + childrenships, lambda{|item| NxCruisers::toString(item) })
+        if selected["uuid"] == ship["uuid"] then
+            return selected
+        end
+        NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull(selected)
     end
 
     # NxCruisers::selectZeroOrMore()
