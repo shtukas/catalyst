@@ -17,6 +17,14 @@ class Transmutations
             end
             return
         end
+        if item["mikuType"] == "NxTask" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["monitor"])
+            return if option.nil?
+            if option == "monitor" then
+                Transmutations::transmute2(item, "NxMonitor")
+            end
+            return
+        end
         raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
     end
 
@@ -51,6 +59,10 @@ class Transmutations
             item = DataCenter::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            return
+        end
+        if item["mikuType"] == "NxTask" and targetMikuType == "NxMonitor" then
+            DataCenter::setAttribute(item["uuid"], "mikuType", "NxMonitor")
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"

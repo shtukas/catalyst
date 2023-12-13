@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | ship | sticky | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack *",
         ].join("\n")
     end
 
@@ -159,8 +159,9 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("unstack", input) then
-            item = store.items().first
+        if Interpreting::match("unstack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             Ox1::detach(item)
             return
