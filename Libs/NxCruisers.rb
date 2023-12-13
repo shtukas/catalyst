@@ -63,16 +63,17 @@ class NxCruisers
             .flatten
     end
 
-    # NxCruisers::listingItems()
-    def self.listingItems()
+    # NxCruisers::shipsInRecursiveDescent()
+    def self.shipsInRecursiveDescent()
         topShips = DataCenter::mikuType("NxCruiser")
                     .select{|item| item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? }
                     .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         NxCruisers::recursiveDescent(topShips)
-            .map.with_index{|item, indx|
-                item[":metric:"] = NxCruisers::metric(item, indx)
-                item
-            }
+    end
+
+    # NxCruisers::listingItems()
+    def self.listingItems()
+        NxCruisers::shipsInRecursiveDescent()
     end
 
     # NxCruisers::elements(cruiser)
@@ -261,8 +262,7 @@ class NxCruisers
     def self.program2()
         loop {
 
-            items = DataCenter::mikuType("NxCruiser")
-                        .sort_by{|item| Metrics::metric2(item) }
+            items = NxCruisers::shipsInRecursiveDescent()
             return if items.empty?
 
             system("clear")

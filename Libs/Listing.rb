@@ -80,7 +80,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        positionstr = Ox1::activePositionOrNull(item) ? "stack".red : "#{"%.3f" % Metrics::metric2(item)}"
+        positionstr = Ox1::activePositionOrNull(item) ? "stack".red : ""
         line = "#{storePrefix} #{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
@@ -147,7 +147,6 @@ class Listing
     # Listing::items2()
     def self.items2()
         items = Listing::items()
-        items = Metrics::order(Listing::items())
         items = Ox1::organiseListing(items)
         runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
         items = runningItems + pausedItems + items

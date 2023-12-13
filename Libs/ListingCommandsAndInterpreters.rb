@@ -68,15 +68,15 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("priority", input) then
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             return if line == ""
-            task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
-            puts JSON.pretty_generate(task)
-            Ox1::putAtTop(task)
+            item = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+            puts JSON.pretty_generate(item)
+            Ox1::putAtTop(item)
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
-                NxBalls::start(task)
+                NxBalls::start(item)
             end
             return
         end
