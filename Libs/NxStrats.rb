@@ -55,4 +55,9 @@ class NxStrats
                 puts JSON.pretty_generate(cursor)
             }
     end
+
+    # NxStrats::suffix(item)
+    def self.suffix(item)
+        NxStrats::parentOrNull(item) ? " ✨" : ""
+    end
 end
