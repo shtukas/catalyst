@@ -3,29 +3,20 @@ class Transmutations
 
     # Transmutations::transmute1(item)
     def self.transmute1(item)
-        if item["mikuType"] == "NxOndate" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["sticky" ,"task", "cruiser"])
+        map = {
+            "NxOndate"  => ["NxSticky" ,"NxTask", "NxCruiser"],
+            "NxTask"    => ["NxMonitor"],
+            "NxMonitor" => ["NxTask", "NxCruiser"],
+        }
+        if map[item["mikuType"]].nil? then
+            raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
+        end
+        if item["mikuType"] == "NxMonitor" then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", map[item["mikuType"]])
             return if option.nil?
-            if option == "sticky" then
-                Transmutations::transmute2(item, "NxMonitor")
-            end
-            if option == "task" then
-                Transmutations::transmute2(item, "NxTask")
-            end
-            if option == "cruiser" then
-                Transmutations::transmute2(item, "NxCruiser")
-            end
+            Transmutations::transmute2(item, option)
             return
         end
-        if item["mikuType"] == "NxTask" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", ["monitor"])
-            return if option.nil?
-            if option == "monitor" then
-                Transmutations::transmute2(item, "NxMonitor")
-            end
-            return
-        end
-        raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
     end
 
     # Transmutations::transmute2(item, targetMikuType)
@@ -56,6 +47,13 @@ class Transmutations
             core = TxCores::interactivelyMakeNew()
             DataCenter::setAttribute(item["uuid"], "engine-0020", core)
             DataCenter::setAttribute(item["uuid"], "mikuType", "NxCruiser")
+            item = DataCenter::itemOrNull(item["uuid"])
+            puts JSON.pretty_generate(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            return
+        end
+        if item["mikuType"] == "NxMonitor" and targetMikuType == "NxTask" then
+            DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
             item = DataCenter::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
