@@ -23,6 +23,10 @@ class PolyActions
 
         # types in alphabetical order
 
+        if item["mikuType"] == "NxPatrol" then
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -82,6 +86,11 @@ class PolyActions
         Ox1::detach(item)
 
         # order: alphabetical order
+
+        if item["mikuType"] == "NxPatrol" then
+            DataCenter::setAttribute(item["uuid"], "unixtime", Time.new.to_i)
+            return
+        end
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
@@ -168,6 +177,10 @@ class PolyActions
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
+            return
+        end
+
+        if item["mikuType"] == "NxPatrol" then
             return
         end
 
@@ -270,6 +283,13 @@ class PolyActions
 
         NxBalls::stop(item)
 
+        if item["mikuType"] == "NxPatrol" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                DataCenter::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 DataCenter::destroy(item["uuid"])
@@ -331,6 +351,10 @@ class PolyActions
 
     # PolyActions::program(item)
     def self.program(item)
+
+        if item["mikuType"] == "NxPatrol" then
+            return
+        end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::program1(item)

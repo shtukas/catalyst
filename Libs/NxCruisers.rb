@@ -17,7 +17,7 @@ class NxCruisers
         return if description == ""
         core = TxCores::interactivelyMakeNewOrNull()
         return if core.nil?
-        NxCruisers::issueWithInit(uuid, description, [core])
+        NxCruisers::issueWithInit(uuid, description, core)
     end
 
     # NxCruisers::interactivelyIssueNewOrNull()
@@ -95,6 +95,12 @@ class NxCruisers
         if cruiser["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
             return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
+        if cruiser["description"].include?("patrol") then
+            elements = DataCenter::catalystItems()
+                        .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
+            return elements.sort_by{|i| i["unixtime"] }
+        end
+
         DataCenter::catalystItems()
             .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
@@ -236,16 +242,25 @@ class NxCruisers
                 }
 
             puts ""
-            puts "top | pile | todo | ship | sort | move"
+
+            puts "top | pile | task | patrol | ship | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "todo" then
-                todo = NxTasks::interactivelyIssueNewOrNull()
-                next if todo.nil?
-                puts JSON.pretty_generate(todo)
-                DataCenter::setAttribute(todo["uuid"], "parentuuid-0032", item["uuid"])
+            if input == "task" then
+                task = NxTasks::interactivelyIssueNewOrNull()
+                next if task.nil?
+                puts JSON.pretty_generate(task)
+                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                next
+            end
+
+            if input == "patrol" then
+                patrol = NxPatrols::interactivelyIssueNewOrNull()
+                next if patrol.nil?
+                puts JSON.pretty_generate(patrol)
+                DataCenter::setAttribute(patrol["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -260,10 +275,10 @@ class NxCruisers
             if input == "top" then
                 line = LucilleCore::askQuestionAnswerAsString("description: ")
                 next if line == ""
-                todo = NxTasks::descriptionToTask1(SecureRandom.hex, line)
-                puts JSON.pretty_generate(todo)
-                DataCenter::setAttribute(todo["uuid"], "parentuuid-0032", item["uuid"])
-                DataCenter::setAttribute(todo["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
+                task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+                puts JSON.pretty_generate(task)
+                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                DataCenter::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 next
             end
 

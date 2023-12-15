@@ -164,6 +164,7 @@ require_relative "Notes.rb"
 require_relative "NxCruisers.rb"
 require_relative "NxOndate.rb"
 require_relative "NxMonitors.rb"
+require_relative "NxPatrols.rb"
 
 require_relative "Ox1.rb"
 require_relative "OpenCycles.rb"
