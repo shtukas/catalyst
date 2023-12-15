@@ -30,7 +30,7 @@ class PolyFunctions
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                ship = DataCenter::itemOrNull("60949c4f-4e1f-45d3-acb4-3b6c718ac1ed")
+                ship = DataCenter::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3")
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
