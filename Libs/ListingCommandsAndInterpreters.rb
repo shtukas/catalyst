@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | pile * | core * | uncore * | bank accounts * | donation * | booster * | cfsr * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | cfsr * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | ship | sticky | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
@@ -157,6 +157,13 @@ class ListingCommandsAndInterpreters
                 end
             }
             return
+        end
+
+        if Interpreting::match("stack *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Ox1::putAtTop(item)
         end
 
         if Interpreting::match("unstack *", input) then
