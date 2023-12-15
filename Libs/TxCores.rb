@@ -4,22 +4,11 @@ class TxCores
     # Build
 
     # TxCores::interactivelyMakeNewOrNull(ec = nil)
-    def self.interactivelyMakeNewOrNull()
+    def self.interactivelyMakeNewOrNull(ec = nil)
         type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done", "monitor"])
         return nil if type.nil?
         if type == "booster" then
-            hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
-            return nil if hours == ""
-            hours = hours.to_f
-            return nil if hours == 0
-            expiry = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            return {
-                "uuid"     => ec ? ec["uuid"] : SecureRandom.uuid,
-                "mikuType" => "TxCore",
-                "type"     => "booster",
-                "hours"    => hours,
-                "expiry"   => expiry
-            }
+            return TxCores::interactivelyMakeBoosterOrNull(ec)
         end
         if type == "daily-hours" then
             hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
@@ -62,19 +51,20 @@ class TxCores
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
     end
 
-    # TxCores::interactivelyMakeBoosterOrNull()
-    def self.interactivelyMakeBoosterOrNull()
-        hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
+    # TxCores::interactivelyMakeBoosterOrNull(ec = nil)
+    def self.interactivelyMakeBoosterOrNull(ec = nil)
+        hours = LucilleCore::askQuestionAnswerAsString("total hours (empty for abort): ")
         return nil if hours == ""
         hours = hours.to_f
         return nil if hours == 0
-        expiry = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-        {
-            "uuid"     => SecureRandom.uuid,
-            "mikuType" => "TxCore",
-            "type"     => "booster",
-            "hours"    => hours,
-            "expiry"   => expiry
+        expiry = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+        return {
+            "uuid"        => ec ? ec["uuid"] : SecureRandom.uuid,
+            "mikuType"    => "TxCore",
+            "type"        => "booster",
+            "startunixtime" => Time.new.to_i,
+            "hours"       => hours,
+            "endunixtime" => expiry
         }
     end
 
@@ -87,26 +77,6 @@ class TxCores
 
     # -----------------------------------------------
     # Data
-
-    # TxCores::coreDayHours(core)
-    def self.coreDayHours(core)
-        if core["type"] == "weekly-hours" then
-            return core["hours"].to_f/7
-        end
-        if core["type"] == "daily-hours" then
-            return core["hours"]
-        end
-        if core["type"] == "booster" then
-            return core["hours"]
-        end
-        if core["type"] == "blocking-until-done" then
-            return 1
-        end
-        if core["type"] == "monitor" then
-            return 1
-        end
-        raise "(error: 63cdeae4-d616-44d6-abbd-f53595dc7e73): core: #{core}"
-    end
 
     # TxCores::coreDayCompletionRatio(core)
     def self.coreDayCompletionRatio(core)
@@ -126,11 +96,13 @@ class TxCores
             return [0.8*x1 + 0.2*x2, x1].max
         end
         if core["type"] == "booster" then
-            dailyHours = core["hours"]
-            hoursDoneToday = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
-            x1 = hoursDoneToday.to_f/dailyHours
-            x2 = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
-            return [0.8*x1 + 0.2*x2, x1].max
+            core["startunixtime"] = core["startunixtime"] || 1702659382
+            core["endunixtime"] = core["endunixtime"] ? core["endunixtime"] : DateTime.parse(core["expiry"]).to_time.to_i
+            deltaXToNow = [Time.new.to_i, core["endunixtime"]].min - core["startunixtime"]
+            deltaXTotal = core["endunixtime"] - core["startunixtime"]
+            idealHours = core["hours"]*(deltaXToNow.to_f/deltaXTotal)
+            hoursDone = Bank::getValue(core["uuid"]).to_f/3600
+            return hoursDone.to_f/idealHours
         end
         if core["type"] == "blocking-until-done" then
             return 0
@@ -141,28 +113,29 @@ class TxCores
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
 
-    # TxCores::string2(core)
-    def self.string2(core)
-        return "(core not found)" if core.nil?
-        "(#{core["type"]}: #{core["hours"]})"
-    end
-
     # TxCores::suffix1(core, context = nil)
     def self.suffix1(core, context = nil)
         if context == "listing" then
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "⏱️  ( blcking til done           )".green
+            return "⏱️  ( blcking til done            )".green
         end
         if core["type"] == "monitor" then
-            return "⏱️  ( monitor                    )".green
+            return "⏱️  ( monitor                     )".green
+        end
+        if core["type"] == "booster" then
+            if TxCores::coreDayCompletionRatio(core) < 1 then
+                return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of booster: #{"%5.2f" % core["hours"]} hs)".green
+            else
+                return "⏱️  (expired booster              )".green
+            end
         end
         if core["type"] == "weekly-hours" then
-            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
+            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of weekly:  #{"%5.2f" % core["hours"]} hs)".green
         end
         if core["type"] == "daily-hours" then
-            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of daily:  #{"%5.2f" % core["hours"]} hs)".green
+            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of daily:   #{"%5.2f" % core["hours"]} hs)".green
         end
         
     end

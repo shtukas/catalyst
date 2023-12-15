@@ -201,7 +201,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            booster = TxCores::interactivelyMakeBoosterOrNull()
+            booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
             return if booster.nil?
             DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
             return
@@ -210,7 +210,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("todo+booster", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            booster = TxCores::interactivelyMakeBoosterOrNull()
+            booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
             DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
