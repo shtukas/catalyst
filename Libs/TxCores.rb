@@ -3,7 +3,7 @@ class TxCores
     # -----------------------------------------------
     # Build
 
-    # TxCores::interactivelyMakeNewOrNull()
+    # TxCores::interactivelyMakeNewOrNull(ec = nil)
     def self.interactivelyMakeNewOrNull()
         type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done", "monitor"])
         return nil if type.nil?
@@ -14,7 +14,7 @@ class TxCores
             return nil if hours == 0
             expiry = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             return {
-                "uuid"     => SecureRandom.uuid,
+                "uuid"     => ec ? ec["uuid"] : SecureRandom.uuid,
                 "mikuType" => "TxCore",
                 "type"     => "booster",
                 "hours"    => hours,
@@ -27,7 +27,7 @@ class TxCores
             hours = hours.to_f
             return nil if hours == 0
             return {
-                "uuid"          => SecureRandom.uuid,
+                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
                 "mikuType"      => "TxCore",
                 "type"          => "daily-hours",
                 "hours"         => hours,
@@ -39,7 +39,7 @@ class TxCores
             hours = hours.to_f
             return nil if hours == 0
             return {
-                "uuid"          => SecureRandom.uuid,
+                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
                 "mikuType"      => "TxCore",
                 "type"          => "weekly-hours",
                 "hours"         => hours
@@ -47,14 +47,14 @@ class TxCores
         end
         if type == "blocking-until-done" then
             return {
-                "uuid"          => SecureRandom.uuid,
+                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
                 "mikuType"      => "TxCore",
                 "type"          => "blocking-until-done"
             }
         end
         if type == "monitor" then
             return {
-                "uuid"          => SecureRandom.uuid,
+                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
                 "mikuType"      => "TxCore",
                 "type"          => "monitor"
             }
@@ -153,12 +153,18 @@ class TxCores
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "⏱️  (  blcking til done )".green
+            return "⏱️  ( blcking til done           )".green
         end
         if core["type"] == "monitor" then
-            return "⏱️  (           monitor )".green
+            return "⏱️  ( monitor                    )".green
         end
-        "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of #{"%4.2f" % TxCores::coreDayHours(core)} hs)".green
+        if core["type"] == "weekly-hours" then
+            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
+        end
+        if core["type"] == "daily-hours" then
+            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of daily:  #{"%5.2f" % core["hours"]} hs)".green
+        end
+        
     end
 
     # TxCores::suffix2(item)

@@ -271,9 +271,9 @@ class ListingCommandsAndInterpreters
                     return
                 end
             end
-            core = TxCores::interactivelyMakeNewOrNull()
-            return if core.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0020", core)
+            core2 = TxCores::interactivelyMakeNewOrNull(item["engine-0020"])
+            return if core2.nil?
+            DataCenter::setAttribute(item["uuid"], "engine-0020", core2)
             return
         end
 
