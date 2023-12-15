@@ -7,20 +7,30 @@ class Transmutations
             "NxOndate"  => ["NxSticky" ,"NxTask", "NxCruiser"],
             "NxTask"    => ["NxMonitor"],
             "NxMonitor" => ["NxTask", "NxCruiser"],
+            "NxCruiser" => ["NxTask"]
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
         end
-        if item["mikuType"] == "NxMonitor" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", map[item["mikuType"]])
-            return if option.nil?
-            Transmutations::transmute2(item, option)
-            return
-        end
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", map[item["mikuType"]])
+        return if option.nil?
+        Transmutations::transmute2(item, option)
     end
 
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
+        if item["mikuType"] == "NxCruiser" and targetMikuType == "NxTask" then
+            if NxCruisers::elements(item).size.size > 0 then
+                DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
+                item = DataCenter::itemOrNull(item["uuid"])
+                puts JSON.pretty_generate(item)
+                NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            else
+                puts "We cannot trnasmute a NxCruise with non empty cargo. Found #{NxCruisers::elements(item).size} elements"
+                LucilleCore::pressEnterToContinue()
+            end
+            return
+        end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxMonitor" then
             DataCenter::setAttribute(item["uuid"], "mikuType", "NxMonitor")
             item = DataCenter::itemOrNull(item["uuid"])

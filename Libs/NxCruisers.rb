@@ -83,8 +83,6 @@ class NxCruisers
         NxCruisers::recursiveDescent(topShips)
     end
 
-
-
     # NxCruisers::listingItems()
     def self.listingItems()
         items1 = DataCenter::mikuType("NxCruiser")

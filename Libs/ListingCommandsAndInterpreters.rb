@@ -5,9 +5,9 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | cfsr * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | ship | sticky | priority | stack",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | ship | monitor | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack *",
@@ -49,7 +49,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sticky", input) then
+        if Interpreting::match("monitor", input) then
             item = NxMonitors::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
