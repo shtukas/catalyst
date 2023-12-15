@@ -227,12 +227,7 @@ class Listing
             }
         }
         loop {
-            mode = XCache::getOrDefaultValue("a297793a-a62e-4e2f-b7aa-72d494bdb206", "listing")
-            if mode == "listing" then
-                Listing::listing(initialCodeTrace)
-            else
-                Listing::focus(initialCodeTrace)
-            end
+            Listing::listing(initialCodeTrace)
         }
     end
 
@@ -280,105 +275,4 @@ class Listing
         }
     end
 
-    # Listing::focus(initialCodeTrace)
-    def self.focus(initialCodeTrace)
-
-        counter = 0
-
-        loop {
-
-            counter = counter + 1
-
-            if CommonUtils::catalystTraceCode() != initialCodeTrace then
-                puts "Code change detected"
-                exit
-            end
-
-            items = Listing::items2()
-            item = items.first
-            items.drop(1).each{|item|
-                if NxBalls::itemIsRunning(item) then
-                    NxBalls::pause(item)
-                end
-            }
-
-            system('clear')
-
-            store = ItemStore.new()
-            store.register(item, true)
-
-            contextcommands = lambda{|item|
-                if item["mikuType"] == "PhysicalTarget" then
-                    return ["access", "push", "exit"]
-                end
-                if NxBalls::itemIsRunning(item) then
-                    return ["done", "access", "stop", "pause", "exit", "command"]
-                end
-                if NxBalls::itemIsActive(item) then
-                    return ["done", "pursue", "exit", "command"]
-                end
-                ["start", "access", "done", "exit", "command"]
-            }
-
-            commands = contextcommands.call(item)
-
-            input = LucilleCore::askQuestionAnswerAsString("[#{counter}] #{Listing::toString2(store, item)} : #{commands.join(', ').green} : ")
-
-            if input == "" then
-                next
-            end
-
-            if !commands.include?(input) then
-                puts "command: #{input} is not available in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "exit" then
-                XCache::set("a297793a-a62e-4e2f-b7aa-72d494bdb206", "listing")
-                return
-            end
-
-            if input == "command" then
-                input = LucilleCore::askQuestionAnswerAsString("> ")
-                ListingCommandsAndInterpreters::interpreter(input, store)
-                next
-            end
-
-            if input == "start" then
-                NxBalls::start(item)
-                next
-            end
-
-            if input == "access" then
-                PolyActions::access(item)
-                next
-            end
-
-            if input == "stop" then
-                NxBalls::stop(item)
-                Ox1::detach(item)
-                next
-            end
-
-            if input == "done" then
-                NxBalls::stop(item)
-                Ox1::detach(item)
-                PolyActions::done(item, true)
-                next
-            end
-
-            if input == "push" then
-                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + 3600)
-                next
-            end
-
-            if input == "pursue" then
-                NxBalls::pursue(item)
-                next
-            end
-
-            raise "(error: 22a823c7-0d5b-4d0c-a3a9-b0bb75ebd445) command not interpreted 🤔"
-        }
-    end
 end
