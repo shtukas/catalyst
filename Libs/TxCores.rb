@@ -119,7 +119,7 @@ class TxCores
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "⏱️  ( 0.00 %; blcking til done  )".green
+            return "⏱️  (  0.00 %; blcking til done )".green
         end
         if core["type"] == "monitor" then
             return "⏱️  ( monitor                   )".green
