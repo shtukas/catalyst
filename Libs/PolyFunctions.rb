@@ -30,29 +30,21 @@ class PolyFunctions
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                accounts << {
-                    "description" => "ship: orphaned tasks (automatic)",
-                    "number"      => "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed"
-                }
+                ship = DataCenter::itemOrNull("60949c4f-4e1f-45d3-acb4-3b6c718ac1ed")
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
 
         if item["mikuType"] == "Wave" then
             if !item["interruption"] then
-                accounts << {
-                    "description" => "ship: waves !interruption (automatic)",
-                    "number"      => "1c699298-c26c-47d9-806b-e19f84fd5d75"
-                }
+                ship = DataCenter::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75")
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
 
         if item["mikuType"] == "Backup" then
-            if !item["interruption"] then
-                accounts << {
-                    "description" => "ship: backups (automatic)",
-                    "number"      => "eadf9717-58a1-449b-8b99-97c85a154fbc"
-                }
-            end
+            ship = DataCenter::itemOrNull("eadf9717-58a1-449b-8b99-97c85a154fbc")
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
         end
 
         # Special Features

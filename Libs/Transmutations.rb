@@ -7,7 +7,8 @@ class Transmutations
             "NxOndate"  => ["NxSticky" ,"NxTask", "NxCruiser"],
             "NxTask"    => ["NxMonitor"],
             "NxMonitor" => ["NxTask", "NxCruiser"],
-            "NxCruiser" => ["NxTask"]
+            "NxCruiser" => ["NxTask"],
+            "Wave"      => ["NxPatrol"],
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
@@ -71,6 +72,13 @@ class Transmutations
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxMonitor" then
             DataCenter::setAttribute(item["uuid"], "mikuType", "NxMonitor")
+            return
+        end
+        if item["mikuType"] == "Wave" and targetMikuType == "NxPatrol" then
+            DataCenter::setAttribute(item["uuid"], "mikuType", "NxPatrol")
+            item = DataCenter::itemOrNull(item["uuid"])
+            puts JSON.pretty_generate(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"
