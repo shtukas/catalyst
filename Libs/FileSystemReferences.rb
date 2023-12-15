@@ -14,9 +14,25 @@ class FileSystemReferences
         File.open(filepath, "w"){|f| f.puts(contents) }
     end
 
+    # FileSystemReferences::issueOrReadOpenCycleDirectoryReferenceOrNull()
+    def self.issueOrReadOpenCycleDirectoryReferenceOrNull()
+        locations = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles")
+            .select{|location| !File.basename(location).start_with?('.') }
+            .select{|location| File.directory?(location) }
+        location = LucilleCore::selectEntityFromListOfEntitiesOrNull("directory", locations, lambda{|l| File.basename(l) })
+        return nil if location.nil?
+        filepath = FileSystemReferences::locateCFSRfileInDirectoryOrNull(location)
+        if filepath then
+            return IO.read(filepath).lines.first.strip
+        end
+        id = SecureRandom::hex
+        FileSystemReferences::issueCfsrFileAtDirectory(location, id)
+        id
+    end
+
     # FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
     def self.interactivelyIssueFileSystemReferenceOrNull()
-        options = ["enter string", "build from location's name", "generate file in directory"]
+        options = ["enter string", "build from location's name", "generate file in directory", "reference for an open cycle"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
         return nil if option.nil?
         if option == "enter string" then
@@ -40,6 +56,9 @@ class FileSystemReferences
             FileSystemReferences::issueCfsrFileAtDirectory(location, id)
             return id
         end
+        if option == "reference for an open cycle" then
+            return FileSystemReferences::issueOrReadOpenCycleDirectoryReferenceOrNull()
+        end
     end
 
     # FileSystemReferences::determineReferenceLocationOrNull(reference)
@@ -56,8 +75,8 @@ class FileSystemReferences
         LucilleCore::pressEnterToContinue()
     end
 
-    # FileSystemReferences::locateCFSRfileInDirectory(location)
-    def self.locateCFSRfileInDirectory(location)
+    # FileSystemReferences::locateCFSRfileInDirectoryOrNull(location)
+    def self.locateCFSRfileInDirectoryOrNull(location)
         raise "error: a57f4952" if !File.directory?(location)
         LucilleCore::locationsAtFolder(location)
             .select{|loc| loc[-14, 14] == ".cfsr-20231213" }

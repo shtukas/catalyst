@@ -4,7 +4,7 @@ class OpenCycles
     def self.issueReferenceAndMonitorForThisLocation(location)
         reference = SecureRandom.hex # both the reference and the uuid of the monitor
         FileSystemReferences::issueCfsrFileAtDirectory(location, reference)
-        monitor = NxMonitors::issueNew(SecureRandom.uuid, File.basename(location))
+        monitor = NxMonitors::issueNew(SecureRandom.uuid, "(auto) #{File.basename(location)}")
         DataCenter::setAttribute(monitor["uuid"], "cfsr-20231213", reference)
     end
 
@@ -13,7 +13,7 @@ class OpenCycles
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/OpenCycles").each{|location|
             next if !File.directory?(location)
             next if File.basename(location).start_with?('.')
-            cfsrfilepath = FileSystemReferences::locateCFSRfileInDirectory(location)
+            cfsrfilepath = FileSystemReferences::locateCFSRfileInDirectoryOrNull(location)
             if cfsrfilepath.nil? then
                 puts "creating a csfr file and monitor for open cycle: #{File.basename(location).green}"
                 LucilleCore::pressEnterToContinue()
