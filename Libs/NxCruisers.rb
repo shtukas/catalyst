@@ -88,9 +88,11 @@ class NxCruisers
         items1 = DataCenter::mikuType("NxCruiser")
                     .select{|ship| ship["engine-0020"]["type"] == "booster" }
                     .select{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) < 1 }
+                    .sort_by{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) }
 
         items2 = NxCruisers::shipsInRecursiveDescent()
                     .select{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) < 1 }
+                    .sort_by{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) }
 
         items1 + items2
     end
