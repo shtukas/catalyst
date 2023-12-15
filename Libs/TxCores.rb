@@ -98,7 +98,7 @@ class TxCores
         if core["type"] == "booster" then
             core["startunixtime"] = core["startunixtime"] || 1702659382
             core["endunixtime"] = core["endunixtime"] ? core["endunixtime"] : DateTime.parse(core["expiry"]).to_time.to_i
-            deltaXToNow = [Time.new.to_i, core["endunixtime"]].min - core["startunixtime"]
+            deltaXToNow = [CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()), core["endunixtime"]].min - core["startunixtime"]
             deltaXTotal = core["endunixtime"] - core["startunixtime"]
             idealHours = core["hours"]*(deltaXToNow.to_f/deltaXTotal)
             hoursDone = Bank::getValue(core["uuid"]).to_f/3600
@@ -119,25 +119,24 @@ class TxCores
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "⏱️  ( blcking til done            )".green
+            return "⏱️  ( blcking til done          )".green
         end
         if core["type"] == "monitor" then
-            return "⏱️  ( monitor                     )".green
+            return "⏱️  ( monitor                   )".green
         end
         if core["type"] == "booster" then
             if TxCores::coreDayCompletionRatio(core) < 1 then
-                return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of booster: #{"%5.2f" % core["hours"]} hs)".green
+                return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; booster: #{"%5.2f" % core["hours"]} hs)".green
             else
-                return "⏱️  (expired booster              )".green
+                return "⏱️  (expired booster            )".green
             end
         end
         if core["type"] == "weekly-hours" then
-            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of weekly:  #{"%5.2f" % core["hours"]} hs)".green
+            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; weekly:  #{"%5.2f" % core["hours"]} hs)".green
         end
         if core["type"] == "daily-hours" then
-            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} % of daily:   #{"%5.2f" % core["hours"]} hs)".green
+            return "⏱️  (#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; daily:   #{"%5.2f" % core["hours"]} hs)".green
         end
-        
     end
 
     # TxCores::suffix2(item)

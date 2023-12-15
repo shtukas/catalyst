@@ -7,7 +7,7 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | cfsr * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | todo+booster | desktop | ship | sticky | priority | stack",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | ship | sticky | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack *",
@@ -211,15 +211,6 @@ class ListingCommandsAndInterpreters
             booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
             return if booster.nil?
             DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
-            return
-        end
-
-        if Interpreting::match("todo+booster", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
-            booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
-            DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
-            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
 
