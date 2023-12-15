@@ -97,7 +97,7 @@ class NxCruisers
 
     # NxCruisers::elements(cruiser)
     def self.elements(cruiser)
-        if cruiser["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
+        if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return DataCenter::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
@@ -121,7 +121,7 @@ class NxCruisers
 
     # NxCruisers::elementsForPrefix(cruiser)
     def self.elementsForPrefix(cruiser)
-        if cruiser["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
+        if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return DataCenter::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
@@ -132,6 +132,7 @@ class NxCruisers
         if cruiser["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
             return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
+
         items = DataCenter::catalystItems()
                 .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
 
