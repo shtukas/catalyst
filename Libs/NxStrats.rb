@@ -51,6 +51,7 @@ class NxStrats
             .map{|line| line.strip }
             .reverse
             .each{|line|
+                next if line == ""
                 cursor = NxStrats::issue(line, cursor["uuid"])
                 puts JSON.pretty_generate(cursor)
             }

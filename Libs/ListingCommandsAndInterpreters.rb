@@ -19,6 +19,7 @@ class ListingCommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
+                Ox1::detach(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 return
             end
@@ -186,12 +187,21 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
+            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
 
         if Interpreting::match("sort", input) then
+            puts "> multiple pass selection (first select and then order 1+ times)"
+            sleep 1
             selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
-            selected.reverse.each{|item|
+            s1 = selected # part 1
+            s2 = []       # part 2
+            loop {
+                s1, s2 = LucilleCore::selectZeroOrMore("item", [], s1+s2, lambda{|item| PolyFunctions::toString(item) })
+                break if s1.empty?
+            }
+            (s1+s2).reverse.each{|item|
                 Ox1::putAtTop(item)
             }
             return

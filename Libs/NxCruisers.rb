@@ -61,7 +61,7 @@ class NxCruisers
     # NxCruisers::recursiveDescent(ships)
     def self.recursiveDescent(ships)
         ships
-            .map{|ship| NxCruisers::elements(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) } + [ship]}
+            .map{|ship| NxCruisers::elementsInNaturalCruiseOrder(ship).select{|i| i["mikuType"] == "NxCruiser" }.sort_by{|item| NxCruisers::dayCompletionRatio(item) } + [ship]}
             .flatten
     end
 
@@ -79,26 +79,30 @@ class NxCruisers
     # NxCruisers::shipsInRecursiveDescent()
     def self.shipsInRecursiveDescent()
         topShips = NxCruisers::topShips()
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+                    .sort_by{|item| NxCruisers::dayCompletionRatio(item) }
         NxCruisers::recursiveDescent(topShips)
     end
 
     # NxCruisers::listingItems()
     def self.listingItems()
+        items0 = Cubes::mikuType("NxCruiser")
+                    .select{|ship| ship["engine-0020"]["type"] == "booster" }
+                    .select{|ship| ship["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
+
         items1 = Cubes::mikuType("NxCruiser")
                     .select{|ship| ship["engine-0020"]["type"] == "booster" }
-                    .select{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) < 1 }
-                    .sort_by{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) }
+                    .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
+                    .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
 
         items2 = NxCruisers::shipsInRecursiveDescent()
-                    .select{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) < 1 }
-                    .sort_by{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) }
+                    .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
+                    .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
 
-        items1 + items2
+        items0 + items1 + items2
     end
 
-    # NxCruisers::elements(cruiser)
-    def self.elements(cruiser)
+    # NxCruisers::elementsInNaturalCruiseOrder(cruiser)
+    def self.elementsInNaturalCruiseOrder(cruiser)
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return Cubes::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
@@ -139,13 +143,13 @@ class NxCruisers
                 .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
 
         i1, i2 = items.partition{|item| item["mikuType"] == "NxCruiser" }
-        i1.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) } + i2.sort_by{|item| item["global-positioning"] || 0 }
+        i1.select{|item| NxCruisers::dayCompletionRatio(item) < 1 }.sort_by{|item| NxCruisers::dayCompletionRatio(item) } + i2.sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # NxCruisers::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         #items = Cubes::mikuType("NxCruiser")
-        #            .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+        #            .sort_by{|item| NxCruisers::dayCompletionRatio(item) }
         #LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", items, lambda{|item| NxCruisers::toString(item) })
         NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull()
     end
@@ -153,7 +157,7 @@ class NxCruisers
     # NxCruisers::interactivelySelectOneTopShipOrNull()
     def self.interactivelySelectOneTopShipOrNull()
         topShips = NxCruisers::topShips()
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+                    .sort_by{|item| NxCruisers::dayCompletionRatio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", topShips, lambda{|item| NxCruisers::toString(item) })
     end
 
@@ -164,7 +168,7 @@ class NxCruisers
             return nil if ship.nil?
             return NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull(ship)
         end
-        childrenships = NxCruisers::elements(ship).select{|item| item["mikuType"] == "NxCruiser" }.sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+        childrenships = NxCruisers::elementsInNaturalCruiseOrder(ship).select{|item| item["mikuType"] == "NxCruiser" }.sort_by{|item| NxCruisers::dayCompletionRatio(item) }
         if childrenships.empty? then
             return ship
         end
@@ -178,7 +182,7 @@ class NxCruisers
     # NxCruisers::selectZeroOrMore()
     def self.selectZeroOrMore()
         items = Cubes::mikuType("NxCruiser")
-                    .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+                    .sort_by{|item| NxCruisers::dayCompletionRatio(item) }
         selected, _ = LucilleCore::selectZeroOrMore("item", [], items, lambda{|item| NxCruisers::toString(item) })
         selected
     end
@@ -203,11 +207,28 @@ class NxCruisers
 
     # NxCruisers::topPosition(item)
     def self.topPosition(item)
-        ([0] + NxCruisers::elements(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + NxCruisers::elementsInNaturalCruiseOrder(item).map{|task| task["global-positioning"] || 0 }).min
+    end
+
+    # NxCruisers::dayCompletionRatio(item)
+    def self.dayCompletionRatio(item)
+        if item["engine-0020"]["type"] == "content-driven" then
+            count = NxCruisers::elementsInNaturalCruiseOrder(item).count
+            return 1 if count == 0
+            return 0.9*(1.to_f/count)
+        end
+        TxCores::coreDayCompletionRatio(item["engine-0020"])
     end
 
     # ------------------
     # Ops
+
+    # NxCruisers::interactivelySelectShipAndAddTo(itemuuid)
+    def self.interactivelySelectShipAndAddTo(itemuuid)
+        ship = NxCruisers::interactivelySelectOneOrNull()
+        return if ship.nil?
+        DataCenter::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
+    end
 
     # NxCruisers::access(item)
     def self.access(item)
@@ -251,7 +272,7 @@ class NxCruisers
             puts  Listing::toString2(store, item)
             puts  ""
 
-            Prefix::prefix(NxCruisers::elements(item))
+            Prefix::prefix(NxCruisers::elementsInNaturalCruiseOrder(item))
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts  Listing::toString3(store, item)
@@ -304,7 +325,7 @@ class NxCruisers
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxCruisers::elements(item), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxCruisers::elementsInNaturalCruiseOrder(item), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Cubes::setAttribute(i["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 }
@@ -312,7 +333,7 @@ class NxCruisers
             end
 
             if input == "move" then
-                NxCruisers::selectSubsetAndMoveToSelectedShip(NxCruisers::elements(item))
+                NxCruisers::selectSubsetAndMoveToSelectedShip(NxCruisers::elementsInNaturalCruiseOrder(item))
                 next
             end
 
@@ -325,7 +346,8 @@ class NxCruisers
     def self.program2()
         loop {
 
-            items = NxCruisers::shipsInRecursiveDescent()
+            items = DataCenter::mikuType("NxCruiser")
+                        .sort_by{|item| NxCruisers::dayCompletionRatio(item) }
             return if items.empty?
 
             system("clear")
