@@ -183,13 +183,6 @@ class NxCruisers
         selected
     end
 
-    # NxCruisers::interactivelySelectShipAndAddTo(itemuuid)
-    def self.interactivelySelectShipAndAddTo(itemuuid)
-        ship = NxCruisers::interactivelySelectOneOrNull()
-        return if ship.nil?
-        DataCenter::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
-    end
-
     # NxCruisers::selectSubsetAndMoveToSelectedShip(items)
     def self.selectSubsetAndMoveToSelectedShip(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
@@ -218,6 +211,13 @@ class NxCruisers
 
     # ------------------
     # Ops
+
+    # NxCruisers::interactivelySelectShipAndAddTo(itemuuid)
+    def self.interactivelySelectShipAndAddTo(itemuuid)
+        ship = NxCruisers::interactivelySelectOneOrNull()
+        return if ship.nil?
+        DataCenter::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
+    end
 
     # NxCruisers::access(item)
     def self.access(item)
