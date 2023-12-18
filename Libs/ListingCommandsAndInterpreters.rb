@@ -192,16 +192,8 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            puts "> multiple pass selection (first select and then order 1+ times)"
-            sleep 1
             selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
-            s1 = selected # part 1
-            s2 = []       # part 2
-            loop {
-                s1, s2 = LucilleCore::selectZeroOrMore("item", [], s1+s2, lambda{|item| PolyFunctions::toString(item) })
-                break if s1.empty?
-            }
-            (s1+s2).reverse.each{|item|
+            selected.reverse.each{|item|
                 Ox1::putAtTop(item)
             }
             return

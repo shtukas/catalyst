@@ -201,7 +201,7 @@ class Cubes
         items = []
         Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
-            next if File.basename(path).start_with?('.') # .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
+            next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             items << Cubes::filepathToItem(path)
         end
         items
