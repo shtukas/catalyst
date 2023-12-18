@@ -22,8 +22,8 @@ class Transmutations
     def self.transmute2(item, targetMikuType)
         if item["mikuType"] == "NxCruiser" and targetMikuType == "NxTask" then
             if NxCruisers::elements(item).size.size > 0 then
-                DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
-                item = DataCenter::itemOrNull(item["uuid"])
+                Cubes::setAttribute(item["uuid"], "mikuType", "NxTask")
+                item = Cubes::itemOrNull(item["uuid"])
                 puts JSON.pretty_generate(item)
                 NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             else
@@ -33,50 +33,50 @@ class Transmutations
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxMonitor" then
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxMonitor")
-            item = DataCenter::itemOrNull(item["uuid"])
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxMonitor")
+            item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
-            item = DataCenter::itemOrNull(item["uuid"])
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxTask")
+            item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxCruiser" then
             core = TxCores::interactivelyMakeNew()
-            DataCenter::setAttribute(item["uuid"], "engine-0020", core)
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxCruiser")
-            item = DataCenter::itemOrNull(item["uuid"])
+            Cubes::setAttribute(item["uuid"], "engine-0020", core)
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxCruiser")
+            item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
         if item["mikuType"] == "NxMonitor" and targetMikuType == "NxCruiser" then
             core = TxCores::interactivelyMakeNew()
-            DataCenter::setAttribute(item["uuid"], "engine-0020", core)
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxCruiser")
-            item = DataCenter::itemOrNull(item["uuid"])
+            Cubes::setAttribute(item["uuid"], "engine-0020", core)
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxCruiser")
+            item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
         if item["mikuType"] == "NxMonitor" and targetMikuType == "NxTask" then
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxTask")
-            item = DataCenter::itemOrNull(item["uuid"])
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxTask")
+            item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxMonitor" then
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxMonitor")
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxMonitor")
             return
         end
         if item["mikuType"] == "Wave" and targetMikuType == "NxPatrol" then
-            DataCenter::setAttribute(item["uuid"], "mikuType", "NxPatrol")
-            item = DataCenter::itemOrNull(item["uuid"])
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxPatrol")
+            item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             return

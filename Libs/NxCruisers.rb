@@ -3,12 +3,12 @@ class NxCruisers
 
     # NxCruisers::issueWithInit(uuid, description, engine)
     def self.issueWithInit(uuid, description, engine)
-        DataCenter::itemInit(uuid, "NxCruiser")
-        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
-        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "engine-0020", engine)
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::itemOrNull(uuid)
+        Cubes::itemInit(uuid, "NxCruiser")
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "engine-0020", engine)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxCruisers::interactivelyIssueNewOrNull2(uuid)
@@ -67,12 +67,12 @@ class NxCruisers
 
     # NxCruisers::isTopShip(item)
     def self.isTopShip(item)
-        item["parentuuid-0032"].nil? or DataCenter::itemOrNull(item["parentuuid-0032"]).nil? 
+        item["parentuuid-0032"].nil? or Cubes::itemOrNull(item["parentuuid-0032"]).nil? 
     end
 
     # NxCruisers::topShips()
     def self.topShips()
-        DataCenter::mikuType("NxCruiser")
+        Cubes::mikuType("NxCruiser")
             .select{|item| NxCruisers::isTopShip(item) }
     end
 
@@ -85,7 +85,7 @@ class NxCruisers
 
     # NxCruisers::listingItems()
     def self.listingItems()
-        items1 = DataCenter::mikuType("NxCruiser")
+        items1 = Cubes::mikuType("NxCruiser")
                     .select{|ship| ship["engine-0020"]["type"] == "booster" }
                     .select{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) < 1 }
                     .sort_by{|ship| TxCores::coreDayCompletionRatio(ship["engine-0020"]) }
@@ -100,7 +100,7 @@ class NxCruisers
     # NxCruisers::elements(cruiser)
     def self.elements(cruiser)
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
-            return DataCenter::mikuType("NxTask")
+            return Cubes::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
@@ -111,12 +111,12 @@ class NxCruisers
             return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
         if cruiser["description"].include?("patrol") then
-            elements = DataCenter::catalystItems()
+            elements = Cubes::items()
                         .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
             return elements.sort_by{|i| i["unixtime"] }
         end
 
-        DataCenter::catalystItems()
+        Cubes::items()
             .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
@@ -124,7 +124,7 @@ class NxCruisers
     # NxCruisers::elementsForPrefix(cruiser)
     def self.elementsForPrefix(cruiser)
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
-            return DataCenter::mikuType("NxTask")
+            return Cubes::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
@@ -135,7 +135,7 @@ class NxCruisers
             return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
 
-        items = DataCenter::catalystItems()
+        items = Cubes::items()
                 .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
 
         i1, i2 = items.partition{|item| item["mikuType"] == "NxCruiser" }
@@ -144,7 +144,7 @@ class NxCruisers
 
     # NxCruisers::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        #items = DataCenter::mikuType("NxCruiser")
+        #items = Cubes::mikuType("NxCruiser")
         #            .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         #LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", items, lambda{|item| NxCruisers::toString(item) })
         NxCruisers::interactivelySelectShipUsingTopDownNavigationOrNull()
@@ -177,7 +177,7 @@ class NxCruisers
 
     # NxCruisers::selectZeroOrMore()
     def self.selectZeroOrMore()
-        items = DataCenter::mikuType("NxCruiser")
+        items = Cubes::mikuType("NxCruiser")
                     .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
         selected, _ = LucilleCore::selectZeroOrMore("item", [], items, lambda{|item| NxCruisers::toString(item) })
         selected
@@ -187,7 +187,7 @@ class NxCruisers
     def self.interactivelySelectShipAndAddTo(itemuuid)
         ship = NxCruisers::interactivelySelectOneOrNull()
         return if ship.nil?
-        DataCenter::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
+        Cubes::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
     end
 
     # NxCruisers::selectSubsetAndMoveToSelectedShip(items)
@@ -197,7 +197,7 @@ class NxCruisers
         ship = NxCruisers::interactivelySelectOneOrNull()
         return if ship.nil?
         selected.each{|item|
-            DataCenter::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
+            Cubes::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
         }
     end
 
@@ -230,8 +230,8 @@ class NxCruisers
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                DataCenter::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
+                Cubes::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
             }
     end
 
@@ -239,7 +239,7 @@ class NxCruisers
     def self.program1(item)
         loop {
 
-            item = DataCenter::itemOrNull(item["uuid"])
+            item = Cubes::itemOrNull(item["uuid"])
             return if item.nil?
 
             system("clear")
@@ -268,7 +268,7 @@ class NxCruisers
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -276,7 +276,7 @@ class NxCruisers
                 patrol = NxPatrols::interactivelyIssueNewOrNull()
                 next if patrol.nil?
                 puts JSON.pretty_generate(patrol)
-                DataCenter::setAttribute(patrol["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes::setAttribute(patrol["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -284,7 +284,7 @@ class NxCruisers
                 ship = NxCruisers::interactivelyIssueNewOrNull()
                 next if ship.nil?
                 puts JSON.pretty_generate(ship)
-                DataCenter::setAttribute(ship["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes::setAttribute(ship["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -293,8 +293,8 @@ class NxCruisers
                 next if line == ""
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
-                DataCenter::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                DataCenter::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
+                Cubes::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes::setAttribute(task["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 next
             end
 
@@ -306,7 +306,7 @@ class NxCruisers
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], NxCruisers::elements(item), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    DataCenter::setAttribute(i["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
+                    Cubes::setAttribute(i["uuid"], "global-positioning", NxCruisers::topPosition(item) - 1)
                 }
                 next
             end

@@ -215,17 +215,7 @@ class Listing
 
     # Listing::main()
     def self.main()
-
         initialCodeTrace = CommonUtils::catalystTraceCode()
-
-        DataCenter::reload()
-
-        Thread.new {
-            loop {
-                sleep 1200
-                DataCenter::reload()
-            }
-        }
         loop {
             Listing::listing(initialCodeTrace)
         }

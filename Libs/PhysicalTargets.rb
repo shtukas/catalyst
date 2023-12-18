@@ -11,14 +11,14 @@ class PhysicalTargets
         return nil if dailyTarget == ""
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
-        DataCenter::itemInit(uuid, "PhysicalTarget")
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "dailyTarget", dailyTarget)
-        DataCenter::setAttribute(uuid, "date", CommonUtils::today())
-        DataCenter::setAttribute(uuid, "counter", 0)
-        DataCenter::setAttribute(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
+        Cubes::itemInit(uuid, "PhysicalTarget")
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "dailyTarget", dailyTarget)
+        Cubes::setAttribute(uuid, "date", CommonUtils::today())
+        Cubes::setAttribute(uuid, "counter", 0)
+        Cubes::setAttribute(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
 
-        DataCenter::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------
@@ -31,13 +31,13 @@ class PhysicalTargets
 
     # PhysicalTargets::listingItems()
     def self.listingItems()
-        DataCenter::mikuType("PhysicalTarget").each{|item|
+        Cubes::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
-                DataCenter::setAttribute(item["uuid"], "date", CommonUtils::today())
-                DataCenter::setAttribute(item["uuid"], "counter", 0)
+                Cubes::setAttribute(item["uuid"], "date", CommonUtils::today())
+                Cubes::setAttribute(item["uuid"], "counter", 0)
             end
         }
-        DataCenter::mikuType("PhysicalTarget")
+        Cubes::mikuType("PhysicalTarget")
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
             .map{|item|
@@ -53,8 +53,8 @@ class PhysicalTargets
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
-        DataCenter::setAttribute(item["uuid"], "counter", count + item["counter"])
-        DataCenter::setAttribute(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
+        Cubes::setAttribute(item["uuid"], "counter", count + item["counter"])
+        Cubes::setAttribute(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
     # PhysicalTargets::access(item)

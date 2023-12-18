@@ -14,7 +14,7 @@ class PolyFunctions
         # Types
 
         if item["mikuType"] == "NxStrat" then
-            bottom = DataCenter::itemOrNull(item["bottom"])
+            bottom = Cubes::itemOrNull(item["bottom"])
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
@@ -30,20 +30,20 @@ class PolyFunctions
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                ship = DataCenter::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3")
+                ship = Cubes::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3")
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
 
         if item["mikuType"] == "Wave" then
             if !item["interruption"] then
-                ship = DataCenter::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75")
+                ship = Cubes::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75")
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
 
         if item["mikuType"] == "Backup" then
-            ship = DataCenter::itemOrNull("eadf9717-58a1-449b-8b99-97c85a154fbc")
+            ship = Cubes::itemOrNull("eadf9717-58a1-449b-8b99-97c85a154fbc")
             accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
         end
 
@@ -57,7 +57,7 @@ class PolyFunctions
         end
 
         if item["parentuuid-0032"] then
-            parent = DataCenter::itemOrNull(item["parentuuid-0032"])
+            parent = Cubes::itemOrNull(item["parentuuid-0032"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
@@ -65,7 +65,7 @@ class PolyFunctions
 
         if item["donation-1752"] then
             item["donation-1752"].each {|targetuuid|
-                target = DataCenter::itemOrNull(targetuuid)
+                target = Cubes::itemOrNull(targetuuid)
                 if target then
                     accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
                 end

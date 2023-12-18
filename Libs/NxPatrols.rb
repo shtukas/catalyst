@@ -6,10 +6,10 @@ class NxPatrols
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        DataCenter::itemInit(uuid, "NxPatrol")
-        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::itemOrNull(uuid)
+        Cubes::itemInit(uuid, "NxPatrol")
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # ------------------

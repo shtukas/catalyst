@@ -6,22 +6,22 @@ class NxMonitors
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        DataCenter::itemInit(uuid, "NxMonitor")
+        Cubes::itemInit(uuid, "NxMonitor")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
-        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "field11", coredataref)
-        DataCenter::itemOrNull(uuid)
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "field11", coredataref)
+        Cubes::itemOrNull(uuid)
     end
 
     # NxMonitors::issueNew(uuid, description)
     def self.issueNew(uuid, description)
-        DataCenter::itemInit(uuid, "NxMonitor")
-        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
-        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::itemOrNull(uuid)
+        Cubes::itemInit(uuid, "NxMonitor")
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::itemOrNull(uuid)
     end
 
     # ------------------
@@ -34,6 +34,6 @@ class NxMonitors
 
     # NxMonitors::listingItems()
     def self.listingItems()
-        DataCenter::mikuType("NxMonitor")
+        Cubes::mikuType("NxMonitor")
     end
 end

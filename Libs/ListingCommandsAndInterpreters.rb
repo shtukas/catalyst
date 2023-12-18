@@ -45,7 +45,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             ships = NxCruisers::selectZeroOrMore()
             donation = ((item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }).uniq
-            DataCenter::setAttribute(item["uuid"], "donation-1752", donation)
+            Cubes::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
 
@@ -94,7 +94,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("stickies", input) then
-            items = DataCenter::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
+            items = Cubes::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
             Catalyst::program2(items)
             return
         end
@@ -105,7 +105,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
             return if reference.nil?
-            DataCenter::setAttribute(item["uuid"], "cfsr-20231213", reference)
+            Cubes::setAttribute(item["uuid"], "cfsr-20231213", reference)
             return
         end
 
@@ -115,7 +115,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             note = item["note-1531"] || ""
             note = CommonUtils::editTextSynchronously(note)
-            DataCenter::setAttribute(item["uuid"], "note-1531", note)
+            Cubes::setAttribute(item["uuid"], "note-1531", note)
             return
         end
 
@@ -161,7 +161,7 @@ class ListingCommandsAndInterpreters
                 puts "> deciding ship for task: '#{PolyFunctions::toString(task)}'"
                 ship = NxCruisers::interactivelySelectOneOrNull()
                 if ship then
-                    DataCenter::setAttribute(task["uuid"], "donation-1752", [ship["uuid"]])
+                    Cubes::setAttribute(task["uuid"], "donation-1752", [ship["uuid"]])
                 end
             }
             return
@@ -200,7 +200,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            DataCenter::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Cubes::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -208,7 +208,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DataCenter::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Cubes::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -218,7 +218,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
             return if booster.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0020", booster)
+            Cubes::setAttribute(item["uuid"], "engine-0020", booster)
             return
         end
 
@@ -273,13 +273,13 @@ class ListingCommandsAndInterpreters
                 puts "You are adding a core to a #{item["mikuType"]}"
                 if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxCruiser ? ") then
                     Transmutations::transmute2(item, "NxCruiser")
-                    item = DataCenter::itemOrNull(item["uuid"])
+                    item = Cubes::itemOrNull(item["uuid"])
                     return
                 end
             end
             core2 = TxCores::interactivelyMakeNewOrNull(item["engine-0020"])
             return if core2.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0020", core2)
+            Cubes::setAttribute(item["uuid"], "engine-0020", core2)
             return
         end
 
@@ -287,7 +287,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            DataCenter::setAttribute(item["uuid"], "engine-0020", nil)
+            Cubes::setAttribute(item["uuid"], "engine-0020", nil)
             return
         end
 
@@ -296,7 +296,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            DataCenter::setAttribute(item["uuid"], "field11", reference)
+            Cubes::setAttribute(item["uuid"], "field11", reference)
             return
         end
 
@@ -306,7 +306,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            DataCenter::setAttribute(item["uuid"], "field11", reference)
+            Cubes::setAttribute(item["uuid"], "field11", reference)
             return
         end
 
@@ -433,14 +433,14 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("actives", input) then
-            items = DataCenter::catalystItems()
+            items = Cubes::items()
                         .select{|item| item["active"] }
             Catalyst::program2(items)
             return
         end
 
         if Interpreting::match("ondates", input) then
-            elements = DataCenter::mikuType("NxOndate").sort_by{|item| item["datetime"] }
+            elements = Cubes::mikuType("NxOndate").sort_by{|item| item["datetime"] }
             Catalyst::program2(elements)
             return
         end
@@ -481,7 +481,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            DataCenter::setAttribute(item["uuid"], "datetime", datetime)
+            Cubes::setAttribute(item["uuid"], "datetime", datetime)
             return
         end
 
@@ -504,7 +504,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["ordinal-1051"] then
-                DataCenter::setAttribute(item["uuid"], "ordinal-1051", nil)
+                Cubes::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
@@ -515,7 +515,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if item["ordinal-1051"] then
-                DataCenter::setAttribute(item["uuid"], "ordinal-1051", nil)
+                Cubes::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
