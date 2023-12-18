@@ -19,6 +19,7 @@ class ListingCommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
+                Ox1::detach(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 return
             end
