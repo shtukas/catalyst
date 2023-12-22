@@ -14,14 +14,14 @@ class PolyFunctions
         # Types
 
         if item["mikuType"] == "NxStrat" then
-            bottom = DataCenter::itemOrNull(item["bottom"])
+            bottom = Cubes::itemOrNull(item["bottom"])
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
         end
 
         if item["mikuType"] == "NxCruiser" then
-            core = item["engine-0020"][0]
+            core = item["engine-0020"]
             accounts << {
                 "description" => "core: #{core["uuid"]}",
                 "number"      => core["uuid"]
@@ -30,34 +30,26 @@ class PolyFunctions
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                accounts << {
-                    "description" => "ship: orphaned tasks (automatic)",
-                    "number"      => "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed"
-                }
+                ship = Cubes::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3")
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
 
         if item["mikuType"] == "Wave" then
             if !item["interruption"] then
-                accounts << {
-                    "description" => "ship: waves !interruption (automatic)",
-                    "number"      => "1c699298-c26c-47d9-806b-e19f84fd5d75"
-                }
+                ship = Cubes::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75")
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
             end
         end
 
         if item["mikuType"] == "Backup" then
-            if !item["interruption"] then
-                accounts << {
-                    "description" => "ship: backups (automatic)",
-                    "number"      => "eadf9717-58a1-449b-8b99-97c85a154fbc"
-                }
-            end
+            ship = Cubes::itemOrNull("eadf9717-58a1-449b-8b99-97c85a154fbc")
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
         end
 
         # Special Features
 
-        if core = TxCores::extractActiveCoreOrNull(item) then
+        if core = item["engine-0020"] then
             accounts << {
                 "description" => "core: #{core["uuid"]}",
                 "number"      => core["uuid"]
@@ -65,7 +57,7 @@ class PolyFunctions
         end
 
         if item["parentuuid-0032"] then
-            parent = DataCenter::itemOrNull(item["parentuuid-0032"])
+            parent = Cubes::itemOrNull(item["parentuuid-0032"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
@@ -73,7 +65,7 @@ class PolyFunctions
 
         if item["donation-1752"] then
             item["donation-1752"].each {|targetuuid|
-                target = DataCenter::itemOrNull(targetuuid)
+                target = Cubes::itemOrNull(targetuuid)
                 if target then
                     accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
                 end
@@ -115,8 +107,11 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxSticky" then
-            return NxStickies::toString(item)
+        if item["mikuType"] == "NxMonitor" then
+            return NxMonitors::toString(item)
+        end
+        if item["mikuType"] == "NxPatrol" then
+            return NxPatrols::toString(item)
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)

@@ -142,9 +142,9 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Dives.rb"
-require_relative "DataCenter.rb"
 
 require_relative "Fsck.rb"
+require_relative "FileSystemReferences.rb"
 
 require_relative "Galaxy.rb"
 
@@ -156,18 +156,18 @@ require_relative "ListingCommandsAndInterpreters.rb"
 
 require_relative "InMemoryCache.rb"
 
-require_relative "Metrics.rb"
-
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxStrats.rb"
 require_relative "Notes.rb"
-require_relative "NxCruiser.rb"
+require_relative "NxCruisers.rb"
 require_relative "NxOndate.rb"
-require_relative "NxStickies.rb"
+require_relative "NxMonitors.rb"
+require_relative "NxPatrols.rb"
 
 require_relative "Ox1.rb"
+require_relative "OpenCycles.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

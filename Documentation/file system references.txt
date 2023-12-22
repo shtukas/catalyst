@@ -1,0 +1,9 @@
+
+catalyst file system references
+
+A (catalyst) file system reference is a string. It's either: 
+    - a file or folder name fragment, or 
+    - the first line of any file (possibly a dot file) ending with suffix ".cfsr-20231213" (the other lines, notably the second one are used for self explanations)
+
+If we use a file or folder name fragment, then ensure that it's reasonably unique. Originally introduced to track open cycles, but extended to the entire galaxy.
+

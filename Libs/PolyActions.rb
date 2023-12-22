@@ -8,7 +8,24 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["cfsr-20231213"] then
+            options = ["standard access (default)", "cfsr access"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            if option.nil? or option == "standard access (default)" then
+                # nothing to do here
+            end
+            if option == "cfsr access" then
+                # nothing to do here
+                FileSystemReferences::accessReference(item["cfsr-20231213"])
+                return
+            end
+        end
+
         # types in alphabetical order
+
+        if item["mikuType"] == "NxPatrol" then
+            return
+        end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
@@ -34,8 +51,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSticky" then
-            NxStickies::access(item)
+        if item["mikuType"] == "NxMonitor" then
+            NxMonitors::access(item)
             return
         end
 
@@ -70,6 +87,11 @@ class PolyActions
 
         # order: alphabetical order
 
+        if item["mikuType"] == "NxPatrol" then
+            Cubes::setAttribute(item["uuid"], "unixtime", Time.new.to_i)
+            return
+        end
+
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
             return
@@ -100,7 +122,7 @@ class PolyActions
             return NxCruisers::done(item)
         end
 
-        if item["mikuType"] == "NxSticky" then
+        if item["mikuType"] == "NxMonitor" then
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
             return
         end
@@ -112,14 +134,14 @@ class PolyActions
                 return
             end
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -127,7 +149,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -158,6 +180,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxPatrol" then
+            return
+        end
+
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
@@ -184,8 +210,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxSticky" then
-            NxStickies::natural(item)
+        if item["mikuType"] == "NxMonitor" then
+            NxMonitors::natural(item)
             return
         end
 
@@ -200,7 +226,7 @@ class PolyActions
                     return
                 end
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    DataCenter::destroy(item["uuid"])
+                    Cubes::destroy(item["uuid"])
                 end
                 return
             end
@@ -213,7 +239,7 @@ class PolyActions
             PolyActions::access(item)
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -226,7 +252,7 @@ class PolyActions
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -257,9 +283,16 @@ class PolyActions
 
         NxBalls::stop(item)
 
+        if item["mikuType"] == "NxPatrol" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -271,28 +304,28 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
 
-        if item["mikuType"] == "NxSticky" then
+        if item["mikuType"] == "NxMonitor" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -300,14 +333,14 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                DataCenter::destroy(item["uuid"])
+                Cubes::destroy(item["uuid"])
             end
             return
         end
@@ -318,6 +351,10 @@ class PolyActions
 
     # PolyActions::program(item)
     def self.program(item)
+
+        if item["mikuType"] == "NxPatrol" then
+            return
+        end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::program1(item)
@@ -366,6 +403,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        DataCenter::setAttribute(item["uuid"], "description", description)
+        Cubes::setAttribute(item["uuid"], "description", description)
     end
 end

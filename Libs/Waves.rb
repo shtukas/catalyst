@@ -113,18 +113,18 @@ class Waves
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
-        DataCenter::itemInit(uuid, "Wave")
+        Cubes::itemInit(uuid, "Wave")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        DataCenter::setAttribute(uuid, "unixtime", Time.new.to_i)
-        DataCenter::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        DataCenter::setAttribute(uuid, "description", description)
-        DataCenter::setAttribute(uuid, "nx46", nx46)
-        DataCenter::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        DataCenter::setAttribute(uuid, "field11", coredataref)
-        DataCenter::setAttribute(uuid, "interruption", interruption)
+        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes::setAttribute(uuid, "description", description)
+        Cubes::setAttribute(uuid, "nx46", nx46)
+        Cubes::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        Cubes::setAttribute(uuid, "field11", coredataref)
+        Cubes::setAttribute(uuid, "interruption", interruption)
 
-        DataCenter::itemOrNull(uuid)
+        Cubes::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -142,7 +142,7 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        DataCenter::mikuType("Wave")
+        Cubes::mikuType("Wave")
             .select{|item| Listing::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
@@ -158,8 +158,8 @@ class Waves
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
-        DataCenter::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        DataCenter::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        Cubes::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Cubes::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -183,27 +183,27 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                DataCenter::setAttribute(item["uuid"], "description", description)
+                Cubes::setAttribute(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                DataCenter::setAttribute(item["uuid"], "nx46", nx46)
+                Cubes::setAttribute(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveDone(item)
                 return
             end
             if action == "set priority" then
-                DataCenter::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
+                Cubes::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                DataCenter::setAttribute(item["uuid"], "onlyOnDays", days)
+                Cubes::setAttribute(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
-                    DataCenter::destroy(item["uuid"])
+                    Cubes::destroy(item["uuid"])
                     return
                 end
             end
@@ -212,7 +212,7 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = DataCenter::mikuType("Wave")
+        items = Cubes::mikuType("Wave")
         i1, i2 = items.partition{|item| DoNotShowUntil::isVisible(item) }
         i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
         items = i1 + i2
@@ -221,7 +221,7 @@ class Waves
 
     # Waves::fsck()
     def self.fsck()
-        DataCenter::mikuType("Wave").each{|item|
+        Cubes::mikuType("Wave").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

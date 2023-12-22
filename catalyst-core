@@ -1,13 +1,4 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 
-Listing::checkForCodeUpdates()
-
-Thread.new {
-    loop {
-        sleep 300
-        Listing::checkForCodeUpdates()
-    }
-}
-
 Listing::main()

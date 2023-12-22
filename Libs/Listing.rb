@@ -80,8 +80,8 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        positionstr = Ox1::activePositionOrNull(item) ? "stack".red : "#{"%.3f" % Metrics::metric2(item)}"
-        line = "#{storePrefix} #{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        positionstr = Ox1::activePositionOrNull(item) ? " stack".red : "      "
+        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -102,7 +102,7 @@ class Listing
     def self.toString3(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -129,7 +129,7 @@ class Listing
             Config::isPrimaryInstance() ? PhysicalTargets::listingItems() : [],
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
-            NxStickies::listingItems(),
+            NxMonitors::listingItems(),
             NxTasks::engined(),
             NxCruisers::listingItems(),
         ]
@@ -147,7 +147,6 @@ class Listing
     # Listing::items2()
     def self.items2()
         items = Listing::items()
-        items = Metrics::order(Listing::items())
         items = Ox1::organiseListing(items)
         runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
         items = runningItems + pausedItems + items
@@ -202,8 +201,10 @@ class Listing
     def self.checkForCodeUpdates()
         if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
             puts "Attempting to download new code"
-            system("#{File.dirname(__FILE__)}/../pull-from-origin")
+            output = `#{File.dirname(__FILE__)}/../pull-from-origin`.strip
+            return (output == "Already up to date.")
         end
+        false
     end
 
     # Listing::injectActiveItems(items, runningItems)
@@ -214,24 +215,9 @@ class Listing
 
     # Listing::main()
     def self.main()
-
         initialCodeTrace = CommonUtils::catalystTraceCode()
-
-        DataCenter::reload()
-
-        Thread.new {
-            loop {
-                sleep 1200
-                DataCenter::reload()
-            }
-        }
         loop {
-            mode = XCache::getOrDefaultValue("a297793a-a62e-4e2f-b7aa-72d494bdb206", "listing")
-            if mode == "listing" then
-                Listing::listing(initialCodeTrace)
-            else
-                Listing::focus(initialCodeTrace)
-            end
+            Listing::listing(initialCodeTrace)
         }
     end
 
@@ -249,7 +235,7 @@ class Listing
             end
 
             if Config::isPrimaryInstance() then
-                Catalyst::openCyclesSync()
+                OpenCycles::sync()
             end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -279,105 +265,4 @@ class Listing
         }
     end
 
-    # Listing::focus(initialCodeTrace)
-    def self.focus(initialCodeTrace)
-
-        counter = 0
-
-        loop {
-
-            counter = counter + 1
-
-            if CommonUtils::catalystTraceCode() != initialCodeTrace then
-                puts "Code change detected"
-                exit
-            end
-
-            items = Listing::items2()
-            item = items.first
-            items.drop(1).each{|item|
-                if NxBalls::itemIsRunning(item) then
-                    NxBalls::pause(item)
-                end
-            }
-
-            system('clear')
-
-            store = ItemStore.new()
-            store.register(item, true)
-
-            contextcommands = lambda{|item|
-                if item["mikuType"] == "PhysicalTarget" then
-                    return ["access", "push", "exit"]
-                end
-                if NxBalls::itemIsRunning(item) then
-                    return ["done", "access", "stop", "pause", "exit", "command"]
-                end
-                if NxBalls::itemIsActive(item) then
-                    return ["done", "pursue", "exit", "command"]
-                end
-                ["start", "access", "done", "exit", "command"]
-            }
-
-            commands = contextcommands.call(item)
-
-            input = LucilleCore::askQuestionAnswerAsString("[#{counter}] #{Listing::toString2(store, item)} : #{commands.join(', ').green} : ")
-
-            if input == "" then
-                next
-            end
-
-            if !commands.include?(input) then
-                puts "command: #{input} is not available in this context"
-                LucilleCore::pressEnterToContinue()
-                next
-            end
-
-            if input == "exit" then
-                XCache::set("a297793a-a62e-4e2f-b7aa-72d494bdb206", "listing")
-                return
-            end
-
-            if input == "command" then
-                input = LucilleCore::askQuestionAnswerAsString("> ")
-                ListingCommandsAndInterpreters::interpreter(input, store)
-                next
-            end
-
-            if input == "start" then
-                NxBalls::start(item)
-                next
-            end
-
-            if input == "access" then
-                PolyActions::access(item)
-                next
-            end
-
-            if input == "stop" then
-                NxBalls::stop(item)
-                Ox1::detach(item)
-                next
-            end
-
-            if input == "done" then
-                NxBalls::stop(item)
-                Ox1::detach(item)
-                PolyActions::done(item, true)
-                next
-            end
-
-            if input == "push" then
-                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + 3600)
-                next
-            end
-
-            if input == "pursue" then
-                NxBalls::pursue(item)
-                next
-            end
-
-            raise "(error: 22a823c7-0d5b-4d0c-a3a9-b0bb75ebd445) command not interpreted 🤔"
-        }
-    end
 end

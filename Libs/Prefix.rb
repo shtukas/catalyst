@@ -11,14 +11,11 @@ class Prefix
         end
 
         if items[0]["mikuType"] == "NxCruiser" then
-            item = items[0]
-            if NxBalls::itemIsActive(item) then
-                children = NxCruisers::elementsForPrefix(item)
-                            .select{|i| Listing::listable(i) }
-                            .first(6)
-                if children.size > 0 then
-                    return Prefix::prefix(children + items)
-                end
+            children = NxCruisers::elementsForPrefix(items[0])
+                        .select{|i| Listing::listable(i) }
+                        .first(6)
+            if children.size > 0 then
+                return Prefix::prefix(children + items)
             end
         end
 

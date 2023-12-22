@@ -8,3 +8,5 @@ NxCruiser:
     - engine-0020  : Array[TxCore]
                      # This is an optional or possibly empty for general catalyst
                      # items, but should be present and non empty for NxCruisers
+
+If the description contains the word "patrol", then it acts as a patrol group.
