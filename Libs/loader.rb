@@ -133,6 +133,7 @@ require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
 require_relative "CoreDataRefStrings.rb"
 require_relative "Cubes.rb"
+require_relative "CacheWS.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
