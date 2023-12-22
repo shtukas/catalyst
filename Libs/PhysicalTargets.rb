@@ -18,6 +18,8 @@ class PhysicalTargets
         Cubes::setAttribute(uuid, "counter", 0)
         Cubes::setAttribute(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
 
+        CacheWS::emit("mikutype-has-been-modified:PhysicalTarget")
+
         Cubes::itemOrNull(uuid)
     end
 

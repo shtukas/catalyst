@@ -124,6 +124,8 @@ class Waves
         Cubes::setAttribute(uuid, "field11", coredataref)
         Cubes::setAttribute(uuid, "interruption", interruption)
 
+        CacheWS::emit("mikutype-has-been-modified:Wave")
+
         Cubes::itemOrNull(uuid)
     end
 

@@ -1,5 +1,9 @@
 # encoding: UTF-8
 
+$CacheWS_AD64B8EA = {}
+$CacheWS_PrimaryKey = "0EF7E9F4-CA6D-4710-8C3D-BB86CC4F5146"
+$CacheWS_useCache = true
+
 class CacheWS
 
     # -- private ---------------------------------------
@@ -60,21 +64,37 @@ class CacheWS
 
     # CacheWS::set(key, value, signals)
     def self.set(key, value, signals)
-        XCache::set(key, value)
+        return if !$CacheWS_useCache
+        XCache::set("#{$CacheWS_PrimaryKey}:#{key}", JSON.generate(value))
+        $CacheWS_AD64B8EA[key] = value
         signals.each{|signal|
+            #puts "signal: #{signal}"
             CacheWS::registration(signal, key)
         }
     end
 
     # CacheWS::getOrNull(key)
     def self.getOrNull(key)
-        XCache::getOrNull(key)
+        return nil if !$CacheWS_useCache
+
+        value = $CacheWS_AD64B8EA[key]
+        return value if value
+
+        value = XCache::getOrNull("#{$CacheWS_PrimaryKey}:#{key}")
+        return nil if value.nil?
+        value = JSON.parse(value)
+
+        $CacheWS_AD64B8EA[key] = value
+
+        value
     end
 
-    # CacheWS::send(signal)
-    def self.send(signal)
+    # CacheWS::emit(signal)
+    def self.emit(signal)
+        return if !$CacheWS_useCache
         CacheWS::getKeysForSignal(signal).each{|key|
-            XCache::destroy(key)
+            XCache::destroy("#{$CacheWS_PrimaryKey}:#{key}")
+            $CacheWS_AD64B8EA[key] = nil
         }
     end
 end

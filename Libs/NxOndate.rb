@@ -13,6 +13,7 @@ class NxOndates
         Cubes::setAttribute(uuid, "datetime", datetime)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
+        CacheWS::emit("mikutype-has-been-modified:NxOndate")
         Cubes::itemOrNull(uuid)
     end
 
@@ -27,6 +28,7 @@ class NxOndates
         Cubes::setAttribute(uuid, "datetime", datetime)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
+        CacheWS::emit("mikutype-has-been-modified:NxOndate")
         Cubes::itemOrNull(uuid)
     end
 

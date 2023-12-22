@@ -115,6 +115,8 @@ class Anniversaries
         Cubes::setAttribute(uuid, "repeatType", repeatType)
         Cubes::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
 
+        CacheWS::emit("mikutype-has-been-modified:NxAnniversary")
+
         Cubes::itemOrNull(uuid)
     end
 

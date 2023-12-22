@@ -8,6 +8,7 @@ class NxCruisers
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "engine-0020", engine)
         Cubes::setAttribute(uuid, "description", description)
+        CacheWS::emit("mikutype-has-been-modified:NxCruiser")
         Cubes::itemOrNull(uuid)
     end
 
@@ -85,18 +86,42 @@ class NxCruisers
 
     # NxCruisers::listingItems()
     def self.listingItems()
-        items0 = Cubes::mikuType("NxCruiser")
-                    .select{|ship| ship["engine-0020"]["type"] == "booster" }
-                    .select{|ship| ship["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
+        items0 = (lambda {
+            items = CacheWS::getOrNull("47FDDD68-0655-494E-996C-350BE8654807")
+            return items if items
+            items = Cubes::mikuType("NxCruiser")
+                        .select{|ship| ship["engine-0020"]["type"] == "booster" }
+                        .select{|ship| ship["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
 
-        items1 = Cubes::mikuType("NxCruiser")
-                    .select{|ship| ship["engine-0020"]["type"] == "booster" }
-                    .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
-                    .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+            signals = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
+            CacheWS::set("47FDDD68-0655-494E-996C-350BE8654807", items, signals)
+            items
+        }).call()
 
-        items2 = NxCruisers::shipsInRecursiveDescent()
-                    .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
-                    .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+        items1 = (lambda {
+            items = CacheWS::getOrNull("8EF6CD96-72CF-45CB-956C-DF2B510CA8A1")
+            return items if items
+            items = Cubes::mikuType("NxCruiser")
+                        .select{|ship| ship["engine-0020"]["type"] == "booster" }
+                        .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
+                        .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+            signals = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
+            CacheWS::set("8EF6CD96-72CF-45CB-956C-DF2B510CA8A1", items, signals)
+            items
+        }).call()
+
+        items2 = (lambda {
+            items = CacheWS::getOrNull("36E64A0A-D4DD-4AF7-B9ED-303602E57781")
+            return items if items
+
+            items = NxCruisers::shipsInRecursiveDescent()
+                .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
+                .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+
+            signals = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
+            CacheWS::set("36E64A0A-D4DD-4AF7-B9ED-303602E57781", items, signals)
+            items
+        }).call()
 
         items0 + items1 + items2
     end

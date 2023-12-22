@@ -102,9 +102,18 @@ class Cubes
 
     # Cubes::itemOrNull(uuid)
     def self.itemOrNull(uuid)
+
+        item = CacheWS::getOrNull("eedab467-711a-480f-ad80-cf6529f26d91:#{uuid}")
+        return item if item
+
         filepath = Cubes::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
-        Cubes::filepathToItem(filepath)
+        item = Cubes::filepathToItem(filepath)
+
+        signals = ["item-has-been-modified:#{uuid}"]
+        CacheWS::set("eedab467-711a-480f-ad80-cf6529f26d91:#{uuid}", item, signals)
+
+        item
     end
 
     # Cubes::setAttribute(uuid, attrname, attrvalue)
@@ -125,6 +134,9 @@ class Cubes
 
     # Cubes::getAttributeOrNull(uuid, attrname)
     def self.getAttributeOrNull(uuid, attrname)
+
+        CacheWS::emit("item-has-been-modified:#{uuid}")
+
         filepath = Cubes::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
         value = nil
@@ -187,6 +199,7 @@ class Cubes
 
     # Cubes::destroy(uuid)
     def self.destroy(uuid)
+        CacheWS::emit("item-has-been-modified:#{uuid}")
         filepath = Cubes::existingFilepathOrNull(uuid)
         return if filepath.nil?
         puts "> delete item file: #{filepath}".yellow
@@ -209,7 +222,18 @@ class Cubes
 
     # Cubes::mikuType(mikuType)
     def self.mikuType(mikuType)
-        Cubes::items().select{|item| item["mikuType"] == mikuType }
+        items = CacheWS::getOrNull("52ed8b56-1b6e-46a5-9555-f559d4016fed:#{mikuType}")
+        return items if items
+
+        items = Cubes::items().select{|item| item["mikuType"] == mikuType }
+
+        signals = [
+            "mikutype-has-been-modified:#{mikuType}",
+            items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
+        ].flatten
+        CacheWS::set("52ed8b56-1b6e-46a5-9555-f559d4016fed:#{mikuType}", items, signals)
+
+        items
     end
 end
 

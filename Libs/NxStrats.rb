@@ -9,6 +9,7 @@ class NxStrats
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "bottom", bottomuuid)
+        CacheWS::emit("mikutype-has-been-modified:NxStrat")
         Cubes::itemOrNull(uuid)
     end
 

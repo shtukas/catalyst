@@ -21,6 +21,8 @@ class NxTasks
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
 
+        CacheWS::emit("mikutype-has-been-modified:NxTask")
+
         Cubes::itemOrNull(uuid)
     end
 
@@ -39,6 +41,8 @@ class NxTasks
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
 
+        CacheWS::emit("mikutype-has-been-modified:NxTask")
+
         Cubes::itemOrNull(uuid)
     end
 
@@ -56,6 +60,8 @@ class NxTasks
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
 
+        CacheWS::emit("mikutype-has-been-modified:NxTask")
+
         Cubes::itemOrNull(uuid)
     end
 
@@ -65,6 +71,8 @@ class NxTasks
         Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
+
+        CacheWS::emit("mikutype-has-been-modified:NxTask")
 
         Cubes::itemOrNull(uuid)
     end
