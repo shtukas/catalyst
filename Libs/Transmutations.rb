@@ -13,9 +13,11 @@ class Transmutations
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
         end
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", map[item["mikuType"]])
-        return if option.nil?
-        Transmutations::transmute2(item, option)
+        mikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", map[item["mikuType"]])
+        return if mikuType.nil?
+        Transmutations::transmute2(item, mikuType)
+        CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
+        CacheWS::emit("mikutype-has-been-modified:#{mikuType}")
     end
 
     # Transmutations::transmute2(item, targetMikuType)
