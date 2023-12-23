@@ -198,6 +198,7 @@ class NxCruisers
             return ship
         end
         selected = LucilleCore::selectEntityFromListOfEntitiesOrNull("ship", [ship] + childrenships, lambda{|item| NxCruisers::toString(item) })
+        return if selected.nil?
         if selected["uuid"] == ship["uuid"] then
             return selected
         end
