@@ -1,12 +1,12 @@
 
-NxCruiser:
+NxBlock:
     - uuid         : String
-    - mikuType     : "NxCruiser"
+    - mikuType     : "NxBlock"
     - unixtime     : Float
     - datetime     : DateTime Iso 8601 UTC Zulu
     - description  : String
     - engine-0020  : Array[TxCore]
                      # This is an optional or possibly empty for general catalyst
-                     # items, but should be present and non empty for NxCruisers
+                     # items, but should be present and non empty for NxBlocks
 
 If the description contains the word "patrol", then it acts as a patrol group.

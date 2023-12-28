@@ -134,7 +134,7 @@ class Listing
             NxBackups::listingItems(),
             NxMonitors::listingItems(),
             #NxTasks::engined(),
-            #NxCruisers::listingItems(),
+            #NxBlocks::listingItems(),
             Engined::listingItems(),
         ]
             .flatten
@@ -178,7 +178,7 @@ class Listing
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxCruisers::listingItems()", lambda{ NxCruisers::listingItems() })
+        spot.contest_entry("NxBlocks::listingItems()", lambda{ NxBlocks::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()

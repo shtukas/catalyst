@@ -10,8 +10,8 @@ class Prefix
             return stratification.take(stratification.size-1) + items
         end
 
-        if items[0]["mikuType"] == "NxCruiser" then
-            children = NxCruisers::elementsForPrefix(items[0])
+        if items[0]["mikuType"] == "NxBlock" then
+            children = NxBlocks::elementsForPrefix(items[0])
                         .select{|i| Listing::listable(i) }
                         .first(6)
             if children.size > 0 then

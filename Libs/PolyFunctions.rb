@@ -20,7 +20,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxCruiser" then
+        if item["mikuType"] == "NxBlock" then
             core = item["engine-0020"]
             accounts << {
                 "description" => "core: #{core["uuid"]}",
@@ -30,15 +30,15 @@ class PolyFunctions
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                ship = Cubes::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3")
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
+                block = Cubes::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3")
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
             end
         end
 
         if item["mikuType"] == "Wave" then
             if !item["interruption"] then
-                ship = Cubes::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75")
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
+                block = Cubes::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75")
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
             end
         end
 
@@ -96,8 +96,8 @@ class PolyFunctions
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
-        if item["mikuType"] == "NxCruiser" then
-            return NxCruisers::toString(item, context)
+        if item["mikuType"] == "NxBlock" then
+            return NxBlocks::toString(item, context)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)

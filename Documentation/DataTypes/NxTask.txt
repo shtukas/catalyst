@@ -8,8 +8,8 @@ NxTask:
     - field11     : null or CoreData reference string
 
 Although not strictly enforced (when that is not the case they are captured by 
-ship "orphaned tasks (automatic)"), tasks should have either a parent that is 
-a ship, or an engine
+block "orphaned tasks (automatic)"), tasks should have either a parent that is 
+a block, or an engine
 
     - engine-0020           : TxCore
     - parentuuid-0032       : null or uuid of the parent

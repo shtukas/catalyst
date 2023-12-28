@@ -7,9 +7,9 @@ class Engined
         items0 = (lambda {
             items = CacheWS::getOrNull("47FDDD68-0655-494E-996C-350BE8654807")
             return items if items
-            items = Cubes::mikuType("NxCruiser")
-                        .select{|ship| ship["engine-0020"]["type"] == "booster" }
-                        .select{|ship| ship["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
+            items = Cubes::mikuType("NxBlock")
+                        .select{|block| block["engine-0020"]["type"] == "booster" }
+                        .select{|block| block["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
 
             signals1 = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
             signals2 = items.map{|item| "bank-account-has-been-updated:#{item["uuid"]}" }
@@ -21,10 +21,10 @@ class Engined
         items1 = (lambda {
             items = CacheWS::getOrNull("8EF6CD96-72CF-45CB-956C-DF2B510CA8A1")
             return items if items
-            items = Cubes::mikuType("NxCruiser")
-                        .select{|ship| ship["engine-0020"]["type"] == "booster" }
-                        .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
-                        .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+            items = Cubes::mikuType("NxBlock")
+                        .select{|block| block["engine-0020"]["type"] == "booster" }
+                        .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
+                        .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
             signals1 = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
             signals2 = items.map{|item| "bank-account-has-been-updated:#{item["uuid"]}" }
             signals  = signals1 + signals2
@@ -38,8 +38,8 @@ class Engined
 
             items = Cubes::mikuType("NxTask")
                         .select{|item| item["engine-0020"] }
-                        .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
-                        .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+                        .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
+                        .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
 
             signals1 = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
             signals2 = items.map{|item| "bank-account-has-been-updated:#{item["uuid"]}" }
@@ -52,9 +52,9 @@ class Engined
             items = CacheWS::getOrNull("36E64A0A-D4DD-4AF7-B9ED-303602E57781")
             return items if items
 
-            items = NxCruisers::shipsInRecursiveDescent()
-                .select{|ship| NxCruisers::dayCompletionRatio(ship) < 1 }
-                .sort_by{|ship| NxCruisers::dayCompletionRatio(ship) }
+            items = NxBlocks::blocksInRecursiveDescent()
+                .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
+                .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
 
             signals1 = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
             signals2 = items.map{|item| "bank-account-has-been-updated:#{item["uuid"]}" }

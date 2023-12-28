@@ -7,8 +7,8 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | move *  | todotextfile * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | ship | monitor | priority | stack",
-            "divings       : anniversaries | ondates | waves | desktop | ships | monitors | engines",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack",
+            "divings       : anniversaries | ondates | waves | desktop | blocks | monitors | engines",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack *",
         ].join("\n")
@@ -44,8 +44,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            ships = NxCruisers::selectZeroOrMore()
-            donation = ((item["donation-1752"] || []) + ships.map{|ship| ship["uuid"] }).uniq
+            blocks = NxBlocks::selectZeroOrMore()
+            donation = ((item["donation-1752"] || []) + blocks.map{|block| block["uuid"] }).uniq
             Cubes::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
@@ -75,22 +75,22 @@ class ListingCommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
             return
         end
 
-        if Interpreting::match("ship", input) then
-            item = NxCruisers::interactivelyIssueNewOrNull()
+        if Interpreting::match("block", input) then
+            item = NxBlocks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("ships", input) then
-            NxCruisers::program2()
+        if Interpreting::match("blocks", input) then
+            NxBlocks::program2()
             return
         end
 
@@ -140,8 +140,8 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxCruiser" then
-                NxCruisers::pile(item)
+            if item["mikuType"] == "NxBlock" then
+                NxBlocks::pile(item)
                 return
             end
             NxStrats::interactivelyPile(item)
@@ -152,7 +152,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
 
@@ -167,7 +167,7 @@ class ListingCommandsAndInterpreters
         end
 
         if input == "move" then
-            NxCruisers::selectSubsetAndMoveToSelectedShip(store.items())
+            NxBlocks::selectSubsetAndMoveToSelectedBlock(store.items())
             return
         end
 
@@ -177,10 +177,10 @@ class ListingCommandsAndInterpreters
             text.lines.reverse.each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
-                puts "> deciding ship for task: '#{PolyFunctions::toString(task)}'"
-                ship = NxCruisers::interactivelySelectOneOrNull()
-                if ship then
-                    Cubes::setAttribute(task["uuid"], "donation-1752", [ship["uuid"]])
+                puts "> deciding block for task: '#{PolyFunctions::toString(task)}'"
+                block = NxBlocks::interactivelySelectOneOrNull()
+                if block then
+                    Cubes::setAttribute(task["uuid"], "donation-1752", [block["uuid"]])
                 end
             }
             return
@@ -205,7 +205,7 @@ class ListingCommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
 
@@ -247,17 +247,17 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             option = nil
             loop {
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["cargo of ship", "with own engine"])
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["cargo of block", "with own engine"])
                 if option.nil? then
-                    if LucilleCore::askQuestionAnswerAsBoolean("You did not specify an option, are you sure you want to leave this tasks without a ship or its own engine ? ", false) then
+                    if LucilleCore::askQuestionAnswerAsBoolean("You did not specify an option, are you sure you want to leave this tasks without a block or its own engine ? ", false) then
                         break
                     end
                     next
                 end
-                if option == "cargo of ship" then
-                    ship = NxCruisers::interactivelySelectOneOrNull()
-                    next if ship.nil?
-                    Cubes::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
+                if option == "cargo of block" then
+                    block = NxBlocks::interactivelySelectOneOrNull()
+                    next if block.nil?
+                    Cubes::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
                     return
                 end
                 if option == "with own engine" then
@@ -311,8 +311,8 @@ class ListingCommandsAndInterpreters
             puts "setting core for '#{PolyFunctions::toString(item).green}'"
             if item["mikuType"] == "NxOndate" or item["mikuType"] == "NxMonitor" then
                 puts "You are adding a core to a #{item["mikuType"]}"
-                if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxCruiser ? ") then
-                    Transmutations::transmute2(item, "NxCruiser")
+                if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxBlock ? ") then
+                    Transmutations::transmute2(item, "NxBlock")
                     item = Cubes::itemOrNull(item["uuid"])
                     return
                 end
