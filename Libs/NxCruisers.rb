@@ -247,7 +247,7 @@ class NxCruisers
     def self.interactivelySelectShipAndAddTo(itemuuid)
         ship = NxCruisers::interactivelySelectOneOrNull()
         return if ship.nil?
-        DataCenter::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
+        Cubes::setAttribute(itemuuid, "parentuuid-0032", ship["uuid"])
     end
 
     # NxCruisers::access(item)
@@ -366,7 +366,7 @@ class NxCruisers
     def self.program2()
         loop {
 
-            items = DataCenter::mikuType("NxCruiser")
+            items = Cubes::mikuType("NxCruiser")
                         .sort_by{|item| NxCruisers::dayCompletionRatio(item) }
             return if items.empty?
 
