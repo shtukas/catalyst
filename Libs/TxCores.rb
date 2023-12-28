@@ -5,7 +5,7 @@ class TxCores
 
     # TxCores::interactivelyMakeNewOrNull(ec = nil)
     def self.interactivelyMakeNewOrNull(ec = nil)
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done", "monitor", "content-driven"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done", "monitor"])
         return nil if type.nil?
         if type == "booster" then
             return TxCores::interactivelyMakeBoosterOrNull(ec)

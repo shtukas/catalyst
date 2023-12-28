@@ -218,9 +218,11 @@ class NxBlocks
     # NxBlocks::dayCompletionRatio(item)
     def self.dayCompletionRatio(item)
         if item["engine-0020"]["type"] == "content-driven" then
-            count = NxBlocks::elementsInNaturalCruiseOrder(item).count
-            return 1 if count == 0
-            return 0.9*(1.to_f/count)
+            puts "item: #{PolyFunctions::toString(item)}"
+            puts "core of type 'content-driven' is deprecated, please make another one"
+            core = TxCores::interactivelyMakeNew()
+            Cubes::setAttribute(item["uuid"], "engine-0020", core)
+            item["engine-0020"] = core
         end
         TxCores::coreDayCompletionRatio(item["engine-0020"])
     end
