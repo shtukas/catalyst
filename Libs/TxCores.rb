@@ -5,7 +5,7 @@ class TxCores
 
     # TxCores::interactivelyMakeNewOrNull(ec = nil)
     def self.interactivelyMakeNewOrNull(ec = nil)
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "blocking-until-done", "monitor"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "monitor"])
         return nil if type.nil?
         if type == "booster" then
             return TxCores::interactivelyMakeBoosterOrNull(ec)
@@ -155,6 +155,13 @@ class TxCores
     # TxCores::suffix2(item)
     def self.suffix2(item)
         return "" if item["engine-0020"].nil?
+        if item["engine-0020"]["type"] == "blocking-until-done" then
+            puts "item: #{PolyFunctions::toString(item)}"
+            puts "core of type 'blocking-until-done' is deprecated, please make another one"
+            core = TxCores::interactivelyMakeNew()
+            Cubes::setAttribute(item["uuid"], "engine-0020", core)
+            item["engine-0020"] = core
+        end
         " #{TxCores::suffix1(item["engine-0020"])}"
     end
 end
