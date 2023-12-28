@@ -9,7 +9,6 @@ class NxPatrols
         Cubes::itemInit(uuid, "NxPatrol")
         Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute(uuid, "description", description)
-        CacheWS::emit("mikutype-has-been-modified:NxPatrol")
         Cubes::itemOrNull(uuid)
     end
 

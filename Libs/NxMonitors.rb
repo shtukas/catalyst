@@ -12,7 +12,6 @@ class NxMonitors
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
-        CacheWS::emit("mikutype-has-been-modified:NxMonitor")
         Cubes::itemOrNull(uuid)
     end
 
@@ -22,7 +21,6 @@ class NxMonitors
         Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
-        CacheWS::emit("mikutype-has-been-modified:NxMonitor")
         Cubes::itemOrNull(uuid)
     end
 

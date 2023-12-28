@@ -40,7 +40,6 @@ class NxBackups
                 Cubes::itemInit(uuid, "NxBackup")
                 Cubes::setAttribute(uuid, "description", description)
                 Cubes::setAttribute(uuid, "periodInDays", period.to_f)
-                CacheWS::emit("mikutype-has-been-modified:NxBackup")
             }
     end
 

@@ -60,9 +60,9 @@ class Cubes
     # Cubes::merge(filepath1, filepath2)
     def self.merge(filepath1, filepath2)
         filepath = "/tmp/#{SecureRandom.hex}"
-        puts "> merging files:".yellow
-        puts "    #{filepath1}".yellow
-        puts "    #{filepath2}".yellow
+        #puts "> merging files:".yellow
+        #puts "    #{filepath1}".yellow
+        #puts "    #{filepath2}".yellow
 
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -167,22 +167,28 @@ class Cubes
 
     # Cubes::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-
-        item = CacheWS::getOrNull("eedab467-711a-480f-ad80-cf6529f26d91:#{uuid}")
-        return item if item
+        return $DATA_CENTER_DATA["items"][uuid]
 
         filepath = Cubes::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
-        item = Cubes::filepathToItem(filepath)
-
-        signals = ["item-has-been-modified:#{uuid}"]
-        CacheWS::set("eedab467-711a-480f-ad80-cf6529f26d91:#{uuid}", item, signals)
-
-        item
+        Cubes::filepathToItem(filepath)
     end
 
     # Cubes::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
+        if $DATA_CENTER_DATA["items"][uuid].nil? then
+            raise "(error: 417a064c-d89b-4d20-ac96-529db96d2c23); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
+        end
+        $DATA_CENTER_DATA["items"][uuid][attrname] = attrvalue
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"            => "item-attribute-update",
+            "itemuuid"        => uuid,
+            "attribute-name"  => attrname,
+            "attribute-value" => attrvalue
+        }
+
+        return
+
         filepath = Cubes::existingFilepathOrNull(uuid)
         if filepath.nil? then
             raise "(error: b2a27beb-7b23-4077-af2f-ba408ed37748); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
@@ -194,12 +200,14 @@ class Cubes
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
         db.close
         Cubes::relocate(filepath)
-        CacheWS::emit("item-has-been-modified:#{uuid}")
         nil
     end
 
     # Cubes::getAttributeOrNull(uuid, attrname)
     def self.getAttributeOrNull(uuid, attrname)
+        return nil if $DATA_CENTER_DATA["items"][uuid].nil?
+        return $DATA_CENTER_DATA["items"][uuid][attrname]
+
         filepath = Cubes::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
         value = nil
@@ -262,7 +270,14 @@ class Cubes
 
     # Cubes::destroy(uuid)
     def self.destroy(uuid)
-        CacheWS::emit("item-has-been-modified:#{uuid}")
+        $DATA_CENTER_DATA["items"].delete(uuid)
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"      => "item-destroy",
+            "itemuuid"  => uuid,
+        }
+
+        return
+
         filepath = Cubes::existingFilepathOrNull(uuid)
         return if filepath.nil?
         puts "> delete item file: #{filepath}".yellow
@@ -274,6 +289,8 @@ class Cubes
 
     # Cubes::items()
     def self.items()
+        return $DATA_CENTER_DATA["items"].values
+
         items = []
         Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
@@ -285,18 +302,9 @@ class Cubes
 
     # Cubes::mikuType(mikuType)
     def self.mikuType(mikuType)
-        items = CacheWS::getOrNull("52ed8b56-1b6e-46a5-9555-f559d4016fed:#{mikuType}")
-        return items if items
+        return $DATA_CENTER_DATA["items"].values.select{|item| item["mikuType"] == mikuType }
 
-        items = Cubes::items().select{|item| item["mikuType"] == mikuType }
-
-        signals = [
-            "mikutype-has-been-modified:#{mikuType}",
-            items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
-        ].flatten
-        CacheWS::set("52ed8b56-1b6e-46a5-9555-f559d4016fed:#{mikuType}", items, signals)
-
-        items
+        Cubes::items().select{|item| item["mikuType"] == mikuType }
     end
 end
 

@@ -8,7 +8,6 @@ class NxBlocks
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "engine-0020", engine)
         Cubes::setAttribute(uuid, "description", description)
-        CacheWS::emit("mikutype-has-been-modified:NxBlock")
         Cubes::itemOrNull(uuid)
     end
 
@@ -86,42 +85,18 @@ class NxBlocks
 
     # NxBlocks::listingItems()
     def self.listingItems()
-        items0 = (lambda {
-            items = CacheWS::getOrNull("47FDDD68-0655-494E-996C-350BE8654807")
-            return items if items
-            items = Cubes::mikuType("NxBlock")
-                        .select{|block| block["engine-0020"]["type"] == "booster" }
-                        .select{|block| block["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
+        items0 = Cubes::mikuType("NxBlock")
+                    .select{|block| block["engine-0020"]["type"] == "booster" }
+                    .select{|block| block["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
 
-            signals = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
-            CacheWS::set("47FDDD68-0655-494E-996C-350BE8654807", items, signals)
-            items
-        }).call()
+        items1 = Cubes::mikuType("NxBlock")
+                    .select{|block| block["engine-0020"]["type"] == "booster" }
+                    .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
+                    .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
 
-        items1 = (lambda {
-            items = CacheWS::getOrNull("8EF6CD96-72CF-45CB-956C-DF2B510CA8A1")
-            return items if items
-            items = Cubes::mikuType("NxBlock")
-                        .select{|block| block["engine-0020"]["type"] == "booster" }
-                        .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
-                        .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
-            signals = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
-            CacheWS::set("8EF6CD96-72CF-45CB-956C-DF2B510CA8A1", items, signals)
-            items
-        }).call()
-
-        items2 = (lambda {
-            items = CacheWS::getOrNull("36E64A0A-D4DD-4AF7-B9ED-303602E57781")
-            return items if items
-
-            items = NxBlocks::blocksInRecursiveDescent()
-                .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
-                .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
-
-            signals = items.map{|item| "item-has-been-modified:#{item["uuid"]}" }
-            CacheWS::set("36E64A0A-D4DD-4AF7-B9ED-303602E57781", items, signals)
-            items
-        }).call()
+        items2 = NxBlocks::blocksInRecursiveDescent()
+                    .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
+                    .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
 
         items0 + items1 + items2
     end

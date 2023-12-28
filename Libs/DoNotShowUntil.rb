@@ -23,34 +23,43 @@ class DoNotShowUntil
 
     # DoNotShowUntil::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
-        unixtime1 = XCache::getOrDefaultValue("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", "0").to_f
+        return $DATA_CENTER_DATA["doNotShowUntil"][id]
 
-        unixtime2 = DoNotShowUntil::filepaths()
-                        .map{|filepath|
-                            unixtime = 0
-                            db = SQLite3::Database.new(filepath)
-                            db.busy_timeout = 117
-                            db.busy_handler { |count| true }
-                            db.results_as_hash = true
-                            db.execute("select * from DoNotShowUntil where _id_=?", [id]) do |row|
-                                unixtime = row["_unixtime_"]
-                            end
-                            db.close
-                            unixtime
-                        }
-                        .max
-
-        unixtime = [unixtime1, unixtime2].max
+        DoNotShowUntil::filepaths()
+            .map{|filepath|
+                unixtime = 0
+                db = SQLite3::Database.new(filepath)
+                db.busy_timeout = 117
+                db.busy_handler { |count| true }
+                db.results_as_hash = true
+                db.execute("select * from DoNotShowUntil where _id_=?", [id]) do |row|
+                    unixtime = row["_unixtime_"]
+                end
+                db.close
+                unixtime
+            }
+            .max
         return nil if unixtime == 0
         unixtime
     end
 
     # DoNotShowUntil::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
-        item = Cubes::itemOrNull(id)
+        # item = Cubes::itemOrNull(id)        # old
+        item = $DATA_CENTER_DATA["items"][id] # new
+
         if item then
             Ox1::detach(item)
         end
+
+        $DATA_CENTER_DATA["doNotShowUntil"][id] = unixtime
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"     => "do-not-show-until",
+            "id"       => id,
+            "unixtime" => unixtime
+        }
+
+        return
 
         filepath = DoNotShowUntil::instanceFilepath()
         db = SQLite3::Database.new(filepath)

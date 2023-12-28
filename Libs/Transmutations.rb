@@ -16,8 +16,6 @@ class Transmutations
         mikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("mikuType", map[item["mikuType"]])
         return if mikuType.nil?
         Transmutations::transmute2(item, mikuType)
-        CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
-        CacheWS::emit("mikutype-has-been-modified:#{mikuType}")
     end
 
     # Transmutations::transmute2(item, targetMikuType)

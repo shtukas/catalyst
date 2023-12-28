@@ -27,6 +27,13 @@ class Bank
 
     # Bank::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
+
+        return $DATA_CENTER_DATA["bank"]
+                    .select{|record| record["id"] == uuid }
+                    .select{|record| record["date"] == date }
+                    .map{|record| record["value"] }
+                    .inject(0, :+)
+
         Bank::filepaths()
             .map{|filepath|
                 value = 0
@@ -45,6 +52,12 @@ class Bank
 
     # Bank::getValue(uuid)
     def self.getValue(uuid)
+
+        return $DATA_CENTER_DATA["bank"]
+                    .select{|record| record["id"] == uuid }
+                    .map{|record| record["value"] }
+                    .inject(0, :+)
+
         Bank::filepaths()
             .map{|filepath|
                 value = 0
@@ -63,6 +76,20 @@ class Bank
 
     # Bank::put(uuid, value)
     def self.put(uuid, value)
+        $DATA_CENTER_DATA["bank"] << {
+            "id"    => uuid,
+            "date"  => CommonUtils::today(),
+            "value" => value
+        }
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"  => "bank-record",
+            "id"    => uuid,
+            "date"  => CommonUtils::today(),
+            "value" => value
+        }
+
+        return
+
         filepath = Bank::instanceFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -70,8 +97,6 @@ class Bank
         db.results_as_hash = true
         db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, CommonUtils::today(), value]
         db.close
-
-        CacheWS::emit("bank-account-has-been-updated:#{uuid}")
     end
 
     # ----------------------------------

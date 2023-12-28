@@ -106,7 +106,6 @@ class PolyActions
 
         if item["mikuType"] == "NxPatrol" then
             Cubes::setAttribute(item["uuid"], "unixtime", Time.new.to_i)
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
@@ -118,7 +117,6 @@ class PolyActions
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -134,19 +132,16 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
         if item["mikuType"] == "NxBlock" then
             NxBlocks::done(item)
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
         if item["mikuType"] == "NxMonitor" then
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
@@ -154,12 +149,10 @@ class PolyActions
             if parent = NxStrats::parentOrNull(item) then
                 puts "You cannot done NxStrat '#{PolyFunctions::toString(item).green}' as it has a parent: '#{PolyFunctions::toString(parent).green}'"
                 LucilleCore::pressEnterToContinue()
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
                 return
             end
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -167,7 +160,6 @@ class PolyActions
         if item["mikuType"] == "NxOndate" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -176,21 +168,18 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
         if item["mikuType"] == "Wave" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -216,7 +205,6 @@ class PolyActions
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -232,19 +220,16 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
         if item["mikuType"] == "NxBlock" then
             NxBlocks::natural(item)
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
         if item["mikuType"] == "NxMonitor" then
             NxMonitors::natural(item)
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             return
         end
 
@@ -260,7 +245,6 @@ class PolyActions
                 end
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                     Cubes::destroy(item["uuid"])
-                    CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
                 end
                 return
             end
@@ -274,7 +258,6 @@ class PolyActions
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -288,7 +271,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -306,7 +288,6 @@ class PolyActions
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -323,7 +304,6 @@ class PolyActions
         if item["mikuType"] == "NxPatrol" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -331,7 +311,6 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -344,7 +323,6 @@ class PolyActions
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -352,7 +330,6 @@ class PolyActions
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -360,7 +337,6 @@ class PolyActions
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -368,7 +344,6 @@ class PolyActions
         if item["mikuType"] == "NxMonitor" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -377,7 +352,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -385,7 +359,6 @@ class PolyActions
         if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
-                CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
             end
             return
         end
@@ -435,8 +408,6 @@ class PolyActions
         PolyFunctions::itemToBankingAccounts(item).each{|account|
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank::put(account["number"], timeInSeconds)
-            CacheWS::emit("item-has-been-modified:#{item["uuid"]}")
-            CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
         }
     end
 
@@ -451,6 +422,5 @@ class PolyActions
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
         Cubes::setAttribute(item["uuid"], "description", description)
-        CacheWS::emit("mikutype-has-been-modified:#{item["mikuType"]}")
     end
 end

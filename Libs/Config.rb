@@ -59,9 +59,4 @@ class Config
     def self.isPrimaryInstance()
         Config::thisInstanceId() == "Lucille24-pascal"
     end
-
-    # Config::instanceIds()
-    def self.instanceIds()
-        JSON.parse(IO.read("#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/instanceIds.json"))
-    end
 end
