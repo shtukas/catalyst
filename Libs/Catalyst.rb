@@ -43,7 +43,7 @@ class Catalyst
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
             puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
-
+            Cubes::maintenance()
             if Cubes::mikuType("NxTask").size < 100 then
                 Cubes::mikuType("NxIce").take(10).each{|item|
 
