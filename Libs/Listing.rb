@@ -81,7 +81,8 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         positionstr = Ox1::activePositionOrNull(item) ? " stack".red : "      "
-        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
+        tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
+        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -102,7 +103,8 @@ class Listing
     def self.toString3(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
+        tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
+        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

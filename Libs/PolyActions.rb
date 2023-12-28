@@ -8,6 +8,23 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["todotextfile-1312"] then
+            # this takes priority
+            todotextfile = item["todotextfile-1312"]
+            location = Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
+            if location.nil? then
+                puts PolyFunctions::toString(item)
+                puts "Could not resolve this todotextfile: #{todotextfile}"
+                if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
+                    Cubes::setAttribute(item["uuid"], "todotextfile-1312", nil)
+                end
+                return
+            end
+            puts "found: #{location}"
+            system("open '#{location}'")
+            return
+        end
+
         if item["cfsr-20231213"] then
             options = ["standard access (default)", "cfsr access"]
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)

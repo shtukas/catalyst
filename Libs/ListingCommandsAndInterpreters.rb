@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | move * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | move *  | todotextfile * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | ship | monitor | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | ships | monitors | engines",
@@ -153,6 +153,16 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            return
+        end
+
+        if Interpreting::match("todotextfile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
+            return if todotextfile == ""
+            Cubes::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
             return
         end
 

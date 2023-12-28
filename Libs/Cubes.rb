@@ -129,14 +129,12 @@ class Cubes
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
         db.close
         Cubes::relocate(filepath)
+        CacheWS::emit("item-has-been-modified:#{uuid}")
         nil
     end
 
     # Cubes::getAttributeOrNull(uuid, attrname)
     def self.getAttributeOrNull(uuid, attrname)
-
-        CacheWS::emit("item-has-been-modified:#{uuid}")
-
         filepath = Cubes::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
         value = nil

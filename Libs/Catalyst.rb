@@ -57,4 +57,21 @@ class Catalyst
         return "" if item["donation-1752"].nil?
         " (#{item["donation-1752"].map{|uuid| Cubes::itemOrNull(uuid)}.compact.map{|target| target["description"]}.join(", ")})".green
     end
+
+    # Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
+    def self.selectTodoTextFileLocationOrNull(todotextfile)
+        location = XCache::getOrNull("fcf91da7-0600-41aa-817a-7af95cd2570b:#{todotextfile}")
+        if File.exist?(location) then
+            return location
+        end
+
+        roots = [Config::pathToGalaxy()]
+        Galaxy::locationEnumerator(roots).each{|location|
+            if File.basename(location).include?(todotextfile) then
+                XCache::set("fcf91da7-0600-41aa-817a-7af95cd2570b:#{todotextfile}", location)
+                return location
+            end
+        }
+        nil
+    end
 end

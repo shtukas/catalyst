@@ -14,3 +14,4 @@ Cross types conventions (all optional):
     - engine-0020           : TxCore
     - parentuuid-0032       : null or uuid of the parent
     - cfsr-20231213         : string, the catalyst file system reference
+    - todotextfile-1312     : fragment of name of a todo text file (must be located in Galaxy)

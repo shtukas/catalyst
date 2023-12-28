@@ -5,6 +5,20 @@ class NxTasks
     # --------------------------------------------------
     # Makers
 
+    # NxTasks::contentMaker(uuid) # [coredataref or null, todotextfile or null]
+    def self.contentMaker(uuid)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("coredata", "todotextfile")
+        return [nil, nil] if option.nil?
+        if option == "coredata" then
+            return [CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid), nil]
+        end
+        if option == "todotextfile" then
+            fragment = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
+            return [nil, nil] if fragment == ""
+            return [nil, fragment]
+        end
+    end
+
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
 
@@ -14,12 +28,13 @@ class NxTasks
         uuid = SecureRandom.uuid
         Cubes::itemInit(uuid, "NxTask")
 
-        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+        coredataref, todotextfile = NxTasks::contentMaker(uuid)
 
         Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes::setAttribute(uuid, "description", description)
         Cubes::setAttribute(uuid, "field11", coredataref)
+        Cubes::setAttribute(uuid, "todotextfile-1312", todotextfile)
 
         CacheWS::emit("mikutype-has-been-modified:NxTask")
 
@@ -111,9 +126,24 @@ class NxTasks
     # --------------------------------------------------
     # Operations
 
-    # NxTasks::access(task)
-    def self.access(task)
-        CoreDataRefStrings::accessAndMaybeEdit(task["uuid"], task["field11"])
+    # NxTasks::access(item)
+    def self.access(item)
+        if item["todotextfile-1312"] then
+            # this takes priority
+            todotextfile = item["todotextfile-1312"]
+            location = Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
+            if location.nil? then
+                puts "Could not resolve this todotextfile: #{todotextfile}"
+                if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
+                    Cubes::setAttribute(item["uuid"], "todotextfile-1312", nil)
+                end
+                return
+            end
+            puts "found: #{location}"
+            system("open '#{location}'")
+            return
+        end
+        CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
     end
 
     # NxTasks::fsck()
