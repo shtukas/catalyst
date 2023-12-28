@@ -42,11 +42,6 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "Backup" then
-            ship = Cubes::itemOrNull("eadf9717-58a1-449b-8b99-97c85a154fbc")
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(ship)
-        end
-
         # Special Features
 
         if core = item["engine-0020"] then
@@ -95,8 +90,8 @@ class PolyFunctions
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::toString(item)
         end
-        if item["mikuType"] == "Backup" then
-            return Backups::toString(item)
+        if item["mikuType"] == "NxBackup" then
+            return NxBackups::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

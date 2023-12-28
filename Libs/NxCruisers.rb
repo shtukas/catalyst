@@ -136,9 +136,6 @@ class NxCruisers
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::listingItems().select{|item| !item["interruption"] }
         end
-        if cruiser["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
-            return Config::isPrimaryInstance() ? Backups::listingItems() : []
-        end
         if cruiser["description"].include?("patrol") then
             elements = Cubes::items()
                         .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
@@ -159,9 +156,6 @@ class NxCruisers
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::listingItems().select{|item| !item["interruption"] }
-        end
-        if cruiser["uuid"] == "eadf9717-58a1-449b-8b99-97c85a154fbc" then # backups (automatic)
-            return Config::isPrimaryInstance() ? Backups::listingItems() : []
         end
 
         items = Cubes::items()

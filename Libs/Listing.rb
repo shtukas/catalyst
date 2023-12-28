@@ -129,6 +129,7 @@ class Listing
             Config::isPrimaryInstance() ? PhysicalTargets::listingItems() : [],
             Waves::listingItems().select{|item| item["interruption"] },
             NxOndates::listingItems(),
+            NxBackups::listingItems(),
             NxMonitors::listingItems(),
             NxTasks::engined(),
             NxCruisers::listingItems(),

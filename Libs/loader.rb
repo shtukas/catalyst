@@ -126,7 +126,6 @@ require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
-require_relative "Backups.rb"
 
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
@@ -165,6 +164,7 @@ require_relative "NxCruisers.rb"
 require_relative "NxOndate.rb"
 require_relative "NxMonitors.rb"
 require_relative "NxPatrols.rb"
+require_relative "NxBackups.rb"
 
 require_relative "Ox1.rb"
 require_relative "OpenCycles.rb"

@@ -32,7 +32,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Backup" then
+        if item["mikuType"] == "NxBackup" then
             return
         end
 
@@ -106,8 +106,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Backup" then
-            XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+        if item["mikuType"] == "NxBackup" then
+            DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["periodInDays"]*86400)
             return
         end
 
@@ -204,7 +204,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "Backup" then
+        if item["mikuType"] == "NxBackup" then
             XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
             return
         end
@@ -425,7 +425,7 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-        if item["mikuType"] == "Backup" then
+        if item["mikuType"] == "NxBackup" then
             puts "There is no description edit for Backups (inherited from the file)"
             LucilleCore::pressEnterToContinue()
             return
