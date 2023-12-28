@@ -178,7 +178,7 @@ class ListingCommandsAndInterpreters
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding block for task: '#{PolyFunctions::toString(task)}'"
-                block = NxBlocks::interactivelySelectOneOrNull()
+                block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
                 if block then
                     Cubes::setAttribute(task["uuid"], "donation-1752", [block["uuid"]])
                 end
@@ -255,7 +255,7 @@ class ListingCommandsAndInterpreters
                     next
                 end
                 if option == "cargo of block" then
-                    block = NxBlocks::interactivelySelectOneOrNull()
+                    block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
                     next if block.nil?
                     Cubes::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
                     return

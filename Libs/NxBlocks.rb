@@ -165,14 +165,6 @@ class NxBlocks
         i1.select{|item| NxBlocks::dayCompletionRatio(item) < 1 }.sort_by{|item| NxBlocks::dayCompletionRatio(item) } + i2.sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxBlocks::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        #items = Cubes::mikuType("NxBlock")
-        #            .sort_by{|item| NxBlocks::dayCompletionRatio(item) }
-        #LucilleCore::selectEntityFromListOfEntitiesOrNull("block", items, lambda{|item| NxBlocks::toString(item) })
-        NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
-    end
-
     # NxBlocks::interactivelySelectOneTopBlockOrNull()
     def self.interactivelySelectOneTopBlockOrNull()
         topBlocks = NxBlocks::topBlocks()
@@ -207,18 +199,11 @@ class NxBlocks
         selected
     end
 
-    # NxBlocks::interactivelySelectBlockAndAddTo(itemuuid)
-    def self.interactivelySelectBlockAndAddTo(itemuuid)
-        block = NxBlocks::interactivelySelectOneOrNull()
-        return if block.nil?
-        Cubes::setAttribute(itemuuid, "parentuuid-0032", block["uuid"])
-    end
-
     # NxBlocks::selectSubsetAndMoveToSelectedBlock(items)
     def self.selectSubsetAndMoveToSelectedBlock(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        block = NxBlocks::interactivelySelectOneOrNull()
+        block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
         return if block.nil?
         selected.each{|item|
             Cubes::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
@@ -245,7 +230,7 @@ class NxBlocks
 
     # NxBlocks::interactivelySelectBlockAndAddTo(itemuuid)
     def self.interactivelySelectBlockAndAddTo(itemuuid)
-        block = NxBlocks::interactivelySelectOneOrNull()
+        block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
         return if block.nil?
         Cubes::setAttribute(itemuuid, "parentuuid-0032", block["uuid"])
     end
@@ -382,7 +367,7 @@ class NxBlocks
     def self.program2()
         loop {
 
-            items = Cubes::mikuType("NxBlock")
+            items = NxBlocks::topBlocks()
                         .sort_by{|item| NxBlocks::dayCompletionRatio(item) }
             return if items.empty?
 
