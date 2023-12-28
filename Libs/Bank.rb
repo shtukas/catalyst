@@ -70,6 +70,8 @@ class Bank
         db.results_as_hash = true
         db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, uuid, CommonUtils::today(), value]
         db.close
+
+        CacheWS::emit("bank-account-has-been-updated:#{uuid}")
     end
 
     # ----------------------------------

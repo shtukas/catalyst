@@ -131,8 +131,9 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxMonitors::listingItems(),
-            NxTasks::engined(),
-            NxCruisers::listingItems(),
+            #NxTasks::engined(),
+            #NxCruisers::listingItems(),
+            Engined::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }

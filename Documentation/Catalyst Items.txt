@@ -11,6 +11,6 @@ Cross types conventions (all optional):
                               within the children of a core.
     - donation-1752         : Array[String]
     - note-1531             : String
-    - engine-0020           : Array[TxCore]
+    - engine-0020           : TxCore
     - parentuuid-0032       : null or uuid of the parent
     - cfsr-20231213         : string, the catalyst file system reference

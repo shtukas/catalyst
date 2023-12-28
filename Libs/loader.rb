@@ -142,6 +142,8 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Dives.rb"
 
+require_relative "Engined.rb"
+
 require_relative "Fsck.rb"
 require_relative "FileSystemReferences.rb"
 

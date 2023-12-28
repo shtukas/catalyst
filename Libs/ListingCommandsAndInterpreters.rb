@@ -7,8 +7,8 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | move * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | ship | monitor | priority | stack",
-            "divings       : anniversaries | ondates | waves | desktop | ships | stickies",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | ship | monitor | priority | stack",
+            "divings       : anniversaries | ondates | waves | desktop | ships | monitors | engines",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack *",
         ].join("\n")
@@ -94,8 +94,16 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stickies", input) then
+        if Interpreting::match("monitors", input) then
             items = Cubes::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
+            Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("engines", input) then
+            items = Cubes::items()
+                        .select{|item| item["engine-0020"] }
+                        .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
             Catalyst::program2(items)
             return
         end
@@ -224,11 +232,31 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo", input) then
+        if Interpreting::match("todo", input) or Interpreting::match("task", input)  then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            puts JSON.pretty_generate(item)
-            NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
+            option = nil
+            loop {
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["cargo of ship", "with own engine"])
+                if option.nil? then
+                    if LucilleCore::askQuestionAnswerAsBoolean("You did not specify an option, are you sure you want to leave this tasks without a ship or its own engine ? ", false) then
+                        break
+                    end
+                    next
+                end
+                if option == "cargo of ship" then
+                    ship = NxCruisers::interactivelySelectOneOrNull()
+                    next if ship.nil?
+                    Cubes::setAttribute(item["uuid"], "parentuuid-0032", ship["uuid"])
+                    return
+                end
+                if option == "with own engine" then
+                    core = TxCores::interactivelyMakeNew()
+                    next if core.nil?
+                    Cubes::setAttribute(item["uuid"], "engine-0020", core)
+                    return
+                end
+            }
             return
         end
 
