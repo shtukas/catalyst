@@ -80,7 +80,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        positionstr = Ox1::activePositionOrNull(item) ? " stack".red : "      "
+        positionstr = Ox1::activePositionOrNull(item) ? " stack".green : "      "
         tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
         line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 

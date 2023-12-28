@@ -86,7 +86,7 @@ class FileSystemReferences
     # FileSystemReferences::suffix(item)
     def self.suffix(item)
         return "" if item["cfsr-20231213"].nil?
-        " (cfsr)".red
+        " (cfsr)".green
     end
 
 end

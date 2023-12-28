@@ -4,7 +4,7 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         map = {
-            "NxOndate"  => ["NxSticky" ,"NxTask", "NxBlock"],
+            "NxOndate"  => ["NxMonitor" ,"NxTask", "NxBlock"],
             "NxTask"    => ["NxMonitor"],
             "NxMonitor" => ["NxTask", "NxBlock"],
             "NxBlock" => ["NxTask"],

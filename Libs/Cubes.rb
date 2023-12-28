@@ -18,6 +18,10 @@ class Cubes
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "mikuType", JSON.generate(mikuType)]
         db.close
         Cubes::relocate(filepath)
+        $DATA_CENTER_DATA["items"][uuid] = {
+            "uuid" => uuid,
+            "mikuType" => mikuType
+        }
     end
 
     # Cubes::existingFilepathOrNull(uuid)
@@ -47,8 +51,8 @@ class Cubes
         filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
         filepath2 = "#{folderpath2}/#{filename2}"
         return filepath1 if (filepath1 == filepath2)
-        puts "filepath1: #{filepath1}".yellow
-        puts "filepath2: #{filepath2}".yellow
+        #puts "filepath1: #{filepath1}".yellow
+        #puts "filepath2: #{filepath2}".yellow
         FileUtils.mv(filepath1, filepath2)
 
         uuid = Cubes::uuidFromFile(filepath2)
