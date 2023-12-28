@@ -23,13 +23,13 @@ class Transmutations
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
         if item["mikuType"] == "NxCruiser" and targetMikuType == "NxTask" then
-            if NxCruisers::elements(item).size.size > 0 then
+            if NxCruisers::elementsInNaturalCruiseOrder(item).size.size > 0 then
                 Cubes::setAttribute(item["uuid"], "mikuType", "NxTask")
                 item = Cubes::itemOrNull(item["uuid"])
                 puts JSON.pretty_generate(item)
                 NxCruisers::interactivelySelectShipAndAddTo(item["uuid"])
             else
-                puts "We cannot trnasmute a NxCruise with non empty cargo. Found #{NxCruisers::elements(item).size} elements"
+                puts "We cannot trnasmute a NxCruise with non empty cargo. Found #{NxCruisers::elementsInNaturalCruiseOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
             end
             return
