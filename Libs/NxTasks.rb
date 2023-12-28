@@ -7,7 +7,7 @@ class NxTasks
 
     # NxTasks::contentMaker(uuid) # [coredataref or null, todotextfile or null]
     def self.contentMaker(uuid)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("coredata", "todotextfile")
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["coredata", "todotextfile"])
         return [nil, nil] if option.nil?
         if option == "coredata" then
             return [CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid), nil]

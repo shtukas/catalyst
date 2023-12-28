@@ -242,7 +242,7 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo", input) or Interpreting::match("task", input)  then
+        if Interpreting::match("todo", input) or Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             option = nil
