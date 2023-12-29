@@ -206,3 +206,13 @@ Thread.new {
         XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate($DATA_CENTER_DATA))
     }
 }
+
+Thread.new {
+    sleep 60
+    loop {
+        data = DataCenter::rebuildDataFromScratch()
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate(data))
+        $DATA_CENTER_DATA = data
+        sleep 1200
+    }
+}
