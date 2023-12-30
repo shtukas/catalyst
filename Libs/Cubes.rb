@@ -32,7 +32,7 @@ class Cubes
             return filepath
         end
 
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes")
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Cubes")
             .select{|location| location[-14, 14] == ".catalyst-cube" }
             .each{|filepath|
                 u1 = Cubes::uuidFromFile(filepath)
@@ -47,7 +47,7 @@ class Cubes
 
     # Cubes::relocate(filepath1)
     def self.relocate(filepath1)
-        folderpath2 = "#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes"
+        folderpath2 = "#{Config::pathToCatalystDataRepository()}/Cubes"
         filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
         filepath2 = "#{folderpath2}/#{filename2}"
         return filepath1 if (filepath1 == filepath2)
@@ -106,7 +106,7 @@ class Cubes
     # Cubes::maintenance()
     def self.maintenance()
         filepaths = []
-        Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
+        Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             filepaths << path
@@ -296,7 +296,7 @@ class Cubes
         return $DATA_CENTER_DATA["items"].values
 
         items = []
-        Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
+        Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             items << Cubes::filepathToItem(path)

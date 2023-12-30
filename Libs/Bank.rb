@@ -7,7 +7,7 @@ class Bank
 
     # Bank::instanceFilepath()
     def self.instanceFilepath()
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Bank/Bank-#{Config::thisInstanceId()}.sqlite3"
+        filepath = "#{Config::pathToCatalystDataRepository()}/Bank/Bank-#{Config::thisInstanceId()}.sqlite3"
         if !File.exist?(filepath) then
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
@@ -21,7 +21,7 @@ class Bank
 
     # Bank::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/Bank")
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 

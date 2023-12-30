@@ -28,11 +28,6 @@ class Config
         "#{Config::userHomeDirectory()}/Galaxy/DataBank/Stargate-Config.json"
     end
 
-    # Config::pathToCatalystData()
-    def self.pathToCatalystData()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst"
-    end
-
     # Config::getOrNull(key)
     def self.getOrNull(key)
         config = JSON.parse(IO.read(Config::configFilepath()))
@@ -58,5 +53,13 @@ class Config
     # Config::isPrimaryInstance()
     def self.isPrimaryInstance()
         Config::thisInstanceId() == "Lucille24-pascal"
+    end
+
+    # Config::pathToCatalystDataRepository()
+    def self.pathToCatalystDataRepository()
+        if File.exist?("/Users/Shared/Galaxy/DataHub/catalyst") then
+            return "/Users/Shared/Galaxy/DataHub/catalyst"
+        end
+        "#{Config::pathToCatalystDataRepository()}"
     end
 end

@@ -3,7 +3,7 @@ class NxBalls
 
     # NxBalls::repository()
     def self.repository()
-        "#{Config::pathToGalaxy()}/DataHub/catalyst/NxBalls"
+        "#{Config::pathToCatalystDataRepository()}/NxBalls"
     end
 
     # ---------------------------------

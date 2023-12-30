@@ -604,8 +604,7 @@ class CommonUtils
     # CommonUtils::uniqueStringLocationUsingPartialGalaxySearchOrNull(uniquestring)
     def self.uniqueStringLocationUsingPartialGalaxySearchOrNull(uniquestring)
         roots = [
-            "#{Config::userHomeDirectory()}/Desktop",
-            "#{Config::userHomeDirectory()}/Galaxy/DataHub"
+            "#{Config::userHomeDirectory()}/Galaxy"
         ]
         roots.each{|root|
             Find.find(root) do |path|

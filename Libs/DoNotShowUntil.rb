@@ -3,7 +3,7 @@ class DoNotShowUntil
 
     # DoNotShowUntil::instanceFilepath()
     def self.instanceFilepath()
-        filepath = "#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/DoNotShowUntil/DoNotShowUntil-#{Config::thisInstanceId()}.sqlite3"
+        filepath = "#{Config::pathToCatalystDataRepository()}/DoNotShowUntil/DoNotShowUntil-#{Config::thisInstanceId()}.sqlite3"
         if !File.exist?(filepath) then
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
@@ -17,7 +17,7 @@ class DoNotShowUntil
 
     # DoNotShowUntil::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/catalyst/DoNotShowUntil")
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 

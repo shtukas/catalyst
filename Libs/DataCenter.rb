@@ -71,7 +71,7 @@ class DataCenter
     # DataCenter::rebuildDataFromScratch()
     def self.rebuildDataFromScratch()
         itemsmap = {}
-        Find.find("#{Config::pathToGalaxy()}/DataHub/catalyst/Cubes") do |path|
+        Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             item = Cubes::filepathToItem(path)
