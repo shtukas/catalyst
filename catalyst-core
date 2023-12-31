@@ -1,5 +1,0 @@
-# encoding: UTF-8
-require_relative "Libs/loader.rb"
-
-DataCenter::getData()
-Listing::main()

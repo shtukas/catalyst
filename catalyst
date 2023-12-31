@@ -1,8 +1,7 @@
-#!/bin/zsh
+#!/usr/bin/ruby
 
-# https://stackoverflow.com/questions/18810483/what-is-the-zsh-equivalent-of-a-bash-script-getting-the-scripts-directory
-SCRIPT_PATH="$0:a:h"
-echo $SCRIPT_PATH
-cd $SCRIPT_PATH
-export RBENV_VERSION=3.2.0
-ruby catalyst-core
+# encoding: UTF-8
+require_relative "Libs/loader.rb"
+
+DataCenter::getData()
+Listing::main()
