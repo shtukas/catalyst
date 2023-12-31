@@ -15,6 +15,7 @@ class Bank
             db.results_as_hash = true
             db.execute("create table Bank (_recorduuid_ string primary key, _id_ string, _date_ string, _value_ float)")
             db.close
+            FileUtils.chmod(0755, filepath)
         end
         filepath
     end

@@ -20,6 +20,7 @@ class NxBalls
     def self.commitBall(item, nxball)
         filepath = "#{NxBalls::repository()}/#{item["uuid"]}.ball"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(nxball)) }
+        FileUtils.chmod(0755, filepath)
     end
 
     # NxBalls::issueNxBall(item, accounts)

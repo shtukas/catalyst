@@ -11,6 +11,7 @@ class DoNotShowUntil
             db.results_as_hash = true
             db.execute("create table DoNotShowUntil (_id_ string primary key, _unixtime_ float)")
             db.close
+            FileUtils.chmod(0755, filepath)
         end
         filepath
     end
