@@ -164,7 +164,7 @@ require_relative "Notes.rb"
 require_relative "NxBlocks.rb"
 require_relative "NxOndate.rb"
 require_relative "NxMonitors.rb"
-require_relative "NxPatrols.rb"
+require_relative "NxMissions.rb"
 require_relative "NxBackups.rb"
 
 require_relative "Ox1.rb"

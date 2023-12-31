@@ -1,6 +1,0 @@
-
-NxPatrol:
-    - uuid        : String
-    - mikuType    : "NxPatrol"
-    - unixtime    : Float
-    - description : String

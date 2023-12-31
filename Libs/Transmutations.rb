@@ -7,8 +7,8 @@ class Transmutations
             "NxOndate"  => ["NxMonitor" ,"NxTask", "NxBlock"],
             "NxTask"    => ["NxMonitor"],
             "NxMonitor" => ["NxTask", "NxBlock"],
-            "NxBlock" => ["NxTask"],
-            "Wave"      => ["NxPatrol"],
+            "NxBlock"   => ["NxTask"],
+            "Wave"      => ["NxMission"],
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
@@ -74,8 +74,9 @@ class Transmutations
             Cubes::setAttribute(item["uuid"], "mikuType", "NxMonitor")
             return
         end
-        if item["mikuType"] == "Wave" and targetMikuType == "NxPatrol" then
-            Cubes::setAttribute(item["uuid"], "mikuType", "NxPatrol")
+        if item["mikuType"] == "Wave" and targetMikuType == "NxMission" then
+            Cubes::setAttribute(item["uuid"], "mikuType", "NxMission")
+            Cubes::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             item = Cubes::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])

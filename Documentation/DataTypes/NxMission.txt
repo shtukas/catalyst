@@ -1,0 +1,6 @@
+
+NxMission:
+    - uuid              : String
+    - mikuType          : "NxMission"
+    - description       : String
+    - lastDoneUnixtime  : Float

@@ -7,7 +7,7 @@ class ListingCommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | move *  | todotextfile * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack | mission",
             "divings       : anniversaries | ondates | waves | desktop | blocks | monitors | engines",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
@@ -84,6 +84,14 @@ class ListingCommandsAndInterpreters
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
+            return
+        end
+
+        if Interpreting::match("mission", input) then
+            mission = NxMissions::interactivelyIssueNewOrNull()
+            return if mission.nil?
+            puts JSON.pretty_generate(mission)
+            NxBlocks::interactivelySelectBlockAndAddTo(mission["uuid"])
             return
         end
 

@@ -111,12 +111,9 @@ class NxBlocks
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::listingItems().select{|item| !item["interruption"] }
         end
-        if cruiser["description"].include?("patrol") then
-            elements = Cubes::items()
-                        .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
-            return elements.sort_by{|i| i["unixtime"] }
+        if cruiser["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
+            return Cubes::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
         end
-
         Cubes::items()
             .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
@@ -278,7 +275,7 @@ class NxBlocks
 
             puts ""
 
-            puts "top | pile | task | patrol | block | sort | move"
+            puts "top | pile | task | mission | block | sort | move"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -291,11 +288,11 @@ class NxBlocks
                 next
             end
 
-            if input == "patrol" then
-                patrol = NxPatrols::interactivelyIssueNewOrNull()
-                next if patrol.nil?
-                puts JSON.pretty_generate(patrol)
-                Cubes::setAttribute(patrol["uuid"], "parentuuid-0032", item["uuid"])
+            if input == "mission" then
+                mission = NxMissions::interactivelyIssueNewOrNull()
+                next if mission.nil?
+                puts JSON.pretty_generate(mission)
+                Cubes::setAttribute(mission["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 

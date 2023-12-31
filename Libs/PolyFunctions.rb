@@ -105,8 +105,8 @@ class PolyFunctions
         if item["mikuType"] == "NxMonitor" then
             return NxMonitors::toString(item)
         end
-        if item["mikuType"] == "NxPatrol" then
-            return NxPatrols::toString(item)
+        if item["mikuType"] == "NxMission" then
+            return NxMissions::toString(item)
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)

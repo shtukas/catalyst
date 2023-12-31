@@ -40,7 +40,7 @@ class PolyActions
 
         # types in alphabetical order
 
-        if item["mikuType"] == "NxPatrol" then
+        if item["mikuType"] == "NxMission" then
             return
         end
 
@@ -104,8 +104,8 @@ class PolyActions
 
         # order: alphabetical order
 
-        if item["mikuType"] == "NxPatrol" then
-            Cubes::setAttribute(item["uuid"], "unixtime", Time.new.to_i)
+        if item["mikuType"] == "NxMission" then
+            Cubes::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             return
         end
 
@@ -198,7 +198,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxPatrol" then
+        if item["mikuType"] == "NxMission" then
             return
         end
 
@@ -301,7 +301,7 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxPatrol" then
+        if item["mikuType"] == "NxMission" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes::destroy(item["uuid"])
             end
@@ -370,7 +370,7 @@ class PolyActions
     # PolyActions::program(item)
     def self.program(item)
 
-        if item["mikuType"] == "NxPatrol" then
+        if item["mikuType"] == "NxMission" then
             return
         end
 
