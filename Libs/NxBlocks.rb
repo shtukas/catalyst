@@ -33,7 +33,7 @@ class NxBlocks
     def self.toString(item, context = nil)
         icon = NxBlocks::isTopBlock(item) ? "🔺" : "🔸"
         if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
-            count = LucilleCore::locationsAtFolder("#{Config::userHomeDirectory()}/Galaxy/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
+            count = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
             if count then
                 return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} special circumstances: DataHub/Buffer-In"
             end

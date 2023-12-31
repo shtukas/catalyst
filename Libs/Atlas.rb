@@ -11,7 +11,7 @@ class Atlas
     def self.scanroots()
         roots = []
         roots << "#{Config::userHomeDirectory()}/Desktop"
-        roots << "#{Config::userHomeDirectory()}/Galaxy"
+        roots << Config::pathToGalaxy()
         roots
     end
 

@@ -117,8 +117,8 @@ class DataCenter
         }
     end
 
-    # DataCenter::loadData()
-    def self.loadData()
+    # DataCenter::getData()
+    def self.getData()
         if $DATA_CENTER_DATA then
             return $DATA_CENTER_DATA
         end
@@ -131,6 +131,13 @@ class DataCenter
         XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate(data))
         $DATA_CENTER_DATA = data
         data
+    end
+
+    # DataCenter::reloadDataFromScratch()
+    def self.reloadDataFromScratch()
+        data = DataCenter::rebuildDataFromScratch()
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate(data))
+        $DATA_CENTER_DATA = data
     end
 
     # DataCenter::waitUntilQueueIsEmpty()
@@ -210,9 +217,7 @@ Thread.new {
 Thread.new {
     sleep 60
     loop {
-        data = DataCenter::rebuildDataFromScratch()
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate(data))
-        $DATA_CENTER_DATA = data
+        DataCenter::reloadDataFromScratch()
         sleep 1200
     }
 }

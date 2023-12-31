@@ -4,7 +4,7 @@ class NxBackups
 
     # NxBackups::readUuidsFromFile()
     def self.filepath()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/Drives, Passwords, Backups and Lost Procedures.txt"
+        "#{Config::pathToGalaxy()}/DataHub/Drives, Passwords, Backups and Lost Procedures.txt"
     end
 
     # NxBackups::readUuidsFromFile()

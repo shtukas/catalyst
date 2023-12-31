@@ -323,7 +323,7 @@ class CommonUtils
 
     # CommonUtils::interactivelySelectDesktopLocationOrNull() 
     def self.interactivelySelectDesktopLocationOrNull()
-        CommonUtils::interactivelySelectLocationAtSpecifiedDirectoryOrNull(Config::pathToDesktop())
+        CommonUtils::interactivelySelectLocationAtSpecifiedDirectoryOrNull("#{Config::userHomeDirectory()}/Desktop")
     end
 
     # CommonUtils::interactivelySelectDesktopLocation()
@@ -581,7 +581,7 @@ class CommonUtils
 
     # CommonUtils::atlas(pattern)
     def self.atlas(pattern)
-        location = `#{Config::userHomeDirectory()}/Galaxy/Binaries/atlas '#{pattern}'`.strip
+        location = `#{Config::pathToGalaxy()}/Binaries/atlas '#{pattern}'`.strip
         (location != "") ? location : nil
     end
 
@@ -604,7 +604,7 @@ class CommonUtils
     # CommonUtils::uniqueStringLocationUsingPartialGalaxySearchOrNull(uniquestring)
     def self.uniqueStringLocationUsingPartialGalaxySearchOrNull(uniquestring)
         roots = [
-            "#{Config::userHomeDirectory()}/Galaxy"
+            Config::pathToGalaxy()
         ]
         roots.each{|root|
             Find.find(root) do |path|

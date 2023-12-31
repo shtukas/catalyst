@@ -10,7 +10,7 @@ class ListingCommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack",
             "divings       : anniversaries | ondates | waves | desktop | blocks | monitors | engines",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack *",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
     end
 
@@ -47,6 +47,11 @@ class ListingCommandsAndInterpreters
             blocks = NxBlocks::selectZeroOrMore()
             donation = ((item["donation-1752"] || []) + blocks.map{|block| block["uuid"] }).uniq
             Cubes::setAttribute(item["uuid"], "donation-1752", donation)
+            return
+        end
+
+        if Interpreting::match("reload", input) then
+            DataCenter::reloadDataFromScratch()
             return
         end
 
