@@ -57,9 +57,14 @@ class Config
 
     # Config::pathToCatalystDataRepository()
     def self.pathToCatalystDataRepository()
-        if File.exist?("/Users/Shared/Galaxy/DataHub/catalyst") then
-            return "/Users/Shared/Galaxy/DataHub/catalyst"
+        dir1 = "/Users/Shared/Galaxy/DataHub/catalyst"
+        if File.exist?(dir1) then
+            return dir1
         end
-        "#{Config::pathToCatalystDataRepository()}"
+        dir2 = "#{Config::userHomeDirectory()}/x-space/Dx004/DataHub/catalyst"
+        if File.exist?(dir2) then
+            return dir2
+        end
+        raise "(Error 3D436606-CBE2-4B77-852D-02E657CAFC54)"
     end
 end
