@@ -29,13 +29,19 @@ class NxBlocks
     # ------------------
     # Data
 
+    # NxBlocks::bufferInCardinal()
+    def self.bufferInCardinal()
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Buffer-In")
+            .select{|location| !File.basename(location).start_with?(".") }
+            .size
+    end
+
     # NxBlocks::toString(item, context = nil)
     def self.toString(item, context = nil)
         icon = NxBlocks::isTopBlock(item) ? "🔺" : "🔸"
-        if item["uuid"] == "60949c4f-4e1f-45d3-acb4-3b6c718ac1ed" then # orphaned tasks (automatic)
-            count = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Buffer-In").select{|location| !File.basename(location).start_with?(".") }
-            if count then
-                return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} special circumstances: DataHub/Buffer-In"
+        if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+            if NxBlocks::bufferInCardinal() > 0 then
+                return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} special circumstances of orphaned tasks (automatic): DataHub/Buffer-In"
             end
         end
         
@@ -104,6 +110,9 @@ class NxBlocks
     # NxBlocks::elementsInNaturalCruiseOrder(cruiser)
     def self.elementsInNaturalCruiseOrder(cruiser)
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+            if NxBlocks::bufferInCardinal() > 0 then
+                return []
+            end
             return Cubes::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
