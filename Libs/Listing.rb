@@ -58,7 +58,7 @@ class Listing
     # Listing::listable(item)
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
-        return false if !DoNotShowUntil::isVisible(item)
+        return false if !DoNotShowUntil2::isVisible(item)
         true
     end
 
@@ -66,7 +66,7 @@ class Listing
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
-        return false if !DoNotShowUntil::isVisible(item)
+        return false if !DoNotShowUntil2::isVisible(item)
         return false if TmpSkip1::isSkipped(item)
         true
     end
@@ -82,9 +82,9 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         positionstr = Ox1::activePositionOrNull(item) ? " stack".green : "      "
         tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
-        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 
-        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
 
@@ -104,9 +104,9 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
-        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
 
-        if !DoNotShowUntil::isVisible(item) and !NxBalls::itemIsActive(item) then
+        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
 

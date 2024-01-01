@@ -8,7 +8,7 @@ class Dives
             system('clear')
 
             puts ""
-            items = items.select{|item| Cubes::itemOrNull(item["uuid"]) }
+            items = items.select{|item| Cubes2::itemOrNull(item["uuid"]) }
 
             store = ItemStore.new()
 

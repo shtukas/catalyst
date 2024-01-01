@@ -89,17 +89,17 @@ class TxCores
     def self.coreDayCompletionRatio(core)
         return 0 if core.nil?
         if core["type"] == "weekly-hours" then
-            doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank::getValueAtDate(core["uuid"], date) }
+            doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }
             doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
             return doneSinceLastSaturdayInHours.to_f/core["hours"] if doneSinceLastSaturdayInHours >= core["hours"]
             dailyHours = core["hours"].to_f/7
-            return Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
+            return Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
         end
         if core["type"] == "daily-hours" then
             dailyHours = core["hours"]
-            hoursDoneToday = Bank::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
+            hoursDoneToday = Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
             x1 = hoursDoneToday.to_f/dailyHours
-            x2 = Bank::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
+            x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
             return [0.8*x1 + 0.2*x2, x1].max
         end
         if core["type"] == "booster" then
@@ -108,7 +108,7 @@ class TxCores
             deltaXToNow = [CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()), core["endunixtime"]].min - core["startunixtime"]
             deltaXTotal = core["endunixtime"] - core["startunixtime"]
             idealHours = core["hours"]*(deltaXToNow.to_f/deltaXTotal)
-            hoursDone = Bank::getValue(core["uuid"]).to_f/3600
+            hoursDone = Bank2::getValue(core["uuid"]).to_f/3600
             return hoursDone.to_f/idealHours
         end
         if core["type"] == "blocking-until-done" then
@@ -159,7 +159,7 @@ class TxCores
             puts "item: #{PolyFunctions::toString(item)}"
             puts "core of type 'blocking-until-done' is deprecated, please make another one"
             core = TxCores::interactivelyMakeNew()
-            Cubes::setAttribute(item["uuid"], "engine-0020", core)
+            Cubes2::setAttribute(item["uuid"], "engine-0020", core)
             item["engine-0020"] = core
         end
         " #{TxCores::suffix1(item["engine-0020"])}"

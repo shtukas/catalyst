@@ -1,7 +1,7 @@
 
-class DoNotShowUntil
+class DoNotShowUntil1
 
-    # DoNotShowUntil::instanceFilepath()
+    # DoNotShowUntil1::instanceFilepath()
     def self.instanceFilepath()
         filepath = "#{Config::pathToCatalystDataRepository()}/DoNotShowUntil/DoNotShowUntil-#{Config::thisInstanceId()}.sqlite3"
         if !File.exist?(filepath) then
@@ -15,17 +15,15 @@ class DoNotShowUntil
         filepath
     end
 
-    # DoNotShowUntil::filepaths()
+    # DoNotShowUntil1::filepaths()
     def self.filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 
-    # DoNotShowUntil::getUnixtimeOrNull(id)
+    # DoNotShowUntil1::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
-        return $DATA_CENTER_DATA["doNotShowUntil"][id]
-
-        DoNotShowUntil::filepaths()
+        DoNotShowUntil1::filepaths()
             .map{|filepath|
                 unixtime = 0
                 db = SQLite3::Database.new(filepath)
@@ -43,25 +41,13 @@ class DoNotShowUntil
         unixtime
     end
 
-    # DoNotShowUntil::setUnixtime(id, unixtime)
+    # DoNotShowUntil1::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
-        # item = Cubes::itemOrNull(id)        # old
-        item = $DATA_CENTER_DATA["items"][id] # new
-
+        item = Cubes1::itemOrNull(id)
         if item then
             Ox1::detach(item)
         end
-
-        $DATA_CENTER_DATA["doNotShowUntil"][id] = unixtime
-        $DATA_CENTER_UPDATE_QUEUE << {
-            "type"     => "do-not-show-until",
-            "id"       => id,
-            "unixtime" => unixtime
-        }
-
-        return
-
-        filepath = DoNotShowUntil::instanceFilepath()
+        filepath = DoNotShowUntil1::instanceFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -74,14 +60,14 @@ class DoNotShowUntil
         puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}".yellow
     end
 
-    # DoNotShowUntil::isVisible(item)
+    # DoNotShowUntil1::isVisible(item)
     def self.isVisible(item)
-        Time.new.to_i >= (DoNotShowUntil::getUnixtimeOrNull(item["uuid"]) || 0)
+        Time.new.to_i >= (DoNotShowUntil1::getUnixtimeOrNull(item["uuid"]) || 0)
     end
 
-    # DoNotShowUntil::suffixString(item)
+    # DoNotShowUntil1::suffixString(item)
     def self.suffixString(item)
-        unixtime = (DoNotShowUntil::getUnixtimeOrNull(item["uuid"]) || 0)
+        unixtime = (DoNotShowUntil1::getUnixtimeOrNull(item["uuid"]) || 0)
         return "" if unixtime.nil?
         return "" if Time.new.to_i > unixtime
         " (not shown until: #{Time.at(unixtime).to_s})"

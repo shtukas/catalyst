@@ -25,15 +25,21 @@ NxDataBankRecord {
 We emit updates that are kept in memory and written to disk asynchronously.
 
 {
+    "type"     : "item-init"
+    "uuid"     : String
+    "mikuType" : Value
+}
+
+{
     "type"            : "item-attribute-update"
-    "itemuuid"        : String
+    "iuuid"           : String
     "attribute-name"  : String
     "attribute-value" : Value
 }
 
 {
-    "type"     : "item-destroy"
-    "itemuuid" : String
+    "type" : "item-destroy"
+    "uuid" : String
 }
 
 {
@@ -43,7 +49,7 @@ We emit updates that are kept in memory and written to disk asynchronously.
 }
 
 {
-    "type"  : "bank-record"
+    "type"  : "bank-put"
     "id"    : String
     "date"  : Integer
     "value" : Float
@@ -54,32 +60,32 @@ We emit updates that are kept in memory and written to disk asynchronously.
 $DATA_CENTER_DATA = nil
 $DATA_CENTER_UPDATE_QUEUE = []
 
-class DataCenter
+class CoreData
 
-    # DataCenter::version()
+    # CoreData::version()
     def self.version()
         "Mercury"
     end
 
-    # DataCenter::getDataFromCacheOrNull()
+    # CoreData::getDataFromCacheOrNull()
     def self.getDataFromCacheOrNull()
-        data = XCache::getOrNull("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}")
+        data = XCache::getOrNull("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}")
         return nil if data.nil?
         JSON.parse(data)
     end
 
-    # DataCenter::rebuildDataFromScratch()
+    # CoreData::rebuildDataFromScratch()
     def self.rebuildDataFromScratch()
         itemsmap = {}
         Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
-            item = Cubes::filepathToItem(path)
+            item = Cubes1::filepathToItem(path)
             itemsmap[item["uuid"]] = item
         end
 
         doNotShowUntil = {}
-        DoNotShowUntil::filepaths()
+        DoNotShowUntil1::filepaths()
             .map{|filepath|
                 unixtime = 0
                 db = SQLite3::Database.new(filepath)
@@ -93,7 +99,7 @@ class DataCenter
             }
 
         bank = []
-        Bank::filepaths()
+        Bank1::filepaths()
             .map{|filepath|
                 value = 0
                 db = SQLite3::Database.new(filepath)
@@ -117,35 +123,176 @@ class DataCenter
         }
     end
 
-    # DataCenter::getData()
+    # CoreData::getData()
     def self.getData()
         if $DATA_CENTER_DATA then
             return $DATA_CENTER_DATA
         end
-        data = DataCenter::getDataFromCacheOrNull()
+        data = CoreData::getDataFromCacheOrNull()
         if data then
             $DATA_CENTER_DATA = data
             return data
         end
-        data = DataCenter::rebuildDataFromScratch()
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate(data))
+        data = CoreData::rebuildDataFromScratch()
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate(data))
         $DATA_CENTER_DATA = data
         data
     end
 
-    # DataCenter::reloadDataFromScratch()
+    # CoreData::reloadDataFromScratch()
     def self.reloadDataFromScratch()
-        data = DataCenter::rebuildDataFromScratch()
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate(data))
+        data = CoreData::rebuildDataFromScratch()
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate(data))
         $DATA_CENTER_DATA = data
     end
 
-    # DataCenter::waitUntilQueueIsEmpty()
+    # CoreData::waitUntilQueueIsEmpty()
     def self.waitUntilQueueIsEmpty()
         loop {
             break if $DATA_CENTER_UPDATE_QUEUE.empty?
             sleep 1
         }
+    end
+end
+
+class Cubes2
+
+    # Cubes2::itemInit(uuid, mikuType)
+    def self.itemInit(uuid, mikuType)
+        $DATA_CENTER_DATA["items"][uuid] = {
+            "uuid" => uuid,
+            "mikuType" => mikuType
+        }
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"     => "item-init",
+            "uuid"     => uuid,
+            "mikuType" => attrvalue
+        }
+    end
+
+    # Cubes2::itemOrNull(uuid)
+    def self.itemOrNull(uuid)
+        $DATA_CENTER_DATA["items"][uuid]
+    end
+
+    # Cubes2::setAttribute(uuid, attrname, attrvalue)
+    def self.setAttribute(uuid, attrname, attrvalue)
+        if $DATA_CENTER_DATA["items"][uuid].nil? then
+            raise "(error: 417a064c-d89b-4d20-ac96-529db96d2c23); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
+        end
+        $DATA_CENTER_DATA["items"][uuid][attrname] = attrvalue
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"            => "item-attribute-update",
+            "iuuid"           => uuid,
+            "attribute-name"  => attrname,
+            "attribute-value" => attrvalue
+        }
+        nil
+    end
+
+    # Cubes2::destroy(uuid)
+    def self.destroy(uuid)
+        $DATA_CENTER_DATA["items"].delete(uuid)
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type" => "item-destroy",
+            "uuid" => uuid,
+        }
+    end
+
+    # Cubes2::items()
+    def self.items()
+        $DATA_CENTER_DATA["items"].values
+    end
+
+   # Cubes2::mikuType(mikuType)
+    def self.mikuType(mikuType)
+        $DATA_CENTER_DATA["items"].values.select{|item| item["mikuType"] == mikuType }
+    end
+end
+
+class DoNotShowUntil2
+
+    # DoNotShowUntil2::getUnixtimeOrNull(id)
+    def self.getUnixtimeOrNull(id)
+        $DATA_CENTER_DATA["doNotShowUntil"][id]
+    end
+
+    # DoNotShowUntil2::setUnixtime(id, unixtime)
+    def self.setUnixtime(id, unixtime)
+        item = $DATA_CENTER_DATA["items"][id] # new
+
+        if item then
+            Ox1::detach(item)
+        end
+
+        $DATA_CENTER_DATA["doNotShowUntil"][id] = unixtime
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"     => "do-not-show-until",
+            "id"       => id,
+            "unixtime" => unixtime
+        }
+    end
+
+    # DoNotShowUntil2::isVisible(item)
+    def self.isVisible(item)
+        Time.new.to_i >= (DoNotShowUntil2::getUnixtimeOrNull(item["uuid"]) || 0)
+    end
+
+    # DoNotShowUntil2::suffixString(item)
+    def self.suffixString(item)
+        unixtime = (DoNotShowUntil2::getUnixtimeOrNull(item["uuid"]) || 0)
+        return "" if unixtime.nil?
+        return "" if Time.new.to_i > unixtime
+        " (not shown until: #{Time.at(unixtime).to_s})"
+    end
+end
+
+class Bank2
+
+    # Bank2::put(uuid, value)
+    def self.put(uuid, value)
+        $DATA_CENTER_DATA["bank"] << {
+            "id"    => uuid,
+            "date"  => CommonUtils::today(),
+            "value" => value
+        }
+        $DATA_CENTER_UPDATE_QUEUE << {
+            "type"  => "bank-put",
+            "id"    => uuid,
+            "date"  => CommonUtils::today(),
+            "value" => value
+        }
+    end
+
+    # Bank2::getValueAtDate(uuid, date)
+    def self.getValueAtDate(uuid, date)
+        $DATA_CENTER_DATA["bank"]
+            .select{|record| record["id"] == uuid }
+            .select{|record| record["date"] == date }
+            .map{|record| record["value"] }
+            .inject(0, :+)
+    end
+
+    # Bank2::getValue(uuid)
+    def self.getValue(uuid)
+        $DATA_CENTER_DATA["bank"]
+            .select{|record| record["id"] == uuid }
+            .map{|record| record["value"] }
+            .inject(0, :+)
+    end
+
+    # Bank2::averageHoursPerDayOverThePastNDays(uuid, n)
+    def self.averageHoursPerDayOverThePastNDays(uuid, n)
+        range = (0..n)
+        totalInSeconds = range.map{|indx| Bank2::getValueAtDate(uuid, CommonUtils::nDaysInTheFuture(-indx)) }.inject(0, :+)
+        totalInHours = totalInSeconds.to_f/3600
+        average = totalInHours.to_f/(n+1)
+        average
+    end
+
+    # Bank2::recoveredAverageHoursPerDay(uuid)
+    def self.recoveredAverageHoursPerDay(uuid)
+        (0..6).map{|n| Bank2::averageHoursPerDayOverThePastNDays(uuid, n) }.max
     end
 end
 
@@ -157,67 +304,40 @@ Thread.new {
             next
         end
         #puts JSON.pretty_generate(update).yellow
+        if update["type"] == "item-init" then
+            uuid      = update["uuid"]
+            mikuType  = update["mikuType"]
+            Cubes1::itemInit(uuid, mikuType)
+        end
         if update["type"] == "item-attribute-update" then
-            uuid      = update["itemuuid"]
+            uuid      = update["iuuid"]
             attrname  = update["attribute-name"]
             attrvalue = update["attribute-value"]
-
-            filepath = Cubes::existingFilepathOrNull(uuid)
-            if filepath.nil? then
-                raise "(error: b2a27beb-7b23-4077-af2f-ba408ed37748); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
-            end
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
-            db.close
-
-            Cubes::relocate(filepath)
+            Cubes1::setAttribute(uuid, attrname, attrvalue)
         end
         if update["type"] == "item-destroy" then
-            uuid = update["itemuuid"]
-
-            filepath = Cubes::existingFilepathOrNull(uuid)
-            next if filepath.nil?
-            FileUtils.rm(filepath)
+            uuid = update["uuid"]
+            Cubes1::destroy(uuid)
         end
         if update["type"] == "do-not-show-until" then
             id = update["id"]
             unixtime = update["unixtime"]
-
-            filepath = DoNotShowUntil::instanceFilepath()
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute "delete from DoNotShowUntil where _id_=?", [id]
-            db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [id, unixtime]
-            db.close
-
-            XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", unixtime)
+            DoNotShowUntil1::setUnixtime(id, unixtime)
         end
-        if update["type"] == "bank-record" then
+        if update["type"] == "bank-put" then
             id = update["id"]
             date = update["date"]
             value = update["value"]
-
-            filepath = Bank::instanceFilepath()
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute "insert into Bank (_recorduuid_, _id_, _date_, _value_) values (?, ?, ?, ?)", [SecureRandom.uuid, id, date, value]
-            db.close
+            Bank1::put(id, date, value)
         end
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{DataCenter::version()}", JSON.generate($DATA_CENTER_DATA))
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate($DATA_CENTER_DATA))
     }
 }
 
 Thread.new {
     sleep 60
     loop {
-        DataCenter::reloadDataFromScratch()
+        CoreData::reloadDataFromScratch()
         sleep 1200
     }
 }

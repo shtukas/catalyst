@@ -6,22 +6,22 @@ class NxMonitors
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Cubes::itemInit(uuid, "NxMonitor")
+        Cubes2::itemInit(uuid, "NxMonitor")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "field11", coredataref)
+        Cubes2::itemOrNull(uuid)
     end
 
     # NxMonitors::issueNew(uuid, description)
     def self.issueNew(uuid, description)
-        Cubes::itemInit(uuid, "NxMonitor")
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemInit(uuid, "NxMonitor")
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::itemOrNull(uuid)
     end
 
     # ------------------
@@ -36,7 +36,7 @@ class NxMonitors
             if location.nil? then
                 puts "Could not resolve this todotextfile: #{todotextfile}"
                 if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
-                    Cubes::setAttribute(item["uuid"], "todotextfile-1312", nil)
+                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", nil)
                 end
                 return
             end
@@ -54,6 +54,6 @@ class NxMonitors
 
     # NxMonitors::listingItems()
     def self.listingItems()
-        Cubes::mikuType("NxMonitor")
+        Cubes2::mikuType("NxMonitor")
     end
 end

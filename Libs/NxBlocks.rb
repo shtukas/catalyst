@@ -3,12 +3,12 @@ class NxBlocks
 
     # NxBlocks::issueWithInit(uuid, description, engine)
     def self.issueWithInit(uuid, description, engine)
-        Cubes::itemInit(uuid, "NxBlock")
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "engine-0020", engine)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemInit(uuid, "NxBlock")
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "engine-0020", engine)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::itemOrNull(uuid)
     end
 
     # NxBlocks::interactivelyIssueNewOrNull2(uuid)
@@ -73,12 +73,12 @@ class NxBlocks
 
     # NxBlocks::isTopBlock(item)
     def self.isTopBlock(item)
-        item["parentuuid-0032"].nil? or Cubes::itemOrNull(item["parentuuid-0032"]).nil? 
+        item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil? 
     end
 
     # NxBlocks::topBlocks()
     def self.topBlocks()
-        Cubes::mikuType("NxBlock")
+        Cubes2::mikuType("NxBlock")
             .select{|item| NxBlocks::isTopBlock(item) }
     end
 
@@ -91,11 +91,11 @@ class NxBlocks
 
     # NxBlocks::listingItems()
     def self.listingItems()
-        items0 = Cubes::mikuType("NxBlock")
+        items0 = Cubes2::mikuType("NxBlock")
                     .select{|block| block["engine-0020"]["type"] == "booster" }
                     .select{|block| block["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
 
-        items1 = Cubes::mikuType("NxBlock")
+        items1 = Cubes2::mikuType("NxBlock")
                     .select{|block| block["engine-0020"]["type"] == "booster" }
                     .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
                     .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
@@ -113,7 +113,7 @@ class NxBlocks
             if NxBlocks::bufferInCardinal() > 0 then
                 return []
             end
-            return Cubes::mikuType("NxTask")
+            return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
@@ -121,9 +121,9 @@ class NxBlocks
             return Waves::listingItems().select{|item| !item["interruption"] }
         end
         if cruiser["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
-            return Cubes::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
+            return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
         end
-        Cubes::items()
+        Cubes2::items()
             .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
@@ -131,7 +131,7 @@ class NxBlocks
     # NxBlocks::elementsForPrefix(cruiser)
     def self.elementsForPrefix(cruiser)
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
-            return Cubes::mikuType("NxTask")
+            return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
@@ -139,7 +139,7 @@ class NxBlocks
             return Waves::listingItems().select{|item| !item["interruption"] }
         end
 
-        items = Cubes::items()
+        items = Cubes2::items()
                 .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
 
         i1, i2 = items.partition{|item| item["mikuType"] == "NxBlock" }
@@ -174,7 +174,7 @@ class NxBlocks
 
     # NxBlocks::selectZeroOrMore()
     def self.selectZeroOrMore()
-        items = Cubes::mikuType("NxBlock")
+        items = Cubes2::mikuType("NxBlock")
                     .sort_by{|item| NxBlocks::dayCompletionRatio(item) }
         selected, _ = LucilleCore::selectZeroOrMore("item", [], items, lambda{|item| NxBlocks::toString(item) })
         selected
@@ -187,7 +187,7 @@ class NxBlocks
         block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
         return if block.nil?
         selected.each{|item|
-            Cubes::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
+            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
         }
     end
 
@@ -202,7 +202,7 @@ class NxBlocks
             puts "item: #{PolyFunctions::toString(item)}"
             puts "core of type 'content-driven' is deprecated, please make another one"
             core = TxCores::interactivelyMakeNew()
-            Cubes::setAttribute(item["uuid"], "engine-0020", core)
+            Cubes2::setAttribute(item["uuid"], "engine-0020", core)
             item["engine-0020"] = core
         end
         TxCores::coreDayCompletionRatio(item["engine-0020"])
@@ -215,7 +215,7 @@ class NxBlocks
     def self.interactivelySelectBlockAndAddTo(itemuuid)
         block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
         return if block.nil?
-        Cubes::setAttribute(itemuuid, "parentuuid-0032", block["uuid"])
+        Cubes2::setAttribute(itemuuid, "parentuuid-0032", block["uuid"])
     end
 
     # NxBlocks::access(item)
@@ -227,7 +227,7 @@ class NxBlocks
             if location.nil? then
                 puts "Could not resolve this todotextfile: #{todotextfile}"
                 if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
-                    Cubes::setAttribute(item["uuid"], "todotextfile-1312", nil)
+                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", nil)
                 end
                 return
             end
@@ -255,8 +255,8 @@ class NxBlocks
             .each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
-                Cubes::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                Cubes::setAttribute(task["uuid"], "global-positioning", NxBlocks::topPosition(item) - 1)
+                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes2::setAttribute(task["uuid"], "global-positioning", NxBlocks::topPosition(item) - 1)
             }
     end
 
@@ -264,7 +264,7 @@ class NxBlocks
     def self.program1(item)
         loop {
 
-            item = Cubes::itemOrNull(item["uuid"])
+            item = Cubes2::itemOrNull(item["uuid"])
             return if item.nil?
 
             system("clear")
@@ -293,7 +293,7 @@ class NxBlocks
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Cubes::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -301,7 +301,7 @@ class NxBlocks
                 mission = NxMissions::interactivelyIssueNewOrNull()
                 next if mission.nil?
                 puts JSON.pretty_generate(mission)
-                Cubes::setAttribute(mission["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes2::setAttribute(mission["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -309,7 +309,7 @@ class NxBlocks
                 block = NxBlocks::interactivelyIssueNewOrNull()
                 next if block.nil?
                 puts JSON.pretty_generate(block)
-                Cubes::setAttribute(block["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes2::setAttribute(block["uuid"], "parentuuid-0032", item["uuid"])
                 next
             end
 
@@ -318,8 +318,8 @@ class NxBlocks
                 next if line == ""
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
-                Cubes::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                Cubes::setAttribute(task["uuid"], "global-positioning", NxBlocks::topPosition(item) - 1)
+                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                Cubes2::setAttribute(task["uuid"], "global-positioning", NxBlocks::topPosition(item) - 1)
                 next
             end
 
@@ -331,7 +331,7 @@ class NxBlocks
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("item", [], NxBlocks::elementsInNaturalCruiseOrder(item), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Cubes::setAttribute(i["uuid"], "global-positioning", NxBlocks::topPosition(item) - 1)
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxBlocks::topPosition(item) - 1)
                 }
                 next
             end
@@ -385,6 +385,6 @@ class NxBlocks
 
     # NxBlocks::done(item)
     def self.done(item)
-        DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+        DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
     end
 end

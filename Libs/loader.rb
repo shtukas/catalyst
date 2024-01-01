@@ -133,8 +133,8 @@ require_relative "CoreDataRefStrings.rb"
 require_relative "Cubes.rb"
 
 require_relative "DoNotShowUntil.rb"
-# DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-# DoNotShowUntil::isVisible(item)
+# DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+# DoNotShowUntil1::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"

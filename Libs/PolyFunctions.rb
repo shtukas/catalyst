@@ -14,7 +14,7 @@ class PolyFunctions
         # Types
 
         if item["mikuType"] == "NxStrat" then
-            bottom = Cubes::itemOrNull(item["bottom"])
+            bottom = Cubes2::itemOrNull(item["bottom"])
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
@@ -29,20 +29,20 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxMisson" then
-            block = Cubes::itemOrNull("ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34") # block: missions (automatic)
+            block = Cubes2::itemOrNull("ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34") # block: missions (automatic)
             accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
         end
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                block = Cubes::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3") # orphaned tasks (automatic)
+                block = Cubes2::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3") # orphaned tasks (automatic)
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
             end
         end
 
         if item["mikuType"] == "Wave" then
             if !item["interruption"] then
-                block = Cubes::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75") # waves !interruption (automatic)
+                block = Cubes2::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75") # waves !interruption (automatic)
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
             end
         end
@@ -57,7 +57,7 @@ class PolyFunctions
         end
 
         if item["parentuuid-0032"] then
-            parent = Cubes::itemOrNull(item["parentuuid-0032"])
+            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
@@ -65,7 +65,7 @@ class PolyFunctions
 
         if item["donation-1752"] then
             item["donation-1752"].each {|targetuuid|
-                target = Cubes::itemOrNull(targetuuid)
+                target = Cubes2::itemOrNull(targetuuid)
                 if target then
                     accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
                 end

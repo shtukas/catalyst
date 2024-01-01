@@ -26,17 +26,17 @@ class NxTasks
         return nil if description == ""
 
         uuid = SecureRandom.uuid
-        Cubes::itemInit(uuid, "NxTask")
+        Cubes2::itemInit(uuid, "NxTask")
 
         coredataref, todotextfile = NxTasks::contentMaker(uuid)
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
-        Cubes::setAttribute(uuid, "todotextfile-1312", todotextfile)
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "field11", coredataref)
+        Cubes2::setAttribute(uuid, "todotextfile-1312", todotextfile)
 
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemOrNull(uuid)
     end
 
     # NxTasks::urlToTask(url)
@@ -44,17 +44,17 @@ class NxTasks
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
 
-        Cubes::itemInit(uuid, "NxTask")
+        Cubes2::itemInit(uuid, "NxTask")
 
-        nhash = Cubes::putBlob(uuid, url)
+        nhash = Cubes1::putBlob(uuid, url)
         coredataref = "url:#{nhash}"
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "field11", coredataref)
 
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemOrNull(uuid)
     end
 
     # NxTasks::bufferInLocationToTask(location)
@@ -62,26 +62,26 @@ class NxTasks
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
 
-        Cubes::itemInit(uuid, "NxTask")
+        Cubes2::itemInit(uuid, "NxTask")
 
         coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
 
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "field11", coredataref)
 
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask1(uuid, description)
     def self.descriptionToTask1(uuid, description)
-        Cubes::itemInit(uuid, "NxTask")
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes::setAttribute(uuid, "description", description)
+        Cubes2::itemInit(uuid, "NxTask")
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "description", description)
 
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemOrNull(uuid)
     end
 
     # --------------------------------------------------
@@ -100,14 +100,14 @@ class NxTasks
 
     # NxTasks::engined()
     def self.engined()
-        Cubes::mikuType("NxTask")
+        Cubes2::mikuType("NxTask")
             .select{|item| item["engine-0020"] }
     end
 
     # NxTasks::getParentOrNull(item)
     def self.getParentOrNull(item)
         return nil if item["parentuuid-0032"].nil?
-        Cubes::itemOrNull(item["parentuuid-0032"])
+        Cubes2::itemOrNull(item["parentuuid-0032"])
     end
 
     # NxTasks::isOrphan(item)
@@ -127,7 +127,7 @@ class NxTasks
             if location.nil? then
                 puts "Could not resolve this todotextfile: #{todotextfile}"
                 if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
-                    Cubes::setAttribute(item["uuid"], "todotextfile-1312", nil)
+                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", nil)
                 end
                 return
             end
@@ -140,7 +140,7 @@ class NxTasks
 
     # NxTasks::fsck()
     def self.fsck()
-        Cubes::mikuType("NxTask").each{|item|
+        Cubes2::mikuType("NxTask").each{|item|
             CoreDataRefStrings::fsck(item)
         }
     end

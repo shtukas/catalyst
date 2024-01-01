@@ -5,7 +5,7 @@ class OpenCycles
         reference = SecureRandom.hex # both the reference and the uuid of the monitor
         FileSystemReferences::issueCfsrFileAtDirectory(location, reference)
         monitor = NxMonitors::issueNew(SecureRandom.uuid, "(auto) #{File.basename(location)}")
-        Cubes::setAttribute(monitor["uuid"], "cfsr-20231213", reference)
+        Cubes2::setAttribute(monitor["uuid"], "cfsr-20231213", reference)
     end
 
     # OpenCycles::sync()
@@ -20,7 +20,7 @@ class OpenCycles
                 OpenCycles::issueReferenceAndMonitorForThisLocation(location)
             else
                 reference = IO.read(cfsrfilepath).lines.first.strip
-                item = Cubes::items().select{|item| item["cfsr-20231213"] == reference }.first
+                item = Cubes2::items().select{|item| item["cfsr-20231213"] == reference }.first
                 if !item then
                     puts "I found a csfr file in #{location.green}, but not the corresponding catalyst item. I am going to delete the reference, and create a new one"
                     LucilleCore::pressEnterToContinue()

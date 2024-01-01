@@ -7,13 +7,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-        Cubes::itemInit(uuid, "NxOndate")
+        Cubes2::itemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", datetime)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", datetime)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "field11", coredataref)
+        Cubes2::itemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueAtDatetimeNewOrNull(datetime)
@@ -21,13 +21,13 @@ class NxOndates
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Cubes::itemInit(uuid, "NxOndate")
+        Cubes2::itemInit(uuid, "NxOndate")
         coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-        Cubes::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes::setAttribute(uuid, "datetime", datetime)
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "field11", coredataref)
-        Cubes::itemOrNull(uuid)
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", datetime)
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "field11", coredataref)
+        Cubes2::itemOrNull(uuid)
     end
 
     # ------------------
@@ -40,7 +40,7 @@ class NxOndates
 
     # NxOndates::listingItems()
     def self.listingItems()
-        Cubes::mikuType("NxOndate")
+        Cubes2::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
     end
 

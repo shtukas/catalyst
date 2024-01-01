@@ -6,10 +6,10 @@ class NxMissions
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Cubes::itemInit(uuid, "NxMission")
-        Cubes::setAttribute(uuid, "description", description)
-        Cubes::setAttribute(uuid, "lastDoneUnixtime", Time.new.to_i)
-        Cubes::itemOrNull(uuid)
+        Cubes2::itemInit(uuid, "NxMission")
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "lastDoneUnixtime", Time.new.to_i)
+        Cubes2::itemOrNull(uuid)
     end
 
     # ------------------

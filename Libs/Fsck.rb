@@ -32,18 +32,18 @@ class Fsck
 
     # Fsck::runAll()
     def self.runAll()
-        Cubes::items().each{|item|
+        Cubes2::items().each{|item|
             puts JSON.pretty_generate(item)
             if item["mikuType"] == "Nx101" then
-                Cubes::destroy(item["uuid"])
+                Cubes2::destroy(item["uuid"])
                 next
             end
             if item["mikuType"] == "DxStackItem" then
-                Cubes::destroy(item["uuid"])
+                Cubes2::destroy(item["uuid"])
                 next
             end
             if item["mikuType"] == "NxAvaldi" then
-                Cubes::destroy(item["uuid"])
+                Cubes2::destroy(item["uuid"])
                 next
             end
             if item["field11"] then

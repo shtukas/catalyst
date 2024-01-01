@@ -1,11 +1,11 @@
 # encoding: UTF-8
 
-class Cubes
+class Cubes1
 
     # ----------------------------------------
     # File Management (1)
 
-    # Cubes::itemInit(uuid, mikuType)
+    # Cubes1::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)
         filepath = "/tmp/#{SecureRandom.hex}"
         puts "> create item file: #{filepath}".yellow
@@ -17,14 +17,10 @@ class Cubes
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "uuid", JSON.generate(uuid)]
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", "mikuType", JSON.generate(mikuType)]
         db.close
-        Cubes::relocate(filepath)
-        $DATA_CENTER_DATA["items"][uuid] = {
-            "uuid" => uuid,
-            "mikuType" => mikuType
-        }
+        Cubes1::relocate(filepath)
     end
 
-    # Cubes::existingFilepathOrNull(uuid)
+    # Cubes1::existingFilepathOrNull(uuid)
     def self.existingFilepathOrNull(uuid)
         filepath = XCache::getOrNull("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}")
         if filepath and File.exist?(filepath) then
@@ -35,7 +31,7 @@ class Cubes
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Cubes")
             .select{|location| location[-14, 14] == ".catalyst-cube" }
             .each{|filepath|
-                u1 = Cubes::uuidFromFile(filepath)
+                u1 = Cubes1::uuidFromFile(filepath)
                 XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{u1}", filepath)
                 if u1 == uuid then
                     return filepath
@@ -45,7 +41,7 @@ class Cubes
         nil
     end
 
-    # Cubes::relocate(filepath1)
+    # Cubes1::relocate(filepath1)
     def self.relocate(filepath1)
         folderpath2 = "#{Config::pathToCatalystDataRepository()}/Cubes"
         filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
@@ -54,12 +50,12 @@ class Cubes
         #puts "filepath1: #{filepath1}".yellow
         #puts "filepath2: #{filepath2}".yellow
         FileUtils.mv(filepath1, filepath2)
-        uuid = Cubes::uuidFromFile(filepath2)
+        uuid = Cubes1::uuidFromFile(filepath2)
         XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", filepath2)
         filepath2
     end
 
-    # Cubes::merge(filepath1, filepath2)
+    # Cubes1::merge(filepath1, filepath2)
     def self.merge(filepath1, filepath2)
         filepath = "/tmp/#{SecureRandom.hex}"
         #puts "> merging files:".yellow
@@ -97,10 +93,10 @@ class Cubes
 
         FileUtils.rm(filepath1)
         FileUtils.rm(filepath2)
-        Cubes::relocate(filepath)
+        Cubes1::relocate(filepath)
     end
 
-    # Cubes::maintenance()
+    # Cubes1::maintenance()
     def self.maintenance()
         filepaths = []
         Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
@@ -110,7 +106,7 @@ class Cubes
         end
         mapping = {}
         filepaths.each{|filepath|
-            uuid = Cubes::uuidFromFile(filepath)
+            uuid = Cubes1::uuidFromFile(filepath)
             mapping[uuid] = (mapping[uuid] || []) + [filepath]
         }
         mapping.each{|uuid, filepaths|
@@ -119,14 +115,14 @@ class Cubes
                 raise "(error: ab8e-9926a61562b4) this should not happen: uuid: #{uuid}, filepaths: #{filepaths.join(", ")}"
             end
             filepath1, filepath2 = filepaths
-            Cubes::merge(filepath1, filepath2)
+            Cubes1::merge(filepath1, filepath2)
         }
     end
 
     # ----------------------------------------
     # File Management (2)
 
-    # Cubes::uuidFromFile(filepath)
+    # Cubes1::uuidFromFile(filepath)
     def self.uuidFromFile(filepath)
         if !File.exist?(filepath) then
             raise "(error: 1fe836ef-01a9-447e-87ee-11c3dcb9128f); filepath: #{filepath}"
@@ -146,7 +142,7 @@ class Cubes
         uuid
     end
 
-    # Cubes::filepathToItem(filepath)
+    # Cubes1::filepathToItem(filepath)
     def self.filepathToItem(filepath)
         raise "(error: 20013646-0111-4434-9d8f-9c90baca90a6)" if !File.exist?(filepath)
         return nil if filepath.nil?
@@ -166,31 +162,16 @@ class Cubes
     # ----------------------------------------
     # Items
 
-    # Cubes::itemOrNull(uuid)
+    # Cubes1::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        return $DATA_CENTER_DATA["items"][uuid]
-
-        filepath = Cubes::existingFilepathOrNull(uuid)
+        filepath = Cubes1::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
-        Cubes::filepathToItem(filepath)
+        Cubes1::filepathToItem(filepath)
     end
 
-    # Cubes::setAttribute(uuid, attrname, attrvalue)
+    # Cubes1::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        if $DATA_CENTER_DATA["items"][uuid].nil? then
-            raise "(error: 417a064c-d89b-4d20-ac96-529db96d2c23); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
-        end
-        $DATA_CENTER_DATA["items"][uuid][attrname] = attrvalue
-        $DATA_CENTER_UPDATE_QUEUE << {
-            "type"            => "item-attribute-update",
-            "itemuuid"        => uuid,
-            "attribute-name"  => attrname,
-            "attribute-value" => attrvalue
-        }
-
-        return
-
-        filepath = Cubes::existingFilepathOrNull(uuid)
+        filepath = Cubes1::existingFilepathOrNull(uuid)
         if filepath.nil? then
             raise "(error: b2a27beb-7b23-4077-af2f-ba408ed37748); uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
         end
@@ -200,16 +181,13 @@ class Cubes
         db.results_as_hash = true
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "attribute", attrname, JSON.generate(attrvalue)]
         db.close
-        Cubes::relocate(filepath)
+        Cubes1::relocate(filepath)
         nil
     end
 
-    # Cubes::getAttributeOrNull(uuid, attrname)
+    # Cubes1::getAttributeOrNull(uuid, attrname)
     def self.getAttributeOrNull(uuid, attrname)
-        return nil if $DATA_CENTER_DATA["items"][uuid].nil?
-        return $DATA_CENTER_DATA["items"][uuid][attrname]
-
-        filepath = Cubes::existingFilepathOrNull(uuid)
+        filepath = Cubes1::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
         value = nil
         db = SQLite3::Database.new(filepath)
@@ -224,9 +202,9 @@ class Cubes
         value
     end
 
-    # Cubes::getBlobOrNull(uuid, nhash)
+    # Cubes1::getBlobOrNull(uuid, nhash)
     def self.getBlobOrNull(uuid, nhash)
-        filepath = Cubes::existingFilepathOrNull(uuid)
+        filepath = Cubes1::existingFilepathOrNull(uuid)
         return nil if filepath.nil?
         blob = nil
         db = SQLite3::Database.new(filepath)
@@ -242,17 +220,17 @@ class Cubes
         db.close
         # We return a blob that was checked against the nhash
         # Also note that we allow for corrupted records before finding the right one.
-        # See Cubes::putBlob, for more.
+        # See Cubes1::putBlob, for more.
         blob
     end
 
-    # Cubes::putBlob(uuid, blob)
+    # Cubes1::putBlob(uuid, blob)
     def self.putBlob(uuid, blob) # nhash
         nhash = "SHA256-#{Digest::SHA256.hexdigest(blob)}"
-        if bx = Cubes::getBlobOrNull(uuid, nhash) then
+        if bx = Cubes1::getBlobOrNull(uuid, nhash) then
             return nhash
         end
-        filepath = Cubes::existingFilepathOrNull(uuid)
+        filepath = Cubes1::existingFilepathOrNull(uuid)
         if filepath.nil? then
             raise "(error: e6cea94f-1b92-46ad-96af-adf9ecbded1d); uuid: #{uuid}"
         end
@@ -265,21 +243,13 @@ class Cubes
         # Also, treating these files as happen only ensure that we can merge them without logical issues.
         db.execute "insert into _cube_ (_recorduuid_, _recordTime_, _recordType_, _name_, _value_) values (?, ?, ?, ?, ?)", [SecureRandom.hex(10), Time.new.to_f, "datablob", nhash, blob]
         db.close
-        Cubes::relocate(filepath)
+        Cubes1::relocate(filepath)
         nhash
     end
 
-    # Cubes::destroy(uuid)
+    # Cubes1::destroy(uuid)
     def self.destroy(uuid)
-        $DATA_CENTER_DATA["items"].delete(uuid)
-        $DATA_CENTER_UPDATE_QUEUE << {
-            "type"      => "item-destroy",
-            "itemuuid"  => uuid,
-        }
-
-        return
-
-        filepath = Cubes::existingFilepathOrNull(uuid)
+        filepath = Cubes1::existingFilepathOrNull(uuid)
         return if filepath.nil?
         puts "> delete item file: #{filepath}".yellow
         FileUtils.rm(filepath)
@@ -288,24 +258,20 @@ class Cubes
     # ----------------------------------------
     # Items
 
-    # Cubes::items()
+    # Cubes1::items()
     def self.items()
-        return $DATA_CENTER_DATA["items"].values
-
         items = []
         Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
-            items << Cubes::filepathToItem(path)
+            items << Cubes1::filepathToItem(path)
         end
         items
     end
 
-    # Cubes::mikuType(mikuType)
+    # Cubes1::mikuType(mikuType)
     def self.mikuType(mikuType)
-        return $DATA_CENTER_DATA["items"].values.select{|item| item["mikuType"] == mikuType }
-
-        Cubes::items().select{|item| item["mikuType"] == mikuType }
+        Cubes1::items().select{|item| item["mikuType"] == mikuType }
     end
 end
 
@@ -316,7 +282,7 @@ class Elizabeth
     end
 
     def putBlob(datablob) # nhash
-        Cubes::putBlob(@uuid, datablob)
+        Cubes1::putBlob(@uuid, datablob)
     end
 
     def filepathToContentHash(filepath)
@@ -324,7 +290,7 @@ class Elizabeth
     end
 
     def getBlobOrNull(nhash)
-        Cubes::getBlobOrNull(@uuid, nhash)
+        Cubes1::getBlobOrNull(@uuid, nhash)
     end
 
     def readBlobErrorIfNotFound(nhash)

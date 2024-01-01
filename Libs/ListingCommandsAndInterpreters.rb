@@ -20,7 +20,7 @@ class ListingCommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 Ox1::detach(item)
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
                 return
             end
         end
@@ -46,12 +46,12 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             blocks = NxBlocks::selectZeroOrMore()
             donation = ((item["donation-1752"] || []) + blocks.map{|block| block["uuid"] }).uniq
-            Cubes::setAttribute(item["uuid"], "donation-1752", donation)
+            Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
 
         if Interpreting::match("reload", input) then
-            DataCenter::reloadDataFromScratch()
+            CoreData::reloadDataFromScratch()
             return
         end
 
@@ -108,20 +108,20 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("monitors", input) then
-            items = Cubes::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
+            items = Cubes2::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
             Catalyst::program2(items)
             return
         end
 
         if Interpreting::match("missions", input) then
-            items = Cubes::mikuType("NxMission")
+            items = Cubes2::mikuType("NxMission")
                         .sort_by{|item| item["lastDoneUnixtime"] }
             Catalyst::program2(items)
             return
         end
 
         if Interpreting::match("engines", input) then
-            items = Cubes::items()
+            items = Cubes2::items()
                         .select{|item| item["engine-0020"] }
                         .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
             Catalyst::program2(items)
@@ -134,7 +134,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
             return if reference.nil?
-            Cubes::setAttribute(item["uuid"], "cfsr-20231213", reference)
+            Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
             return
         end
 
@@ -144,7 +144,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             note = item["note-1531"] || ""
             note = CommonUtils::editTextSynchronously(note)
-            Cubes::setAttribute(item["uuid"], "note-1531", note)
+            Cubes2::setAttribute(item["uuid"], "note-1531", note)
             return
         end
 
@@ -182,7 +182,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
             return if todotextfile == ""
-            Cubes::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
+            Cubes2::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
             return
         end
 
@@ -200,7 +200,7 @@ class ListingCommandsAndInterpreters
                 puts "> deciding block for task: '#{PolyFunctions::toString(task)}'"
                 block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
                 if block then
-                    Cubes::setAttribute(task["uuid"], "donation-1752", [block["uuid"]])
+                    Cubes2::setAttribute(task["uuid"], "donation-1752", [block["uuid"]])
                 end
             }
             return
@@ -240,7 +240,7 @@ class ListingCommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Cubes::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Cubes2::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -248,7 +248,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Cubes::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Cubes2::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -258,7 +258,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
             return if booster.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0020", booster)
+            Cubes2::setAttribute(item["uuid"], "engine-0020", booster)
             return
         end
 
@@ -277,13 +277,13 @@ class ListingCommandsAndInterpreters
                 if option == "cargo of block" then
                     block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
                     next if block.nil?
-                    Cubes::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
+                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
                     return
                 end
                 if option == "with own engine" then
                     core = TxCores::interactivelyMakeNew()
                     next if core.nil?
-                    Cubes::setAttribute(item["uuid"], "engine-0020", core)
+                    Cubes2::setAttribute(item["uuid"], "engine-0020", core)
                     return
                 end
             }
@@ -333,13 +333,13 @@ class ListingCommandsAndInterpreters
                 puts "You are adding a core to a #{item["mikuType"]}"
                 if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxBlock ? ") then
                     Transmutations::transmute2(item, "NxBlock")
-                    item = Cubes::itemOrNull(item["uuid"])
+                    item = Cubes2::itemOrNull(item["uuid"])
                     return
                 end
             end
             core2 = TxCores::interactivelyMakeNewOrNull(item["engine-0020"])
             return if core2.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0020", core2)
+            Cubes2::setAttribute(item["uuid"], "engine-0020", core2)
             return
         end
 
@@ -347,7 +347,7 @@ class ListingCommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Cubes::setAttribute(item["uuid"], "engine-0020", nil)
+            Cubes2::setAttribute(item["uuid"], "engine-0020", nil)
             return
         end
 
@@ -356,7 +356,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Cubes::setAttribute(item["uuid"], "field11", reference)
+            Cubes2::setAttribute(item["uuid"], "field11", reference)
             return
         end
 
@@ -366,7 +366,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
             return if reference.nil?
-            Cubes::setAttribute(item["uuid"], "field11", reference)
+            Cubes2::setAttribute(item["uuid"], "field11", reference)
             return
         end
 
@@ -433,7 +433,7 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             NxBalls::stop(item)
-            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
             return
         end
 
@@ -444,7 +444,7 @@ class ListingCommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             NxBalls::stop(item)
-            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
             return
         end
 
@@ -493,14 +493,14 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("actives", input) then
-            items = Cubes::items()
+            items = Cubes2::items()
                         .select{|item| item["active"] }
             Catalyst::program2(items)
             return
         end
 
         if Interpreting::match("ondates", input) then
-            elements = Cubes::mikuType("NxOndate").sort_by{|item| item["datetime"] }
+            elements = Cubes2::mikuType("NxOndate").sort_by{|item| item["datetime"] }
             Catalyst::program2(elements)
             return
         end
@@ -541,7 +541,7 @@ class ListingCommandsAndInterpreters
             return if item.nil?
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Cubes::setAttribute(item["uuid"], "datetime", datetime)
+            Cubes2::setAttribute(item["uuid"], "datetime", datetime)
             return
         end
 
@@ -564,7 +564,7 @@ class ListingCommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["ordinal-1051"] then
-                Cubes::setAttribute(item["uuid"], "ordinal-1051", nil)
+                Cubes2::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
@@ -575,7 +575,7 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if item["ordinal-1051"] then
-                Cubes::setAttribute(item["uuid"], "ordinal-1051", nil)
+                Cubes2::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return

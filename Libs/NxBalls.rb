@@ -110,7 +110,7 @@ class NxBalls
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
-            Bank::put(account["number"], timespanInSeconds)
+            Bank2::put(account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
         timespanInSeconds
@@ -127,7 +127,7 @@ class NxBalls
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
             puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
-            Bank::put(account["number"], timespanInSeconds)
+            Bank2::put(account["number"], timespanInSeconds)
         }
         nxball["type"] = "paused"
         nxball["sequencestart"] = nxball["sequencestart"] || Time.new.to_i
@@ -189,7 +189,7 @@ class NxBalls
             .reverse
             .map{|ball| ball["itemuuid"] }
             .map{|itemuuid| 
-                ix = Cubes::itemOrNull(itemuuid)
+                ix = Cubes2::itemOrNull(itemuuid)
                 if ix.nil? then
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then
