@@ -160,13 +160,13 @@ class Cubes2
     # Cubes2::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)
         $DATA_CENTER_DATA["items"][uuid] = {
-            "uuid" => uuid,
+            "uuid"     => uuid,
             "mikuType" => mikuType
         }
         $DATA_CENTER_UPDATE_QUEUE << {
             "type"     => "item-init",
             "uuid"     => uuid,
-            "mikuType" => attrvalue
+            "mikuType" => mikuType
         }
     end
 
