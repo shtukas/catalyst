@@ -168,6 +168,7 @@ class Cubes2
             "uuid"     => uuid,
             "mikuType" => mikuType
         }
+        DataProcessor::processQueue()
     end
 
     # Cubes2::itemOrNull(uuid)
@@ -187,6 +188,7 @@ class Cubes2
             "attribute-name"  => attrname,
             "attribute-value" => attrvalue
         }
+        DataProcessor::processQueue()
         nil
     end
 
@@ -197,6 +199,7 @@ class Cubes2
             "type" => "item-destroy",
             "uuid" => uuid,
         }
+        DataProcessor::processQueue()
     end
 
     # Cubes2::items()
@@ -231,6 +234,7 @@ class DoNotShowUntil2
             "id"       => id,
             "unixtime" => unixtime
         }
+        DataProcessor::processQueue()
     end
 
     # DoNotShowUntil2::isVisible(item)
@@ -262,6 +266,7 @@ class Bank2
             "date"  => CommonUtils::today(),
             "value" => value
         }
+        DataProcessor::processQueue()
     end
 
     # Bank2::getValueAtDate(uuid, date)
@@ -296,14 +301,11 @@ class Bank2
     end
 end
 
-Thread.new {
-    loop {
-        update = $DATA_CENTER_UPDATE_QUEUE.shift
-        if update.nil? then
-            sleep 1
-            next
-        end
-        #puts JSON.pretty_generate(update).yellow
+class DataProcessor
+
+    # DataProcessor::processUpdate(update)
+    def self.processUpdate(update)
+        puts JSON.pretty_generate(update).yellow
         if update["type"] == "item-init" then
             uuid      = update["uuid"]
             mikuType  = update["mikuType"]
@@ -330,9 +332,23 @@ Thread.new {
             value = update["value"]
             Bank1::put(id, date, value)
         end
+    end
+
+    # DataProcessor::processQueue()
+    def self.processQueue()
+        while update = $DATA_CENTER_UPDATE_QUEUE.shift do
+            DataProcessor::processUpdate(update)
+        end
         XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate($DATA_CENTER_DATA))
-    }
-}
+    end
+end
+
+#Thread.new {
+#    loop {
+#        DataProcessor::processQueue()
+#        sleep 1
+#    }
+#}
 
 Thread.new {
     sleep 60
