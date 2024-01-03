@@ -6,7 +6,7 @@ class Engined
     def self.listingItems()
         tasks = Cubes2::mikuType("NxTask").select{|item| item["engine-0020"] }
         (tasks + NxBlocks::topBlocks())
-            .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
-            .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
+            .select{|item| NxBlocks::dayCompletionRatio(item) < 1 }
+            .sort_by{|item| NxBlocks::dayCompletionRatio(item) }
     end
 end
