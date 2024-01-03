@@ -41,7 +41,7 @@ class NxBlocks
         icon = NxBlocks::isTopBlock(item) ? "🔺" : "🔸"
         if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             if NxBlocks::bufferInCardinal() > 0 then
-                return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} special circumstances of orphaned tasks (automatic): DataHub/Buffer-In"
+                return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} orphaned tasks (automatic); special circumstances: DataHub/Buffer-In"
             end
         end
         
