@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | booster * | unbooster * | cfsr * | move *  | todotextfile * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | cfsr * | move *  | todotextfile * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack | mission",
             "divings       : anniversaries | ondates | waves | desktop | blocks | monitors | engines | missions",
@@ -249,16 +249,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Cubes2::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            return
-        end
-
-        if Interpreting::match("booster *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            booster = TxCores::interactivelyMakeBoosterOrNull(item["engine-0020"])
-            return if booster.nil?
-            Cubes2::setAttribute(item["uuid"], "engine-0020", booster)
             return
         end
 

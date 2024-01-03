@@ -14,13 +14,6 @@ TxCore
 TxCore
     "uuid"          : String
     "mikuType"      : "TxCore"
-    "type"          : "booster"
-    "hours"         : Float
-    "expiry"        : DateTime
-
-TxCore
-    "uuid"          : String
-    "mikuType"      : "TxCore"
     "type"          : "blocking-until-done"
 
 TxCore

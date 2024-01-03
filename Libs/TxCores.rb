@@ -5,11 +5,8 @@ class TxCores
 
     # TxCores::interactivelyMakeNewOrNull(ec = nil)
     def self.interactivelyMakeNewOrNull(ec = nil)
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["booster","daily-hours", "weekly-hours", "monitor"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["daily-hours", "weekly-hours", "monitor"])
         return nil if type.nil?
-        if type == "booster" then
-            return TxCores::interactivelyMakeBoosterOrNull(ec)
-        end
         if type == "daily-hours" then
             hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
             return nil if hours == ""
@@ -48,31 +45,7 @@ class TxCores
                 "type"          => "monitor"
             }
         end
-        if type == "content-driven" then
-            return {
-                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
-                "mikuType"      => "TxCore",
-                "type"          => "content-driven"
-            }
-        end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
-    end
-
-    # TxCores::interactivelyMakeBoosterOrNull(ec = nil)
-    def self.interactivelyMakeBoosterOrNull(ec = nil)
-        hours = LucilleCore::askQuestionAnswerAsString("total hours (empty for abort): ")
-        return nil if hours == ""
-        hours = hours.to_f
-        return nil if hours == 0
-        expiry = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-        return {
-            "uuid"        => ec ? ec["uuid"] : SecureRandom.uuid,
-            "mikuType"    => "TxCore",
-            "type"        => "booster",
-            "startunixtime" => Time.new.to_i,
-            "hours"       => hours,
-            "endunixtime" => expiry
-        }
     end
 
     # TxCores::interactivelyMakeNew()
@@ -102,23 +75,11 @@ class TxCores
             x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
             return [0.8*x1 + 0.2*x2, x1].max
         end
-        if core["type"] == "booster" then
-            core["startunixtime"] = core["startunixtime"] || 1702659382
-            core["endunixtime"] = core["endunixtime"] ? core["endunixtime"] : DateTime.parse(core["expiry"]).to_time.to_i
-            deltaXToNow = [CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()), core["endunixtime"]].min - core["startunixtime"]
-            deltaXTotal = core["endunixtime"] - core["startunixtime"]
-            idealHours = core["hours"]*(deltaXToNow.to_f/deltaXTotal)
-            hoursDone = Bank2::getValue(core["uuid"]).to_f/3600
-            return hoursDone.to_f/idealHours
-        end
         if core["type"] == "blocking-until-done" then
             return 0
         end
         if core["type"] == "monitor" then
             return 0
-        end
-        if core["type"] == "content-driven" then
-            raise "(error: 57df1e253f9c) we are no supposed to be able to call TxCores::coreDayCompletionRatio with #{core}" 
         end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
@@ -134,21 +95,11 @@ class TxCores
         if core["type"] == "monitor" then
             return "( monitor                   )".green
         end
-        if core["type"] == "booster" then
-            if TxCores::coreDayCompletionRatio(core) < 1 then
-                return "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; booster: #{"%5.2f" % core["hours"]} hs)".green
-            else
-                return "(expired booster            )".green
-            end
-        end
         if core["type"] == "weekly-hours" then
             return "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; weekly:  #{"%5.2f" % core["hours"]} hs)".green
         end
         if core["type"] == "daily-hours" then
             return "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; daily:   #{"%5.2f" % core["hours"]} hs)".green
-        end
-        if core["type"] == "content-driven" then
-            return "(        ; content driven   )".green
         end
     end
 

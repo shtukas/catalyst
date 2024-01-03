@@ -54,13 +54,6 @@ class NxBlocks
         if core["type"] == "blocking-until-done" then
             return 0.75 + 0.01 * 1.to_f/(indx+1)
         end
-        if core["type"] == "booster" then
-            ratio = TxCores::coreDayCompletionRatio(core)
-            if ratio >= 1 then
-                return 0.1
-            end
-            return 0.60 + 0.10 * (1-ratio)
-        end
         0.30 + 0.20 * 1.to_f/(indx+1)
     end
 
@@ -91,20 +84,9 @@ class NxBlocks
 
     # NxBlocks::listingItems()
     def self.listingItems()
-        items0 = Cubes2::mikuType("NxBlock")
-                    .select{|block| block["engine-0020"]["type"] == "booster" }
-                    .select{|block| block["engine-0020"]["endunixtime"] <= Time.new.to_i } # expired boosters
-
-        items1 = Cubes2::mikuType("NxBlock")
-                    .select{|block| block["engine-0020"]["type"] == "booster" }
-                    .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
-                    .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
-
-        items2 = NxBlocks::blocksInRecursiveDescent()
-                    .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
-                    .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
-
-        items0 + items1 + items2
+        NxBlocks::blocksInRecursiveDescent()
+            .select{|block| NxBlocks::dayCompletionRatio(block) < 1 }
+            .sort_by{|block| NxBlocks::dayCompletionRatio(block) }
     end
 
     # NxBlocks::elementsInNaturalCruiseOrder(cruiser)
@@ -198,13 +180,6 @@ class NxBlocks
 
     # NxBlocks::dayCompletionRatio(item)
     def self.dayCompletionRatio(item)
-        if item["engine-0020"]["type"] == "content-driven" then
-            puts "item: #{PolyFunctions::toString(item)}"
-            puts "core of type 'content-driven' is deprecated, please make another one"
-            core = TxCores::interactivelyMakeNew()
-            Cubes2::setAttribute(item["uuid"], "engine-0020", core)
-            item["engine-0020"] = core
-        end
         TxCores::coreDayCompletionRatio(item["engine-0020"])
     end
 
