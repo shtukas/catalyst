@@ -285,7 +285,7 @@ class PolyActions
                 NxBalls::start(item)
             end
             PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("completed : '#{PolyFunctions::toString(item).green} ? '", true) then
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
             end
