@@ -1,0 +1,6 @@
+
+TxPayload
+    "coreDataRef"  : null or String
+    "note"         : null or Text
+    "openCycleRef" : null or String
+    "textFileRef"  : null or String
