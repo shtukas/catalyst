@@ -26,7 +26,7 @@ class PhysicalTargets
 
     # PhysicalTargets::toString(item)
     def self.toString(item)
-        "💪 #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})#{CoreDataRefStrings::itemToSuffixString(item)}"
+        "💪 #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
     end
 
     # PhysicalTargets::listingItems()

@@ -114,14 +114,14 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         Cubes2::itemInit(uuid, "Wave")
-        coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
+        payload = TxPayload::interactivelyMakeNewOr(uuid)
+        payload.each{|k, v| Cubes2::setAttribute(uuid, k, v) }
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
         Cubes2::setAttribute(uuid, "nx46", nx46)
         Cubes2::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        Cubes2::setAttribute(uuid, "field11", coredataref)
         Cubes2::setAttribute(uuid, "interruption", interruption)
         Cubes2::itemOrNull(uuid)
     end
@@ -133,7 +133,7 @@ class Waves
     def self.toString(item)
         ago = "done: #{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
         interruption = item["interruption"] ? " (interruption)" : ""
-        "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])})#{CoreDataRefStrings::itemToSuffixString(item)} (#{ago})#{interruption}"
+        "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])}) (#{ago})#{interruption}"
     end
 
     # -------------------------------------------------------------------------
@@ -164,12 +164,6 @@ class Waves
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
         puts "not shown until: #{Time.at(unixtime).to_s}"
         DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
-    end
-
-    # Waves::access(item)
-    def self.access(item)
-        puts Waves::toString(item).green
-        CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
     end
 
     # Waves::program2(item)

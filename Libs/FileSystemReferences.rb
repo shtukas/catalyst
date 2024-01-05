@@ -82,11 +82,4 @@ class FileSystemReferences
             .select{|loc| loc[-14, 14] == ".cfsr-20231213" }
             .first
     end
-
-    # FileSystemReferences::suffix(item)
-    def self.suffix(item)
-        return "" if item["cfsr-20231213"].nil?
-        " (cfsr)".green
-    end
-
 end

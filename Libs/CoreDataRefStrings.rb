@@ -68,34 +68,41 @@ class CoreDataRefStrings
         raise "(error: f75b2797-99e5-49d0-8d49-40b44beb538c) unsupported core data reference type: #{referencetype}"
     end
 
-    # CoreDataRefStrings::referenceStringToSuffixString(referenceString)
-    def self.referenceStringToSuffixString(referenceString)
+    # CoreDataRefStrings::referenceToStringOrNull(referenceString)
+    def self.referenceToStringOrNull(referenceString)
         if referenceString.nil? then
-            return ""
+            return nil
         end
         if referenceString == "null" then
-            return ""
+            return nil
         end
         if referenceString.start_with?("text") then
-            return " (text)"
+            return "(text)"
         end
         if referenceString.start_with?("url") then
-            return " (url)"
+            return "(url)"
         end
         if referenceString.start_with?("aion-point") then
-            return " (aion point)"
+            return "(aion point)"
         end
         if referenceString.start_with?("open-cycle") then
-            return " (open-cycle)"
+            return "(open-cycle)"
         end
         if referenceString.start_with?("unique-string") then
             str = referenceString.split(":")[1]
-            return " (unique string: #{str})"
+            return "(unique string: #{str})"
         end
         if referenceString.start_with?("Dx8UnitId") then
-            return " (Dx8Unit)"
+            return "(Dx8Unit)"
         end
         raise "CoreData, I do not know how to string '#{referenceString}'"
+    end
+
+    # CoreDataRefStrings::referenceStringToSuffixString(referenceString)
+    def self.referenceStringToSuffixString(referenceString)
+        str = CoreDataRefStrings::referenceToStringOrNull(referenceString)
+        return " #{str}" if str
+        ""
     end
 
     # CoreDataRefStrings::itemToSuffixString(item)

@@ -81,8 +81,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         positionstr = Ox1::activePositionOrNull(item) ? " stack".green : "      "
-        tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
-        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -103,8 +102,7 @@ class Listing
     def self.toString3(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
-        tdtf = item["todotextfile-1312"] ? " (todotextfile: #{item["todotextfile-1312"]})".green : ""
-        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{tdtf}#{Notes::suffix(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{FileSystemReferences::suffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

@@ -5,7 +5,7 @@ class ListingCommandsAndInterpreters
     # ListingCommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | coredata (<n>) | skip (<n>) | note * | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | cfsr * | move *  | todotextfile * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack | mission",
             "divings       : anniversaries | ondates | waves | desktop | blocks | monitors | engines | missions",
@@ -128,26 +128,6 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cfsr *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
-            return if reference.nil?
-            Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
-            return
-        end
-
-        if Interpreting::match("note *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            note = item["note-1531"] || ""
-            note = CommonUtils::editTextSynchronously(note)
-            Cubes2::setAttribute(item["uuid"], "note-1531", note)
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -176,13 +156,11 @@ class ListingCommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todotextfile *", input) then
+        if Interpreting::match("payload *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
-            return if todotextfile == ""
-            Cubes2::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
+            TxPayload::edit(item)
             return
         end
 
@@ -338,25 +316,6 @@ class ListingCommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Cubes2::setAttribute(item["uuid"], "engine-0020", nil)
-            return
-        end
-
-        if Interpreting::match("coredata", input) then
-            item = store.getDefault()
-            return if item.nil?
-            reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
-            return if reference.nil?
-            Cubes2::setAttribute(item["uuid"], "field11", reference)
-            return
-        end
-
-        if Interpreting::match("coredata *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            reference =  CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
-            return if reference.nil?
-            Cubes2::setAttribute(item["uuid"], "field11", reference)
             return
         end
 

@@ -8,38 +8,6 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["todotextfile-1312"] then
-            # this takes priority
-            todotextfile = item["todotextfile-1312"]
-            location = Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
-            if location.nil? then
-                puts PolyFunctions::toString(item)
-                puts "Could not resolve this todotextfile: #{todotextfile}"
-                if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
-                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", nil)
-                end
-                return
-            end
-            puts "found: #{location}"
-            system("open '#{location}'")
-            return
-        end
-
-        if item["cfsr-20231213"] then
-            options = ["standard access (default)", "cfsr access"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            if option.nil? or option == "standard access (default)" then
-                # nothing to do here
-            end
-            if option == "cfsr access" then
-                # nothing to do here
-                FileSystemReferences::accessReference(item["cfsr-20231213"])
-                return
-            end
-        end
-
-        # types in alphabetical order
-
         if item["mikuType"] == "NxMission" then
             return
         end
@@ -59,7 +27,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
+            TxPayload::access(item)
             return
         end
 
@@ -69,12 +37,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxMonitor" then
-            NxMonitors::access(item)
+            TxPayload::access(item)
             return
         end
 
         if item["mikuType"] == "NxTask" then
-            NxTasks::access(item)
+            TxPayload::access(item)
             return
         end
 
@@ -89,7 +57,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            Waves::access(item)
+            TxPayload::access(item)
             return
         end
 

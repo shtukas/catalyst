@@ -17,6 +17,6 @@ class NxMissions
 
     # NxMissions::toString(item)
     def self.toString(item)
-        "🚀 (mission: start, stop, done) #{item["description"]}#{CoreDataRefStrings::itemToSuffixString(item).red}"
+        "🚀 (mission: start, stop, done) #{item["description"]}"
     end
 end
