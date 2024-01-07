@@ -97,6 +97,7 @@ class NxListings
             end
             return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
+                    .select{|item| !item["special-circumstances-bottom-task-1939"] }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
@@ -115,6 +116,7 @@ class NxListings
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
+                    .select{|item| !item["special-circumstances-bottom-task-1939"] }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)

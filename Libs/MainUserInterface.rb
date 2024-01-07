@@ -134,7 +134,9 @@ class MainUserInterface
             #NxTasks::engined(),
             #NxListings::muiItems(),
             Engined::muiItems(),
-            Waves::muiItems().select{|item| !item["interruption"] }
+            Waves::muiItems().select{|item| !item["interruption"] },
+            Cubes2::mikuType("NxTask")
+                .select{|item| item["special-circumstances-bottom-task-1939"] }
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
