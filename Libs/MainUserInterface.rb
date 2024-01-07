@@ -124,16 +124,17 @@ class MainUserInterface
         [
             Ox1::items(),
             DropBox::items(),
-            Desktop::listingItems(),
-            Anniversaries::listingItems(),
-            Config::isPrimaryInstance() ? PhysicalTargets::listingItems() : [],
-            Waves::listingItems().select{|item| item["interruption"] },
-            NxOndates::listingItems(),
-            NxBackups::listingItems(),
-            NxMonitors::listingItems(),
+            Desktop::muiItems(),
+            Anniversaries::muiItems(),
+            Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
+            Waves::muiItems().select{|item| item["interruption"] },
+            NxOndates::muiItems(),
+            NxBackups::muiItems(),
+            NxMonitors::muiItems(),
             #NxTasks::engined(),
-            #NxListings::listingItems(),
-            Engined::listingItems(),
+            #NxListings::muiItems(),
+            Engined::muiItems(),
+            Waves::muiItems().select{|item| !item["interruption"] }
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -173,12 +174,12 @@ class MainUserInterface
         spot = Speedometer.new()
 
         spot.start_contest()
-        spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
+        spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxListings::listingItems()", lambda{ NxListings::listingItems() })
-        spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
-        spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
+        spot.contest_entry("NxListings::muiItems()", lambda{ NxListings::muiItems() })
+        spot.contest_entry("PhysicalTargets::muiItems()", lambda{ PhysicalTargets::muiItems() })
+        spot.contest_entry("Waves::muiItems()", lambda{ Waves::muiItems() })
         spot.end_contest()
 
         puts ""

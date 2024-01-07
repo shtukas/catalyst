@@ -38,8 +38,8 @@ class NxOndates
         "🗓️  #{item["description"]}"
     end
 
-    # NxOndates::listingItems()
-    def self.listingItems()
+    # NxOndates::muiItems()
+    def self.muiItems()
         Cubes2::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
     end

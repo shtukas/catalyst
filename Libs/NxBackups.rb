@@ -50,8 +50,8 @@ class NxBackups
         }
     end
 
-    # NxBackups::listingItems()
-    def self.listingItems()
+    # NxBackups::muiItems()
+    def self.muiItems()
         Cubes2::mikuType("NxBackup")
     end
 

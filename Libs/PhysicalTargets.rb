@@ -29,8 +29,8 @@ class PhysicalTargets
         "💪 #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
     end
 
-    # PhysicalTargets::listingItems()
-    def self.listingItems()
+    # PhysicalTargets::muiItems()
+    def self.muiItems()
         Cubes2::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
                 Cubes2::setAttribute(item["uuid"], "date", CommonUtils::today())

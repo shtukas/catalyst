@@ -32,8 +32,8 @@ class NxMonitors
         "☀️  #{item["description"]}"
     end
 
-    # NxMonitors::listingItems()
-    def self.listingItems()
+    # NxMonitors::muiItems()
+    def self.muiItems()
         Cubes2::mikuType("NxMonitor")
     end
 end

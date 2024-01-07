@@ -139,8 +139,8 @@ class Waves
     # -------------------------------------------------------------------------
     # Data (2)
 
-    # Waves::listingItems()
-    def self.listingItems()
+    # Waves::muiItems()
+    def self.muiItems()
         Cubes2::mikuType("Wave")
             .select{|item| MainUserInterface::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }

@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | block | monitor | priority | stack | mission",
-            "divings       : anniversaries | ondates | waves | desktop | blocks | monitors | engines | missions",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | listing | monitor | priority | stack | mission",
+            "divings       : anniversaries | ondates | waves | desktop | listings | monitors | engines | missions",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -44,8 +44,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            blocks = NxListings::selectZeroOrMore()
-            donation = ((item["donation-1752"] || []) + blocks.map{|block| block["uuid"] }).uniq
+            listings = NxListings::selectZeroOrMore()
+            donation = ((item["donation-1752"] || []) + listings.map{|listing| listing["uuid"] }).uniq
             Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
             return
         end
@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -91,18 +91,18 @@ class CommandsAndInterpreters
             mission = NxMissions::interactivelyIssueNewOrNull()
             return if mission.nil?
             puts JSON.pretty_generate(mission)
-            NxListings::interactivelySelectBlockAndAddTo(mission["uuid"])
+            NxListings::interactivelySelectOneAndAddTo(mission["uuid"])
             return
         end
 
-        if Interpreting::match("block", input) then
+        if Interpreting::match("listing", input) then
             item = NxListings::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("blocks", input) then
+        if Interpreting::match("listings", input) then
             NxListings::program2()
             return
         end
@@ -152,7 +152,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
             return
         end
 
@@ -165,7 +165,7 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            NxListings::selectSubsetAndMoveToSelectedBlock(store.items())
+            NxListings::selectSubsetOfItemsAndMove(store.items())
             return
         end
 
@@ -175,10 +175,10 @@ class CommandsAndInterpreters
             text.lines.reverse.each{|line|
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
-                puts "> deciding block for task: '#{PolyFunctions::toString(task)}'"
-                block = NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull()
-                if block then
-                    Cubes2::setAttribute(task["uuid"], "donation-1752", [block["uuid"]])
+                puts "> deciding listing for task: '#{PolyFunctions::toString(task)}'"
+                listing = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+                if listing then
+                    Cubes2::setAttribute(task["uuid"], "donation-1752", [listing["uuid"]])
                 end
             }
             return
@@ -203,7 +203,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
             return
         end
 
@@ -235,17 +235,17 @@ class CommandsAndInterpreters
             return if item.nil?
             option = nil
             loop {
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["cargo of block", "with own engine"])
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in listing", "with own engine"])
                 if option.nil? then
-                    if LucilleCore::askQuestionAnswerAsBoolean("You did not specify an option, are you sure you want to leave this tasks without a block or its own engine ? ", false) then
+                    if LucilleCore::askQuestionAnswerAsBoolean("You did not specify an option, are you sure you want to leave this tasks without a listing or its own engine ? ", false) then
                         break
                     end
                     next
                 end
-                if option == "cargo of block" then
-                    block = NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull()
-                    next if block.nil?
-                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
+                if option == "in listing" then
+                    listing = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+                    next if listing.nil?
+                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", listing["uuid"])
                     return
                 end
                 if option == "with own engine" then

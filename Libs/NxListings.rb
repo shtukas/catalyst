@@ -60,7 +60,7 @@ class NxListings
     # NxListings::recursiveDescent(blocks)
     def self.recursiveDescent(blocks)
         blocks
-            .map{|block| NxListings::elementsInNaturalCruiseOrder(block).select{|i| i["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) } + [block]}
+            .map{|block| NxListings::elementsInNaturalOrder(block).select{|i| i["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) } + [block]}
             .flatten
     end
 
@@ -82,15 +82,15 @@ class NxListings
         NxListings::recursiveDescent(topBlocks)
     end
 
-    # NxListings::listingItems()
-    def self.listingItems()
+    # NxListings::muiItems()
+    def self.muiItems()
         NxListings::blocksInRecursiveDescent()
             .select{|block| NxListings::dayCompletionRatio(block) < 1 }
             .sort_by{|block| NxListings::dayCompletionRatio(block) }
     end
 
-    # NxListings::elementsInNaturalCruiseOrder(cruiser)
-    def self.elementsInNaturalCruiseOrder(cruiser)
+    # NxListings::elementsInNaturalOrder(cruiser)
+    def self.elementsInNaturalOrder(cruiser)
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             if NxListings::bufferInCardinal() > 0 then
                 return []
@@ -100,7 +100,7 @@ class NxListings
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
-            return Waves::listingItems().select{|item| !item["interruption"] }
+            return Waves::muiItems().select{|item| !item["interruption"] }
         end
         if cruiser["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
             return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
@@ -118,7 +118,7 @@ class NxListings
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
-            return Waves::listingItems().select{|item| !item["interruption"] }
+            return Waves::muiItems().select{|item| !item["interruption"] }
         end
 
         items = Cubes2::items()
@@ -135,14 +135,14 @@ class NxListings
         LucilleCore::selectEntityFromListOfEntitiesOrNull("block", topBlocks, lambda{|item| NxListings::toString(item) })
     end
 
-    # NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull(block = nil)
-    def self.interactivelySelectBlockUsingTopDownNavigationOrNull(block = nil)
+    # NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(block = nil)
+    def self.interactivelySelectOneUsingTopDownNavigationOrNull(block = nil)
         if block.nil? then
             block = NxListings::interactivelySelectOneTopBlockOrNull()
             return nil if block.nil?
-            return NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull(block)
+            return NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(block)
         end
-        childrenblocks = NxListings::elementsInNaturalCruiseOrder(block).select{|item| item["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) }
+        childrenblocks = NxListings::elementsInNaturalOrder(block).select{|item| item["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) }
         if childrenblocks.empty? then
             return block
         end
@@ -151,7 +151,7 @@ class NxListings
         if selected["uuid"] == block["uuid"] then
             return selected
         end
-        NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull(selected)
+        NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(selected)
     end
 
     # NxListings::selectZeroOrMore()
@@ -162,11 +162,11 @@ class NxListings
         selected
     end
 
-    # NxListings::selectSubsetAndMoveToSelectedBlock(items)
-    def self.selectSubsetAndMoveToSelectedBlock(items)
+    # NxListings::selectSubsetOfItemsAndMove(items)
+    def self.selectSubsetOfItemsAndMove(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        block = NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull()
+        block = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
         return if block.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
@@ -175,7 +175,7 @@ class NxListings
 
     # NxListings::topPosition(item)
     def self.topPosition(item)
-        ([0] + NxListings::elementsInNaturalCruiseOrder(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + NxListings::elementsInNaturalOrder(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
     # NxListings::dayCompletionRatio(item)
@@ -186,9 +186,9 @@ class NxListings
     # ------------------
     # Ops
 
-    # NxListings::interactivelySelectBlockAndAddTo(itemuuid)
-    def self.interactivelySelectBlockAndAddTo(itemuuid)
-        block = NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull()
+    # NxListings::interactivelySelectOneAndAddTo(itemuuid)
+    def self.interactivelySelectOneAndAddTo(itemuuid)
+        block = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
         return if block.nil?
         Cubes2::setAttribute(itemuuid, "parentuuid-0032", block["uuid"])
     end
@@ -235,7 +235,7 @@ class NxListings
             puts  MainUserInterface::toString2(store, item)
             puts  ""
 
-            Prefix::prefix(NxListings::elementsInNaturalCruiseOrder(item))
+            Prefix::prefix(NxListings::elementsInNaturalOrder(item))
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts  MainUserInterface::toString3(store, item)
@@ -288,7 +288,7 @@ class NxListings
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxListings::elementsInNaturalCruiseOrder(item), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxListings::elementsInNaturalOrder(item), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Cubes2::setAttribute(i["uuid"], "global-positioning", NxListings::topPosition(item) - 1)
                 }
@@ -296,7 +296,7 @@ class NxListings
             end
 
             if input == "move" then
-                NxListings::selectSubsetAndMoveToSelectedBlock(NxListings::elementsInNaturalCruiseOrder(item))
+                NxListings::selectSubsetOfItemsAndMove(NxListings::elementsInNaturalOrder(item))
                 next
             end
 
