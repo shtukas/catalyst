@@ -98,27 +98,6 @@ class MainUserInterface
         line
     end
 
-    # MainUserInterface::toString3(store, item)
-    def self.toString3(store, item)
-        return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
-
-        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
-    end
-
     # MainUserInterface::items()
     def self.items()
         [
@@ -135,7 +114,7 @@ class MainUserInterface
             #NxListings::muiItems(),
             Engined::muiItems(),
             Waves::muiItems().select{|item| !item["interruption"] },
-            Cubes2::mikuType("NxTask")
+            Cubes2::mikuType("NxListing")
                 .select{|item| item["special-circumstances-bottom-task-1939"] }
         ]
             .flatten

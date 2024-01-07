@@ -75,9 +75,6 @@ class NxTasks
     # NxTasks::toString(item)
     def self.toString(item)
         icon = (lambda {|item|
-            if item["special-circumstances-bottom-task-1939"] then
-                return "🔥"
-            end
             if NxTasks::isOrphan(item) then
                 return "◽️"
             end

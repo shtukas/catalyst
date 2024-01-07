@@ -36,15 +36,22 @@ class NxListings
             .size
     end
 
+    # NxListings::icon(item)
+    def self.icon(item)
+        if item["special-circumstances-bottom-task-1939"] then
+            return "🔥"
+        end
+        NxListings::isTopBlock(item) ? "🔺" : "🔸"
+    end
+
     # NxListings::toString(item, context = nil)
     def self.toString(item, context = nil)
-        icon = NxListings::isTopBlock(item) ? "🔺" : "🔸"
+        icon = NxListings::icon(item)
         if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             if NxListings::bufferInCardinal() > 0 then
                 return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} orphaned tasks (automatic); special circumstances: DataHub/Buffer-In"
             end
         end
-        
         "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} #{item["description"]}"
     end
 
@@ -97,7 +104,6 @@ class NxListings
             end
             return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
-                    .select{|item| !item["special-circumstances-bottom-task-1939"] }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
@@ -116,7 +122,6 @@ class NxListings
         if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
-                    .select{|item| !item["special-circumstances-bottom-task-1939"] }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
         if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
@@ -221,6 +226,27 @@ class NxListings
             }
     end
 
+    # NxListings::toString3(store, item)
+    def self.toString3(store, item)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
+        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+
+        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
     # NxListings::program1(item)
     def self.program1(item)
         loop {
@@ -240,7 +266,7 @@ class NxListings
             Prefix::prefix(NxListings::elementsInNaturalOrder(item))
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts  MainUserInterface::toString3(store, item)
+                    puts  NxListings::toString3(store, item)
                 }
 
             puts ""

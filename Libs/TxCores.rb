@@ -81,6 +81,9 @@ class TxCores
         if core["type"] == "monitor" then
             return 0
         end
+        if core["type"] == "special-circumstances-bottom-task-1939" then
+            return 1
+        end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
 
@@ -101,11 +104,17 @@ class TxCores
         if core["type"] == "daily-hours" then
             return "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; daily:   #{"%5.2f" % core["hours"]} hs)".green
         end
+        if core["type"] == "special-circumstances-bottom-task-1939" then
+            return ""
+        end
     end
 
     # TxCores::suffix2(item)
     def self.suffix2(item)
         return "" if item["engine-0020"].nil?
+        if item["engine-0020"]["type"] == "special-circumstances-bottom-task-1939" then
+            return ""
+        end
         if item["engine-0020"]["type"] == "blocking-until-done" then
             puts "item: #{PolyFunctions::toString(item)}"
             puts "core of type 'blocking-until-done' is deprecated, please make another one"
