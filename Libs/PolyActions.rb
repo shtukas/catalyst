@@ -285,7 +285,7 @@ class PolyActions
 
         if item["mikuType"] == "NxListing" then
             if NxListings::elementsInNaturalOrder(item).size > 0 then
-                puts "You cannot delete '#{PolyFunctions::toString(item).green}' because the stack is not empty"
+                puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
                 LucilleCore::pressEnterToContinue()
                 return
             end
