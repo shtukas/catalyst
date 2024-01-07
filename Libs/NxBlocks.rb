@@ -232,13 +232,13 @@ class NxBlocks
 
             puts  ""
             store.register(item, false)
-            puts  Listing::toString2(store, item)
+            puts  MainUserInterface::toString2(store, item)
             puts  ""
 
             Prefix::prefix(NxBlocks::elementsInNaturalCruiseOrder(item))
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts  Listing::toString3(store, item)
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts  MainUserInterface::toString3(store, item)
                 }
 
             puts ""
@@ -301,7 +301,7 @@ class NxBlocks
             end
 
             puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 
@@ -321,8 +321,8 @@ class NxBlocks
 
             items
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts  Listing::toString2(store, item)
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts  MainUserInterface::toString2(store, item)
                 }
 
             puts ""
@@ -338,7 +338,7 @@ class NxBlocks
             end
 
             puts ""
-            ListingCommandsAndInterpreters::interpreter(input, store)
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 

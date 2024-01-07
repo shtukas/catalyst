@@ -142,7 +142,7 @@ class Waves
     # Waves::listingItems()
     def self.listingItems()
         Cubes2::mikuType("Wave")
-            .select{|item| Listing::listable(item) }
+            .select{|item| MainUserInterface::listable(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
             .select{|item|
                 item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())

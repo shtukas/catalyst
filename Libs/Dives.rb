@@ -14,8 +14,8 @@ class Dives
 
             items
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item)
                 }
 
             puts ""
@@ -23,7 +23,7 @@ class Dives
             input = LucilleCore::askQuestionAnswerAsString("> ")
             next if input == ""
             return if input == "exit"
-            ListingCommandsAndInterpreters::interpreter(input, store)
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 end

@@ -50,19 +50,19 @@ class Speedometer
 
 end
 
-class Listing
+class MainUserInterface
 
     # -----------------------------------------
     # Data
 
-    # Listing::listable(item)
+    # MainUserInterface::listable(item)
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil2::isVisible(item)
         true
     end
 
-    # Listing::canBeDefault(item)
+    # MainUserInterface::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
@@ -71,12 +71,12 @@ class Listing
         true
     end
 
-    # Listing::isInterruption(item)
+    # MainUserInterface::isInterruption(item)
     def self.isInterruption(item)
         item["interruption"]
     end
 
-    # Listing::toString2(store, item)
+    # MainUserInterface::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
@@ -98,7 +98,7 @@ class Listing
         line
     end
 
-    # Listing::toString3(store, item)
+    # MainUserInterface::toString3(store, item)
     def self.toString3(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
@@ -119,7 +119,7 @@ class Listing
         line
     end
 
-    # Listing::items()
+    # MainUserInterface::items()
     def self.items()
         [
             Ox1::items(),
@@ -136,7 +136,7 @@ class Listing
             Engined::listingItems(),
         ]
             .flatten
-            .select{|item| Listing::listable(item) }
+            .select{|item| MainUserInterface::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -146,15 +146,15 @@ class Listing
             }
     end
 
-    # Listing::items2()
+    # MainUserInterface::items2()
     def self.items2()
-        items = Listing::items()
+        items = MainUserInterface::items()
         items = Ox1::organiseListing(items)
         runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
         items = runningItems + pausedItems + items
         items = Prefix::prefix(items)
         items
-            .select{|item| Listing::listable(item) }
+            .select{|item| MainUserInterface::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -167,7 +167,7 @@ class Listing
     # -----------------------------------------
     # Ops
 
-    # Listing::speedTest()
+    # MainUserInterface::speedTest()
     def self.speedTest()
 
         spot = Speedometer.new()
@@ -183,14 +183,14 @@ class Listing
 
         puts ""
 
-        spot.start_unit("Listing::items()")
-        Listing::items()
+        spot.start_unit("MainUserInterface::items()")
+        MainUserInterface::items()
         spot.end_unit()
 
-        spot.start_unit("Listing::items().first(100) >> Listing::toString2(store, item)")
+        spot.start_unit("MainUserInterface::items().first(100) >> MainUserInterface::toString2(store, item)")
         store = ItemStore.new()
-        items = Listing::items().first(100)
-        items.each {|item| Listing::toString2(store, item) }
+        items = MainUserInterface::items().first(100)
+        items.each {|item| MainUserInterface::toString2(store, item) }
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -199,7 +199,7 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::checkForCodeUpdates()
+    # MainUserInterface::checkForCodeUpdates()
     def self.checkForCodeUpdates()
         if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
             puts "Attempting to download new code"
@@ -209,21 +209,21 @@ class Listing
         false
     end
 
-    # Listing::injectActiveItems(items, runningItems)
+    # MainUserInterface::injectActiveItems(items, runningItems)
     def self.injectActiveItems(items, runningItems)
         activeItems, pausedItems = runningItems.partition{|item| NxBalls::itemIsRunning(item) }
         activeItems + pausedItems + items
     end
 
-    # Listing::main()
+    # MainUserInterface::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
-            Listing::listing(initialCodeTrace)
+            MainUserInterface::listing(initialCodeTrace)
         }
     end
 
-    # Listing::listing(initialCodeTrace)
+    # MainUserInterface::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
 
@@ -247,11 +247,11 @@ class Listing
 
             spacecontrol.putsline ""
 
-            items = Listing::items2()
+            items = MainUserInterface::items2()
             items
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    line = MainUserInterface::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }
@@ -263,7 +263,7 @@ class Listing
                 return
             end
 
-            ListingCommandsAndInterpreters::interpreter(input, store)
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 

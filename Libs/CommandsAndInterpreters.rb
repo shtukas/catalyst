@@ -1,8 +1,8 @@
 # encoding: UTF-8
 
-class ListingCommandsAndInterpreters
+class CommandsAndInterpreters
 
-    # ListingCommandsAndInterpreters::commands()
+    # CommandsAndInterpreters::commands()
     def self.commands()
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
@@ -14,7 +14,7 @@ class ListingCommandsAndInterpreters
         ].join("\n")
     end
 
-    # ListingCommandsAndInterpreters::interpreter(input, store)
+    # CommandsAndInterpreters::interpreter(input, store)
     def self.interpreter(input, store)
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
@@ -320,7 +320,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("commands", input) then
-            puts ListingCommandsAndInterpreters::commands().yellow
+            puts CommandsAndInterpreters::commands().yellow
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -536,7 +536,7 @@ class ListingCommandsAndInterpreters
         end
 
         if Interpreting::match("speed", input) then
-            Listing::speedTest()
+            MainUserInterface::speedTest()
             return
         end
 

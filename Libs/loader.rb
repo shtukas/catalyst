@@ -151,8 +151,8 @@ require_relative "Galaxy.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 
-require_relative "Listing.rb"
-require_relative "ListingCommandsAndInterpreters.rb"
+require_relative "MainUserInterface.rb"
+require_relative "CommandsAndInterpreters.rb"
 
 require_relative "InMemoryCache.rb"
 

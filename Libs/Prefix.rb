@@ -12,7 +12,7 @@ class Prefix
 
         if items[0]["mikuType"] == "NxBlock" then
             children = NxBlocks::elementsForPrefix(items[0])
-                        .select{|i| Listing::listable(i) }
+                        .select{|i| MainUserInterface::listable(i) }
                         .first(6)
             if children.size > 0 then
                 return Prefix::prefix(children + items)
