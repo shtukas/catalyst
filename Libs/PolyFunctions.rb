@@ -20,7 +20,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxBlock" then
+        if item["mikuType"] == "NxListing" then
             core = item["engine-0020"]
             accounts << {
                 "description" => "core: #{core["uuid"]}",
@@ -101,8 +101,8 @@ class PolyFunctions
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
-        if item["mikuType"] == "NxBlock" then
-            return NxBlocks::toString(item, context)
+        if item["mikuType"] == "NxListing" then
+            return NxListings::toString(item, context)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)

@@ -61,7 +61,7 @@ class TxPayload
 
     # TxPayload::edit(item)
     def self.edit(item)
-        return if item["mikuType"] == "NxBlock"
+        return if item["mikuType"] == "NxListing"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["coredata", "note", "textfile", "file system reference"])
@@ -99,7 +99,7 @@ class TxPayload
 
     # TxPayload::access(item)
     def self.access(item)
-        return if item["mikuType"] == "NxBlock"
+        return if item["mikuType"] == "NxListing"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
             options = [

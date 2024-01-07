@@ -132,7 +132,7 @@ class MainUserInterface
             NxBackups::listingItems(),
             NxMonitors::listingItems(),
             #NxTasks::engined(),
-            #NxBlocks::listingItems(),
+            #NxListings::listingItems(),
             Engined::listingItems(),
         ]
             .flatten
@@ -176,7 +176,7 @@ class MainUserInterface
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxBlocks::listingItems()", lambda{ NxBlocks::listingItems() })
+        spot.contest_entry("NxListings::listingItems()", lambda{ NxListings::listingItems() })
         spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::listingItems()", lambda{ Waves::listingItems() })
         spot.end_contest()

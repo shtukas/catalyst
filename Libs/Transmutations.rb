@@ -4,10 +4,10 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         map = {
-            "NxOndate"  => ["NxMonitor" ,"NxTask", "NxBlock"],
+            "NxOndate"  => ["NxMonitor" ,"NxTask", "NxListing"],
             "NxTask"    => ["NxMonitor"],
-            "NxMonitor" => ["NxTask", "NxBlock"],
-            "NxBlock"   => ["NxTask"],
+            "NxMonitor" => ["NxTask", "NxListing"],
+            "NxListing"   => ["NxTask"],
             "Wave"      => ["NxMission"],
         }
         if map[item["mikuType"]].nil? then
@@ -20,14 +20,14 @@ class Transmutations
 
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
-        if item["mikuType"] == "NxBlock" and targetMikuType == "NxTask" then
-            if NxBlocks::elementsInNaturalCruiseOrder(item).size.size > 0 then
+        if item["mikuType"] == "NxListing" and targetMikuType == "NxTask" then
+            if NxListings::elementsInNaturalCruiseOrder(item).size.size > 0 then
                 Cubes2::setAttribute(item["uuid"], "mikuType", "NxTask")
                 item = Cubes2::itemOrNull(item["uuid"])
                 puts JSON.pretty_generate(item)
-                NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+                NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             else
-                puts "We cannot trnasmute a NxCruise with non empty cargo. Found #{NxBlocks::elementsInNaturalCruiseOrder(item).size} elements"
+                puts "We cannot trnasmute a NxCruise with non empty cargo. Found #{NxListings::elementsInNaturalCruiseOrder(item).size} elements"
                 LucilleCore::pressEnterToContinue()
             end
             return
@@ -42,32 +42,32 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTask")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxOndate" and targetMikuType == "NxBlock" then
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxListing" then
             core = TxCores::interactivelyMakeNew()
             Cubes2::setAttribute(item["uuid"], "engine-0020", core)
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxBlock")
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxListing")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxMonitor" and targetMikuType == "NxBlock" then
+        if item["mikuType"] == "NxMonitor" and targetMikuType == "NxListing" then
             core = TxCores::interactivelyMakeNew()
             Cubes2::setAttribute(item["uuid"], "engine-0020", core)
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxBlock")
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxListing")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
         if item["mikuType"] == "NxMonitor" and targetMikuType == "NxTask" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTask")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxMonitor" then
@@ -79,7 +79,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"

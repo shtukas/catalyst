@@ -31,8 +31,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBlock" then
-            NxBlocks::access(item)
+        if item["mikuType"] == "NxListing" then
+            NxListings::access(item)
             return
         end
 
@@ -103,8 +103,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBlock" then
-            NxBlocks::done(item)
+        if item["mikuType"] == "NxListing" then
+            NxListings::done(item)
             return
         end
 
@@ -191,8 +191,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBlock" then
-            NxBlocks::natural(item)
+        if item["mikuType"] == "NxListing" then
+            NxListings::natural(item)
             return
         end
 
@@ -283,8 +283,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBlock" then
-            if NxBlocks::elementsInNaturalCruiseOrder(item).size > 0 then
+        if item["mikuType"] == "NxListing" then
+            if NxListings::elementsInNaturalCruiseOrder(item).size > 0 then
                 puts "You cannot delete '#{PolyFunctions::toString(item).green}' because the stack is not empty"
                 LucilleCore::pressEnterToContinue()
                 return

@@ -44,7 +44,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            blocks = NxBlocks::selectZeroOrMore()
+            blocks = NxListings::selectZeroOrMore()
             donation = ((item["donation-1752"] || []) + blocks.map{|block| block["uuid"] }).uniq
             Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
             return
@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -91,19 +91,19 @@ class CommandsAndInterpreters
             mission = NxMissions::interactivelyIssueNewOrNull()
             return if mission.nil?
             puts JSON.pretty_generate(mission)
-            NxBlocks::interactivelySelectBlockAndAddTo(mission["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(mission["uuid"])
             return
         end
 
         if Interpreting::match("block", input) then
-            item = NxBlocks::interactivelyIssueNewOrNull()
+            item = NxListings::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("blocks", input) then
-            NxBlocks::program2()
+            NxListings::program2()
             return
         end
 
@@ -140,8 +140,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxBlock" then
-                NxBlocks::pile(item)
+            if item["mikuType"] == "NxListing" then
+                NxListings::pile(item)
                 return
             end
             NxStrats::interactivelyPile(item)
@@ -152,7 +152,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
 
@@ -165,7 +165,7 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            NxBlocks::selectSubsetAndMoveToSelectedBlock(store.items())
+            NxListings::selectSubsetAndMoveToSelectedBlock(store.items())
             return
         end
 
@@ -176,7 +176,7 @@ class CommandsAndInterpreters
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding block for task: '#{PolyFunctions::toString(task)}'"
-                block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
+                block = NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull()
                 if block then
                     Cubes2::setAttribute(task["uuid"], "donation-1752", [block["uuid"]])
                 end
@@ -203,7 +203,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxBlocks::interactivelySelectBlockAndAddTo(item["uuid"])
+            NxListings::interactivelySelectBlockAndAddTo(item["uuid"])
             return
         end
 
@@ -243,7 +243,7 @@ class CommandsAndInterpreters
                     next
                 end
                 if option == "cargo of block" then
-                    block = NxBlocks::interactivelySelectBlockUsingTopDownNavigationOrNull()
+                    block = NxListings::interactivelySelectBlockUsingTopDownNavigationOrNull()
                     next if block.nil?
                     Cubes2::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
                     return
@@ -299,8 +299,8 @@ class CommandsAndInterpreters
             puts "setting core for '#{PolyFunctions::toString(item).green}'"
             if item["mikuType"] == "NxOndate" or item["mikuType"] == "NxMonitor" then
                 puts "You are adding a core to a #{item["mikuType"]}"
-                if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxBlock ? ") then
-                    Transmutations::transmute2(item, "NxBlock")
+                if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxListing ? ") then
+                    Transmutations::transmute2(item, "NxListing")
                     item = Cubes2::itemOrNull(item["uuid"])
                     return
                 end
