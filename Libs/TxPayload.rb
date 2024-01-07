@@ -109,11 +109,17 @@ class TxPayload
                 item["cfsr-20231213"] ? "(cfsr)" : nil
             ]
             .compact
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            return if option.nil?
+            option = nil
+            return if options.size == 0
+            if options.size == 1 then
+                option = options.first
+            end
+            if options.size > 1 then
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+                return if option.nil?
+            end
             if option == CoreDataRefStrings::referenceToStringOrNull(item["field11"]) then
                 CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
-                next
             end
             if option == "note" then
                 note = item["note-1531"] || ""
@@ -121,7 +127,6 @@ class TxPayload
                 note = note.size > 0 ? note : nil
                 item["note-1531"] = note
                 Cubes2::setAttribute(item["uuid"], "note-1531", note)
-                next
             end
             if option == "textfile" then
                 todotextfile = item["todotextfile-1312"]
@@ -135,12 +140,13 @@ class TxPayload
                 end
                 puts "found: #{location}"
                 system("open '#{location}'")
-                next
             end
             if option == "file system reference" then
                 reference = item["cfsr-20231213"]
                 FileSystemReferences::accessReference(reference)
-                next
+            end
+            if options.size == 1 then
+                break
             end
         }
     end
