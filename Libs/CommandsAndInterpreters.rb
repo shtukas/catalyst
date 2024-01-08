@@ -20,6 +20,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 Ox1::detach(item)
+                NxBalls::stop(item)
                 DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
                 return
             end
