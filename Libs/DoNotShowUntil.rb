@@ -15,15 +15,21 @@ class DoNotShowUntil1
         filepath
     end
 
-    # DoNotShowUntil1::filepaths()
-    def self.filepaths()
+    # DoNotShowUntil1::databaseFilepaths()
+    def self.databaseFilepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 
+    # DoNotShowUntil1::recordFilepaths()
+    def self.recordFilepaths()
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
+            .select{|location| location[-7, 7] == ".record" }
+    end
+
     # DoNotShowUntil1::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
-        DoNotShowUntil1::filepaths()
+        DoNotShowUntil1::databaseFilepaths()
             .map{|filepath|
                 unixtime = 0
                 db = SQLite3::Database.new(filepath)
@@ -47,6 +53,7 @@ class DoNotShowUntil1
         if item then
             Ox1::detach(item)
         end
+
         filepath = DoNotShowUntil1::instanceFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -55,6 +62,14 @@ class DoNotShowUntil1
         db.execute "delete from DoNotShowUntil where _id_=?", [id]
         db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [id, unixtime]
         db.close
+
+        record = {
+            "id" => id,
+            "unixtime" => unixtime
+        }
+        filename = "#{CommonUtils::timeStringL22()}.record"
+        filepath = "#{Config::pathToCatalystDataRepository()}/DoNotShowUntil/#{filename}"
+        File.open(filepath, "w"){|f| f.puts(JSON.generate(record)) }
 
         XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", unixtime)
         puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}".yellow

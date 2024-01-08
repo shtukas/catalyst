@@ -85,8 +85,8 @@ class CoreData
         end
 
         doNotShowUntil = {}
-        DoNotShowUntil1::filepaths()
-            .map{|filepath|
+        DoNotShowUntil1::databaseFilepaths()
+            .each{|filepath|
                 unixtime = 0
                 db = SQLite3::Database.new(filepath)
                 db.busy_timeout = 117
@@ -97,10 +97,14 @@ class CoreData
                 end
                 db.close
             }
+        DoNotShowUntil1::recordFilepaths().each{|filepath|
+            record = JSON.parse(IO.read(filepath))
+            doNotShowUntil[record["id"]] =  [(doNotShowUntil[record["id"]] || 0), record["unixtime"]].max
+        }
 
         bank = []
         Bank1::filepaths()
-            .map{|filepath|
+            .each{|filepath|
                 value = 0
                 db = SQLite3::Database.new(filepath)
                 db.busy_timeout = 117
