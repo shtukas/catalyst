@@ -41,7 +41,7 @@ class NxListings
         if item["special-circumstances-bottom-task-1939"] then
             return "🔥"
         end
-        NxListings::isTopBlock(item) ? "🔺" : "🔸"
+        NxListings::isRootListing(item) ? "🔺" : "🔸"
     end
 
     # NxListings::toString(item, context = nil)
@@ -71,19 +71,19 @@ class NxListings
             .flatten
     end
 
-    # NxListings::isTopBlock(item)
-    def self.isTopBlock(item)
+    # NxListings::isRootListing(item)
+    def self.isRootListing(item)
         item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil? 
     end
 
     # NxListings::topBlocks()
     def self.topBlocks()
         Cubes2::mikuType("NxListing")
-            .select{|item| NxListings::isTopBlock(item) }
+            .select{|item| NxListings::isRootListing(item) }
     end
 
-    # NxListings::blocksInRecursiveDescent()
-    def self.blocksInRecursiveDescent()
+    # NxListings::listingsInRecursiveDescent()
+    def self.listingsInRecursiveDescent()
         topBlocks = NxListings::topBlocks()
                     .sort_by{|item| NxListings::dayCompletionRatio(item) }
         NxListings::recursiveDescent(topBlocks)
@@ -91,14 +91,14 @@ class NxListings
 
     # NxListings::muiItems()
     def self.muiItems()
-        NxListings::blocksInRecursiveDescent()
+        NxListings::listingsInRecursiveDescent()
             .select{|block| NxListings::dayCompletionRatio(block) < 1 }
             .sort_by{|block| NxListings::dayCompletionRatio(block) }
     end
 
-    # NxListings::elementsInNaturalOrder(cruiser)
-    def self.elementsInNaturalOrder(cruiser)
-        if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+    # NxListings::elementsInNaturalOrder(listing)
+    def self.elementsInNaturalOrder(listing)
+        if listing["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             if NxListings::bufferInCardinal() > 0 then
                 return []
             end
@@ -106,30 +106,30 @@ class NxListings
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
-        if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
+        if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::muiItems().select{|item| !item["interruption"] }
         end
-        if cruiser["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
+        if listing["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
             return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
         end
         Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
+            .select{|item| item["parentuuid-0032"] == listing["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxListings::elementsForPrefix(cruiser)
-    def self.elementsForPrefix(cruiser)
-        if cruiser["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
+    # NxListings::elementsForPrefix(listing)
+    def self.elementsForPrefix(listing)
+        if listing["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
-        if cruiser["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
+        if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::muiItems().select{|item| !item["interruption"] }
         end
 
         items = Cubes2::items()
-                .select{|item| item["parentuuid-0032"] == cruiser["uuid"] }
+                .select{|item| item["parentuuid-0032"] == listing["uuid"] }
 
         i1, i2 = items.partition{|item| item["mikuType"] == "NxListing" }
         i1.select{|item| NxListings::dayCompletionRatio(item) < 1 }.sort_by{|item| NxListings::dayCompletionRatio(item) } + i2.sort_by{|item| item["global-positioning"] || 0 }
@@ -190,14 +190,57 @@ class NxListings
         TxCores::coreDayCompletionRatio(item["engine-0020"])
     end
 
+    # NxListings::toString3(store, item)
+    def self.toString3(store, item)
+        return nil if item.nil?
+        storePrefix = store ? "(#{store.prefixString()})" : "     "
+        global_positioning = "[#{"%7.3f" % (item["global-positioning"] || 0)}]"
+        line = "#{storePrefix}#{global_positioning}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+
+        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
+    # NxListings::interactivelySelectPositionOrNull(listing)
+    def self.interactivelySelectPositionOrNull(listing)
+        elements = NxListings::elementsInNaturalOrder(listing)
+        elements.first(20).each{|item|
+            puts "#{NxListings::toString3(nil, item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
+        if position == "first" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+        end
+        position = position.to_f
+        position
+    end
+
     # ------------------
     # Ops
 
     # NxListings::interactivelySelectOneAndAddTo(itemuuid)
     def self.interactivelySelectOneAndAddTo(itemuuid)
-        block = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
-        return if block.nil?
-        Cubes2::setAttribute(itemuuid, "parentuuid-0032", block["uuid"])
+        listing = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+        return if listing.nil?
+        Cubes2::setAttribute(itemuuid, "parentuuid-0032", listing["uuid"])
+        position = NxListings::interactivelySelectPositionOrNull(listing)
+        if position then
+            Cubes2::setAttribute(itemuuid, "global-positioning", position)
+        end
     end
 
     # NxListings::access(item)
@@ -224,27 +267,6 @@ class NxListings
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 Cubes2::setAttribute(task["uuid"], "global-positioning", NxListings::topPosition(item) - 1)
             }
-    end
-
-    # NxListings::toString3(store, item)
-    def self.toString3(store, item)
-        return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "     "
-        line = "#{storePrefix}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
-
-        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
     end
 
     # NxListings::program1(item)
