@@ -80,6 +80,7 @@ class CoreData
         Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
+            next if !File.exist?(path) # propection against a file renaming during this operation
             item = Cubes1::filepathToItem(path)
             itemsmap[item["uuid"]] = item
         end
