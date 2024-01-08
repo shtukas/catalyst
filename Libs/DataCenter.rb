@@ -85,7 +85,7 @@ class CoreData
         end
 
         doNotShowUntil = {}
-        DoNotShowUntil1::databaseFilepaths()
+        DoNotShowUntil1::database_filepaths()
             .each{|filepath|
                 unixtime = 0
                 db = SQLite3::Database.new(filepath)
@@ -97,13 +97,13 @@ class CoreData
                 end
                 db.close
             }
-        DoNotShowUntil1::recordFilepaths().each{|filepath|
+        DoNotShowUntil1::record_filepaths().each{|filepath|
             record = JSON.parse(IO.read(filepath))
             doNotShowUntil[record["id"]] =  [(doNotShowUntil[record["id"]] || 0), record["unixtime"]].max
         }
 
         bank = []
-        Bank1::filepaths()
+        Bank1::database_filepaths()
             .each{|filepath|
                 value = 0
                 db = SQLite3::Database.new(filepath)
@@ -119,6 +119,10 @@ class CoreData
                 end
                 db.close
             }
+        Bank1::record_filepaths().each{|filepath|
+            record = JSON.parse(IO.read(filepath))
+            bank << record # The stored records have exactly the shape of data center bank items
+        }
 
         {
             "items"          => itemsmap,

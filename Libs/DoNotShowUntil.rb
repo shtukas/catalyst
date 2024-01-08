@@ -15,21 +15,30 @@ class DoNotShowUntil1
         filepath
     end
 
-    # DoNotShowUntil1::databaseFilepaths()
-    def self.databaseFilepaths()
+    # DoNotShowUntil1::database_filepaths()
+    def self.database_filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 
-    # DoNotShowUntil1::recordFilepaths()
-    def self.recordFilepaths()
+    # DoNotShowUntil1::record_filepaths()
+    def self.record_filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
             .select{|location| location[-7, 7] == ".record" }
+            .map{|filepath|
+                record = JSON.parse(IO.read(filepath))
+                if record["unixtime"] < Time.new.to_i then
+                    FileUtils.rm(filepath)
+                    nil
+                else
+                    filepath
+                end
+            }.compact
     end
 
     # DoNotShowUntil1::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
-        DoNotShowUntil1::databaseFilepaths()
+        DoNotShowUntil1::database_filepaths()
             .map{|filepath|
                 unixtime = 0
                 db = SQLite3::Database.new(filepath)
@@ -53,15 +62,6 @@ class DoNotShowUntil1
         if item then
             Ox1::detach(item)
         end
-
-        filepath = DoNotShowUntil1::instanceFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute "delete from DoNotShowUntil where _id_=?", [id]
-        db.execute "insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [id, unixtime]
-        db.close
 
         record = {
             "id" => id,

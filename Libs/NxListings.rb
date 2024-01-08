@@ -86,7 +86,7 @@ class NxListings
     def self.listingsInRecursiveDescent()
         topBlocks = NxListings::topBlocks()
                     .sort_by{|item| NxListings::dayCompletionRatio(item) }
-        NxListings::recursiveDescent(topBlocks)
+        NxListings::recursiveDescent(daylies + topBlocks)
     end
 
     # NxListings::muiItems()
