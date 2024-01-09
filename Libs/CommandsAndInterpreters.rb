@@ -45,9 +45,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            listings = NxListings::selectZeroOrMore()
-            donation = ((item["donation-1752"] || []) + listings.map{|listing| listing["uuid"] }).uniq
-            Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
+            NxListings::upgradeItemDonations(item)
             return
         end
 
@@ -81,7 +79,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+            NxListings::upgradeItemDonations(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -92,7 +90,7 @@ class CommandsAndInterpreters
             mission = NxMissions::interactivelyIssueNewOrNull()
             return if mission.nil?
             puts JSON.pretty_generate(mission)
-            NxListings::interactivelySelectOneAndAddTo(mission["uuid"])
+            NxListings::upgradeItemDonations(mission)
             return
         end
 
@@ -204,7 +202,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+            NxListings::upgradeItemDonations(item)
             return
         end
 

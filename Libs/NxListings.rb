@@ -354,4 +354,11 @@ class NxListings
     def self.done(item)
         DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
     end
+
+    # NxListings::upgradeItemDonations(item)
+    def self.upgradeItemDonations(item)
+        listings = NxListings::selectZeroOrMore()
+        donation = ((item["donation-1752"] || []) + listings.map{|listing| listing["uuid"] }).uniq
+        Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
+    end
 end

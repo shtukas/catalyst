@@ -51,7 +51,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxListing")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+            NxListings::upgradeItemDonations(item)
             return
         end
         if item["mikuType"] == "NxMonitor" and targetMikuType == "NxListing" then
@@ -60,7 +60,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxListing")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+            NxListings::upgradeItemDonations(item)
             return
         end
         if item["mikuType"] == "NxMonitor" and targetMikuType == "NxTask" then
@@ -79,7 +79,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+            NxListings::upgradeItemDonations(item)
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"
