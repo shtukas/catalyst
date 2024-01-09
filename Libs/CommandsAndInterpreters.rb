@@ -244,9 +244,7 @@ class CommandsAndInterpreters
                     next
                 end
                 if option == "in listing" then
-                    listing = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
-                    next if listing.nil?
-                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", listing["uuid"])
+                    NxListings::interactivelySelectOneAndAddTo(item["uuid"])
                     return
                 end
                 if option == "with own engine" then
