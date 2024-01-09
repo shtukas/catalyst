@@ -64,34 +64,14 @@ class NxListings
         0.30 + 0.20 * 1.to_f/(indx+1)
     end
 
-    # NxListings::recursiveDescent(blocks)
-    def self.recursiveDescent(blocks)
-        blocks
-            .map{|block| NxListings::elementsInNaturalOrder(block).select{|i| i["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) } + [block]}
-            .flatten
-    end
-
     # NxListings::isRootListing(item)
     def self.isRootListing(item)
         item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil? 
     end
 
-    # NxListings::topBlocks()
-    def self.topBlocks()
-        Cubes2::mikuType("NxListing")
-            .select{|item| NxListings::isRootListing(item) }
-    end
-
-    # NxListings::listingsInRecursiveDescent()
-    def self.listingsInRecursiveDescent()
-        topBlocks = NxListings::topBlocks()
-                    .sort_by{|item| NxListings::dayCompletionRatio(item) }
-        NxListings::recursiveDescent(daylies + topBlocks)
-    end
-
     # NxListings::muiItems()
     def self.muiItems()
-        NxListings::listingsInRecursiveDescent()
+        Cubes2::mikuType("NxListing")
             .select{|block| NxListings::dayCompletionRatio(block) < 1 }
             .sort_by{|block| NxListings::dayCompletionRatio(block) }
     end
@@ -112,7 +92,7 @@ class NxListings
         if listing["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
             return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
         end
-        Cubes2::items()
+        Cubes2::mikuType("NxTask")
             .select{|item| item["parentuuid-0032"] == listing["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
@@ -127,38 +107,16 @@ class NxListings
         if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::muiItems().select{|item| !item["interruption"] }
         end
-
-        items = Cubes2::items()
-                .select{|item| item["parentuuid-0032"] == listing["uuid"] }
-
-        i1, i2 = items.partition{|item| item["mikuType"] == "NxListing" }
-        i1.select{|item| NxListings::dayCompletionRatio(item) < 1 }.sort_by{|item| NxListings::dayCompletionRatio(item) } + i2.sort_by{|item| item["global-positioning"] || 0 }
+        Cubes2::mikuType("NxTask")
+            .select{|item| item["parentuuid-0032"] == listing["uuid"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxListings::interactivelySelectOneTopBlockOrNull()
-    def self.interactivelySelectOneTopBlockOrNull()
-        topBlocks = NxListings::topBlocks()
+    # NxListings::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        listings = Cubes2::mikuType("NxListing")
                     .sort_by{|item| NxListings::dayCompletionRatio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("block", topBlocks, lambda{|item| NxListings::toString(item) })
-    end
-
-    # NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(block = nil)
-    def self.interactivelySelectOneUsingTopDownNavigationOrNull(block = nil)
-        if block.nil? then
-            block = NxListings::interactivelySelectOneTopBlockOrNull()
-            return nil if block.nil?
-            return NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(block)
-        end
-        childrenblocks = NxListings::elementsInNaturalOrder(block).select{|item| item["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) }
-        if childrenblocks.empty? then
-            return block
-        end
-        selected = LucilleCore::selectEntityFromListOfEntitiesOrNull("block", [block] + childrenblocks, lambda{|item| NxListings::toString(item) })
-        return if selected.nil?
-        if selected["uuid"] == block["uuid"] then
-            return selected
-        end
-        NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(selected)
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("block", listings, lambda{|item| NxListings::toString(item) })
     end
 
     # NxListings::selectZeroOrMore()
@@ -173,7 +131,7 @@ class NxListings
     def self.selectSubsetOfItemsAndMove(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        block = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+        block = NxListings::interactivelySelectOneOrNull()
         return if block.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", block["uuid"])
@@ -234,7 +192,7 @@ class NxListings
 
     # NxListings::interactivelySelectOneAndAddTo(itemuuid)
     def self.interactivelySelectOneAndAddTo(itemuuid)
-        listing = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+        listing = NxListings::interactivelySelectOneOrNull()
         return if listing.nil?
         Cubes2::setAttribute(itemuuid, "parentuuid-0032", listing["uuid"])
         position = NxListings::interactivelySelectPositionOrNull(listing)
@@ -359,7 +317,7 @@ class NxListings
     def self.program2()
         loop {
 
-            items = NxListings::topBlocks()
+            items = Cubes2::mikuType("NxListing")
                         .sort_by{|item| NxListings::dayCompletionRatio(item) }
             return if items.empty?
 

@@ -177,7 +177,7 @@ class CommandsAndInterpreters
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding listing for task: '#{PolyFunctions::toString(task)}'"
-                listing = NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+                listing = NxListings::interactivelySelectOneOrNull()
                 if listing then
                     Cubes2::setAttribute(task["uuid"], "donation-1752", [listing["uuid"]])
                 end
