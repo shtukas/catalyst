@@ -285,7 +285,7 @@ class NxListings
             puts  MainUserInterface::toString2(store, item)
             puts  ""
 
-            Prefix::prefix(NxListings::elementsInNaturalOrder(item))
+            NxListings::elementsInNaturalOrder(item)
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts  NxListings::toString3(store, item)
