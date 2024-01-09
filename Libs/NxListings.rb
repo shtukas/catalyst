@@ -203,12 +203,12 @@ class NxListings
 
     # NxListings::access(item)
     def self.access(item)
-        NxListings::program1(item)
+        NxListings::program1(item, false)
     end
 
     # NxListings::natural(item)
     def self.natural(item)
-        NxListings::program1(item)
+        NxListings::program1(item, false)
     end
 
     # NxListings::pile(item)
@@ -227,8 +227,8 @@ class NxListings
             }
     end
 
-    # NxListings::program1(item)
-    def self.program1(item)
+    # NxListings::program1(item, withPrefix)
+    def self.program1(item, withPrefix)
         loop {
 
             item = Cubes2::itemOrNull(item["uuid"])
@@ -243,7 +243,12 @@ class NxListings
             puts  MainUserInterface::toString2(store, item)
             puts  ""
 
-            NxListings::elementsInNaturalOrder(item)
+            elements = NxListings::elementsInNaturalOrder(item)
+            if withPrefix then
+                elements = Prefix::prefix(elements)
+            end
+
+            elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts  NxListings::toString3(store, item)
@@ -251,7 +256,7 @@ class NxListings
 
             puts ""
 
-            puts "top | pile | task | mission | block | sort | move"
+            puts "top | pile | task | mission | block | sort | move | with-prefix"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -308,6 +313,11 @@ class NxListings
                 next
             end
 
+            if input == "with-prefix" then
+                NxListings::program1(item, true)
+                next
+            end
+
             puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
@@ -342,7 +352,7 @@ class NxListings
                 indx = input[2, 9].strip.to_i
                 item = store.get(indx)
                 next if item.nil?
-                NxListings::program1(item)
+                NxListings::program1(item, false)
                 next
             end
 
