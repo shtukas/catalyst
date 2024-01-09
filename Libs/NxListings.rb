@@ -343,6 +343,7 @@ class NxListings
                 item = store.get(indx)
                 next if item.nil?
                 NxListings::program1(item)
+                next
             end
 
             puts ""
