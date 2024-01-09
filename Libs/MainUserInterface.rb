@@ -100,6 +100,7 @@ class MainUserInterface
 
     # MainUserInterface::items()
     def self.items()
+        engined1, engined2 = Engined::muiItems()
         [
             Ox1::items(),
             DropBox::items(),
@@ -110,12 +111,10 @@ class MainUserInterface
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxMonitors::muiItems(),
-            #NxTasks::engined(),
-            #NxListings::muiItems(),
-            Engined::muiItems(),
+            engined1,
             Waves::muiItems().select{|item| !item["interruption"] },
-            Cubes2::mikuType("NxListing")
-                .select{|item| item["special-circumstances-bottom-task-1939"] }
+            Cubes2::mikuType("NxListing").select{|item| item["special-circumstances-bottom-task-1939"] },
+            engined2
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }

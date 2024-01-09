@@ -14,7 +14,6 @@ class Engined
                     .select{|listing| listing["engine-0020"]["type"] != "daily-hours" }
                     .sort_by{|item| NxListings::dayCompletionRatio(item) }
 
-        (tasks + listings1 + listings2)
-            .select{|item| NxListings::dayCompletionRatio(item) < 1 }
+        (tasks + listings1 + listings2).partition{|item| NxListings::dayCompletionRatio(item) < 1 }
     end
 end
