@@ -6,11 +6,14 @@ class Engined
         tasks = Cubes2::mikuType("NxTask").select{|item| item["engine-0020"] }
                 .sort_by{|item| NxListings::dayCompletionRatio(item) }
 
-        listings1 = Cubes2::mikuType("NxListing")
+        listings = Cubes2::mikuType("NxListing")
+        listings = listings.select{|listing| NxListings::shouldIncludeInMuiItems(listing) }
+
+        listings1 = listings
                     .select{|listing| listing["engine-0020"]["type"] == "daily-hours" }
                     .sort_by{|item| NxListings::dayCompletionRatio(item) }
 
-        listings2 = Cubes2::mikuType("NxListing")
+        listings2 = listings
                     .select{|listing| listing["engine-0020"]["type"] != "daily-hours" }
                     .sort_by{|item| NxListings::dayCompletionRatio(item) }
 

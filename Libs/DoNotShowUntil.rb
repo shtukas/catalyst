@@ -15,12 +15,6 @@ class DoNotShowUntil1
         filepath
     end
 
-    # DoNotShowUntil1::database_filepaths()
-    def self.database_filepaths()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
-            .select{|location| location[-8, 8] == ".sqlite3" }
-    end
-
     # DoNotShowUntil1::record_filepaths()
     def self.record_filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
@@ -38,22 +32,7 @@ class DoNotShowUntil1
 
     # DoNotShowUntil1::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
-        DoNotShowUntil1::database_filepaths()
-            .map{|filepath|
-                unixtime = 0
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select * from DoNotShowUntil where _id_=?", [id]) do |row|
-                    unixtime = row["_unixtime_"]
-                end
-                db.close
-                unixtime
-            }
-            .max
-        return nil if unixtime == 0
-        unixtime
+        # not implemented
     end
 
     # DoNotShowUntil1::setUnixtime(id, unixtime)

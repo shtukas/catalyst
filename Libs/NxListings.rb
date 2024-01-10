@@ -187,6 +187,14 @@ class NxListings
         position
     end
 
+    # NxListings::shouldIncludeInMuiItems(listing)
+    def self.shouldIncludeInMuiItems(listing)
+        if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
+            return Waves::muiItems().select{|item| !item["interruption"] }.size > 0
+        end
+        true
+    end
+
     # ------------------
     # Ops
 

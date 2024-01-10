@@ -19,12 +19,6 @@ class Bank1
         filepath
     end
 
-    # Bank1::database_filepaths()
-    def self.database_filepaths()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
-            .select{|location| location[-8, 8] == ".sqlite3" }
-    end
-
     # Bank1::record_filepaths()
     def self.record_filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
@@ -42,38 +36,12 @@ class Bank1
 
     # Bank1::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
-        Bank1::database_filepaths()
-            .map{|filepath|
-                value = 0
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select * from Bank where _id_=? and _date_=?", [uuid, date]) do |row|
-                    value = value + row["_value_"]
-                end
-                db.close
-                value
-            }
-            .inject(0, :+)
+        # not implemented
     end
 
     # Bank1::getValue(uuid)
     def self.getValue(uuid)
-        Bank1::database_filepaths()
-            .map{|filepath|
-                value = 0
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select * from Bank where _id_=?", [uuid]) do |row|
-                    value = value + row["_value_"]
-                end
-                db.close
-                value
-            }
-            .inject(0, :+)
+        # not implemented
     end
 
     # Bank1::put(uuid, date, value)

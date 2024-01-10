@@ -86,40 +86,12 @@ class CoreData
         end
 
         doNotShowUntil = {}
-        DoNotShowUntil1::database_filepaths()
-            .each{|filepath|
-                unixtime = 0
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select * from DoNotShowUntil", []) do |row|
-                    doNotShowUntil[row["_id_"]] =  [(doNotShowUntil[row["_id_"]] || 0), row["_unixtime_"]].max
-                end
-                db.close
-            }
         DoNotShowUntil1::record_filepaths().each{|filepath|
             record = JSON.parse(IO.read(filepath))
             doNotShowUntil[record["id"]] =  [(doNotShowUntil[record["id"]] || 0), record["unixtime"]].max
         }
 
         bank = []
-        Bank1::database_filepaths()
-            .each{|filepath|
-                value = 0
-                db = SQLite3::Database.new(filepath)
-                db.busy_timeout = 117
-                db.busy_handler { |count| true }
-                db.results_as_hash = true
-                db.execute("select * from Bank", []) do |row|
-                    bank << {
-                        "id"    => row["_id_"],
-                        "date"  => row["_date_"],
-                        "value" => row["_value_"],
-                    }
-                end
-                db.close
-            }
         Bank1::record_filepaths().each{|filepath|
             record = JSON.parse(IO.read(filepath))
             bank << record # The stored records have exactly the shape of data center bank items
