@@ -257,9 +257,9 @@ class NxListings
             end
 
             elements
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts  NxListings::toString3(store, item)
+                .each{|element|
+                    store.register(element, MainUserInterface::canBeDefault(element))
+                    puts  NxListings::toString3(store, element)
                 }
 
             puts ""
@@ -274,6 +274,10 @@ class NxListings
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
+                position = NxListings::interactivelySelectPositionOrNull(item)
+                if position then
+                    Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+                end
                 next
             end
 
