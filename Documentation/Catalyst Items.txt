@@ -1,4 +1,7 @@
-Catalyst items are json object with at least a uuid ("uuid") and a miku type ("mikuType").
+Catalyst items are json object with at least 
+    - uuid
+    - mikuType
+    - unixtime
 
 Cross types conventions (all optional):
 

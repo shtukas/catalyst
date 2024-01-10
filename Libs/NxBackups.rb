@@ -38,6 +38,7 @@ class NxBackups
                 next if !missinguuids.include?(uuid)
                 puts "Creating missing NxBackup: #{line}"
                 Cubes2::itemInit(uuid, "NxBackup")
+                Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
                 Cubes2::setAttribute(uuid, "description", description)
                 Cubes2::setAttribute(uuid, "periodInDays", period.to_f)
             }

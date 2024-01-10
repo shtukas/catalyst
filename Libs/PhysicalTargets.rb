@@ -12,6 +12,7 @@ class PhysicalTargets
         dailyTarget = dailyTarget.to_i
         uuid = SecureRandom.uuid
         Cubes2::itemInit(uuid, "PhysicalTarget")
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "description", description)
         Cubes2::setAttribute(uuid, "dailyTarget", dailyTarget)
         Cubes2::setAttribute(uuid, "date", CommonUtils::today())
