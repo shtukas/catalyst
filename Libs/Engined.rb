@@ -6,7 +6,7 @@ class Engined
         tasks = Cubes2::mikuType("NxTask").select{|item| item["engine-0020"] }
                 .sort_by{|item| NxListings::dayCompletionRatio(item) }
 
-        listings = Cubes2::mikuType("NxListing")
+        listings = NxListings::topListings()
         listings = listings.select{|listing| NxListings::shouldIncludeInMuiItems(listing) }
 
         listings1 = listings
