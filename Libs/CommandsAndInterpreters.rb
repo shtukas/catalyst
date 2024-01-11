@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | listing | monitor | priority | stack | mission",
-            "divings       : anniversaries | ondates | waves | desktop | listings | monitors | engines | missions",
+            "divings       : anniversaries | ondates | waves | desktop | listings | monitors | engines | missions | backups",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -103,6 +103,12 @@ class CommandsAndInterpreters
 
         if Interpreting::match("listings", input) then
             NxListings::program2()
+            return
+        end
+
+        if Interpreting::match("backups", input) then
+            items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
+            Catalyst::program2(items)
             return
         end
 

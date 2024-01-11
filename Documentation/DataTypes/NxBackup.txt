@@ -4,3 +4,4 @@ NxBackup
     - "mikuType"     : "NxBackup"
     - "description"  : String
     - "periodInDays" : Float
+    - "lastDone"     : Unixtime

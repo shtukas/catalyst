@@ -90,7 +90,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            DoNotShowUntil2::setUnixtime(item["uuid"], Time.new.to_i + item["periodInDays"]*86400)
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
+                Cubes2::setAttribute(item["uuid"], "lastDone", Time.new.to_i)
+            end
             return
         end
 
@@ -178,7 +180,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            XCache::set("1c959874-c958-469f-967a-690d681412ca:#{item["uuid"]}", Time.new.to_i)
+            PolyActions::done(item)
             return
         end
 
