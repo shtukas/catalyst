@@ -83,30 +83,30 @@ class NxListings
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
+    # NxListings::listingsWhichShouldNotHaveChildren()
+    def self.listingsWhichShouldNotHaveChildren()
+        [
+            "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3",
+            "1c699298-c26c-47d9-806b-e19f84fd5d75",
+            "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34"
+        ]
+    end
+
     # NxListings::elementsInNaturalOrder(listing)
     def self.elementsInNaturalOrder(listing)
         if listing["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             if NxListings::bufferInCardinal() > 0 then
                 return []
             end
-            return [
-                NxListings::children(listing),
-                Cubes2::mikuType("NxTask")
+            return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
-            ].flatten
         end
         if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
-            return [
-                NxListings::children(listing),
-                Waves::muiItems().select{|item| !item["interruption"] }
-            ].flatten
+            return Waves::muiItems().select{|item| !item["interruption"] }
         end
         if listing["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
-            return [
-                NxListings::children(listing),
-                Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
-            ].flatten
+            return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
         end
         children(listing)
     end
@@ -181,6 +181,7 @@ class NxListings
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
         listing = NxListings::interactivelySelectOneOrNull()
+        return if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
         return if listing.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", listing["uuid"])
@@ -251,6 +252,7 @@ class NxListings
     def self.interactivelySelectOneAndAddTo(itemuuid)
         listing = NxListings::interactivelySelectOneOrNull()
         return if listing.nil?
+        return if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
         Cubes2::setAttribute(itemuuid, "parentuuid-0032", listing["uuid"])
         position = NxListings::interactivelySelectPositionOrNull(listing)
         if position then
@@ -319,6 +321,7 @@ class NxListings
             return if input == ""
 
             if input == "task" then
+                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
@@ -331,6 +334,7 @@ class NxListings
             end
 
             if input == "listing" then
+                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
                 l = NxListings::interactivelyIssueNewOrNull()
                 next if l.nil?
                 puts JSON.pretty_generate(l)
@@ -343,6 +347,7 @@ class NxListings
             end
 
             if input == "top" then
+                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
                 line = LucilleCore::askQuestionAnswerAsString("description: ")
                 next if line == ""
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
@@ -363,6 +368,7 @@ class NxListings
             end
 
             if input == "pile" then
+                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
                 NxListings::pile(listing)
                 next
             end
