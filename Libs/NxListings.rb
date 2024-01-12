@@ -121,6 +121,9 @@ class NxListings
         if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
             return Waves::muiItems().select{|item| !item["interruption"] }
         end
+        if listing["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
+            return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }.take(1)
+        end
         Cubes2::items()
             .select{|item| item["parentuuid-0032"] == listing["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }

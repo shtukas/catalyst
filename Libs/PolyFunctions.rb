@@ -28,22 +28,22 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxMisson" then
-            block = Cubes2::itemOrNull("ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34") # block: missions (automatic)
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
+        if item["mikuType"] == "NxMission" then
+            listing = Cubes2::itemOrNull("ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34") # listing: missions (automatic)
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(listing)
         end
 
         if item["mikuType"] == "NxTask" then
             if NxTasks::isOrphan(item) then
-                block = Cubes2::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3") # orphaned tasks (automatic)
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
+                listing = Cubes2::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3") # orphaned tasks (automatic)
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(listing)
             end
         end
 
         if item["mikuType"] == "Wave" then
             if !item["interruption"] then
-                block = Cubes2::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75") # waves !interruption (automatic)
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(block)
+                listing = Cubes2::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75") # waves !interruption (automatic)
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(listing)
             end
         end
 
