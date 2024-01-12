@@ -135,6 +135,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
+            if item["engine-0020"] then
+                DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes2::destroy(item["uuid"])
@@ -199,7 +203,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxMonitor" then
-            NxMonitors::natural(item)
+            TxPayload::access(item)
             return
         end
 
