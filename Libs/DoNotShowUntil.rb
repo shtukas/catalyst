@@ -21,7 +21,7 @@ class DoNotShowUntil1
             .select{|location| location[-7, 7] == ".record" }
             .map{|filepath|
                 record = JSON.parse(IO.read(filepath))
-                if record["unixtime"] < Time.new.to_i then
+                if record["unixtime"] < Time.new.to_i or Cubes2::itemOrNull(record["id"]).nil? then
                     FileUtils.rm(filepath)
                     nil
                 else
