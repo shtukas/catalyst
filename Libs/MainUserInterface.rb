@@ -113,7 +113,6 @@ class MainUserInterface
             NxMonitors::muiItems(),
             engined1,
             Waves::muiItems().select{|item| !item["interruption"] },
-            Cubes2::mikuType("NxListing").select{|item| item["special-circumstances-bottom-task-1939"] },
             engined2
         ]
             .flatten

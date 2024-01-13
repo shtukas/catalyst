@@ -7,7 +7,6 @@ class Engined
             .sort_by{|item| NxListings::dayCompletionRatio(item) }
 
         listings = NxListings::topListings()
-            .select{|listing| NxListings::shouldIncludeInMuiItems(listing) }
 
         (tasks + listings)
             .sort_by{|item| NxListings::dayCompletionRatio(item) }

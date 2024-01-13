@@ -40,13 +40,6 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "Wave" then
-            if !item["interruption"] then
-                listing = Cubes2::itemOrNull("1c699298-c26c-47d9-806b-e19f84fd5d75") # waves !interruption (automatic)
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(listing)
-            end
-        end
-
         # Special Features
 
         if core = item["engine-0020"] then

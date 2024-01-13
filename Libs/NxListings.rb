@@ -38,9 +38,6 @@ class NxListings
 
     # NxListings::icon(item)
     def self.icon(item)
-        if item["special-circumstances-bottom-task-1939"] then
-            return "🔥"
-        end
         NxListings::isRootListing(item) ? "🔺" : "🔸"
     end
 
@@ -87,7 +84,6 @@ class NxListings
     def self.listingsWhichShouldNotHaveChildren()
         [
             "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3",
-            "1c699298-c26c-47d9-806b-e19f84fd5d75",
             "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34"
         ]
     end
@@ -102,9 +98,6 @@ class NxListings
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
         end
-        if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
-            return Waves::muiItems().select{|item| !item["interruption"] }
-        end
         if listing["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
             return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }
         end
@@ -117,9 +110,6 @@ class NxListings
             return Cubes2::mikuType("NxTask")
                     .select{|item| NxTasks::isOrphan(item) }
                     .sort_by{|item| item["global-positioning"] || 0 }
-        end
-        if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
-            return Waves::muiItems().select{|item| !item["interruption"] }
         end
         if listing["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then # missions (automatic)
             return Cubes2::mikuType("NxMission").sort_by{|item| item["lastDoneUnixtime"] }.take(1)
@@ -240,14 +230,6 @@ class NxListings
         position
     end
 
-    # NxListings::shouldIncludeInMuiItems(listing)
-    def self.shouldIncludeInMuiItems(listing)
-        if listing["uuid"] == "1c699298-c26c-47d9-806b-e19f84fd5d75" then # waves !interruption (automatic)
-            return Waves::muiItems().select{|item| !item["interruption"] }.size > 0
-        end
-        true
-    end
-
     # ------------------
     # Ops
 
@@ -344,7 +326,7 @@ class NxListings
                 Cubes2::setAttribute(l["uuid"], "parentuuid-0032", listing["uuid"])
                 position = NxListings::interactivelySelectPositionOrNull(listing)
                 if position then
-                    Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+                    Cubes2::setAttribute(l["uuid"], "global-positioning", position)
                 end
                 next
             end
