@@ -31,13 +31,6 @@ class TxCores
                 "hours"         => hours
             }
         end
-        if type == "blocking-until-done" then
-            return {
-                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
-                "mikuType"      => "TxCore",
-                "type"          => "blocking-until-done"
-            }
-        end
         if type == "monitor" then
             return {
                 "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
@@ -75,12 +68,6 @@ class TxCores
             x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
             return [0.8*x1 + 0.2*x2, x1].max
         end
-        if core["type"] == "blocking-until-done" then
-            return 0
-        end
-        if core["type"] == "monitor" then
-            return 0
-        end
         raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
     end
 
@@ -90,12 +77,6 @@ class TxCores
             return "".yellow
         end
         if context == "listing" then
-            return ""
-        end
-        if core["type"] == "blocking-until-done" then
-            return " (  0.00 %; blocking til done)".green
-        end
-        if core["type"] == "monitor" then
             return ""
         end
         if core["type"] == "weekly-hours" then
@@ -109,13 +90,6 @@ class TxCores
     # TxCores::suffix2(item)
     def self.suffix2(item)
         return "" if item["engine-0020"].nil?
-        if item["engine-0020"]["type"] == "blocking-until-done" then
-            puts "item: #{PolyFunctions::toString(item)}"
-            puts "core of type 'blocking-until-done' is deprecated, please make another one"
-            core = TxCores::interactivelyMakeNew()
-            Cubes2::setAttribute(item["uuid"], "engine-0020", core)
-            item["engine-0020"] = core
-        end
         TxCores::suffix1(item["engine-0020"])
     end
 end
