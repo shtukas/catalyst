@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | listing | monitor | priority | stack | mission",
-            "divings       : anniversaries | ondates | waves | desktop | listings | monitors | engines | missions | backups",
+            "divings       : anniversaries | ondates | waves | desktop | listings | engines | missions | backups",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -45,7 +45,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxListings::upgradeItemDonations(item)
+            NxProjects::upgradeItemDonations(item)
             return
         end
 
@@ -55,7 +55,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("monitor", input) then
-            item = NxMonitors::interactivelyIssueNewOrNull()
+            item = NxProjects::interactivelyIssueMonitorOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -79,7 +79,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxListings::upgradeItemDonations(item)
+            NxProjects::upgradeItemDonations(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -90,30 +90,24 @@ class CommandsAndInterpreters
             mission = NxMissions::interactivelyIssueNewOrNull()
             return if mission.nil?
             puts JSON.pretty_generate(mission)
-            NxListings::upgradeItemDonations(mission)
+            NxProjects::upgradeItemDonations(mission)
             return
         end
 
         if Interpreting::match("listing", input) then
-            item = NxListings::interactivelyIssueNewOrNull()
+            item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
         if Interpreting::match("listings", input) then
-            NxListings::program2()
+            NxProjects::program2()
             return
         end
 
         if Interpreting::match("backups", input) then
             items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
-            Catalyst::program2(items)
-            return
-        end
-
-        if Interpreting::match("monitors", input) then
-            items = Cubes2::mikuType("NxMonitor").sort_by{|item| item["datetime"] }
             Catalyst::program2(items)
             return
         end
@@ -128,7 +122,7 @@ class CommandsAndInterpreters
         if Interpreting::match("engines", input) then
             items = Cubes2::items()
                         .select{|item| item["engine-0020"] }
-                        .sort_by{|item| TxCores::coreDayCompletionRatio(item["engine-0020"]) }
+                        .sort_by{|item| TxCores::dayCompletionRatio(item["engine-0020"]) }
             Catalyst::program2(items)
             return
         end
@@ -145,8 +139,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxListing" then
-                NxListings::pile(item)
+            if item["mikuType"] == "NxProject" then
+                NxProjects::pile(item)
                 return
             end
             NxStrats::interactivelyPile(item)
@@ -157,7 +151,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+            NxProjects::interactivelySelectOneAndAddTo(item["uuid"])
             return
         end
 
@@ -170,7 +164,7 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            NxListings::selectSubsetOfItemsAndMove(store.items())
+            NxProjects::selectSubsetOfItemsAndMove(store.items())
             return
         end
 
@@ -181,7 +175,7 @@ class CommandsAndInterpreters
                 task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding listing for task: '#{PolyFunctions::toString(task)}'"
-                listing = NxListings::interactivelySelectOneOrNull()
+                listing = NxProjects::interactivelySelectOneOrNull()
                 if listing then
                     Cubes2::setAttribute(task["uuid"], "donation-1752", [listing["uuid"]])
                 end
@@ -208,7 +202,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxListings::upgradeItemDonations(item)
+            NxProjects::upgradeItemDonations(item)
             return
         end
 
@@ -248,7 +242,7 @@ class CommandsAndInterpreters
                     next
                 end
                 if option == "in listing" then
-                    NxListings::interactivelySelectOneAndAddTo(item["uuid"])
+                    NxProjects::interactivelySelectOneAndAddTo(item["uuid"])
                     return
                 end
                 if option == "with own engine" then
@@ -300,14 +294,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "setting core for '#{PolyFunctions::toString(item).green}'"
-            if item["mikuType"] == "NxOndate" or item["mikuType"] == "NxMonitor" then
-                puts "You are adding a core to a #{item["mikuType"]}"
-                if LucilleCore::askQuestionAnswerAsBoolean("Would you like to transmute it to a NxListing ? ") then
-                    Transmutations::transmute2(item, "NxListing")
-                    item = Cubes2::itemOrNull(item["uuid"])
-                    return
-                end
-            end
             core2 = TxCores::interactivelyMakeNewOrNull(item["engine-0020"])
             return if core2.nil?
             Cubes2::setAttribute(item["uuid"], "engine-0020", core2)

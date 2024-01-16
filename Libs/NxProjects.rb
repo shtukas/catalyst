@@ -1,9 +1,9 @@
 
-class NxListings
+class NxProjects
 
-    # NxListings::issueWithInit(uuid, description, engine)
+    # NxProjects::issueWithInit(uuid, description, engine)
     def self.issueWithInit(uuid, description, engine)
-        Cubes2::itemInit(uuid, "NxListing")
+        Cubes2::itemInit(uuid, "NxProject")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "engine-0020", engine)
@@ -11,76 +11,92 @@ class NxListings
         Cubes2::itemOrNull(uuid)
     end
 
-    # NxListings::interactivelyIssueNewOrNull2(uuid)
+    # NxProjects::interactivelyIssueNewOrNull2(uuid)
     def self.interactivelyIssueNewOrNull2(uuid)
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         core = TxCores::interactivelyMakeNewOrNull()
-        return if core.nil?
-        NxListings::issueWithInit(uuid, description, core)
+        NxProjects::issueWithInit(uuid, description, core)
     end
 
-    # NxListings::interactivelyIssueNewOrNull()
+    # NxProjects::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
-        NxListings::interactivelyIssueNewOrNull2(uuid)
+        NxProjects::interactivelyIssueNewOrNull2(uuid)
+    end
+
+    # NxProjects::interactivelyIssueMonitorOrNull()
+    def self.interactivelyIssueMonitorOrNull()
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return if description == ""
+        uuid = SecureRandom.uuid
+        Cubes2::itemInit(uuid, "NxProject")
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "engine-0020", {
+            "uuid"          => SecureRandom.uuid,
+            "mikuType"      => "TxCore",
+            "type"          => "monitor"
+        })
+        Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::itemOrNull(uuid)
     end
 
     # ------------------
     # Data
 
-    # NxListings::bufferInCardinal()
+    # NxProjects::bufferInCardinal()
     def self.bufferInCardinal()
         LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Buffer-In")
             .select{|location| !File.basename(location).start_with?(".") }
             .size
     end
 
-    # NxListings::icon(item)
+    # NxProjects::icon(item)
     def self.icon(item)
-        NxListings::isRootListing(item) ? "🔺" : "🔸"
+        return "☀️ " if (item["engine-0020"] and item["engine-0020"]["type"] == "monitor")
+        item["engine-0020"] ? "🔺" : "🔸"
     end
 
-    # NxListings::toString(item, context = nil)
+    # NxProjects::toString(item, context = nil)
     def self.toString(item, context = nil)
-        icon = NxListings::icon(item)
+        icon = NxProjects::icon(item)
         if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
-            if NxListings::bufferInCardinal() > 0 then
+            if NxProjects::bufferInCardinal() > 0 then
                 return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} orphaned tasks (automatic); special circumstances: DataHub/Buffer-In"
             end
         end
         "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} #{item["description"]}"
     end
 
-    # NxListings::metric(item, indx)
-    def self.metric(item, indx)
-        core = item["engine-0020"]
-        if core["type"] == "blocking-until-done" then
-            return 0.75 + 0.01 * 1.to_f/(indx+1)
-        end
-        0.30 + 0.20 * 1.to_f/(indx+1)
-    end
-
-    # NxListings::isRootListing(item)
+    # NxProjects::isRootListing(item)
     def self.isRootListing(item)
         item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil? 
     end
 
-    # NxListings::muiItems()
-    def self.muiItems()
-        Cubes2::mikuType("NxListing")
-            .select{|block| NxListings::dayCompletionRatio(block) < 1 }
-            .sort_by{|block| NxListings::dayCompletionRatio(block) }
+    # NxProjects::muiItem1()
+    def self.muiItems1()
+        Cubes2::mikuType("NxProject")
+            .select{|item| item["engine-0020"] }
+            .select{|item| item["engine-0020"]["type"] == "monitor" }
+            .sort_by{|item| item["unixtime"] }
     end
 
-    # NxListings::children(listing)
+    # NxProjects::muiItems2()
+    def self.muiItems2()
+        Cubes2::mikuType("NxProject")
+            .select{|item| item["engine-0020"].nil? }
+            .sort_by{|item| item["unixtime"] }
+    end
+
+    # NxProjects::children(listing)
     def self.children(listing)
         Cubes2::items()
             .select{|item| item["parentuuid-0032"] == listing["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxListings::listingsWhichShouldNotHaveChildren()
+    # NxProjects::listingsWhichShouldNotHaveChildren()
     def self.listingsWhichShouldNotHaveChildren()
         [
             "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3",
@@ -88,10 +104,10 @@ class NxListings
         ]
     end
 
-    # NxListings::elementsInNaturalOrder(listing)
+    # NxProjects::elementsInNaturalOrder(listing)
     def self.elementsInNaturalOrder(listing)
         if listing["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
-            if NxListings::bufferInCardinal() > 0 then
+            if NxProjects::bufferInCardinal() > 0 then
                 return []
             end
             return Cubes2::mikuType("NxTask")
@@ -104,7 +120,7 @@ class NxListings
         children(listing)
     end
 
-    # NxListings::elementsForPrefix(listing)
+    # NxProjects::elementsForPrefix(listing)
     def self.elementsForPrefix(listing)
         if listing["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             return Cubes2::mikuType("NxTask")
@@ -119,79 +135,54 @@ class NxListings
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxListings::isTopListing(listing)
+    # NxProjects::isTopListing(listing)
     def self.isTopListing(listing)
         listing["parentuuid-0032"].nil? or Cubes2::itemOrNull(listing["parentuuid-0032"]).nil? 
     end
 
-    # NxListings::topListings()
+    # NxProjects::topListings()
     def self.topListings()
-        Cubes2::mikuType("NxListing")
-            .select{|item| NxListings::isTopListing(item) }
+        Cubes2::mikuType("NxProject")
+            .select{|item| NxProjects::isTopListing(item) }
     end
 
-    # NxListings::interactivelySelectOneToplistingOrNull()
-    def self.interactivelySelectOneToplistingOrNull()
-        topListings = NxListings::topListings()
-                    .sort_by{|item| NxListings::dayCompletionRatio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("block", topListings, lambda{|item| NxListings::toString(item) })
+    # NxProjects::itemsInOrder()
+    def self.itemsInOrder()
+        p1, p2 = Cubes2::mikuType("NxProject").partition{|item| item["engine-0020"] }
+        p1 = p1.sort_by{|item| TxCores::dayCompletionRatio(item["engine-0020"]) }
+        p2 = p2.sort_by{|item| item["unixtime"] }
+        p1+p2
     end
 
-    # NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(listing = nil)
-    def self.interactivelySelectOneUsingTopDownNavigationOrNull(listing = nil)
-        if listing.nil? then
-            listing = NxListings::interactivelySelectOneToplistingOrNull()
-            return nil if listing.nil?
-            return NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(listing)
-        end
-        childrenlistings = NxListings::elementsInNaturalOrder(listing).select{|item| item["mikuType"] == "NxListing" }.sort_by{|item| NxListings::dayCompletionRatio(item) }
-        if childrenlistings.empty? then
-            return listing
-        end
-        selected = LucilleCore::selectEntityFromListOfEntitiesOrNull("listing", [listing] + childrenlistings, lambda{|item| NxListings::toString(item) })
-        return if selected.nil?
-        if selected["uuid"] == listing["uuid"] then
-            return selected
-        end
-        NxListings::interactivelySelectOneUsingTopDownNavigationOrNull(selected)
-    end
-
-    # NxListings::interactivelySelectOneOrNull()
+    # NxProjects::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        NxListings::interactivelySelectOneUsingTopDownNavigationOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("project", NxProjects::itemsInOrder(), lambda{|item| NxProjects::toString(item) })
     end
 
-    # NxListings::selectZeroOrMore()
+    # NxProjects::selectZeroOrMore()
     def self.selectZeroOrMore()
-        items = Cubes2::mikuType("NxListing")
-                    .sort_by{|item| NxListings::dayCompletionRatio(item) }
-        selected, _ = LucilleCore::selectZeroOrMore("item", [], items, lambda{|item| NxListings::toString(item) })
+        selected, _ = LucilleCore::selectZeroOrMore("item", [], NxProjects::itemsInOrder(), lambda{|item| NxProjects::toString(item) })
         selected
     end
 
-    # NxListings::selectSubsetOfItemsAndMove(items)
+    # NxProjects::selectSubsetOfItemsAndMove(items)
     def self.selectSubsetOfItemsAndMove(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        listing = NxListings::interactivelySelectOneOrNull()
-        return if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
+        listing = NxProjects::interactivelySelectOneOrNull()
+        return if NxProjects::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
         return if listing.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", listing["uuid"])
         }
     end
 
-    # NxListings::topPosition(item)
+    # NxProjects::topPosition(item)
     def self.topPosition(item)
-        ([0] + NxListings::elementsInNaturalOrder(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + NxProjects::elementsInNaturalOrder(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
-    # NxListings::dayCompletionRatio(item)
-    def self.dayCompletionRatio(item)
-        TxCores::coreDayCompletionRatio(item["engine-0020"])
-    end
-
-    # NxListings::toString3(store, item)
+    # NxProjects::toString3(store, item)
     def self.toString3(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
@@ -213,11 +204,11 @@ class NxListings
         line
     end
 
-    # NxListings::interactivelySelectPositionOrNull(listing)
+    # NxProjects::interactivelySelectPositionOrNull(listing)
     def self.interactivelySelectPositionOrNull(listing)
-        elements = NxListings::elementsInNaturalOrder(listing)
+        elements = NxProjects::elementsInNaturalOrder(listing)
         elements.first(20).each{|item|
-            puts "#{NxListings::toString3(nil, item)}"
+            puts "#{NxProjects::toString3(nil, item)}"
         }
         position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
         if position == "first" then
@@ -233,29 +224,29 @@ class NxListings
     # ------------------
     # Ops
 
-    # NxListings::interactivelySelectOneAndAddTo(itemuuid)
+    # NxProjects::interactivelySelectOneAndAddTo(itemuuid)
     def self.interactivelySelectOneAndAddTo(itemuuid)
-        listing = NxListings::interactivelySelectOneOrNull()
+        listing = NxProjects::interactivelySelectOneOrNull()
         return if listing.nil?
-        return if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
+        return if NxProjects::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
         Cubes2::setAttribute(itemuuid, "parentuuid-0032", listing["uuid"])
-        position = NxListings::interactivelySelectPositionOrNull(listing)
+        position = NxProjects::interactivelySelectPositionOrNull(listing)
         if position then
             Cubes2::setAttribute(itemuuid, "global-positioning", position)
         end
     end
 
-    # NxListings::access(item)
+    # NxProjects::access(item)
     def self.access(item)
-        NxListings::program1(item, false)
+        NxProjects::program1(item, false)
     end
 
-    # NxListings::natural(item)
+    # NxProjects::natural(item)
     def self.natural(item)
-        NxListings::program1(item, false)
+        NxProjects::program1(item, false)
     end
 
-    # NxListings::pile(item)
+    # NxProjects::pile(item)
     def self.pile(item)
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
@@ -267,11 +258,11 @@ class NxListings
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                Cubes2::setAttribute(task["uuid"], "global-positioning", NxListings::topPosition(item) - 1)
+                Cubes2::setAttribute(task["uuid"], "global-positioning", NxProjects::topPosition(item) - 1)
             }
     end
 
-    # NxListings::program1(listing, withPrefix)
+    # NxProjects::program1(listing, withPrefix)
     def self.program1(listing, withPrefix)
         loop {
 
@@ -287,7 +278,7 @@ class NxListings
             puts  MainUserInterface::toString2(store, listing)
             puts  ""
 
-            elements = NxListings::elementsInNaturalOrder(listing)
+            elements = NxProjects::elementsInNaturalOrder(listing)
             if withPrefix then
                 elements = Prefix::prefix(elements)
             end
@@ -295,7 +286,7 @@ class NxListings
             elements
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
-                    puts  NxListings::toString3(store, element)
+                    puts  NxProjects::toString3(store, element)
                 }
 
             puts ""
@@ -306,12 +297,12 @@ class NxListings
             return if input == ""
 
             if input == "task" then
-                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
+                next if NxProjects::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
                 task = NxTasks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", listing["uuid"])
-                position = NxListings::interactivelySelectPositionOrNull(listing)
+                position = NxProjects::interactivelySelectPositionOrNull(listing)
                 if position then
                     Cubes2::setAttribute(task["uuid"], "global-positioning", position)
                 end
@@ -319,12 +310,12 @@ class NxListings
             end
 
             if input == "listing" then
-                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
-                l = NxListings::interactivelyIssueNewOrNull()
+                next if NxProjects::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
+                l = NxProjects::interactivelyIssueNewOrNull()
                 next if l.nil?
                 puts JSON.pretty_generate(l)
                 Cubes2::setAttribute(l["uuid"], "parentuuid-0032", listing["uuid"])
-                position = NxListings::interactivelySelectPositionOrNull(listing)
+                position = NxProjects::interactivelySelectPositionOrNull(listing)
                 if position then
                     Cubes2::setAttribute(l["uuid"], "global-positioning", position)
                 end
@@ -332,13 +323,13 @@ class NxListings
             end
 
             if input == "top" then
-                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
+                next if NxProjects::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
                 line = LucilleCore::askQuestionAnswerAsString("description: ")
                 next if line == ""
                 task = NxTasks::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", listing["uuid"])
-                Cubes2::setAttribute(task["uuid"], "global-positioning", NxListings::topPosition(listing) - 1)
+                Cubes2::setAttribute(task["uuid"], "global-positioning", NxProjects::topPosition(listing) - 1)
                 next
             end
 
@@ -346,33 +337,33 @@ class NxListings
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = NxListings::interactivelySelectPositionOrNull(listing)
+                position = NxProjects::interactivelySelectPositionOrNull(listing)
                 next if position.nil?
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
 
             if input == "pile" then
-                next if NxListings::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
-                NxListings::pile(listing)
+                next if NxProjects::listingsWhichShouldNotHaveChildren().include?(listing["uuid"])
+                NxProjects::pile(listing)
                 next
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("listing", [], NxListings::elementsInNaturalOrder(listing), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("listing", [], NxProjects::elementsInNaturalOrder(listing), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxListings::topPosition(listing) - 1)
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxProjects::topPosition(listing) - 1)
                 }
                 next
             end
 
             if input == "move" then
-                NxListings::selectSubsetOfItemsAndMove(NxListings::elementsInNaturalOrder(listing))
+                NxProjects::selectSubsetOfItemsAndMove(NxProjects::elementsInNaturalOrder(listing))
                 next
             end
 
             if input == "with-prefix" then
-                NxListings::program1(listing, true)
+                NxProjects::program1(listing, true)
                 next
             end
 
@@ -381,12 +372,11 @@ class NxListings
         }
     end
 
-    # NxListings::program2()
+    # NxProjects::program2()
     def self.program2()
         loop {
 
-            items = Cubes2::mikuType("NxListing")
-                        .sort_by{|item| NxListings::dayCompletionRatio(item) }
+            items = NxProjects::itemsInOrder()
             return if items.empty?
 
             system("clear")
@@ -410,7 +400,7 @@ class NxListings
                 indx = input[2, 9].strip.to_i
                 item = store.get(indx)
                 next if item.nil?
-                NxListings::program1(item, false)
+                NxProjects::program1(item, false)
                 next
             end
 
@@ -419,14 +409,14 @@ class NxListings
         }
     end
 
-    # NxListings::done(item)
+    # NxProjects::done(item)
     def self.done(item)
         DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
     end
 
-    # NxListings::upgradeItemDonations(item)
+    # NxProjects::upgradeItemDonations(item)
     def self.upgradeItemDonations(item)
-        listings = NxListings::selectZeroOrMore()
+        listings = NxProjects::selectZeroOrMore()
         donation = ((item["donation-1752"] || []) + listings.map{|listing| listing["uuid"] }).uniq
         Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
     end

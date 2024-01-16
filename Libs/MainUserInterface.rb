@@ -110,10 +110,11 @@ class MainUserInterface
             Waves::muiItems().select{|item| item["interruption"] },
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            NxMonitors::muiItems(),
+            NxProjects::muiItems1(),
             engined1,
-            Waves::muiItems().select{|item| !item["interruption"] },
-            engined2
+            Waves::muiItems().select{|item| !item["interruption"] }.first(6),
+            NxProjects::muiItems2(),
+            engined2,
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -156,7 +157,7 @@ class MainUserInterface
         spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxListings::muiItems()", lambda{ NxListings::muiItems() })
+        spot.contest_entry("NxProjects::muiItems()", lambda{ NxProjects::muiItems() })
         spot.contest_entry("PhysicalTargets::muiItems()", lambda{ PhysicalTargets::muiItems() })
         spot.contest_entry("Waves::muiItems()", lambda{ Waves::muiItems() })
         spot.end_contest()

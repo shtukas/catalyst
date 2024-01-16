@@ -43,11 +43,4 @@ class NxOndates
         Cubes2::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
     end
-
-    # NxOndates::item(item)
-    def self.item(item)
-        ratio = NxListings::dayCompletionRatio(item)
-        hours = item["engine-0020"]["hours"]
-        [(1-ratio), 0].max * hours * 3600
-    end
 end

@@ -58,8 +58,8 @@ class TxCores
     # -----------------------------------------------
     # Data
 
-    # TxCores::coreDayCompletionRatio(core)
-    def self.coreDayCompletionRatio(core)
+    # TxCores::dayCompletionRatio(core)
+    def self.dayCompletionRatio(core)
         return 0 if core.nil?
         if core["type"] == "weekly-hours" then
             doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }
@@ -86,20 +86,23 @@ class TxCores
 
     # TxCores::suffix1(core, context = nil)
     def self.suffix1(core, context = nil)
+        if core.nil? then
+            return "".yellow
+        end
         if context == "listing" then
             return ""
         end
         if core["type"] == "blocking-until-done" then
-            return "(  0.00 %; blocking til done)".green
+            return " (  0.00 %; blocking til done)".green
         end
         if core["type"] == "monitor" then
-            return "( monitor                   )".green
+            return ""
         end
         if core["type"] == "weekly-hours" then
-            return "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; weekly:  #{"%5.2f" % core["hours"]} hs)".green
+            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %; weekly:  #{"%5.2f" % core["hours"]} hs)".green
         end
         if core["type"] == "daily-hours" then
-            return "(#{"%6.2f" % (100*TxCores::coreDayCompletionRatio(core))} %; daily:   #{"%5.2f" % core["hours"]} hs)".green
+            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %; daily:   #{"%5.2f" % core["hours"]} hs)".green
         end
     end
 
@@ -113,6 +116,6 @@ class TxCores
             Cubes2::setAttribute(item["uuid"], "engine-0020", core)
             item["engine-0020"] = core
         end
-        " #{TxCores::suffix1(item["engine-0020"])}"
+        TxCores::suffix1(item["engine-0020"])
     end
 end

@@ -61,7 +61,7 @@ class TxPayload
 
     # TxPayload::edit(item)
     def self.edit(item)
-        return if item["mikuType"] == "NxListing"
+        return if item["mikuType"] == "NxProject"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["coredata", "note", "textfile", "file system reference"])
@@ -99,14 +99,18 @@ class TxPayload
 
     # TxPayload::access(item)
     def self.access(item)
-        return if item["mikuType"] == "NxListing"
+        return if item["mikuType"] == "NxProject"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
+            option1 = CoreDataRefStrings::referenceToStringOrNull(item["field11"])
+            option2 = item["note-1531"] ? "(note)" : nil
+            option3 = item["todotextfile-1312"] ? "(textfile: #{item["todotextfile-1312"]})" : nil
+            option4 = item["cfsr-20231213"] ? "(cfsr)" : nil
             options = [
-                CoreDataRefStrings::referenceToStringOrNull(item["field11"]),
-                item["note-1531"] ? "(note)" : nil,
-                item["todotextfile-1312"] ? "(textfile: #{item["todotextfile-1312"]})" : nil,
-                item["cfsr-20231213"] ? "(cfsr)" : nil
+                option1,
+                option2,
+                option3,
+                option4
             ]
             .compact
             option = nil
@@ -118,17 +122,17 @@ class TxPayload
                 option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
                 return if option.nil?
             end
-            if option == CoreDataRefStrings::referenceToStringOrNull(item["field11"]) then
+            if option == option1 then
                 CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
             end
-            if option == "note" then
+            if option == option2 then
                 note = item["note-1531"] || ""
                 note = CommonUtils::editTextSynchronously(note).strip
                 note = note.size > 0 ? note : nil
                 item["note-1531"] = note
                 Cubes2::setAttribute(item["uuid"], "note-1531", note)
             end
-            if option == "textfile" then
+            if option == option3 then
                 todotextfile = item["todotextfile-1312"]
                 location = Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
                 if location.nil? then
@@ -141,7 +145,7 @@ class TxPayload
                 puts "found: #{location}"
                 system("open '#{location}'")
             end
-            if option == "file system reference" then
+            if option == option4 then
                 reference = item["cfsr-20231213"]
                 FileSystemReferences::accessReference(reference)
             end

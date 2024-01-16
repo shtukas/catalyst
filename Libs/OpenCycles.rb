@@ -2,9 +2,21 @@ class OpenCycles
 
     # OpenCycles::issueReferenceAndMonitorForThisLocation(location)
     def self.issueReferenceAndMonitorForThisLocation(location)
-        reference = SecureRandom.hex # both the reference and the uuid of the monitor
+        reference = SecureRandom.hex
         FileSystemReferences::issueCfsrFileAtDirectory(location, reference)
-        monitor = NxMonitors::issueNew(SecureRandom.uuid, "(auto) #{File.basename(location)}")
+
+        uuid = SecureRandom.uuid
+
+        Cubes2::itemInit(uuid, "NxProject")
+        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Cubes2::setAttribute(uuid, "engine-0020", {
+            "uuid"     => SecureRandom.uuid,
+            "mikuType" => "TxCore",
+            "type"     => "monitor"
+        })
+
+        Cubes2::setAttribute(uuid, "description", "(auto) #{File.basename(location)}")
         Cubes2::setAttribute(monitor["uuid"], "cfsr-20231213", reference)
     end
 
