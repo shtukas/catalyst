@@ -1,7 +1,7 @@
 class OpenCycles
 
-    # OpenCycles::issueReferenceAndMonitorForThisLocation(location)
-    def self.issueReferenceAndMonitorForThisLocation(location)
+    # OpenCycles::issueReferenceAndProjectForThisLocation(location)
+    def self.issueReferenceAndProjectForThisLocation(location)
         reference = SecureRandom.hex
         FileSystemReferences::issueCfsrFileAtDirectory(location, reference)
 
@@ -10,14 +10,9 @@ class OpenCycles
         Cubes2::itemInit(uuid, "NxProject")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes2::setAttribute(uuid, "engine-0020", {
-            "uuid"     => SecureRandom.uuid,
-            "mikuType" => "TxCore",
-            "type"     => "monitor"
-        })
-
+        Cubes2::setAttribute(uuid, "engine-0020", nil)
         Cubes2::setAttribute(uuid, "description", "(auto) #{File.basename(location)}")
-        Cubes2::setAttribute(monitor["uuid"], "cfsr-20231213", reference)
+        Cubes2::setAttribute(uuid, "cfsr-20231213", reference)
     end
 
     # OpenCycles::sync()
@@ -29,7 +24,7 @@ class OpenCycles
             if cfsrfilepath.nil? then
                 puts "creating a csfr file and monitor for open cycle: #{File.basename(location).green}"
                 LucilleCore::pressEnterToContinue()
-                OpenCycles::issueReferenceAndMonitorForThisLocation(location)
+                OpenCycles::issueReferenceAndProjectForThisLocation(location)
             else
                 reference = IO.read(cfsrfilepath).lines.first.strip
                 item = Cubes2::items().select{|item| item["cfsr-20231213"] == reference }.first
@@ -37,7 +32,7 @@ class OpenCycles
                     puts "I found a csfr file in #{location.green}, but not the corresponding catalyst item. I am going to delete the reference, and create a new one"
                     LucilleCore::pressEnterToContinue()
                     FileUtils.rm(cfsrfilepath)
-                    OpenCycles::issueReferenceAndMonitorForThisLocation(location)
+                    OpenCycles::issueReferenceAndProjectForThisLocation(location)
                 end
             end
         }

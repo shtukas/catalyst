@@ -110,7 +110,6 @@ class MainUserInterface
             Waves::muiItems().select{|item| item["interruption"] },
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            NxProjects::muiItems1(),
             engined1,
             Waves::muiItems().select{|item| !item["interruption"] }.first(6),
             NxProjects::muiItems2(),

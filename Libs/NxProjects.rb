@@ -33,11 +33,7 @@ class NxProjects
         Cubes2::itemInit(uuid, "NxProject")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes2::setAttribute(uuid, "engine-0020", {
-            "uuid"          => SecureRandom.uuid,
-            "mikuType"      => "TxCore",
-            "type"          => "monitor"
-        })
+        Cubes2::setAttribute(uuid, "engine-0020", nil)
         Cubes2::setAttribute(uuid, "description", description)
         Cubes2::itemOrNull(uuid)
     end
@@ -54,7 +50,6 @@ class NxProjects
 
     # NxProjects::icon(item)
     def self.icon(item)
-        return "☀️ " if (item["engine-0020"] and item["engine-0020"]["type"] == "monitor")
         item["engine-0020"] ? "🔺" : "🔸"
     end
 
@@ -72,14 +67,6 @@ class NxProjects
     # NxProjects::isRootListing(item)
     def self.isRootListing(item)
         item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil? 
-    end
-
-    # NxProjects::muiItem1()
-    def self.muiItems1()
-        Cubes2::mikuType("NxProject")
-            .select{|item| item["engine-0020"] }
-            .select{|item| item["engine-0020"]["type"] == "monitor" }
-            .sort_by{|item| item["unixtime"] }
     end
 
     # NxProjects::muiItems2()

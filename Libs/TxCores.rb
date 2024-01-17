@@ -5,7 +5,7 @@ class TxCores
 
     # TxCores::interactivelyMakeNewOrNull(ec = nil)
     def self.interactivelyMakeNewOrNull(ec = nil)
-        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["daily-hours", "weekly-hours", "monitor"])
+        type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["daily-hours", "weekly-hours"])
         return nil if type.nil?
         if type == "daily-hours" then
             hours = LucilleCore::askQuestionAnswerAsString("daily hours (empty for abort): ")
@@ -29,13 +29,6 @@ class TxCores
                 "mikuType"      => "TxCore",
                 "type"          => "weekly-hours",
                 "hours"         => hours
-            }
-        end
-        if type == "monitor" then
-            return {
-                "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
-                "mikuType"      => "TxCore",
-                "type"          => "monitor"
             }
         end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
