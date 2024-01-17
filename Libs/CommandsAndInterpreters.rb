@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | listing | monitor | priority | stack | mission",
-            "divings       : anniversaries | ondates | waves | desktop | listings | engines | missions | backups",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | monitor | priority | stack | mission",
+            "divings       : anniversaries | ondates | waves | desktop | projects | engines | missions | backups",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -94,14 +94,14 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("listing", input) then
+        if Interpreting::match("project", input) then
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("listings", input) then
+        if Interpreting::match("projects", input) then
             NxProjects::program2()
             return
         end
