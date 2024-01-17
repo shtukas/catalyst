@@ -122,7 +122,7 @@ class CommandsAndInterpreters
         if Interpreting::match("engines", input) then
             items = Cubes2::items()
                         .select{|item| item["engine-0020"] }
-                        .sort_by{|item| TxCores::dayCompletionRatio(item["engine-0020"]) }
+                        .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
             Catalyst::program2(items)
             return
         end

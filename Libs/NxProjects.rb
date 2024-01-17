@@ -149,7 +149,7 @@ class NxProjects
     # NxProjects::itemsInOrder()
     def self.itemsInOrder()
         p1, p2 = Cubes2::mikuType("NxProject").partition{|item| item["engine-0020"] }
-        p1 = p1.sort_by{|item| TxCores::dayCompletionRatio(item["engine-0020"]) }
+        p1 = p1.sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
         p2 = p2.sort_by{|item| item["unixtime"] }
         p1+p2
     end

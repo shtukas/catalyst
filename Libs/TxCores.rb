@@ -51,24 +51,51 @@ class TxCores
     # -----------------------------------------------
     # Data
 
+    # TxCores::todayDone(core)
+    def self.todayDone(core)
+        Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
+    end
+
+    # TxCores::dailyCommitment(core)
+    def self.dailyCommitment(core)
+        if core["type"] == "daily-hours" then
+            return core["hours"]
+        end
+        if core["type"] == "weekly-hours" then
+            return core["hours"].to_f/7
+        end
+        raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
+    end
+
     # TxCores::dayCompletionRatio(core)
     def self.dayCompletionRatio(core)
-        return 0 if core.nil?
-        if core["type"] == "weekly-hours" then
-            doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }
-            doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
-            return doneSinceLastSaturdayInHours.to_f/core["hours"] if doneSinceLastSaturdayInHours >= core["hours"]
-            dailyHours = core["hours"].to_f/7
-            return Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
-        end
+        x1 = TxCores::todayDone(core).to_f/TxCores::dailyCommitment(core)
+        x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxCores::dailyCommitment(core)
+        [0.9*x1 + 0.1*x2, x1].max
+    end
+
+    # TxCores::weeklyCompletionRatioOrNull(core)
+    def self.weeklyCompletionRatioOrNull(core)
         if core["type"] == "daily-hours" then
-            dailyHours = core["hours"]
-            hoursDoneToday = Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
-            x1 = hoursDoneToday.to_f/dailyHours
-            x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/dailyHours
-            return [0.8*x1 + 0.2*x2, x1].max
+            raise "(error: 0b0b4e04-e4a6-41e6-84bf-49687ee49b41): core: #{core}"
         end
-        raise "(error: 1cd26e69-4d2b-4cf7-9497-9bc715ea8f44): core: #{core}"
+        doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }
+        doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
+        doneSinceLastSaturdayInHours.to_f/core["hours"]
+    end
+
+    # TxCores::listingCompletionRatio(core)
+    def self.listingCompletionRatio(core)
+        if core["type"] == "daily-hours" then
+            return TxCores::dayCompletionRatio(core)
+        end
+        if core["type"] == "weekly-hours" then
+            if TxCores::weeklyCompletionRatioOrNull(core) >= 1 then
+                return TxCores::weeklyCompletionRatioOrNull(core)
+            end
+            return TxCores::dayCompletionRatio(core)
+        end
+        raise "(error: 2ba8c6dc-48fd-4155-a4f3-1cf65892acc1): core: #{core}"
     end
 
     # TxCores::suffix1(core, context = nil)
@@ -79,12 +106,13 @@ class TxCores
         if context == "listing" then
             return ""
         end
-        if core["type"] == "weekly-hours" then
-            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %; weekly:  #{"%5.2f" % core["hours"]} hs)".green
-        end
         if core["type"] == "daily-hours" then
-            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %; daily:   #{"%5.2f" % core["hours"]} hs)".green
+            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %           of daily:  #{"%5.2f" % core["hours"]} hs)".green
         end
+        if core["type"] == "weekly-hours" then
+            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxCores::weeklyCompletionRatioOrNull(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
+        end
+
     end
 
     # TxCores::suffix2(item)
