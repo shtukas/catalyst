@@ -19,15 +19,18 @@ class DoNotShowUntil1
     def self.record_filepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
             .select{|location| location[-7, 7] == ".record" }
-            .map{|filepath|
+    end
+
+    # DoNotShowUntil1::maintenance()
+    def self.maintenance()
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
+            .select{|location| location[-7, 7] == ".record" }
+            .each{|filepath|
                 record = JSON.parse(IO.read(filepath))
                 if record["unixtime"] < Time.new.to_i or Cubes2::itemOrNull(record["id"]).nil? then
                     FileUtils.rm(filepath)
-                    nil
-                else
-                    filepath
                 end
-            }.compact
+            }
     end
 
     # DoNotShowUntil1::getUnixtimeOrNull(id)

@@ -44,6 +44,7 @@ class Catalyst
         if Config::isPrimaryInstance() then
             puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
             Cubes1::maintenance()
+            DoNotShowUntil1::maintenance()
             if Cubes2::mikuType("NxTask").size < 100 then
                 Cubes2::mikuType("NxIce").take(10).each{|item|
 

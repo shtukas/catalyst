@@ -62,16 +62,14 @@ $DATA_CENTER_UPDATE_QUEUE = []
 
 class CoreData
 
-    # CoreData::version()
-    def self.version()
-        "Mercury"
-    end
-
     # CoreData::getDataFromCacheOrNull()
     def self.getDataFromCacheOrNull()
-        data = XCache::getOrNull("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}")
+        data = XCache::getOrNull("872b3c2e-8a04-4df0-999d-d1a1ae9e537b")
         return nil if data.nil?
-        JSON.parse(data)
+        data = JSON.parse(data)
+        return nil if data["unixtime"].nil?
+        return nil if (Time.new.to_i - data["unixtime"]) > 3600
+        data
     end
 
     # CoreData::rebuildDataFromScratch()
@@ -98,6 +96,7 @@ class CoreData
         }
 
         {
+            "unixtime"       => Time.new.to_i, # time of generation
             "items"          => itemsmap,
             "doNotShowUntil" => doNotShowUntil,
             "bank"           => bank
@@ -115,7 +114,7 @@ class CoreData
             return data
         end
         data = CoreData::rebuildDataFromScratch()
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate(data))
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537b", JSON.generate(data))
         $DATA_CENTER_DATA = data
         data
     end
@@ -123,7 +122,7 @@ class CoreData
     # CoreData::reloadDataFromScratch()
     def self.reloadDataFromScratch()
         data = CoreData::rebuildDataFromScratch()
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate(data))
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537b", JSON.generate(data))
         $DATA_CENTER_DATA = data
     end
 
@@ -320,7 +319,7 @@ class DataProcessor
         while update = $DATA_CENTER_UPDATE_QUEUE.shift do
             DataProcessor::processUpdate(update)
         end
-        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537a:#{CoreData::version()}", JSON.generate($DATA_CENTER_DATA))
+        XCache::set("872b3c2e-8a04-4df0-999d-d1a1ae9e537b", JSON.generate($DATA_CENTER_DATA))
     end
 end
 
