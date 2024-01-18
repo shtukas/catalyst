@@ -100,7 +100,6 @@ class MainUserInterface
 
     # MainUserInterface::items()
     def self.items()
-        engined1, engined2 = Engined::muiItems()
         [
             Ox1::items(),
             DropBox::items(),
@@ -110,10 +109,9 @@ class MainUserInterface
             Waves::muiItems().select{|item| item["interruption"] },
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            engined1,
-            Waves::muiItems().select{|item| !item["interruption"] }.first(6),
-            NxProjects::muiItems2(),
-            engined2,
+            OrderingT::muiItems(),   # mixing engined and non interruption waves
+            NxProjects::muiItems2(), # projects without an engine
+            Engined::muiItems2(),    # engined ratio >= 1
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -246,5 +244,4 @@ class MainUserInterface
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
-
 end

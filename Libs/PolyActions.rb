@@ -67,6 +67,11 @@ class PolyActions
 
         # order: alphabetical order
 
+        if item["engine-0020"] then
+            # `done` to anything with an engine pushes it to tomorrow
+            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+        end
+
         if item["mikuType"] == "NxMission" then
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             return

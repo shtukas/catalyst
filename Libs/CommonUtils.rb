@@ -92,11 +92,6 @@ class CommonUtils
         !CommonUtils::isWeekday()
     end
 
-    # CommonUtils::getLocalTimeZone()
-    def self.getLocalTimeZone()
-        `date`.strip[-3 , 3]
-    end
-
     # CommonUtils::todayAsLowercaseEnglishWeekDayName()
     def self.todayAsLowercaseEnglishWeekDayName()
         ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][Time.new.wday]
@@ -221,6 +216,11 @@ class CommonUtils
         "#{CommonUtils::nDaysInTheFuture(1)}T01:00:00Z"
     end
 
+    # CommonUtils::getLocalTimeZone()
+    def self.getLocalTimeZone()
+        `date`.strip[-3 , 3]
+    end
+
     # CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtLastMidnightAtGivenTimeZone(timezone)
         supportedTimeZones = ["BST", "GMT"]
@@ -230,6 +230,11 @@ class CommonUtils
         DateTime.parse("#{(DateTime.now.to_date).to_s} 00:00:00 #{timezone}").to_time.to_i
     end
 
+    # CommonUtils::unixtimeAtLastMidnightAtLocalTimezone()
+    def self.unixtimeAtLastMidnightAtLocalTimezone()
+        CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())
+    end
+
     # CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtComingMidnightAtGivenTimeZone(timezone)
         supportedTimeZones = ["BST", "GMT"]
@@ -237,6 +242,11 @@ class CommonUtils
             raise "error: 8223a3d9-5ab4-4e13-b6fe-90b895e7f28d ; we are only supporting '#{supportedTimeZones}' and you provided #{timezone}"
         end
         DateTime.parse("#{(DateTime.now.to_date+1).to_s} 00:00:00 #{timezone}").to_time.to_i
+    end
+
+    # CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+    def self.unixtimeAtComingMidnightAtLocalTimezone()
+        CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())
     end
 
     # CommonUtils::isDateTime_UTC_ISO8601(datetime)
