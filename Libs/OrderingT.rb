@@ -32,10 +32,13 @@ class OrderingT
 
     # OrderingT::muiItems()
     def self.muiItems()
-        items1 = Cubes2::items()
+        items1 = NxProjects::itemsInMainListingOrder()
+        items2 = Cubes2::items()
                     .select{|item| item["engine-0020"] }
+                    .select{|item| item["mikuType"] == "NxProject" }
                     .select{|item| TxCores::listingCompletionRatio(item["engine-0020"]) < 1 }
-        items2 = Waves::muiItems().select{|item| !item["interruption"] }
-        (items1+items2).sort_by{|item| OrderingT::ratio(item) }
+        items3 = Waves::muiItems().select{|item| !item["interruption"] }
+
+        (items1+items2+items3).sort_by{|item| OrderingT::ratio(item) }
     end
 end

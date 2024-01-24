@@ -123,6 +123,9 @@ class TxCores
         if context == "listing" then
             return ""
         end
+        if context != "projects" then
+            return ""
+        end
         if core["type"] == "daily-hours" then
             return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %           of daily:  #{"%5.2f" % core["hours"]} hs)".green
         end
@@ -131,9 +134,9 @@ class TxCores
         end
     end
 
-    # TxCores::suffix2(item)
-    def self.suffix2(item)
+    # TxCores::suffix2(item, context = nil)
+    def self.suffix2(item, context = nil)
         return "" if item["engine-0020"].nil?
-        TxCores::suffix1(item["engine-0020"])
+        TxCores::suffix1(item["engine-0020"], context)
     end
 end

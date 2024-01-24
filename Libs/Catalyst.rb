@@ -21,9 +21,9 @@ class Catalyst
 
             store = ItemStore.new()
 
-            puts  ""
-
+            puts ""
             puts NxProjects::numbersLine()
+
             puts ""
 
             elements

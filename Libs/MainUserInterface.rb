@@ -76,12 +76,12 @@ class MainUserInterface
         item["interruption"]
     end
 
-    # MainUserInterface::toString2(store, item)
-    def self.toString2(store, item)
+    # MainUserInterface::toString2(store, item, context = nil)
+    def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "     "
         positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
-        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item)} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item, context)} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -109,9 +109,7 @@ class MainUserInterface
             Waves::muiItems().select{|item| item["interruption"] },
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            OrderingT::muiItems(),   # mixing engined and non interruption waves
-            NxProjects::muiItems2(), # projects without an engine
-            Engined::muiItems2(),    # engined ratio >= 1
+            OrderingT::muiItems(), # mixing engined and non interruption waves
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -224,15 +222,15 @@ class MainUserInterface
             system("clear")
 
             spacecontrol.putsline ""
-
             spacecontrol.putsline NxProjects::numbersLine()
+
             spacecontrol.putsline ""
 
             items = MainUserInterface::items2()
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    line = MainUserInterface::toString2(store, item)
+                    line = MainUserInterface::toString2(store, item, "listing")
                     status = spacecontrol.putsline line
                     break if !status
                 }
