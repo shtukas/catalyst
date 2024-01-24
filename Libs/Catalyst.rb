@@ -23,6 +23,9 @@ class Catalyst
 
             puts  ""
 
+            puts NxProjects::numbersLine()
+            puts ""
+
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
