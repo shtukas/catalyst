@@ -49,8 +49,8 @@ class TxCores
         Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
     end
 
-    # TxCores::dailyCommitment(core)
-    def self.dailyCommitment(core)
+    # TxCores::todayIdeal(core)
+    def self.todayIdeal(core)
         if core["type"] == "daily-hours" then
             return core["hours"]
         end
@@ -60,10 +60,36 @@ class TxCores
         raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
     end
 
+    # TxCores::weeklyDone(core)
+    def self.weeklyDone(core)
+        CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }.to_f/3600
+    end
+
+    # TxCores::numbers(core)
+    def self.numbers(core)
+        if core["type"] == "daily-hours" then
+            return [
+                TxCores::todayDone(core),
+                core["hours"],
+                TxCores::weeklyDone(core),
+                core["hours"]*7
+            ]
+        end
+        if core["type"] == "weekly-hours" then
+            return [
+                TxCores::todayDone(core),
+                core["hours"].to_f/7,
+                TxCores::weeklyDone(core),
+                core["hours"]
+            ]
+        end
+        raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
+    end
+
     # TxCores::dayCompletionRatio(core)
     def self.dayCompletionRatio(core)
-        x1 = TxCores::todayDone(core).to_f/TxCores::dailyCommitment(core)
-        x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxCores::dailyCommitment(core)
+        x1 = TxCores::todayDone(core).to_f/TxCores::todayIdeal(core)
+        x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxCores::todayIdeal(core)
         [0.9*x1 + 0.1*x2, x1].max
     end
 
@@ -72,9 +98,7 @@ class TxCores
         if core["type"] == "daily-hours" then
             raise "(error: 0b0b4e04-e4a6-41e6-84bf-49687ee49b41): core: #{core}"
         end
-        doneSinceLastSaturdayInSeconds = CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }
-        doneSinceLastSaturdayInHours = doneSinceLastSaturdayInSeconds.to_f/3600
-        doneSinceLastSaturdayInHours.to_f/core["hours"]
+        TxCores::weeklyDone(core).to_f/core["hours"]
     end
 
     # TxCores::listingCompletionRatio(core)
@@ -105,7 +129,6 @@ class TxCores
         if core["type"] == "weekly-hours" then
             return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxCores::weeklyCompletionRatioOrNull(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
         end
-
     end
 
     # TxCores::suffix2(item)

@@ -208,6 +208,17 @@ class NxProjects
         position
     end
 
+    # NxProjects::numbersLine()
+    def self.numbersLine()
+        numbers = Cubes2::mikuType("NxProject")
+            .select{|item| item["engine-0020"] }
+            .reduce([0, 0, 0, 0]){|acc, item|
+                n = TxCores::numbers(item["engine-0020"])
+                (0..3).map{|i| acc[i]+n[i]}
+            }
+        numbers.map{|x| x.round(2) }.to_s
+    end
+
     # ------------------
     # Ops
 

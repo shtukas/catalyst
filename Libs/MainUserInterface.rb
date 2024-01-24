@@ -225,6 +225,9 @@ class MainUserInterface
 
             spacecontrol.putsline ""
 
+            spacecontrol.putsline NxProjects::numbersLine()
+            spacecontrol.putsline ""
+
             items = MainUserInterface::items2()
             items
                 .each{|item|
