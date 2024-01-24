@@ -140,19 +140,16 @@ class NxProjects
 
     # NxProjects::horizon()
     def self.horizon()
-        NxProjects::itemsInGlobalPositioningOrder()
-            .reduce([]){|selection, project|
-                total = selection.map{|project| TxCores::numbers(project["engine-0020"])[1] }.inject(0, :+)
-                if total >= 12 then
-                    selection
-                else
-                    if project["engine-0020"] then
-                        selection + [ project ]
-                    else
-                        selection
-                    end
-                end
-            }
+        answer = []
+        projects = NxProjects::itemsInGlobalPositioningOrder()
+        loop {
+            break if projects.empty?
+            project = projects.shift
+            break if project["engine-0020"].nil?
+            break if (answer + [project]).map{|projt| TxCores::numbers(projt["engine-0020"])[1] }.inject(0, :+) > 12
+            answer << project
+        }
+        answer
     end
 
     # NxProjects::itemsInMainListingOrder()
@@ -212,12 +209,11 @@ class NxProjects
 
     # NxProjects::numbersLine()
     def self.numbersLine()
-        numbers = Cubes2::mikuType("NxProject")
-            .select{|item| item["engine-0020"] }
-            .reduce([0, 0, 0, 0]){|acc, item|
-                n = TxCores::numbers(item["engine-0020"])
-                (0..3).map{|i| acc[i]+n[i]}
-            }
+        numbers = NxProjects::horizon()
+                    .reduce([0, 0, 0, 0]){|acc, project|
+                        n = TxCores::numbers(project["engine-0020"])
+                        (0..3).map{|i| acc[i]+n[i]}
+                    }
         "⏱️  #{numbers.map{|x| x.round(2) }.join(" ")}"
     end
 
@@ -386,17 +382,27 @@ class NxProjects
 
             puts  ""
 
-            NxProjects::horizon()
+            horizon = NxProjects::horizon()
+
+            puts ""
+            puts NxProjects::numbersLine()
+
+            puts ""
+            items.take(horizon.size)
+                .each{|item|
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item)
+                }
+
+            puts ""
+            horizon
                 .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
                 .each{|item|
                     puts MainUserInterface::toString2(nil, item, "projects")
                 }
 
             puts ""
-            puts NxProjects::numbersLine()
-
-            puts ""
-            items
+            items.drop(horizon.size)
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts MainUserInterface::toString2(store, item)

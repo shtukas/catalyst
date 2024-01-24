@@ -79,7 +79,7 @@ class MainUserInterface
     # MainUserInterface::toString2(store, item, context = nil)
     def self.toString2(store, item, context = nil)
         return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "     "
+        storePrefix = store ? "(#{store.prefixString()})" : ""
         positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
         line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item, context)} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
