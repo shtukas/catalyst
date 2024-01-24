@@ -385,9 +385,6 @@ class NxProjects
             horizon = NxProjects::horizon()
 
             puts ""
-            puts NxProjects::numbersLine()
-
-            puts ""
             items.take(horizon.size)
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
@@ -400,6 +397,9 @@ class NxProjects
                 .each{|item|
                     puts MainUserInterface::toString2(nil, item, "projects")
                 }
+
+            puts ""
+            puts NxProjects::numbersLine()
 
             puts ""
             items.drop(horizon.size)

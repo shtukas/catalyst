@@ -22,9 +22,6 @@ class Catalyst
             store = ItemStore.new()
 
             puts ""
-            puts NxProjects::numbersLine()
-
-            puts ""
 
             elements
                 .each{|item|
