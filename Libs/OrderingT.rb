@@ -35,7 +35,7 @@ class OrderingT
         items1 = NxProjects::itemsInMainListingOrder()
         items2 = Cubes2::items()
                     .select{|item| item["engine-0020"] }
-                    .select{|item| item["mikuType"] == "NxProject" }
+                    .select{|item| item["mikuType"] != "NxProject" }
                     .select{|item| TxCores::listingCompletionRatio(item["engine-0020"]) < 1 }
         items3 = Waves::muiItems().select{|item| !item["interruption"] }
 
