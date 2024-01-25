@@ -5,3 +5,4 @@ NxProject:
     - unixtime     : Float
     - datetime     : DateTime Iso 8601 UTC Zulu
     - description  : String
+    - active       : boolean

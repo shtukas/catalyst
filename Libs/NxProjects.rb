@@ -50,7 +50,7 @@ class NxProjects
 
     # NxProjects::icon(item)
     def self.icon(item)
-        "🔺"
+        item["active"] ? "🔺" : "🔸"
     end
 
     # NxProjects::toString(item, context = nil)
@@ -67,13 +67,6 @@ class NxProjects
     # NxProjects::isRootListing(item)
     def self.isRootListing(item)
         item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil? 
-    end
-
-    # NxProjects::muiItems2()
-    def self.muiItems2()
-        Cubes2::mikuType("NxProject")
-            .select{|item| item["engine-0020"].nil? }
-            .sort_by{|item| item["unixtime"] }
     end
 
     # NxProjects::children(listing)
@@ -127,34 +120,19 @@ class NxProjects
         listing["parentuuid-0032"].nil? or Cubes2::itemOrNull(listing["parentuuid-0032"]).nil? 
     end
 
-    # NxProjects::topListings()
-    def self.topListings()
-        Cubes2::mikuType("NxProject")
-            .select{|item| NxProjects::isTopListing(item) }
-    end
-
     # NxProjects::itemsInGlobalPositioningOrder()
     def self.itemsInGlobalPositioningOrder()
         Cubes2::mikuType("NxProject").sort_by{|project| project["global-positioning"] || 0 }
     end
 
-    # NxProjects::horizon()
-    def self.horizon()
-        answer = []
-        projects = NxProjects::itemsInGlobalPositioningOrder()
-        loop {
-            break if projects.empty?
-            project = projects.shift
-            break if project["engine-0020"].nil?
-            break if (answer + [project]).map{|projt| TxCores::numbers(projt["engine-0020"])[1] }.inject(0, :+) > 12
-            answer << project
-        }
-        answer
+    # NxProjects::actives()
+    def self.actives()
+        Cubes2::mikuType("NxProject").select{|item| item["active"] }
     end
 
     # NxProjects::itemsInMainListingOrder()
     def self.itemsInMainListingOrder()
-        NxProjects::horizon().sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
+        NxProjects::actives().sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
     end
 
     # NxProjects::interactivelySelectOneOrNull()
@@ -209,7 +187,7 @@ class NxProjects
 
     # NxProjects::numbersLine()
     def self.numbersLine()
-        numbers = NxProjects::horizon()
+        numbers = NxProjects::actives()
                     .reduce([0, 0, 0, 0]){|acc, project|
                         n = TxCores::numbers(project["engine-0020"])
                         (0..3).map{|i| acc[i]+n[i]}
@@ -382,37 +360,57 @@ class NxProjects
 
             puts  ""
 
-            horizon = NxProjects::horizon()
+            actives = NxProjects::actives()
 
             puts ""
-            items.take(horizon.size)
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
-                }
-
-            puts ""
-            horizon
+            actives
                 .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
                 .each{|item|
-                    puts MainUserInterface::toString2(nil, item, "projects")
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item, "projects")
                 }
 
             puts ""
             puts NxProjects::numbersLine()
 
             puts ""
-            items.drop(horizon.size)
+            items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts MainUserInterface::toString2(store, item)
                 }
 
             puts ""
-            puts "sort"
+            puts "activate | disactivate | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input.start_with?("..") then
+                indx = input[2, 9].strip.to_i
+                item = store.get(indx)
+                next if item.nil?
+                NxProjects::program1(item, false)
+                next
+            end
+
+            if input == "activate" then
+                projects = NxProjects::itemsInGlobalPositioningOrder()
+                selected, _ = LucilleCore::selectZeroOrMore("project", [], projects, lambda{|i| PolyFunctions::toString(i) })
+                selected.each{|i|
+                    Cubes2::setAttribute(i["uuid"], "active", true)
+                }
+                next
+            end
+
+            if input == "disactivate" then
+                projects = NxProjects::itemsInGlobalPositioningOrder()
+                selected, _ = LucilleCore::selectZeroOrMore("project", [], projects, lambda{|i| PolyFunctions::toString(i) })
+                selected.each{|i|
+                    Cubes2::setAttribute(i["uuid"], "active", false)
+                }
+                next
+            end
 
             if input == "sort" then
                 projects = NxProjects::itemsInGlobalPositioningOrder()
@@ -420,14 +418,6 @@ class NxProjects
                 selected.reverse.each{|i|
                     Cubes2::setAttribute(i["uuid"], "global-positioning", NxProjects::topPosition() - 1)
                 }
-                next
-            end
-
-            if input.start_with?("..") then
-                indx = input[2, 9].strip.to_i
-                item = store.get(indx)
-                next if item.nil?
-                NxProjects::program1(item, false)
                 next
             end
 
