@@ -123,15 +123,15 @@ class TxCores
         if context == "listing" then
             return ""
         end
-        if context != "projects" then
-            return ""
+        if context == "ns:projects:active" then
+            if core["type"] == "daily-hours" then
+                return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %           of daily:  #{"%5.2f" % core["hours"]} hs)".green
+            end
+            if core["type"] == "weekly-hours" then
+                return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxCores::weeklyCompletionRatioOrNull(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
+            end
         end
-        if core["type"] == "daily-hours" then
-            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %           of daily:  #{"%5.2f" % core["hours"]} hs)".green
-        end
-        if core["type"] == "weekly-hours" then
-            return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxCores::weeklyCompletionRatioOrNull(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
-        end
+        ""
     end
 
     # TxCores::suffix2(item, context = nil)

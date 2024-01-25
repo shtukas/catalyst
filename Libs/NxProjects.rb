@@ -55,13 +55,22 @@ class NxProjects
 
     # NxProjects::toString(item, context = nil)
     def self.toString(item, context = nil)
+        global_position_str = ""
         icon = NxProjects::icon(item)
+        suffix1 = ""
+        description = item["description"]
         if item["uuid"] == "06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3" then # orphaned tasks (automatic)
             if NxProjects::bufferInCardinal() > 0 then
-                return "#{icon}#{TxCores::suffix1(item["engine-0020"], context)} orphaned tasks (automatic); special circumstances: DataHub/Buffer-In"
+                suffix1 = TxCores::suffix1(item["engine-0020"], context)
+                description = "orphaned tasks (automatic); special circumstances: DataHub/Buffer-In"
             end
         end
-        "#{icon} #{item["description"]}"
+
+        if context == "ns:projects:listing" then
+            global_position_str = "(#{"%7.3f" % (item["global-positioning"] || 0)}) "
+        end
+
+        "#{global_position_str}#{icon}#{suffix1} #{item["description"]}"
     end
 
     # NxProjects::isRootListing(item)
@@ -172,7 +181,7 @@ class NxProjects
     def self.interactivelySelectPositionOrNull(listing)
         elements = NxProjects::elementsInNaturalOrder(listing)
         elements.first(20).each{|item|
-            puts "#{NxProjects::toString2(nil, item)}"
+            puts "#{NxProjects::toString(nil, item)}"
         }
         position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
         if position == "first" then
@@ -247,11 +256,11 @@ class NxProjects
 
             store = ItemStore.new()
 
-            puts  ""
+            puts ""
 
             store.register(project, false)
-            puts  MainUserInterface::toString2(store, project)
-            puts  ""
+            puts MainUserInterface::toString2(store, project)
+            puts ""
 
             elements = NxProjects::elementsInNaturalOrder(project)
             if withPrefix then
@@ -261,15 +270,27 @@ class NxProjects
             elements
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
-                    puts  NxProjects::toString2(store, element)
+                    puts MainUserInterface::toString2(store, element)
                 }
 
             puts ""
 
             puts "top | pile | task | position * | project | sort | move | with-prefix"
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input.start_with?("position") then
+                indx = input[8, 99].strip.to_i
+                item = store.get(indx)
+                next if item.nil?
+                position = LucilleCore::askQuestionAnswerAsString("position: ")
+                return if position == ""
+                position = position.to_f
+                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+                next
+            end
 
             if input == "task" then
                 next if NxProjects::whichShouldNotHaveChildren().include?(project["uuid"])
@@ -358,7 +379,7 @@ class NxProjects
 
             store = ItemStore.new()
 
-            puts  ""
+            puts ""
 
             actives = NxProjects::actives()
 
@@ -367,7 +388,7 @@ class NxProjects
                 .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, "projects")
+                    puts MainUserInterface::toString2(store, item, "ns:projects:active")
                 }
 
             puts ""
@@ -377,11 +398,13 @@ class NxProjects
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
+                    puts MainUserInterface::toString2(store, item, "ns:projects:listing")
                 }
 
             puts ""
-            puts "activate | disactivate | sort"
+
+            puts "position * | activate | disactivate | sort"
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -391,6 +414,17 @@ class NxProjects
                 item = store.get(indx)
                 next if item.nil?
                 NxProjects::program1(item, false)
+                next
+            end
+
+            if input.start_with?("position") then
+                indx = input[8, 99].strip.to_i
+                item = store.get(indx)
+                next if item.nil?
+                position = LucilleCore::askQuestionAnswerAsString("position: ")
+                return if position == ""
+                position = position.to_f
+                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
                 next
             end
 

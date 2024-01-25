@@ -26,7 +26,7 @@ class Catalyst
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts  MainUserInterface::toString2(store, item)
+                    puts MainUserInterface::toString2(store, item)
                 }
 
             puts ""
