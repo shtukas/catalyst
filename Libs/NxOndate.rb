@@ -5,7 +5,7 @@ class NxOndates
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         Cubes2::itemInit(uuid, "NxOndate")
         payload = TxPayload::interactivelyMakeNewOr(uuid)
@@ -20,7 +20,7 @@ class NxOndates
     def self.interactivelyIssueAtDatetimeNewOrNull(datetime)
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         Cubes2::itemInit(uuid, "NxOndate")
         payload = TxPayload::interactivelyMakeNewOr(uuid)
         payload.each{|k, v| Cubes2::setAttribute(uuid, k, v) }

@@ -192,7 +192,7 @@ class NxProjects
                         n = TxCores::numbers(project["engine-0020"])
                         (0..3).map{|i| acc[i]+n[i]}
                     }
-        "⏱️  #{numbers.map{|x| x.round(2) }.join(" ")}"
+        "🔺 #{numbers.map{|x| x.round(2) }.join(" ")}"
     end
 
     # ------------------
@@ -371,7 +371,7 @@ class NxProjects
                 }
 
             puts ""
-            puts NxProjects::numbersLine()
+            puts Catalyst::numbers()
 
             puts ""
             items

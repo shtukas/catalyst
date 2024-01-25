@@ -1,0 +1,6 @@
+
+UxCore
+    "uuid"          : String
+    "mikuType"      : "UxCore"
+    "type"          : "weekly-hours"
+    "hours"         : Float

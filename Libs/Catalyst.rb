@@ -75,4 +75,9 @@ class Catalyst
         }
         nil
     end
+
+    # Catalyst::numbers()
+    def self.numbers()
+        "#{NxProjects::numbersLine()} #{UxCores::numbersline()}"
+    end
 end

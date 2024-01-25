@@ -180,6 +180,8 @@ require_relative "TxCores.rb"
 require_relative "Transmutations.rb"
 require_relative "TxPayload.rb"
 
+require_relative "UxCores.rb"
+
 require_relative "Waves.rb"
 
 # ------------------------------------------------------------

@@ -222,7 +222,7 @@ class MainUserInterface
             system("clear")
 
             spacecontrol.putsline ""
-            spacecontrol.putsline NxProjects::numbersLine()
+            spacecontrol.putsline Catalyst::numbers()
 
             spacecontrol.putsline ""
 

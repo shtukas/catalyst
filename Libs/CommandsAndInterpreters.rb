@@ -45,7 +45,19 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxProjects::upgradeItemDonations(item)
+
+            options = ["project", "UxCore"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            return if option.nil?
+            if option == "project" then
+                NxProjects::upgradeItemDonations(item)
+            end
+            if option == "UxCore" then
+                uxcore = LucilleCore::selectEntityFromListOfEntitiesOrNull("uxcore", Cubes1::mikuType("UxCore"), lambda{|item| PolyFunctions::toString(item) })
+                return if uxcore.nil?
+                donation = ((item["donation-1752"] || []) + [uxcore["uuid"]]).uniq
+                Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
+            end
             return
         end
 
