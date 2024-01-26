@@ -48,7 +48,7 @@ class NxBackups
     # NxBackups::removeObsoleteItems()
     def self.removeObsoleteItems()
         (Cubes2::mikuType("NxBackup").map{|item| item["uuid"] } - NxBackups::readUuidsFromFile()).each{|uuid|
-            Cores::destroy(uuid)
+            Cubes2::destroy(uuid)
         }
     end
 

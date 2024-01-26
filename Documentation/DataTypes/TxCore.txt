@@ -10,3 +10,9 @@ TxCore
     "mikuType"      : "TxCore"
     "type"          : "weekly-hours"
     "hours"         : Float
+
+TxCore
+    "uuid"          : String
+    "mikuType"      : "TxCore"
+    "type"          : "one-sitting"
+    "hours"         : Float

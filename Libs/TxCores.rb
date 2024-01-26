@@ -31,6 +31,13 @@ class TxCores
                 "hours"         => hours
             }
         end
+        if type == "one-sitting" then
+            return {
+                "uuid"          => SecureRandom.uuid,
+                "mikuType"      => "TxCore",
+                "type"          => "one-sitting",
+            }
+        end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
     end
 
@@ -57,6 +64,9 @@ class TxCores
         if core["type"] == "weekly-hours" then
             return core["hours"].to_f/7
         end
+        if core["type"] == "one-sitting" then
+            return 0
+        end
         raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
     end
 
@@ -81,6 +91,14 @@ class TxCores
                 core["hours"].to_f/7,
                 TxCores::weeklyDone(core),
                 core["hours"]
+            ]
+        end
+        if core["type"] == "one-sitting" then
+            return [
+                0,
+                1,
+                0,
+                0
             ]
         end
         raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
@@ -111,6 +129,9 @@ class TxCores
                 return TxCores::weeklyCompletionRatioOrNull(core)
             end
             return TxCores::dayCompletionRatio(core)
+        end
+        if core["type"] == "one-sitting" then
+            return 0.5
         end
         raise "(error: 2ba8c6dc-48fd-4155-a4f3-1cf65892acc1): core: #{core}"
     end
