@@ -432,6 +432,11 @@ class NxProjects
                 projects = NxProjects::itemsInGlobalPositioningOrder()
                 selected, _ = LucilleCore::selectZeroOrMore("project", [], projects, lambda{|i| PolyFunctions::toString(i) })
                 selected.each{|i|
+                    if i["engine-0020"].nil? then
+                        puts "I need an engine for '#{PolyFunctions::toString(i).green}'"
+                        core = TxCores::interactivelyMakeNew()
+                        Cubes2::setAttribute(i["uuid"], "engine-0020", core)
+                    end
                     Cubes2::setAttribute(i["uuid"], "active", true)
                 }
                 next
