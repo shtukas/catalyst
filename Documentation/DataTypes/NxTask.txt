@@ -5,7 +5,6 @@ NxTask:
     - unixtime    : Float
     - datetime    : DateTime Iso 8601 UTC Zulu
     - description : String
-    - field11     : null or CoreData reference string
 
 Although not strictly enforced (when that is not the case they are captured by 
 block "orphaned tasks (automatic)"), tasks should have either a parent that is 

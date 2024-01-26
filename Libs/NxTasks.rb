@@ -7,20 +7,15 @@ class NxTasks
 
     # NxTasks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
-
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-
         uuid = SecureRandom.uuid
         Cubes2::itemInit(uuid, "NxTask")
-
         payload = TxPayload::interactivelyMakeNewOr(uuid)
         payload.each{|k, v| Cubes2::setAttribute(uuid, k, v) }
-
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
-
         Cubes2::itemOrNull(uuid)
     end
 
@@ -28,17 +23,11 @@ class NxTasks
     def self.urlToTask(url)
         description = "(vienna) #{url}"
         uuid = SecureRandom.uuid
-
         Cubes2::itemInit(uuid, "NxTask")
-
-        nhash = Cubes1::putBlob(uuid, url)
-        coredataref = "url:#{nhash}"
-
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
-        Cubes2::setAttribute(uuid, "field11", coredataref)
-
+        Cubes2::setAttribute(uuid, "url-e88a", url)
         Cubes2::itemOrNull(uuid)
     end
 
@@ -46,16 +35,12 @@ class NxTasks
     def self.bufferInLocationToTask(location)
         description = "(buffer-in) #{File.basename(location)}"
         uuid = SecureRandom.uuid
-
         Cubes2::itemInit(uuid, "NxTask")
-
-        coredataref = CoreDataRefStrings::locationToAionPointCoreDataReference(uuid, location)
-
+        aionreferences = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
-        Cubes2::setAttribute(uuid, "field11", coredataref)
-
+        Cubes2::setAttribute(uuid, "aion-point-7c758c", aionreferences)
         Cubes2::itemOrNull(uuid)
     end
 
@@ -65,7 +50,6 @@ class NxTasks
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
-
         Cubes2::itemOrNull(uuid)
     end
 
@@ -98,15 +82,5 @@ class NxTasks
     # NxTasks::isOrphan(item)
     def self.isOrphan(item)
         NxTasks::getParentOrNull(item).nil?
-    end
-
-    # --------------------------------------------------
-    # Operations
-
-    # NxTasks::fsck()
-    def self.fsck()
-        Cubes2::mikuType("NxTask").each{|item|
-            CoreDataRefStrings::fsck(item)
-        }
     end
 end

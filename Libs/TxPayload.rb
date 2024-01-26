@@ -2,43 +2,87 @@
 
 class TxPayload
 
+    # TxPayload::mapping()
+    def self.mapping()
+        {
+            "note-1531"          => "text of a note",
+            "todotextfile-1312"  => "name or name fragment of a text file",
+            "cfsr-20231213"      => "file system reference (see FileSystemReferences)",
+            "aion-point-7c758c"  => "aion point root hash",
+            "dx8UnitId-00286e29" => "Dx8UnitId reference",
+            "url-e88a"           => "URL",
+            "unique-string-c3e5" => "string",
+        }
+    end
+
+    # TxPayload::keysToFriendly(key)
+    def self.keysToFriendly(key)
+        TxPayload::mapping()[key]
+    end
+
+    # TxPayload::keysToShort(key)
+    def self.keysToShort(key)
+        ({
+            "note-1531"          => "(note)",
+            "todotextfile-1312"  => "(named textfile)",
+            "cfsr-20231213"      => "(file system ref)",
+            "aion-point-7c758c"  => "(aion point)",
+            "dx8UnitId-00286e29" => "(Dx8Unit)",
+            "url-e88a"           => "(url)",
+            "unique-string-c3e5" => "(unique-string)",
+        })[key]
+    end
+
+    # TxPayload::friendlyToKey(friendly)
+    def self.friendlyToKey(friendly)
+        TxPayload::mapping().each{|key, value|
+            if value == friendly then
+                return key
+            end
+        }
+    end
+
     # TxPayload::interactivelyMakeNewOr(uuid)
     def self.interactivelyMakeNewOr(uuid)
-        payload = {
-            "field11"           => nil,
-            "todotextfile-1312" => nil,
-            "note-1531"         => nil,
-            "cfsr-20231213"     => nil
-        }
+        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
         loop {
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["coredata", "note", "textfile", "file system reference"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return payload if option.nil?
-            if option == "coredata" then
-                coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(uuid)
-                if coredataref then
-                    payload["field11"] = coredataref
-                end
-                next
-            end
-            if option == "note" then
+            if TxPayload::friendlyToKey(option) == "note-1531" then
                 note = payload["note-1531"] || ""
                 note = CommonUtils::editTextSynchronously(note).strip
                 note = note.size > 0 ? note : nil
                 payload["note-1531"] = note
                 next
             end
-            if option == "textfile" then
+            if TxPayload::friendlyToKey(option) == "todotextfile-1312" then
                 todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
                 if todotextfile != "" then
                     payload["todotextfile-1312"] = todotextfile
                 end
                 next
             end
-            if option == "file system reference" then
+            if TxPayload::friendlyToKey(option) == "cfsr-20231213" then
                 reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
                 if reference then
                     payload["cfsr-20231213"] = reference
                 end
+                next
+            end
+            if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
+                raise "be5eeeb4-2333-40e8-b264-23ac2f73b964"
+                next
+            end
+            if TxPayload::friendlyToKey(option) == "dx8UnitId-00286e29" then
+                raise "be5eeeb4-2433-40e8-b264-23ac2f73b964"
+                next
+            end
+            if TxPayload::friendlyToKey(option) == "url-e88a" then
+                raise "be5eeeb4-2343-40e8-b264-23ac2f73b964"
+                next
+            end
+            if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
+                raise "be5eeeb4-2334-40e8-b264-23ac2f73b964"
                 next
             end
         }
@@ -46,55 +90,13 @@ class TxPayload
 
     # TxPayload::suffix_string(item)
     def self.suffix_string(item)
-        str = [
-            CoreDataRefStrings::referenceToStringOrNull(item["field11"]),
-            item["note-1531"] ? "(note)" : nil,
-            item["todotextfile-1312"] ? "(textfile: #{item["todotextfile-1312"]})" : nil,
-            item["cfsr-20231213"] ? "(cfsr)" : nil
-        ]
-            .compact
-            .join(' ').green
-
+        str = TxPayload::mapping()
+                .keys
+                .map{|key| item[key] ? TxPayload::keysToShort(key) : nil }
+                .compact
+                .join(' ').green
         return "" if str == ""
         " #{str}".green
-    end
-
-    # TxPayload::edit(item)
-    def self.edit(item)
-        return if item["mikuType"] == "NxProject"
-        loop {
-            puts "payload:#{TxPayload::suffix_string(item)}".green
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["coredata", "note", "textfile", "file system reference"])
-            return if option.nil?
-            if option == "coredata" then
-                coredataref = CoreDataRefStrings::interactivelyMakeNewReferenceStringOrNull(item["uuid"])
-                if coredataref then
-                    item["field11"] = coredataref
-                    Cubes2::setAttribute(item["uuid"], "field11", coredataref)
-                end
-            end
-            if option == "note" then
-                note = item["note-1531"] || ""
-                note = CommonUtils::editTextSynchronously(note).strip
-                note = note.size > 0 ? note : nil
-                item["note-1531"] = note
-                Cubes2::setAttribute(item["uuid"], "note-1531", note)
-            end
-            if option == "textfile" then
-                todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
-                if todotextfile != "" then
-                    item["todotextfile-1312"] = todotextfile
-                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
-                end
-            end
-            if option == "file system reference" then
-                reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
-                if reference then
-                    item["cfsr-20231213"] = reference
-                    Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
-                end
-            end
-        }
     end
 
     # TxPayload::access(item)
@@ -102,37 +104,23 @@ class TxPayload
         return if item["mikuType"] == "NxProject"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
-            option1 = CoreDataRefStrings::referenceToStringOrNull(item["field11"])
-            option2 = item["note-1531"] ? "(note)" : nil
-            option3 = item["todotextfile-1312"] ? "(textfile: #{item["todotextfile-1312"]})" : nil
-            option4 = item["cfsr-20231213"] ? "(cfsr)" : nil
-            options = [
-                option1,
-                option2,
-                option3,
-                option4
-            ]
-            .compact
-            option = nil
+            options = TxPayload::mapping().keys.map{|key| item[key] ? keys : nil }.compact
             return if options.size == 0
             if options.size == 1 then
                 option = options.first
-            end
-            if options.size > 1 then
+            else
                 option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
                 return if option.nil?
             end
-            if option == option1 then
-                CoreDataRefStrings::accessAndMaybeEdit(item["uuid"], item["field11"])
-            end
-            if option == option2 then
+
+            if option == "note-1531" then
                 note = item["note-1531"] || ""
                 note = CommonUtils::editTextSynchronously(note).strip
                 note = note.size > 0 ? note : nil
                 item["note-1531"] = note
                 Cubes2::setAttribute(item["uuid"], "note-1531", note)
             end
-            if option == option3 then
+            if option == "todotextfile-1312" then
                 todotextfile = item["todotextfile-1312"]
                 location = Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
                 if location.nil? then
@@ -145,12 +133,68 @@ class TxPayload
                 puts "found: #{location}"
                 system("open '#{location}'")
             end
-            if option == option4 then
+            if option == "cfsr-20231213" then
                 reference = item["cfsr-20231213"]
                 FileSystemReferences::accessReference(reference)
             end
+            if option == "aion-point-7c758c" then
+                raise "be5eeeb4-2334-40e8-b264-24ac2f73b964"
+            end
+            if option == "dx8UnitId-00286e29" then
+                raise "be5eeeb4-234-40e8-b264-24ac2f73b964"
+            end
+            if option == "url-e88a" then
+                raise "be5eeeb4-2334-40b264-24ac2f73b964"
+            end
+            if option == "unique-string-c3e5" then
+                raise "be5eeeb4-234-40e8-b264-24a3b964"
+            end
             if options.size == 1 then
                 break
+            end
+        }
+    end
+
+    # TxPayload::edit(item)
+    def self.edit(item)
+        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
+        return if item["mikuType"] == "NxProject"
+        loop {
+            puts "payload:#{TxPayload::suffix_string(item)}".green
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            return if option.nil?
+            if TxPayload::friendlyToKey(option) == "note-1531" then
+                note = item["note-1531"] || ""
+                note = CommonUtils::editTextSynchronously(note).strip
+                note = note.size > 0 ? note : nil
+                item["note-1531"] = note
+                Cubes2::setAttribute(item["uuid"], "note-1531", note)
+            end
+            if TxPayload::friendlyToKey(option) == "todotextfile-1312" then
+                todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
+                if todotextfile != "" then
+                    item["todotextfile-1312"] = todotextfile
+                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
+                end
+            end
+            if TxPayload::friendlyToKey(option) == "cfsr-20231213" then
+                reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
+                if reference then
+                    item["cfsr-20231213"] = reference
+                    Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
+                end
+            end
+            if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
+                raise "be1eeeb4-2334-40e8-b264-24ac2f73b964"
+            end
+            if TxPayload::friendlyToKey(option) == "dx8UnitId-00286e29" then
+                raise "be2eeeb4-234-40e8-b264-24ac2f73b964"
+            end
+            if TxPayload::friendlyToKey(option) == "url-e88a" then
+                raise "be3eeeb4-2334-40b264-24ac2f73b964"
+            end
+            if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
+                raise "be4eeeb4-234-40e8-b264-24a3b964"
             end
         }
     end

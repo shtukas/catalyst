@@ -211,11 +211,4 @@ class Waves
         items = i1 + i2
         Catalyst::program2(items)
     end
-
-    # Waves::fsck()
-    def self.fsck()
-        Cubes2::mikuType("Wave").each{|item|
-            CoreDataRefStrings::fsck(item)
-        }
-    end
 end

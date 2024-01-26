@@ -5,17 +5,22 @@ Catalyst items are json object with at least
 
 Cross types conventions (all optional):
 
-    - field11             : coredata reference string
-    - note-1531           : String
-    - todotextfile-1312   : fragment of name of a todo text file (must be located in Galaxy)
-    - cfsr-20231213       : string, the catalyst file system reference
-
     - doNotShowUntil      : unixtime
     - skip-0843           : unixtime (skipped until this time)
     - open-cycle-1143     : uuid of the open cycle that this item represents
     - ox1-0656            : Ox1
     - global-positioning  : Float # used for ordering and sorting
                             within the children of a core.
+
+    # Payload
+    - note-1531           : String
+    - todotextfile-1312   : fragment of name of a todo text file (must be located in Galaxy)
+    - cfsr-20231213       : string, the catalyst file system reference
+    - aion-point-7c758c   : aion point root hash
+    - dx8UnitId-00286e29  : Dx8UnitId reference
+    - url-e88a            : URL
+    - unique-string-c3e5  : String
+
     - donation-1752       : Array[String]
     - engine-0020         : TxCore
     - parentuuid-0032     : null or uuid of the parent

@@ -129,7 +129,6 @@ require_relative "Bank.rb"
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
-require_relative "CoreDataRefStrings.rb"
 require_relative "Cubes.rb"
 
 require_relative "DoNotShowUntil.rb"

@@ -5,6 +5,11 @@ class Cubes1
     # ----------------------------------------
     # File Management (1)
 
+    # Cubes1::pathToCubes()
+    def self.pathToCubes()
+        "#{Config::pathToCatalystDataRepository()}/Cubes"
+    end
+
     # Cubes1::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)
         filepath = "/tmp/#{SecureRandom.hex}"
@@ -28,7 +33,7 @@ class Cubes1
             return filepath
         end
 
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Cubes")
+        LucilleCore::locationsAtFolder(Cubes1::pathToCubes())
             .select{|location| location[-14, 14] == ".catalyst-cube" }
             .each{|filepath|
                 u1 = Cubes1::uuidFromFile(filepath)
@@ -43,7 +48,7 @@ class Cubes1
 
     # Cubes1::relocate(filepath1)
     def self.relocate(filepath1)
-        folderpath2 = "#{Config::pathToCatalystDataRepository()}/Cubes"
+        folderpath2 = Cubes1::pathToCubes()
         filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
         filepath2 = "#{folderpath2}/#{filename2}"
         return filepath1 if (filepath1 == filepath2)
@@ -99,7 +104,7 @@ class Cubes1
     # Cubes1::maintenance()
     def self.maintenance()
         filepaths = []
-        Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
+        Find.find(Cubes1::pathToCubes()) do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             filepaths << path
@@ -261,7 +266,7 @@ class Cubes1
     # Cubes1::items()
     def self.items()
         items = []
-        Find.find("#{Config::pathToCatalystDataRepository()}/Cubes") do |path|
+        Find.find(Cubes1::pathToCubes()) do |path|
             next if !path.include?(".catalyst-cube")
             next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
             items << Cubes1::filepathToItem(path)
