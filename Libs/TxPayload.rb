@@ -99,9 +99,13 @@ class TxPayload
         " #{str}".green
     end
 
+    # TxPayload::itemHasPayload(item)
+    def self.itemHasPayload(item)
+        TxPayload::mapping().keys.map{|key| item[key] }.compact.size > 0
+    end
+
     # TxPayload::access(item)
     def self.access(item)
-        return if item["mikuType"] == "NxProject"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
             options = TxPayload::mapping().keys.map{|key| item[key] ? key : nil }.compact
@@ -174,7 +178,6 @@ class TxPayload
     # TxPayload::edit(item)
     def self.edit(item)
         options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
-        return if item["mikuType"] == "NxProject"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)

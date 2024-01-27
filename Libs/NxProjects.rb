@@ -227,6 +227,9 @@ class NxProjects
 
     # NxProjects::access(item)
     def self.access(item)
+        if TxPayload::itemHasPayload(item) then
+            TxPayload::access(item)
+        end
         NxProjects::program1(item, false)
     end
 
