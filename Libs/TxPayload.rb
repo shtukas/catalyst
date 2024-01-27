@@ -104,7 +104,7 @@ class TxPayload
         return if item["mikuType"] == "NxProject"
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
-            options = TxPayload::mapping().keys.map{|key| item[key] ? keys : nil }.compact
+            options = TxPayload::mapping().keys.map{|key| item[key] ? key : nil }.compact
             return if options.size == 0
             if options.size == 1 then
                 option = options.first
