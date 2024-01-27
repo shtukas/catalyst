@@ -112,7 +112,6 @@ class TxPayload
                 option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
                 return if option.nil?
             end
-
             if option == "note-1531" then
                 note = item["note-1531"] || ""
                 note = CommonUtils::editTextSynchronously(note).strip
@@ -138,16 +137,33 @@ class TxPayload
                 FileSystemReferences::accessReference(reference)
             end
             if option == "aion-point-7c758c" then
-                raise "be5eeeb4-2334-40e8-b264-24ac2f73b964"
+                nhash = item["aion-point-7c758c"]
+                puts "accessing aion point: #{nhash}"
+                exportId = SecureRandom.hex(4)
+                exportFoldername = "aion-point-#{exportId}"
+                exportFolder = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
+                FileUtils.mkpath(exportFolder)
+                AionCore::exportHashAtFolder(Elizabeth.new(uuid), nhash, exportFolder)
+                system("open '#{exportFolder}'")
+                LucilleCore::pressEnterToContinue()
             end
             if option == "dx8UnitId-00286e29" then
-                raise "be5eeeb4-234-40e8-b264-24ac2f73b964"
+                unitId = item["dx8UnitId-00286e29"]
+                Dx8Units::access(unitId)
             end
             if option == "url-e88a" then
-                raise "be5eeeb4-2334-40b264-24ac2f73b964"
+                url = item["url-e88a"]
+                CommonUtils::openUrlUsingSafari(url)
+                LucilleCore::pressEnterToContinue()
             end
             if option == "unique-string-c3e5" then
-                raise "be5eeeb4-234-40e8-b264-24a3b964"
+                uniquestring = item["unique-string-c3e5"]
+                puts "accessing unique string: #{uniquestring}"
+                location = Atlas::uniqueStringToLocationOrNull(uniquestring)
+                if location then
+                    puts "location: #{location}"
+                    LucilleCore::pressEnterToContinue()
+                end
             end
             if options.size == 1 then
                 break
