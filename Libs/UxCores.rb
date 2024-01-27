@@ -31,9 +31,12 @@ class UxCores
         [
             "⛵️ ",
             Cubes2::mikuType("UxCore")
-                .map{|core| TxCores::dayCompletionRatio(core) }
-                .map{|ratio| "#{(100 * ratio).round(2)}" }
+                .map{|core| 
+                    ratio = TxCores::dayCompletionRatio(core)
+                    "#{core["description"][0, 1]}: #{(100 * ratio).round(2)}%"
+                }
                 .join(" "),
+            " today"
         ].join()
     end
 

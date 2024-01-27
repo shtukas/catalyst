@@ -207,7 +207,9 @@ class NxProjects
                         n = TxCores::numbers(project["engine-0020"])
                         (0..3).map{|i| acc[i]+n[i]}
                     }
-        "🔺 #{numbers.map{|x| x.round(2) }.join(" ")}"
+        ratio = numbers[0].to_f/numbers[1]
+        percentage = (ratio*100).round(2)
+        "🔺 #{percentage.round(2)}% of #{numbers[1].round(2)} hours today"
     end
 
     # ------------------
