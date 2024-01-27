@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | monitor | priority | stack | mission",
             "divings       : anniversaries | ondates | waves | desktop | projects | engines | missions | backups",
@@ -207,6 +207,16 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Ox1::detach(item)
+            return
+        end
+
+        if Interpreting::match("completed *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] == "NxProject" then
+                PolyActions::destroy(item)
+            end
             return
         end
 
