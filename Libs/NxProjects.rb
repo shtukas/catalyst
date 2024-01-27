@@ -139,6 +139,12 @@ class NxProjects
         Cubes2::mikuType("NxProject").select{|item| item["active"] }
     end
 
+    # NxProjects::horizon()
+    def self.horizon()
+        NxProjects::actives()
+            .select{|item| DoNotShowUntil2::isVisible(item) }
+    end
+
     # NxProjects::itemsInMainListingOrder()
     def self.itemsInMainListingOrder()
         NxProjects::actives().sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
@@ -196,7 +202,7 @@ class NxProjects
 
     # NxProjects::numbersLine()
     def self.numbersLine()
-        numbers = NxProjects::actives()
+        numbers = NxProjects::horizon()
                     .reduce([0, 0, 0, 0]){|acc, project|
                         n = TxCores::numbers(project["engine-0020"])
                         (0..3).map{|i| acc[i]+n[i]}
