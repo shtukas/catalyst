@@ -42,8 +42,9 @@ class TxPayload
         }
     end
 
-    # TxPayload::interactivelyMakeNewOr(uuid)
-    def self.interactivelyMakeNewOr(uuid)
+    # TxPayload::interactivelyMakeNew(uuid)
+    def self.interactivelyMakeNew(uuid)
+        payload = {}
         options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
         loop {
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)

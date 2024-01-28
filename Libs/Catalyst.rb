@@ -63,7 +63,7 @@ class Catalyst
     # Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
     def self.selectTodoTextFileLocationOrNull(todotextfile)
         location = XCache::getOrNull("fcf91da7-0600-41aa-817a-7af95cd2570b:#{todotextfile}")
-        if File.exist?(location) then
+        if location and File.exist?(location) then
             return location
         end
 
@@ -79,6 +79,6 @@ class Catalyst
 
     # Catalyst::numbers()
     def self.numbers()
-        "#{NxProjects::numbersLine()} #{UxCores::numbersline()}"
+        UxCores::numbersline()
     end
 end

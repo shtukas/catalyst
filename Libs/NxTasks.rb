@@ -11,7 +11,7 @@ class NxTasks
         return nil if description == ""
         uuid = SecureRandom.uuid
         Cubes2::itemInit(uuid, "NxTask")
-        payload = TxPayload::interactivelyMakeNewOr(uuid)
+        payload = TxPayload::interactivelyMakeNew(uuid)
         payload.each{|k, v| Cubes2::setAttribute(uuid, k, v) }
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
