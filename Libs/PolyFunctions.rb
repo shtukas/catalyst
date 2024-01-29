@@ -126,6 +126,6 @@ class PolyFunctions
         if item["mikuType"] == "UxCore" then
             return UxCores::toString(item)
         end
-        raise "(error: 820ce38d-e9db-4182-8e14-69551f58671c) I do not know how to PolyFunctions::toString(item): #{item}"
+        raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
 end
