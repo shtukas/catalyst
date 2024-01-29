@@ -348,7 +348,7 @@ class NxTodos
 
     # NxTodos::done(item)
     def self.done(item)
-        if NxTodos::children(listing).empty? then
+        if NxTodos::children(item).empty? then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
