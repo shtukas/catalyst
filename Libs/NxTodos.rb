@@ -151,7 +151,7 @@ class NxTodos
         end
     end
 
-    # NxTodos::natural(item)
+    # NxTodos::access(item)
     def self.natural(item)
         NxTodos::access(item)
     end
@@ -348,7 +348,13 @@ class NxTodos
 
     # NxTodos::done(item)
     def self.done(item)
-        DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+        if NxTodos::children(listing).empty? then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+        else
+            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
+        end
     end
 
     # NxTodos::upgradeItemDonations(item)

@@ -193,7 +193,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            NxTodos::natural(item)
+            NxTodos::access(item)
             return
         end
 
@@ -350,6 +350,11 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             Catalyst::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "NxTodo" then
+            NxTodos::program1(item)
             return
         end
 
