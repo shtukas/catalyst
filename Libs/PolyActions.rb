@@ -31,8 +31,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            NxProjects::access(item)
+        if item["mikuType"] == "NxTodo" then
+            NxTodos::access(item)
             return
         end
 
@@ -105,8 +105,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            NxProjects::done(item)
+        if item["mikuType"] == "NxTodo" then
+            NxTodos::done(item)
             return
         end
 
@@ -192,8 +192,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            NxProjects::natural(item)
+        if item["mikuType"] == "NxTodo" then
+            NxTodos::natural(item)
             return
         end
 
@@ -279,8 +279,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            if NxProjects::elementsInNaturalOrder(item).size > 0 then
+        if item["mikuType"] == "NxTodo" then
+            if NxTodos::children(item).size > 0 then
                 puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
                 LucilleCore::pressEnterToContinue()
                 return

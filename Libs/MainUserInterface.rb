@@ -76,12 +76,12 @@ class MainUserInterface
         item["interruption"]
     end
 
-    # MainUserInterface::toString2(store, item, context = nil)
-    def self.toString2(store, item, context = nil)
+    # MainUserInterface::toString2(store, item)
+    def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
-        line = "#{storePrefix}#{positionstr}#{TxCores::suffix2(item, context)} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -152,7 +152,7 @@ class MainUserInterface
         spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxProjects::muiItems()", lambda{ NxProjects::muiItems() })
+        spot.contest_entry("NxTodos::muiItems()", lambda{ NxTodos::muiItems() })
         spot.contest_entry("PhysicalTargets::muiItems()", lambda{ PhysicalTargets::muiItems() })
         spot.contest_entry("Waves::muiItems()", lambda{ Waves::muiItems() })
         spot.end_contest()
@@ -230,7 +230,7 @@ class MainUserInterface
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    line = MainUserInterface::toString2(store, item, "listing")
+                    line = MainUserInterface::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }

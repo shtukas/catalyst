@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | monitor | priority | stack | mission",
-            "divings       : anniversaries | ondates | waves | desktop | projects | engines | missions | backups",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | mission",
+            "divings       : anniversaries | ondates | waves | desktop | todos | engines | missions | backups | orbitals",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -50,7 +50,7 @@ class CommandsAndInterpreters
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return if option.nil?
             if option == "project" then
-                NxProjects::upgradeItemDonations(item)
+                NxTodos::upgradeItemDonations(item)
             end
             if option == "UxCore" then
                 uxcore = LucilleCore::selectEntityFromListOfEntitiesOrNull("uxcore", Cubes1::mikuType("UxCore"), lambda{|item| PolyFunctions::toString(item) })
@@ -66,13 +66,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("monitor", input) then
-            item = NxProjects::interactivelyIssueMonitorOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            return
-        end
-
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -85,13 +78,13 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             return if line == ""
-            item = NxTasks::descriptionToTask1(SecureRandom.hex, line)
+            item = NxTodos::descriptionToTask1(SecureRandom.hex, line)
             puts JSON.pretty_generate(item)
             Ox1::putAtTop(item)
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxProjects::upgradeItemDonations(item)
+            NxTodos::upgradeItemDonations(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -102,19 +95,24 @@ class CommandsAndInterpreters
             mission = NxMissions::interactivelyIssueNewOrNull()
             return if mission.nil?
             puts JSON.pretty_generate(mission)
-            NxProjects::upgradeItemDonations(mission)
+            NxTodos::upgradeItemDonations(mission)
             return
         end
 
         if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNewOrNull()
+            item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
         end
 
-        if Interpreting::match("projects", input) then
-            NxProjects::program2()
+        if Interpreting::match("todos", input) then
+            NxTodos::program2()
+            return
+        end
+
+        if Interpreting::match("orbitals", input) then
+            Catalyst::program2(Cubes2::mikuType("NxOrbital"))
             return
         end
 
@@ -151,8 +149,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxProject" then
-                NxProjects::pile(item)
+            if item["mikuType"] == "NxTodo" then
+                NxTodos::pile(item)
                 return
             end
             NxStrats::interactivelyPile(item)
@@ -163,7 +161,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxProjects::interactivelySelectOneAndAddTo(item["uuid"])
+            NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
             return
         end
 
@@ -176,7 +174,7 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            NxProjects::selectSubsetOfItemsAndMove(store.items())
+            NxTodos::selectSubsetOfItemsAndMove(store.items())
             return
         end
 
@@ -184,10 +182,10 @@ class CommandsAndInterpreters
             text = CommonUtils::editTextSynchronously("").strip
             return if text == ""
             text.lines.reverse.each{|line|
-                task = NxTasks::descriptionToTask1(SecureRandom.uuid, line.strip)
+                task = NxTodos::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
                 puts "> deciding listing for task: '#{PolyFunctions::toString(task)}'"
-                listing = NxProjects::interactivelySelectOneOrNull()
+                listing = NxTodos::interactivelySelectOneOrNull()
                 if listing then
                     Cubes2::setAttribute(task["uuid"], "donation-1752", [listing["uuid"]])
                 end
@@ -214,7 +212,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxProject" then
+            if item["mikuType"] == "NxTodo" then
                 PolyActions::destroy(item)
             end
             return
@@ -224,7 +222,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxProjects::upgradeItemDonations(item)
+            NxTodos::upgradeItemDonations(item)
             return
         end
 
@@ -251,8 +249,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo", input) or Interpreting::match("task", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
+        if Interpreting::match("todo", input) then
+            item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             option = nil
             loop {
@@ -264,7 +262,7 @@ class CommandsAndInterpreters
                     next
                 end
                 if option == "in listing" then
-                    NxProjects::interactivelySelectOneAndAddTo(item["uuid"])
+                    NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
                     return
                 end
                 if option == "with own engine" then

@@ -7,7 +7,7 @@ class OpenCycles
 
         uuid = SecureRandom.uuid
 
-        Cubes2::itemInit(uuid, "NxProject")
+        Cubes2::itemInit(uuid, "NxTodo")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "engine-0020", nil)

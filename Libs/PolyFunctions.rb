@@ -20,7 +20,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxProject" and item["engine-0020"] then
+        if item["mikuType"] == "NxTodo" and item["engine-0020"] then
             core = item["engine-0020"]
             accounts << {
                 "description" => "core: #{core["uuid"]}",
@@ -29,15 +29,17 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxMission" then
-            listing = Cubes2::itemOrNull("ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34") # listing: missions (automatic)
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(listing)
+            accounts << {
+                "description" => "missions control",
+                "number"      => "missions-control-4160-84b0-09a726873619"
+            }
         end
 
-        if item["mikuType"] == "NxTask" then
-            if NxTasks::isOrphan(item) then
-                listing = Cubes2::itemOrNull("06ebad3e-2ecf-4acd-9eea-00cdaa6acdc3") # orphaned tasks (automatic)
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(listing)
-            end
+        if item["mikuType"] == "NxOrbital" then
+            accounts << {
+                "description" => "orbital control",
+                "number"      => "orbital-control-497b-bedb-0152d1d9248a"
+            }
         end
 
         # Special Features
@@ -74,8 +76,8 @@ class PolyFunctions
         }
     end
 
-    # PolyFunctions::toString(item, context = nil)
-    def self.toString(item, context = nil)
+    # PolyFunctions::toString(item)
+    def self.toString(item)
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
@@ -94,8 +96,11 @@ class PolyFunctions
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item, context)
+        if item["mikuType"] == "NxTodo" then
+            return NxTodos::toString(item)
+        end
+        if item["mikuType"] == "NxOrbital" then
+            return NxOrbitals::toString(item)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
@@ -105,9 +110,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
-        end
-        if item["mikuType"] == "NxTask" then
-            return NxTasks::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

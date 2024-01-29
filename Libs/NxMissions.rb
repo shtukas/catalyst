@@ -20,4 +20,19 @@ class NxMissions
     def self.toString(item)
         "🚀 (mission: start, stop, done) #{item["description"]}"
     end
+
+    # NxMissions::recoveryTimeControl()
+    def self.recoveryTimeControl()
+        0.75
+    end
+
+    # NxMissions::muiItems()
+    def self.muiItems()
+
+        return [] if Bank2::recoveredAverageHoursPerDay("missions-control-4160-84b0-09a726873619") > NxMissions::recoveryTimeControl()
+
+        Cubes2::mikuType("NxMission")
+            .sort_by{|item| item["lastDoneUnixtime"] }
+            .take(1)
+    end
 end

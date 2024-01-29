@@ -19,6 +19,22 @@ class OrderingT
         # (that ratio is kept in the instance's own XCache, so is varying from one
         # instance to another)
 
+        if item["mikuType"] == "NxTodo" then
+            if item["engine-0020"] then
+                return TxCores::listingCompletionRatio(item["engine-0020"])
+            else
+                return Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxTodos::basicHoursPerDayForProjectsWithoutEngine()
+            end
+        end
+
+        if item["mikuType"] == "NxOrbital" then
+            return TxCores::listingCompletionRatio(item["engine-0020"])
+        end
+
+        if item["mikuType"] == "NxMission" then
+            return Bank2::recoveredAverageHoursPerDay("missions-control-4160-84b0-09a726873619").to_f/NxMissions::recoveryTimeControl()
+        end
+
         if item["engine-0020"] then
             return TxCores::listingCompletionRatio(item["engine-0020"])
         end
@@ -32,13 +48,16 @@ class OrderingT
 
     # OrderingT::muiItems()
     def self.muiItems()
-        items1 = NxProjects::itemsInMainListingOrder()
-        items2 = Cubes2::items()
+        items1 = NxTodos::muiItems()
+        items2 = NxOrbitals::muiItems()
+        items3 = NxMissions::muiItems()
+        items4 = Cubes2::items()
                     .select{|item| item["engine-0020"] }
-                    .select{|item| item["mikuType"] != "NxProject" }
+                    .select{|item| item["mikuType"] != "NxTodo" }
+                    .select{|item| item["mikuType"] != "NxOrbital" }
                     .select{|item| TxCores::listingCompletionRatio(item["engine-0020"]) < 1 }
-        items3 = Waves::muiItems().select{|item| !item["interruption"] }
+        items5 = Waves::muiItems().select{|item| !item["interruption"] }
 
-        (items1+items2+items3).sort_by{|item| OrderingT::ratio(item) }
+        (items1+items2+items3+items4+items5).sort_by{|item| OrderingT::ratio(item) }
     end
 end

@@ -4,8 +4,9 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         map = {
-            "NxOndate"  => ["NxTask", "NxProject"],
+            "NxOndate"  => ["NxTask", "NxTodo"],
             "Wave"      => ["NxMission"],
+            "NxTodo" => ["NxOrbital"]
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
@@ -17,32 +18,24 @@ class Transmutations
 
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
-        if item["mikuType"] == "NxProject" and targetMikuType == "NxTask" then
-            if NxProjects::elementsInNaturalOrder(item).size.size > 0 then
-                Cubes2::setAttribute(item["uuid"], "mikuType", "NxTask")
-                item = Cubes2::itemOrNull(item["uuid"])
-                puts JSON.pretty_generate(item)
-                NxProjects::interactivelySelectOneAndAddTo(item["uuid"])
-            else
-                puts "We cannot trnasmute a NxCruise with non empty cargo. Found #{NxProjects::elementsInNaturalOrder(item).size} elements"
-                LucilleCore::pressEnterToContinue()
-            end
+        if item["mikuType"] == "NxTodo" and targetMikuType == "NxOrbital" then
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxOrbital")
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTask" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTask")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxProjects::interactivelySelectOneAndAddTo(item["uuid"])
+            NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxOndate" and targetMikuType == "NxProject" then
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxTodo" then
             core = TxCores::interactivelyMakeNewOrNull()
             Cubes2::setAttribute(item["uuid"], "engine-0020", core)
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxProject")
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxProjects::upgradeItemDonations(item)
+            NxTodos::upgradeItemDonations(item)
             return
         end
         if item["mikuType"] == "Wave" and targetMikuType == "NxMission" then
@@ -50,7 +43,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxProjects::upgradeItemDonations(item)
+            NxTodos::upgradeItemDonations(item)
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"

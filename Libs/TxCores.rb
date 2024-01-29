@@ -136,28 +136,22 @@ class TxCores
         raise "(error: 2ba8c6dc-48fd-4155-a4f3-1cf65892acc1): core: #{core}"
     end
 
-    # TxCores::suffix1(core, context = nil)
-    def self.suffix1(core, context = nil)
+    # TxCores::suffix1(core)
+    def self.suffix1(core)
         if core.nil? then
             return "".yellow
         end
-        if context == "listing" then
-            return ""
+        if core["type"] == "daily-hours" then
+            return " (#{(100*TxCores::dayCompletionRatio(core)).round(2)} % of daily:  #{core["hours"]} hs)".green
         end
-        if context == "ns:projects:active" then
-            if core["type"] == "daily-hours" then
-                return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %           of daily:  #{"%5.2f" % core["hours"]} hs)".green
-            end
-            if core["type"] == "weekly-hours" then
-                return " (#{"%6.2f" % (100*TxCores::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxCores::weeklyCompletionRatioOrNull(core))} % of weekly: #{"%5.2f" % core["hours"]} hs)".green
-            end
+        if core["type"] == "weekly-hours" then
+            return " (#{(100*TxCores::dayCompletionRatio(core)).round(2)} %, #{(100*TxCores::weeklyCompletionRatioOrNull(core)).round(2)} % of weekly: #{core["hours"]} hs)".green
         end
-        ""
     end
 
-    # TxCores::suffix2(item, context = nil)
-    def self.suffix2(item, context = nil)
+    # TxCores::suffix2(item)
+    def self.suffix2(item)
         return "" if item["engine-0020"].nil?
-        TxCores::suffix1(item["engine-0020"], context)
+        TxCores::suffix1(item["engine-0020"])
     end
 end

@@ -1,8 +1,7 @@
 
-NxProject:
+NxTodo:
     - uuid         : String
-    - mikuType     : "NxProject"
+    - mikuType     : "NxTodo"
     - unixtime     : Float
     - datetime     : DateTime Iso 8601 UTC Zulu
     - description  : String
-    - active       : boolean
