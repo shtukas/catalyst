@@ -42,5 +42,6 @@ class NxOndates
     def self.muiItems()
         Cubes2::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
     end
 end
