@@ -30,12 +30,10 @@ class Transmutations
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTodo" then
-            core = TxCores::interactivelyMakeNewOrNull()
-            Cubes2::setAttribute(item["uuid"], "engine-0020", core)
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxTodos::upgradeItemDonations(item)
+            NxTodos::properlyDecorateNewlyCreatedTodo(item)
             return
         end
         if item["mikuType"] == "Wave" and targetMikuType == "NxMission" then

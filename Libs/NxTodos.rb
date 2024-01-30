@@ -59,12 +59,12 @@ class NxTodos
 
     # NxTodos::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", NxTodos::childless(), lambda{|item| NxTodos::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", NxTodos::rootTodos(), lambda{|item| NxTodos::toString(item) })
     end
 
     # NxTodos::selectZeroOrMore()
     def self.selectZeroOrMore()
-        selected, _ = LucilleCore::selectZeroOrMore("item", [], NxTodos::childless(), lambda{|item| NxTodos::toString(item) })
+        selected, _ = LucilleCore::selectZeroOrMore("item", [], NxTodos::rootTodos(), lambda{|item| NxTodos::toString(item) })
         selected
     end
 
@@ -120,11 +120,33 @@ class NxTodos
         1.5
     end
 
-    # NxTodos::childless()
-    def self.childless()
+    # NxTodos::rootTodos()
+    def self.rootTodos()
         NxTodos::itemsInGlobalPositioningOrder()
             .select{|item| item["parentuuid-0032"].nil? }
             .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # NxTodos::interactivelySelectTopTodoOrNull()
+    def self.interactivelySelectTopTodoOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("root todo", NxTodos::rootTodos(), lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # NxTodos::interactivelySelectPositionAmoungTopTodos()
+    def self.interactivelySelectPositionAmoungTopTodos()
+        elements = NxTodos::rootTodos()
+        elements.each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
+        if position == "first" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+        end
+        position = position.to_f
+        position
     end
 
     # ------------------
@@ -290,7 +312,7 @@ class NxTodos
     def self.program2()
         loop {
 
-            items = NxTodos::childless()
+            items = NxTodos::rootTodos()
             return if items.empty?
 
             system("clear")
@@ -372,5 +394,35 @@ class NxTodos
             .each{|item|
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
             }
+    end
+
+    # NxTodos::properlyDecorateNewlyCreatedTodo(item)
+    def self.properlyDecorateNewlyCreatedTodo(item)
+        loop {
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top todo (with position)", "in listing", "with own engine"])
+            next if option.nil?
+            if option == "top todo (with position)" then
+                position = NxTodos::interactivelySelectPositionAmoungTopTodos()
+                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+                return
+            end
+            if option == "in listing" then
+                NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
+                return
+            end
+            if option == "with own engine" then
+                core = TxCores::interactivelyMakeNew()
+                next if core.nil?
+                Cubes2::setAttribute(item["uuid"], "engine-0020", core)
+                return
+            end
+            if option == "with own engine" then
+                core = TxCores::interactivelyMakeNew()
+                next if core.nil?
+                Cubes2::setAttribute(item["uuid"], "engine-0020", core)
+                return
+            end
+        }
+        NxTodos::upgradeItemDonations(item)
     end
 end

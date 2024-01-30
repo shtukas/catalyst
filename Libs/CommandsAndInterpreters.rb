@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | mission",
             "divings       : anniversaries | ondates | waves | desktop | todos | engines | missions | backups | orbitals",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
         ].join("\n")
     end
 
@@ -113,6 +113,14 @@ class CommandsAndInterpreters
 
         if Interpreting::match("orbitals", input) then
             Catalyst::program2(Cubes2::mikuType("NxOrbital"))
+            return
+        end
+
+        if Interpreting::match("contribution", input) then
+            uxcore = UxCores::interactivelySelectOneOrNull()
+            return if uxcore.nil?
+            timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours for '#{PolyFunctions::toString(uxcore).green}': ").to_f
+            PolyActions::addTimeToItem(uxcore, timeInHours*3600)
             return
         end
 
@@ -252,26 +260,7 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
-            option = nil
-            loop {
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in listing", "with own engine"])
-                if option.nil? then
-                    if LucilleCore::askQuestionAnswerAsBoolean("You did not specify an option, are you sure you want to leave this tasks without a listing or its own engine ? ", false) then
-                        break
-                    end
-                    next
-                end
-                if option == "in listing" then
-                    NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
-                    return
-                end
-                if option == "with own engine" then
-                    core = TxCores::interactivelyMakeNew()
-                    next if core.nil?
-                    Cubes2::setAttribute(item["uuid"], "engine-0020", core)
-                    return
-                end
-            }
+            NxTodos::properlyDecorateNewlyCreatedTodo(item)
             return
         end
 
