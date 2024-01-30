@@ -71,19 +71,27 @@ class TxPayload
                 next
             end
             if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
-                raise "be5eeeb4-2333-40e8-b264-23ac2f73b964"
+                location = CommonUtils::interactivelySelectDesktopLocationOrNull()
+                next if location.nil?
+                nhash = AionCore::commitLocationReturnHash(Elizabeth.new(item["uuid"]), location)
+                payload["aion-point-7c758c"] = nhash
                 next
             end
             if TxPayload::friendlyToKey(option) == "dx8UnitId-00286e29" then
-                raise "be5eeeb4-2433-40e8-b264-23ac2f73b964"
+                unitId = LucilleCore::askQuestionAnswerAsString("Dx8Unit Id: ")
+                next if unitId == ""
+                payload["dx8UnitId-00286e29"] = unitId
                 next
             end
             if TxPayload::friendlyToKey(option) == "url-e88a" then
-                raise "be5eeeb4-2343-40e8-b264-23ac2f73b964"
+                url = LucilleCore::askQuestionAnswerAsString("url: ")
+                next if url == ""
+                payload["url-e88a"] = url
                 next
             end
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
-                raise "be5eeeb4-2334-40e8-b264-23ac2f73b964"
+                uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
+                payload["unique-string-c3e5"] = uniquestring
                 next
             end
         }
@@ -205,16 +213,24 @@ class TxPayload
                 end
             end
             if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
-                raise "be1eeeb4-2334-40e8-b264-24ac2f73b964"
+                location = CommonUtils::interactivelySelectDesktopLocationOrNull()
+                next if location.nil?
+                nhash = AionCore::commitLocationReturnHash(Elizabeth.new(item["uuid"]), location)
+                Cubes2::setAttribute(item["uuid"], "aion-point-7c758c", nhash)
             end
             if TxPayload::friendlyToKey(option) == "dx8UnitId-00286e29" then
-                raise "be2eeeb4-234-40e8-b264-24ac2f73b964"
+                unitId = LucilleCore::askQuestionAnswerAsString("Dx8Unit Id: ")
+                next if unitId == ""
+                Cubes2::setAttribute(item["uuid"], "dx8UnitId-00286e29", unitId)
             end
             if TxPayload::friendlyToKey(option) == "url-e88a" then
-                raise "be3eeeb4-2334-40b264-24ac2f73b964"
+                url = LucilleCore::askQuestionAnswerAsString("url: ")
+                next if url == ""
+                Cubes2::setAttribute(item["uuid"], "url-e88a", url)
             end
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
-                raise "be4eeeb4-234-40e8-b264-24a3b964"
+                uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
+                Cubes2::setAttribute(item["uuid"], "unique-string-c3e5", uniquestring)
             end
         }
     end
