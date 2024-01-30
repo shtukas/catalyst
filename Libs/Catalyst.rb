@@ -82,4 +82,19 @@ class Catalyst
     def self.numbers()
         UxCores::numbersline()
     end
+
+    # Catalyst::addDonation(item, target)
+    def self.addDonation(item, target)
+        donation = ((item["donation-1752"] || []) + [target["uuid"]]).uniq
+        Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
+    end
+
+    # Catalyst::interactivelyUpgradeItemDonations(item)
+    def self.interactivelyUpgradeItemDonations(item)
+        NxTodos::selectZeroOrMore().each{|target| Catalyst::addDonation(item, target) }
+        uxcore = UxCores::interactivelySelectOneOrNull()
+        if uxcore then
+            Catalyst::addDonation(item, uxcore)
+        end
+    end
 end

@@ -44,5 +44,4 @@ class UxCores
     def self.interactivelySelectOneOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("uxcore", Cubes2::mikuType("UxCore"), lambda{|item| PolyFunctions::toString(item) })
     end
-
 end

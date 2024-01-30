@@ -34,7 +34,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxTodos::upgradeItemDonations(item)
+            Catalyst::interactivelyUpgradeItemDonations(item)
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"

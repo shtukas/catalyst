@@ -379,13 +379,6 @@ class NxTodos
         end
     end
 
-    # NxTodos::upgradeItemDonations(item)
-    def self.upgradeItemDonations(item)
-        listings = NxTodos::selectZeroOrMore()
-        donation = ((item["donation-1752"] || []) + listings.map{|listing| listing["uuid"] }).uniq
-        Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
-    end
-
     # NxTodos::maintenance()
     def self.maintenance()
         Cubes2::mikuType("NxTodo")
@@ -423,6 +416,6 @@ class NxTodos
                 return
             end
         }
-        NxTodos::upgradeItemDonations(item)
+        Catalyst::interactivelyUpgradeItemDonations(item)
     end
 end

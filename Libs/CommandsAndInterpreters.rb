@@ -50,13 +50,12 @@ class CommandsAndInterpreters
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return if option.nil?
             if option == "project" then
-                NxTodos::upgradeItemDonations(item)
+                Catalyst::interactivelyUpgradeItemDonations(item)
             end
             if option == "UxCore" then
                 uxcore = LucilleCore::selectEntityFromListOfEntitiesOrNull("uxcore", Cubes1::mikuType("UxCore"), lambda{|item| PolyFunctions::toString(item) })
                 return if uxcore.nil?
-                donation = ((item["donation-1752"] || []) + [uxcore["uuid"]]).uniq
-                Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
+                Catalyst::addDonation(item, uxcore)
             end
             return
         end
@@ -84,7 +83,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            NxTodos::upgradeItemDonations(item)
+            Catalyst::interactivelyUpgradeItemDonations(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -95,7 +94,7 @@ class CommandsAndInterpreters
             mission = NxMissions::interactivelyIssueNewOrNull()
             return if mission.nil?
             puts JSON.pretty_generate(mission)
-            NxTodos::upgradeItemDonations(mission)
+            Catalyst::interactivelyUpgradeItemDonations(mission)
             return
         end
 
@@ -230,7 +229,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxTodos::upgradeItemDonations(item)
+            Catalyst::interactivelyUpgradeItemDonations(item)
             return
         end
 
