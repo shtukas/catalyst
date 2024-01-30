@@ -12,9 +12,6 @@ class Fsck
         if item["mikuType"] == "NxPool" then
             return
         end
-        if item["mikuType"] == "NxTask" then
-            return
-        end
         if item["mikuType"] == "PhysicalTarget" then
             return
         end

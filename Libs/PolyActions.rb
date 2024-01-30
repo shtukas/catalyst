@@ -36,11 +36,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            TxPayload::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxStrat" then
             return
         end
@@ -124,18 +119,6 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            if item["engine-0020"] then
-                DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
                 Cubes2::destroy(item["uuid"])
             end
             return
@@ -226,19 +209,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            if !NxBalls::itemIsActive(item) then
-                NxBalls::start(item)
-            end
-            PolyActions::access(item)
-            NxBalls::stop(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
             return
@@ -312,14 +282,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                PolyActions::addTimeToItem(item, 300) # cosmological inflation 😄
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
@@ -345,11 +307,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            Catalyst::program1(item)
             return
         end
 

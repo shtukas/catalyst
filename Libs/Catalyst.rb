@@ -47,7 +47,7 @@ class Catalyst
             DoNotShowUntil1::maintenance()
             NxBackups::maintenance()
             NxTodos::maintenance()
-            if Cubes2::mikuType("NxTask").size < 100 then
+            if Cubes2::mikuType("NxTodo").size < 100 then
                 Cubes2::mikuType("NxIce").take(10).each{|item|
 
                 }
