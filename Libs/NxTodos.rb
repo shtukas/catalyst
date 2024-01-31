@@ -113,11 +113,53 @@ class NxTodos
 
     # NxTodos::muiItems()
     def self.muiItems()
-        Cubes2::mikuType("NxTodo")
-            .select{|item| item["parentuuid-0032"].nil? }
-            .sort_by{|project| project["global-positioning"] || 0 }
+
+        # We focus on 5 items per day to avoid being fed new items at ratio 0
+        # intra day.
+
+        # Tracking object
+        # {
+        #    "date"  : YYYY-MM-DD
+        #    "uuids" : Array[String]
+        # }
+
+        data = (lambda {
+
+            folderpath = "#{Config::pathToCatalystDataRepository()}/todos-daily"
+
+            filepaths = LucilleCore::locationsAtFolder(folderpath)
+                            .select{|location| location[-5, 5] == ".json" }
+                            .map{|filepath|
+                                data = JSON.parse(IO.read(filepath))
+                                if data["date"] == CommonUtils::today() then
+                                    filepath
+                                else
+                                    FileUtils.rm(filepath)
+                                    nil
+                                end
+                            }
+                            .compact
+
+            filepaths.drop(1).each{|filepath| FileUtils.rm(filepath) }
+
+            if filepaths.size > 0 then
+                JSON.parse(IO.read(filepaths.first))
+            else
+                filepath = "#{Config::pathToCatalystDataRepository()}/todos-daily/#{CommonUtils::timeStringL22()}.json"
+                data = {
+                    "date"  => CommonUtils::today(),
+                    "uuids" => NxTodos::rootTodos().first(5).map{|item| item["uuid"] }
+                }
+                File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
+                data
+            end
+
+        }).call()
+
+        data["uuids"]
+            .map{|uuid| Cubes2::itemOrNull(uuid) }
+            .compact
             .select{|item| DoNotShowUntil2::isVisible(item) }
-            .first(5)
     end
 
     # NxTodos::basicHoursPerDayForProjectsWithoutEngine()
