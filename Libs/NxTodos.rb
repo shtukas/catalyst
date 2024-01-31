@@ -89,6 +89,11 @@ class NxTodos
         ([0] + Cubes2::mikuType("NxTodo").map{|project| project["global-positioning"] || 0 }).min
     end
 
+    # NxTodos::nextPosition()
+    def self.nextPosition()
+        ([0] + Cubes2::mikuType("NxTodo").map{|project| project["global-positioning"] || 0 }).max + 1
+    end
+
     # NxTodos::interactivelySelectPositionOrNull(listing)
     def self.interactivelySelectPositionOrNull(listing)
         elements = NxTodos::children(listing)

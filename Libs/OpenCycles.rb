@@ -13,6 +13,8 @@ class OpenCycles
         Cubes2::setAttribute(uuid, "engine-0020", nil)
         Cubes2::setAttribute(uuid, "description", "#{File.basename(location)} (auto)")
         Cubes2::setAttribute(uuid, "cfsr-20231213", reference)
+        Cubes2::setAttribute(uuid, "global-positioning", NxTodos::nextPosition())
+        
     end
 
     # OpenCycles::sync()
