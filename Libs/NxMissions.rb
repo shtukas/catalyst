@@ -26,13 +26,15 @@ class NxMissions
         0.75
     end
 
-    # NxMissions::muiItems()
-    def self.muiItems()
-
-        return [] if Bank2::recoveredAverageHoursPerDay("missions-control-4160-84b0-09a726873619") > NxMissions::recoveryTimeControl()
-
+    # NxMissions::itemsInOrder()
+    def self.itemsInOrder()
         Cubes2::mikuType("NxMission")
             .sort_by{|item| item["lastDoneUnixtime"] }
-            .take(1)
+    end
+
+    # NxMissions::muiItems()
+    def self.muiItems()
+        return [] if Bank2::recoveredAverageHoursPerDay("missions-control-4160-84b0-09a726873619") > NxMissions::recoveryTimeControl()
+        NxMissions::itemsInOrder().take(1)
     end
 end

@@ -19,13 +19,16 @@ class NxOrbitals
                 description = "block; special circumstances: DataHub/Buffer-In"
             end
         end
-        "🔅 #{description}"
+        "💫 #{description}"
     end
 
-    # NxOrbitals::children(listing)
-    def self.children(listing)
+    # NxOrbitals::children(orbital)
+    def self.children(orbital)
+        if orbital["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then
+            return NxMissions::itemsInOrder()
+        end
         Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == listing["uuid"] }
+            .select{|item| item["parentuuid-0032"] == orbital["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 

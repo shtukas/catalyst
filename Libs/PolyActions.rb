@@ -154,6 +154,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOrbital" then
+            Catalyst::program2(NxOrbitals::children(item))
+            return
+        end
+
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
@@ -226,7 +231,7 @@ class PolyActions
             return
         end
 
-        puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
+        puts "I do not know how to PolyActions::natural(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
