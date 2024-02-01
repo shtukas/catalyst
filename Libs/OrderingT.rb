@@ -43,6 +43,10 @@ class OrderingT
             return OrderingT::getXcacheRatio(item)
         end
 
+        if item["mikuType"] == "UxCore" then
+            return 0.5 + 0.5*TxCores::dayCompletionRatio(item)
+        end
+
         raise "(error: fbffdec2-1fde-4fe4-b072-524ff49ca935): #{item}"
     end
 
@@ -57,7 +61,8 @@ class OrderingT
                     .select{|item| item["mikuType"] != "NxOrbital" }
                     .select{|item| TxCores::listingCompletionRatio(item["engine-0020"]) < 1 }
         items5 = Waves::muiItems().select{|item| !item["interruption"] }
+        items6 = Cubes2::mikuType("UxCore")
 
-        (items1+items2+items3+items4+items5).sort_by{|item| OrderingT::ratio(item) }
+        (items1+items2+items3+items4+items5+items6).sort_by{|item| OrderingT::ratio(item) }
     end
 end
