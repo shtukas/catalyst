@@ -24,9 +24,6 @@ class NxOrbitals
 
     # NxOrbitals::children(orbital)
     def self.children(orbital)
-        if orbital["uuid"] == "ba25c5c4-4a7c-47f3-ab9f-8ca04793bd34" then
-            return NxMissions::itemsInOrder()
-        end
         Cubes2::items()
             .select{|item| item["parentuuid-0032"] == orbital["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
@@ -43,7 +40,7 @@ class NxOrbitals
             end
         }
 
-        return [] if Bank2::recoveredAverageHoursPerDay("orbital-control-497b-bedb-0152d1d9248a") > 1
+        return [] if Bank2::recoveredAverageHoursPerDay("9f891bc1-ca32-4792-8d66-d66612a4e7c6") > 1
 
         Cubes2::mikuType("NxOrbital")
             .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }

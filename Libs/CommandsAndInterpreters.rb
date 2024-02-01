@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | mission",
-            "divings       : anniversaries | ondates | waves | desktop | todos | engines | missions | backups | orbitals",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
+            "divings       : anniversaries | ondates | waves | desktop | todos | engines | ringworld-missions | singular-non-work-quests | backups | orbitals",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
         ].join("\n")
@@ -90,11 +90,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("mission", input) then
-            mission = NxMissions::interactivelyIssueNewOrNull()
-            return if mission.nil?
-            puts JSON.pretty_generate(mission)
-            Catalyst::interactivelyUpgradeItemDonations(mission)
+        if Interpreting::match("ringworld-mission", input) then
+            item = NxRingworldMissions::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            Catalyst::interactivelyUpgradeItemDonations(item)
+            return
+        end
+
+        if Interpreting::match("singular-non-work-quest", input) then
+            item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            Catalyst::interactivelyUpgradeItemDonations(item)
             return
         end
 
@@ -129,9 +137,16 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("missions", input) then
-            items = Cubes2::mikuType("NxMission")
+        if Interpreting::match("ringworld-missions", input) then
+            items = Cubes2::mikuType("NxRingworldMission")
                         .sort_by{|item| item["lastDoneUnixtime"] }
+            Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("singular-non-work-quests", input) then
+            items = Cubes2::mikuType("NxSingularNonWorkQuest")
+                        .sort_by{|item| item["unixtime"] }
             Catalyst::program2(items)
             return
         end

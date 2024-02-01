@@ -28,17 +28,24 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxMission" then
+        if item["mikuType"] == "NxRingworldMission" then
             accounts << {
-                "description" => "missions control",
-                "number"      => "missions-control-4160-84b0-09a726873619"
+                "description" => "ringworld missions control",
+                "number"      => "3413fd90-cfeb-4a66-af12-c1fc3eefa9ce"
+            }
+        end
+
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            accounts << {
+                "description" => "singular non work quests control",
+                "number"      => "043c1f2e-3baa-4313-af1c-22c4b6fcb33b"
             }
         end
 
         if item["mikuType"] == "NxOrbital" then
             accounts << {
                 "description" => "orbital control",
-                "number"      => "orbital-control-497b-bedb-0152d1d9248a"
+                "number"      => "9f891bc1-ca32-4792-8d66-d66612a4e7c6"
             }
         end
 
@@ -105,8 +112,11 @@ class PolyFunctions
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end
-        if item["mikuType"] == "NxMission" then
-            return NxMissions::toString(item)
+        if item["mikuType"] == "NxRingworldMission" then
+            return NxRingworldMissions::toString(item)
+        end
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            return NxSingularNonWorkQuests::toString(item)
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)

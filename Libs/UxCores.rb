@@ -23,13 +23,13 @@ class UxCores
 
     # UxCores::toString(item)
     def self.toString(item)
-        "🔅 #{item["description"]}"
+        "⏱️  #{item["description"]}"
     end
 
     # UxCores::numbersline()
     def self.numbersline()
         [
-            "🔅 ",
+            "⏱️  ",
             Cubes2::mikuType("UxCore")
                 .map{|core| 
                     ratio = TxCores::dayCompletionRatio(core)

@@ -8,7 +8,7 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["mikuType"] == "NxMission" then
+        if item["mikuType"] == "NxRingworldMission" then
             return
         end
 
@@ -67,7 +67,7 @@ class PolyActions
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
         end
 
-        if item["mikuType"] == "NxMission" then
+        if item["mikuType"] == "NxRingworldMission" then
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             return
         end
@@ -150,7 +150,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMission" then
+        if item["mikuType"] == "NxRingworldMission" then
             return
         end
 
@@ -240,7 +240,7 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxMission" then
+        if item["mikuType"] == "NxRingworldMission" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
@@ -301,7 +301,7 @@ class PolyActions
     # PolyActions::program(item)
     def self.program(item)
 
-        if item["mikuType"] == "NxMission" then
+        if item["mikuType"] == "NxRingworldMission" then
             return
         end
 

@@ -1,12 +1,12 @@
 
-class NxMissions
+class NxRingworldMissions
 
-    # NxMissions::interactivelyIssueNewOrNull()
+    # NxRingworldMissions::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Cubes2::itemInit(uuid, "NxMission")
+        Cubes2::itemInit(uuid, "NxRingworldMission")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "description", description)
         Cubes2::setAttribute(uuid, "lastDoneUnixtime", Time.new.to_i)
@@ -16,25 +16,25 @@ class NxMissions
     # ------------------
     # Data
 
-    # NxMissions::toString(item)
+    # NxRingworldMissions::toString(item)
     def self.toString(item)
-        "🚀 (mission: start, stop, done) #{item["description"]}"
+        "⭕️ (mission: start, stop, done) #{item["description"]}"
     end
 
-    # NxMissions::recoveryTimeControl()
+    # NxRingworldMissions::recoveryTimeControl()
     def self.recoveryTimeControl()
         0.75
     end
 
-    # NxMissions::itemsInOrder()
+    # NxRingworldMissions::itemsInOrder()
     def self.itemsInOrder()
-        Cubes2::mikuType("NxMission")
+        Cubes2::mikuType("NxRingworldMission")
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
-    # NxMissions::muiItems()
+    # NxRingworldMissions::muiItems()
     def self.muiItems()
-        return [] if Bank2::recoveredAverageHoursPerDay("missions-control-4160-84b0-09a726873619") > NxMissions::recoveryTimeControl()
-        NxMissions::itemsInOrder().take(1)
+        return [] if Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce") > NxRingworldMissions::recoveryTimeControl()
+        NxRingworldMissions::itemsInOrder().take(1)
     end
 end

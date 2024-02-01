@@ -31,8 +31,12 @@ class OrderingT
             return TxCores::listingCompletionRatio(item["engine-0020"])
         end
 
-        if item["mikuType"] == "NxMission" then
-            return Bank2::recoveredAverageHoursPerDay("missions-control-4160-84b0-09a726873619").to_f/NxMissions::recoveryTimeControl()
+        if item["mikuType"] == "NxRingworldMission" then
+            return Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce").to_f/NxRingworldMissions::recoveryTimeControl()
+        end
+
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            return Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b").to_f/NxSingularNonWorkQuests::recoveryTimeControl()
         end
 
         if item["engine-0020"] then
@@ -54,7 +58,7 @@ class OrderingT
     def self.muiItems()
         items1 = NxTodos::muiItems()
         items2 = NxOrbitals::muiItems()
-        items3 = NxMissions::muiItems()
+        items3 = NxRingworldMissions::muiItems()
         items4 = Cubes2::items()
                     .select{|item| item["engine-0020"] }
                     .select{|item| item["mikuType"] != "NxTodo" }
@@ -62,7 +66,8 @@ class OrderingT
                     .select{|item| TxCores::listingCompletionRatio(item["engine-0020"]) < 1 }
         items5 = Waves::muiItems().select{|item| !item["interruption"] }
         items6 = Cubes2::mikuType("UxCore")
+        items7 = NxSingularNonWorkQuests::muiItems()
 
-        (items1+items2+items3+items4+items5+items6).sort_by{|item| OrderingT::ratio(item) }
+        (items1 + items2 + items3 + items4 + items5 + items6 + items7).sort_by{|item| OrderingT::ratio(item) }
     end
 end

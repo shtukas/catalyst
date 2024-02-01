@@ -1,0 +1,7 @@
+
+NxSingularNonWorkQuest:
+    - uuid        : String
+    - mikuType    : "NxSingularNonWorkQuest"
+    - unixtime    : Float
+    - description : String
+

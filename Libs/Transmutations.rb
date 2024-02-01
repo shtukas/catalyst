@@ -5,7 +5,7 @@ class Transmutations
     def self.transmute1(item)
         map = {
             "NxOndate"  => ["NxTodo"],
-            "Wave"      => ["NxMission"],
+            "Wave"      => ["NxRingworldMission"],
             "NxTodo" => ["NxOrbital"]
         }
         if map[item["mikuType"]].nil? then
@@ -29,8 +29,8 @@ class Transmutations
             NxTodos::properlyDecorateNewlyCreatedTodo(item)
             return
         end
-        if item["mikuType"] == "Wave" and targetMikuType == "NxMission" then
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxMission")
+        if item["mikuType"] == "Wave" and targetMikuType == "NxRingworldMission" then
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxRingworldMission")
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
