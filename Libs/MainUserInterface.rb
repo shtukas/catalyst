@@ -222,9 +222,6 @@ class MainUserInterface
             system("clear")
 
             spacecontrol.putsline ""
-            spacecontrol.putsline Catalyst::numbers()
-
-            spacecontrol.putsline ""
 
             items = MainUserInterface::items2()
             items

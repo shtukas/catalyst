@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
             "divings       : anniversaries | ondates | waves | desktop | todos | engines | ringworld-missions | singular-non-work-quests | backups | orbitals",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution | numbers",
         ].join("\n")
     end
 
@@ -57,6 +57,21 @@ class CommandsAndInterpreters
                 return if uxcore.nil?
                 Catalyst::addDonation(item, uxcore)
             end
+            return
+        end
+
+        if Interpreting::match("numbers", input) then
+
+            Cubes2::mikuType("UxCore")
+                .each{|core|
+                    puts "#{"#{core["description"]}:".ljust(26)} rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay(core["uuid"])}, (day completion ratio: #{TxCores::dayCompletionRatio(core).round(2)})"
+                }
+            puts "ringworld missions:        rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce")}"
+            puts "singular non world quests: rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b")}"
+            puts "orbital control:           rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("9f891bc1-ca32-4792-8d66-d66612a4e7c6")}"
+            puts "wave control:              rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("67df9561-a0bf-4eb6-b963-a8e6f83f65b6")}"
+
+            LucilleCore::pressEnterToContinue()
             return
         end
 

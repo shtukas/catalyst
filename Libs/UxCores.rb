@@ -26,20 +26,6 @@ class UxCores
         "⏱️  #{item["description"]}"
     end
 
-    # UxCores::numbersline()
-    def self.numbersline()
-        [
-            "⏱️  ",
-            Cubes2::mikuType("UxCore")
-                .map{|core| 
-                    ratio = TxCores::dayCompletionRatio(core)
-                    "#{core["description"][0, 1]}: #{(100 * ratio).round(2)}%"
-                }
-                .join(" "),
-            " today"
-        ].join()
-    end
-
     # UxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("uxcore", Cubes2::mikuType("UxCore"), lambda{|item| PolyFunctions::toString(item) })

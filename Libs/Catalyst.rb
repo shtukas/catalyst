@@ -78,11 +78,6 @@ class Catalyst
         nil
     end
 
-    # Catalyst::numbers()
-    def self.numbers()
-        UxCores::numbersline()
-    end
-
     # Catalyst::addDonation(item, target)
     def self.addDonation(item, target)
         donation = ((item["donation-1752"] || []) + [target["uuid"]]).uniq
