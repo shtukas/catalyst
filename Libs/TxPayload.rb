@@ -45,7 +45,7 @@ class TxPayload
     # TxPayload::interactivelyMakeNew(uuid)
     def self.interactivelyMakeNew(uuid)
         payload = {}
-        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
+        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) } + ["new open cycle"]
         loop {
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return payload if option.nil?
@@ -92,6 +92,17 @@ class TxPayload
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
                 uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
                 payload["unique-string-c3e5"] = uniquestring
+                next
+            end
+            if option == "new open cycle" then
+                description = LucilleCore::askQuestionAnswerAsString("description without date: ")
+                next if description == ""
+                foldername = "#{CommonUtils::today()} #{description}"
+                folderpath = "#{Config::pathToGalaxy()}/OpenCycles/#{foldername}"
+                FileUtils.mkdir(folderpath)
+                reference = SecureRandom.hex
+                FileSystemReferences::issueCfsrFileAtDirectory(folderpath, reference)
+                payload["cfsr-20231213"] = reference
                 next
             end
         }

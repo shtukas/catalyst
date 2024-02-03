@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
-            "divings       : anniversaries | ondates | waves | desktop | todos | engines | ringworld-missions | singular-non-work-quests | backups | orbitals",
+            "divings       : anniversaries | ondates | waves | desktop | todos | engines | ringworld-missions | singular-non-work-quests | backups | orbitals | uxcores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution | numbers",
         ].join("\n")
@@ -29,7 +29,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::natural(item)
+            PolyActions::doubledots(item)
             return
         end
 
@@ -37,7 +37,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::natural(item)
+            PolyActions::doubledots(item)
             return
         end
 
@@ -45,18 +45,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
-            options = ["project", "UxCore"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            return if option.nil?
-            if option == "project" then
-                Catalyst::interactivelyUpgradeItemDonations(item)
-            end
-            if option == "UxCore" then
-                uxcore = LucilleCore::selectEntityFromListOfEntitiesOrNull("uxcore", Cubes1::mikuType("UxCore"), lambda{|item| PolyFunctions::toString(item) })
-                return if uxcore.nil?
-                Catalyst::addDonation(item, uxcore)
-            end
+            Catalyst::interactivelySetDonations(item)
             return
         end
 
@@ -98,7 +87,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            Catalyst::interactivelyUpgradeItemDonations(item)
+            Catalyst::interactivelySetDonations(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -109,7 +98,7 @@ class CommandsAndInterpreters
             item = NxRingworldMissions::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelyUpgradeItemDonations(item)
+            Catalyst::interactivelySetDonations(item)
             return
         end
 
@@ -117,7 +106,7 @@ class CommandsAndInterpreters
             item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelyUpgradeItemDonations(item)
+            Catalyst::interactivelySetDonations(item)
             return
         end
 
@@ -143,6 +132,11 @@ class CommandsAndInterpreters
             return if uxcore.nil?
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours for '#{PolyFunctions::toString(uxcore).green}': ").to_f
             PolyActions::addTimeToItem(uxcore, timeInHours*3600)
+            return
+        end
+
+        if Interpreting::match("uxcores", input) then
+            Catalyst::program2(Cubes2::mikuType("UxCore"))
             return
         end
 
@@ -259,7 +253,7 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelyUpgradeItemDonations(item)
+            Catalyst::interactivelySetDonations(item)
             return
         end
 

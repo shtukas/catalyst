@@ -46,4 +46,9 @@ class NxOrbitals
             .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
             .take(1)
     end
+
+    # NxOrbitals::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("orbital", Cubes2::mikuType("NxOrbital"), lambda{|item| PolyFunctions::toString(item) })
+    end
 end

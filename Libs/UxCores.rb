@@ -21,8 +21,11 @@ class UxCores
         Cubes2::itemOrNull(uuid)
     end
 
-    # UxCores::toString(item)
-    def self.toString(item)
+    # UxCores::toString(item, context = nil)
+    def self.toString(item, context = nil)
+        if context == "listing" then
+            return "⏱️ #{TxCores::suffix1(item)} #{item["description"]}"
+        end
         "⏱️  #{item["description"]}"
     end
 

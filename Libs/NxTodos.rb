@@ -439,14 +439,14 @@ class NxTodos
     # NxTodos::properlyDecorateNewlyCreatedTodo(item)
     def self.properlyDecorateNewlyCreatedTodo(item)
         loop {
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top todo (with position)", "in listing", "with own engine"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top todo (with position)", "in todo listing", "in orbital", "with own engine"])
             next if option.nil?
             if option == "top todo (with position)" then
                 position = NxTodos::interactivelySelectPositionAmoungTopTodos()
                 Cubes2::setAttribute(item["uuid"], "global-positioning", position)
                 return
             end
-            if option == "in listing" then
+            if option == "in todo listing" then
                 NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
                 return
             end
@@ -456,13 +456,13 @@ class NxTodos
                 Cubes2::setAttribute(item["uuid"], "engine-0020", core)
                 return
             end
-            if option == "with own engine" then
-                core = TxCores::interactivelyMakeNew()
-                next if core.nil?
-                Cubes2::setAttribute(item["uuid"], "engine-0020", core)
+            if option == "in orbital" then
+                orbital = NxOrbitals::interactivelySelectOneOrNull()
+                next if orbital.nil?
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", orbital["uuid"])
                 return
             end
         }
-        Catalyst::interactivelyUpgradeItemDonations(item)
+        Catalyst::interactivelySetDonations(item)
     end
 end

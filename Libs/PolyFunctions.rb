@@ -90,8 +90,8 @@ class PolyFunctions
         }
     end
 
-    # PolyFunctions::toString(item)
-    def self.toString(item)
+    # PolyFunctions::toString(item, context = nil)
+    def self.toString(item, context = nil)
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
@@ -141,7 +141,7 @@ class PolyFunctions
             return Waves::toString(item)
         end
         if item["mikuType"] == "UxCore" then
-            return UxCores::toString(item)
+            return UxCores::toString(item, context)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

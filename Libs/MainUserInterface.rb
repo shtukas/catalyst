@@ -81,7 +81,7 @@ class MainUserInterface
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
-        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

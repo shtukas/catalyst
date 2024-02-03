@@ -84,8 +84,8 @@ class Catalyst
         Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
     end
 
-    # Catalyst::interactivelyUpgradeItemDonations(item)
-    def self.interactivelyUpgradeItemDonations(item)
+    # Catalyst::interactivelySetDonations(item)
+    def self.interactivelySetDonations(item)
         NxTodos::selectZeroOrMore().each{|target| Catalyst::addDonation(item, target) }
         uxcore = UxCores::interactivelySelectOneOrNull()
         if uxcore then
