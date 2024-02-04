@@ -10,8 +10,8 @@ class Catalyst
         }
     end
 
-    # Catalyst::program2(elements)
-    def self.program2(elements)
+    # Catalyst::program2(elements, context = nil)
+    def self.program2(elements, context = nil)
         loop {
 
             elements = elements.map{|item| Cubes2::itemOrNull(item["uuid"]) }.compact
@@ -26,7 +26,7 @@ class Catalyst
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
+                    puts MainUserInterface::toString2(store, item, context)
                 }
 
             puts ""

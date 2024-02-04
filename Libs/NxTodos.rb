@@ -45,6 +45,9 @@ class NxTodos
         if context == "listing" then
             return "#{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
         end
+        if context == "inventory" then
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+        end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
     end
 
@@ -145,13 +148,13 @@ class NxTodos
             puts ""
 
             store.register(project, false)
-            puts MainUserInterface::toString2(store, project)
+            puts MainUserInterface::toString2(store, project, "inventory")
             puts ""
 
             NxTodos::children(project)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
-                    puts MainUserInterface::toString2(store, element)
+                    puts MainUserInterface::toString2(store, element, "listing")
                 }
 
             puts ""

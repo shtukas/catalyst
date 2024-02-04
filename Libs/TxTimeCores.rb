@@ -23,8 +23,8 @@ class TxTimeCores
 
     # TxTimeCores::toString(item, context = nil)
     def self.toString(item, context = nil)
-        if context == "listing" then
-            return "⏱️  #{item["description"]}#{TxEngines::suffix1(item)}"
+        if context == "timecores" then
+            return "⏱️ #{TxEngines::suffix1(item)} #{item["description"]}"
         end
         "⏱️  #{item["description"]}"
     end
@@ -79,7 +79,7 @@ class TxTimeCores
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
+                    puts MainUserInterface::toString2(store, item, "inventory")
                 }
 
             puts ""

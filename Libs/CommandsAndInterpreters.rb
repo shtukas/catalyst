@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | timecore",
-            "divings       : anniversaries | ondates | waves | desktop | engines | ringworld-missions | singular-non-work-quests | backups | orbitals | uxcores",
+            "divings       : anniversaries | ondates | waves | desktop | engines | ringworld-missions | singular-non-work-quests | backups | orbitals | timecores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution | numbers",
         ].join("\n")
@@ -130,8 +130,9 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("uxcores", input) then
-            Catalyst::program2(Cubes2::mikuType("TxTimeCore"))
+        if Interpreting::match("timecores", input) then
+            timecores = Cubes2::mikuType("TxTimeCore").sort_by{|item| TxEngines::listingCompletionRatio(item) }
+            Catalyst::program2(timecores, "timecores")
             return
         end
 

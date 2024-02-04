@@ -76,12 +76,12 @@ class MainUserInterface
         item["interruption"]
     end
 
-    # MainUserInterface::toString2(store, item)
-    def self.toString2(store, item)
+    # MainUserInterface::toString2(store, item, context = nil)
+    def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
-        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item, "listing")}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -239,7 +239,7 @@ class MainUserInterface
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    line = MainUserInterface::toString2(store, item)
+                    line = MainUserInterface::toString2(store, item, "listing")
                     status = spacecontrol.putsline line
                     break if !status
                 }
