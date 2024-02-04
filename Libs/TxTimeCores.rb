@@ -41,6 +41,13 @@ class TxTimeCores
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
+    # TxTimeCores::childrenForPrefix(timecore)
+    def self.childrenForPrefix(timecore)
+        children = TxTimeCores::children(timecore)
+        p1, p2 = children.partition{|item| item["engine-0020"] }
+        p1.select{|item| TxEngines::listingCompletionRatio(core) < 1 }.sort_by{|item| TxEngines::listingCompletionRatio(core) } + p2
+    end
+
     # TxTimeCores::topPositionAmongChildren(item)
     def self.topPositionAmongChildren(item)
         ([0] + TxTimeCores::children(item).map{|task| task["global-positioning"] || 0 }).min

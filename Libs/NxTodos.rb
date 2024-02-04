@@ -58,6 +58,13 @@ class NxTodos
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
+    # NxTodos::childrenForPrefix(todo)
+    def self.childrenForPrefix(todo)
+        children = NxTodos::children(todo)
+        p1, p2 = children.partition{|item| item["engine-0020"] }
+        p1.select{|item| TxEngines::listingCompletionRatio(core) < 1 }.sort_by{|item| TxEngines::listingCompletionRatio(core) } + p2
+    end
+
     # NxTodos::itemsInGlobalPositioningOrder()
     def self.itemsInGlobalPositioningOrder()
         Cubes2::mikuType("NxTodo").sort_by{|project| project["global-positioning"] || 0 }

@@ -11,7 +11,7 @@ class Prefix
         end
 
         if items[0]["mikuType"] == "TxTimeCore" then
-            children = TxTimeCores::children(items[0])
+            children = TxTimeCores::childrenForPrefix(items[0])
                         .select{|i| MainUserInterface::listable(i) }
                         .first(3)
             if children.size > 0 then
@@ -20,7 +20,7 @@ class Prefix
         end
 
         if items[0]["mikuType"] == "NxTodo" then
-            children = NxTodos::children(items[0])
+            children = NxTodos::childrenForPrefix(items[0])
                         .select{|i| MainUserInterface::listable(i) }
                         .first(3)
             if children.size > 0 then
