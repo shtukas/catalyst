@@ -86,10 +86,61 @@ class Catalyst
 
     # Catalyst::interactivelySetDonations(item)
     def self.interactivelySetDonations(item)
-        NxTodos::selectZeroOrMore().each{|target| Catalyst::addDonation(item, target) }
-        uxcore = UxCores::interactivelySelectOneOrNull()
-        if uxcore then
-            Catalyst::addDonation(item, uxcore)
+        target = Catalyst::interactivelySelectNodeOrNull()
+        if target then
+            Catalyst::addDonation(item, target)
         end
+    end
+
+    # Catalyst::interactivelySelectNodeOrNull(cursor = nil)
+    def self.interactivelySelectNodeOrNull(cursor = nil)
+        if cursor.nil? then
+            timecore = TxTimeCores::interactivelySelectOneOrNull()
+            return nil if timecore.nil?
+            if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(timecore)}' ? (alternatively dive) ") then
+                return timecore
+            else
+                return Catalyst::interactivelySelectNodeOrNull(timecore)
+            end
+        end
+        if cursor["mikuType"] == "TxTimeCore" then
+            target = LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", TxTimeCores::children(cursor), lambda{|item| PolyFunctions::toString(item) })
+            return nil if target.nil?
+            children = NxTodos::children(target)
+            if children.empty? then
+                return target
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(target)}' ? (alternatively dive) ") then
+                return target
+            else
+                return Catalyst::interactivelySelectNodeOrNull(target)
+            end
+        end
+        if cursor["mikuType"] == "NxTodo" then
+            children = NxTodos::children(cursor)
+            target = LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", children, lambda{|item| PolyFunctions::toString(item) })
+            return nil if target.nil?
+            children = NxTodos::children(target)
+            if children.empty? then
+                return target
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(target)}' ? (alternatively dive) ") then
+                return target
+            else
+                return Catalyst::interactivelySelectNodeOrNull(target)
+            end
+        end
+        raise "(error: d7256dcc-6d95-42b4-9fd2-3f1e5c2b674b) cursor: #{cursor}"
+    end
+
+    # Catalyst::selectSubsetOfItemsAndMove(items)
+    def self.selectSubsetOfItemsAndMove(items)
+        selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
+        return if selected.size == 0
+        node = Catalyst::interactivelySelectNodeOrNull()
+        return if node.nil?
+        selected.each{|item|
+            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", node["uuid"])
+        }
     end
 end

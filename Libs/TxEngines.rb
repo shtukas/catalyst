@@ -1,9 +1,9 @@
-class TxCores
+class TxEngines
 
     # -----------------------------------------------
     # Build
 
-    # TxCores::interactivelyMakeNewOrNull(ec = nil)
+    # TxEngines::interactivelyMakeNewOrNull(ec = nil)
     def self.interactivelyMakeNewOrNull(ec = nil)
         type = LucilleCore::selectEntityFromListOfEntitiesOrNull("type", ["daily-hours", "weekly-hours"])
         return nil if type.nil?
@@ -14,7 +14,7 @@ class TxCores
             return nil if hours == 0
             return {
                 "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
-                "mikuType"      => "TxCore",
+                "mikuType"      => "TxEngine",
                 "type"          => "daily-hours",
                 "hours"         => hours,
             }
@@ -26,7 +26,7 @@ class TxCores
             return nil if hours == 0
             return {
                 "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
-                "mikuType"      => "TxCore",
+                "mikuType"      => "TxEngine",
                 "type"          => "weekly-hours",
                 "hours"         => hours
             }
@@ -34,29 +34,29 @@ class TxCores
         if type == "one-sitting" then
             return {
                 "uuid"          => SecureRandom.uuid,
-                "mikuType"      => "TxCore",
+                "mikuType"      => "TxEngine",
                 "type"          => "one-sitting",
             }
         end
         raise "(error: 9ece0a71-f6bc-4b2d-ae27-3d4b5a0fac17)"
     end
 
-    # TxCores::interactivelyMakeNew()
+    # TxEngines::interactivelyMakeNew()
     def self.interactivelyMakeNew()
-        core = TxCores::interactivelyMakeNewOrNull()
+        core = TxEngines::interactivelyMakeNewOrNull()
         return core if core
-        TxCores::interactivelyMakeNew()
+        TxEngines::interactivelyMakeNew()
     end
 
     # -----------------------------------------------
     # Data
 
-    # TxCores::todayDone(core)
+    # TxEngines::todayDone(core)
     def self.todayDone(core)
         Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
     end
 
-    # TxCores::todayIdeal(core)
+    # TxEngines::todayIdeal(core)
     def self.todayIdeal(core)
         if core["type"] == "daily-hours" then
             return core["hours"]
@@ -70,26 +70,26 @@ class TxCores
         raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
     end
 
-    # TxCores::weeklyDone(core)
+    # TxEngines::weeklyDone(core)
     def self.weeklyDone(core)
         CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }.to_f/3600
     end
 
-    # TxCores::numbers(core)
+    # TxEngines::numbers(core)
     def self.numbers(core)
         if core["type"] == "daily-hours" then
             return [
-                TxCores::todayDone(core),
+                TxEngines::todayDone(core),
                 core["hours"],
-                TxCores::weeklyDone(core),
+                TxEngines::weeklyDone(core),
                 core["hours"]*7
             ]
         end
         if core["type"] == "weekly-hours" then
             return [
-                TxCores::todayDone(core),
+                TxEngines::todayDone(core),
                 core["hours"].to_f/7,
-                TxCores::weeklyDone(core),
+                TxEngines::weeklyDone(core),
                 core["hours"]
             ]
         end
@@ -104,31 +104,31 @@ class TxCores
         raise "(error: 6854718b-24f5-4690-b479-5c8178a966c7): core: #{core}"
     end
 
-    # TxCores::dayCompletionRatio(core)
+    # TxEngines::dayCompletionRatio(core)
     def self.dayCompletionRatio(core)
-        x1 = TxCores::todayDone(core).to_f/TxCores::todayIdeal(core)
-        x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxCores::todayIdeal(core)
+        x1 = TxEngines::todayDone(core).to_f/TxEngines::todayIdeal(core)
+        x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxEngines::todayIdeal(core)
         [0.9*x1 + 0.1*x2, x1].max
     end
 
-    # TxCores::weeklyCompletionRatioOrNull(core)
+    # TxEngines::weeklyCompletionRatioOrNull(core)
     def self.weeklyCompletionRatioOrNull(core)
         if core["type"] == "daily-hours" then
             raise "(error: 0b0b4e04-e4a6-41e6-84bf-49687ee49b41): core: #{core}"
         end
-        TxCores::weeklyDone(core).to_f/core["hours"]
+        TxEngines::weeklyDone(core).to_f/core["hours"]
     end
 
-    # TxCores::listingCompletionRatio(core)
+    # TxEngines::listingCompletionRatio(core)
     def self.listingCompletionRatio(core)
         if core["type"] == "daily-hours" then
-            return TxCores::dayCompletionRatio(core)
+            return TxEngines::dayCompletionRatio(core)
         end
         if core["type"] == "weekly-hours" then
-            if TxCores::weeklyCompletionRatioOrNull(core) >= 1 then
-                return TxCores::weeklyCompletionRatioOrNull(core)
+            if TxEngines::weeklyCompletionRatioOrNull(core) >= 1 then
+                return TxEngines::weeklyCompletionRatioOrNull(core)
             end
-            return TxCores::dayCompletionRatio(core)
+            return TxEngines::dayCompletionRatio(core)
         end
         if core["type"] == "one-sitting" then
             return 0.5
@@ -136,22 +136,22 @@ class TxCores
         raise "(error: 2ba8c6dc-48fd-4155-a4f3-1cf65892acc1): core: #{core}"
     end
 
-    # TxCores::suffix1(core)
+    # TxEngines::suffix1(core)
     def self.suffix1(core)
         if core.nil? then
             return "".yellow
         end
         if core["type"] == "daily-hours" then
-            return " (#{(100*TxCores::dayCompletionRatio(core)).round(2)} % of daily:  #{core["hours"]} hs)".green
+            return " (#{(100*TxEngines::dayCompletionRatio(core)).round(2)} % of daily:  #{core["hours"]} hs)".green
         end
         if core["type"] == "weekly-hours" then
-            return " (#{(100*TxCores::dayCompletionRatio(core)).round(2)} %, #{(100*TxCores::weeklyCompletionRatioOrNull(core)).round(2)} % of weekly: #{core["hours"]} hs)".green
+            return " (#{(100*TxEngines::dayCompletionRatio(core)).round(2)} %, #{(100*TxEngines::weeklyCompletionRatioOrNull(core)).round(2)} % of weekly: #{core["hours"]} hs)".green
         end
     end
 
-    # TxCores::suffix2(item)
+    # TxEngines::suffix2(item)
     def self.suffix2(item)
         return "" if item["engine-0020"].nil?
-        TxCores::suffix1(item["engine-0020"])
+        TxEngines::suffix1(item["engine-0020"])
     end
 end

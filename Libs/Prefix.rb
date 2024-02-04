@@ -10,6 +10,15 @@ class Prefix
             return stratification.take(stratification.size-1) + items
         end
 
+        if items[0]["mikuType"] == "TxTimeCore" then
+            children = TxTimeCores::children(items[0])
+                        .select{|i| MainUserInterface::listable(i) }
+                        .first(3)
+            if children.size > 0 then
+                return Prefix::prefix(children + items)
+            end
+        end
+
         if items[0]["mikuType"] == "NxTodo" then
             children = NxTodos::children(items[0])
                         .select{|i| MainUserInterface::listable(i) }

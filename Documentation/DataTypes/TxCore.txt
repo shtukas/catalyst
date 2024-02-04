@@ -1,18 +1,18 @@
 
-TxCore
+TxEngine
     "uuid"          : String
-    "mikuType"      : "TxCore"
+    "mikuType"      : "TxEngine"
     "type"          : "daily-hours"
     "hours"         : Float
 
-TxCore
+TxEngine
     "uuid"          : String
-    "mikuType"      : "TxCore"
+    "mikuType"      : "TxEngine"
     "type"          : "weekly-hours"
     "hours"         : Float
 
-TxCore
+TxEngine
     "uuid"          : String
-    "mikuType"      : "TxCore"
+    "mikuType"      : "TxEngine"
     "type"          : "one-sitting"
     "hours"         : Float

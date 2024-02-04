@@ -1,6 +1,6 @@
 
-UxCore
+TxTimeCore
     "uuid"          : String
-    "mikuType"      : "UxCore"
+    "mikuType"      : "TxTimeCore"
     "type"          : "weekly-hours"
     "hours"         : Float

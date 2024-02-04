@@ -22,5 +22,5 @@ Cross types conventions (all optional):
     - unique-string-c3e5  : String
 
     - donation-1752       : Array[String]
-    - engine-0020         : TxCore
+    - engine-0020         : TxEngine
     - parentuuid-0032     : null or uuid of the parent

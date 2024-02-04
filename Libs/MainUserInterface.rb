@@ -100,6 +100,18 @@ class MainUserInterface
 
     # MainUserInterface::items()
     def self.items()
+        xp = [
+            NxOrbitals::muiItems(),
+            NxRingworldMissions::muiItems(),
+            Cubes2::items()
+                .select{|item| item["engine-0020"] }
+                .select{|item| item["mikuType"] != "NxTodo" }
+                .select{|item| item["mikuType"] != "NxOrbital" }
+                .select{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) < 1 },
+            Cubes2::mikuType("TxTimeCore"),
+            NxSingularNonWorkQuests::muiItems(),
+        ].flatten
+
         [
             Ox1::items(),
             DropBox::items(),
@@ -109,7 +121,8 @@ class MainUserInterface
             Waves::muiItems().select{|item| item["interruption"] },
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            OrderingT::muiItems(), # mixing engined and non interruption waves
+            Waves::muiItems().select{|item| !item["interruption"] },
+            OrderingT::apply(xp),
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -152,7 +165,6 @@ class MainUserInterface
         spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("NxTodos::muiItems()", lambda{ NxTodos::muiItems() })
         spot.contest_entry("PhysicalTargets::muiItems()", lambda{ PhysicalTargets::muiItems() })
         spot.contest_entry("Waves::muiItems()", lambda{ Waves::muiItems() })
         spot.end_contest()

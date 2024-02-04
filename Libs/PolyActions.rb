@@ -51,9 +51,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "UxCore" then
-            todos = NxTodos::rootTodos().select{|todo| todo["donation-1752"] and todo["donation-1752"].include?(item["uuid"]) }
-            Catalyst::program2(todos)
+        if item["mikuType"] == "TxTimeCore" then
+            TxTimeCores::program(item)
             return
         end
 
@@ -237,7 +236,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "UxCore" then
+        if item["mikuType"] == "TxTimeCore" then
             PolyActions::access(item)
             return
         end

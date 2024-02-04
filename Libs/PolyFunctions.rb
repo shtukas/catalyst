@@ -111,7 +111,7 @@ class PolyFunctions
             return item["description"]
         end
         if item["mikuType"] == "NxTodo" then
-            return NxTodos::toString(item)
+            return NxTodos::toString(item, context)
         end
         if item["mikuType"] == "NxOrbital" then
             return NxOrbitals::toString(item)
@@ -140,8 +140,8 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        if item["mikuType"] == "UxCore" then
-            return UxCores::toString(item, context)
+        if item["mikuType"] == "TxTimeCore" then
+            return TxTimeCores::toString(item, context)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

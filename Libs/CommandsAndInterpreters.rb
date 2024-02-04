@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo or task | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
-            "divings       : anniversaries | ondates | waves | desktop | todos | engines | ringworld-missions | singular-non-work-quests | backups | orbitals | uxcores",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | timecore",
+            "divings       : anniversaries | ondates | waves | desktop | engines | ringworld-missions | singular-non-work-quests | backups | orbitals | uxcores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution | numbers",
         ].join("\n")
@@ -51,9 +51,9 @@ class CommandsAndInterpreters
 
         if Interpreting::match("numbers", input) then
 
-            Cubes2::mikuType("UxCore")
+            Cubes2::mikuType("TxTimeCore")
                 .each{|core|
-                    puts "#{"#{core["description"]}:".ljust(26)} rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay(core["uuid"])}, (day completion ratio: #{TxCores::dayCompletionRatio(core).round(2)})"
+                    puts "#{"#{core["description"]}:".ljust(26)} rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay(core["uuid"])}, (day completion ratio: #{TxEngines::dayCompletionRatio(core).round(2)})"
                 }
             puts "ringworld missions:        rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce")}"
             puts "singular non world quests: rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b")}"
@@ -117,18 +117,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todos", input) then
-            NxTodos::program2()
-            return
-        end
-
         if Interpreting::match("orbitals", input) then
             Catalyst::program2(Cubes2::mikuType("NxOrbital"))
             return
         end
 
         if Interpreting::match("contribution", input) then
-            uxcore = UxCores::interactivelySelectOneOrNull()
+            uxcore = TxTimeCores::interactivelySelectOneOrNull()
             return if uxcore.nil?
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours for '#{PolyFunctions::toString(uxcore).green}': ").to_f
             PolyActions::addTimeToItem(uxcore, timeInHours*3600)
@@ -136,7 +131,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("uxcores", input) then
-            Catalyst::program2(Cubes2::mikuType("UxCore"))
+            Catalyst::program2(Cubes2::mikuType("TxTimeCore"))
             return
         end
 
@@ -163,7 +158,7 @@ class CommandsAndInterpreters
         if Interpreting::match("engines", input) then
             items = Cubes2::items()
                         .select{|item| item["engine-0020"] }
-                        .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
+                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
             Catalyst::program2(items)
             return
         end
@@ -192,7 +187,10 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
+            return if item["mikuType"] != "NxTodo"
+            target = Catalyst::interactivelySelectNodeOrNull()
+            return if target.nil?
+            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", target["uuid"])
             return
         end
 
@@ -205,7 +203,12 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            NxTodos::selectSubsetOfItemsAndMove(store.items())
+            Catalyst::selectSubsetOfItemsAndMove(store.items())
+            return
+        end
+
+        if input == "timecore" then
+            TxTimeCores::interactivelyMakeNewOrNull()
             return
         end
 
@@ -215,11 +218,6 @@ class CommandsAndInterpreters
             text.lines.reverse.each{|line|
                 task = NxTodos::descriptionToTask1(SecureRandom.uuid, line.strip)
                 Ox1::putAtTop(task)
-                puts "> deciding listing for task: '#{PolyFunctions::toString(task)}'"
-                listing = NxTodos::interactivelySelectOneOrNull()
-                if listing then
-                    Cubes2::setAttribute(task["uuid"], "donation-1752", [listing["uuid"]])
-                end
             }
             return
         end
@@ -281,9 +279,26 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxTodos::interactivelyIssueNewOrNull()
-            return if item.nil?
-            NxTodos::properlyDecorateNewlyCreatedTodo(item)
+            options = ["regular tree positioned todo", "ringworld mission", "singular non work quest"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            return if option.nil?
+            if option == "regular tree positioned todo" then
+                item = NxTodos::interactivelyIssueNewOrNull()
+                return if item.nil?
+                NxTodos::properlyPositionNewlyCreatedTodo(item)
+            end
+            if option == "regular tree positioned todo" then
+                item = NxRingworldMissions::interactivelyIssueNewOrNull()
+                return if item.nil?
+                puts JSON.pretty_generate(item)
+                Catalyst::interactivelySetDonations(item)
+            end
+            if option == "singular non work quest" then
+                item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
+                return if item.nil?
+                puts JSON.pretty_generate(item)
+                Catalyst::interactivelySetDonations(item)
+            end
             return
         end
 
@@ -326,7 +341,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts "setting core for '#{PolyFunctions::toString(item).green}'"
-            core2 = TxCores::interactivelyMakeNewOrNull(item["engine-0020"])
+            core2 = TxEngines::interactivelyMakeNewOrNull(item["engine-0020"])
             return if core2.nil?
             Cubes2::setAttribute(item["uuid"], "engine-0020", core2)
             return

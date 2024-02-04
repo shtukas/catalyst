@@ -34,7 +34,7 @@ class NxOrbitals
         Cubes2::mikuType("NxOrbital").each{|orbital|
             if orbital["engine-0020"].nil? then
                 puts "I need an engine for orbital '#{orbital["description"]}'"
-                core = TxCores::interactivelyMakeNewOrNull()
+                core = TxEngines::interactivelyMakeNewOrNull()
                 Cubes2::setAttribute(orbital["uuid"], "engine-0020", core)
                 return NxOrbitals::muiItems()
             end
@@ -43,7 +43,7 @@ class NxOrbitals
         return [] if Bank2::recoveredAverageHoursPerDay("9f891bc1-ca32-4792-8d66-d66612a4e7c6") > 1
 
         Cubes2::mikuType("NxOrbital")
-            .sort_by{|item| TxCores::listingCompletionRatio(item["engine-0020"]) }
+            .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
             .take(1)
     end
 

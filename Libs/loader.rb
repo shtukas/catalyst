@@ -176,11 +176,11 @@ require_relative "Prefix.rb"
 require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
-require_relative "TxCores.rb"
+require_relative "TxEngines.rb"
 require_relative "Transmutations.rb"
 require_relative "TxPayload.rb"
 
-require_relative "UxCores.rb"
+require_relative "TxTimeCores.rb"
 
 require_relative "Waves.rb"
 

@@ -40,9 +40,12 @@ class NxTodos
         "🔹"
     end
 
-    # NxTodos::toString(item)
-    def self.toString(item)
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxCores::suffix2(item)}"
+    # NxTodos::toString(item, context = nil)
+    def self.toString(item, context = nil)
+        if context == "listing" then
+            return "#{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+        end
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
     end
 
     # NxTodos::children(listing)
@@ -55,28 +58,6 @@ class NxTodos
     # NxTodos::itemsInGlobalPositioningOrder()
     def self.itemsInGlobalPositioningOrder()
         Cubes2::mikuType("NxTodo").sort_by{|project| project["global-positioning"] || 0 }
-    end
-
-    # NxTodos::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", NxTodos::rootTodos(), lambda{|item| NxTodos::toString(item) })
-    end
-
-    # NxTodos::selectZeroOrMore()
-    def self.selectZeroOrMore()
-        selected, _ = LucilleCore::selectZeroOrMore("item", [], NxTodos::rootTodos(), lambda{|item| NxTodos::toString(item) })
-        selected
-    end
-
-    # NxTodos::selectSubsetOfItemsAndMove(items)
-    def self.selectSubsetOfItemsAndMove(items)
-        selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
-        return if selected.size == 0
-        listing = NxTodos::interactivelySelectOneOrNull()
-        return if listing.nil?
-        selected.each{|item|
-            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", listing["uuid"])
-        }
     end
 
     # NxTodos::topPositionAmongChildren(item)
@@ -111,104 +92,13 @@ class NxTodos
         position
     end
 
-    # NxTodos::muiItems()
-    def self.muiItems()
-
-        # We focus on 5 items per day to avoid being fed new items at ratio 0
-        # intra day.
-
-        # Tracking object
-        # {
-        #    "date"  : YYYY-MM-DD
-        #    "uuids" : Array[String]
-        # }
-
-        data = (lambda {
-
-            folderpath = "#{Config::pathToCatalystDataRepository()}/todos-daily"
-
-            filepaths = LucilleCore::locationsAtFolder(folderpath)
-                            .select{|location| location[-5, 5] == ".json" }
-                            .map{|filepath|
-                                data = JSON.parse(IO.read(filepath))
-                                if data["date"] == CommonUtils::today() then
-                                    filepath
-                                else
-                                    FileUtils.rm(filepath)
-                                    nil
-                                end
-                            }
-                            .compact
-
-            filepaths.drop(1).each{|filepath| FileUtils.rm(filepath) }
-
-            if filepaths.size > 0 then
-                JSON.parse(IO.read(filepaths.first))
-            else
-                filepath = "#{Config::pathToCatalystDataRepository()}/todos-daily/#{CommonUtils::timeStringL22()}.json"
-                data = {
-                    "date"  => CommonUtils::today(),
-                    "uuids" => NxTodos::rootTodos().first(5).map{|item| item["uuid"] }
-                }
-                File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(data)) }
-                data
-            end
-
-        }).call()
-
-        data["uuids"]
-            .map{|uuid| Cubes2::itemOrNull(uuid) }
-            .compact
-            .select{|item| DoNotShowUntil2::isVisible(item) }
-    end
-
     # NxTodos::basicHoursPerDayForProjectsWithoutEngine()
     def self.basicHoursPerDayForProjectsWithoutEngine()
         1.5
     end
 
-    # NxTodos::rootTodos()
-    def self.rootTodos()
-        NxTodos::itemsInGlobalPositioningOrder()
-            .select{|item| item["parentuuid-0032"].nil? }
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # NxTodos::interactivelySelectTopTodoOrNull()
-    def self.interactivelySelectTopTodoOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("root todo", NxTodos::rootTodos(), lambda{|item| PolyFunctions::toString(item) })
-    end
-
-    # NxTodos::interactivelySelectPositionAmoungTopTodos()
-    def self.interactivelySelectPositionAmoungTopTodos()
-        elements = NxTodos::rootTodos()
-        elements.each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        position = position.to_f
-        position
-    end
-
     # ------------------
     # Ops
-
-    # NxTodos::interactivelySelectOneAndAddTo(itemuuid)
-    def self.interactivelySelectOneAndAddTo(itemuuid)
-        listing = NxTodos::interactivelySelectOneOrNull()
-        return if listing.nil?
-        Cubes2::setAttribute(itemuuid, "parentuuid-0032", listing["uuid"])
-        position = NxTodos::interactivelySelectPositionOrNull(listing)
-        if position then
-            Cubes2::setAttribute(itemuuid, "global-positioning", position)
-        end
-    end
 
     # NxTodos::access(item)
     def self.access(item)
@@ -266,7 +156,7 @@ class NxTodos
 
             puts ""
 
-            puts "top | pile | todo | position * | project | sort | move | with-prefix"
+            puts "top | pile | todo | position * | sort | move"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -291,18 +181,6 @@ class NxTodos
                 position = NxTodos::interactivelySelectPositionOrNull(project)
                 if position then
                     Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-                end
-                next
-            end
-
-            if input == "project" then
-                l = NxTodos::interactivelyIssueNewOrNull()
-                next if l.nil?
-                puts JSON.pretty_generate(l)
-                Cubes2::setAttribute(l["uuid"], "parentuuid-0032", project["uuid"])
-                position = NxTodos::interactivelySelectPositionOrNull(project)
-                if position then
-                    Cubes2::setAttribute(l["uuid"], "global-positioning", position)
                 end
                 next
             end
@@ -341,72 +219,7 @@ class NxTodos
             end
 
             if input == "move" then
-                NxTodos::selectSubsetOfItemsAndMove(NxTodos::children(project))
-                next
-            end
-
-            if input == "with-prefix" then
-                NxTodos::program1(project)
-                next
-            end
-
-            puts ""
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxTodos::program2()
-    def self.program2()
-        loop {
-
-            items = NxTodos::rootTodos()
-            return if items.empty?
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts ""
-
-            items
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
-                }
-
-            puts ""
-
-            puts "position * | sort"
-
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input.start_with?("..") then
-                indx = input[2, 9].strip.to_i
-                item = store.get(indx)
-                next if item.nil?
-                NxTodos::program1(item)
-                next
-            end
-
-            if input.start_with?("position") then
-                indx = input[8, 99].strip.to_i
-                item = store.get(indx)
-                next if item.nil?
-                position = LucilleCore::askQuestionAnswerAsString("position: ")
-                return if position == ""
-                position = position.to_f
-                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
-                next
-            end
-
-            if input == "sort" then
-                projects = NxTodos::itemsInGlobalPositioningOrder()
-                selected, _ = LucilleCore::selectZeroOrMore("project", [], projects, lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|i|
-                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxTodos::topPosition() - 1)
-                }
+                Catalyst::selectSubsetOfItemsAndMove(NxTodos::children(project))
                 next
             end
 
@@ -436,30 +249,27 @@ class NxTodos
             }
     end
 
-    # NxTodos::properlyDecorateNewlyCreatedTodo(item)
-    def self.properlyDecorateNewlyCreatedTodo(item)
+    # NxTodos::properlyPositionNewlyCreatedTodo(item)
+    def self.properlyPositionNewlyCreatedTodo(item)
         loop {
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["top todo (with position)", "in todo listing", "in orbital", "with own engine"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set parent", "in orbital", "with own engine"])
             next if option.nil?
-            if option == "top todo (with position)" then
-                position = NxTodos::interactivelySelectPositionAmoungTopTodos()
-                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
-                return
-            end
-            if option == "in todo listing" then
-                NxTodos::interactivelySelectOneAndAddTo(item["uuid"])
-                return
-            end
-            if option == "with own engine" then
-                core = TxCores::interactivelyMakeNew()
-                next if core.nil?
-                Cubes2::setAttribute(item["uuid"], "engine-0020", core)
+            if option == "set parent" then
+                parent = Catalyst::interactivelySelectNodeOrNull()
+                next if parent.nil?
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
                 return
             end
             if option == "in orbital" then
                 orbital = NxOrbitals::interactivelySelectOneOrNull()
                 next if orbital.nil?
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", orbital["uuid"])
+                return
+            end
+            if option == "with own engine" then
+                core = TxEngines::interactivelyMakeNew()
+                next if core.nil?
+                Cubes2::setAttribute(item["uuid"], "engine-0020", core)
                 return
             end
         }
