@@ -197,7 +197,7 @@ class TxPayload
 
     # TxPayload::edit(item)
     def self.edit(item)
-        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
+        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) } + ["new open cycle"]
         loop {
             puts "payload:#{TxPayload::suffix_string(item)}".green
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
@@ -242,6 +242,17 @@ class TxPayload
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
                 uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
                 Cubes2::setAttribute(item["uuid"], "unique-string-c3e5", uniquestring)
+            end
+            if option == "new open cycle" then
+                description = LucilleCore::askQuestionAnswerAsString("description without date: ")
+                next if description == ""
+                foldername = "#{CommonUtils::today()} #{description}"
+                folderpath = "#{Config::pathToGalaxy()}/OpenCycles/#{foldername}"
+                FileUtils.mkdir(folderpath)
+                reference = SecureRandom.hex
+                FileSystemReferences::issueCfsrFileAtDirectory(folderpath, reference)
+                Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
+                next
             end
         }
     end
