@@ -112,9 +112,6 @@ class TxEngines
             end
             return TxEngines::dayCompletionRatio(core)
         end
-        if core["type"] == "one-sitting" then
-            return 0.5
-        end
         raise "(error: 2ba8c6dc-48fd-4155-a4f3-1cf65892acc1): core: #{core}"
     end
 
