@@ -21,7 +21,7 @@ class NxShips
             return "(ship) (deletion in progress)"
         end
         ratio = NxShips::ratio(item)
-        ratiostring = "(ship: #{100 * ratio} % of #{item["hours"]} hours)".green
+        ratiostring = "(ship: #{(100 * ratio).round(2)} % of #{item["hours"]} hours)".green
         if context == "listing" then
             return "#{PolyFunctions::toString(target, "ship")} #{ratiostring}"
         end
