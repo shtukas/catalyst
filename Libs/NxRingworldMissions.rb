@@ -18,8 +18,8 @@ class NxRingworldMissions
 
     # NxRingworldMissions::toString(item)
     def self.toString(item)
-        ratiostr = "(#{(100 * NxRingworldMissions::ratio()).round(2)} % of #{NxRingworldMissions::recoveryTimeControl()} hs)".green
-        "⭕️ (mission: start, stop, done) #{item["description"]} #{ratiostr}"
+        ratiostring = "[#{"%6.2f" % NxRingworldMissions::ratio()}]".green
+        "⭕️ #{ratiostring} (mission: start, stop, done) #{item["description"]}"
     end
 
     # NxRingworldMissions::recoveryTimeControl()

@@ -10,10 +10,9 @@ class TxEngines
         hours = hours.to_f
         return nil if hours == 0
         return {
-            "uuid"          => ec ? ec["uuid"] : SecureRandom.uuid,
-            "mikuType"      => "TxEngine",
-            "type"          => "weekly-hours",
-            "hours"         => hours
+            "uuid"     => ec ? ec["uuid"] : SecureRandom.uuid,
+            "mikuType" => "TxEngine",
+            "hours"    => hours
         }
     end
 
@@ -46,7 +45,11 @@ class TxEngines
     def self.dayCompletionRatio(core)
         x1 = TxEngines::todayDone(core).to_f/TxEngines::todayIdeal(core)
         x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxEngines::todayIdeal(core)
-        [0.9*x1 + 0.1*x2, x1].max
+        number = [x1, x2].max
+        if number < 0.5 then
+            return [x1, x2].min
+        end
+        number
     end
 
     # TxEngines::weeklyCompletionRatioOrNull(core)
@@ -62,14 +65,8 @@ class TxEngines
         TxEngines::dayCompletionRatio(core)
     end
 
-    # TxEngines::suffix1(core)
-    def self.suffix1(core)
-        " (#{"%6.2f" % (100*TxEngines::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxEngines::weeklyCompletionRatioOrNull(core))} % of #{"%5.2f" % core["hours"]} hs)".green
-    end
-
-    # TxEngines::suffix2(item)
-    def self.suffix2(item)
-        return "" if item["engine-0020"].nil?
-        TxEngines::suffix1(item["engine-0020"])
+    # TxEngines::toString(core)
+    def self.toString(core)
+        "(#{"%6.2f" % (100*TxEngines::dayCompletionRatio(core))} %, #{"%6.2f" % (100*TxEngines::weeklyCompletionRatioOrNull(core))} % of #{"%5.2f" % core["hours"]} hs)".green
     end
 end

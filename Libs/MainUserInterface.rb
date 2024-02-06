@@ -81,7 +81,7 @@ class MainUserInterface
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
-        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}#{NxStrats::suffix(item)}"
+        line = "#{storePrefix}#{positionstr} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -100,13 +100,6 @@ class MainUserInterface
 
     # MainUserInterface::items()
     def self.items()
-        xp = [
-            NxOrbitals::muiItems(),
-            NxRingworldMissions::muiItems(),
-            NxShips::muiItems(),
-            NxSingularNonWorkQuests::muiItems(),
-        ].flatten
-
         [
             Ox1::items(),
             DropBox::items(),
@@ -117,10 +110,11 @@ class MainUserInterface
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             Waves::muiItems().select{|item| !item["interruption"] },
-            OrderingT::apply(xp),
-            Cubes2::mikuType("TxTimeCore")
-                .select{|item| TxEngines::listingCompletionRatio(item) < 1 }
-                .sort_by{|item| TxEngines::listingCompletionRatio(item) },
+            Prefix::prefix(OrderingT::apply([
+                NxOrbitals::muiItems(),
+                NxRingworldMissions::muiItems(),
+                NxSingularNonWorkQuests::muiItems(),
+            ].flatten)),
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -220,10 +214,6 @@ class MainUserInterface
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600)  then
                 Catalyst::periodicPrimaryInstanceMaintenance()
-            end
-
-            if Config::isPrimaryInstance() then
-                OpenCycles::sync()
             end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)

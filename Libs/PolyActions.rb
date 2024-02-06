@@ -36,15 +36,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            return
-        end
-
-        if item["mikuType"] == "NxShip" then
-            target = Cubes2::itemOrNull(item["targetuuid"])
-            if target then
-                PolyActions::access(target)
-            end
+        if item["mikuType"] == "NxBlock" then
+            NxBlocks::access(item)
             return
         end
 
@@ -56,11 +49,6 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             TxPayload::access(item)
-            return
-        end
-
-        if item["mikuType"] == "TxTimeCore" then
-            TxTimeCores::program(item)
             return
         end
 
@@ -77,14 +65,6 @@ class PolyActions
 
         if item["mikuType"] == "NxOrbital" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
-            return
-        end
-
-        if item["mikuType"] == "NxShip" then
-            target = Cubes2::itemOrNull(item["targetuuid"])
-            if target then
-                PolyActions::done(target, confirmed)
-            end
             return
         end
 
@@ -126,15 +106,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            if parent = NxStrats::parentOrNull(item) then
-                puts "You cannot done NxStrat '#{PolyFunctions::toString(item).green}' as it has a parent: '#{PolyFunctions::toString(parent).green}'"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
+        if item["mikuType"] == "NxBlock" then
+            NxBlocks::done(item)
             return
         end
 
@@ -168,14 +141,6 @@ class PolyActions
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
-            return
-        end
-
-        if item["mikuType"] == "NxShip" then
-            target = Cubes2::itemOrNull(item["targetuuid"])
-            if target then
-                PolyActions::doubledots(target)
-            end
             return
         end
 
@@ -214,21 +179,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            if !NxBalls::itemIsActive(item) then
-                NxBalls::start(item)
-                return
-            end
-            if NxBalls::itemIsActive(item) then
-                NxBalls::stop(item)
-                if NxStrats::parentOrNull(item) then
-                    return
-                end
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    Cubes2::destroy(item["uuid"])
-                end
-                return
-            end
+        if item["mikuType"] == "NxBlock" then
+            NxBlocks::access(item)
+            return
         end
 
         if item["mikuType"] == "NxOndate" then
@@ -260,11 +213,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxTimeCore" then
-            PolyActions::access(item)
-            return
-        end
-
         puts "I do not know how to PolyActions::doubledots(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -281,15 +229,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
-            target = Cubes2::itemOrNull(item["targetuuid"])
-            if target then
-                PolyActions::destroy(target)
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
@@ -298,7 +237,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            if NxTodos::children(item).size > 0 then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBlock" then
+            if NxBlocks::children(item).size > 0 then
                 puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -330,13 +276,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
         puts "I do not know how to PolyActions::destroy(#{JSON.pretty_generate(item)})"
         raise "(error: f7ac071e-f2bb-4921-a7f3-22f268b25be8)"
     end
@@ -353,21 +292,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxShip" then
-            target = Cubes2::itemOrNull(item["targetuuid"])
-            if target then
-                PolyActions::program(target)
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTodo" then
-            NxTodos::program1(item)
             return
         end
 

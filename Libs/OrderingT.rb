@@ -13,15 +13,11 @@ class OrderingT
         end
 
         if item["mikuType"] == "NxRingworldMission" then
-            return Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce").to_f/NxRingworldMissions::recoveryTimeControl()
+            return NxRingworldMissions::ratio()
         end
 
         if item["mikuType"] == "NxSingularNonWorkQuest" then
-            return Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b").to_f/NxSingularNonWorkQuests::recoveryTimeControl()
-        end
-
-        if item["mikuType"] == "NxShip" then
-            return NxShips::ratio(item)
+            return NxSingularNonWorkQuests::ratio()
         end
 
         raise "(error: fbffdec2-1fde-4fe4-b072-524ff49ca935): #{item}"

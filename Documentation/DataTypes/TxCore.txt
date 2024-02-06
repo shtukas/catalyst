@@ -1,5 +1,0 @@
-TxEngine
-    "uuid"          : String
-    "mikuType"      : "TxEngine"
-    "type"          : "weekly-hours"
-    "hours"         : Float

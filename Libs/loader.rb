@@ -154,17 +154,15 @@ require_relative "InMemoryCache.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxLambdas.rb"
-require_relative "NxStrats.rb"
 require_relative "NxTodos.rb"
 require_relative "NxOndate.rb"
 require_relative "NxRingworldMissions.rb"
 require_relative "NxBackups.rb"
 require_relative "NxOrbitals.rb"
 require_relative "NxSingularNonWorkQuests.rb"
-require_relative "NxShip.rb"
+require_relative "NxBlocks.rb"
 
 require_relative "Ox1.rb"
-require_relative "OpenCycles.rb"
 require_relative "OrderingT.rb"
 
 require_relative "ProgrammableBooleans.rb"
@@ -179,8 +177,6 @@ require_relative "TmpSkip1.rb"
 require_relative "TxEngines.rb"
 require_relative "Transmutations.rb"
 require_relative "TxPayload.rb"
-
-require_relative "TxTimeCores.rb"
 
 require_relative "Waves.rb"
 

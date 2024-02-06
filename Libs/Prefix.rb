@@ -5,22 +5,8 @@ class Prefix
     def self.prefix(items)
         return [] if items.empty?
 
-        stratification = NxStrats::stratification([items[0]])
-        if stratification.size > 1 then
-            return stratification.take(stratification.size-1) + items
-        end
-
-        if items[0]["mikuType"] == "TxTimeCore" then
-            children = TxTimeCores::childrenForPrefix(items[0])
-                        .select{|i| MainUserInterface::listable(i) }
-                        .first(3)
-            if children.size > 0 then
-                return Prefix::prefix(children + items)
-            end
-        end
-
-        if items[0]["mikuType"] == "NxTodo" then
-            children = NxTodos::childrenForPrefix(items[0])
+        if items[0]["mikuType"] == "NxBlock" then
+            children = NxBlocks::childrenForPrefix(items[0])
                         .select{|i| MainUserInterface::listable(i) }
                         .first(3)
             if children.size > 0 then

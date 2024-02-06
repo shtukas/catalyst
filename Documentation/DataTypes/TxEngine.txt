@@ -1,6 +1,4 @@
-
-TxTimeCore
+TxEngine
     "uuid"          : String
-    "mikuType"      : "TxTimeCore"
-    "type"          : "weekly-hours"
+    "mikuType"      : "TxEngine"
     "hours"         : Float

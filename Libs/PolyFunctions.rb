@@ -13,20 +13,6 @@ class PolyFunctions
 
         # Types
 
-        if item["mikuType"] == "NxShip" then
-            target = Cubes2::itemOrNull(item["targetuuid"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            bottom = Cubes2::itemOrNull(item["bottom"])
-            if bottom then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
-            end
-        end
-
         if item["mikuType"] == "NxRingworldMission" then
             accounts << {
                 "description" => "ringworld missions control",
@@ -109,6 +95,9 @@ class PolyFunctions
         if item["mikuType"] == "NxTodo" then
             return NxTodos::toString(item, context)
         end
+        if item["mikuType"] == "NxBlock" then
+            return NxBlocks::toString(item, context)
+        end
         if item["mikuType"] == "NxOrbital" then
             return NxOrbitals::toString(item, context)
         end
@@ -124,23 +113,14 @@ class PolyFunctions
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
         end
-        if item["mikuType"] == "NxShip" then
-            return NxShips::toString(item, context)
-        end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
-        if item["mikuType"] == "NxStrat" then
-            return NxStrats::toString(item)
-        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
-        end
-        if item["mikuType"] == "TxTimeCore" then
-            return TxTimeCores::toString(item, context)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end

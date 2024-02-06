@@ -95,7 +95,7 @@ class Catalyst
     # Catalyst::interactivelySelectNodeOrNull(cursor = nil)
     def self.interactivelySelectNodeOrNull(cursor = nil)
         if cursor.nil? then
-            timecore = TxTimeCores::interactivelySelectOneOrNull()
+            timecore = NxOrbitals::interactivelySelectOneOrNull()
             return nil if timecore.nil?
             if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(timecore)}' ? (alternatively dive) ") then
                 return timecore
@@ -103,38 +103,16 @@ class Catalyst
                 return Catalyst::interactivelySelectNodeOrNull(timecore)
             end
         end
-        if cursor["mikuType"] == "TxTimeCore" then
-            target = LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", TxTimeCores::children(cursor), lambda{|item| PolyFunctions::toString(item) })
-            return nil if target.nil?
-            children = NxTodos::children(target)
-            if children.empty? then
-                return target
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(target)}' ? (alternatively dive) ") then
-                return target
-            else
-                return Catalyst::interactivelySelectNodeOrNull(target)
-            end
-        end
-        if cursor["mikuType"] == "NxTodo" then
-            children = NxTodos::children(cursor)
-            target = LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", children, lambda{|item| PolyFunctions::toString(item) })
-            return nil if target.nil?
-            children = NxTodos::children(target)
-            if children.empty? then
-                return target
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(target)}' ? (alternatively dive) ") then
-                return target
-            else
-                return Catalyst::interactivelySelectNodeOrNull(target)
-            end
+        if cursor["mikuType"] == "NxOrbital" then
+            target = LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", NxOrbitals::childrenThatAreBlocks(cursor), lambda{|item| PolyFunctions::toString(item) })
+            return cursor if target.nil?
+            return target
         end
         raise "(error: d7256dcc-6d95-42b4-9fd2-3f1e5c2b674b) cursor: #{cursor}"
     end
 
-    # Catalyst::selectSubsetOfItemsAndMove(items)
-    def self.selectSubsetOfItemsAndMove(items)
+    # Catalyst::selectSubsetOfItemsAndMoveInTimeCore(items)
+    def self.selectSubsetOfItemsAndMoveInTimeCore(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
         node = Catalyst::interactivelySelectNodeOrNull()

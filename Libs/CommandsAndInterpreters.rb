@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | timecore | ship *",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | orbitals | timecores | ships",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | orbital | block",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | orbitals | ships",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution | numbers",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
         ].join("\n")
     end
 
@@ -49,23 +49,15 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("numbers", input) then
-
-            Cubes2::mikuType("TxTimeCore")
-                .each{|core|
-                    puts "#{"#{core["description"]}:".ljust(26)} rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay(core["uuid"])}, (day completion ratio: #{TxEngines::dayCompletionRatio(core).round(2)})"
-                }
-            puts "ringworld missions:        rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce")}"
-            puts "singular non world quests: rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b")}"
-            puts "orbital control:           rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("9f891bc1-ca32-4792-8d66-d66612a4e7c6")}"
-            puts "wave control:              rt: #{"%5.2f" % Bank2::recoveredAverageHoursPerDay("67df9561-a0bf-4eb6-b963-a8e6f83f65b6")}"
-
-            LucilleCore::pressEnterToContinue()
+        if Interpreting::match("reload", input) then
+            CoreData::reloadDataFromScratch()
             return
         end
 
-        if Interpreting::match("reload", input) then
-            CoreData::reloadDataFromScratch()
+        if Interpreting::match("block", input) then
+            block = NxBlocks::interactivelyIssueNewOrNull()
+            return if block.nil?
+            NxBlocks::properlyPositionNewlyCreatedBlock(block)
             return
         end
 
@@ -124,16 +116,10 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("contribution", input) then
-            uxcore = TxTimeCores::interactivelySelectOneOrNull()
+            uxcore = NxOrbitals::interactivelySelectOneOrNull()
             return if uxcore.nil?
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours for '#{PolyFunctions::toString(uxcore).green}': ").to_f
             PolyActions::addTimeToItem(uxcore, timeInHours*3600)
-            return
-        end
-
-        if Interpreting::match("timecores", input) then
-            timecores = Cubes2::mikuType("TxTimeCore").sort_by{|item| TxEngines::listingCompletionRatio(item) }
-            Catalyst::program2(timecores, "timecores")
             return
         end
 
@@ -165,18 +151,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] == "NxTodo" then
-                NxTodos::pile(item)
-                return
-            end
-            NxStrats::interactivelyPile(item)
-            return
-        end
-
         if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -197,12 +171,12 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            Catalyst::selectSubsetOfItemsAndMove(store.items())
+            Catalyst::selectSubsetOfItemsAndMoveInTimeCore(store.items())
             return
         end
 
-        if input == "timecore" then
-            TxTimeCores::interactivelyMakeNewOrNull()
+        if input == "orbital" then
+            NxOrbitals::interactivelyMakeNewOrNull()
             return
         end
 
@@ -228,21 +202,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Ox1::detach(item)
-            return
-        end
-
-        if Interpreting::match("ship *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            return if hours == 0
-            NxShips::interactivelyIssueNew(item["uuid"], hours)
-            return
-        end
-
-        if Interpreting::match("ships", input) then
-            NxShips::program()
             return
         end
 
