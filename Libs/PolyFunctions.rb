@@ -13,19 +13,18 @@ class PolyFunctions
 
         # Types
 
+        if item["mikuType"] == "NxShip" then
+            target = Cubes2::itemOrNull(item["targetuuid"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
         if item["mikuType"] == "NxStrat" then
             bottom = Cubes2::itemOrNull(item["bottom"])
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
-        end
-
-        if item["mikuType"] == "NxTodo" and item["engine-0020"] then
-            core = item["engine-0020"]
-            accounts << {
-                "description" => "core: #{core["uuid"]}",
-                "number"      => core["uuid"]
-            }
         end
 
         if item["mikuType"] == "NxRingworldMission" then
@@ -44,6 +43,10 @@ class PolyFunctions
 
         if item["mikuType"] == "NxOrbital" then
             accounts << {
+                "description" => "engine: #{item["engine-0020"]["uuid"]}",
+                "number"      => item["engine-0020"]["uuid"]
+            }
+            accounts << {
                 "description" => "orbital control",
                 "number"      => "9f891bc1-ca32-4792-8d66-d66612a4e7c6"
             }
@@ -57,13 +60,6 @@ class PolyFunctions
         end
 
         # Special Features
-
-        if core = item["engine-0020"] then
-            accounts << {
-                "description" => "core: #{core["uuid"]}",
-                "number"      => core["uuid"]
-            }
-        end
 
         if item["parentuuid-0032"] then
             parent = Cubes2::itemOrNull(item["parentuuid-0032"])
@@ -127,6 +123,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
+        end
+        if item["mikuType"] == "NxShip" then
+            return NxShips::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

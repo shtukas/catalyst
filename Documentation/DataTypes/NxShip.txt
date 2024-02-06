@@ -1,0 +1,7 @@
+A ship is a pointer to a todo
+
+NxShip:
+    - uuid         : String
+    - mikuType     : "NxShip"
+    - targetuuid   : string
+    - hours        : float

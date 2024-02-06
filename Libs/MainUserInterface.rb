@@ -103,12 +103,7 @@ class MainUserInterface
         xp = [
             NxOrbitals::muiItems(),
             NxRingworldMissions::muiItems(),
-            Cubes2::items()
-                .select{|item| item["engine-0020"] }
-                .select{|item| item["mikuType"] != "NxTodo" }
-                .select{|item| item["mikuType"] != "NxOrbital" }
-                .select{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) < 1 },
-            Cubes2::mikuType("TxTimeCore"),
+            NxShips::muiItems(),
             NxSingularNonWorkQuests::muiItems(),
         ].flatten
 
@@ -123,6 +118,9 @@ class MainUserInterface
             NxBackups::muiItems(),
             Waves::muiItems().select{|item| !item["interruption"] },
             OrderingT::apply(xp),
+            Cubes2::mikuType("TxTimeCore")
+                .select{|item| TxEngines::listingCompletionRatio(item) < 1 }
+                .sort_by{|item| TxEngines::listingCompletionRatio(item) },
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }

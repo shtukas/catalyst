@@ -48,6 +48,9 @@ class NxTodos
         if context == "inventory" then
             return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
         end
+        if context == "ship" then
+            return "#{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+        end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
     end
 
@@ -60,9 +63,7 @@ class NxTodos
 
     # NxTodos::childrenForPrefix(todo)
     def self.childrenForPrefix(todo)
-        children = NxTodos::children(todo)
-        p1, p2 = children.partition{|item| item["engine-0020"] }
-        p1.select{|item| TxEngines::listingCompletionRatio(core) < 1 }.sort_by{|item| TxEngines::listingCompletionRatio(core) } + p2
+        NxTodos::children(todo)
     end
 
     # NxTodos::itemsInGlobalPositioningOrder()
@@ -262,7 +263,7 @@ class NxTodos
     # NxTodos::properlyPositionNewlyCreatedTodo(item)
     def self.properlyPositionNewlyCreatedTodo(item)
         loop {
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set parent", "in orbital", "with own engine"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set parent", "in orbital"])
             next if option.nil?
             if option == "set parent" then
                 parent = Catalyst::interactivelySelectNodeOrNull()
@@ -274,12 +275,6 @@ class NxTodos
                 orbital = NxOrbitals::interactivelySelectOneOrNull()
                 next if orbital.nil?
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", orbital["uuid"])
-                return
-            end
-            if option == "with own engine" then
-                core = TxEngines::interactivelyMakeNew()
-                next if core.nil?
-                Cubes2::setAttribute(item["uuid"], "engine-0020", core)
                 return
             end
         }

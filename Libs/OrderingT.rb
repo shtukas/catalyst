@@ -8,14 +8,6 @@ class OrderingT
         # (that ratio is kept in the instance's own XCache, so is varying from one
         # instance to another)
 
-        if item["mikuType"] == "NxTodo" then
-            if item["engine-0020"] then
-                return TxEngines::listingCompletionRatio(item["engine-0020"])
-            else
-                return Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/NxTodos::basicHoursPerDayForProjectsWithoutEngine()
-            end
-        end
-
         if item["mikuType"] == "NxOrbital" then
             return TxEngines::listingCompletionRatio(item["engine-0020"])
         end
@@ -28,12 +20,8 @@ class OrderingT
             return Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b").to_f/NxSingularNonWorkQuests::recoveryTimeControl()
         end
 
-        if item["engine-0020"] then
-            return TxEngines::listingCompletionRatio(item["engine-0020"])
-        end
-
-        if item["mikuType"] == "TxTimeCore" then
-            return 0.5 + 0.5*TxEngines::dayCompletionRatio(item)
+        if item["mikuType"] == "NxShip" then
+            return NxShips::ratio(item)
         end
 
         raise "(error: fbffdec2-1fde-4fe4-b072-524ff49ca935): #{item}"

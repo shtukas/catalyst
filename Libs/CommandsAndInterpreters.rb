@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | core * | uncore * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | pile * | bank accounts * | donation * | move * | payload * | completed * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | timecore",
-            "divings       : anniversaries | ondates | waves | desktop | engines | ringworld-missions | singular-non-work-quests | backups | orbitals | timecores",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | timecore | ship *",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | orbitals | timecores | ships",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution | numbers",
         ].join("\n")
@@ -156,14 +156,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("engines", input) then
-            items = Cubes2::items()
-                        .select{|item| item["engine-0020"] }
-                        .sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
-            Catalyst::program2(items)
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -235,6 +227,21 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Ox1::detach(item)
+            return
+        end
+
+        if Interpreting::match("ship *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            return if hours == 0
+            NxShips::interactivelyIssueNew(item["uuid"], hours)
+            return
+        end
+
+        if Interpreting::match("ships", input) then
+            NxShips::program()
             return
         end
 
@@ -334,25 +341,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
-            return
-        end
-
-        if Interpreting::match("core *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts "setting core for '#{PolyFunctions::toString(item).green}'"
-            core2 = TxEngines::interactivelyMakeNewOrNull(item["engine-0020"])
-            return if core2.nil?
-            Cubes2::setAttribute(item["uuid"], "engine-0020", core2)
-            return
-        end
-
-        if Interpreting::match("uncore *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Cubes2::setAttribute(item["uuid"], "engine-0020", nil)
             return
         end
 

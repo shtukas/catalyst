@@ -40,6 +40,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxShip" then
+            target = Cubes2::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::access(target)
+            end
+            return
+        end
+
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             Ox1::detach(item)
@@ -67,9 +75,17 @@ class PolyActions
 
         # order: alphabetical order
 
-        if item["engine-0020"] then
-            # `done` to anything with an engine pushes it to tomorrow
+        if item["mikuType"] == "NxOrbital" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            return
+        end
+
+        if item["mikuType"] == "NxShip" then
+            target = Cubes2::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::done(target, confirmed)
+            end
+            return
         end
 
         if item["mikuType"] == "NxRingworldMission" then
@@ -152,6 +168,14 @@ class PolyActions
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
+            return
+        end
+
+        if item["mikuType"] == "NxShip" then
+            target = Cubes2::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::doubledots(target)
+            end
             return
         end
 
@@ -257,6 +281,15 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxShip" then
+            target = Cubes2::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::destroy(target)
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
@@ -317,6 +350,14 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "NxShip" then
+            target = Cubes2::itemOrNull(item["targetuuid"])
+            if target then
+                PolyActions::program(target)
+            end
             return
         end
 

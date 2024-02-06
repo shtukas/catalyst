@@ -43,9 +43,7 @@ class TxTimeCores
 
     # TxTimeCores::childrenForPrefix(timecore)
     def self.childrenForPrefix(timecore)
-        children = TxTimeCores::children(timecore)
-        p1, p2 = children.partition{|item| item["engine-0020"] }
-        p1.select{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) < 1 }.sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) } + p2
+        TxTimeCores::children(timecore)
     end
 
     # TxTimeCores::topPositionAmongChildren(item)
