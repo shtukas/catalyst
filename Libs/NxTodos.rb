@@ -43,15 +43,15 @@ class NxTodos
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
         if context == "listing" then
-            return "#{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+            return "#{NxTodos::icon(item)} #{item["description"]}"
         end
         if context == "inventory" then
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
         end
         if context == "ship" then
             return "#{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
         end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
 
     # NxTodos::children(listing)
