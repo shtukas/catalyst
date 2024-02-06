@@ -15,9 +15,15 @@ class NxSingularNonWorkQuests
     # ------------------
     # Data
 
+    # NxSingularNonWorkQuests::ratio()
+    def self.ratio()
+        Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b").to_f/NxSingularNonWorkQuests::recoveryTimeControl()
+    end
+
     # NxSingularNonWorkQuests::toString(item)
     def self.toString(item)
-        "🚴‍♂️ (mission: start, stop, done) #{item["description"]}"
+        ratiostr = "(#{(100 * NxSingularNonWorkQuests::ratio()).round(2)} % of #{NxSingularNonWorkQuests::recoveryTimeControl()} hs)".green
+        "🚴‍♂️ (mission: start, stop, done) #{item["description"]} #{ratiostr}"
     end
 
     # NxSingularNonWorkQuests::recoveryTimeControl()
@@ -33,7 +39,7 @@ class NxSingularNonWorkQuests
 
     # NxSingularNonWorkQuests::muiItems()
     def self.muiItems()
-        return [] if Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b") > NxSingularNonWorkQuests::recoveryTimeControl()
+        return [] if NxSingularNonWorkQuests::ratio() >= 1
         NxSingularNonWorkQuests::itemsInOrder().take(1)
     end
 end

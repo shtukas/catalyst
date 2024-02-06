@@ -49,7 +49,7 @@ class NxTodos
             return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
         end
         if context == "ship" then
-            return "#{NxTodos::icon(item)} #{item["description"]}#{TxEngines::suffix2(item)}"
+            return "#{NxTodos::icon(item)} #{item["description"]}"
         end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end

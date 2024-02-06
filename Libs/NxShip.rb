@@ -13,15 +13,19 @@ class NxShips
     # ------------------
     # Data
 
-    # NxShips::toString(item)
-    def self.toString(item)
+    # NxShips::toString(item, context = nil)
+    def self.toString(item, context = nil)
         target = Cubes2::itemOrNull(item["targetuuid"])
         if target.nil? then
             Cubes2::destroy(item["uuid"])
             return "(ship) (deletion in progress)"
         end
         ratio = NxShips::ratio(item)
-        "(ship: #{100 * ratio} % of #{item["hours"]} hours) #{PolyFunctions::toString(target, "ship")}"
+        ratiostring = "(ship: #{100 * ratio} % of #{item["hours"]} hours)".green
+        if context == "listing" then
+            return "#{PolyFunctions::toString(target, "ship")} #{ratiostring}"
+        end
+        "#{ratiostring} #{PolyFunctions::toString(target, "ship")}"
     end
 
     # NxShips::ratio(item)

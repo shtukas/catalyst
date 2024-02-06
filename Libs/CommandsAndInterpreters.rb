@@ -118,7 +118,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("orbitals", input) then
-            Catalyst::program2(Cubes2::mikuType("NxOrbital"))
+            orbitals = Cubes2::mikuType("NxOrbital").sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
+            Catalyst::program2(orbitals)
             return
         end
 

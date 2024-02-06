@@ -19,7 +19,10 @@ class NxOrbitals
                 description = "block; special circumstances: DataHub/Buffer-In"
             end
         end
-        "💫 #{description}"
+        if context == "listing" then
+            return "💫 #{description}#{TxEngines::suffix2(item)}"
+        end
+        "💫#{TxEngines::suffix2(item)} #{description}"
     end
 
     # NxOrbitals::children(orbital)

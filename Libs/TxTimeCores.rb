@@ -26,6 +26,9 @@ class TxTimeCores
         if context == "timecores" then
             return "⏱️ #{TxEngines::suffix1(item)} #{item["description"]}"
         end
+        if context == "listing" then
+            return "⏱️  #{item["description"]}#{TxEngines::suffix1(item)}"
+        end
         "⏱️  #{item["description"]}"
     end
 

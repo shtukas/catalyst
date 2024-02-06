@@ -1,18 +1,5 @@
-
-TxEngine
-    "uuid"          : String
-    "mikuType"      : "TxEngine"
-    "type"          : "daily-hours"
-    "hours"         : Float
-
 TxEngine
     "uuid"          : String
     "mikuType"      : "TxEngine"
     "type"          : "weekly-hours"
-    "hours"         : Float
-
-TxEngine
-    "uuid"          : String
-    "mikuType"      : "TxEngine"
-    "type"          : "one-sitting"
     "hours"         : Float

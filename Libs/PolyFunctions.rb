@@ -110,7 +110,7 @@ class PolyFunctions
             return NxTodos::toString(item, context)
         end
         if item["mikuType"] == "NxOrbital" then
-            return NxOrbitals::toString(item)
+            return NxOrbitals::toString(item, context)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
@@ -125,7 +125,7 @@ class PolyFunctions
             return NxPools::toString(item)
         end
         if item["mikuType"] == "NxShip" then
-            return NxShips::toString(item)
+            return NxShips::toString(item, context)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

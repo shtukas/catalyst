@@ -18,7 +18,8 @@ class NxRingworldMissions
 
     # NxRingworldMissions::toString(item)
     def self.toString(item)
-        "⭕️ (mission: start, stop, done) #{item["description"]}"
+        ratiostr = "(#{(100 * NxRingworldMissions::ratio()).round(2)} % of #{NxRingworldMissions::recoveryTimeControl()} hs)".green
+        "⭕️ (mission: start, stop, done) #{item["description"]} #{ratiostr}"
     end
 
     # NxRingworldMissions::recoveryTimeControl()
@@ -32,9 +33,14 @@ class NxRingworldMissions
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
+    # NxRingworldMissions::ratio()
+    def self.ratio()
+        Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce").to_f/NxRingworldMissions::recoveryTimeControl()
+    end
+
     # NxRingworldMissions::muiItems()
     def self.muiItems()
-        return [] if Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce") > NxRingworldMissions::recoveryTimeControl()
+        return [] if NxRingworldMissions::ratio() >= 1
         NxRingworldMissions::itemsInOrder().take(1)
     end
 end
