@@ -42,6 +42,13 @@ class NxBlocks
     # NxBlocks::childrenForPrefix(todo)
     def self.childrenForPrefix(todo)
         NxBlocks::children(todo)
+            .reduce([]){|selected, item|
+                if selected.size < 3 and MainUserInterface::listable(item) and Bank2::recoveredAverageHoursPerDay(item) < 1 then
+                    selected + [item]
+                else
+                    selected
+                end
+            }
     end
 
     # NxBlocks::itemsInGlobalPositioningOrder()
