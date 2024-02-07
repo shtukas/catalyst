@@ -183,7 +183,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
+            NxBalls::start(item)
             NxTodos::access(item)
+            LucilleCore::pressEnterToContinue()
+            NxBalls::stop(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
             return
         end
 
@@ -197,6 +203,7 @@ class PolyActions
                 NxBalls::start(item)
             end
             PolyActions::access(item)
+            LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
