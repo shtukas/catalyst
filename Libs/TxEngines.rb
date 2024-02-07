@@ -26,30 +26,19 @@ class TxEngines
     # -----------------------------------------------
     # Data
 
-    # TxEngines::todayDone(core)
-    def self.todayDone(core)
-        Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/3600
-    end
-
     # TxEngines::todayIdeal(core)
     def self.todayIdeal(core)
         return core["hours"].to_f/7
     end
 
+    # TxEngines::dayCompletionRatio(core)
+    def self.dayCompletionRatio(core)
+        Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxEngines::todayIdeal(core)
+    end
+
     # TxEngines::weeklyDone(core)
     def self.weeklyDone(core)
         CommonUtils::datesSinceLastSaturday().reduce(0){|time, date| time + Bank2::getValueAtDate(core["uuid"], date) }.to_f/3600
-    end
-
-    # TxEngines::dayCompletionRatio(core)
-    def self.dayCompletionRatio(core)
-        x1 = TxEngines::todayDone(core).to_f/TxEngines::todayIdeal(core)
-        x2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxEngines::todayIdeal(core)
-        number = [x1, x2].max
-        if number < 0.5 then
-            return [x1, x2].min
-        end
-        number
     end
 
     # TxEngines::weeklyCompletionRatioOrNull(core)
