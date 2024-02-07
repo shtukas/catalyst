@@ -161,6 +161,7 @@ require_relative "NxBackups.rb"
 require_relative "NxOrbitals.rb"
 require_relative "NxSingularNonWorkQuests.rb"
 require_relative "NxBlocks.rb"
+require_relative "NxBufferInMonitors.rb"
 
 require_relative "Ox1.rb"
 require_relative "OrderingT.rb"

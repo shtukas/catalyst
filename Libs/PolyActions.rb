@@ -52,6 +52,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return
+        end
+
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
@@ -127,6 +131,10 @@ class PolyActions
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
 
@@ -213,6 +221,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return
+        end
+
         puts "I do not know how to PolyActions::doubledots(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
@@ -273,6 +285,10 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
 

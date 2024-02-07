@@ -20,6 +20,10 @@ class OrderingT
             return NxSingularNonWorkQuests::ratio()
         end
 
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return NxBufferInMonitors::ratio()
+        end
+
         raise "(error: fbffdec2-1fde-4fe4-b072-524ff49ca935): #{item}"
     end
 

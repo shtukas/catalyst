@@ -113,6 +113,9 @@ class PolyFunctions
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
         end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return NxBufferInMonitors::toString(item)
+        end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end

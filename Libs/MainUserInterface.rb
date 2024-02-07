@@ -114,6 +114,7 @@ class MainUserInterface
                 NxOrbitals::muiItems(),
                 NxRingworldMissions::muiItems(),
                 NxSingularNonWorkQuests::muiItems(),
+                NxBufferInMonitors::muiItems(),
             ].flatten)),
         ]
             .flatten
