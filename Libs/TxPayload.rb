@@ -167,7 +167,7 @@ class TxPayload
                 exportFoldername = "aion-point-#{exportId}"
                 exportFolder = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
                 FileUtils.mkpath(exportFolder)
-                AionCore::exportHashAtFolder(Elizabeth.new(uuid), nhash, exportFolder)
+                AionCore::exportHashAtFolder(Elizabeth.new(item["uuid"]), nhash, exportFolder)
                 system("open '#{exportFolder}'")
                 LucilleCore::pressEnterToContinue()
             end
