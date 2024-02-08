@@ -24,7 +24,8 @@ class NxBlocks
     # NxBlocks::toString(item, context = nil)
     def self.toString(item, context = nil)
         if context == "listing" then
-            return "#{NxBlocks::icon(item)} #{item["description"]}"
+            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
+            return "#{NxBlocks::icon(item)} #{str1} #{item["description"]}"
         end
         if context == "inventory" then
             return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)} #{item["description"]}"

@@ -33,7 +33,8 @@ class NxTodos
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
         if context == "listing" then
-            return "#{NxTodos::icon(item)} #{item["description"]}"
+            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
+            return "#{NxTodos::icon(item)} #{str1} #{item["description"]}"
         end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
