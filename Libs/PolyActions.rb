@@ -56,6 +56,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOrbital" then
+            return NxOrbitals::program(item)
+        end
+
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
