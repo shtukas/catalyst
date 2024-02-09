@@ -160,6 +160,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            NxBalls::start(item)
+            NxTodos::access(item)
+            LucilleCore::pressEnterToContinue()
+            NxBalls::stop(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+            return
+        end
+
         if item["mikuType"] == "NxOrbital" then
             Catalyst::program2(NxOrbitals::children(item))
             return
