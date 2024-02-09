@@ -78,15 +78,13 @@ class NxOrbitals
 
     # NxOrbitals::childrenForPrefix(timecore)
     def self.childrenForPrefix(timecore)
-        items = NxOrbitals::children(timecore)
-            .reduce([]){|selected, item|
-                if selected.size < 3 and MainUserInterface::listable(item) and Bank2::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
-                    selected + [item]
-                else
-                    selected
-                end
+        NxOrbitals::children(timecore)
+            .each{|item|
+                next if !MainUserInterface::listable(item)
+                next if Bank2::recoveredAverageHoursPerDay(item["uuid"]) > 1
+                return [item]
             }
-        items.sort_by{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) }
+        []
     end
 
     # NxOrbitals::topPositionAmongChildren(item)

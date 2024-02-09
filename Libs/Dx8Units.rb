@@ -55,4 +55,16 @@ class Dx8Units
         system("open '#{location}'")
         LucilleCore::pressEnterToContinue()
     end
+
+    # Dx8Units::destroy(unitId)
+    def self.destroy(unitId)
+        location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
+        if location.nil? then
+            puts "I could not acquire the Dx8Unit. Aborting operation."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        puts "location: #{location}"
+        LucilleCore::removeFileSystemLocation(location)
+    end
 end

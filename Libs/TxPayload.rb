@@ -127,6 +127,8 @@ class TxPayload
     # TxPayload::access(item)
     def self.access(item)
         loop {
+            item = Cubes2::itemOrNull(item["uuid"])
+            return if item.nil?
             puts "payload:#{TxPayload::suffix_string(item)}".green
             options = TxPayload::mapping().keys.map{|key| item[key] ? key : nil }.compact
             return if options.size == 0
@@ -174,6 +176,10 @@ class TxPayload
             if option == "dx8UnitId-00286e29" then
                 unitId = item["dx8UnitId-00286e29"]
                 Dx8Units::access(unitId)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy Dx8Unit '#{unitId}'") then
+                    Dx8Units::destroy(unitId)
+                    Cubes2::setAttribute(item["uuid"], "dx8UnitId-00286e29", nil)
+                end
             end
             if option == "url-e88a" then
                 url = item["url-e88a"]
@@ -230,9 +236,9 @@ class TxPayload
                 Cubes2::setAttribute(item["uuid"], "aion-point-7c758c", nhash)
             end
             if TxPayload::friendlyToKey(option) == "dx8UnitId-00286e29" then
-                unitId = LucilleCore::askQuestionAnswerAsString("Dx8Unit Id: ")
-                next if unitId == ""
-                Cubes2::setAttribute(item["uuid"], "dx8UnitId-00286e29", unitId)
+                puts "There is no edition of a Dx8Unit"
+                LucilleCore::pressEnterToContinue()
+                next
             end
             if TxPayload::friendlyToKey(option) == "url-e88a" then
                 url = LucilleCore::askQuestionAnswerAsString("url: ")
