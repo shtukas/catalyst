@@ -249,10 +249,15 @@ class Bank2
         DataProcessor::processQueue()
     end
 
-    # Bank2::getValueAtDate(uuid, date)
-    def self.getValueAtDate(uuid, date)
+    # Bank2::getRecords(uuid)
+    def self.getRecords(uuid)
         $DATA_CENTER_DATA["bank"]
             .select{|record| record["id"] == uuid }
+    end
+
+    # Bank2::getValueAtDate(uuid, date)
+    def self.getValueAtDate(uuid, date)
+        Bank2::getRecords(uuid)
             .select{|record| record["date"] == date }
             .map{|record| record["value"] }
             .inject(0, :+)
@@ -260,8 +265,7 @@ class Bank2
 
     # Bank2::getValue(uuid)
     def self.getValue(uuid)
-        $DATA_CENTER_DATA["bank"]
-            .select{|record| record["id"] == uuid }
+        Bank2::getRecords(uuid)
             .map{|record| record["value"] }
             .inject(0, :+)
     end
