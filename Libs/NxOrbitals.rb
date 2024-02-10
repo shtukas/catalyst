@@ -36,6 +36,9 @@ class NxOrbitals
             ratiostring = "[#{"%6.2f" % TxEngines::listingCompletionRatio(item["engine-0020"])}]".green
             return "💫 #{ratiostring} #{description}"
         end
+        if context == "program" then
+            return "💫 #{TxEngines::toString(item["engine-0020"]).green} #{description}"
+        end
         ratiostring = "[#{"%6.2f" % TxEngines::listingCompletionRatio(item["engine-0020"])}] #{TxEngines::toString(item["engine-0020"])}".green
         "💫 #{ratiostring} #{description}"
     end
@@ -103,6 +106,10 @@ class NxOrbitals
 
             store = ItemStore.new()
 
+            puts ""
+
+            store.register(orbital, false)
+            puts MainUserInterface::toString2(store, orbital, "program")
             puts ""
 
             elements

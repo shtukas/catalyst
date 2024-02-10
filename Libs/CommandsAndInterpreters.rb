@@ -174,7 +174,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            target = Catalyst::interactivelySelectNodeOrNull()
+            target = Catalyst::interactivelySelectContainerOrNull()
             return if target.nil?
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", target["uuid"])
             return

@@ -37,6 +37,12 @@ class TxEngines
         dates.map{|date| Bank2::getValueAtDate(core["uuid"], date) }.inject(0, :+).to_f/3600
     end
 
+    # TxEngines::timeDoneSinceLastSaturdayIncludingTodayInHours(core)
+    def self.timeDoneSinceLastSaturdayIncludingTodayInHours(core)
+        dates = CommonUtils::datesSinceLastSaturday()
+        dates.map{|date| Bank2::getValueAtDate(core["uuid"], date) }.inject(0, :+).to_f/3600
+    end
+
     # TxEngines::remainingTimeForOngoingWeekInHours(core)
     def self.remainingTimeForOngoingWeekInHours(core)
         [TxEngines::weeklyHours(core) - TxEngines::timeDoneSinceLastSaturdayExcludingTodayInHours(core), 0].max
@@ -70,6 +76,6 @@ class TxEngines
 
     # TxEngines::toString(core)
     def self.toString(core)
-        "(today: #{"%6.2f" % (100*TxEngines::dayCompletionRatioAgainstComputedtodayIdealInHours(core))} %, done: #{"%5.2f" % TxEngines::timeDoneSinceLastSaturdayExcludingTodayInHours(core)} of weekly: #{"%5.2f" % core["hours"]})".green
+        "(today: #{"%6.2f" % (100*TxEngines::dayCompletionRatioAgainstComputedtodayIdealInHours(core))} %, done: #{"%5.2f" % TxEngines::timeDoneSinceLastSaturdayIncludingTodayInHours(core)} of weekly: #{"%5.2f" % core["hours"]})".green
     end
 end

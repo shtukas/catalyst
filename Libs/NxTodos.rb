@@ -75,7 +75,7 @@ class NxTodos
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set parent", "in orbital"])
             next if option.nil?
             if option == "set parent" then
-                parent = Catalyst::interactivelySelectNodeOrNull()
+                parent = Catalyst::interactivelySelectContainerOrNull()
                 next if parent.nil?
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
                 return

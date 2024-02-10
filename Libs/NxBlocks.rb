@@ -101,9 +101,7 @@ class NxBlocks
         if TxPayload::itemHasPayload(item) then
             TxPayload::access(item)
         end
-        if NxBlocks::children(item).size > 0 then
-            NxBlocks::program1(item)
-        end
+        NxBlocks::program1(item)
     end
 
     # NxBlocks::access(item)

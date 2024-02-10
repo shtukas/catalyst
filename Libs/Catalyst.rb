@@ -91,21 +91,21 @@ class Catalyst
 
     # Catalyst::interactivelySetDonations(item)
     def self.interactivelySetDonations(item)
-        target = Catalyst::interactivelySelectNodeOrNull()
+        target = Catalyst::interactivelySelectContainerOrNull()
         if target then
             Catalyst::addDonation(item, target)
         end
     end
 
-    # Catalyst::interactivelySelectNodeOrNull(cursor = nil)
-    def self.interactivelySelectNodeOrNull(cursor = nil)
+    # Catalyst::interactivelySelectContainerOrNull(cursor = nil)
+    def self.interactivelySelectContainerOrNull(cursor = nil)
         if cursor.nil? then
             timecore = NxOrbitals::interactivelySelectOneOrNull()
             return nil if timecore.nil?
-            if LucilleCore::askQuestionAnswerAsBoolean("return '#{PolyFunctions::toString(timecore)}' ? (alternatively dive) ") then
+            if LucilleCore::askQuestionAnswerAsBoolean("select '#{PolyFunctions::toString(timecore)}' ? (alternatively dive) ") then
                 return timecore
             else
-                return Catalyst::interactivelySelectNodeOrNull(timecore)
+                return Catalyst::interactivelySelectContainerOrNull(timecore)
             end
         end
         if cursor["mikuType"] == "NxOrbital" then
@@ -116,14 +116,45 @@ class Catalyst
         raise "(error: d7256dcc-6d95-42b4-9fd2-3f1e5c2b674b) cursor: #{cursor}"
     end
 
+    # Catalyst::children(listing)
+    def self.children(listing)
+        Cubes2::items()
+            .select{|item| item["parentuuid-0032"] == listing["uuid"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # Catalyst::interactivelySelectPositionInContainerOrNull(container)
+    def self.interactivelySelectPositionInContainerOrNull(container)
+        elements = Catalyst::children(container)
+        elements.first(20).each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
+        if position == "first" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+        end
+        position = position.to_f
+        position
+    end
+
     # Catalyst::selectSubsetOfItemsAndMoveInTimeCore(items)
     def self.selectSubsetOfItemsAndMoveInTimeCore(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        node = Catalyst::interactivelySelectNodeOrNull()
+        node = Catalyst::interactivelySelectContainerOrNull()
         return if node.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", node["uuid"])
         }
+        if selected.size == 1 then
+            selected = selected.first
+            position = Catalyst::interactivelySelectPositionInContainerOrNull(node)
+            if position then
+                Cubes2::setAttribute(selected["uuid"], "global-positioning", position)
+            end
+        end
     end
 end

@@ -173,7 +173,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOrbital" then
-            Catalyst::program2(NxOrbitals::children(item))
+            NxOrbitals::program(item)
             return
         end
 
