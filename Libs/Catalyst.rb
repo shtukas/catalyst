@@ -91,27 +91,73 @@ class Catalyst
 
     # Catalyst::interactivelySetDonations(item)
     def self.interactivelySetDonations(item)
-        target = Catalyst::interactivelySelectContainerOrNull()
+        target = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
         if target then
             Catalyst::addDonation(item, target)
         end
     end
 
-    # Catalyst::interactivelySelectContainerOrNull(cursor = nil)
-    def self.interactivelySelectContainerOrNull(cursor = nil)
+    # Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor = nil)
+    def self.interactivelySelectContainerDescentFromRootOrNull(cursor = nil)
+        selectOrDive = lambda{|item|
+            puts PolyFunctions::toString(item).green
+            options = ["select (default)", "dive"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            if option.nil?  or option == "select (default)" then
+                return "select"
+            end
+            "dive"
+        }
+
         if cursor.nil? then
-            timecore = NxOrbitals::interactivelySelectOneOrNull()
-            return nil if timecore.nil?
-            if LucilleCore::askQuestionAnswerAsBoolean("select '#{PolyFunctions::toString(timecore)}' ? (alternatively dive) ") then
-                return timecore
+            orbital = NxOrbitals::interactivelySelectOneOrNull()
+            return nil if orbital.nil?
+            if selectOrDive.call(orbital) == "select" then
+                return orbital
             else
-                return Catalyst::interactivelySelectContainerOrNull(timecore)
+                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(orbital)
             end
         end
-        if cursor["mikuType"] == "NxOrbital" then
-            target = LucilleCore::selectEntityFromListOfEntitiesOrNull("todo", NxOrbitals::childrenThatAreBlocks(cursor), lambda{|item| PolyFunctions::toString(item) })
-            return cursor if target.nil?
-            return target
+        if cursor["mikuType"] == "NxOrbital" or cursor["mikuType"] == "NxBlock" then
+            createBlockAtContainer = lambda{|container|
+                block = NxBlocks::interactivelyIssueNewOrNull()
+                return if block.nil?
+                puts JSON.pretty_generate(block)
+                Cubes2::setAttribute(block["uuid"], "parentuuid-0032", container["uuid"])
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(container)
+                Cubes2::setAttribute(block["uuid"], "global-positioning", position)
+            }
+
+            puts ""
+            store = ItemStore.new()
+            store.register(cursor, false)
+            puts MainUserInterface::toString2(store, cursor).green
+            Catalyst::childrenThatAreBlocks(cursor)
+                .each{|block|
+                    store.register(block, false)
+                    puts MainUserInterface::toString2(store, block)
+                }
+            puts "new (here)"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            if input == "" then
+                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor)
+            end
+            if input == "new" then
+                createBlockAtContainer.call(cursor)
+                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor)
+            end
+            if input == "0" then
+                return cursor
+            end
+            target = store.get(input.to_i)
+            if target.nil? then
+                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor)
+            end
+            if selectOrDive.call(target) == "select" then
+                return target
+            else
+                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(target)
+            end
         end
         raise "(error: d7256dcc-6d95-42b4-9fd2-3f1e5c2b674b) cursor: #{cursor}"
     end
@@ -120,6 +166,14 @@ class Catalyst
     def self.children(listing)
         Cubes2::items()
             .select{|item| item["parentuuid-0032"] == listing["uuid"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # Catalyst::childrenThatAreBlocks(timecore)
+    def self.childrenThatAreBlocks(timecore)
+        Cubes2::items()
+            .select{|item| item["parentuuid-0032"] == timecore["uuid"] }
+            .select{|item| item["mikuType"] == "NxBlock" }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
@@ -140,11 +194,11 @@ class Catalyst
         position
     end
 
-    # Catalyst::selectSubsetOfItemsAndMoveInTimeCore(items)
-    def self.selectSubsetOfItemsAndMoveInTimeCore(items)
+    # Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(items)
+    def self.selectSubsetOfItemsAndMoveToSelectedContainer(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        node = Catalyst::interactivelySelectContainerOrNull()
+        node = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
         return if node.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", node["uuid"])

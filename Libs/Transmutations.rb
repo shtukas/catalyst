@@ -26,7 +26,7 @@ class Transmutations
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
-            NxTodos::properlyPositionNewlyCreatedTodo(item)
+            NxTodos::positionItemOnTreeUseDescent(item)
             return
         end
         if item["mikuType"] == "Wave" and targetMikuType == "NxRingworldMission" then

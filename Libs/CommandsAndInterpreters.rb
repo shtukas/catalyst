@@ -174,7 +174,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            target = Catalyst::interactivelySelectContainerOrNull()
+            target = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
             return if target.nil?
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", target["uuid"])
             return
@@ -189,7 +189,7 @@ class CommandsAndInterpreters
         end
 
         if input == "move" then
-            Catalyst::selectSubsetOfItemsAndMoveInTimeCore(store.items())
+            Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(store.items())
             return
         end
 
@@ -271,7 +271,7 @@ class CommandsAndInterpreters
             if option == "regular tree positioned todo" then
                 item = NxTodos::interactivelyIssueNewOrNull()
                 return if item.nil?
-                NxTodos::properlyPositionNewlyCreatedTodo(item)
+                NxTodos::positionItemOnTreeUseDescent(item)
             end
             if option == "regular tree positioned todo" then
                 item = NxRingworldMissions::interactivelyIssueNewOrNull()

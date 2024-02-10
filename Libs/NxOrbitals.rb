@@ -43,21 +43,6 @@ class NxOrbitals
         "💫 #{ratiostring} #{description}"
     end
 
-    # NxOrbitals::children(orbital)
-    def self.children(orbital)
-        Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == orbital["uuid"] }
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # NxOrbitals::childrenThatAreBlocks(timecore)
-    def self.childrenThatAreBlocks(timecore)
-        Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == timecore["uuid"] }
-            .select{|item| item["mikuType"] == "NxBlock" }
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
     # NxOrbitals::muiItems()
     def self.muiItems()
         Cubes2::mikuType("NxOrbital").each{|orbital|
@@ -81,7 +66,7 @@ class NxOrbitals
 
     # NxOrbitals::childrenForPrefix(timecore)
     def self.childrenForPrefix(timecore)
-        NxOrbitals::children(timecore)
+        Catalyst::children(timecore)
             .each{|item|
                 next if !MainUserInterface::listable(item)
                 next if Bank2::recoveredAverageHoursPerDay(item["uuid"]) > 1
@@ -92,14 +77,14 @@ class NxOrbitals
 
     # NxOrbitals::topPositionAmongChildren(item)
     def self.topPositionAmongChildren(item)
-        ([0] + NxOrbitals::children(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + Catalyst::children(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
     # NxOrbitals::program(orbital)
     def self.program(orbital)
         loop {
 
-            elements = NxOrbitals::children(orbital)
+            elements = Catalyst::children(orbital)
             return if elements.empty?
 
             system("clear")
@@ -129,7 +114,7 @@ class NxOrbitals
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", orbital["uuid"])
-                position = NxOrbitals::interactivelySelectPosition(orbital)
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(orbital)
                 Cubes2::setAttribute(task["uuid"], "global-positioning", position)
                 next
             end
@@ -139,7 +124,7 @@ class NxOrbitals
                 next if block.nil?
                 puts JSON.pretty_generate(block)
                 Cubes2::setAttribute(block["uuid"], "parentuuid-0032", orbital["uuid"])
-                position = NxOrbitals::interactivelySelectPosition(orbital)
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(orbital)
                 Cubes2::setAttribute(block["uuid"], "global-positioning", position)
                 next
             end
@@ -148,14 +133,14 @@ class NxOrbitals
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = NxOrbitals::interactivelySelectPosition(orbital)
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(orbital)
                 next if position.nil?
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("project", [], NxOrbitals::children(orbital), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("project", [], Catalyst::children(orbital), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Cubes2::setAttribute(i["uuid"], "global-positioning", NxOrbitals::topPositionAmongChildren(orbital) - 1)
                 }
@@ -163,7 +148,7 @@ class NxOrbitals
             end
 
             if input == "move" then
-                Catalyst::selectSubsetOfItemsAndMoveInTimeCore(NxOrbitals::children(orbital))
+                Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(Catalyst::children(orbital))
                 next
             end
 
@@ -186,23 +171,6 @@ class NxOrbitals
             puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
-    end
-
-    # NxOrbitals::interactivelySelectPosition(item)
-    def self.interactivelySelectPosition(item)
-        elements = NxOrbitals::children(item)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        position = position.to_f
-        position
     end
 
     # NxOrbitals::numbers()

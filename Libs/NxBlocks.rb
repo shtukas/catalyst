@@ -33,16 +33,9 @@ class NxBlocks
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)} #{item["description"]}"
     end
 
-    # NxBlocks::children(listing)
-    def self.children(listing)
-        Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == listing["uuid"] }
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
     # NxBlocks::childrenForPrefix(block)
     def self.childrenForPrefix(block)
-        NxBlocks::children(block)
+        Catalyst::children(block)
             .each{|item|
                 next if !MainUserInterface::listable(item)
                 next if Bank2::recoveredAverageHoursPerDay(item["uuid"]) > 1
@@ -58,7 +51,7 @@ class NxBlocks
 
     # NxBlocks::topPositionAmongChildren(item)
     def self.topPositionAmongChildren(item)
-        ([0] + NxBlocks::children(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + Catalyst::children(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
     # NxBlocks::topPosition()
@@ -69,23 +62,6 @@ class NxBlocks
     # NxBlocks::nextPosition()
     def self.nextPosition()
         ([0] + Cubes2::mikuType("NxBlock").map{|project| project["global-positioning"] || 0 }).max + 1
-    end
-
-    # NxBlocks::interactivelySelectPositionOrNull(listing)
-    def self.interactivelySelectPositionOrNull(listing)
-        elements = NxBlocks::children(listing)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        position = position.to_f
-        position
     end
 
     # NxBlocks::basicHoursPerDayForProjectsWithoutEngine()
@@ -118,19 +94,19 @@ class NxBlocks
             .map{|line| line.strip }
             .reverse
             .each{|line|
-                task = NxBlocks::descriptionToTask1(SecureRandom.hex, line)
+                task = NxTodos::descriptionToTask1(SecureRandom.hex, line)
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
                 Cubes2::setAttribute(task["uuid"], "global-positioning", NxBlocks::topPositionAmongChildren(item) - 1)
             }
     end
 
-    # NxBlocks::program1(project)
-    def self.program1(project)
+    # NxBlocks::program1(block)
+    def self.program1(block)
         loop {
 
-            project = Cubes2::itemOrNull(project["uuid"])
-            return if project.nil?
+            block = Cubes2::itemOrNull(block["uuid"])
+            return if block.nil?
 
             system("clear")
 
@@ -138,11 +114,11 @@ class NxBlocks
 
             puts ""
 
-            store.register(project, false)
-            puts MainUserInterface::toString2(store, project, "inventory")
+            store.register(block, false)
+            puts MainUserInterface::toString2(store, block, "inventory")
             puts ""
 
-            NxBlocks::children(project)
+            Catalyst::children(block)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element, "listing")
@@ -150,7 +126,7 @@ class NxBlocks
 
             puts ""
 
-            puts "todo | pile | position * | sort | move"
+            puts "todo | pile | block | position * | sort | move"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -160,14 +136,24 @@ class NxBlocks
                 task = NxBlocks::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
-                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", project["uuid"])
-                position = NxBlocks::interactivelySelectPositionOrNull(project)
+                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", block["uuid"])
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(block)
                 Cubes2::setAttribute(task["uuid"], "global-positioning", position)
                 next
             end
 
             if input == "pile" then
-                NxBlocks::pile(project)
+                NxBlocks::pile(block)
+                next
+            end
+
+            if input == "block" then
+                bx = NxBlocks::interactivelyIssueNewOrNull()
+                next if bx.nil?
+                puts JSON.pretty_generate(bx)
+                Cubes2::setAttribute(bx["uuid"], "parentuuid-0032", block["uuid"])
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(block)
+                Cubes2::setAttribute(bx["uuid"], "global-positioning", position)
                 next
             end
 
@@ -175,22 +161,22 @@ class NxBlocks
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = NxBlocks::interactivelySelectPositionOrNull(project)
+                position = Catalyst::interactivelySelectPositionInContainerOrNull(block)
                 next if position.nil?
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("project", [], NxBlocks::children(project), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(block), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxBlocks::topPositionAmongChildren(project) - 1)
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxBlocks::topPositionAmongChildren(block) - 1)
                 }
                 next
             end
 
             if input == "move" then
-                Catalyst::selectSubsetOfItemsAndMoveInTimeCore(NxBlocks::children(project))
+                Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(Catalyst::children(block))
                 next
             end
 
@@ -201,7 +187,7 @@ class NxBlocks
 
     # NxBlocks::done(item)
     def self.done(item)
-        if NxBlocks::children(item).empty? then
+        if Catalyst::children(item).empty? then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
@@ -228,7 +214,7 @@ class NxBlocks
             break if timecore
         }
         Cubes2::setAttribute(item["uuid"], "parentuuid-0032", timecore["uuid"])
-        position = NxOrbitals::interactivelySelectPosition(timecore)
+        position = Catalyst::interactivelySelectPositionInContainerOrNull(timecore)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
     end
 end

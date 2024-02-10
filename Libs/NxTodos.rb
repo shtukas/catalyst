@@ -69,24 +69,12 @@ class NxTodos
             }
     end
 
-    # NxTodos::properlyPositionNewlyCreatedTodo(item)
-    def self.properlyPositionNewlyCreatedTodo(item)
-        loop {
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set parent", "in orbital"])
-            next if option.nil?
-            if option == "set parent" then
-                parent = Catalyst::interactivelySelectContainerOrNull()
-                next if parent.nil?
-                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-                return
-            end
-            if option == "in orbital" then
-                orbital = NxOrbitals::interactivelySelectOneOrNull()
-                next if orbital.nil?
-                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", orbital["uuid"])
-                return
-            end
-        }
-        Catalyst::interactivelySetDonations(item)
+    # NxTodos::positionItemOnTreeUseDescent(item)
+    def self.positionItemOnTreeUseDescent(item)
+        container = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
+        return if container.nil?
+        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", container["uuid"])
+        position = Catalyst::interactivelySelectPositionInContainerOrNull(container)
+        Cubes2::setAttribute(item["uuid"], "global-positioning", position)
     end
 end
