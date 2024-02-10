@@ -197,4 +197,15 @@ class NxOrbitals
         position = position.to_f
         position
     end
+
+    # NxOrbitals::numbers()
+    def self.numbers()
+        idealTodayInHours = Cubes2::mikuType("NxOrbital").map{|orbital| TxEngines::todayIdealInHours(orbital["engine-0020"]) }.inject(0, :+)
+        doneTodayInHours = Cubes2::mikuType("NxOrbital").map{|orbital| Bank2::getValueAtDate(orbital["engine-0020"]["uuid"], CommonUtils::today()) }.inject(0, :+).to_f/3600
+        {
+            "ratio"      => doneTodayInHours.to_f/idealTodayInHours,
+            "idealToday" => idealTodayInHours,
+            "doneToday"  => doneTodayInHours
+        }
+    end
 end

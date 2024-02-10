@@ -10,14 +10,19 @@ class Catalyst
         }
     end
 
-    # Catalyst::program2(elements, context = nil)
-    def self.program2(elements, context = nil)
+    # Catalyst::program2(elements, context = nil, prefixLambda = nil)
+    def self.program2(elements, context = nil, prefixLambda = nil)
         loop {
 
             elements = elements.map{|item| Cubes2::itemOrNull(item["uuid"]) }.compact
             return if elements.empty?
 
             system("clear")
+
+            if prefixLambda then
+                puts ""
+                puts prefixLambda.call()
+            end
 
             store = ItemStore.new()
 
