@@ -40,16 +40,15 @@ class NxBlocks
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxBlocks::childrenForPrefix(todo)
-    def self.childrenForPrefix(todo)
-        NxBlocks::children(todo)
-            .reduce([]){|selected, item|
-                if selected.size < 3 and MainUserInterface::listable(item) and Bank2::recoveredAverageHoursPerDay(item) < 1 then
-                    selected + [item]
-                else
-                    selected
-                end
+    # NxBlocks::childrenForPrefix(block)
+    def self.childrenForPrefix(block)
+        NxBlocks::children(block)
+            .each{|item|
+                next if !MainUserInterface::listable(item)
+                next if Bank2::recoveredAverageHoursPerDay(item["uuid"]) > 1
+                return [item]
             }
+        []
     end
 
     # NxBlocks::itemsInGlobalPositioningOrder()
