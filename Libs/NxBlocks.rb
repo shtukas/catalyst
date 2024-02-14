@@ -18,19 +18,24 @@ class NxBlocks
 
     # NxBlocks::icon(item)
     def self.icon(item)
-        "🧊"
+        "📃"
     end
 
     # NxBlocks::toString(item, context = nil)
     def self.toString(item, context = nil)
+        activestr = item["active-1708"] ? " (active: #{item["active-1708"]})".green : ""
         if context == "listing" then
             str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
-            return "#{NxBlocks::icon(item)} #{str1} #{item["description"]}"
+            return "#{NxBlocks::icon(item)}#{activestr} #{str1} #{item["description"]}"
         end
         if context == "inventory" then
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)} #{item["description"]}"
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)}#{activestr} #{item["description"]}"
         end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)} #{item["description"]}"
+        if context == "listing-in-block" then
+            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)} #{str1} #{item["description"]}"
+        end
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)}#{activestr} #{item["description"]}"
     end
 
     # NxBlocks::childrenForPrefix(block)
@@ -121,7 +126,7 @@ class NxBlocks
             Catalyst::children(block)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
-                    puts MainUserInterface::toString2(store, element, "listing")
+                    puts MainUserInterface::toString2(store, element, "listing-in-block")
                 }
 
             puts ""
@@ -133,7 +138,7 @@ class NxBlocks
             return if input == ""
 
             if input == "todo" then
-                task = NxBlocks::interactivelyIssueNewOrNull()
+                task = NxTodos::interactivelyIssueNewOrNull()
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", block["uuid"])
@@ -180,7 +185,6 @@ class NxBlocks
                 next
             end
 
-            puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
     end

@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | active * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | orbital | block",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | orbitals | ships",
@@ -76,6 +76,20 @@ class CommandsAndInterpreters
             return if item.nil?
             puts Bank2::getRecords(item["uuid"])
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("active *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if !["NxTodo", "NxBlock"].include?(item["mikuType"])
+            return if item["parentuuid-0032"].nil?
+            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+            return if parent.nil?
+            return if parent["mikuType"] != "NxOrbital"
+            priority = LucilleCore::askQuestionAnswerAsString("priority: ").to_f
+            NxTodos::setActive(item, priority)
             return
         end
 

@@ -4,4 +4,3 @@ NxSingularNonWorkQuest:
     - mikuType    : "NxSingularNonWorkQuest"
     - unixtime    : Float
     - description : String
-

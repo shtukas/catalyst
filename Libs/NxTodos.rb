@@ -32,11 +32,16 @@ class NxTodos
 
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
+        activestr = item["active-1708"] ? " (active: #{item["active-1708"]})".green : ""
         if context == "listing" then
             str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
             return "#{NxTodos::icon(item)} #{str1} #{item["description"]}"
         end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
+        if context == "listing-in-block" then
+            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{str1} #{item["description"]}"
+        end
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)}#{activestr} #{item["description"]}"
     end
 
     # ------------------
@@ -67,6 +72,15 @@ class NxTodos
             .each{|item|
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", "c1ec1949-5e0d-44ae-acb2-36429e9146c0") # Misc Timecore
             }
+
+        Cubes2::mikuType("NxTodo")
+            .each{|item|
+                next if item["parentuuid-0032"].nil?
+                parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+                next if parent.nil?
+                next if parent["mikuType"] == "NxOrbital"
+                Cubes2::setAttribute(item["uuid"], "active-1708", nil) # we uset active if the parent wasn't an orbital
+            }
     end
 
     # NxTodos::positionItemOnTreeUseDescent(item)
@@ -76,5 +90,10 @@ class NxTodos
         Cubes2::setAttribute(item["uuid"], "parentuuid-0032", container["uuid"])
         position = Catalyst::interactivelySelectPositionInContainerOrNull(container)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+    end
+
+    # NxTodos::setActive(item, priority)
+    def self.setActive(item, priority)
+        Cubes2::setAttribute(item["uuid"], "active-1708", priority)
     end
 end

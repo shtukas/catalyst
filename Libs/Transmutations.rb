@@ -4,7 +4,7 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         map = {
-            "NxOndate"  => ["NxTodo"],
+            "NxOndate"  => ["NxTodo", "NxSingularNonWorkQuest"],
             "Wave"      => ["NxRingworldMission"],
             "NxTodo" => ["NxOrbital"]
         }
@@ -27,6 +27,10 @@ class Transmutations
             item = Cubes2::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             NxTodos::positionItemOnTreeUseDescent(item)
+            return
+        end
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxSingularNonWorkQuest" then
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxSingularNonWorkQuest")
             return
         end
         if item["mikuType"] == "Wave" and targetMikuType == "NxRingworldMission" then

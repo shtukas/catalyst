@@ -64,15 +64,33 @@ class NxOrbitals
         LucilleCore::selectEntityFromListOfEntitiesOrNull("orbital", Cubes2::mikuType("NxOrbital"), lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxOrbitals::childrenForPrefix(timecore)
-    def self.childrenForPrefix(timecore)
-        Catalyst::children(timecore)
-            .each{|item|
-                next if !MainUserInterface::listable(item)
-                next if Bank2::recoveredAverageHoursPerDay(item["uuid"]) > 1
-                return [item]
-            }
-        []
+    # NxOrbitals::childrenForPrefix(orbital)
+    def self.childrenForPrefix(orbital)
+        # Here we have two case
+        # 1. Either none of the items are active in which case we focus on the top one
+        # 2. There is at least one active item and we compute the expected recovery times for each and order them
+
+        activeItems = Catalyst::children(orbital).select{|item| item["active-1708"] }
+
+        if activeItems.size > 0 then
+            totalPriority = activeItems.map{|item| item["active-1708"] }.inject(0, :+)
+            items = activeItems
+                        .map{|item|
+                            normalisedPriority = item["active-1708"].to_f/totalPriority
+                            normalisedRecoveryTime = Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/normalisedPriority
+                            {
+                                "item" => item,
+                                "normalisedRecoveryTime" => normalisedRecoveryTime
+                            }
+                        }
+                        .sort_by{|packet| packet["normalisedRecoveryTime"] }
+                        .map{|packet| packet["item"]}
+            return items
+        end
+
+        Catalyst::children(orbital)
+            .select{|item| MainUserInterface::listable(item) }
+            .take(1)
     end
 
     # NxOrbitals::topPositionAmongChildren(item)
@@ -168,7 +186,6 @@ class NxOrbitals
                 next
             end
 
-            puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
