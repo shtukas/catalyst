@@ -116,13 +116,14 @@ class NxOrbitals
             puts ""
 
             elements
+                .first(20)
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts MainUserInterface::toString2(store, item, "inventory")
                 }
 
             puts ""
-            puts "todo | block | pile | position * | sort | move"
+            puts "todo | block | pile | position * | sort | move | children"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -144,6 +145,22 @@ class NxOrbitals
                 Cubes2::setAttribute(block["uuid"], "parentuuid-0032", orbital["uuid"])
                 position = Catalyst::interactivelySelectPositionInContainerOrNull(orbital)
                 Cubes2::setAttribute(block["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input == "pile" then
+                text = CommonUtils::editTextSynchronously("").strip
+                next if text == ""
+                text
+                    .lines
+                    .map{|line| line.strip }
+                    .reverse
+                    .each{|line|
+                        task = NxTodos::descriptionToTask1(SecureRandom.hex, line)
+                        puts JSON.pretty_generate(task)
+                        Cubes2::setAttribute(task["uuid"], "parentuuid-0032", orbital["uuid"])
+                        Cubes2::setAttribute(task["uuid"], "global-positioning", NxOrbitals::topPositionAmongChildren(orbital) - 1)
+                    }
                 next
             end
 
@@ -170,19 +187,8 @@ class NxOrbitals
                 next
             end
 
-            if input == "pile" then
-                text = CommonUtils::editTextSynchronously("").strip
-                next if text == ""
-                text
-                    .lines
-                    .map{|line| line.strip }
-                    .reverse
-                    .each{|line|
-                        task = NxTodos::descriptionToTask1(SecureRandom.hex, line)
-                        puts JSON.pretty_generate(task)
-                        Cubes2::setAttribute(task["uuid"], "parentuuid-0032", orbital["uuid"])
-                        Cubes2::setAttribute(task["uuid"], "global-positioning", NxOrbitals::topPositionAmongChildren(orbital) - 1)
-                    }
+            if input == "children" then
+                Catalyst::program2(elements)
                 next
             end
 
