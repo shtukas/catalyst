@@ -31,51 +31,18 @@ class TxEngines
         core["hours"]
     end
 
-    # TxEngines::timeDoneSinceLastSaturdayExcludingTodayInHours(core)
-    def self.timeDoneSinceLastSaturdayExcludingTodayInHours(core)
-        dates = CommonUtils::datesSinceLastSaturday() - [CommonUtils::today()]
-        dates.map{|date| Bank2::getValueAtDate(core["uuid"], date) }.inject(0, :+).to_f/3600
-    end
-
-    # TxEngines::timeDoneSinceLastSaturdayIncludingTodayInHours(core)
-    def self.timeDoneSinceLastSaturdayIncludingTodayInHours(core)
-        dates = CommonUtils::datesSinceLastSaturday()
-        dates.map{|date| Bank2::getValueAtDate(core["uuid"], date) }.inject(0, :+).to_f/3600
-    end
-
-    # TxEngines::remainingTimeForOngoingWeekInHours(core)
-    def self.remainingTimeForOngoingWeekInHours(core)
-        [TxEngines::weeklyHours(core) - TxEngines::timeDoneSinceLastSaturdayExcludingTodayInHours(core), 0].max
-    end
-
-    # TxEngines::remainingDaysInOngoingWeek()
-    def self.remainingDaysInOngoingWeek()
-        7 - CommonUtils::datesSinceLastSaturday().size
-    end
-
-    # TxEngines::todayIdealInHours(core)
-    def self.todayIdealInHours(core)
-        [ core["hours"].to_f/7 , TxEngines::remainingTimeForOngoingWeekInHours(core).to_f/TxEngines::remainingDaysInOngoingWeek() ].min
-    end
-
-    # TxEngines::dayCompletionRatioAgainstComputedtodayIdealInHours(core)
-    def self.dayCompletionRatioAgainstComputedtodayIdealInHours(core)
-        ti = TxEngines::todayIdealInHours(core)
-        return 1 if ti == 0
-
-        ratio1 = Bank2::getValueAtDate(core["uuid"], CommonUtils::today()).to_f/(3600*ti)
-        ratio2 = Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/ti
-
-        0.8*ratio1 + 0.2*ratio2
+    # TxEngines::dailyHours(core)
+    def self.dailyHours(core)
+        TxEngines::weeklyHours(core).to_f/7
     end
 
     # TxEngines::listingCompletionRatio(core)
     def self.listingCompletionRatio(core)
-        TxEngines::dayCompletionRatioAgainstComputedtodayIdealInHours(core)
+        Bank2::recoveredAverageHoursPerDay(core["uuid"]).to_f/TxEngines::dailyHours(core)
     end
 
     # TxEngines::toString(core)
     def self.toString(core)
-        "(today: #{"%6.2f" % (100*TxEngines::dayCompletionRatioAgainstComputedtodayIdealInHours(core))} %, done: #{"%5.2f" % TxEngines::timeDoneSinceLastSaturdayIncludingTodayInHours(core)} of weekly: #{"%5.2f" % core["hours"]})".green
+        "(today: #{"%6.2f" % (100*TxEngines::listingCompletionRatio(core))} % of weekly: #{"%5.2f" % core["hours"]})".green
     end
 end
