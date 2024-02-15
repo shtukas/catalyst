@@ -7,7 +7,6 @@ class TxPayload
         {
             "note-1531"          => "text of a note",
             "todotextfile-1312"  => "name or name fragment of a text file",
-            "cfsr-20231213"      => "file system reference (see FileSystemReferences)",
             "aion-point-7c758c"  => "aion point root hash",
             "dx8UnitId-00286e29" => "Dx8UnitId reference",
             "url-e88a"           => "URL",
@@ -25,7 +24,6 @@ class TxPayload
         ({
             "note-1531"          => "(note)",
             "todotextfile-1312"  => "(named textfile)",
-            "cfsr-20231213"      => "(file system ref)",
             "aion-point-7c758c"  => "(aion point)",
             "dx8UnitId-00286e29" => "(Dx8Unit)",
             "url-e88a"           => "(url)",
@@ -45,7 +43,7 @@ class TxPayload
     # TxPayload::interactivelyMakeNew(uuid)
     def self.interactivelyMakeNew(uuid)
         payload = {}
-        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) } + ["new open cycle"]
+        options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
         loop {
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return payload if option.nil?
@@ -60,13 +58,6 @@ class TxPayload
                 todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
                 if todotextfile != "" then
                     payload["todotextfile-1312"] = todotextfile
-                end
-                next
-            end
-            if TxPayload::friendlyToKey(option) == "cfsr-20231213" then
-                reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
-                if reference then
-                    payload["cfsr-20231213"] = reference
                 end
                 next
             end
@@ -92,17 +83,6 @@ class TxPayload
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
                 uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
                 payload["unique-string-c3e5"] = uniquestring
-                next
-            end
-            if option == "new open cycle" then
-                description = LucilleCore::askQuestionAnswerAsString("description without date: ")
-                next if description == ""
-                foldername = "#{CommonUtils::today()} #{description}"
-                folderpath = "#{Config::pathToGalaxy()}/OpenCycles/#{foldername}"
-                FileUtils.mkdir(folderpath)
-                reference = SecureRandom.hex
-                FileSystemReferences::issueCfsrFileAtDirectory(folderpath, reference)
-                payload["cfsr-20231213"] = reference
                 next
             end
         }
@@ -157,10 +137,6 @@ class TxPayload
                 end
                 puts "found: #{location}"
                 system("open '#{location}'")
-            end
-            if option == "cfsr-20231213" then
-                reference = item["cfsr-20231213"]
-                FileSystemReferences::accessReference(reference)
             end
             if option == "aion-point-7c758c" then
                 nhash = item["aion-point-7c758c"]
@@ -222,13 +198,6 @@ class TxPayload
                     Cubes2::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
                 end
             end
-            if TxPayload::friendlyToKey(option) == "cfsr-20231213" then
-                reference = FileSystemReferences::interactivelyIssueFileSystemReferenceOrNull()
-                if reference then
-                    item["cfsr-20231213"] = reference
-                    Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
-                end
-            end
             if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
                 location = CommonUtils::interactivelySelectDesktopLocationOrNull()
                 next if location.nil?
@@ -248,17 +217,6 @@ class TxPayload
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
                 uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
                 Cubes2::setAttribute(item["uuid"], "unique-string-c3e5", uniquestring)
-            end
-            if option == "new open cycle" then
-                description = LucilleCore::askQuestionAnswerAsString("description without date: ")
-                next if description == ""
-                foldername = "#{CommonUtils::today()} #{description}"
-                folderpath = "#{Config::pathToGalaxy()}/OpenCycles/#{foldername}"
-                FileUtils.mkdir(folderpath)
-                reference = SecureRandom.hex
-                FileSystemReferences::issueCfsrFileAtDirectory(folderpath, reference)
-                Cubes2::setAttribute(item["uuid"], "cfsr-20231213", reference)
-                next
             end
         }
     end

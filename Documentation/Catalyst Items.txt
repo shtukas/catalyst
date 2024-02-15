@@ -15,7 +15,6 @@ Cross types conventions (all optional):
     # Payload
     - note-1531           : String
     - todotextfile-1312   : fragment of name of a todo text file (must be located in Galaxy)
-    - cfsr-20231213       : string, the catalyst file system reference
     - aion-point-7c758c   : aion point root hash
     - dx8UnitId-00286e29  : Dx8UnitId reference
     - url-e88a            : URL
