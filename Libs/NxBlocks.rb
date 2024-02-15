@@ -90,22 +90,6 @@ class NxBlocks
         NxBlocks::access(item)
     end
 
-    # NxBlocks::pile(item)
-    def self.pile(item)
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        text
-            .lines
-            .map{|line| line.strip }
-            .reverse
-            .each{|line|
-                task = NxTodos::descriptionToTask1(SecureRandom.hex, line)
-                puts JSON.pretty_generate(task)
-                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", item["uuid"])
-                Cubes2::setAttribute(task["uuid"], "global-positioning", NxBlocks::topPositionAmongChildren(item) - 1)
-            }
-    end
-
     # NxBlocks::program1(block)
     def self.program1(block)
         loop {
@@ -131,7 +115,7 @@ class NxBlocks
 
             puts ""
 
-            puts "todo | pile | block | position * | sort | move"
+            puts "todo | block | insert | position * | sort | move"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -147,11 +131,6 @@ class NxBlocks
                 next
             end
 
-            if input == "pile" then
-                NxBlocks::pile(block)
-                next
-            end
-
             if input == "block" then
                 bx = NxBlocks::interactivelyIssueNewOrNull()
                 next if bx.nil?
@@ -159,6 +138,21 @@ class NxBlocks
                 Cubes2::setAttribute(bx["uuid"], "parentuuid-0032", block["uuid"])
                 position = Catalyst::interactivelySelectPositionInContainerOrNull(block)
                 Cubes2::setAttribute(bx["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input == "insert" then
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                text = CommonUtils::editTextSynchronously("").strip
+                next if text == ""
+                descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
+                positions = Catalyst::insertionPositions(orbital, position, descriptions.size)
+                descriptions.zip(positions).each{|description, position|
+                        task = NxTodos::descriptionToTask1(SecureRandom.hex, description)
+                        puts JSON.pretty_generate(task)
+                        Cubes2::setAttribute(task["uuid"], "parentuuid-0032", orbital["uuid"])
+                        Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+                }
                 next
             end
 

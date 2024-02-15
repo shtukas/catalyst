@@ -162,10 +162,10 @@ class Catalyst
         raise "(error: d7256dcc-6d95-42b4-9fd2-3f1e5c2b674b) cursor: #{cursor}"
     end
 
-    # Catalyst::children(listing)
-    def self.children(listing)
+    # Catalyst::children(parent)
+    def self.children(parent)
         Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == listing["uuid"] }
+            .select{|item| item["parentuuid-0032"] == parent["uuid"] }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
@@ -209,6 +209,35 @@ class Catalyst
             if position then
                 Cubes2::setAttribute(selected["uuid"], "global-positioning", position)
             end
+        end
+    end
+
+    # Catalyst::insertionPositions(parent, position, count)
+    def self.insertionPositions(parent, position, count)
+        children = Catalyst::children(parent)
+        if children.empty? then
+            return (1..count).to_a
+        end
+        childrens1 = children.select{|item| (item["global-positioning"] || 0) < position }
+        childrens2 = children.select{|item| (item["global-positioning"] || 0) > position }
+        if childrens1.empty? and childrens2.empty? then
+            # this should not happen
+            raise "(error: cb689a8d-5fb9-4b8d-80b7-1f30ecb4edca; parent: #{parent}, position: #{position}, count: #{count})"
+        end
+        if childrens1.size > 0 and childrens2.size == 0 then
+            x = position.ceil
+            return (x..x+count-1).to_a
+        end
+        if childrens1.size == 0 and childrens2.size > 0 then
+            x = position.floor - count
+            return (x..x+count-1).to_a
+        end
+        if childrens1.size > 0 and childrens2.size > 0 then
+            x1 = childrens1.map{|item| item["global-positioning"] || 0 }.max
+            x2 = childrens2.map{|item| item["global-positioning"] || 0 }.min
+            spread = 0.8*(x2 - x1)
+            shift  = 0.1*(x2 - x1)
+            return (0..count-1).to_a.map{|x| x1 + shift + spread*x.to_f/(count) }
         end
     end
 end

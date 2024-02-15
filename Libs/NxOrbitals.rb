@@ -123,7 +123,7 @@ class NxOrbitals
                 }
 
             puts ""
-            puts "todo | block | pile | position * | sort | move | children"
+            puts "todo | block | insert | position * | sort | move | children"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -148,19 +148,18 @@ class NxOrbitals
                 next
             end
 
-            if input == "pile" then
+            if input == "insert" then
+                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
                 text = CommonUtils::editTextSynchronously("").strip
                 next if text == ""
-                text
-                    .lines
-                    .map{|line| line.strip }
-                    .reverse
-                    .each{|line|
-                        task = NxTodos::descriptionToTask1(SecureRandom.hex, line)
+                descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
+                positions = Catalyst::insertionPositions(orbital, position, descriptions.size)
+                descriptions.zip(positions).each{|description, position|
+                        task = NxTodos::descriptionToTask1(SecureRandom.hex, description)
                         puts JSON.pretty_generate(task)
                         Cubes2::setAttribute(task["uuid"], "parentuuid-0032", orbital["uuid"])
-                        Cubes2::setAttribute(task["uuid"], "global-positioning", NxOrbitals::topPositionAmongChildren(orbital) - 1)
-                    }
+                        Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+                }
                 next
             end
 
