@@ -133,7 +133,9 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("orbitals", input) then
-            orbitals = Cubes2::mikuType("NxOrbital").sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
+            elements = lambda {
+                Cubes2::mikuType("NxOrbital").sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
+            }
             prefix = lambda {
                 numbers = NxOrbitals::numbers()
                 #{
@@ -143,7 +145,7 @@ class CommandsAndInterpreters
                 #}
                 "today: done: #{(100 * numbers["ratio"]).round(2)} % (#{numbers["doneToday"].round(2)} hours of #{numbers["idealToday"].round(2)})"
             }
-            Catalyst::program2(orbitals, nil, prefix)
+            Catalyst::program3(elements, nil, prefix)
             return
         end
 

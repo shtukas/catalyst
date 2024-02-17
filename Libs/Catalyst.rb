@@ -44,6 +44,40 @@ class Catalyst
         }
     end
 
+   # Catalyst::program3(elementsLambda, context = nil, prefixLambda = nil)
+    def self.program3(elementsLambda, context = nil, prefixLambda = nil)
+        loop {
+
+            elements = elementsLambda.call()
+            return if elements.empty?
+
+            system("clear")
+
+            if prefixLambda then
+                puts ""
+                puts prefixLambda.call()
+            end
+
+            store = ItemStore.new()
+
+            puts ""
+
+            elements
+                .each{|item|
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item, context)
+                }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            puts ""
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
