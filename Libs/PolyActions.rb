@@ -278,6 +278,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxOrbital" then
+            if Catalyst::children(item).size > 0 then
+                puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxBlock" then
             if Catalyst::children(item).size > 0 then
                 puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"

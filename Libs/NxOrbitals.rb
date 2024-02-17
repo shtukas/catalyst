@@ -103,7 +103,6 @@ class NxOrbitals
         loop {
 
             elements = Catalyst::children(orbital)
-            return if elements.empty?
 
             system("clear")
 
