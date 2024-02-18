@@ -149,6 +149,18 @@ class Waves
             }
     end
 
+    # Waves::muiItemsInterruption()
+    def self.muiItemsInterruption()
+        Waves::muiItems()
+            .select{|item| item["interruption"] }
+    end
+
+    # Waves::muiItemsNotInterruption()
+    def self.muiItemsNotInterruption()
+        Waves::muiItems()
+            .select{|item| !item["interruption"] }
+    end
+
     # -------------------------------------------------------------------------
     # Operations
 

@@ -109,8 +109,9 @@ class MainUserInterface
             Waves::muiItems().select{|item| item["interruption"] },
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            Waves::muiItems().select{|item| !item["interruption"] },
+            Waves::muiItemsInterruption(),
             Prefix::prefix(OrderingT::apply([
+                Waves::muiItemsNotInterruption(),
                 NxOrbitals::muiItems(),
                 NxRingworldMissions::muiItems(),
                 NxSingularNonWorkQuests::muiItems(),

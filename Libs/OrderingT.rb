@@ -24,6 +24,10 @@ class OrderingT
             return NxBufferInMonitors::ratio()
         end
 
+        if item["mikuType"] == "Wave" then
+            return WavesControl::getRatio(item["uuid"])
+        end
+
         raise "(error: fbffdec2-1fde-4fe4-b072-524ff49ca935): #{item}"
     end
 

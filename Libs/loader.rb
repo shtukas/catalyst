@@ -182,5 +182,6 @@ require_relative "Transmutations.rb"
 require_relative "TxPayload.rb"
 
 require_relative "Waves.rb"
+require_relative "WavesControl.rb"
 
 # ------------------------------------------------------------
