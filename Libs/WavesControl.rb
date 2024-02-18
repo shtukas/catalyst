@@ -11,10 +11,6 @@ class WavesControl
         Find.find("#{Config::pathToCatalystDataRepository()}/Wave-Control") do |path|
             next if path[-5, 5] != ".json"
             object = JSON.parse(IO.read(path))
-            if (Time.new.to_i - object["displayTime"]) > 0.9*86400 then
-                FileUtils.rm(path)
-                next
-            end
             next if object["uuid"] != uuid
             return object
         end
