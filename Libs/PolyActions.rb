@@ -95,7 +95,7 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                Cubes2::setAttribute(item["uuid"], "lastDone", Time.new.to_i)
+                NxBackups::setNowForDescription(item["description"])
             end
             return
         end

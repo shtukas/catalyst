@@ -106,17 +106,16 @@ class MainUserInterface
             Desktop::muiItems(),
             Anniversaries::muiItems(),
             Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
-            Waves::muiItems().select{|item| item["interruption"] },
+            Waves::muiItemsInterruption(),
             NxOndates::muiItems(),
             NxBackups::muiItems(),
-            Waves::muiItemsInterruption(),
+            Waves::muiItemsNotInterruption(),
             Prefix::prefix(OrderingT::apply([
-                Waves::muiItemsNotInterruption(),
-                NxOrbitals::muiItems(),
                 NxRingworldMissions::muiItems(),
                 NxSingularNonWorkQuests::muiItems(),
                 NxBufferInMonitors::muiItems(),
             ].flatten)),
+            NxOrbitals::muiItems()
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
