@@ -44,40 +44,6 @@ class Catalyst
         }
     end
 
-   # Catalyst::program3(elementsLambda, context = nil, prefixLambda = nil)
-    def self.program3(elementsLambda, context = nil, prefixLambda = nil)
-        loop {
-
-            elements = elementsLambda.call()
-            return if elements.empty?
-
-            system("clear")
-
-            if prefixLambda then
-                puts ""
-                puts prefixLambda.call()
-            end
-
-            store = ItemStore.new()
-
-            puts ""
-
-            elements
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, context)
-                }
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            puts ""
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
@@ -125,95 +91,23 @@ class Catalyst
 
     # Catalyst::interactivelySetDonations(item)
     def self.interactivelySetDonations(item)
-        target = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
+        target = NxThreads::interactivelySelectOneOrNull()
         if target then
             Catalyst::addDonation(item, target)
         end
-    end
-
-    # Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor = nil)
-    def self.interactivelySelectContainerDescentFromRootOrNull(cursor = nil)
-        selectOrDive = lambda{|item|
-            puts PolyFunctions::toString(item).green
-            options = ["select (default)", "dive"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            if option.nil?  or option == "select (default)" then
-                return "select"
-            end
-            "dive"
-        }
-
-        if cursor.nil? then
-            orbital = NxOrbitals::interactivelySelectOneOrNull()
-            return nil if orbital.nil?
-            if selectOrDive.call(orbital) == "select" then
-                return orbital
-            else
-                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(orbital)
-            end
-        end
-        if cursor["mikuType"] == "NxOrbital" or cursor["mikuType"] == "NxBlock" then
-            createBlockAtContainer = lambda{|container|
-                block = NxBlocks::interactivelyIssueNewOrNull()
-                return if block.nil?
-                puts JSON.pretty_generate(block)
-                Cubes2::setAttribute(block["uuid"], "parentuuid-0032", container["uuid"])
-                position = Catalyst::interactivelySelectPositionInContainerOrNull(container)
-                Cubes2::setAttribute(block["uuid"], "global-positioning", position)
-            }
-
-            puts ""
-            store = ItemStore.new()
-            store.register(cursor, false)
-            puts MainUserInterface::toString2(store, cursor).green
-            Catalyst::childrenThatAreBlocks(cursor)
-                .each{|block|
-                    store.register(block, false)
-                    puts MainUserInterface::toString2(store, block)
-                }
-            puts "new (here)"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "" then
-                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor)
-            end
-            if input == "new" then
-                createBlockAtContainer.call(cursor)
-                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor)
-            end
-            if input == "0" then
-                return cursor
-            end
-            target = store.get(input.to_i)
-            if target.nil? then
-                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(cursor)
-            end
-            if selectOrDive.call(target) == "select" then
-                return target
-            else
-                return Catalyst::interactivelySelectContainerDescentFromRootOrNull(target)
-            end
-        end
-        raise "(error: d7256dcc-6d95-42b4-9fd2-3f1e5c2b674b) cursor: #{cursor}"
-    end
-
-    # Catalyst::children(parent)
-    def self.children(parent)
-        Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == parent["uuid"] }
-            .sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # Catalyst::childrenThatAreBlocks(timecore)
     def self.childrenThatAreBlocks(timecore)
         Cubes2::items()
             .select{|item| item["parentuuid-0032"] == timecore["uuid"] }
-            .select{|item| item["mikuType"] == "NxBlock" }
+            .select{|item| item["mikuType"] == "NxThread" }
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # Catalyst::interactivelySelectPositionInContainerOrNull(container)
     def self.interactivelySelectPositionInContainerOrNull(container)
-        elements = Catalyst::children(container)
+        elements = NxThreads::children(container)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -232,7 +126,7 @@ class Catalyst
     def self.selectSubsetOfItemsAndMoveToSelectedContainer(items)
         selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
         return if selected.size == 0
-        node = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
+        node = NxThreads::interactivelySelectOneOrNull()
         return if node.nil?
         selected.each{|item|
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", node["uuid"])
@@ -248,7 +142,7 @@ class Catalyst
 
     # Catalyst::insertionPositions(parent, position, count)
     def self.insertionPositions(parent, position, count)
-        children = Catalyst::children(parent)
+        children = NxThreads::children(parent)
         if children.empty? then
             return (1..count).to_a
         end

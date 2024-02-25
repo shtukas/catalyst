@@ -6,7 +6,7 @@ class Transmutations
         map = {
             "NxOndate"  => ["NxTodo", "NxSingularNonWorkQuest"],
             "Wave"      => ["NxRingworldMission"],
-            "NxTodo" => ["NxOrbital"]
+            "NxTodo" => ["NxThread"]
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
@@ -18,8 +18,8 @@ class Transmutations
 
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
-        if item["mikuType"] == "NxTodo" and targetMikuType == "NxOrbital" then
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxOrbital")
+        if item["mikuType"] == "NxTodo" and targetMikuType == "NxThread" then
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTodo" then

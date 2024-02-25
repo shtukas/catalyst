@@ -106,16 +106,17 @@ class MainUserInterface
             Desktop::muiItems(),
             Anniversaries::muiItems(),
             Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
-            Waves::muiItemsInterruption(),
-            NxOndates::muiItems(),
-            NxBackups::muiItems(),
-            Waves::muiItemsNotInterruption(),
-            Prefix::prefix(OrderingT::apply([
-                NxRingworldMissions::muiItems(),
-                NxSingularNonWorkQuests::muiItems(),
-                NxBufferInMonitors::muiItems(),
-            ].flatten)),
-            NxOrbitals::muiItems()
+            #Waves::muiItemsInterruption(),
+            #NxOndates::muiItems(),
+            #NxBackups::muiItems(),
+            #Waves::muiItemsNotInterruption(),
+            #OrderingT::apply([
+            #    NxRingworldMissions::muiItems(),
+            #    NxSingularNonWorkQuests::muiItems(),
+            #    NxBufferInMonitors::muiItems(),
+            #].flatten),
+            NxTodos::orphans(),
+            NxThreads::muiItems()
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -134,7 +135,6 @@ class MainUserInterface
         items = Ox1::organiseListing(items)
         runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
         items = runningItems + pausedItems + items
-        items = Prefix::prefix(items)
         items
             .select{|item| MainUserInterface::listable(item) }
             .reduce([]){|selected, item|

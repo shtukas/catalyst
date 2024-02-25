@@ -27,21 +27,26 @@ class NxTodos
 
     # NxTodos::icon(item)
     def self.icon(item)
-        "🔺"
+        "▫️"
+    end
+
+    # NxTodos::isOrphan(item)
+    def self.isOrphan(item)
+        item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil?
     end
 
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
-        activestr = item["active-1708"] ? " (active: #{item["active-1708"]})".green : ""
-        if context == "listing" then
-            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
-            return "#{NxTodos::icon(item)} #{str1} #{item["description"]}"
-        end
-        if context == "listing-in-block" then
-            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{str1} #{item["description"]}"
-        end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)}#{activestr} #{item["description"]}"
+        orphan = NxTodos::isOrphan(item) ? "  (orphan)" : ""
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)}#{orphan} #{item["description"]}"
+    end
+
+    # NxTodos::orphans()
+    def self.orphans()
+        # Return the todos 
+        Cubes2::mikuType("NxTodo")
+            .select{|item| NxTodos::isOrphan(item) }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # ------------------
@@ -78,22 +83,17 @@ class NxTodos
                 next if item["parentuuid-0032"].nil?
                 parent = Cubes2::itemOrNull(item["parentuuid-0032"])
                 next if parent.nil?
-                next if parent["mikuType"] == "NxOrbital"
-                Cubes2::setAttribute(item["uuid"], "active-1708", nil) # we uset active if the parent wasn't an orbital
+                next if parent["mikuType"] == "NxThread"
+                Cubes2::setAttribute(item["uuid"], "hours-1432", nil) # we uset active if the parent wasn't an orbital
             }
     end
 
     # NxTodos::positionItemOnTreeUseDescent(item)
     def self.positionItemOnTreeUseDescent(item)
-        container = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
+        container = NxThreads::interactivelySelectOneOrNull()
         return if container.nil?
         Cubes2::setAttribute(item["uuid"], "parentuuid-0032", container["uuid"])
         position = Catalyst::interactivelySelectPositionInContainerOrNull(container)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
-    end
-
-    # NxTodos::setActive(item, priority)
-    def self.setActive(item, priority)
-        Cubes2::setAttribute(item["uuid"], "active-1708", priority)
     end
 end

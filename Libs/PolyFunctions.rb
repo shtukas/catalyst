@@ -27,7 +27,7 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxOrbital" then
+        if item["mikuType"] == "NxThread" then
             accounts << {
                 "description" => "engine: #{item["engine-0020"]["uuid"]}",
                 "number"      => item["engine-0020"]["uuid"]
@@ -95,11 +95,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTodo" then
             return NxTodos::toString(item, context)
         end
-        if item["mikuType"] == "NxBlock" then
-            return NxBlocks::toString(item, context)
-        end
-        if item["mikuType"] == "NxOrbital" then
-            return NxOrbitals::toString(item, context)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::toString(item, context)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)

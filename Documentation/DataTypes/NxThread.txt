@@ -1,7 +1,8 @@
 
-NxBlock:
+NxThread:
     - uuid         : String
-    - mikuType     : "NxBlock"
+    - mikuType     : "NxThread"
     - unixtime     : Float
     - datetime     : DateTime Iso 8601 UTC Zulu
     - description  : String
+    - hours-1432   : target hours of an active thread

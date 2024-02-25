@@ -1,12 +1,12 @@
 
-class NxBlocks
+class NxThreads
 
-    # NxBlocks::interactivelyIssueNewOrNull()
+    # NxThreads::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Cubes2::itemInit(uuid, "NxBlock")
+        Cubes2::itemInit(uuid, "NxThread")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
@@ -16,81 +16,84 @@ class NxBlocks
     # ------------------
     # Data
 
-    # NxBlocks::icon(item)
+    # NxThreads::icon(item)
     def self.icon(item)
-        "📃"
+        item["hours-1432"] ? "🔺" : "🔸"
     end
 
-    # NxBlocks::toString(item, context = nil)
+    # NxThreads::activeListingRatio(item)
+    def self.activeListingRatio(item)
+        raise "(error: b8a8b117-b8a5-4b74-81ff-5d3aa1803d27) item: #{item}" if item["hours-1432"].nil?
+        raise "(error: 8a2b0d8a-31fd-456b-aaf0-b296a0e8a86d) item: #{item}" if item["hours-1432"] == 0
+        Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["hours-1432"]
+    end
+
+    # NxThreads::toString(item, context = nil)
     def self.toString(item, context = nil)
-        activestr = item["active-1708"] ? " (active: #{item["active-1708"]})".green : ""
-        if context == "listing" then
-            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
-            return "#{NxBlocks::icon(item)}#{activestr} #{str1} #{item["description"]}"
-        end
-        if context == "inventory" then
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)}#{activestr} #{item["description"]}"
-        end
-        if context == "listing-in-block" then
-            str1 = "(#{"%6.2f" % Bank2::recoveredAverageHoursPerDay(item["uuid"])})".green
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)} #{str1} #{item["description"]}"
-        end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxBlocks::icon(item)}#{activestr} #{item["description"]}"
+        activity = item["hours-1432"] ? " (#{"%5.2f" % NxThreads::activeListingRatio(item)}, active: #{"%5.2f" % item["hours-1432"]})".green : "                       "
+        positioning = item["hours-1432"] ? "         " : "(#{"%7.3f" % (item["global-positioning"] || 0)})"
+        "#{positioning} #{NxThreads::icon(item)}#{activity} #{item["description"]}"
     end
 
-    # NxBlocks::childrenForPrefix(block)
-    def self.childrenForPrefix(block)
-        Catalyst::children(block)
-            .each{|item|
-                next if !MainUserInterface::listable(item)
-                next if Bank2::recoveredAverageHoursPerDay(item["uuid"]) > 1
-                return [item]
-            }
-        []
-    end
-
-    # NxBlocks::itemsInGlobalPositioningOrder()
+    # NxThreads::itemsInGlobalPositioningOrder()
     def self.itemsInGlobalPositioningOrder()
-        Cubes2::mikuType("NxBlock").sort_by{|project| project["global-positioning"] || 0 }
+        Cubes2::mikuType("NxThread").sort_by{|project| project["global-positioning"] || 0 }
     end
 
-    # NxBlocks::topPositionAmongChildren(item)
+    # NxThreads::topPositionAmongThreads()
+    def self.topPositionAmongThreads()
+        ([0] + Cubes2::mikuType("NxThread").map{|task| task["global-positioning"] || 0 }).min
+    end
+
+    # NxThreads::topPositionAmongChildren(item)
     def self.topPositionAmongChildren(item)
-        ([0] + Catalyst::children(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + NxThreads::children(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
-    # NxBlocks::topPosition()
+    # NxThreads::topPosition()
     def self.topPosition()
-        ([0] + Cubes2::mikuType("NxBlock").map{|project| project["global-positioning"] || 0 }).min
+        ([0] + Cubes2::mikuType("NxThread").map{|project| project["global-positioning"] || 0 }).min
     end
 
-    # NxBlocks::nextPosition()
+    # NxThreads::nextPosition()
     def self.nextPosition()
-        ([0] + Cubes2::mikuType("NxBlock").map{|project| project["global-positioning"] || 0 }).max + 1
+        ([0] + Cubes2::mikuType("NxThread").map{|project| project["global-positioning"] || 0 }).max + 1
     end
 
-    # NxBlocks::basicHoursPerDayForProjectsWithoutEngine()
+    # NxThreads::basicHoursPerDayForProjectsWithoutEngine()
     def self.basicHoursPerDayForProjectsWithoutEngine()
         1.5
+    end
+
+    # NxThreads::itemsInOrder1()
+    def self.itemsInOrder1()
+        threads = Cubes2::mikuType("NxThread")
+        t1, t2 = threads.partition{|item| item["hours-1432"] }
+        [
+            t1.sort_by{|item| NxThreads::activeListingRatio(item) },
+            t2.sort_by{|item| item["global-positioning"] || 0 }
+        ].flatten
+    end
+
+    # NxThreads::muiItems()
+    def self.muiItems()
+        NxThreads::itemsInOrder1()
     end
 
     # ------------------
     # Ops
 
-    # NxBlocks::access(item)
+    # NxThreads::access(item)
     def self.access(item)
-        if TxPayload::itemHasPayload(item) then
-            TxPayload::access(item)
-        end
-        NxBlocks::program1(item)
+        NxThreads::program1(item)
     end
 
-    # NxBlocks::access(item)
+    # NxThreads::access(item)
     def self.natural(item)
-        NxBlocks::access(item)
+        NxThreads::access(item)
     end
 
-    # NxBlocks::program1(block)
+    # NxThreads::program1(block)
     def self.program1(block)
         loop {
 
@@ -107,7 +110,7 @@ class NxBlocks
             puts MainUserInterface::toString2(store, block, "inventory")
             puts ""
 
-            Catalyst::children(block)
+            NxThreads::children(block)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element, "listing-in-block")
@@ -132,7 +135,7 @@ class NxBlocks
             end
 
             if input == "block" then
-                bx = NxBlocks::interactivelyIssueNewOrNull()
+                bx = NxThreads::interactivelyIssueNewOrNull()
                 next if bx.nil?
                 puts JSON.pretty_generate(bx)
                 Cubes2::setAttribute(bx["uuid"], "parentuuid-0032", block["uuid"])
@@ -167,15 +170,15 @@ class NxBlocks
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(block), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxThreads::children(block), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxBlocks::topPositionAmongChildren(block) - 1)
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxThreads::topPositionAmongChildren(block) - 1)
                 }
                 next
             end
 
             if input == "move" then
-                Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(Catalyst::children(block))
+                Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(NxThreads::children(block))
                 next
             end
 
@@ -183,20 +186,45 @@ class NxBlocks
         }
     end
 
-    # NxBlocks::done(item)
-    def self.done(item)
-        if Catalyst::children(item).empty? then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+    # NxThreads::program2()
+    def self.program2()
+        loop {
+
+            elements = Cubes2::mikuType("NxThread").sort_by{|item| item["global-positioning"] }
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts ""
+
+            elements
+                .each{|item|
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item, context)
+                }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "sort" then
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|i|
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxThreads::topPositionAmongThreads() - 1)
+                }
+                next
             end
-        else
-            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()))
-        end
+
+            puts ""
+            CommandsAndInterpreters::interpreter(input, store)
+        }
     end
 
-    # NxBlocks::maintenance()
+    # NxThreads::maintenance()
     def self.maintenance()
-        Cubes2::mikuType("NxBlock")
+        Cubes2::mikuType("NxThread")
             .select{|item| item["parentuuid-0032"] }
             .select{|item| Cubes2::itemOrNull(item["parentuuid-0032"]).nil? }
             .each{|item|
@@ -204,15 +232,32 @@ class NxBlocks
             }
     end
 
-    # NxBlocks::properlyPositionNewlyCreatedBlock(item)
+    # NxThreads::properlyPositionNewlyCreatedBlock(item)
     def self.properlyPositionNewlyCreatedBlock(item)
         timecore = nil
         loop {
-            timecore = NxOrbitals::interactivelySelectOneOrNull()
+            timecore = NxThreads::interactivelySelectOneOrNull()
             break if timecore
         }
         Cubes2::setAttribute(item["uuid"], "parentuuid-0032", timecore["uuid"])
         position = Catalyst::interactivelySelectPositionInContainerOrNull(timecore)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+    end
+
+    # NxThreads::setHours(item, priority)
+    def self.setHours(item, priority)
+        Cubes2::setAttribute(item["uuid"], "hours-1432", priority)
+    end
+
+    # NxThreads::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInOrder1(), lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # NxThreads::children(parent)
+    def self.children(parent)
+        Cubes2::items()
+            .select{|item| item["parentuuid-0032"] == parent["uuid"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
     end
 end

@@ -1,9 +1,0 @@
-Orbitals are long running projects, sometimes with non standard internal logic (eg: missions)
-
-NxOrbital:
-    - uuid         : String
-    - mikuType     : "NxOrbital"
-    - unixtime     : Float
-    - datetime     : DateTime Iso 8601 UTC Zulu
-    - description  : String
-    - engine-0020  : TxEngine

@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | active * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | hours * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | orbital | block",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | orbitals | ships",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | block",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | blocks | ships",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
         ].join("\n")
@@ -54,10 +54,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("block", input) then
-            block = NxBlocks::interactivelyIssueNewOrNull()
+        if Interpreting::match("thread", input) then
+            block = NxThreads::interactivelyIssueNewOrNull()
             return if block.nil?
-            NxBlocks::properlyPositionNewlyCreatedBlock(block)
+            NxThreads::properlyPositionNewlyCreatedBlock(block)
             return
         end
 
@@ -79,17 +79,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("active *", input) then
+        if Interpreting::match("hours *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if !["NxTodo", "NxBlock"].include?(item["mikuType"])
-            return if item["parentuuid-0032"].nil?
-            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
-            return if parent.nil?
-            return if parent["mikuType"] != "NxOrbital"
-            priority = LucilleCore::askQuestionAnswerAsString("priority: ").to_f
-            NxTodos::setActive(item, priority)
+            return if item["mikuType"] != "NxThread"
+            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
+            NxThreads::setHours(item, hours)
             return
         end
 
@@ -132,25 +128,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("orbitals", input) then
-            elements = lambda {
-                Cubes2::mikuType("NxOrbital").sort_by{|item| TxEngines::listingCompletionRatio(item["engine-0020"]) }
-            }
-            prefix = lambda {
-                numbers = NxOrbitals::numbers()
-                #{
-                #    "ratio"      => doneTodayInHours.to_f/idealTodayInHours,
-                #    "idealToday" => idealTodayInHours,
-                #    "doneToday"  => doneTodayInHours
-                #}
-                "today: done: #{(100 * numbers["ratio"]).round(2)} % (#{numbers["doneToday"].round(2)} hours of #{numbers["idealToday"].round(2)})"
-            }
-            Catalyst::program3(elements, nil, prefix)
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
         if Interpreting::match("contribution", input) then
-            uxcore = NxOrbitals::interactivelySelectOneOrNull()
+            uxcore = NxThreads::interactivelySelectOneOrNull()
             return if uxcore.nil?
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours for '#{PolyFunctions::toString(uxcore).green}': ").to_f
             PolyActions::addTimeToItem(uxcore, timeInHours*3600)
@@ -190,7 +174,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            target = Catalyst::interactivelySelectContainerDescentFromRootOrNull()
+            target = NxThreads::interactivelySelectOneOrNull()
             return if target.nil?
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", target["uuid"])
             return
@@ -206,11 +190,6 @@ class CommandsAndInterpreters
 
         if input == "move" then
             Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(store.items())
-            return
-        end
-
-        if input == "orbital" then
-            NxOrbitals::interactivelyMakeNewOrNull()
             return
         end
 

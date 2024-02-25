@@ -36,11 +36,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBlock" then
-            NxBlocks::access(item)
-            return
-        end
-
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
             Ox1::detach(item)
@@ -56,8 +51,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOrbital" then
-            return NxOrbitals::program(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::program(item)
         end
 
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
@@ -71,7 +66,7 @@ class PolyActions
 
         # order: alphabetical order
 
-        if item["mikuType"] == "NxOrbital" then
+        if item["mikuType"] == "NxThread" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
@@ -111,11 +106,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTodo" then
             NxTodos::done(item)
-            return
-        end
-
-        if item["mikuType"] == "NxBlock" then
-            NxBlocks::done(item)
             return
         end
 
@@ -172,8 +162,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOrbital" then
-            NxOrbitals::program(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -206,11 +196,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxBlock" then
-            NxBlocks::access(item)
             return
         end
 
@@ -278,20 +263,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOrbital" then
-            if Catalyst::children(item).size > 0 then
-                puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxBlock" then
-            if Catalyst::children(item).size > 0 then
+        if item["mikuType"] == "NxThread" then
+            if NxThreads::children(item).size > 0 then
                 puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
                 LucilleCore::pressEnterToContinue()
                 return
