@@ -106,15 +106,15 @@ class MainUserInterface
             Desktop::muiItems(),
             Anniversaries::muiItems(),
             Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
-            #Waves::muiItemsInterruption(),
-            #NxOndates::muiItems(),
-            #NxBackups::muiItems(),
-            #Waves::muiItemsNotInterruption(),
-            #OrderingT::apply([
-            #    NxRingworldMissions::muiItems(),
-            #    NxSingularNonWorkQuests::muiItems(),
-            #    NxBufferInMonitors::muiItems(),
-            #].flatten),
+            Waves::muiItemsInterruption(),
+            NxOndates::muiItems(),
+            NxBackups::muiItems(),
+            Waves::muiItemsNotInterruption(),
+            OrderingT::apply([
+                NxRingworldMissions::muiItems(),
+                NxSingularNonWorkQuests::muiItems(),
+                NxBufferInMonitors::muiItems(),
+            ].flatten),
             NxTodos::orphans(),
             NxThreads::muiItems()
         ]
