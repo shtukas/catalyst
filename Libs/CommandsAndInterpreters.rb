@@ -232,7 +232,6 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetDonations(item)
             return
         end
 
