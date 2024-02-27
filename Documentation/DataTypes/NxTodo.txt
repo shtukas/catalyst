@@ -5,3 +5,4 @@ NxTodo:
     - unixtime    : Float
     - datetime    : DateTime Iso 8601 UTC Zulu
     - description : String
+    - hours-1432   : target hours of an active orphan todo

@@ -101,21 +101,20 @@ class MainUserInterface
     # MainUserInterface::items()
     def self.items()
         [
-            Ox1::items(),
-            DropBox::items(),
-            Desktop::muiItems(),
-            Anniversaries::muiItems(),
-            Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
-            Waves::muiItemsInterruption(),
-            NxOndates::muiItems(),
-            NxBackups::muiItems(),
-            Waves::muiItemsNotInterruption(),
-            OrderingT::apply([
-                NxRingworldMissions::muiItems(),
-                NxSingularNonWorkQuests::muiItems(),
-                NxBufferInMonitors::muiItems(),
-            ].flatten),
-            NxTodos::orphans(),
+            #Ox1::items(),
+            #DropBox::items(),
+            #Desktop::muiItems(),
+            #Anniversaries::muiItems(),
+            #Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
+            #Waves::muiItemsInterruption(),
+            #NxOndates::muiItems(),
+            #NxBackups::muiItems(),
+            #Waves::muiItemsNotInterruption(),
+            #OrderingT::apply([
+            #    NxRingworldMissions::muiItems(),
+            #    NxSingularNonWorkQuests::muiItems(),
+            #    NxBufferInMonitors::muiItems(),
+            #].flatten),
             NxThreads::muiItems()
         ]
             .flatten
@@ -223,6 +222,16 @@ class MainUserInterface
             system("clear")
 
             spacecontrol.putsline ""
+
+            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
+            if uuids.size > 0 then
+                uuids.each{|uuid|
+                    item = Cubes2::itemOrNull(uuid)
+                    next if item.nil?
+                    puts "[selected] #{PolyFunctions::toString(item)}"
+                }
+                puts ""
+            end
 
             items = MainUserInterface::items2()
             items

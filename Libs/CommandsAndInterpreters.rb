@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | hours * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | hours * | unhours * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | block",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | blocks | ships",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
         ].join("\n")
@@ -54,13 +54,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("thread", input) then
-            block = NxThreads::interactivelyIssueNewOrNull()
-            return if block.nil?
-            NxThreads::properlyPositionNewlyCreatedBlock(block)
-            return
-        end
-
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -79,11 +72,19 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("unhours *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Cubes2::setAttribute(item["uuid"], "hours-1432", nil)
+            return
+        end
+
         if Interpreting::match("hours *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxThread"
+            return if !["NxThread", "NxTodo"].include?(item["mikuType"])
             hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
             NxThreads::setHours(item, hours)
             return

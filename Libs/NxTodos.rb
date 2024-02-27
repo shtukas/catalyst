@@ -27,7 +27,7 @@ class NxTodos
 
     # NxTodos::icon(item)
     def self.icon(item)
-        "▫️"
+        "🔹"
     end
 
     # NxTodos::isOrphan(item)
@@ -37,8 +37,17 @@ class NxTodos
 
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
-        orphan = NxTodos::isOrphan(item) ? "  (orphan)" : ""
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)}#{orphan} #{item["description"]}"
+
+        if NxTodos::isOrphan(item) then
+            if item["hours-1432"] then
+                activity = item["hours-1432"] ? " (#{"%5.2f" % NxThreads::activeListingRatio(item)}, active: #{"%5.2f" % item["hours-1432"]})".green : "                       "
+                positioning = item["hours-1432"] ? "         " : "(#{"%7.3f" % (item["global-positioning"] || 0)})"
+                return "#{positioning} #{NxTodos::icon(item)}#{activity} #{item["description"]}"
+            end
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)}                        #{item["description"]}"
+        end
+
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
 
     # NxTodos::orphans()
