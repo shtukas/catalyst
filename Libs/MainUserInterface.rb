@@ -101,20 +101,20 @@ class MainUserInterface
     # MainUserInterface::items()
     def self.items()
         [
-            #Ox1::items(),
-            #DropBox::items(),
-            #Desktop::muiItems(),
-            #Anniversaries::muiItems(),
-            #Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
-            #Waves::muiItemsInterruption(),
-            #NxOndates::muiItems(),
-            #NxBackups::muiItems(),
-            #Waves::muiItemsNotInterruption(),
-            #OrderingT::apply([
-            #    NxRingworldMissions::muiItems(),
-            #    NxSingularNonWorkQuests::muiItems(),
-            #    NxBufferInMonitors::muiItems(),
-            #].flatten),
+            Ox1::items(),
+            DropBox::items(),
+            Desktop::muiItems(),
+            Anniversaries::muiItems(),
+            Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
+            Waves::muiItemsInterruption(),
+            NxOndates::muiItems(),
+            NxBackups::muiItems(),
+            Waves::muiItemsNotInterruption(),
+            OrderingT::apply([
+                NxRingworldMissions::muiItems(),
+                NxSingularNonWorkQuests::muiItems(),
+                NxBufferInMonitors::muiItems(),
+            ].flatten),
             NxThreads::muiItems()
         ]
             .flatten
