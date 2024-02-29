@@ -267,6 +267,7 @@ class NxThreads
             (Cubes2::mikuType("NxThread") + NxTodos::orphans())
                 .select{|item| item["hours-1432"] }
                 .sort_by{|item| NxThreads::listingRatio(item) }
+                .select{|item| NxThreads::listingRatio(item) < 1 }
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     puts MainUserInterface::toString2(store, item)
@@ -277,6 +278,15 @@ class NxThreads
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item)
+                }
+
+            puts ""
+
+            Cubes2::mikuType("TxCore")
+                .sort_by{|item| TxCores::ratio(item) }
+                .each{|item|
+                    store.register(item, false)
                     puts MainUserInterface::toString2(store, item)
                 }
 

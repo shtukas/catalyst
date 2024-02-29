@@ -86,9 +86,20 @@ class Catalyst
 
     # Catalyst::interactivelySetDonations(item)
     def self.interactivelySetDonations(item)
-        target = NxThreads::interactivelySelectOneOrNull()
-        if target then
-            Catalyst::addDonation(item, target)
+        options = ["thread", "core"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        return if option.nil?
+        if option == "thread" then
+            target = NxThreads::interactivelySelectOneOrNull()
+            if target then
+                Catalyst::addDonation(item, target)
+            end
+        end
+        if option == "core" then
+            target = TxCores::interactivelySelectOneOrNull()
+            if target then
+                Catalyst::addDonation(item, target)
+            end
         end
     end
 

@@ -108,6 +108,9 @@ class PolyFunctions
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::toString(item)
+        end
         if item["mikuType"] == "Scheduler1Listing" then
             return item["announce"]
         end
