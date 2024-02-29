@@ -97,14 +97,6 @@ class Catalyst
         end
     end
 
-    # Catalyst::childrenThatAreBlocks(timecore)
-    def self.childrenThatAreBlocks(timecore)
-        Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == timecore["uuid"] }
-            .select{|item| item["mikuType"] == "NxThread" }
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
     # Catalyst::interactivelySelectPositionInContainerOrNull(container)
     def self.interactivelySelectPositionInContainerOrNull(container)
         elements = NxThreads::children(container)
@@ -120,24 +112,6 @@ class Catalyst
         end
         position = position.to_f
         position
-    end
-
-    # Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(items)
-    def self.selectSubsetOfItemsAndMoveToSelectedContainer(items)
-        selected, _ = LucilleCore::selectZeroOrMore("selection", [], items, lambda{|item| PolyFunctions::toString(item) })
-        return if selected.size == 0
-        node = NxThreads::interactivelySelectOneOrNull()
-        return if node.nil?
-        selected.each{|item|
-            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", node["uuid"])
-        }
-        if selected.size == 1 then
-            selected = selected.first
-            position = Catalyst::interactivelySelectPositionInContainerOrNull(node)
-            if position then
-                Cubes2::setAttribute(selected["uuid"], "global-positioning", position)
-            end
-        end
     end
 
     # Catalyst::insertionPositions(parent, position, count)

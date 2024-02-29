@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | move * | payload * | completed *  | bank data * | hours * | unhours * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | unhours * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships",
@@ -170,27 +170,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["mikuType"] != "NxTodo"
-            target = NxThreads::interactivelySelectOneOrNull()
-            return if target.nil?
-            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", target["uuid"])
-            return
-        end
-
         if Interpreting::match("payload *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             TxPayload::edit(item)
-            return
-        end
-
-        if input == "move" then
-            Catalyst::selectSubsetOfItemsAndMoveToSelectedContainer(store.items())
             return
         end
 
