@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | unhours * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
         ].join("\n")
@@ -244,13 +244,13 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            options = ["regular tree positioned todo", "ringworld mission", "singular non work quest"]
+            options = ["todo", "ringworld mission", "singular non work quest"]
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
             return if option.nil?
-            if option == "regular tree positioned todo" then
+            if option == "todo" then
                 item = NxTodos::interactivelyIssueNewOrNull()
                 return if item.nil?
-                NxTodos::positionItemOnTreeUseDescent(item)
+                puts JSON.pretty_generate(item)
             end
             if option == "regular tree positioned todo" then
                 item = NxRingworldMissions::interactivelyIssueNewOrNull()
@@ -298,6 +298,17 @@ class CommandsAndInterpreters
 
         if Interpreting::match("anniversaries", input) then
             Anniversaries::program2()
+            return
+        end
+
+        if Interpreting::match("float", input) then
+            NxFloats::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("floats", input) then
+            floats = Cubes2::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
+            Catalyst::program2(floats)
             return
         end
 

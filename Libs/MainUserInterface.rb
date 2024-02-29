@@ -109,6 +109,7 @@ class MainUserInterface
             Waves::muiItemsInterruption(),
             NxOndates::muiItems(),
             NxBackups::muiItems(),
+            NxFloats::muiItems(),
             Waves::muiItemsNotInterruption(),
             OrderingT::apply([
                 NxRingworldMissions::muiItems(),

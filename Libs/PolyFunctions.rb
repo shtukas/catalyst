@@ -27,17 +27,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxThread" then
-            accounts << {
-                "description" => "engine: #{item["engine-0020"]["uuid"]}",
-                "number"      => item["engine-0020"]["uuid"]
-            }
-            accounts << {
-                "description" => "orbital control",
-                "number"      => "9f891bc1-ca32-4792-8d66-d66612a4e7c6"
-            }
-        end
-
         if item["mikuType"] == "Wave" then
             accounts << {
                 "description" => "wave control",
@@ -88,6 +77,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
+        end
+        if item["mikuType"] == "NxFloat" then
+            return NxFloats::toString(item)
         end
         if item["mikuType"] == "NxLambda" then
             return item["description"]

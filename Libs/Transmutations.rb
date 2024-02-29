@@ -4,9 +4,10 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         map = {
-            "NxOndate"  => ["NxTodo", "NxSingularNonWorkQuest"],
+            "NxOndate"  => ["NxTodo", "NxSingularNonWorkQuest", "NxFloat"],
             "Wave"      => ["NxRingworldMission"],
-            "NxTodo" => ["NxThread"]
+            "NxTodo"    => ["NxThread"],
+            "NxThread"  => ["NxTodo"]
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
@@ -18,19 +19,30 @@ class Transmutations
 
     # Transmutations::transmute2(item, targetMikuType)
     def self.transmute2(item, targetMikuType)
-        if item["mikuType"] == "NxTodo" and targetMikuType == "NxThread" then
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
-            return
-        end
+
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTodo" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
-            item = Cubes2::itemOrNull(item["uuid"])
-            puts JSON.pretty_generate(item)
-            NxTodos::positionItemOnTreeUseDescent(item)
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxSingularNonWorkQuest" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxSingularNonWorkQuest")
+            return
+        end
+        if item["mikuType"] == "NxOndate" and targetMikuType == "NxFloat" then
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxFloat")
+            return
+        end
+        if item["mikuType"] == "NxTodo" and targetMikuType == "NxThread" then
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
+            return
+        end
+        if item["mikuType"] == "NxThread" and targetMikuType == "NxTodo" then
+            if NxThreads::children(item).size > 0 then
+                puts "You cannot transmute '#{PolyFunctions::toString(item)}' because it is not empty"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
             return
         end
         if item["mikuType"] == "Wave" and targetMikuType == "NxRingworldMission" then

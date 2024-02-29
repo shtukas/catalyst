@@ -21,6 +21,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxFloat" then
+            return
+        end
+
         if item["mikuType"] == "NxLambda" then
             item["lambda"].call()
             return
@@ -64,7 +68,10 @@ class PolyActions
         NxBalls::stop(item)
         Ox1::detach(item)
 
-        # order: alphabetical order
+        if item["mikuType"] == "NxFloat" then
+            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            return
+        end
 
         if item["mikuType"] == "NxThread" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
@@ -139,7 +146,9 @@ class PolyActions
     # PolyActions::doubledots(item)
     def self.doubledots(item)
 
-        # order: alphabetical order
+        if item["mikuType"] == "NxFloat" then
+            return
+        end
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
@@ -243,6 +252,13 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxRingworldMission" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end

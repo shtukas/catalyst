@@ -10,19 +10,14 @@ class Catalyst
         }
     end
 
-    # Catalyst::program2(elements, context = nil, prefixLambda = nil)
-    def self.program2(elements, context = nil, prefixLambda = nil)
+    # Catalyst::program2(elements, context = nil)
+    def self.program2(elements, context = nil)
         loop {
 
             elements = elements.map{|item| Cubes2::itemOrNull(item["uuid"]) }.compact
             return if elements.empty?
 
             system("clear")
-
-            if prefixLambda then
-                puts ""
-                puts prefixLambda.call()
-            end
 
             store = ItemStore.new()
 
@@ -95,23 +90,6 @@ class Catalyst
         if target then
             Catalyst::addDonation(item, target)
         end
-    end
-
-    # Catalyst::interactivelySelectPositionInContainerOrNull(container)
-    def self.interactivelySelectPositionInContainerOrNull(container)
-        elements = NxThreads::children(container)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        position = position.to_f
-        position
     end
 
     # Catalyst::insertionPositions(parent, position, count)

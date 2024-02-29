@@ -40,7 +40,7 @@ class NxTodos
 
         if NxTodos::isOrphan(item) then
             if item["hours-1432"] then
-                activity = item["hours-1432"] ? " (#{"%5.2f" % NxThreads::activeListingRatio(item)}, active: #{"%5.2f" % item["hours-1432"]})".green : "                       "
+                activity = item["hours-1432"] ? " (#{"%5.2f" % NxThreads::listingRatio(item)} of daily #{"%5.2f" % item["hours-1432"]})".green : "                       "
                 positioning = item["hours-1432"] ? "         " : "(#{"%7.3f" % (item["global-positioning"] || 0)})"
                 return "#{positioning} #{NxTodos::icon(item)}#{activity} #{item["description"]}"
             end
@@ -95,14 +95,5 @@ class NxTodos
                 next if parent["mikuType"] == "NxThread"
                 Cubes2::setAttribute(item["uuid"], "hours-1432", nil) # we uset active if the parent wasn't an orbital
             }
-    end
-
-    # NxTodos::positionItemOnTreeUseDescent(item)
-    def self.positionItemOnTreeUseDescent(item)
-        container = NxThreads::interactivelySelectOneOrNull()
-        return if container.nil?
-        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", container["uuid"])
-        position = Catalyst::interactivelySelectPositionInContainerOrNull(container)
-        Cubes2::setAttribute(item["uuid"], "global-positioning", position)
     end
 end
