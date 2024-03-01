@@ -94,6 +94,6 @@ class NxBackups
 
     # NxBackups::toString(item)
     def self.toString(item)
-        "💾 #{item["description"]} (due: #{Time.at(NxBackups::dueTime(item)).utc.iso8601.gsub("T", " ")})"
+        "💾 #{item["description"]} (every #{NxBackups::getPeriodForDescriptionOrNull(item["description"])} days; due: #{Time.at(NxBackups::dueTime(item)).utc.iso8601.gsub("T", " ")})"
     end
 end
