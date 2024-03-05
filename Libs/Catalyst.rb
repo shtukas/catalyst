@@ -39,6 +39,35 @@ class Catalyst
         }
     end
 
+    # Catalyst::program3(elementsLambda, context = nil)
+    def self.program3(elementsLambda, context = nil)
+        loop {
+
+            elements = elementsLambda.call()
+            return if elements.empty?
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts ""
+
+            elements
+                .each{|item|
+                    store.register(item, MainUserInterface::canBeDefault(item))
+                    puts MainUserInterface::toString2(store, item, context)
+                }
+
+            puts ""
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            puts ""
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
@@ -52,13 +81,31 @@ class Catalyst
 
                 }
             end
+
+            Cubes2::items().each{|item|
+                next if item["donation-1601"].nil?
+                target = Cubes2::itemOrNull(item["donation-1601"])
+                if item.nil? then
+                    Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
+                    next
+                end
+                if item["mikuType"] != "TxCore" then
+                    Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
+                    next
+                end
+            }
+
+
         end
     end
 
     # Catalyst::donationSuffix(item)
     def self.donationSuffix(item)
-        return "" if item["donation-1752"].nil?
-        " (#{item["donation-1752"].map{|uuid| Cubes2::itemOrNull(uuid)}.compact.map{|target| target["description"]}.join(", ")})".green
+        return "" if item["donation-1601"].nil?
+        uuid = item["donation-1601"]
+        item = Cubes2::itemOrNull(uuid)
+        return "" if item.nil?
+        " (#{item["description"]})".green
     end
 
     # Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
@@ -78,29 +125,11 @@ class Catalyst
         nil
     end
 
-    # Catalyst::addDonation(item, target)
-    def self.addDonation(item, target)
-        donation = ((item["donation-1752"] || []) + [target["uuid"]]).uniq
-        Cubes2::setAttribute(item["uuid"], "donation-1752", donation)
-    end
-
-    # Catalyst::interactivelySetDonations(item)
-    def self.interactivelySetDonations(item)
-        options = ["thread", "core"]
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        return if option.nil?
-        if option == "thread" then
-            target = NxThreads::interactivelySelectOneOrNull()
-            if target then
-                Catalyst::addDonation(item, target)
-            end
-        end
-        if option == "core" then
-            target = TxCores::interactivelySelectOneOrNull()
-            if target then
-                Catalyst::addDonation(item, target)
-            end
-        end
+    # Catalyst::interactivelySetDonation(item)
+    def self.interactivelySetDonation(item)
+        core = TxCores::interactivelySelectOneOrNull()
+        return if core.nil?
+        Cubes2::setAttribute(item["uuid"], "donation-1601", core["uuid"])
     end
 
     # Catalyst::insertionPositions(parent, position, count)

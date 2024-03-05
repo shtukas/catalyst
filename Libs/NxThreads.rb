@@ -23,6 +23,12 @@ class NxThreads
 
     # NxThreads::toString(item, context = nil)
     def self.toString(item, context = nil)
+        if context == "work-listing-1633" then
+            return "#{NxThreads::icon(item)} #{item["description"]}"
+        end
+        if context == "main-listing-1635" then
+            return "#{NxThreads::icon(item)} #{item["description"]}"
+        end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}"
     end
 
@@ -80,7 +86,14 @@ class NxThreads
                 .flatten
         t2 = NxThreads::threadsAndTodosInGlobalPositioningOrder()
                 .select{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
-        t1 + t2
+        (t1 + t2)
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
     end
 
     # NxThreads::interactivelySelectOneOrNull()

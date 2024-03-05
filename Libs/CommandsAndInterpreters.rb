@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | contribution",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | work",
         ].join("\n")
     end
 
@@ -45,7 +45,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Catalyst::interactivelySetDonations(item)
+            Catalyst::interactivelySetDonation(item)
             return
         end
 
@@ -81,7 +81,7 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i1|
                 NxBalls::pause(i1)
             }
-            Catalyst::interactivelySetDonations(item)
+            Catalyst::interactivelySetDonation(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
                 NxBalls::start(item)
             end
@@ -92,7 +92,7 @@ class CommandsAndInterpreters
             item = NxRingworldMissions::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetDonations(item)
+            Catalyst::interactivelySetDonation(item)
             return
         end
 
@@ -100,7 +100,7 @@ class CommandsAndInterpreters
             item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetDonations(item)
+            Catalyst::interactivelySetDonation(item)
             return
         end
 
@@ -116,11 +116,9 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("contribution", input) then
-            uxcore = NxThreads::interactivelySelectOneOrNull()
-            return if uxcore.nil?
-            timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours for '#{PolyFunctions::toString(uxcore).green}': ").to_f
-            PolyActions::addTimeToItem(uxcore, timeInHours*3600)
+        if Interpreting::match("work", input) then
+            elementsLambda = lambda{ NxThreads::muiItems() }
+            Catalyst::program3(elementsLambda, "work-listing-1633")
             return
         end
 
@@ -238,13 +236,13 @@ class CommandsAndInterpreters
                 item = NxRingworldMissions::interactivelyIssueNewOrNull()
                 return if item.nil?
                 puts JSON.pretty_generate(item)
-                Catalyst::interactivelySetDonations(item)
+                Catalyst::interactivelySetDonation(item)
             end
             if option == "singular non work quest" then
                 item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
                 return if item.nil?
                 puts JSON.pretty_generate(item)
-                Catalyst::interactivelySetDonations(item)
+                Catalyst::interactivelySetDonation(item)
             end
             return
         end

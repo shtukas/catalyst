@@ -43,13 +43,11 @@ class PolyFunctions
             end
         end
 
-        if item["donation-1752"] then
-            item["donation-1752"].each {|targetuuid|
-                target = Cubes2::itemOrNull(targetuuid)
-                if target then
-                    accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-                end
-            }
+        if item["donation-1601"] then
+            target = Cubes2::itemOrNull(item["donation-1601"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
         end
 
         accounts.reduce([]){|as, account|

@@ -20,5 +20,5 @@ Cross types conventions (all optional):
     - url-e88a            : URL
     - unique-string-c3e5  : String
 
-    - donation-1752       : Array[String]
+    - donation-1601       : null or String
     - parentuuid-0032     : null or uuid of the parent

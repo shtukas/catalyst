@@ -37,6 +37,6 @@ class TxCores
     # TxCores::listingElementsForCore(core)
     def self.listingElementsForCore(core)
         NxThreads::threadsAndTodosInGlobalPositioningOrder()
-            .select{|item| item["donation-1752"] and item["donation-1752"].include?(core["uuid"]) }
+            .select{|item| item["donation-1601"] == core["uuid"] }
     end 
 end

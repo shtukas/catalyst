@@ -238,7 +238,7 @@ class MainUserInterface
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    line = MainUserInterface::toString2(store, item, "listing")
+                    line = MainUserInterface::toString2(store, item, "main-listing-1635")
                     status = spacecontrol.putsline line
                     break if !status
                 }

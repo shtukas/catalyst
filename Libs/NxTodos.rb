@@ -37,6 +37,12 @@ class NxTodos
 
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
+        if context == "work-listing-1633" then
+            return "#{NxTodos::icon(item)} #{item["description"]}"
+        end
+        if context == "main-listing-1635" then
+            return "#{NxTodos::icon(item)} #{item["description"]}"
+        end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
 
