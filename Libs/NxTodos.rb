@@ -27,7 +27,7 @@ class NxTodos
 
     # NxTodos::icon(item)
     def self.icon(item)
-        "🔹"
+        "🔺"
     end
 
     # NxTodos::isOrphan(item)
@@ -37,16 +37,6 @@ class NxTodos
 
     # NxTodos::toString(item, context = nil)
     def self.toString(item, context = nil)
-
-        if NxTodos::isOrphan(item) then
-            if item["hours-1432"] then
-                activity = item["hours-1432"] ? " (#{"%5.2f" % NxThreads::listingRatio(item)} of daily #{"%5.2f" % item["hours-1432"]})".green : "                       "
-                positioning = item["hours-1432"] ? "         " : "(#{"%7.3f" % (item["global-positioning"] || 0)})"
-                return "#{positioning} #{NxTodos::icon(item)}#{activity} #{item["description"]}"
-            end
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)}                        #{item["description"]}"
-        end
-
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
 
@@ -85,15 +75,6 @@ class NxTodos
             .select{|item| Cubes2::itemOrNull(item["parentuuid-0032"]).nil? }
             .each{|item|
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", "c1ec1949-5e0d-44ae-acb2-36429e9146c0") # Misc Timecore
-            }
-
-        Cubes2::mikuType("NxTodo")
-            .each{|item|
-                next if item["parentuuid-0032"].nil?
-                parent = Cubes2::itemOrNull(item["parentuuid-0032"])
-                next if parent.nil?
-                next if parent["mikuType"] == "NxThread"
-                Cubes2::setAttribute(item["uuid"], "hours-1432", nil) # we uset active if the parent wasn't an orbital
             }
     end
 end

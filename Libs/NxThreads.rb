@@ -18,22 +18,12 @@ class NxThreads
 
     # NxThreads::icon(item)
     def self.icon(item)
-        "🔺"
-    end
-
-    # NxThreads::listingRatio(item)
-    def self.listingRatio(item)
-        raise "(error: b8a8b117-b8a5-4b74-81ff-5d3aa1803d27) item: #{item}" if item["hours-1432"].nil?
-        raise "(error: 8a2b0d8a-31fd-456b-aaf0-b296a0e8a86d) item: #{item}" if item["hours-1432"] == 0
-        Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["hours-1432"]
+        "🔹"
     end
 
     # NxThreads::toString(item, context = nil)
     def self.toString(item, context = nil)
-        activity = item["hours-1432"] ? " (#{"%5.2f" % NxThreads::listingRatio(item)} of daily #{"%5.2f" % item["hours-1432"]})".green : "                       "
-        positioning = item["hours-1432"] ? "         " : "(#{"%7.3f" % (item["global-positioning"] || 0)})"
-        positioning = "(#{"%7.3f" % (item["global-positioning"] || 0)})"
-        "#{positioning} #{NxThreads::icon(item)}#{activity} #{item["description"]}"
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}"
     end
 
     # NxThreads::itemsInGlobalPositioningOrder()
@@ -66,34 +56,36 @@ class NxThreads
         1.5
     end
 
-    # NxThreads::itemsInOrder1()
-    def self.itemsInOrder1()
-        threads = Cubes2::mikuType("NxThread")
-        t1, t2 = threads.partition{|item| item["hours-1432"] }
-        [
-            t1.sort_by{|item| NxThreads::listingRatio(item) },
-            t2.sort_by{|item| item["global-positioning"] || 0 }
-        ].flatten
+    # NxThreads::itemsInGlobalPositioningOrder()
+    def self.itemsInGlobalPositioningOrder()
+        Cubes2::mikuType("NxThread")
+            .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxThreads::threadsAndTodosInOrder1()
-    def self.threadsAndTodosInOrder1()
-        items = (Cubes2::mikuType("NxThread") + NxTodos::orphans())
-        t1, t2 = items.partition{|item| item["hours-1432"] }
-        [
-            t1.sort_by{|item| NxThreads::listingRatio(item) },
-            t2.sort_by{|item| item["global-positioning"] || 0 }
-        ].flatten
+    # NxThreads::threadsAndTodosInGlobalPositioningOrder()
+    def self.threadsAndTodosInGlobalPositioningOrder()
+        (Cubes2::mikuType("NxThread") + NxTodos::orphans())
+            .sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # NxThreads::muiItems()
     def self.muiItems()
-        NxThreads::threadsAndTodosInOrder1()
+        t1 = Cubes2::mikuType("TxCore")
+                .select{|item| TxCores::ratio(item) < 1 }
+                .sort_by{|item| TxCores::ratio(item) }
+                .map{|core|
+                    TxCores::listingElementsForCore(core)
+                        .select{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
+                }
+                .flatten
+        t2 = NxThreads::threadsAndTodosInGlobalPositioningOrder()
+                .select{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
+        t1 + t2
     end
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInOrder1(), lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInGlobalPositioningOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxThreads::children(parent)
@@ -264,17 +256,6 @@ class NxThreads
                 puts ""
             end
 
-            (Cubes2::mikuType("NxThread") + NxTodos::orphans())
-                .select{|item| item["hours-1432"] }
-                .sort_by{|item| NxThreads::listingRatio(item) }
-                .select{|item| NxThreads::listingRatio(item) < 1 }
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
-                }
-
-            puts ""
-
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
@@ -354,14 +335,5 @@ class NxThreads
             .each{|item|
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", "c1ec1949-5e0d-44ae-acb2-36429e9146c0") # Misc Timecore
             }
-    end
-
-    # NxThreads::setHours(item, hours)
-    def self.setHours(item, hours)
-        if hours > 0 then
-            Cubes2::setAttribute(item["uuid"], "hours-1432", hours)
-        else
-            Cubes2::setAttribute(item["uuid"], "hours-1432", nil)
-        end
     end
 end

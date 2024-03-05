@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | unhours * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships | floats",
@@ -69,24 +69,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts Bank2::getRecords(item["uuid"])
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("unhours *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Cubes2::setAttribute(item["uuid"], "hours-1432", nil)
-            return
-        end
-
-        if Interpreting::match("hours *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if !["NxThread", "NxTodo"].include?(item["mikuType"])
-            hours = LucilleCore::askQuestionAnswerAsString("hours: ").to_f
-            NxThreads::setHours(item, hours)
             return
         end
 

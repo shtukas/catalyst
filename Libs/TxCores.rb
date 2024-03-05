@@ -26,11 +26,17 @@ class TxCores
 
     # TxCores::toString(item)
     def self.toString(item)
-        "⏱️  (#{"%7.2f" % TxCores::ratio(item)}) #{item["description"]}"
+        "⏱️  (#{"%7.2f" % (100 * TxCores::ratio(item))} %) #{item["description"]}"
     end
 
     # TxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", Cubes2::mikuType("TxCore"), lambda{|item| PolyFunctions::toString(item) })
     end
+
+    # TxCores::listingElementsForCore(core)
+    def self.listingElementsForCore(core)
+        NxThreads::threadsAndTodosInGlobalPositioningOrder()
+            .select{|item| item["donation-1752"] and item["donation-1752"].include?(core["uuid"]) }
+    end 
 end
