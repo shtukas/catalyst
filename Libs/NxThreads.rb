@@ -18,7 +18,7 @@ class NxThreads
 
     # NxThreads::icon(item)
     def self.icon(item)
-        "🔹"
+        "🔸"
     end
 
     # NxThreads::toString(item, context = nil)
@@ -108,7 +108,7 @@ class NxThreads
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # Catalyst::interactivelySelectPositionInThread(container)
+    # NxThreads::interactivelySelectPositionInThread(container)
     def self.interactivelySelectPositionInThread(container)
         elements = NxThreads::children(container)
         elements.first(20).each{|item|
@@ -185,7 +185,7 @@ class NxThreads
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", thread["uuid"])
-                position = Catalyst::interactivelySelectPositionInThread(thread)
+                position = NxThreads::interactivelySelectPositionInThread(thread)
                 Cubes2::setAttribute(task["uuid"], "global-positioning", position)
                 next
             end
@@ -209,7 +209,7 @@ class NxThreads
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = Catalyst::interactivelySelectPositionInThread(thread)
+                position = NxThreads::interactivelySelectPositionInThread(thread)
                 next if position.nil?
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next

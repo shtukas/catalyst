@@ -27,7 +27,7 @@ class NxTodos
 
     # NxTodos::icon(item)
     def self.icon(item)
-        "🔺"
+        "🔹"
     end
 
     # NxTodos::isOrphan(item)
