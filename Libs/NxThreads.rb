@@ -6,10 +6,13 @@ class NxThreads
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
+        hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+        hours = (hours == 0) ? 1 : hours
         Cubes2::itemInit(uuid, "NxThread")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "hours", hours)
         Cubes2::itemOrNull(uuid)
     end
 
@@ -21,15 +24,15 @@ class NxThreads
         "🔸"
     end
 
+    # NxThreads::performance(item)
+    def self.performance(item)
+        hours = item["hours"] || 1
+        "(#{"%6.2f" % NxThreads::listingRatio(item)} %; #{"%5.2f" % hours} h/w)".yellow
+    end
+
     # NxThreads::toString(item, context = nil)
     def self.toString(item, context = nil)
-        if context == "work-listing-1633" then
-            return "#{NxThreads::icon(item)} #{item["description"]}"
-        end
-        if context == "main-listing-1635" then
-            return "#{NxThreads::icon(item)} #{item["description"]}"
-        end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}"
+        "#{NxThreads::icon(item)} #{NxThreads::performance(item)} #{item["description"]}"
     end
 
     # NxThreads::itemsInGlobalPositioningOrder()
@@ -74,26 +77,22 @@ class NxThreads
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
+    # NxThreads::listingRatio(item)
+    def self.listingRatio(item)
+        if item["mikuType"] == "NxThread" then
+            hours = item["hours"] || 1
+            return Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/7)
+        end
+        if item["mikuType"] == "NxTodo" then
+            return Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/(1.to_f/7)
+        end
+        raise "(error: eb612cb5-61c0-40bf-8b8f-7972e3923ad0): item: #{item}"
+    end
+
     # NxThreads::muiItems()
     def self.muiItems()
-        t1 = Cubes2::mikuType("TxCore")
-                .select{|item| TxCores::ratio(item) < 1 }
-                .sort_by{|item| TxCores::ratio(item) }
-                .map{|core|
-                    TxCores::listingElementsForCore(core)
-                        .select{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
-                }
-                .flatten
-        t2 = NxThreads::threadsAndTodosInGlobalPositioningOrder()
-                .select{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
-        (t1 + t2)
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
+        NxThreads::threadsAndTodosInGlobalPositioningOrder()
+            .sort_by{|item| NxThreads::listingRatio(item) }
     end
 
     # NxThreads::interactivelySelectOneOrNull()
@@ -251,7 +250,7 @@ class NxThreads
         loop {
 
             elements = (Cubes2::mikuType("NxThread") + NxTodos::orphans())
-                        .sort_by{|item| item["global-positioning"] || 0 }
+                        .sort_by{|item| NxThreads::listingRatio(item) }
 
             system("clear")
 
@@ -269,10 +268,15 @@ class NxThreads
                 puts ""
             end
 
+            weekTotal = elements.map{|item| item["hours"] || 1 }.inject(0, :+)
+
+            puts "> week: #{weekTotal}, day: #{(weekTotal.to_f/7).round(2)}"
+            puts ""
+
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
+                    puts MainUserInterface::toString2(store, item, "NxThreads::program2()")
                 }
 
             puts ""

@@ -89,13 +89,7 @@ class Catalyst
                     Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
                     next
                 end
-                if item["mikuType"] != "TxCore" then
-                    Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
-                    next
-                end
             }
-
-
         end
     end
 
@@ -127,9 +121,9 @@ class Catalyst
 
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        core = TxCores::interactivelySelectOneOrNull()
-        return if core.nil?
-        Cubes2::setAttribute(item["uuid"], "donation-1601", core["uuid"])
+        target = NxThreads::interactivelySelectOneOrNull()
+        return if target.nil?
+        Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end
 
     # Catalyst::insertionPositions(parent, position, count)

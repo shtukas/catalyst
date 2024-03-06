@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload | work",
+            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
     end
 
@@ -116,12 +116,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("work", input) then
-            elementsLambda = lambda{ NxThreads::muiItems() }
-            Catalyst::program3(elementsLambda, "work-listing-1633")
-            return
-        end
-
         if Interpreting::match("backups", input) then
             items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
@@ -155,6 +149,16 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             TxPayload::edit(item)
+            return
+        end
+
+        if Interpreting::match("hours *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+            hours = (hours == 0) ? 1 : hours
+            Cubes2::setAttribute(item["uuid"], "hours", hours)
             return
         end
 
