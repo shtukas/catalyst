@@ -27,7 +27,7 @@ class NxThreads
     # NxThreads::performance(item)
     def self.performance(item)
         hours = item["hours"] || 1
-        "(#{"%6.2f" % NxThreads::listingRatio(item)} %; #{"%5.2f" % hours} h/w)".yellow
+        "(#{"%6.2f" % (100 * NxThreads::listingRatio(item))} %; #{"%5.2f" % hours} h/w)".yellow
     end
 
     # NxThreads::toString(item, context = nil)
