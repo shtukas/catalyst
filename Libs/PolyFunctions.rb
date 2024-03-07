@@ -27,13 +27,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "Wave" then
-            accounts << {
-                "description" => "wave control",
-                "number"      => "67df9561-a0bf-4eb6-b963-a8e6f83f65b6"
-            }
-        end
-
         # Special Features
 
         if item["parentuuid-0032"] then

@@ -110,13 +110,13 @@ class MainUserInterface
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
-            Waves::muiItemsNotInterruption(),
             OrderingT::apply([
                 NxRingworldMissions::muiItems(),
                 NxSingularNonWorkQuests::muiItems(),
                 NxBufferInMonitors::muiItems(),
+                Waves::muiItemsNotInterruption(),
+                NxThreads::muiItems()
             ].flatten),
-            NxThreads::muiItems()
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }

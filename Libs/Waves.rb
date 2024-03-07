@@ -159,11 +159,16 @@ class Waves
 
     # Waves::muiItemsNotInterruption()
     def self.muiItemsNotInterruption()
-        if Bank2::recoveredAverageHoursPerDay("67df9561-a0bf-4eb6-b963-a8e6f83f65b6") >= 1 then
-            return []
-        end
         Waves::muiItems()
             .select{|item| !item["interruption"] }
+            .map{|item|
+                if item["ordering-shift-0723"].nil? then
+                    shift = rand
+                    Cubes2::setAttribute(item["uuid"], "ordering-shift-0723", shift)
+                    item["ordering-shift-0723"] = shift
+                end
+                item
+            }
     end
 
     # -------------------------------------------------------------------------
