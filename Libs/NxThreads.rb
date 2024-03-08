@@ -77,6 +77,12 @@ class NxThreads
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
+    # NxThreads::threadsAndTodosInListingRatioOrder()
+    def self.threadsAndTodosInListingRatioOrder()
+        (Cubes2::mikuType("NxThread") + NxTodos::orphans())
+            .sort_by{|item| NxThreads::listingRatio(item) }
+    end
+
     # NxThreads::listingRatio(item)
     def self.listingRatio(item)
         if item["mikuType"] == "NxThread" then
@@ -91,13 +97,12 @@ class NxThreads
 
     # NxThreads::muiItems()
     def self.muiItems()
-        NxThreads::threadsAndTodosInGlobalPositioningOrder()
-            .sort_by{|item| NxThreads::listingRatio(item) }
+        NxThreads::threadsAndTodosInListingRatioOrder()
     end
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInGlobalPositioningOrder(), lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::threadsAndTodosInListingRatioOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxThreads::children(parent)
