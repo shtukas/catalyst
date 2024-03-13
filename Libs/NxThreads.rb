@@ -309,10 +309,7 @@ class NxThreads
             end
 
             if input == "thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                next if thread.nil?
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Cubes2::setAttribute(thread["uuid"], "global-positioning", position)
+                NxThreads::interactivelyIssueNewOrNull()
                 next
             end
 
