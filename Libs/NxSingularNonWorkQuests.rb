@@ -23,7 +23,7 @@ class NxSingularNonWorkQuests
     # NxSingularNonWorkQuests::toString(item)
     def self.toString(item)
         ratiostring = "[#{"%6.2f" % NxRingworldMissions::ratio()}]".green
-        "🚴‍♂️ #{ratiostring} (mission: start, stop, done) #{item["description"]}"
+        "🚴‍♂️ #{ratiostring} (mission: start, stop, done, destroy) #{item["description"]}"
     end
 
     # NxSingularNonWorkQuests::recoveryTimeControl()

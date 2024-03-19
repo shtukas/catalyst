@@ -29,7 +29,7 @@ class Config
 
     # Config::isPrimaryInstance()
     def self.isPrimaryInstance()
-        Config::thisInstanceId() == "Lucille18-pascal"
+        Config::thisInstanceId() == "Lucille24-pascal"
     end
 
     # Config::pathToCatalystDataRepository()

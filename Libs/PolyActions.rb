@@ -82,6 +82,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+            return
+        end
+
         if item["mikuType"] == "NxRingworldMission" then
             Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             return
@@ -175,7 +180,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
                 Cubes2::destroy(item["uuid"])
             end
-            return
             return
         end
 
