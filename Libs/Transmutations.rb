@@ -22,6 +22,7 @@ class Transmutations
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTodo" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
+            NxThreads::interactivelyInsertIntoThread(item)
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxSingularNonWorkQuest" then

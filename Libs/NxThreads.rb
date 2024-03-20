@@ -112,9 +112,9 @@ class NxThreads
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxThreads::interactivelySelectPositionInThread(container)
-    def self.interactivelySelectPositionInThread(container)
-        elements = NxThreads::children(container)
+    # NxThreads::interactivelySelectPositionInThread(thread)
+    def self.interactivelySelectPositionInThread(thread)
+        elements = NxThreads::children(thread)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -214,7 +214,6 @@ class NxThreads
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = NxThreads::interactivelySelectPositionInThread(thread)
-                next if position.nil?
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
@@ -354,5 +353,13 @@ class NxThreads
             .each{|item|
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", "c1ec1949-5e0d-44ae-acb2-36429e9146c0") # Misc Timecore
             }
+    end
+
+    # NxThreads::interactivelyInsertIntoThread(todo)
+    def self.interactivelyInsertIntoThread(todo)
+        thread = NxThreads::interactivelySelectOneOrNull()
+        return if thread.nil?
+        position = NxThreads::interactivelySelectPositionInThread(thread)
+        Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
     end
 end
