@@ -129,12 +129,18 @@ class MainUserInterface
             }
     end
 
+    # MainUserInterface::nxBallsOrdering(items)
+    def self.nxBallsOrdering(items)
+        runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
+        runningItems + pausedItems + items
+    end
+
     # MainUserInterface::items2()
     def self.items2()
         items = MainUserInterface::items()
         items = Ox1::organiseListing(items)
-        runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
-        items = runningItems + pausedItems + items
+        items = MainUserInterface::nxBallsOrdering(items)
+        items = Prefix::addPrefix(items)
         items
             .select{|item| MainUserInterface::listable(item) }
             .reduce([]){|selected, item|
