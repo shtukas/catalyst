@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | select * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | bank data * | hours * | insert * | select * | dump into * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | floats",
@@ -144,6 +144,19 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("insert *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxThread" and item["mikuType"] != "NxTodo" then
+                puts "We can only insert into a thread or a todo"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            Catalyst::insertIntoParent(item)
+            return
+        end
+
         if Interpreting::match("select *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -151,6 +164,27 @@ class CommandsAndInterpreters
             uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
             uuids = (uuids + [item["uuid"]]).uniq
             XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
+            return
+        end
+
+        if Interpreting::match("dump into *", input) then
+            _, _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxThread" and item["mikuType"] != "NxTodo" then
+                puts "We can only dump into a thread or a todo"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
+            uuids.each{|uuid|
+                item = Cubes2::itemOrNull(uuid)
+                next if item.nil?
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+                position = Catalyst::topPositionInParent(parent)
+                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+            }
+            XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", "[]")
             return
         end
 
@@ -194,16 +228,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Ox1::detach(item)
-            return
-        end
-
-        if Interpreting::match("completed *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] == "NxTodo" then
-                PolyActions::destroy(item)
-            end
             return
         end
 

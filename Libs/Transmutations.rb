@@ -38,7 +38,7 @@ class Transmutations
             return
         end
         if item["mikuType"] == "NxThread" and targetMikuType == "NxTodo" then
-            if NxThreads::children(item).size > 0 then
+            if Catalyst::children(item).size > 0 then
                 puts "You cannot transmute '#{PolyFunctions::toString(item)}' because it is not empty"
                 LucilleCore::pressEnterToContinue()
                 return

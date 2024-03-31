@@ -47,7 +47,7 @@ class NxThreads
 
     # NxThreads::topPositionAmongChildren(item)
     def self.topPositionAmongChildren(item)
-        ([0] + NxThreads::children(item).map{|task| task["global-positioning"] || 0 }).min
+        ([0] + Catalyst::children(item).map{|task| task["global-positioning"] || 0 }).min
     end
 
     # NxThreads::topPosition()
@@ -105,30 +105,6 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::threadsAndTodosInListingRatioOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxThreads::children(parent)
-    def self.children(parent)
-        Cubes2::items()
-            .select{|item| item["parentuuid-0032"] == parent["uuid"] }
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # NxThreads::interactivelySelectPositionInThread(thread)
-    def self.interactivelySelectPositionInThread(thread)
-        elements = NxThreads::children(thread)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        position = position.to_f
-        position
-    end
-
     # ------------------
     # Ops
 
@@ -170,7 +146,7 @@ class NxThreads
 
             puts ""
 
-            NxThreads::children(thread)
+            Catalyst::children(thread)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element, "listing-in-thread")
@@ -178,7 +154,7 @@ class NxThreads
 
             puts ""
 
-            puts "todo | insert | position * | sort | select | dump"
+            puts "todo | position * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -189,23 +165,8 @@ class NxThreads
                 next if task.nil?
                 puts JSON.pretty_generate(task)
                 Cubes2::setAttribute(task["uuid"], "parentuuid-0032", thread["uuid"])
-                position = NxThreads::interactivelySelectPositionInThread(thread)
+                position = Catalyst::interactivelySelectPositionInParent(thread)
                 Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-                next
-            end
-
-            if input == "insert" then
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                text = CommonUtils::editTextSynchronously("").strip
-                next if text == ""
-                descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
-                positions = Catalyst::insertionPositions(thread, position, descriptions.size)
-                descriptions.zip(positions).each{|description, position|
-                        task = NxTodos::descriptionToTask1(SecureRandom.hex, description)
-                        puts JSON.pretty_generate(task)
-                        Cubes2::setAttribute(task["uuid"], "parentuuid-0032", thread["uuid"])
-                        Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-                }
                 next
             end
 
@@ -213,35 +174,16 @@ class NxThreads
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = NxThreads::interactivelySelectPositionInThread(thread)
+                position = Catalyst::interactivelySelectPositionInParent(thread)
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxThreads::children(thread), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(thread), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Cubes2::setAttribute(i["uuid"], "global-positioning", NxThreads::topPositionAmongChildren(thread) - 1)
                 }
-                next
-            end
-
-            if input == "select" then
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxThreads::children(thread), lambda{|i| PolyFunctions::toString(i) })
-                uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-                uuids = (uuids + selected.map{|item| item["uuid"]}).uniq
-                XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
-                next
-            end
-
-            if input == "dump" then
-                uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-                uuids.each{|uuid|
-                    item = Cubes2::itemOrNull(uuid)
-                    next if item.nil?
-                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-                }
-                XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", "[]")
                 next
             end
 
@@ -293,7 +235,7 @@ class NxThreads
                 }
 
             puts ""
-            puts "todo | thread | sort | select | dump (at top)"
+            puts "todo | thread | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
@@ -320,26 +262,6 @@ class NxThreads
                 next
             end
 
-            if input == "select" then
-                selected, _ = LucilleCore::selectZeroOrMore("item", [], NxTodos::orphans(), lambda{|i| PolyFunctions::toString(i) })
-                uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-                uuids = (uuids + selected.map{|item| item["uuid"]}).uniq
-                XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
-                next
-            end
-
-            if input == "dump" then
-                uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-                uuids.each{|uuid|
-                    item = Cubes2::itemOrNull(uuid)
-                    next if item.nil?
-                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
-                    Cubes2::setAttribute(item["uuid"], "global-positioning", NxThreads::topPositionAmongThreads() - 1)
-                }
-                XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", "[]")
-                next
-            end
-
             puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
@@ -359,7 +281,7 @@ class NxThreads
     def self.interactivelyInsertIntoThread(todo)
         thread = NxThreads::interactivelySelectOneOrNull()
         return if thread.nil?
-        position = NxThreads::interactivelySelectPositionInThread(thread)
+        position = Catalyst::interactivelySelectPositionInParent(thread)
         Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
     end
 end

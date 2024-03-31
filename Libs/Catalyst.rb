@@ -128,7 +128,7 @@ class Catalyst
 
     # Catalyst::insertionPositions(parent, position, count)
     def self.insertionPositions(parent, position, count)
-        children = NxThreads::children(parent)
+        children = Catalyst::children(parent)
         if children.empty? then
             return (1..count).to_a
         end
@@ -153,5 +153,55 @@ class Catalyst
             shift  = 0.1*(x2 - x1)
             return (0..count-1).to_a.map{|x| x1 + shift + spread*x.to_f/(count) }
         end
+    end
+
+    # Catalyst::children(parent)
+    def self.children(parent)
+        Cubes2::items()
+            .select{|item| item["parentuuid-0032"] == parent["uuid"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # Catalyst::interactivelySelectPositionInParent(parent)
+    def self.interactivelySelectPositionInParent(parent)
+        elements = Catalyst::children(parent)
+        elements.first(20).each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
+        if position == "first" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+        end
+        position = position.to_f
+        position
+    end
+
+    # Catalyst::topPositionInParent(parent)
+    def self.topPositionInParent(parent)
+        elements = Catalyst::children(parent)
+        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
+    end
+
+    # Catalyst::insertIntoParent(parent)
+    def self.insertIntoParent(parent)
+        children = Catalyst::children(parent)
+        if children.empty? then
+            position = 0
+        else
+            position = Catalyst::topPositionInParent(parent) - 1
+        end
+        text = CommonUtils::editTextSynchronously("").strip
+        return if text == ""
+        descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
+        positions = Catalyst::insertionPositions(parent, position, descriptions.size)
+        descriptions.zip(positions).each{|description, position|
+            task = NxTodos::descriptionToTask1(SecureRandom.hex, description)
+            puts JSON.pretty_generate(task)
+            Cubes2::setAttribute(task["uuid"], "parentuuid-0032", parent["uuid"])
+            Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+        }
     end
 end
