@@ -66,25 +66,38 @@ class NxBackups
 
     # NxBackups::getLastUnixtimeForDescriptionOrZero(description)
     def self.getLastUnixtimeForDescriptionOrZero(description)
-        filepath = "#{Config::pathToCatalystDataRepository()}/backups-lastest-times/#{description}.txt"
-        return 0 if !File.exist?(filepath)
-        DateTime.parse(IO.read(filepath).strip).to_time.to_i
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/backups-lastest-times")
+            .select{|location| File.basename(location).include?(description) }
+            .each{|filepath|
+                return DateTime.parse(IO.read(filepath).strip).to_time.to_i
+            }
+        0
     end
 
     # NxBackups::setNowForDescription(description)
     def self.setNowForDescription(description)
-        filepath = "#{Config::pathToCatalystDataRepository()}/backups-lastest-times/#{description}.txt"
+        folderpath = "#{Config::pathToCatalystDataRepository()}/backups-lastest-times"
+        locationsAtFolder(folderpath).each{|location|
+            if File.basename(location).include?(description) then
+                FileUtils.rm(location)
+            end
+        }
+        filepath = "#{folderpath}/#{description}-#{Time.new.to_i}.txt"
         File.open(filepath, "w"){|f| f.puts(Time.new.utc.iso8601) }
     end
 
-    # NxBackups::dueTime(item)
-    def self.dueTime(item)
-        NxBackups::getLastUnixtimeForDescriptionOrZero(item["description"]) + NxBackups::getPeriodForDescriptionOrNull(item["description"])*86400
+    # NxBackups::dueTimeOrNull(item)
+    def self.dueTimeOrNull(item)
+        period = NxBackups::getPeriodForDescriptionOrNull(item["description"])
+        return nil if period.nil?
+        NxBackups::getLastUnixtimeForDescriptionOrZero(item["description"]) + period*86400
     end
 
     # NxBackups::itemIsDue(item)
     def self.itemIsDue(item)
-        NxBackups::dueTime(item) <= Time.new.to_i
+        period = NxBackups::dueTimeOrNull(item)
+        return false if period.nil?
+        period <= Time.new.to_i
     end
 
     # NxBackups::muiItems()
@@ -94,6 +107,10 @@ class NxBackups
 
     # NxBackups::toString(item)
     def self.toString(item)
-        "💾 #{item["description"]} (every #{NxBackups::getPeriodForDescriptionOrNull(item["description"])} days; due: #{Time.at(NxBackups::dueTime(item)).utc.iso8601.gsub("T", " ")})"
+        period = NxBackups::getPeriodForDescriptionOrNull(item["description"])
+        return "💾 #{item["description"]}" if period.nil?
+        dueTime = NxBackups::dueTimeOrNull(item)
+        return "💾 #{item["description"]}" if dueTime.nil?
+        "💾 #{item["description"]} (every #{period} days; due: #{Time.at(dueTime).utc.iso8601.gsub("T", " ")})"
     end
 end

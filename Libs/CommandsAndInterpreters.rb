@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | completed *  | bank data * | hours * | select * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | ships | floats",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -141,6 +141,16 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute1(item)
+            return
+        end
+
+        if Interpreting::match("select *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
+            uuids = (uuids + [item["uuid"]]).uniq
+            XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
             return
         end
 
