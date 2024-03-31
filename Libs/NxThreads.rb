@@ -226,15 +226,6 @@ class NxThreads
                 }
 
             puts ""
-
-            Cubes2::mikuType("TxCore")
-                .sort_by{|item| TxCores::ratio(item) }
-                .each{|item|
-                    store.register(item, false)
-                    puts MainUserInterface::toString2(store, item)
-                }
-
-            puts ""
             puts "todo | thread | sort"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
