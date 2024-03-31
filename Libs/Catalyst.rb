@@ -121,7 +121,7 @@ class Catalyst
 
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        target = NxThreads::interactivelySelectOneOrNull()
+        target = NxTodos::interactivelySelectOrphanOrNull()
         return if target.nil?
         Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end

@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | bank data * | hours * | insert * | select * | dump into * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | threads | floats",
+            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | todos | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
         ].join("\n")
@@ -111,8 +111,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
+        if Interpreting::match("todos", input) then
+            NxTodos::program2()
             return
         end
 
@@ -148,8 +148,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxThread" and item["mikuType"] != "NxTodo" then
-                puts "We can only insert into a thread or a todo"
+            if item["mikuType"] != "NxTodo" then
+                puts "We can only insert into a todo"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -171,8 +171,8 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxThread" and item["mikuType"] != "NxTodo" then
-                puts "We can only dump into a thread or a todo"
+            if item["mikuType"] != "NxTodo" then
+                puts "We can only dump into a todo"
                 LucilleCore::pressEnterToContinue()
                 return
             end

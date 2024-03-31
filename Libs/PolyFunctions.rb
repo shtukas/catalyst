@@ -78,9 +78,6 @@ class PolyFunctions
         if item["mikuType"] == "NxTodo" then
             return NxTodos::toString(item, context)
         end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item, context)
-        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
         end

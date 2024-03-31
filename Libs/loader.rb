@@ -161,7 +161,6 @@ require_relative "NxOndates.rb"
 require_relative "NxRingworldMissions.rb"
 require_relative "NxBackups.rb"
 require_relative "NxSingularNonWorkQuests.rb"
-require_relative "NxThreads.rb"
 require_relative "NxBufferInMonitors.rb"
 require_relative "NxFloats.rb"
 

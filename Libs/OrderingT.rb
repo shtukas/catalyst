@@ -16,11 +16,7 @@ class OrderingT
         end
 
         if item["mikuType"] == "NxTodo" then
-            return NxThreads::listingRatio(item)
-        end
-
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::listingRatio(item)
+            return NxTodos::listingRatio(item)
         end
 
         if item["mikuType"] == "Wave" then

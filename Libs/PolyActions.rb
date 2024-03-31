@@ -55,10 +55,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::program(item)
-        end
-
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
@@ -69,11 +65,6 @@ class PolyActions
         Ox1::detach(item)
 
         if item["mikuType"] == "NxFloat" then
-            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
@@ -175,11 +166,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            NxThreads::program1(item)
-            return
-        end
-
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
@@ -277,18 +263,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            if Catalyst::children(item).size > 0 then
-                puts "You cannot delete '#{PolyFunctions::toString(item).green}' because it is not empty"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end

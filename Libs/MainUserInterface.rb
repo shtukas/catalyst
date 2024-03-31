@@ -116,7 +116,7 @@ class MainUserInterface
                 NxSingularNonWorkQuests::muiItems(),
                 NxBufferInMonitors::muiItems(),
                 Waves::muiItemsNotInterruption(),
-                NxThreads::muiItems()
+                NxTodos::muiItems()
             ].flatten),
         ]
             .flatten
