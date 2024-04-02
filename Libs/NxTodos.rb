@@ -67,7 +67,8 @@ class NxTodos
 
     # NxTodos::interactivelySelectOrphanOrNull()
     def self.interactivelySelectOrphanOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxTodos::orphans(), lambda{|item| PolyFunctions::toString(item) })
+        items = NxTodos::orphans().sort_by{|item| NxTodos::listingRatio(item) }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxTodos::elementsInListingRatioOrder()
