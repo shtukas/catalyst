@@ -88,6 +88,7 @@ class NxTodos
     # NxTodos::access(item)
     def self.access(item)
         TxPayload::access(item)
+        NxTodos::program1(item)
     end
 
     # NxTodos::access(item)

@@ -77,7 +77,7 @@ class NxBackups
     # NxBackups::setNowForDescription(description)
     def self.setNowForDescription(description)
         folderpath = "#{Config::pathToCatalystDataRepository()}/backups-lastest-times"
-        locationsAtFolder(folderpath).each{|location|
+        LucilleCore::locationsAtFolder(folderpath).each{|location|
             if File.basename(location).include?(description) then
                 FileUtils.rm(location)
             end

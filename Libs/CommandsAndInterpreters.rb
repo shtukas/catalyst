@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | stack * | bank accounts * | donation * | payload * | bank data * | hours * | insert * | select * | dump into * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | insert * | select * | dump into * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | priority | stack | ringworld-mission | singular-non-work-quest | float",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | todos | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | move | unstack * | reload",
+            "misc          : search | speed | commands | edit <n> | move | reload",
         ].join("\n")
     end
 
@@ -19,7 +19,6 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                Ox1::detach(item)
                 NxBalls::stop(item)
                 DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
                 return
@@ -69,22 +68,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts Bank2::getRecords(item["uuid"])
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("priority", input) then
-            line = LucilleCore::askQuestionAnswerAsString("description: ")
-            return if line == ""
-            item = NxTodos::descriptionToTask1(SecureRandom.hex, line)
-            puts JSON.pretty_generate(item)
-            Ox1::putAtTop(item)
-            NxBalls::activeItems().each{|i1|
-                NxBalls::pause(i1)
-            }
-            Catalyst::interactivelySetDonation(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("start ? ") then
-                NxBalls::start(item)
-            end
             return
         end
 
@@ -206,43 +189,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack", input) then
-            text = CommonUtils::editTextSynchronously("").strip
-            return if text == ""
-            text.lines.reverse.each{|line|
-                task = NxTodos::descriptionToTask1(SecureRandom.uuid, line.strip)
-                Ox1::putAtTop(task)
-            }
-            return
-        end
-
-        if Interpreting::match("stack *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Ox1::putAtTop(item)
-        end
-
-        if Interpreting::match("unstack *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Ox1::detach(item)
-            return
-        end
-
         if Interpreting::match("today", input) then
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            selected, _ = LucilleCore::selectZeroOrMore("item", [], store.items(), lambda{|item| PolyFunctions::toString(item) })
-            selected.reverse.each{|item|
-                Ox1::putAtTop(item)
-            }
             return
         end
 

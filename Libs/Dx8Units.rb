@@ -5,7 +5,7 @@ class Dx8Units
 
     # Dx8Units::repository()
     def self.repository()
-        "/Volumes/Orbital1/Data/Pascal/Galaxy/Dx8Units"
+        "/Volumes/Orbital1/NxData/Pascal/Dx8Units"
     end
 
     # Dx8Units::attemptRepository()

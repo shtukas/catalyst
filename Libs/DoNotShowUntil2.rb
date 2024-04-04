@@ -8,12 +8,6 @@ class DoNotShowUntil2
 
     # DoNotShowUntil2::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
-        item = $DATA_CENTER_DATA["items"][id] # new
-
-        if item then
-            Ox1::detach(item)
-        end
-
         $DATA_CENTER_DATA["doNotShowUntil"][id] = unixtime
         $DATA_CENTER_UPDATE_QUEUE << {
             "type"     => "do-not-show-until",

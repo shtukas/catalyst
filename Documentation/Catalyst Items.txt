@@ -8,7 +8,6 @@ Cross types conventions (all optional):
     - doNotShowUntil      : unixtime
     - skip-0843           : unixtime (skipped until this time)
     - open-cycle-1143     : uuid of the open cycle that this item represents
-    - ox1-0656            : Ox1
     - global-positioning  : Float # used for ordering and sorting
                             within the children of a core.
 

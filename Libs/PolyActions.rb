@@ -42,7 +42,6 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::access(item)
-            Ox1::detach(item)
             return
         end
 
@@ -62,7 +61,6 @@ class PolyActions
     def self.done(item, confirmed = false)
 
         NxBalls::stop(item)
-        Ox1::detach(item)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
@@ -192,7 +190,8 @@ class PolyActions
             NxTodos::access(item)
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            return if Catalyst::children(item).size > 0
+            if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
             return

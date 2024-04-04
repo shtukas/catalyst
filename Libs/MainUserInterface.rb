@@ -80,9 +80,8 @@ class MainUserInterface
     def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        positionstr = Ox1::activePositionOrNull(item) ? " [stack]".red : ""
         arrow = item["x:prefix:0859"] ? " (#{item["x:prefix:0859"]})" : ""
-        line = "#{storePrefix}#{positionstr}#{arrow} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -102,7 +101,6 @@ class MainUserInterface
     # MainUserInterface::items()
     def self.items()
         [
-            Ox1::items(),
             DropBox::items(),
             Desktop::muiItems(),
             Anniversaries::muiItems(),
@@ -139,7 +137,6 @@ class MainUserInterface
     # MainUserInterface::items2()
     def self.items2()
         items = MainUserInterface::items()
-        items = Ox1::organiseListing(items)
         items = MainUserInterface::nxBallsOrdering(items)
         items = Prefix::addPrefix(items)
         items

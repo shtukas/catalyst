@@ -164,7 +164,6 @@ require_relative "NxSingularNonWorkQuests.rb"
 require_relative "NxBufferInMonitors.rb"
 require_relative "NxFloats.rb"
 
-require_relative "Ox1.rb"
 require_relative "OrderingT.rb"
 
 require_relative "ProgrammableBooleans.rb"

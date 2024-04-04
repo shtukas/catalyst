@@ -40,11 +40,6 @@ class DoNotShowUntil1
 
     # DoNotShowUntil1::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
-        item = Cubes1::itemOrNull(id)
-        if item then
-            Ox1::detach(item)
-        end
-
         record = {
             "id" => id,
             "unixtime" => unixtime
