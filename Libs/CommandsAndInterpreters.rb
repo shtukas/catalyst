@@ -136,7 +136,7 @@ class CommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            Catalyst::insertIntoParent(item)
+            Catalyst::interactivelyInsertIntoParent(item)
             return
         end
 

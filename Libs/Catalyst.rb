@@ -185,14 +185,8 @@ class Catalyst
         ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
     end
 
-    # Catalyst::insertIntoParent(parent)
-    def self.insertIntoParent(parent)
-        children = Catalyst::children(parent)
-        if children.empty? then
-            position = 0
-        else
-            position = Catalyst::topPositionInParent(parent) - 1
-        end
+    # Catalyst::interactivelyInsertAtPosition(parent, position)
+    def self.interactivelyInsertAtPosition(parent, position)
         text = CommonUtils::editTextSynchronously("").strip
         return if text == ""
         descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
@@ -203,5 +197,22 @@ class Catalyst
             Cubes2::setAttribute(task["uuid"], "parentuuid-0032", parent["uuid"])
             Cubes2::setAttribute(task["uuid"], "global-positioning", position)
         }
+    end
+
+    # Catalyst::interactivelyPileIntoParent(parent)
+    def self.interactivelyPileIntoParent(parent)
+        position = Catalyst::topPositionInParent(parent) - 1
+        Catalyst::interactivelyInsertAtPosition(parent, position)
+    end
+
+    # Catalyst::interactivelyInsertIntoParent(parent)
+    def self.interactivelyInsertIntoParent(parent)
+        children = Catalyst::children(parent)
+        if children.empty? then
+            position = 0
+        else
+            position = Catalyst::interactivelySelectPositionInParent(parent) - 1
+        end
+        Catalyst::interactivelyInsertAtPosition(parent, position)
     end
 end

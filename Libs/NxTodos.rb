@@ -149,7 +149,7 @@ class NxTodos
 
             puts ""
 
-            puts "todo | position * | sort"
+            puts "todo | pile | insert | position * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -171,6 +171,11 @@ class NxTodos
                 next if i.nil?
                 position = Catalyst::interactivelySelectPositionInParent(todo)
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input == "pile" then
+                Catalyst::interactivelyPileIntoParent(todo)
                 next
             end
 
