@@ -31,6 +31,9 @@ class Listing
         if item["mikuType"] == "NxBufferInMonitor" then
             return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
         end
+        if item["mikuType"] == "NxTodo" then
+            return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
+        end
         item["uuid"]
     end
 
@@ -44,6 +47,27 @@ class Listing
         end
         if item["mikuType"] == "NxOndate" then
             return 0.2
+        end
+        if item["mikuType"] == "PhysicalTarget" then
+            return 0.2
+        end
+        if item["mikuType"] == "NxBackup" then
+            return 1
+        end
+        if item["mikuType"] == "NxFloat" then
+            return 1
+        end
+        if item["mikuType"] == "NxRingworldMission" then
+            return NxRingworldMissions::ratio()
+        end
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            return NxSingularNonWorkQuests::ratio()
+        end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return NxBufferInMonitors::ratio()
+        end
+        if item["mikuType"] == "NxTodo" then
+            return NxTodos::listingRatio(item)
         end
         raise "(error: d255e0e1) could not determine Listing::insertionRatio for #{item}"
     end
