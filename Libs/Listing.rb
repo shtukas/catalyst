@@ -22,7 +22,40 @@ class Listing
 
     # Listing::trace(item)
     def self.trace(item)
+        if item["mikuType"] == "NxRingworldMission" then
+            return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
+        end
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
+        end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
+        end
         item["uuid"]
+    end
+
+    # Listing::insertionRatio(item)
+    def self.insertionRatio(item)
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return 0.1
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return 1
+        end
+        if item["mikuType"] == "NxOndate" then
+            return 0.2
+        end
+        raise "(error: d255e0e1) could not determine Listing::insertionRatio for #{item}"
+    end
+
+    # Listing::insert(listing, item, trace, iratio)
+    def self.insert(listing, item, trace, iratio)
+        cut = listing.size * iratio
+        nx45 = {
+            "trace" => trace,
+            "item"  => item
+        }
+        listing.take(cut) + [nx45] + listing.drop(cut)
     end
 
     # Listing::apply(items)
@@ -43,10 +76,8 @@ class Listing
                 nx45
             }
             if !hasBeenPositioned then
-                listing << {
-                    "trace" => trace,
-                    "item"  => item
-                }
+                iratio = Listing::insertionRatio(item)
+                listing = Listing::insert(listing, item, trace, iratio)
             end
         }
         listing = listing.select{|nx45|
