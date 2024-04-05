@@ -109,13 +109,11 @@ class MainUserInterface
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
-            OrderingT::apply([
-                NxRingworldMissions::muiItems(),
-                NxSingularNonWorkQuests::muiItems(),
-                NxBufferInMonitors::muiItems(),
-                Waves::muiItemsNotInterruption(),
-                NxTodos::muiItems()
-            ].flatten),
+            NxRingworldMissions::muiItems(),
+            NxSingularNonWorkQuests::muiItems(),
+            NxBufferInMonitors::muiItems(),
+            Waves::muiItemsNotInterruption(),
+            NxTodos::muiItems(),
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -137,6 +135,7 @@ class MainUserInterface
     # MainUserInterface::items2()
     def self.items2()
         items = MainUserInterface::items()
+        items = Listing::apply(items)
         items = MainUserInterface::nxBallsOrdering(items)
         items = Prefix::addPrefix(items)
         items
