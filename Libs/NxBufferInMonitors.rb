@@ -7,7 +7,7 @@ class NxBufferInMonitors
     # NxBufferInMonitors::toString(item)
     def self.toString(item)
         ratiostring = "[#{"%6.2f" % NxBufferInMonitors::ratio()}]".green
-        "🔅 #{ratiostring} BufferIn Monitor"
+        "🔅 #{ratiostring} BufferIn (Process all elements)"
     end
 
     # NxBufferInMonitors::ratio()
