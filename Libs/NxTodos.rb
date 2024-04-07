@@ -91,11 +91,6 @@ class NxTodos
         NxTodos::program1(item)
     end
 
-    # NxTodos::access(item)
-    def self.natural(item)
-        NxTodos::access(item)
-    end
-
     # NxTodos::done(item)
     def self.done(item)
         if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
