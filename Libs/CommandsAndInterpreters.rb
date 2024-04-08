@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | todos | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | move | reload",
+            "misc          : search | speed | commands | edit <n> | reload",
         ].join("\n")
     end
 

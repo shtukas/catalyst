@@ -101,6 +101,7 @@ class MainUserInterface
     # MainUserInterface::items()
     def self.items()
         [
+            NxBalls::activeItems(),
             DropBox::items(),
             Desktop::muiItems(),
             Anniversaries::muiItems(),
@@ -126,17 +127,18 @@ class MainUserInterface
             }
     end
 
-    # MainUserInterface::nxBallsOrdering(items)
-    def self.nxBallsOrdering(items)
-        runningItems, pausedItems = NxBalls::activeItems().partition{|item| NxBalls::itemIsRunning(item) }
-        runningItems + pausedItems + items
+    # MainUserInterface::applyNxBallOrdering(items)
+    def self.applyNxBallOrdering(items)
+        activeItems, nonActiveItems = items.partition{|item| NxBalls::itemIsActive(item) }
+        runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
+        runningItems + pausedItems + nonActiveItems
     end
 
     # MainUserInterface::items2()
     def self.items2()
         items = MainUserInterface::items()
         items = Listing::apply(items)
-        items = MainUserInterface::nxBallsOrdering(items)
+        items = MainUserInterface::applyNxBallOrdering(items)
         items = Prefix::addPrefix(items)
         items
             .select{|item| MainUserInterface::listable(item) }
