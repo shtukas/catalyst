@@ -239,4 +239,12 @@ class NxTodos
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # NxTodos::interactivelySetOrphanParent(item)
+    def self.interactivelySetOrphanParent(item)
+        parent = NxTodos::interactivelySelectOrphanOrNull()
+        return if parent.nil?
+        position = Catalyst::interactivelySelectPositionInParent(parent)
+        Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
+    end
 end

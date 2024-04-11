@@ -31,10 +31,7 @@ class Transmutations
                 return
             end
             if option == "position" then
-                parent = NxTodos::interactivelySelectOrphanOrNull()
-                return if parent.nil?
-                position = Catalyst::interactivelySelectPositionInParent(parent)
-                Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
+                NxTodos::interactivelySetOrphanParent(item)
                 return
             end
             return

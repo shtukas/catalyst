@@ -225,6 +225,7 @@ class CommandsAndInterpreters
                 item = NxTodos::interactivelyIssueNewOrNull()
                 return if item.nil?
                 puts JSON.pretty_generate(item)
+                NxTodos::interactivelySetOrphanParent(item)
             end
             if option == "regular tree positioned todo" then
                 item = NxRingworldMissions::interactivelyIssueNewOrNull()
