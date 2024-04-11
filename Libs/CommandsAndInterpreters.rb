@@ -7,6 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | insert * | select * | dump into * | destroy *",
             "",
+            "listing       : rotate",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | ringworld-mission | singular-non-work-quest | float",
             "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | todos | floats",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
@@ -186,6 +187,11 @@ class CommandsAndInterpreters
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
             Cubes2::setAttribute(item["uuid"], "hours", hours)
+            return
+        end
+
+        if Interpreting::match("rotate", input) then
+            Listing::rotate()
             return
         end
 

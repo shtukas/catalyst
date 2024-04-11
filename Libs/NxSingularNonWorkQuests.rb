@@ -17,7 +17,7 @@ class NxSingularNonWorkQuests
 
     # NxSingularNonWorkQuests::ratio()
     def self.ratio()
-        Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b").to_f/NxSingularNonWorkQuests::recoveryTimeControl()
+        [Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b"), 0].max.to_f/NxSingularNonWorkQuests::recoveryTimeControl()
     end
 
     # NxSingularNonWorkQuests::toString(item)

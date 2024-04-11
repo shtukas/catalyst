@@ -111,4 +111,11 @@ class Listing
         listing.map{|nx45| nx45["item"] }.compact
     end
 
+    # Listing::rotate()
+    def self.rotate()
+        listing = Listing::get()
+        listing = listing.drop(1) + listing.take(1)
+        Listing::store(listing)
+    end
+
 end

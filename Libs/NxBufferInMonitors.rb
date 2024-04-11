@@ -12,7 +12,7 @@ class NxBufferInMonitors
 
     # NxBufferInMonitors::ratio()
     def self.ratio()
-        Bank2::recoveredAverageHoursPerDay("480692a2-cf70-4ad6-ad34-64c88818d688").to_f/0.5
+        [Bank2::recoveredAverageHoursPerDay("480692a2-cf70-4ad6-ad34-64c88818d688"), 0].max.to_f/0.5
     end
 
     # NxBufferInMonitors::bufferInCardinal()

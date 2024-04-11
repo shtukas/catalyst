@@ -38,7 +38,7 @@ class NxTodos
     # NxTodos::listingRatio(item)
     def self.listingRatio(item)
         hours = item["hours"] || 1
-        Bank2::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours.to_f/7)
+        [Bank2::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
     end
 
     # NxTodos::performance(item)

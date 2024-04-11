@@ -35,7 +35,7 @@ class NxRingworldMissions
 
     # NxRingworldMissions::ratio()
     def self.ratio()
-        Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce").to_f/NxRingworldMissions::recoveryTimeControl()
+        [Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce"), 0].max.to_f/NxRingworldMissions::recoveryTimeControl()
     end
 
     # NxRingworldMissions::muiItems()

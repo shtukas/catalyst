@@ -22,7 +22,7 @@ require 'fileutils'
 require 'digest/sha1'
 # Digest::SHA1.hexdigest 'foo'
 # Digest::SHA1.file(myFile).hexdigest
-# Digest::SHA256.hexdigest 'message'  
+# Digest::SHA256.hexdigest 'message'
 # Digest::SHA256.file(myFile).hexdigest
 
 require 'colorize'
