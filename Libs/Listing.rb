@@ -34,6 +34,9 @@ class Listing
         if item["mikuType"] == "NxTodo" then
             return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
         end
+        if item["mikuType"] == "NxOndate" then
+            return "#{item["uuid"]}:#{Bank2::getValue(item["uuid"])}"
+        end
         item["uuid"]
     end
 
