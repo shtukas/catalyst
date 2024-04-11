@@ -20,7 +20,7 @@ class Transmutations
 
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxTodo" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxTodo")
-            options = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set hours", "position"])
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["set hours", "position"])
             if option.nil? then
                 option = "position"
             end
