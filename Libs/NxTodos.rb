@@ -52,7 +52,7 @@ class NxTodos
         if context == "main-listing-1635" then
             return "#{NxTodos::icon(item)} #{item["description"]}"
         end
-        if context == "NxTodos::program2()" then
+        if context == "icon+performance+description" then
             return "#{NxTodos::icon(item)} #{NxTodos::performance(item)} #{item["description"]}"
         end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
@@ -68,7 +68,7 @@ class NxTodos
     # NxTodos::interactivelySelectOrphanOrNull()
     def self.interactivelySelectOrphanOrNull()
         items = NxTodos::orphans().sort_by{|item| NxTodos::listingRatio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item, "icon+performance+description") })
     end
 
     # NxTodos::elementsInListingRatioOrder()
@@ -217,7 +217,7 @@ class NxTodos
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, "NxTodos::program2()")
+                    puts MainUserInterface::toString2(store, item, "icon+performance+description")
                 }
 
             puts ""
