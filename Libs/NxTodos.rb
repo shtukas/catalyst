@@ -244,6 +244,7 @@ class NxTodos
     def self.interactivelySetOrphanParent(item)
         parent = NxTodos::interactivelySelectOrphanOrNull()
         return if parent.nil?
+        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
         position = Catalyst::interactivelySelectPositionInParent(parent)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
     end
