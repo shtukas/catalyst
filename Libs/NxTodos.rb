@@ -245,6 +245,6 @@ class NxTodos
         parent = NxTodos::interactivelySelectOrphanOrNull()
         return if parent.nil?
         position = Catalyst::interactivelySelectPositionInParent(parent)
-        Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
+        Cubes2::setAttribute(item["uuid"], "global-positioning", position)
     end
 end
