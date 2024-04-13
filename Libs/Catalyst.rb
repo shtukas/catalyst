@@ -175,6 +175,9 @@ class Catalyst
         if position == "next" then
             return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
         end
+        if position == "" then
+            position == rand
+        end
         position = position.to_f
         position
     end

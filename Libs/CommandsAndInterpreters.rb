@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | insert * | select * | dump into * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | move * | insert * | select * | dump into * | destroy *",
             "",
             "listing       : rotate",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | ringworld-mission | singular-non-work-quest | float",
@@ -341,6 +341,15 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
+            return
+        end
+
+        if Interpreting::match("move *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTodo"
+            NxTodos::interactivelySetOrphanParent(item)
             return
         end
 
