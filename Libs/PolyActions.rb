@@ -186,11 +186,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
+            if Catalyst::children(item).size > 0 then
+                NxTodos::program1(item)
+                return
+            end
             NxBalls::start(item)
             NxTodos::access(item)
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
-            return if Catalyst::children(item).size > 0
             if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
