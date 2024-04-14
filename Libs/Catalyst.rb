@@ -121,6 +121,7 @@ class Catalyst
 
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
+        puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
         target = NxTodos::interactivelySelectOrphanOrNull()
         return if target.nil?
         Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
@@ -217,5 +218,12 @@ class Catalyst
             position = Catalyst::interactivelySelectPositionInParent(parent) - 1
         end
         Catalyst::interactivelyInsertAtPosition(parent, position)
+    end
+
+    # Catalyst::addToSelect(item)
+    def self.addToSelect(item)
+        uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
+        uuids = (uuids + [item["uuid"]]).uniq
+        XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
     end
 end

@@ -145,9 +145,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-            uuids = (uuids + [item["uuid"]]).uniq
-            XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
+            Catalyst::addToSelect(item)
             return
         end
 
@@ -162,11 +160,11 @@ class CommandsAndInterpreters
             end
             uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
             uuids.each{|uuid|
-                item = Cubes2::itemOrNull(uuid)
-                next if item.nil?
-                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-                position = Catalyst::topPositionInParent(parent)
-                Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+                i2 = Cubes2::itemOrNull(uuid)
+                next if i2.nil?
+                Cubes2::setAttribute(i2["uuid"], "parentuuid-0032", item["uuid"])
+                position = Catalyst::topPositionInParent(item)
+                Cubes2::setAttribute(i2["uuid"], "global-positioning", position)
             }
             XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", "[]")
             return

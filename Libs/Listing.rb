@@ -42,6 +42,9 @@ class Listing
 
     # Listing::insertionRatio(item)
     def self.insertionRatio(item)
+        if item["mikuType"] == "NxAnniversary" then
+            return 0.1
+        end
         if item["mikuType"] == "Wave" and item["interruption"] then
             return 0.1
         end

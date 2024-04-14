@@ -144,7 +144,7 @@ class NxTodos
 
             puts ""
 
-            puts "todo | pile | insert | position * | sort"
+            puts "todo | pile | insert | position * | sort | selects"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -178,6 +178,14 @@ class NxTodos
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(todo), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Cubes2::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(todo) - 1)
+                }
+                next
+            end
+
+            if input == "selects" then
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(todo), lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|i|
+                    Catalyst::addToSelect(i)
                 }
                 next
             end
