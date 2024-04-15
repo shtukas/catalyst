@@ -79,7 +79,7 @@ class NxTodos
 
     # NxTodos::muiItems()
     def self.muiItems()
-        NxTodos::elementsInListingRatioOrder()
+        NxTodos::elementsInListingRatioOrder().select{|item| NxTodos::listingRatio(item) < 1 }
     end
 
     # ------------------

@@ -12,12 +12,19 @@ class Listing
 
     # Listing::get()
     def self.get()
-        JSON.parse(XCache::getOrDefaultValue("2dea29de-dd57-4630-937e-4e3fd1af8cb5", "[]"))
+        filepath = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Listings").sort.last
+        filepath ? JSON.parse(IO.read(filepath)) : []
     end
 
     # Listing::store(listing)
     def self.store(listing)
-        XCache::set("2dea29de-dd57-4630-937e-4e3fd1af8cb5", JSON.generate(listing))
+        filename = "#{(Time.new.to_f*1000).to_i}.json"
+        filepath = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Listings/#{filename}"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(listing)) }
+
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Listings")
+            .select{|l| l != filepath }
+            .each{|l| FileUtils.rm(l) }
     end
 
     # Listing::trace(item)
