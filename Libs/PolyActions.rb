@@ -36,7 +36,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            NxTodos::access(item)
+            if Catalyst::children(item).size > 0 then
+                NxTodos::program1(item)
+            else
+                TxPayload::access(item)
+            end
             return
         end
 
@@ -155,7 +159,7 @@ class PolyActions
 
         if item["mikuType"] == "NxSingularNonWorkQuest" then
             NxBalls::start(item)
-            NxTodos::access(item)
+            TxPayload::access(item)
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
@@ -188,14 +192,14 @@ class PolyActions
         if item["mikuType"] == "NxTodo" then
             if Catalyst::children(item).size > 0 then
                 NxTodos::program1(item)
-                return
-            end
-            NxBalls::start(item)
-            NxTodos::access(item)
-            LucilleCore::pressEnterToContinue()
-            NxBalls::stop(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
-                Cubes2::destroy(item["uuid"])
+            else
+                NxBalls::start(item)
+                TxPayload::access(item)
+                LucilleCore::pressEnterToContinue()
+                NxBalls::stop(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
+                    Cubes2::destroy(item["uuid"])
+                end
             end
             return
         end

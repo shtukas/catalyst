@@ -85,12 +85,6 @@ class NxTodos
     # ------------------
     # Ops
 
-    # NxTodos::access(item)
-    def self.access(item)
-        TxPayload::access(item)
-        NxTodos::program1(item)
-    end
-
     # NxTodos::done(item)
     def self.done(item)
         if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -255,5 +249,11 @@ class NxTodos
         Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
         position = Catalyst::interactivelySelectPositionInParent(parent)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+    end
+
+    # NxSingularNonWorkQuests::metric(item)
+    def self.metric(item)
+        daily = (item["hours"] || 1).to_f/7
+        [0, daily - Bank2::recoveredAverageHoursPerDay(item["uuid"])]
     end
 end

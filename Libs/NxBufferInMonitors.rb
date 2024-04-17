@@ -28,4 +28,9 @@ class NxBufferInMonitors
         return [] if NxBufferInMonitors::ratio() >= 1
         Cubes2::mikuType("NxBufferInMonitor")
     end
+
+    # NxBufferInMonitors::metric(item)
+    def self.metric(item)
+        [0, 0.5 - Bank2::recoveredAverageHoursPerDay("480692a2-cf70-4ad6-ad34-64c88818d688")]
+    end
 end

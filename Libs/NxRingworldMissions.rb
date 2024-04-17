@@ -43,4 +43,9 @@ class NxRingworldMissions
         return [] if NxRingworldMissions::ratio() >= 1
         NxRingworldMissions::itemsInOrder().take(1)
     end
+
+    # NxRingworldMissions::metric(item)
+    def self.metric(item)
+        [0, NxRingworldMissions::recoveryTimeControl() - Bank2::recoveredAverageHoursPerDay("3413fd90-cfeb-4a66-af12-c1fc3eefa9ce")]
+    end
 end

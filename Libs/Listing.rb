@@ -131,4 +131,59 @@ class Listing
         Listing::store(listing)
     end
 
+    # Listing::metric(item)
+    def self.metric(item)
+
+        if item["mikuType"] == "NxAnniversary" then
+            return [1, 0]
+        end
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return [1, 0]
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return [1, 0]
+        end
+        if item["mikuType"] == "NxOndate" then
+            return [1, 0]
+        end
+        if item["mikuType"] == "PhysicalTarget" then
+            return [1, 0]
+        end
+        if item["mikuType"] == "NxBackup" then
+            return [1, 0]
+        end
+        if item["mikuType"] == "NxFloat" then
+            return [1, 0]
+        end
+        if item["mikuType"] == "NxRingworldMission" then
+            return NxRingworldMissions::metric(item)
+        end
+        if item["mikuType"] == "NxSingularNonWorkQuest" then
+            return NxSingularNonWorkQuests::metric(item)
+        end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return NxBufferInMonitors::metric(item)
+        end
+        if item["mikuType"] == "NxTodo" then
+            return NxTodos::metric(item)
+        end
+
+        raise "(error: 26638836) I do not know how to metric item: #{item}"
+    end
+
+    # Listing::metrics(items)
+    def self.metrics(items)
+        items.reduce([0, 0]){|data, item|
+            d = Listing::metric(item)
+            [data[0] + d[0], data[1] + [0, d[1]].max]
+        }
+    end
+
+    # Listing::metricstring()
+    def self.metricstring()
+        items = Listing::get().map{|nx45| nx45["item"] }
+        data = Listing::metrics(items)
+        "#{data[0]} items, #{data[1].round(2)} hours"
+    end
+
 end

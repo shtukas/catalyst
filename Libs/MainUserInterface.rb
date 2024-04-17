@@ -229,6 +229,11 @@ class MainUserInterface
 
             spacecontrol.putsline ""
 
+            items = MainUserInterface::items2()
+
+            spacecontrol.putsline Listing::metricstring()
+            spacecontrol.putsline ""
+
             uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
             if uuids.size > 0 then
                 uuids.each{|uuid|
@@ -239,7 +244,6 @@ class MainUserInterface
                 puts ""
             end
 
-            items = MainUserInterface::items2()
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))

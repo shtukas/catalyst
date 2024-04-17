@@ -42,4 +42,9 @@ class NxSingularNonWorkQuests
         return [] if NxSingularNonWorkQuests::ratio() >= 1
         NxSingularNonWorkQuests::itemsInOrder().take(1)
     end
+
+    # NxSingularNonWorkQuests::metric(item)
+    def self.metric(item)
+        [0, NxSingularNonWorkQuests::recoveryTimeControl() - Bank2::recoveredAverageHoursPerDay("043c1f2e-3baa-4313-af1c-22c4b6fcb33b")]
+    end
 end
