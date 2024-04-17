@@ -110,11 +110,10 @@ class MainUserInterface
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
-            NxRingworldMissions::muiItems(),
-            NxSingularNonWorkQuests::muiItems(),
             NxBufferInMonitors::muiItems(),
-            Waves::muiItemsNotInterruption(),
             NxTodos::muiItems(),
+            NxThreads::muiItems(),
+            Waves::muiItemsNotInterruption(),
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -137,7 +136,6 @@ class MainUserInterface
     # MainUserInterface::items2()
     def self.items2()
         items = MainUserInterface::items()
-        items = Listing::apply(items)
         items = MainUserInterface::applyNxBallOrdering(items)
         items = Prefix::addPrefix(items)
         items
@@ -230,9 +228,6 @@ class MainUserInterface
             spacecontrol.putsline ""
 
             items = MainUserInterface::items2()
-
-            spacecontrol.putsline Listing::metricstring()
-            spacecontrol.putsline ""
 
             uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
             if uuids.size > 0 then

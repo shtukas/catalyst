@@ -146,7 +146,8 @@ class Waves
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             b1 and b2
         }
-        c1, c2 = Cubes2::mikuType("Wave").partition{|item| isMuiItem.call(item) }
+        c1, c2 = Cubes2::mikuType("Wave")
+            .partition{|item| isMuiItem.call(item) }
         c2.each{|item| WavesControl::isNotShowing(item["uuid"]) }
         c1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end

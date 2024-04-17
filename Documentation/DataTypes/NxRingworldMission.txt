@@ -1,7 +1,0 @@
-
-NxRingworldMission:
-    - uuid             : String
-    - mikuType         : "NxRingworldMission"
-    - unixtime         : Float
-    - description      : String
-    - lastDoneUnixtime : Float

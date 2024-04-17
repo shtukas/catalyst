@@ -75,7 +75,6 @@ class Catalyst
             Cubes1::maintenance()
             DoNotShowUntil1::maintenance()
             NxBackups::maintenance()
-            NxTodos::maintenance()
             if Cubes2::mikuType("NxTodo").size < 100 then
                 Cubes2::mikuType("NxIce").take(10).each{|item|
 
@@ -122,7 +121,7 @@ class Catalyst
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        target = NxTodos::interactivelySelectOrphanOrNull()
+        target = NxTodos::interactivelySelectOneOrNull()
         return if target.nil?
         Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end

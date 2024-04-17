@@ -47,14 +47,8 @@ class NxTodos
         "(#{"%6.2f" % (100 * NxTodos::listingRatio(item))} %; #{"%5.2f" % hours} h/w)".yellow
     end
 
-    # NxTodos::toString(item, context = nil)
-    def self.toString(item, context = nil)
-        if context == "main-listing-1635" then
-            return "#{NxTodos::icon(item)} #{item["description"]}"
-        end
-        if context == "icon+performance+description" then
-            return "#{NxTodos::icon(item)} #{NxTodos::performance(item)} #{item["description"]}"
-        end
+    # NxTodos::toString(item)
+    def self.toString(item)
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
 
@@ -65,8 +59,8 @@ class NxTodos
             .sort_by{|item| item["unixtime"] }
     end
 
-    # NxTodos::interactivelySelectOrphanOrNull()
-    def self.interactivelySelectOrphanOrNull()
+    # NxTodos::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
         items = NxTodos::orphans().sort_by{|item| NxTodos::listingRatio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item, "icon+performance+description") })
     end
@@ -80,180 +74,5 @@ class NxTodos
     # NxTodos::muiItems()
     def self.muiItems()
         NxTodos::elementsInListingRatioOrder().select{|item| NxTodos::listingRatio(item) < 1 }
-    end
-
-    # ------------------
-    # Ops
-
-    # NxTodos::done(item)
-    def self.done(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-            Cubes2::destroy(item["uuid"])
-        end
-    end
-
-    # NxTodos::maintenance()
-    def self.maintenance()
-        Cubes2::mikuType("NxTodo")
-            .select{|item| item["parentuuid-0032"] }
-            .select{|item| Cubes2::itemOrNull(item["parentuuid-0032"]).nil? }
-            .each{|item|
-                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", "c1ec1949-5e0d-44ae-acb2-36429e9146c0") # Misc Timecore
-            }
-    end
-
-    # NxTodos::program1(todo)
-    def self.program1(todo)
-        loop {
-
-            todo = Cubes2::itemOrNull(todo["uuid"])
-            return if todo.nil?
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts ""
-
-            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-            if uuids.size > 0 then
-                uuids.each{|uuid|
-                    item = Cubes2::itemOrNull(uuid)
-                    next if item.nil?
-                    puts "[selected] #{PolyFunctions::toString(item)}"
-                }
-                puts ""
-            end
-
-            store.register(todo, false)
-            puts MainUserInterface::toString2(store, todo, "inventory")
-
-            puts ""
-
-            Catalyst::children(todo)
-                .each{|element|
-                    store.register(element, MainUserInterface::canBeDefault(element))
-                    puts MainUserInterface::toString2(store, element, "listing-in-todo")
-                }
-
-            puts ""
-
-            puts "todo | pile | insert | position * | sort | selects"
-
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "todo" then
-                task = NxTodos::interactivelyIssueNewOrNull()
-                next if task.nil?
-                puts JSON.pretty_generate(task)
-                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", todo["uuid"])
-                position = Catalyst::interactivelySelectPositionInParent(todo)
-                Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-                next
-            end
-
-            if input.start_with?("position") then
-                listord = input[8, input.size].strip.to_i
-                i = store.get(listord.to_i)
-                next if i.nil?
-                position = Catalyst::interactivelySelectPositionInParent(todo)
-                Cubes2::setAttribute(i["uuid"], "global-positioning", position)
-                next
-            end
-
-            if input == "pile" then
-                Catalyst::interactivelyPileIntoParent(todo)
-                next
-            end
-
-            if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(todo), lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|i|
-                    Cubes2::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(todo) - 1)
-                }
-                next
-            end
-
-            if input == "selects" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::children(todo), lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|i|
-                    Catalyst::addToSelect(i)
-                }
-                next
-            end
-
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxTodos::program2()
-    def self.program2()
-        loop {
-
-            elements = NxTodos::orphans()
-                        .sort_by{|item| NxTodos::listingRatio(item) }
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts ""
-
-            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-            if uuids.size > 0 then
-                uuids.each{|uuid|
-                    item = Cubes2::itemOrNull(uuid)
-                    next if item.nil?
-                    puts "[selected] #{PolyFunctions::toString(item)}"
-                }
-                puts ""
-            end
-
-            weekTotal = elements.map{|item| item["hours"] || 1 }.inject(0, :+)
-
-            puts "> week: #{weekTotal}, day: #{(weekTotal.to_f/7).round(2)}"
-            puts ""
-
-            elements
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, "icon+performance+description")
-                }
-
-            puts ""
-            puts "todo"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "todo" then
-                task = NxTodos::interactivelyIssueNewOrNull()
-                next if task.nil?
-                puts JSON.pretty_generate(task)
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-                next
-            end
-
-            puts ""
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxTodos::interactivelySetOrphanParent(item)
-    def self.interactivelySetOrphanParent(item)
-        parent = NxTodos::interactivelySelectOrphanOrNull()
-        return if parent.nil?
-        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-        position = Catalyst::interactivelySelectPositionInParent(parent)
-        Cubes2::setAttribute(item["uuid"], "global-positioning", position)
-    end
-
-    # NxSingularNonWorkQuests::metric(item)
-    def self.metric(item)
-        daily = (item["hours"] || 1).to_f/7
-        [0, daily - Bank2::recoveredAverageHoursPerDay(item["uuid"])]
     end
 end

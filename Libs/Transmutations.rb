@@ -4,8 +4,7 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         map = {
-            "NxOndate"  => ["NxTodo", "NxSingularNonWorkQuest", "NxFloat"],
-            "Wave"      => ["NxRingworldMission"],
+            "NxOndate"  => ["NxTodo", "NxFloat"],
         }
         if map[item["mikuType"]].nil? then
             raise "I do not know how to transmute: #{JSON.pretty_generate(item)}"
@@ -31,25 +30,13 @@ class Transmutations
                 return
             end
             if option == "position" then
-                NxTodos::interactivelySetOrphanParent(item)
+                NxThreads::interactivelySetParent(item)
                 return
             end
             return
         end
-        if item["mikuType"] == "NxOndate" and targetMikuType == "NxSingularNonWorkQuest" then
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxSingularNonWorkQuest")
-            return
-        end
         if item["mikuType"] == "NxOndate" and targetMikuType == "NxFloat" then
             Cubes2::setAttribute(item["uuid"], "mikuType", "NxFloat")
-            return
-        end
-        if item["mikuType"] == "Wave" and targetMikuType == "NxRingworldMission" then
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxRingworldMission")
-            Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-            item = Cubes2::itemOrNull(item["uuid"])
-            puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetDonation(item)
             return
         end
         raise "I do not know how to transmute2 a #{item["mikuType"]} into a #{targetMikuType}"

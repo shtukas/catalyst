@@ -8,10 +8,6 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["mikuType"] == "NxRingworldMission" then
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -36,11 +32,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            if Catalyst::children(item).size > 0 then
-                NxTodos::program1(item)
-            else
-                TxPayload::access(item)
-            end
+            TxPayload::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -68,16 +65,6 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
-            return
-        end
-
-        if item["mikuType"] == "NxSingularNonWorkQuest" then
-            Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-            return
-        end
-
-        if item["mikuType"] == "NxRingworldMission" then
-            Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
             return
         end
 
@@ -110,7 +97,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            NxTodos::done(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxThread" then
+            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 
@@ -153,21 +147,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxRingworldMission" then
-            return
-        end
-
-        if item["mikuType"] == "NxSingularNonWorkQuest" then
-            NxBalls::start(item)
-            TxPayload::access(item)
-            LucilleCore::pressEnterToContinue()
-            NxBalls::stop(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", false) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "DropBox" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 DropBox::done(item["uuid"])
@@ -190,17 +169,18 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            if Catalyst::children(item).size > 0 then
-                NxTodos::program1(item)
-            else
-                NxBalls::start(item)
-                TxPayload::access(item)
-                LucilleCore::pressEnterToContinue()
-                NxBalls::stop(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
-                    Cubes2::destroy(item["uuid"])
-                end
+            NxBalls::start(item)
+            TxPayload::access(item)
+            LucilleCore::pressEnterToContinue()
+            NxBalls::stop(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
+                Cubes2::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -247,13 +227,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxRingworldMission" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
@@ -269,6 +242,18 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxThread" then
+            if Catalyst::children(parent).size > 0 then
+                puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
@@ -306,10 +291,6 @@ class PolyActions
 
     # PolyActions::program(item)
     def self.program(item)
-
-        if item["mikuType"] == "NxRingworldMission" then
-            return
-        end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::program1(item)

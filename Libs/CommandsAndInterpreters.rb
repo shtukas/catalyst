@@ -7,9 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | move * | insert * | select * | dump into * | destroy *",
             "",
-            "listing       : rotate",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | ringworld-mission | singular-non-work-quest | float",
-            "divings       : anniversaries | ondates | waves | desktop | ringworld-missions | singular-non-work-quests | backups | todos | floats",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reload",
         ].join("\n")
@@ -72,22 +71,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("ringworld-mission", input) then
-            item = NxRingworldMissions::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("singular-non-work-quest", input) then
-            item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetDonation(item)
-            return
-        end
-
         if Interpreting::match("project", input) then
             item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -95,27 +78,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todos", input) then
-            NxTodos::program2()
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
         if Interpreting::match("backups", input) then
             items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
-            Catalyst::program2(items)
-            return
-        end
-
-        if Interpreting::match("ringworld-missions", input) then
-            items = Cubes2::mikuType("NxRingworldMission")
-                        .sort_by{|item| item["lastDoneUnixtime"] }
-            Catalyst::program2(items)
-            return
-        end
-
-        if Interpreting::match("singular-non-work-quests", input) then
-            items = Cubes2::mikuType("NxSingularNonWorkQuest")
-                        .sort_by{|item| item["unixtime"] }
             Catalyst::program2(items)
             return
         end
@@ -188,11 +157,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("rotate", input) then
-            Listing::rotate()
-            return
-        end
-
         if Interpreting::match("today", input) then
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
@@ -215,28 +179,22 @@ class CommandsAndInterpreters
             return
         end
 
+
+        if Interpreting::match("thread", input) then
+            NxThreads::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
+            return
+        end
+
         if Interpreting::match("todo", input) then
-            options = ["todo", "ringworld mission", "singular non work quest"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            return if option.nil?
-            if option == "todo" then
-                item = NxTodos::interactivelyIssueNewOrNull()
-                return if item.nil?
-                puts JSON.pretty_generate(item)
-                NxTodos::interactivelySetOrphanParent(item)
-            end
-            if option == "regular tree positioned todo" then
-                item = NxRingworldMissions::interactivelyIssueNewOrNull()
-                return if item.nil?
-                puts JSON.pretty_generate(item)
-                Catalyst::interactivelySetDonation(item)
-            end
-            if option == "singular non work quest" then
-                item = NxSingularNonWorkQuests::interactivelyIssueNewOrNull()
-                return if item.nil?
-                puts JSON.pretty_generate(item)
-                Catalyst::interactivelySetDonation(item)
-            end
+            item = NxTodos::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            NxThreads::interactivelySetParent(item)
             return
         end
 
@@ -347,7 +305,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            NxTodos::interactivelySetOrphanParent(item)
+            NxThreads::interactivelySetParent(item)
             return
         end
 
