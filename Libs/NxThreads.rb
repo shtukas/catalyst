@@ -80,6 +80,7 @@ class NxThreads
     # NxThreads::muiItems()
     def self.muiItems()
         NxThreads::activeItems()
+            .select{|item| NxThreads::listingRatio(item) < 1 }
     end
 
     # ------------------

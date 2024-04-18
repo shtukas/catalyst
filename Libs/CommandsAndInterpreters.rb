@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | move * | insert * | select * | dump into * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread | thread * (applied to NxTodo)",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reload",
@@ -151,10 +151,31 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            return if !["NxTodo", "NxThread"].include?(item["mikuType"])
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
             Cubes2::setAttribute(item["uuid"], "hours", hours)
+            if item["mikuType"] != "NxThread" then
+                Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
+            end
             return
+        end
+
+        if Interpreting::match("thread", input) then
+            NxThreads::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("thread *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTodo"
+            Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
+            hours = NxThreads::interactivelyDecideHoursOrNull()
+            if hours then
+                Cubes2::setAttribute(item["uuid"], "hours", hours)
+            end
         end
 
         if Interpreting::match("today", input) then
@@ -179,11 +200,6 @@ class CommandsAndInterpreters
             return
         end
 
-
-        if Interpreting::match("thread", input) then
-            NxThreads::interactivelyIssueNewOrNull()
-            return
-        end
 
         if Interpreting::match("threads", input) then
             NxThreads::program2()
