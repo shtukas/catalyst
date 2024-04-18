@@ -118,14 +118,6 @@ class Catalyst
         nil
     end
 
-    # Catalyst::interactivelySetDonation(item)
-    def self.interactivelySetDonation(item)
-        puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        target = NxTodos::interactivelySelectOneOrNull()
-        return if target.nil?
-        Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
-    end
-
     # Catalyst::insertionPositions(parent, position, count)
     def self.insertionPositions(parent, position, count)
         children = Catalyst::children(parent)

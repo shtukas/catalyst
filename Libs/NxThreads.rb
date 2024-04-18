@@ -240,4 +240,12 @@ class NxThreads
         position = Catalyst::interactivelySelectPositionInParent(parent)
         Cubes2::setAttribute(item["uuid"], "global-positioning", position)
     end
+
+    # NxThreads::interactivelySetDonation(item)
+    def self.interactivelySetDonation(item)
+        puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
+        target = NxThreads::interactivelySelectOneOrNull()
+        return if target.nil?
+        Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
+    end
 end

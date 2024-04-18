@@ -44,7 +44,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Catalyst::interactivelySetDonation(item)
+            NxThreads::interactivelySetDonation(item)
             return
         end
 
