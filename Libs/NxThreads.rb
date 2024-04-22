@@ -77,10 +77,15 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxThreads::muiItems()
-    def self.muiItems()
+    # NxThreads::muiItems1()
+    def self.muiItems1()
         NxThreads::activeItems()
             .select{|item| NxThreads::listingRatio(item) < 1 }
+    end
+
+    # NxThreads::muiItems2()
+    def self.muiItems2()
+        NxThreads::nonActiveItems()
     end
 
     # ------------------

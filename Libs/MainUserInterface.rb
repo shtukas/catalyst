@@ -112,8 +112,9 @@ class MainUserInterface
             NxFloats::muiItems(),
             NxBufferInMonitors::muiItems(),
             NxTodos::muiItems(),
-            NxThreads::muiItems(),
+            NxThreads::muiItems1(),
             Waves::muiItemsNotInterruption(),
+            NxThreads::muiItems2(),
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
