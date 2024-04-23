@@ -65,14 +65,10 @@ class NxTodos
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item, "icon+performance+description") })
     end
 
-    # NxTodos::elementsInListingRatioOrder()
-    def self.elementsInListingRatioOrder()
-        NxTodos::orphans()
-            .sort_by{|item| NxTodos::listingRatio(item) }
-    end
-
     # NxTodos::muiItems()
     def self.muiItems()
-        NxTodos::elementsInListingRatioOrder().select{|item| NxTodos::listingRatio(item) < 1 }
+        NxTodos::orphans()
+            .sort_by{|item| NxTodos::listingRatio(item) }
+            .select{|item| NxTodos::listingRatio(item) < 1 }
     end
 end
