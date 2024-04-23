@@ -221,6 +221,7 @@ class CommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
+            Catalyst::listingOrdinalReset(item)
         end
 
         if Interpreting::match("access", input) then

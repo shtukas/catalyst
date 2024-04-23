@@ -81,7 +81,7 @@ class MainUserInterface
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         arrow = item["x:prefix:0859"] ? " (#{item["x:prefix:0859"]})" : ""
-        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "(#{"%6.3f" % item["listing-ordinal-134"]}) #{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -136,7 +136,7 @@ class MainUserInterface
 
     # MainUserInterface::items2()
     def self.items2()
-        items = MainUserInterface::items()
+        items = Listing::getListedItemsInOrder()
         items = MainUserInterface::applyNxBallOrdering(items)
         items = Prefix::addPrefix(items)
         items

@@ -217,4 +217,15 @@ class Catalyst
         uuids = (uuids + [item["uuid"]]).uniq
         XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
     end
+
+    # Catalyst::listingOrdinalReset(item)
+    def self.listingOrdinalReset(item)
+        Cubes2::setAttribute(item["uuid"], "listing-ordinal-134", nil)
+        if item["mikuType"] == "NxTodo" then
+            return if item["parentuuid-0032"].nil?
+            parent = Cubes2::getOrNull(item["parentuuid-0032"])
+            return if parent.nil?
+            Cubes2::setAttribute(parent["uuid"], "listing-ordinal-134", nil)
+        end
+    end
 end

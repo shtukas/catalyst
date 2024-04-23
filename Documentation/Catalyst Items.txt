@@ -21,3 +21,5 @@ Cross types conventions (all optional):
 
     - donation-1601       : null or String
     - parentuuid-0032     : null or uuid of the parent
+
+    - listing-ordinal-134 : Float

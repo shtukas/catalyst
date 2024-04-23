@@ -62,6 +62,7 @@ class PolyActions
     def self.done(item, confirmed = false)
 
         NxBalls::stop(item)
+        Catalyst::listingOrdinalReset(item)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
@@ -165,6 +166,7 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
+            Catalyst::listingOrdinalReset(item)
             return
         end
 
@@ -173,6 +175,7 @@ class PolyActions
             TxPayload::access(item)
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
+            Catalyst::listingOrdinalReset(item)
             if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
@@ -191,6 +194,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
+            Catalyst::listingOrdinalReset(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes2::destroy(item["uuid"])
             end
@@ -199,6 +203,7 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
+            Catalyst::listingOrdinalReset(item)
             return
         end
 
@@ -211,6 +216,7 @@ class PolyActions
                 NxBalls::stop(item)
                 Waves::performWaveDone(item)
             end
+            Catalyst::listingOrdinalReset(item)
             return
         end
 
