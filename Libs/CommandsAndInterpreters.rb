@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | bank data * | hours * | move * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread | thread * (applied to NxTodo)",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reload",
@@ -97,6 +97,14 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("parent *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Catalyst::interactivelySetParent(item)
+            return
+        end
+
         if Interpreting::match("hours *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -117,20 +125,10 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("thread", input) then
-            NxThreads::interactivelyIssueNewOrNull()
+            thread = NxThreads::interactivelyIssueNewOrNull()
+            return if thread.nil?
+            puts JSON.pretty_generate(thread)
             return
-        end
-
-        if Interpreting::match("thread *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["mikuType"] != "NxTodo"
-            Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
-            hours = NxThreads::interactivelyDecideHoursOrNull()
-            if hours then
-                Cubes2::setAttribute(item["uuid"], "hours", hours)
-            end
         end
 
         if Interpreting::match("today", input) then

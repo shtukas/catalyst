@@ -50,7 +50,10 @@ class NxTodos
     # NxTodos::maintenance()
     def self.maintenance()
         Cubes2::mikuType("NxTodo").each{|item|
-            next if item["parentuuid-0032"].nil?
+            if item["parentuuid-0032"].nil? then
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b") # core infinity
+                next
+            end
             parent = Cubes2::itemOrNull(item["parentuuid-0032"])
             if parent.nil? then
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
@@ -61,5 +64,7 @@ class NxTodos
                 next
             end
         }
+
+        
     end
 end

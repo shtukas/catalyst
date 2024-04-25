@@ -20,11 +20,14 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         hours = NxThreads::interactivelyDecideHoursOrNull()
+        core = TxCores::interactivelySelectOneOrNull()
+        return if core.nil?
         Cubes2::itemInit(uuid, "NxThread")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
         Cubes2::setAttribute(uuid, "hours", hours)
+        Cubes2::setAttribute(uuid, "parentuuid-0032", core["uuid"])
         Cubes2::itemOrNull(uuid)
     end
 
@@ -33,7 +36,7 @@ class NxThreads
 
     # NxThreads::icon(item)
     def self.icon(item)
-        "🔺"
+        "🧵"
     end
 
     # NxThreads::performance(item)
@@ -270,7 +273,10 @@ class NxThreads
     # NxThreads::maintenance()
     def self.maintenance()
         Cubes2::mikuType("NxThread").each{|thread|
-            next if thread["parentuuid-0032"].nil?
+            if thread["parentuuid-0032"].nil? then
+                Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b") # core infinity
+                next
+            end
             parent = Cubes2::itemOrNull(thread["parentuuid-0032"])
             if parent.nil? then
                 Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", nil)
@@ -285,7 +291,7 @@ class NxThreads
         Cubes2::mikuType("NxThread").each{|thread|
             Catalyst::children(thread).each{|child|
                 if child["mikuType"] != "NxTodo" then
-                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil?)
+                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil)
                 end
             }
         }

@@ -84,7 +84,7 @@ class TxCores
 
             puts ""
 
-            puts "todo | thread"
+            puts "todo | thread | hours"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -104,6 +104,11 @@ class TxCores
                 puts JSON.pretty_generate(thread)
                 Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", core["uuid"])
                 next
+            end
+
+            if input == "hours" then
+                hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+                Cubes2::setAttribute(core["uuid"], "hours", hours)
             end
 
             CommandsAndInterpreters::interpreter(input, store)
@@ -157,7 +162,7 @@ class TxCores
         Cubes2::mikuType("NxThread").each{|core|
             Catalyst::children(core).each{|child|
                 if !["NxThread", "NxTodo"].include?(child["mikuType"]) then
-                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil?)
+                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil)
                 end
             }
         }
