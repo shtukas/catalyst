@@ -228,19 +228,7 @@ class MainUserInterface
 
             spacecontrol.putsline ""
 
-            items = MainUserInterface::items2()
-
-            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-            if uuids.size > 0 then
-                uuids.each{|uuid|
-                    item = Cubes2::itemOrNull(uuid)
-                    next if item.nil?
-                    puts "[selected] #{PolyFunctions::toString(item)}"
-                }
-                puts ""
-            end
-
-            items
+            MainUserInterface::items2()
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
                     line = MainUserInterface::toString2(store, item)
@@ -251,7 +239,6 @@ class MainUserInterface
             puts ""
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
-                XCache::set("a297793a-a62e-4e2f-b7aa-72d494bdb206", "focus")
                 return
             end
 

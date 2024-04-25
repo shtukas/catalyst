@@ -130,35 +130,6 @@ class Catalyst
         nil
     end
 
-    # Catalyst::insertionPositions(parent, position, count)
-    def self.insertionPositions(parent, position, count)
-        children = Catalyst::children(parent)
-        if children.empty? then
-            return (1..count).to_a
-        end
-        childrens1 = children.select{|item| (item["global-positioning"] || 0) < position }
-        childrens2 = children.select{|item| (item["global-positioning"] || 0) > position }
-        if childrens1.empty? and childrens2.empty? then
-            # this should not happen
-            raise "(error: cb689a8d-5fb9-4b8d-80b7-1f30ecb4edca; parent: #{parent}, position: #{position}, count: #{count})"
-        end
-        if childrens1.size > 0 and childrens2.size == 0 then
-            x = position.ceil
-            return (x..x+count-1).to_a
-        end
-        if childrens1.size == 0 and childrens2.size > 0 then
-            x = position.floor - count
-            return (x..x+count-1).to_a
-        end
-        if childrens1.size > 0 and childrens2.size > 0 then
-            x1 = childrens1.map{|item| item["global-positioning"] || 0 }.max
-            x2 = childrens2.map{|item| item["global-positioning"] || 0 }.min
-            spread = 0.8*(x2 - x1)
-            shift  = 0.1*(x2 - x1)
-            return (0..count-1).to_a.map{|x| x1 + shift + spread*x.to_f/(count) }
-        end
-    end
-
     # Catalyst::children(parent)
     def self.children(parent)
         Cubes2::items()
@@ -169,70 +140,6 @@ class Catalyst
     # Catalyst::isOrphan(item)
     def self.isOrphan(item)
         item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil?
-    end
-
-    # Catalyst::interactivelySelectPositionInParent(parent)
-    def self.interactivelySelectPositionInParent(parent)
-        elements = Catalyst::children(parent)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        if position == "" then
-            position == rand
-        end
-        position = position.to_f
-        position
-    end
-
-    # Catalyst::topPositionInParent(parent)
-    def self.topPositionInParent(parent)
-        elements = Catalyst::children(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
-    end
-
-    # Catalyst::interactivelyInsertAtPosition(parent, position)
-    def self.interactivelyInsertAtPosition(parent, position)
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
-        positions = Catalyst::insertionPositions(parent, position, descriptions.size)
-        descriptions.zip(positions).each{|description, position|
-            task = NxTodos::descriptionToTask1(SecureRandom.hex, description)
-            puts JSON.pretty_generate(task)
-            Cubes2::setAttribute(task["uuid"], "parentuuid-0032", parent["uuid"])
-            Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-        }
-    end
-
-    # Catalyst::interactivelyPileIntoParent(parent)
-    def self.interactivelyPileIntoParent(parent)
-        position = Catalyst::topPositionInParent(parent) - 1
-        Catalyst::interactivelyInsertAtPosition(parent, position)
-    end
-
-    # Catalyst::interactivelyInsertIntoParent(parent)
-    def self.interactivelyInsertIntoParent(parent)
-        children = Catalyst::children(parent)
-        if children.empty? then
-            position = 0
-        else
-            position = Catalyst::interactivelySelectPositionInParent(parent) - 1
-        end
-        Catalyst::interactivelyInsertAtPosition(parent, position)
-    end
-
-    # Catalyst::addToSelect(item)
-    def self.addToSelect(item)
-        uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-        uuids = (uuids + [item["uuid"]]).uniq
-        XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
     end
 
     # Catalyst::interactivelySetDonation(item)
@@ -248,8 +155,16 @@ class Catalyst
         parent = nil
 
         if item["mikuType"] == "NxTodo" then
-            parent = NxThreads::interactivelySelectOneOrNull()
-            return if parent.nil?
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["thread", "core"])
+            return if option.nil?
+            if option == "thread" then
+                parent = NxThreads::interactivelySelectOneOrNull()
+                return if parent.nil?
+            end
+            if option == "core" then
+                parent = TxCores::interactivelySelectOneOrNull()
+                return if parent.nil?
+            end
         end
 
         if item["mikuType"] == "NxThread" then
@@ -262,7 +177,7 @@ class Catalyst
         Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
 
         if parent["mikuType"] == "NxThread" then
-            position = Catalyst::interactivelySelectPositionInParent(parent)
+            position = NxThreads::interactivelySelectPositionInParent(parent)
             Cubes2::setAttribute(item["uuid"], "global-positioning", position)
         end
     end

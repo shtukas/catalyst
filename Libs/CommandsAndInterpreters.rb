@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | bank data * | hours * | move * | insert * | select * | dump into * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | bank data * | hours * | move * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread | thread * (applied to NxTodo)",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | cores",
@@ -86,48 +86,6 @@ class CommandsAndInterpreters
         if Interpreting::match("backups", input) then
             items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
-            return
-        end
-
-        if Interpreting::match("insert *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTodo" then
-                puts "We can only insert into a todo"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            Catalyst::interactivelyInsertIntoParent(item)
-            return
-        end
-
-        if Interpreting::match("select *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::addToSelect(item)
-            return
-        end
-
-        if Interpreting::match("dump into *", input) then
-            _, _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTodo" then
-                puts "We can only dump into a todo"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-            uuids.each{|uuid|
-                i2 = Cubes2::itemOrNull(uuid)
-                next if i2.nil?
-                Cubes2::setAttribute(i2["uuid"], "parentuuid-0032", item["uuid"])
-                position = Catalyst::topPositionInParent(item)
-                Cubes2::setAttribute(i2["uuid"], "global-positioning", position)
-            }
-            XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", "[]")
             return
         end
 
