@@ -203,4 +203,28 @@ class NxThreads
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # NxThreads::maintenance()
+    def self.maintenance()
+        Cubes2::mikuType("NxThread").each{|thread|
+            next if thread["parentuuid-0032"].nil?
+            parent = Cubes2::itemOrNull(thread["parentuuid-0032"])
+            if parent.nil? then
+                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                next
+            end
+            if parent["mikuType"] != "TxCore" then
+                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                next
+            end
+        }
+
+        Cubes2::mikuType("NxThread").each{|thread|
+            Catalyst::children(thread).each{|child|
+                if child["mikuType"] != "NxTodo" then
+                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil?)
+                end
+            }
+        }
+    end
 end

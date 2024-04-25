@@ -97,6 +97,10 @@ class Catalyst
             }
 
             NxTodos::maintenance()
+
+            NxThreads::maintenance()
+
+            TxCores::maintenance()
         end
     end
 

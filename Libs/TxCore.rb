@@ -142,4 +142,15 @@ class TxCores
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # TxCores::maintenance()
+    def self.maintenance()
+        Cubes2::mikuType("NxThread").each{|core|
+            Catalyst::children(core).each{|child|
+                if child["mikuType"] != "NxThread" then
+                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil?)
+                end
+            }
+        }
+    end
 end

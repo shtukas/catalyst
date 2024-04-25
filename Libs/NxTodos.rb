@@ -44,7 +44,7 @@ class NxTodos
     def self.muiItems()
         Cubes2::mikuType("NxTodo")
             .select{|item| Catalyst::isOrphan(item) }
-            .sort_by{|item| NxTodos::performance(item) }
+            .sort_by{|item| item["unixtime"] }
     end
 
     # NxTodos::maintenance()
@@ -54,6 +54,11 @@ class NxTodos
             parent = Cubes2::itemOrNull(item["parentuuid-0032"])
             if parent.nil? then
                 Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                next
+            end
+            if parent["mikuType"] != "NxThread" then
+                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                next
             end
         }
     end

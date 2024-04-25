@@ -6,13 +6,13 @@ class Prefix
         return [] if items.empty?
 
         if items[0]["mikuType"] == "NxThread" then
-            children = Catalyst::children(items[0])
+            children = Catalyst::children(items[0]).sort_by{|i| (i["global-positioning"] || 0) }
             return items if children.empty?
             return Prefix::addPrefix(children.take(3) + items)
         end
 
         if items[0]["mikuType"] == "TxCore" then
-            children = Catalyst::children(items[0])
+            children = Catalyst::children(items[0]).sort_by{|i| NxThreads::performance(i) }
             return items if children.empty?
             return Prefix::addPrefix(children.take(3) + items)
         end
