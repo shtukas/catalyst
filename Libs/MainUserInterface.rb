@@ -76,12 +76,12 @@ class MainUserInterface
         item["interruption"]
     end
 
-    # MainUserInterface::toString2(store, item, context = nil)
-    def self.toString2(store, item, context = nil)
+    # MainUserInterface::toString2(store, item)
+    def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         arrow = item["x:prefix:0859"] ? " (#{item["x:prefix:0859"]})" : ""
-        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item, context)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -105,16 +105,16 @@ class MainUserInterface
             DropBox::items(),
             Desktop::muiItems(),
             Anniversaries::muiItems(),
-            Config::isPrimaryInstance() ? PhysicalTargets::muiItems() : [],
+            PhysicalTargets::muiItems(),
             Waves::muiItemsInterruption(),
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
             NxBufferInMonitors::muiItems(),
             NxTodos::muiItems(),
-            NxThreads::muiItems1(),
+            NxThreads::muiItems(),
+            TxCores::muiItems(),
             Waves::muiItemsNotInterruption(),
-            NxThreads::muiItems2(),
         ]
             .flatten
             .select{|item| MainUserInterface::listable(item) }
@@ -243,7 +243,7 @@ class MainUserInterface
             items
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    line = MainUserInterface::toString2(store, item, "main-listing-1635")
+                    line = MainUserInterface::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }

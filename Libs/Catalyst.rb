@@ -10,8 +10,8 @@ class Catalyst
         }
     end
 
-    # Catalyst::program2(elements, context = nil)
-    def self.program2(elements, context = nil)
+    # Catalyst::program2(elements)
+    def self.program2(elements)
         loop {
 
             elements = elements.map{|item| Cubes2::itemOrNull(item["uuid"]) }.compact
@@ -26,7 +26,7 @@ class Catalyst
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, context)
+                    puts MainUserInterface::toString2(store, item)
                 }
 
             puts ""
@@ -39,8 +39,8 @@ class Catalyst
         }
     end
 
-    # Catalyst::program3(elementsLambda, context = nil)
-    def self.program3(elementsLambda, context = nil)
+    # Catalyst::program3(elementsLambda)
+    def self.program3(elementsLambda)
         loop {
 
             elements = elementsLambda.call()
@@ -55,7 +55,7 @@ class Catalyst
             elements
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, context)
+                    puts MainUserInterface::toString2(store, item)
                 }
 
             puts ""
@@ -71,12 +71,18 @@ class Catalyst
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
+
             puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
+
             Cubes1::maintenance()
+
             DoNotShowUntil1::maintenance()
+
             NxBackups::maintenance()
+
             if Cubes2::mikuType("NxTodo").size < 100 then
-                Cubes2::mikuType("NxIce").take(10).each{|item|
+                raise "(error: 390817c3-d1f9)"
+                Cubes2::mikuType("NxIce").take(1000).each{|item|
 
                 }
             end
@@ -89,6 +95,8 @@ class Catalyst
                     next
                 end
             }
+
+            NxTodos::maintenance()
         end
     end
 
@@ -154,6 +162,11 @@ class Catalyst
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
+    # Catalyst::isOrphan(item)
+    def self.isOrphan(item)
+        item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil?
+    end
+
     # Catalyst::interactivelySelectPositionInParent(parent)
     def self.interactivelySelectPositionInParent(parent)
         elements = Catalyst::children(parent)
@@ -216,5 +229,37 @@ class Catalyst
         uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
         uuids = (uuids + [item["uuid"]]).uniq
         XCache::set("43ef5eda-d16d-483f-a438-e98d437bedda", JSON.generate(uuids))
+    end
+
+    # Catalyst::interactivelySetDonation(item)
+    def self.interactivelySetDonation(item)
+        puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
+        core = TxCores::interactivelySelectOneOrNull()
+        return if core.nil?
+        Cubes2::setAttribute(item["uuid"], "donation-1601", core["uuid"])
+    end
+
+    # Catalyst::interactivelySetParent(item)
+    def self.interactivelySetParent(item)
+        parent = nil
+
+        if item["mikuType"] == "NxTodo" then
+            parent = NxThreads::interactivelySelectOneOrNull()
+            return if parent.nil?
+        end
+
+        if item["mikuType"] == "NxThread" then
+            parent = TxCores::interactivelySelectOneOrNull()
+            return if parent.nil?
+        end
+
+        return if parent.nil?
+        
+        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
+
+        if parent["mikuType"] == "NxThread" then
+            position = Catalyst::interactivelySelectPositionInParent(parent)
+            Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+        end
     end
 end

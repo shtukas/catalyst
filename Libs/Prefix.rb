@@ -5,7 +5,13 @@ class Prefix
     def self.addPrefix(items)
         return [] if items.empty?
 
-        if items[0]["mikuType"] == "NxTodo" then
+        if items[0]["mikuType"] == "NxThread" then
+            children = Catalyst::children(items[0])
+            return items if children.empty?
+            return Prefix::addPrefix(children.take(3) + items)
+        end
+
+        if items[0]["mikuType"] == "TxCore" then
             children = Catalyst::children(items[0])
             return items if children.empty?
             return Prefix::addPrefix(children.take(3) + items)

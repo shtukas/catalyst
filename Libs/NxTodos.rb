@@ -27,24 +27,12 @@ class NxTodos
 
     # NxTodos::icon(item)
     def self.icon(item)
-        Catalyst::children(item).empty? ? "🔹" : "🔺"
-    end
-
-    # NxTodos::isOrphan(item)
-    def self.isOrphan(item)
-        item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil?
-    end
-
-    # NxTodos::listingRatio(item)
-    def self.listingRatio(item)
-        hours = item["hours"] || 1
-        [Bank2::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
+        "🔹"
     end
 
     # NxTodos::performance(item)
     def self.performance(item)
-        hours = item["hours"] || 1
-        "(#{"%6.2f" % (100 * NxTodos::listingRatio(item))} %; #{"%5.2f" % hours} h/w)".yellow
+        Bank2::recoveredAverageHoursPerDay(item["uuid"])
     end
 
     # NxTodos::toString(item)
@@ -52,23 +40,21 @@ class NxTodos
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}"
     end
 
-    # NxTodos::orphans()
-    def self.orphans()
-        Cubes2::mikuType("NxTodo")
-            .select{|item| NxTodos::isOrphan(item) }
-            .sort_by{|item| item["unixtime"] }
-    end
-
-    # NxTodos::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        items = NxTodos::orphans().sort_by{|item| NxTodos::listingRatio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item, "icon+performance+description") })
-    end
-
     # NxTodos::muiItems()
     def self.muiItems()
-        NxTodos::orphans()
-            .sort_by{|item| NxTodos::listingRatio(item) }
-            .select{|item| NxTodos::listingRatio(item) < 1 }
+        Cubes2::mikuType("NxTodo")
+            .select{|item| Catalyst::isOrphan(item) }
+            .sort_by{|item| NxTodos::performance(item) }
+    end
+
+    # NxTodos::maintenance()
+    def self.maintenance()
+        Cubes2::mikuType("NxTodo").each{|item|
+            next if item["parentuuid-0032"].nil?
+            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+            if parent.nil? then
+                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+            end
+        }
     end
 end

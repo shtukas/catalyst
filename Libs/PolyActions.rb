@@ -51,6 +51,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
@@ -97,7 +102,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["postponing", "destroy"])
+            return if option.nil?
+            if option == "postponing" then
+                DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            end
+            if option == "destroy" then
                 Cubes2::destroy(item["uuid"])
             end
             return
@@ -124,6 +134,11 @@ class PolyActions
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 
@@ -214,6 +229,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
@@ -249,7 +269,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if Catalyst::children(parent).size > 0 then
+            if Catalyst::children(item).size > 0 then
                 puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -281,6 +301,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCore" then
+            if Catalyst::children(item).size > 0 then
+                puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Cubes2::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
@@ -299,6 +331,11 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             Waves::program2(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
             return
         end
 

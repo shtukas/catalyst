@@ -1,8 +1,8 @@
 
 NxThread:
-    - uuid        : String
-    - mikuType    : "NxThread"
-    - unixtime    : Float
-    - datetime    : DateTime Iso 8601 UTC Zulu
-    - description : String
-    - hours       : optional, hours per week, if present makes the thread active
+    - uuid            : String
+    - mikuType        : "NxThread"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - parentuuid-0032 : optional, uuid of a timecore

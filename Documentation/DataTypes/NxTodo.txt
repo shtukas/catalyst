@@ -1,7 +1,8 @@
 
 NxTodo:
-    - uuid        : String
-    - mikuType    : "NxTodo"
-    - unixtime    : Float
-    - datetime    : DateTime Iso 8601 UTC Zulu
-    - description : String
+    - uuid            : String
+    - mikuType        : "NxTodo"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - parentuuid-0032 : optional, uuid of a thread

@@ -38,8 +38,8 @@ class PolyFunctions
         }
     end
 
-    # PolyFunctions::toString(item, context = nil)
-    def self.toString(item, context = nil)
+    # PolyFunctions::toString(item)
+    def self.toString(item)
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
@@ -78,6 +78,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
+        end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

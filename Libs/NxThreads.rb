@@ -33,35 +33,23 @@ class NxThreads
 
     # NxThreads::icon(item)
     def self.icon(item)
-        item["hours"] ? "🔺" : "🔸"
+        "🔺"
     end
 
-    # NxThreads::listingRatio(item)
-    def self.listingRatio(item)
-        raise "(error: cbf9ee6d-8c02) item does not have hours: #{item}" if item["hours"].nil?
-        [Bank2::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours"].to_f/7)
+    # NxThreads::performance(item)
+    def self.performance(item)
+        Bank2::recoveredAverageHoursPerDay(item["uuid"])
     end
 
-    # NxThreads::ratioString(item)
-    def self.ratioString(item)
-        raise "(error: 411e613e-6d12) item does not have hours: #{item}" if item["hours"].nil?
-        "(#{"%6.2f" % (100 * NxThreads::listingRatio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+    # NxThreads::toString(item)
+    def self.toString(item)
+        "#{NxThreads::icon(item)} #{item["description"]}"
     end
 
-    # NxThreads::toString(item, context = nil)
-    def self.toString(item, context = nil)
-        if item["hours"] then
-            "#{NxThreads::icon(item)} #{NxThreads::ratioString(item)} #{item["description"]}"
-        else
-            "#{NxThreads::icon(item)} #{item["description"]}"
-        end
-    end
-
-    # NxThreads::activeItems()
-    def self.activeItems()
+    # NxThreads::itemsInOrder()
+    def self.itemsInOrder()
         Cubes2::mikuType("NxThread")
-            .select{|item| item["hours"] }
-            .sort_by{|item| NxThreads::listingRatio(item) }
+            .sort_by{|item| NxThreads::performance(item) }
     end
 
     # NxThreads::nonActiveItems()
@@ -73,19 +61,14 @@ class NxThreads
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        items = NxThreads::activeItems() + NxThreads::nonActiveItems()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", items, lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxThreads::muiItems1()
-    def self.muiItems1()
-        NxThreads::activeItems()
-            .select{|item| NxThreads::listingRatio(item) < 1 }
-    end
-
-    # NxThreads::muiItems2()
-    def self.muiItems2()
-        NxThreads::nonActiveItems()
+    # NxThreads::muiItems()
+    def self.muiItems()
+        Cubes2::mikuType("NxThread")
+            .select{|item| Catalyst::isOrphan(item) }
+            .select{|item| NxThreads::performance(item) }
     end
 
     # ------------------
@@ -115,7 +98,7 @@ class NxThreads
             end
 
             store.register(thread, false)
-            puts MainUserInterface::toString2(store, thread, "inventory")
+            puts MainUserInterface::toString2(store, thread)
 
             puts ""
 
@@ -181,33 +164,16 @@ class NxThreads
     def self.program2()
         loop {
 
-            elements = NxThreads::activeItems() + NxThreads::nonActiveItems()
-
             system("clear")
 
             store = ItemStore.new()
 
             puts ""
 
-            uuids = JSON.parse(XCache::getOrDefaultValue("43ef5eda-d16d-483f-a438-e98d437bedda", "[]"))
-            if uuids.size > 0 then
-                uuids.each{|uuid|
-                    item = Cubes2::itemOrNull(uuid)
-                    next if item.nil?
-                    puts "[selected] #{PolyFunctions::toString(item)}"
-                }
-                puts ""
-            end
-
-            weekTotal = elements.map{|item| item["hours"] || 1 }.inject(0, :+)
-
-            puts "> week: #{weekTotal}, day: #{(weekTotal.to_f/7).round(2)}"
-            puts ""
-
-            elements
+            NxThreads::itemsInOrder()
                 .each{|item|
                     store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item, "icon+performance+description")
+                    puts MainUserInterface::toString2(store, item)
                 }
 
             puts ""
@@ -236,22 +202,5 @@ class NxThreads
             puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
-    end
-
-    # NxThreads::interactivelySetParent(item)
-    def self.interactivelySetParent(item)
-        parent = NxThreads::interactivelySelectOneOrNull()
-        return if parent.nil?
-        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-        position = Catalyst::interactivelySelectPositionInParent(parent)
-        Cubes2::setAttribute(item["uuid"], "global-positioning", position)
-    end
-
-    # NxThreads::interactivelySetDonation(item)
-    def self.interactivelySetDonation(item)
-        puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        target = NxThreads::interactivelySelectOneOrNull()
-        return if target.nil?
-        Cubes2::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end
 end

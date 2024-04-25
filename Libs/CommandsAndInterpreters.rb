@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | transmute * | bank accounts * | donation * | payload * | bank data * | hours * | move * | insert * | select * | dump into * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | bank data * | hours * | move * | insert * | select * | dump into * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread | thread * (applied to NxTodo)",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reload",
         ].join("\n")
@@ -44,7 +44,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxThreads::interactivelySetDonation(item)
+            Catalyst::interactivelySetDonation(item)
             return
         end
 
@@ -86,14 +86,6 @@ class CommandsAndInterpreters
         if Interpreting::match("backups", input) then
             items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
-            return
-        end
-
-        if Interpreting::match("transmute *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute1(item)
             return
         end
 
@@ -161,6 +153,11 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("cores", input) then
+            TxCores::program2()
+            return
+        end
+
         if Interpreting::match("thread", input) then
             NxThreads::interactivelyIssueNewOrNull()
             return
@@ -200,17 +197,11 @@ class CommandsAndInterpreters
             return
         end
 
-
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
-            return
-        end
-
         if Interpreting::match("todo", input) then
             item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxThreads::interactivelySetParent(item)
+            Catalyst::interactivelySetParent(item)
             return
         end
 
@@ -321,7 +312,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            NxThreads::interactivelySetParent(item)
+            Catalyst::interactivelySetParent(item)
             return
         end
 
