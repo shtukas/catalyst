@@ -53,11 +53,11 @@ class NxTodos
             next if item["parentuuid-0032"].nil?
             parent = Cubes2::itemOrNull(item["parentuuid-0032"])
             if parent.nil? then
-                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
                 next
             end
             if parent["mikuType"] != "NxThread" then
-                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
                 next
             end
         }

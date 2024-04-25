@@ -210,11 +210,11 @@ class NxThreads
             next if thread["parentuuid-0032"].nil?
             parent = Cubes2::itemOrNull(thread["parentuuid-0032"])
             if parent.nil? then
-                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", nil)
                 next
             end
             if parent["mikuType"] != "TxCore" then
-                Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", nil?)
+                Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", nil)
                 next
             end
         }
