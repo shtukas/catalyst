@@ -76,6 +76,7 @@ class TxCores
             puts ""
 
             Catalyst::children(core)
+                .sort_by{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) } # item can be a NxTodo or a NxThread
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element)
@@ -83,11 +84,19 @@ class TxCores
 
             puts ""
 
-            puts "thread"
+            puts "todo | thread"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
+
+            if input == "todo" then
+                todo = NxTodos::interactivelyIssueNewOrNull()
+                next if todo.nil?
+                puts JSON.pretty_generate(todo)
+                Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", core["uuid"])
+                next
+            end
 
             if input == "thread" then
                 thread = NxThreads::interactivelyIssueNewOrNull()
@@ -147,7 +156,7 @@ class TxCores
     def self.maintenance()
         Cubes2::mikuType("NxThread").each{|core|
             Catalyst::children(core).each{|child|
-                if child["mikuType"] != "NxThread" then
+                if !["NxThread", "NxTodo"].include?(child["mikuType"]) then
                     Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil?)
                 end
             }

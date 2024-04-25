@@ -52,13 +52,6 @@ class NxThreads
             .sort_by{|item| NxThreads::performance(item) }
     end
 
-    # NxThreads::nonActiveItems()
-    def self.nonActiveItems()
-        Cubes2::mikuType("NxThread")
-            .select{|item| item["hours"].nil? }
-            .sort_by{|item| item["unixtime"] }
-    end
-
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInOrder(), lambda{|item| PolyFunctions::toString(item) })
@@ -103,6 +96,7 @@ class NxThreads
             puts ""
 
             Catalyst::children(thread)
+                .sort_by{|item| NxTodos::performance(item) }
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element)
@@ -117,12 +111,12 @@ class NxThreads
             return if input == ""
 
             if input == "todo" then
-                task = NxThreads::interactivelyIssueNewOrNull()
-                next if task.nil?
-                puts JSON.pretty_generate(task)
-                Cubes2::setAttribute(task["uuid"], "parentuuid-0032", thread["uuid"])
+                todo = NxThreads::interactivelyIssueNewOrNull()
+                next if todo.nil?
+                puts JSON.pretty_generate(todo)
+                Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
                 position = Catalyst::interactivelySelectPositionInParent(thread)
-                Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+                Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
 
@@ -177,17 +171,15 @@ class NxThreads
                 }
 
             puts ""
-            puts "todo | hours *"
+            puts "thread | hours *"
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "todo" then
-                task = NxThreads::interactivelyIssueNewOrNull()
-                next if task.nil?
-                puts JSON.pretty_generate(task)
-                position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
-                Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+            if input == "thread" then
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                next if thread.nil?
+                puts JSON.pretty_generate(thread)
                 next
             end
 

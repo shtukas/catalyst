@@ -56,7 +56,7 @@ class NxTodos
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
                 next
             end
-            if parent["mikuType"] != "NxThread" then
+            if !["NxThread", "TxCore"].include?(parent["mikuType"]) then
                 Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
                 next
             end
