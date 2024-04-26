@@ -54,6 +54,12 @@ class TxCores
             .select{|core| TxCores::performance(core) < 1 }
     end
 
+    # TxCores::childrenInOrder(core)
+    def self.childrenInOrder(core)
+        Catalyst::children(core)
+            .sort_by{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) } # item can be a NxTodo or a NxThread
+    end
+
     # ------------------
     # Ops
 
@@ -75,8 +81,7 @@ class TxCores
 
             puts ""
 
-            Catalyst::children(core)
-                .sort_by{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) } # item can be a NxTodo or a NxThread
+            TxCores::childrenInOrder(core)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element)
@@ -84,7 +89,7 @@ class TxCores
 
             puts ""
 
-            puts "todo | thread | hours"
+            puts "todo | thread | hours (self) | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -99,7 +104,7 @@ class TxCores
             end
 
             if input == "thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
+                thread = NxThreads::interactivelyIssueNewOrNull(core)
                 next if thread.nil?
                 puts JSON.pretty_generate(thread)
                 Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", core["uuid"])
@@ -109,6 +114,25 @@ class TxCores
             if input == "hours" then
                 hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
                 Cubes2::setAttribute(core["uuid"], "hours", hours)
+            end
+
+            if input == "moves" then
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], TxCores::childrenInOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                next if selected.empty?
+                parent = nil
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["thread", "core"])
+                next if option.nil?
+                if option == "thread" then
+                    parent = NxThreads::interactivelySelectOneOrNull()
+                    next if parent.nil?
+                end
+                if option == "core" then
+                    parent = TxCores::interactivelySelectOneOrNull()
+                    next if parent.nil?
+                end
+                next if parent.nil?
+                selected.each{|i| Cubes2::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"]) }
+                next
             end
 
             CommandsAndInterpreters::interpreter(input, store)

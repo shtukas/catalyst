@@ -14,14 +14,12 @@ class NxThreads
         hours
     end
 
-    # NxThreads::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # NxThreads::interactivelyIssueNewOrNull(core)
+    def self.interactivelyIssueNewOrNull(core)
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         hours = NxThreads::interactivelyDecideHoursOrNull()
-        core = TxCores::interactivelySelectOneOrNull()
-        return if core.nil?
         Cubes2::itemInit(uuid, "NxThread")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
@@ -70,7 +68,7 @@ class NxThreads
     # NxThreads::childrenInOrder(thread)
     def self.childrenInOrder(thread)
         Catalyst::children(thread)
-            .sort_by{|item| item["global-positioning"] }
+            .sort_by{|item| item["global-positioning"] || 0 }
     end
 
     # NxThreads::insertionPositions(parent, position, count)
@@ -184,7 +182,7 @@ class NxThreads
             return if input == ""
 
             if input == "todo" then
-                todo = NxThreads::interactivelyIssueNewOrNull()
+                todo = NxTodos::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
@@ -224,48 +222,6 @@ class NxThreads
                 next
             end
 
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxThreads::program2()
-    def self.program2()
-        loop {
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts ""
-
-            NxThreads::itemsInOrder()
-                .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
-                }
-
-            puts ""
-            puts "thread | hours *"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull()
-                next if thread.nil?
-                puts JSON.pretty_generate(thread)
-                next
-            end
-
-            if input.start_with?("hours") then
-                item = store.get(input[5, 99].strip.to_i)
-                next if item.nil?
-                hours = NxThreads::interactivelyDecideHoursOrNull()
-                Cubes2::setAttribute(item["uuid"], "hours", hours)
-                next
-            end
-
-            puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
