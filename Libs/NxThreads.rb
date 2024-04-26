@@ -181,7 +181,9 @@ class NxThreads
             return if input == ""
 
             if input == "todo" then
-                todo = NxTodos::interactivelyIssueNewOrNull()
+                thread = TxCores::insteractivelySelectCoreAndThreadOrNull()
+                next if thread.nil?
+                todo = NxTodos::interactivelyIssueNewOrNull(thread)
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
