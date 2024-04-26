@@ -142,7 +142,7 @@ class Waves
     # Waves::muiItems()
     def self.muiItems()
         isMuiItem = lambda { |item|
-            b1 = MainUserInterface::listable(item)
+            b1 = Listing::listable(item)
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             b1 and b2
         }

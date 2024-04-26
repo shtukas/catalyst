@@ -424,7 +424,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("speed", input) then
-            MainUserInterface::speedTest()
+            Listing::speedTest()
             return
         end
 

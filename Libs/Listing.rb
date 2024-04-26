@@ -50,19 +50,19 @@ class Speedometer
 
 end
 
-class MainUserInterface
+class Listing
 
     # -----------------------------------------
     # Data
 
-    # MainUserInterface::listable(item)
+    # Listing::listable(item)
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil2::isVisible(item)
         true
     end
 
-    # MainUserInterface::canBeDefault(item)
+    # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
@@ -71,12 +71,12 @@ class MainUserInterface
         true
     end
 
-    # MainUserInterface::isInterruption(item)
+    # Listing::isInterruption(item)
     def self.isInterruption(item)
         item["interruption"]
     end
 
-    # MainUserInterface::toString2(store, item)
+    # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
@@ -98,7 +98,7 @@ class MainUserInterface
         line
     end
 
-    # MainUserInterface::items()
+    # Listing::items()
     def self.items()
         [
             NxBalls::activeItems(),
@@ -117,7 +117,7 @@ class MainUserInterface
             Waves::muiItemsNotInterruption(),
         ]
             .flatten
-            .select{|item| MainUserInterface::listable(item) }
+            .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -127,20 +127,20 @@ class MainUserInterface
             }
     end
 
-    # MainUserInterface::applyNxBallOrdering(items)
+    # Listing::applyNxBallOrdering(items)
     def self.applyNxBallOrdering(items)
         activeItems, nonActiveItems = items.partition{|item| NxBalls::itemIsActive(item) }
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
         runningItems + pausedItems + nonActiveItems
     end
 
-    # MainUserInterface::items2()
+    # Listing::items2()
     def self.items2()
-        items = MainUserInterface::items()
-        items = MainUserInterface::applyNxBallOrdering(items)
+        items = Listing::items()
+        items = Listing::applyNxBallOrdering(items)
         items = Prefix::addPrefix(items)
         items
-            .select{|item| MainUserInterface::listable(item) }
+            .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -153,7 +153,7 @@ class MainUserInterface
     # -----------------------------------------
     # Ops
 
-    # MainUserInterface::speedTest()
+    # Listing::speedTest()
     def self.speedTest()
 
         spot = Speedometer.new()
@@ -168,14 +168,14 @@ class MainUserInterface
 
         puts ""
 
-        spot.start_unit("MainUserInterface::items()")
-        MainUserInterface::items()
+        spot.start_unit("Listing::items()")
+        Listing::items()
         spot.end_unit()
 
-        spot.start_unit("MainUserInterface::items().first(100) >> MainUserInterface::toString2(store, item)")
+        spot.start_unit("Listing::items().first(100) >> Listing::toString2(store, item)")
         store = ItemStore.new()
-        items = MainUserInterface::items().first(100)
-        items.each {|item| MainUserInterface::toString2(store, item) }
+        items = Listing::items().first(100)
+        items.each {|item| Listing::toString2(store, item) }
         spot.end_unit()
 
         spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -184,7 +184,7 @@ class MainUserInterface
         LucilleCore::pressEnterToContinue()
     end
 
-    # MainUserInterface::checkForCodeUpdates()
+    # Listing::checkForCodeUpdates()
     def self.checkForCodeUpdates()
         if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
             puts "Attempting to download new code"
@@ -194,21 +194,21 @@ class MainUserInterface
         false
     end
 
-    # MainUserInterface::injectActiveItems(items, runningItems)
+    # Listing::injectActiveItems(items, runningItems)
     def self.injectActiveItems(items, runningItems)
         activeItems, pausedItems = runningItems.partition{|item| NxBalls::itemIsRunning(item) }
         activeItems + pausedItems + items
     end
 
-    # MainUserInterface::main()
+    # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
         loop {
-            MainUserInterface::listing(initialCodeTrace)
+            Listing::listing(initialCodeTrace)
         }
     end
 
-    # MainUserInterface::listing(initialCodeTrace)
+    # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
 
@@ -228,10 +228,10 @@ class MainUserInterface
 
             spacecontrol.putsline ""
 
-            MainUserInterface::items2()
+            Listing::items2()
                 .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    line = MainUserInterface::toString2(store, item)
+                    store.register(item, Listing::canBeDefault(item))
+                    line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }

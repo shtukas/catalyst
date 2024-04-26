@@ -4,4 +4,4 @@
 require_relative "Libs/loader.rb"
 
 CoreData::getData()
-MainUserInterface::main()
+Listing::main()

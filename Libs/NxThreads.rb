@@ -162,14 +162,14 @@ class NxThreads
             puts ""
 
             store.register(thread, false)
-            puts MainUserInterface::toString2(store, thread)
+            puts Listing::toString2(store, thread)
 
             puts ""
 
             NxThreads::childrenInOrder(thread)
                 .each{|element|
-                    store.register(element, MainUserInterface::canBeDefault(element))
-                    puts MainUserInterface::toString2(store, element)
+                    store.register(element, Listing::canBeDefault(element))
+                    puts Listing::toString2(store, element)
                 }
 
             puts ""

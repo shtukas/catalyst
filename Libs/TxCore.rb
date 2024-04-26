@@ -84,14 +84,14 @@ class TxCores
             puts ""
 
             store.register(core, false)
-            puts MainUserInterface::toString2(store, core)
+            puts Listing::toString2(store, core)
 
             puts ""
 
             TxCores::childrenInGlobalPositioningOrder(core)
                 .each{|element|
-                    store.register(element, MainUserInterface::canBeDefault(element))
-                    puts MainUserInterface::toString2(store, element)
+                    store.register(element, Listing::canBeDefault(element))
+                    puts Listing::toString2(store, element)
                 }
 
             puts ""
@@ -160,8 +160,8 @@ class TxCores
 
             TxCores::coresInOrder()
                 .each{|item|
-                    store.register(item, MainUserInterface::canBeDefault(item))
-                    puts MainUserInterface::toString2(store, item)
+                    store.register(item, Listing::canBeDefault(item))
+                    puts Listing::toString2(store, item)
                 }
 
             puts ""
