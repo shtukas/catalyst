@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | project | stack | float | thread",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reload",
@@ -68,13 +68,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts Bank2::getRecords(item["uuid"])
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("project", input) then
-            item = NxTodos::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
             return
         end
 
@@ -151,7 +144,9 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxTodos::interactivelyIssueNewOrNull()
+            thread = TxCores::insteractivelySelectCoreAndThreadOrNull()
+            return if thread.nil?
+            item = NxTodos::interactivelyIssueNewOrNull(thread)
             return if item.nil?
             puts JSON.pretty_generate(item)
             Catalyst::interactivelySetParent(item)

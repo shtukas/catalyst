@@ -136,9 +136,8 @@ class NxThreads
         descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
         positions = NxThreads::insertionPositions(parent, position, descriptions.size)
         descriptions.zip(positions).each{|description, position|
-            task = NxTodos::descriptionToTask1(SecureRandom.hex, description)
+            task = NxTodos::descriptionToTask1(parent, SecureRandom.hex, description)
             puts JSON.pretty_generate(task)
-            Cubes2::setAttribute(task["uuid"], "parentuuid-0032", parent["uuid"])
             Cubes2::setAttribute(task["uuid"], "global-positioning", position)
         }
     end

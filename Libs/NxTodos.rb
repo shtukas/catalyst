@@ -1,8 +1,8 @@
 
 class NxTodos
 
-    # NxTodos::interactivelyIssueNewOrNull()
-    def self.interactivelyIssueNewOrNull()
+    # NxTodos::interactivelyIssueNewOrNull(thread)
+    def self.interactivelyIssueNewOrNull(thread)
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
@@ -10,15 +10,17 @@ class NxTodos
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "parentuuid-0032", thread["uuid"])
         Cubes2::itemOrNull(uuid)
     end
 
-    # NxTodos::descriptionToTask1(uuid, description)
-    def self.descriptionToTask1(uuid, description)
+    # NxTodos::descriptionToTask1(parent, uuid, description)
+    def self.descriptionToTask1(parent, uuid, description)
         Cubes2::itemInit(uuid, "NxTodo")
         Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
+        Cubes2::setAttribute(uuid, "parentuuid-0032", parent["uuid"])
         Cubes2::itemOrNull(uuid)
     end
 

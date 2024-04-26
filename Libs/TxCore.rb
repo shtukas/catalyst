@@ -54,10 +54,17 @@ class TxCores
             .select{|core| TxCores::performance(core) < 1 }
     end
 
-    # TxCores::childrenInOrder(core)
-    def self.childrenInOrder(core)
+    # TxCores::childrenInGlobalPositioningOrder(core)
+    def self.childrenInGlobalPositioningOrder(core)
         Catalyst::children(core)
-            .sort_by{|item| Bank2::recoveredAverageHoursPerDay(item["uuid"]) } # item can be a NxTodo or a NxThread
+            .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # TxCores::insteractivelySelectCoreAndThreadOrNull()
+    def self.insteractivelySelectCoreAndThreadOrNull()
+        core = TxCores::interactivelySelectOneOrNull()
+        return nil if core.nil?
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", TxCores::childrenInGlobalPositioningOrder(core), lambda{|item| PolyFunctions::toString(item) })
     end
 
     # ------------------
@@ -81,7 +88,7 @@ class TxCores
 
             puts ""
 
-            TxCores::childrenInOrder(core)
+            TxCores::childrenInGlobalPositioningOrder(core)
                 .each{|element|
                     store.register(element, MainUserInterface::canBeDefault(element))
                     puts MainUserInterface::toString2(store, element)
@@ -117,7 +124,7 @@ class TxCores
             end
 
             if input == "moves" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], TxCores::childrenInOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], TxCores::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
                 next if selected.empty?
                 parent = nil
                 option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["thread", "core"])
@@ -183,7 +190,7 @@ class TxCores
 
     # TxCores::maintenance()
     def self.maintenance()
-        Cubes2::mikuType("NxThread").each{|core|
+        Cubes2::mikuType("TxCore").each{|core|
             Catalyst::children(core).each{|child|
                 if !["NxThread", "NxTodo"].include?(child["mikuType"]) then
                     Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil)
