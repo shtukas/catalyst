@@ -22,14 +22,14 @@ class TxCores
         "⏱️"
     end
 
-    # TxCores::performance(item)
-    def self.performance(item)
+    # TxCores::ratio(item)
+    def self.ratio(item)
         [Bank2::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours"].to_f/7)
     end
 
     # TxCores::ratioString(item)
     def self.ratioString(item)
-        "(#{"%6.2f" % (100 * TxCores::performance(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        "(#{"%6.2f" % (100 * TxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
     # TxCores::toString(item, context = nil)
@@ -40,7 +40,7 @@ class TxCores
     # TxCores::coresInOrder()
     def self.coresInOrder()
         Cubes2::mikuType("TxCore")
-            .sort_by{|item| TxCores::performance(item) }
+            .sort_by{|item| TxCores::ratio(item) }
     end
 
     # TxCores::interactivelySelectOneOrNull()
@@ -51,7 +51,7 @@ class TxCores
     # TxCores::muiItems()
     def self.muiItems()
         TxCores::coresInOrder()
-            .select{|core| TxCores::performance(core) < 1 }
+            .select{|core| TxCores::ratio(core) < 1 }
     end
 
     # TxCores::childrenInGlobalPositioningOrder(core)

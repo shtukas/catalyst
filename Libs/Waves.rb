@@ -178,6 +178,9 @@ class Waves
     # Waves::performWaveDone(item)
     def self.performWaveDone(item)
 
+        # Removing flight information
+        Cubes2::setAttribute(item["uuid"], "flight-1742", nil)
+
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
         Cubes2::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)

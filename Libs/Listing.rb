@@ -50,6 +50,30 @@ class Speedometer
 
 end
 
+class ListingRatio
+
+    # ListingRatio::ratio(item)
+    def self.ratio(item)
+        if item["mikuType"] == "Wave" then
+            if item["flight-1742"].nil? then
+                Cubes2::setAttribute(item["uuid"], "flight-1742", Time.new.to_f)
+                return 1
+            else
+                differenceInDays = (Time.new.to_f - item["flight-1742"]).to_f/86400
+                return Math.exp(-differenceInDays)
+            end
+        end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::ratio(item)
+        end
+    end
+
+    # ListingRatio::applyOrder(items)
+    def self.applyOrder(items)
+        items.sort_by{|item| ListingRatio::ratio(item) }
+    end
+end
+
 class Listing
 
     # -----------------------------------------
@@ -113,8 +137,7 @@ class Listing
             NxBufferInMonitors::muiItems(),
             NxTodos::muiItems(),
             NxThreads::muiItems(),
-            TxCores::muiItems(),
-            Waves::muiItemsNotInterruption(),
+            ListingRatio::applyOrder(TxCores::muiItems() + Waves::muiItemsNotInterruption())
         ]
             .flatten
             .select{|item| Listing::listable(item) }
