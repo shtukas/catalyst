@@ -73,7 +73,12 @@ class ListingRatio
 
     # ListingRatio::applyOrder(items)
     def self.applyOrder(items)
-        items.sort_by{|item| ListingRatio::ratio(item) }
+        items
+            .map{|item|
+                item["listing-ratio"] = ListingRatio::ratio(item)
+                item
+            }
+            .sort_by{|item| item["listing-ratio"] }
     end
 end
 
