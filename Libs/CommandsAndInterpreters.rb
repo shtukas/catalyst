@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | reload",
@@ -109,6 +109,13 @@ class CommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             TxCores::program2()
+            return
+        end
+
+        if Interpreting::match("core", input) then
+            core = TxCores::interactivelyIssueNewOrNull()
+            return if core.nil?
+            puts JSON.pretty_generate(core)
             return
         end
 
