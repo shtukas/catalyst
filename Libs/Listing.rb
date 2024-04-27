@@ -66,6 +66,9 @@ class ListingRatio
         if item["mikuType"] == "TxCore" then
             return TxCores::ratio(item)
         end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return NxBufferInMonitors::ratio()
+        end
     end
 
     # ListingRatio::applyOrder(items)
@@ -124,6 +127,9 @@ class Listing
 
     # Listing::items()
     def self.items()
+        managed = TxCores::muiItems() + 
+                  Waves::muiItemsNotInterruption() + 
+                  NxBufferInMonitors::muiItems()
         [
             NxBalls::activeItems(),
             DropBox::items(),
@@ -134,10 +140,9 @@ class Listing
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
-            NxBufferInMonitors::muiItems(),
             NxTodos::muiItems(),
             NxThreads::muiItems(),
-            ListingRatio::applyOrder(TxCores::muiItems() + Waves::muiItemsNotInterruption())
+            ListingRatio::applyOrder(managed)
         ]
             .flatten
             .select{|item| Listing::listable(item) }
