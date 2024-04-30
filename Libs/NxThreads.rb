@@ -14,8 +14,8 @@ class NxThreads
         hours
     end
 
-    # NxThreads::interactivelyIssueNewOrNull(core)
-    def self.interactivelyIssueNewOrNull(core)
+    # NxThreads::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
@@ -25,7 +25,6 @@ class NxThreads
         Cubes2::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes2::setAttribute(uuid, "description", description)
         Cubes2::setAttribute(uuid, "hours", hours)
-        Cubes2::setAttribute(uuid, "parentuuid-0032", core["uuid"])
         Cubes2::itemOrNull(uuid)
     end
 
@@ -37,20 +36,26 @@ class NxThreads
         "🧵"
     end
 
-    # NxThreads::performance(item)
-    def self.performance(item)
-        Bank2::recoveredAverageHoursPerDay(item["uuid"])
+    # NxThreads::ratio(item)
+    def self.ratio(item)
+        [Bank2::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours"].to_f/7)
+    end
+
+    # NxThreads::ratioString(item)
+    def self.ratioString(item)
+        return "" if item["hours"].nil?
+        " (#{"%6.2f" % (100 * NxThreads::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
     # NxThreads::toString(item)
     def self.toString(item)
-        "#{NxThreads::icon(item)} #{item["description"]}"
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
     end
 
     # NxThreads::itemsInOrder()
     def self.itemsInOrder()
         Cubes2::mikuType("NxThread")
-            .sort_by{|item| NxThreads::performance(item) }
+            .sort_by{|item| NxThreads::ratio(item) }
     end
 
     # NxThreads::interactivelySelectOneOrNull()
@@ -58,11 +63,11 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxThreads::muiItems()
-    def self.muiItems()
+    # NxThreads::muiItemsOrphans()
+    def self.muiItemsOrphans()
         Cubes2::mikuType("NxThread")
             .select{|item| Catalyst::isOrphan(item) }
-            .select{|item| NxThreads::performance(item) }
+            .sort_by{|item| NxThreads::ratio(item) }
     end
 
     # NxThreads::childrenInOrder(thread)
@@ -174,21 +179,29 @@ class NxThreads
 
             puts ""
 
-            puts "todo | pile | insert | position * | sort | moves"
+            puts "todo | thread | pile | insert | position * | sort | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "todo" then
-                thread = TxCores::insteractivelySelectCoreAndThreadOrNull()
-                next if thread.nil?
-                todo = NxTodos::interactivelyIssueNewOrNull(thread)
+                todo = NxTodos::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
                 position = NxThreads::interactivelySelectPositionInParent(thread)
                 Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input == "thread" then
+                t2 = NxThreads::interactivelyIssueNewOrNull()
+                next if t2.nil?
+                puts JSON.pretty_generate(t2)
+                Cubes2::setAttribute(t2["uuid"], "parentuuid-0032", thread["uuid"])
+                position = NxThreads::interactivelySelectPositionInParent(thread)
+                Cubes2::setAttribute(t2["uuid"], "global-positioning", position)
                 next
             end
 
@@ -224,33 +237,6 @@ class NxThreads
             end
 
             CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxThreads::maintenance()
-    def self.maintenance()
-        Cubes2::mikuType("NxThread").each{|thread|
-            if thread["parentuuid-0032"].nil? then
-                Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b") # core infinity
-                next
-            end
-            parent = Cubes2::itemOrNull(thread["parentuuid-0032"])
-            if parent.nil? then
-                Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", nil)
-                next
-            end
-            if parent["mikuType"] != "TxCore" then
-                Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", nil)
-                next
-            end
-        }
-
-        Cubes2::mikuType("NxThread").each{|thread|
-            Catalyst::children(thread).each{|child|
-                if child["mikuType"] != "NxTodo" then
-                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil)
-                end
-            }
         }
     end
 end

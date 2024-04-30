@@ -124,11 +124,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("thread", input) then
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            thread = NxThreads::interactivelyIssueNewOrNull(core)
+            thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
             puts JSON.pretty_generate(thread)
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Cubes2::setAttribute(uuid, "parentuuid-0032", core["uuid"])
             return
         end
 
@@ -155,12 +156,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            thread = TxCores::insteractivelySelectCoreAndThreadOrNull()
-            return if thread.nil?
-            item = NxTodos::interactivelyIssueNewOrNull(thread)
+            item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Catalyst::interactivelySetParent(item)
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Cubes2::setAttribute(uuid, "parentuuid-0032", core["uuid"])
             return
         end
 

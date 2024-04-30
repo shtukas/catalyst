@@ -50,38 +50,6 @@ class Speedometer
 
 end
 
-class ListingRatio
-
-    # ListingRatio::ratio(item)
-    def self.ratio(item)
-        if item["mikuType"] == "Wave" then
-            if item["flight-1742"].nil? then
-                Cubes2::setAttribute(item["uuid"], "flight-1742", Time.new.to_f)
-                return 1
-            else
-                differenceInDays = (Time.new.to_f - item["flight-1742"]).to_f/86400
-                return Math.exp(-differenceInDays)
-            end
-        end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::ratio(item)
-        end
-        if item["mikuType"] == "NxBufferInMonitor" then
-            return NxBufferInMonitors::ratio()
-        end
-    end
-
-    # ListingRatio::applyOrder(items)
-    def self.applyOrder(items)
-        items
-            .map{|item|
-                item["listing-ratio"] = ListingRatio::ratio(item)
-                item
-            }
-            .sort_by{|item| item["listing-ratio"] }
-    end
-end
-
 class Listing
 
     # -----------------------------------------
@@ -132,9 +100,6 @@ class Listing
 
     # Listing::items()
     def self.items()
-        managed = TxCores::muiItems() + 
-                  Waves::muiItemsNotInterruption() + 
-                  NxBufferInMonitors::muiItems()
         [
             NxBalls::activeItems(),
             DropBox::items(),
@@ -145,9 +110,11 @@ class Listing
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
-            NxTodos::muiItems(),
-            NxThreads::muiItems(),
-            ListingRatio::applyOrder(managed)
+            NxTodos::muiItemsOrphans(),
+            NxThreads::muiItemsOrphans(),
+            NxBufferInMonitors::muiItems(),
+            TxCores::muiItems(),
+            Waves::muiItemsNotInterruption()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

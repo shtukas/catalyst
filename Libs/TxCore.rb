@@ -50,8 +50,8 @@ class TxCores
 
     # TxCores::muiItems()
     def self.muiItems()
-        TxCores::coresInOrder()
-            .select{|core| TxCores::ratio(core) < 1 }
+        Cubes2::mikuType("TxCore")
+            .sort_by{|core| TxCores::ratio(core) }
     end
 
     # TxCores::childrenInGlobalPositioningOrder(core)
@@ -113,7 +113,7 @@ class TxCores
             end
 
             if input == "thread" then
-                thread = NxThreads::interactivelyIssueNewOrNull(core)
+                thread = NxThreads::interactivelyIssueNewOrNull()
                 next if thread.nil?
                 puts JSON.pretty_generate(thread)
                 Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", core["uuid"])
@@ -187,17 +187,6 @@ class TxCores
 
             puts ""
             CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # TxCores::maintenance()
-    def self.maintenance()
-        Cubes2::mikuType("TxCore").each{|core|
-            Catalyst::children(core).each{|child|
-                if !["NxThread", "NxTodo"].include?(child["mikuType"]) then
-                    Cubes1::setAttribute(child["uuid"], "parentuuid-0032", nil)
-                end
-            }
         }
     end
 end

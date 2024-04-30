@@ -88,19 +88,22 @@ class Catalyst
             end
 
             Cubes2::items().each{|item|
-                next if item["donation-1601"].nil?
-                target = Cubes2::itemOrNull(item["donation-1601"])
-                if item.nil? then
-                    Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
+                next if item["parentuuid-0032"].nil?
+                parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+                if parent.nil? then
+                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
                     next
                 end
             }
 
-            NxTodos::maintenance()
-
-            NxThreads::maintenance()
-
-            TxCores::maintenance()
+            Cubes2::items().each{|item|
+                next if item["donation-1601"].nil?
+                target = Cubes2::itemOrNull(item["donation-1601"])
+                if target.nil? then
+                    Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
+                    next
+                end
+            }
         end
     end
 
@@ -152,33 +155,29 @@ class Catalyst
 
     # Catalyst::interactivelySetParent(item)
     def self.interactivelySetParent(item)
-        parent = nil
+        TxCores::interactivelySelectOneOrNull()
+    end
 
+    # Catalyst::ratioOrNull(item)
+    def self.ratioOrNull(item)
+        return nil if item["hours"].nil?
         if item["mikuType"] == "NxTodo" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["thread", "core"])
-            return if option.nil?
-            if option == "thread" then
-                parent = NxThreads::interactivelySelectOneOrNull()
-                return if parent.nil?
-            end
-            if option == "core" then
-                parent = TxCores::interactivelySelectOneOrNull()
-                return if parent.nil?
-            end
+            return NxTodos::ratio(item)
         end
-
         if item["mikuType"] == "NxThread" then
-            parent = TxCores::interactivelySelectOneOrNull()
-            return if parent.nil?
+            return NxThreads::ratio(item)
         end
-
-        return if parent.nil?
-        
-        Cubes2::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-
-        if parent["mikuType"] == "NxThread" then
-            position = NxThreads::interactivelySelectPositionInParent(parent)
-            Cubes2::setAttribute(item["uuid"], "global-positioning", position)
+        if item["mikuType"] == "TxCore" then
+            return TxCores::ratio(item)
         end
+        nil
+    end
+
+    # Catalyst::deepRatioMinOrNull(item)
+    def self.deepRatioMinOrNull(item)
+        r1 = Catalyst::ratioOrNull(item)
+        r2 = Catalyst::children(item).map{|c| Catalyst::deepRatioMinOrNull(c) }.compact.reduce(nil){|acc, value| [acc, value].compact.min }
+        return nil if (r1.nil? and r2.nil?)
+        [r1, r2].compact.min
     end
 end
