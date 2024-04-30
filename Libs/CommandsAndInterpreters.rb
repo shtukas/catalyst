@@ -97,7 +97,11 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if !["NxTodo", "NxThread"].include?(item["mikuType"])
+            if !["TxCore", "NxThread", "NxTodo"].include?(item["mikuType"]) then
+                puts "You can only set hours to TxCore, NxThread and NxTodo"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
             Cubes2::setAttribute(item["uuid"], "hours", hours)

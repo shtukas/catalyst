@@ -6,3 +6,4 @@ NxTodo:
     - datetime        : DateTime Iso 8601 UTC Zulu
     - description     : String
     - parentuuid-0032 : optional, uuid of a thread
+    - hours           : Float, optional
