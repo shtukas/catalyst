@@ -123,6 +123,7 @@ class Waves
         Cubes2::setAttribute(uuid, "nx46", nx46)
         Cubes2::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
         Cubes2::setAttribute(uuid, "interruption", interruption)
+        Cubes2::setAttribute(uuid, "random", rand)
         Cubes2::itemOrNull(uuid)
     end
 
@@ -146,10 +147,9 @@ class Waves
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             b1 and b2
         }
-        c1, c2 = Cubes2::mikuType("Wave")
-            .partition{|item| isMuiItem.call(item) }
-        c2.each{|item| WavesControl::isNotShowing(item["uuid"]) }
-        c1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+        Cubes2::mikuType("Wave")
+            .select{|item| isMuiItem.call(item) }
+            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end
 
     # Waves::muiItemsInterruption()
@@ -162,14 +162,12 @@ class Waves
     def self.muiItemsNotInterruption()
         Waves::muiItems()
             .select{|item| !item["interruption"] }
-            .map{|item|
-                if item["ordering-shift-0723"].nil? then
-                    shift = rand
-                    Cubes2::setAttribute(item["uuid"], "ordering-shift-0723", shift)
-                    item["ordering-shift-0723"] = shift
-                end
-                item
-            }
+    end
+
+    # Waves::getMuiItemsNotInterruptionByRandom(r)
+    def self.getMuiItemsNotInterruptionByRandom(r)
+        Waves::muiItemsNotInterruption()
+            .select{|item| item["random"] <= r  }
     end
 
     # -------------------------------------------------------------------------

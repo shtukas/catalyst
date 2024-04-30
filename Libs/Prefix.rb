@@ -28,6 +28,11 @@ class Prefix
             return Prefix::addPrefixNxThreadTxCore(items)
         end
         if items[0]["mikuType"] == "TxCore" then
+            item = items[0]
+            waves = Waves::getMuiItemsNotInterruptionByRandom(TxCores::ratio(item))
+            if waves.size > 0 then
+                return waves + items
+            end
             return Prefix::addPrefixNxThreadTxCore(items)
         end
         return items

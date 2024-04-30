@@ -176,6 +176,5 @@ require_relative "NxThreads.rb"
 require_relative "TxCore.rb"
 
 require_relative "Waves.rb"
-require_relative "WavesControl.rb"
 
 # ------------------------------------------------------------
