@@ -51,7 +51,7 @@ class TxCores
     # TxCores::muiItems()
     def self.muiItems()
         Cubes2::mikuType("TxCore")
-            .sort_by{|core| TxCores::ratio(core) }
+            .sort_by{|core| Catalyst::deepRatioMinOrNull(core) }
     end
 
     # TxCores::childrenInGlobalPositioningOrder(core)
