@@ -76,35 +76,6 @@ class NxThreads
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # NxThreads::insertionPositions(parent, position, count)
-    def self.insertionPositions(parent, position, count)
-        children = Catalyst::children(parent)
-        if children.empty? then
-            return (1..count).to_a
-        end
-        childrens1 = children.select{|item| (item["global-positioning"] || 0) < position }
-        childrens2 = children.select{|item| (item["global-positioning"] || 0) > position }
-        if childrens1.empty? and childrens2.empty? then
-            # this should not happen
-            raise "(error: cb689a8d-5fb9-4b8d-80b7-1f30ecb4edca; parent: #{parent}, position: #{position}, count: #{count})"
-        end
-        if childrens1.size > 0 and childrens2.size == 0 then
-            x = position.ceil
-            return (x..x+count-1).to_a
-        end
-        if childrens1.size == 0 and childrens2.size > 0 then
-            x = position.floor - count
-            return (x..x+count-1).to_a
-        end
-        if childrens1.size > 0 and childrens2.size > 0 then
-            x1 = childrens1.map{|item| item["global-positioning"] || 0 }.max
-            x2 = childrens2.map{|item| item["global-positioning"] || 0 }.min
-            spread = 0.8*(x2 - x1)
-            shift  = 0.1*(x2 - x1)
-            return (0..count-1).to_a.map{|x| x1 + shift + spread*x.to_f/(count) }
-        end
-    end
-
     # ------------------
     # Ops
 
@@ -126,31 +97,6 @@ class NxThreads
         end
         position = position.to_f
         position
-    end
-
-    # NxThreads::topPositionInParent(parent)
-    def self.topPositionInParent(parent)
-        elements = Catalyst::children(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
-    end
-
-    # NxThreads::interactivelyInsertAtPosition(parent, position)
-    def self.interactivelyInsertAtPosition(parent, position)
-        text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
-        positions = NxThreads::insertionPositions(parent, position, descriptions.size)
-        descriptions.zip(positions).each{|description, position|
-            task = NxTodos::descriptionToTask1(parent, SecureRandom.hex, description)
-            puts JSON.pretty_generate(task)
-            Cubes2::setAttribute(task["uuid"], "global-positioning", position)
-        }
-    end
-
-    # NxThreads::interactivelyPile(thread)
-    def self.interactivelyPile(thread)
-        position = NxThreads::topPositionInParent(thread) - 1
-        NxThreads::interactivelyInsertAtPosition(thread, position)
     end
 
     # NxThreads::program1(thread)
@@ -215,14 +161,14 @@ class NxThreads
             end
 
             if input == "pile" then
-                NxThreads::interactivelyPile(thread)
+                Catalyst::interactivelyPile(thread)
                 next
             end
 
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxThreads::childrenInOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Cubes2::setAttribute(i["uuid"], "global-positioning", NxThreads::topPositionInParent(thread) - 1)
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
                 }
                 next
             end

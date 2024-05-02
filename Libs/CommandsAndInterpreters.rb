@@ -89,7 +89,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Catalyst::interactivelySetParent(item)
+            Catalyst::interactivelySetParentOrNothing(item, nil)
             return
         end
 
@@ -129,7 +129,7 @@ class CommandsAndInterpreters
             puts JSON.pretty_generate(thread)
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Cubes2::setAttribute(uuid, "parentuuid-0032", core["uuid"])
+            Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", core["uuid"])
             return
         end
 
@@ -161,7 +161,7 @@ class CommandsAndInterpreters
             puts JSON.pretty_generate(item)
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
-            Cubes2::setAttribute(uuid, "parentuuid-0032", core["uuid"])
+            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
             return
         end
 
@@ -272,7 +272,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            Catalyst::interactivelySetParent(item)
+            Catalyst::interactivelySetParentOrNothing(item, nil)
             return
         end
 

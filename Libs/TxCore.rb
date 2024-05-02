@@ -96,7 +96,7 @@ class TxCores
 
             puts ""
 
-            puts "todo | thread | hours (self) | moves"
+            puts "todo | pile | thread | hours (self) | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -109,6 +109,11 @@ class TxCores
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", core["uuid"])
+                next
+            end
+
+            if input == "pile" then
+                Catalyst::interactivelyPile(core)
                 next
             end
 
