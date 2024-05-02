@@ -143,6 +143,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBufferInMonitor" then
+            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 

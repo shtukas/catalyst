@@ -70,12 +70,6 @@ class NxThreads
             .sort_by{|item| NxThreads::ratio(item) }
     end
 
-    # NxThreads::childrenInOrder(thread)
-    def self.childrenInOrder(thread)
-        Catalyst::children(thread)
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
     # ------------------
     # Ops
 
@@ -117,7 +111,7 @@ class NxThreads
 
             puts ""
 
-            NxThreads::childrenInOrder(thread)
+            Catalyst::childrenInGlobalPositioningOrder(thread)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -166,7 +160,7 @@ class NxThreads
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxThreads::childrenInOrder(thread), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Cubes2::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
                 }
@@ -174,7 +168,7 @@ class NxThreads
             end
 
             if input == "moves" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxThreads::childrenInOrder(thread), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 next if selected.empty?
                 t2 = NxThreads::interactivelySelectOneOrNull()
                 next if t2.nil?

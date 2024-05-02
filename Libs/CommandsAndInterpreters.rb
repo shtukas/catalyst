@@ -25,6 +25,15 @@ class CommandsAndInterpreters
             end
         end
 
+        if Interpreting::match(">", input) then
+            item = store.getDefault()
+            return if item.nil?
+            core = TxCores::interactivelySelectOneOrNull()
+            return if core.nil?
+            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
+            return
+        end
+
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?

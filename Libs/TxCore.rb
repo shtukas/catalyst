@@ -54,19 +54,6 @@ class TxCores
             .sort_by{|core| Catalyst::deepRatioMinOrNull(core) }
     end
 
-    # TxCores::childrenInGlobalPositioningOrder(core)
-    def self.childrenInGlobalPositioningOrder(core)
-        Catalyst::children(core)
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # TxCores::insteractivelySelectCoreAndThreadOrNull()
-    def self.insteractivelySelectCoreAndThreadOrNull()
-        core = TxCores::interactivelySelectOneOrNull()
-        return nil if core.nil?
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", TxCores::childrenInGlobalPositioningOrder(core), lambda{|item| PolyFunctions::toString(item) })
-    end
-
     # ------------------
     # Ops
 
@@ -88,7 +75,7 @@ class TxCores
 
             puts ""
 
-            TxCores::childrenInGlobalPositioningOrder(core)
+            Catalyst::childrenInGlobalPositioningOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -96,16 +83,14 @@ class TxCores
 
             puts ""
 
-            puts "todo | pile | thread | hours (self) | moves"
+            puts "todo | pile | thread | sort | hours (self) | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
             if input == "todo" then
-                thread = TxCores::insteractivelySelectCoreAndThreadOrNull()
-                next if thread.nil?
-                todo = NxTodos::interactivelyIssueNewOrNull(thread)
+                todo = NxTodos::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", core["uuid"])
@@ -125,13 +110,21 @@ class TxCores
                 next
             end
 
+            if input == "sort" then
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|i|
+                    Cubes2::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(core) - 1)
+                }
+                next
+            end
+
             if input == "hours" then
                 hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
                 Cubes2::setAttribute(core["uuid"], "hours", hours)
             end
 
             if input == "moves" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], TxCores::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
                 next if selected.empty?
                 parent = nil
                 option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["thread", "core"])

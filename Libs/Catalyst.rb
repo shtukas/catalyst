@@ -137,6 +137,11 @@ class Catalyst
     def self.children(parent)
         Cubes2::items()
             .select{|item| item["parentuuid-0032"] == parent["uuid"] }
+    end
+
+    # Catalyst::childrenInGlobalPositioningOrder(parent)
+    def self.childrenInGlobalPositioningOrder(parent)
+        Catalyst::children(parent)
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
@@ -171,7 +176,7 @@ class Catalyst
                 return
             end
             if option == "dive" then
-                children = TxCores::childrenInGlobalPositioningOrder(core)
+                children = Catalyst::childrenInGlobalPositioningOrder(core)
                                 .select{|item| item["mikuType"] == "NxThread" }
                 if children.empty? then
                     Cubes2::setAttribute(item["uuid"], "parentuuid-0032", cursor["uuid"])
