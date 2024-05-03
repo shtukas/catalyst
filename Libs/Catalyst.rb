@@ -211,7 +211,12 @@ class Catalyst
     # Catalyst::deepRatioMinOrNull(item)
     def self.deepRatioMinOrNull(item)
         r1 = Catalyst::ratioOrNull(item)
-        r2 = Catalyst::children(item).map{|c| Catalyst::deepRatioMinOrNull(c) }.compact.reduce(nil){|acc, value| [acc, value].compact.min }
+        r2 = Catalyst::children(item)
+                .sort_by{|item| item["global-positioning"] || 0 }
+                .first(100) # we should in principle not need that but infinity has a lot of items which were former NxIce
+                .map{|c| Catalyst::deepRatioMinOrNull(c) }
+                .compact
+                .reduce(nil){|acc, value| [acc, value].compact.min }
         return nil if (r1.nil? and r2.nil?)
         [r1, r2].compact.min
     end

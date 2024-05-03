@@ -159,11 +159,20 @@ class Listing
         spot = Speedometer.new()
 
         spot.start_contest()
-        spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
-        spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
+        spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
+        spot.contest_entry("Desktop::muiItems()", lambda { Desktop::muiItems() })
+        spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
         spot.contest_entry("PhysicalTargets::muiItems()", lambda{ PhysicalTargets::muiItems() })
-        spot.contest_entry("Waves::muiItems()", lambda{ Waves::muiItems() })
+        spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
+        spot.contest_entry("NxOndates::muiItems()", lambda{ NxOndates::muiItems() })
+        spot.contest_entry("NxBackups::muiItems()", lambda{ NxBackups::muiItems() })
+        spot.contest_entry("NxFloats::muiItems()", lambda{ NxFloats::muiItems() })
+        spot.contest_entry("NxTodos::muiItemsOrphans()", lambda{ NxTodos::muiItemsOrphans() })
+        spot.contest_entry("NxThreads::muiItemsOrphans()", lambda{ NxThreads::muiItemsOrphans() })
+        spot.contest_entry("NxBufferInMonitors::muiItems()", lambda{ NxBufferInMonitors::muiItems() })
+        spot.contest_entry("TxCores::muiItems()", lambda{ TxCores::muiItems() })
+        spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
         spot.end_contest()
 
         puts ""
@@ -172,14 +181,15 @@ class Listing
         Listing::items()
         spot.end_unit()
 
-        spot.start_unit("Listing::items().first(100) >> Listing::toString2(store, item)")
-        store = ItemStore.new()
-        items = Listing::items().first(100)
-        items.each {|item| Listing::toString2(store, item) }
+        spot.start_unit("Listing::items2()")
+        Listing::items2()
         spot.end_unit()
 
-        spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+        spot.start_unit("Listing::items2().first(100) >> Listing::toString2(store, item)")
         store = ItemStore.new()
+        items = Listing::items2().first(100)
+        items.each {|item| Listing::toString2(store, item) }
+        spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
     end
