@@ -50,10 +50,13 @@ class Cubes1
     def self.relocate(filepath1)
         folderpath2 = Cubes1::pathToCubes()
         filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.catalyst-cube"
-        filepath2 = "#{folderpath2}/#{filename2}"
+        filepath2 = "#{folderpath2}/#{filename2[0, 2]}/#{filename2}"
         return filepath1 if (filepath1 == filepath2)
         #puts "filepath1: #{filepath1}".yellow
         #puts "filepath2: #{filepath2}".yellow
+        if !File.exist?(File.dirname(filepath2)) then
+            FileUtils.mkdir(File.dirname(filepath2))
+        end
         FileUtils.mv(filepath1, filepath2)
         uuid = Cubes1::uuidFromFile(filepath2)
         XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{uuid}", filepath2)
