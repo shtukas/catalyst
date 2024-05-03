@@ -33,15 +33,15 @@ class Cubes1
             return filepath
         end
 
-        LucilleCore::locationsAtFolder(Cubes1::pathToCubes())
-            .select{|location| location[-14, 14] == ".catalyst-cube" }
-            .each{|filepath|
-                u1 = Cubes1::uuidFromFile(filepath)
-                XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{u1}", filepath)
-                if u1 == uuid then
-                    return filepath
-                end
-            }
+        Find.find(Cubes1::pathToCubes()) do |location|
+            next if location[-14, 14] != ".catalyst-cube"
+            filepath = location
+            u1 = Cubes1::uuidFromFile(filepath)
+            XCache::set("ee710030-93d3-43db-bb18-1a5b7d5e24ec:#{u1}", filepath)
+            if u1 == uuid then
+                return filepath
+            end
+        end
 
         nil
     end
@@ -268,7 +268,7 @@ class Cubes1
         items = []
         Find.find(Cubes1::pathToCubes()) do |path|
             next if !path.include?(".catalyst-cube")
-            next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp 
+            next if File.basename(path).start_with?('.') # avoiding: .syncthing.82aafe48c87c22c703b32e35e614f4d7.catalyst-cube.tmp
             items << Cubes1::filepathToItem(path)
         end
         items
