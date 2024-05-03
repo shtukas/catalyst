@@ -166,8 +166,11 @@ class Waves
 
     # Waves::getMuiItemsNotInterruptionByRandom(r)
     def self.getMuiItemsNotInterruptionByRandom(r)
+        shift = lambda{|x|
+            (x + (Time.new.to_f % (86400*6)).to_f/86400*6) % 1
+        }
         Waves::muiItemsNotInterruption()
-            .select{|item| item["random"] <= r  }
+            .select{|item| shift.call(item["random"]) <= r }
     end
 
     # -------------------------------------------------------------------------
