@@ -80,13 +80,6 @@ class Catalyst
 
             NxBackups::maintenance()
 
-            if Cubes2::mikuType("NxTodo").size < 100 then
-                raise "(error: 390817c3-d1f9)"
-                Cubes2::mikuType("NxIce").take(1000).each{|item|
-
-                }
-            end
-
             Cubes2::items().each{|item|
                 next if item["parentuuid-0032"].nil?
                 parent = Cubes2::itemOrNull(item["parentuuid-0032"])

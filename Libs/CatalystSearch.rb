@@ -14,9 +14,8 @@ class CatalystSearch
                 next
             end
             selected = Cubes2::items()
-                            .reject{|item| item["mikuType"] == "NxIce" }
-                            .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
-                            .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] }
+                        .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
+                        .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] }
             Catalyst::program2(selected)
         }
         nil
