@@ -49,6 +49,31 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("pile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTodo" and item["mikuType"] != "NxThread" then
+                puts "The item that you pile on need to be a NxTodo or a NxThread"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if item["parentuuid-0032"].nil? then
+                puts "The item that you pile on need to have a parent"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+            if parent.nil? then
+                puts "This item has a parentuuid-0032 but I could not retrieve the corresponding parent. If you continue I am going to reset the parentuuid-0032"
+                LucilleCore::pressEnterToContinue()
+                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
+                return
+            end
+            Catalyst::interactivelyInsertAtPosition(parent, item["global-positioning"]-1)
+            return
+        end
+
         if Interpreting::match("donation * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)

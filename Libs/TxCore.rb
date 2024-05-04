@@ -51,6 +51,7 @@ class TxCores
     # TxCores::muiItems()
     def self.muiItems()
         Cubes2::mikuType("TxCore")
+            .select{|core| Catalyst::deepRatioMinOrNull(core) < 1 }
             .sort_by{|core| Catalyst::deepRatioMinOrNull(core) }
     end
 
@@ -170,7 +171,7 @@ class TxCores
 
             if input == "core" then
                 core = TxCores::interactivelyIssueNewOrNull()
-                next if task.nil?
+                next if core.nil?
                 puts JSON.pretty_generate(core)
                 next
             end
