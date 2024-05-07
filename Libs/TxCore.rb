@@ -95,6 +95,8 @@ class TxCores
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", core["uuid"])
+                position = Catalyst::interactivelySelectPositionInParent(core)
+                Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
 

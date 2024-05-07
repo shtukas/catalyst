@@ -267,4 +267,24 @@ class Catalyst
         position = Catalyst::topPositionInParent(thread) - 1
         Catalyst::interactivelyInsertAtPosition(thread, position)
     end
+
+    # Catalyst::interactivelySelectPositionInParent(parent)
+    def self.interactivelySelectPositionInParent(parent)
+        elements = Catalyst::childrenInGlobalPositioningOrder(parent)
+        elements.first(20).each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
+        if position == "first" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+        end
+        if position == "" then
+            position == rand
+        end
+        position = position.to_f
+        position
+    end
 end

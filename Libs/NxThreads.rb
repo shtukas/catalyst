@@ -73,26 +73,6 @@ class NxThreads
     # ------------------
     # Ops
 
-    # NxThreads::interactivelySelectPositionInParent(parent)
-    def self.interactivelySelectPositionInParent(parent)
-        elements = Catalyst::children(parent)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        if position == "" then
-            position == rand
-        end
-        position = position.to_f
-        position
-    end
-
     # NxThreads::program1(thread)
     def self.program1(thread)
         loop {
@@ -130,7 +110,7 @@ class NxThreads
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Cubes2::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
-                position = NxThreads::interactivelySelectPositionInParent(thread)
+                position = Catalyst::interactivelySelectPositionInParent(thread)
                 Cubes2::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
@@ -140,7 +120,7 @@ class NxThreads
                 next if t2.nil?
                 puts JSON.pretty_generate(t2)
                 Cubes2::setAttribute(t2["uuid"], "parentuuid-0032", thread["uuid"])
-                position = NxThreads::interactivelySelectPositionInParent(thread)
+                position = Catalyst::interactivelySelectPositionInParent(thread)
                 Cubes2::setAttribute(t2["uuid"], "global-positioning", position)
                 next
             end
@@ -149,7 +129,7 @@ class NxThreads
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = NxThreads::interactivelySelectPositionInParent(thread)
+                position = Catalyst::interactivelySelectPositionInParent(thread)
                 Cubes2::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end

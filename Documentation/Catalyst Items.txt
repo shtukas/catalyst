@@ -19,5 +19,6 @@ Cross types conventions (all optional):
     - url-e88a            : URL
     - unique-string-c3e5  : String
 
+    # hierarchy
     - donation-1601       : null or String
     - parentuuid-0032     : null or uuid of the parent
