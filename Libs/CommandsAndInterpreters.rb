@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | reload",
+            "misc          : search | speed | commands | edit <n> | reload | >> (natural Nxball action on the default item)",
         ].join("\n")
     end
 
@@ -25,12 +25,31 @@ class CommandsAndInterpreters
             end
         end
 
+        # This is to help with core: To Be Sorted
         if Interpreting::match(">", input) then
             item = store.getDefault()
             return if item.nil?
             core = TxCores::interactivelySelectOneOrNull()
             return if core.nil?
             Cubes2::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
+            return
+        end
+
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            if !NxBalls::itemIsActive(item) then
+                PolyActions::start(item)
+                return
+            end
+            if NxBalls::itemIsPaused(item) then
+                NxBalls::pursue(item)
+                return
+            end
+            if NxBalls::itemIsRunning(item) then
+                NxBalls::stop(item)
+                return
+            end
             return
         end
 
