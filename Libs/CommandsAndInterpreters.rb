@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | >> (natural Nxball action on the default item)",
+            "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
 
@@ -32,25 +32,6 @@ class CommandsAndInterpreters
             core = NxThreads::interactivelySelectOneOrNull()
             return if core.nil?
             Cubes1::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
-            return
-        end
-
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            if !NxBalls::itemIsActive(item) then
-                PolyActions::start(item)
-                PolyActions::access(item)
-                return
-            end
-            if NxBalls::itemIsPaused(item) then
-                NxBalls::pursue(item)
-                return
-            end
-            if NxBalls::itemIsRunning(item) then
-                PolyActions::done(item)
-                return
-            end
             return
         end
 
