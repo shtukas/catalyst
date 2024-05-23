@@ -7,13 +7,13 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-        Cubes2::itemInit(uuid, "NxOndate")
+        Cubes1::itemInit(uuid, "NxOndate")
         payload = TxPayload::interactivelyMakeNew(uuid)
-        payload.each{|k, v| Cubes2::setAttribute(uuid, k, v) }
-        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes2::setAttribute(uuid, "datetime", datetime)
-        Cubes2::setAttribute(uuid, "description", description)
-        Cubes2::itemOrNull(uuid)
+        payload.each{|k, v| Cubes1::setAttribute(uuid, k, v) }
+        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes1::setAttribute(uuid, "datetime", datetime)
+        Cubes1::setAttribute(uuid, "description", description)
+        Cubes1::itemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueAtDatetimeNewOrNull(datetime)
@@ -21,13 +21,13 @@ class NxOndates
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        Cubes2::itemInit(uuid, "NxOndate")
+        Cubes1::itemInit(uuid, "NxOndate")
         payload = TxPayload::interactivelyMakeNew(uuid)
-        payload.each{|k, v| Cubes2::setAttribute(uuid, k, v) }
-        Cubes2::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes2::setAttribute(uuid, "datetime", datetime)
-        Cubes2::setAttribute(uuid, "description", description)
-        Cubes2::itemOrNull(uuid)
+        payload.each{|k, v| Cubes1::setAttribute(uuid, k, v) }
+        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Cubes1::setAttribute(uuid, "datetime", datetime)
+        Cubes1::setAttribute(uuid, "description", description)
+        Cubes1::itemOrNull(uuid)
     end
 
     # ------------------
@@ -40,7 +40,7 @@ class NxOndates
 
     # NxOndates::muiItems()
     def self.muiItems()
-        Cubes2::mikuType("NxOndate")
+        Cubes1::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end

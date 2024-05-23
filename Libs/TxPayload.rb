@@ -107,7 +107,7 @@ class TxPayload
     # TxPayload::access(item)
     def self.access(item)
         loop {
-            item = Cubes2::itemOrNull(item["uuid"])
+            item = Cubes1::itemOrNull(item["uuid"])
             return if item.nil?
             puts "payload:#{TxPayload::suffix_string(item)}".green
             options = TxPayload::mapping().keys.map{|key| item[key] ? key : nil }.compact
@@ -123,7 +123,7 @@ class TxPayload
                 note = CommonUtils::editTextSynchronously(note).strip
                 note = note.size > 0 ? note : nil
                 item["note-1531"] = note
-                Cubes2::setAttribute(item["uuid"], "note-1531", note)
+                Cubes1::setAttribute(item["uuid"], "note-1531", note)
             end
             if option == "todotextfile-1312" then
                 todotextfile = item["todotextfile-1312"]
@@ -131,7 +131,7 @@ class TxPayload
                 if location.nil? then
                     puts "Could not resolve this todotextfile: #{todotextfile}"
                     if LucilleCore::askQuestionAnswerAsBoolean("remove reference from item ?") then
-                        Cubes2::setAttribute(item["uuid"], "todotextfile-1312", nil)
+                        Cubes1::setAttribute(item["uuid"], "todotextfile-1312", nil)
                     end
                     next
                 end
@@ -154,7 +154,7 @@ class TxPayload
                 Dx8Units::access(unitId)
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy Dx8Unit '#{unitId}'") then
                     Dx8Units::destroy(unitId)
-                    Cubes2::setAttribute(item["uuid"], "dx8UnitId-00286e29", nil)
+                    Cubes1::setAttribute(item["uuid"], "dx8UnitId-00286e29", nil)
                 end
             end
             if option == "url-e88a" then
@@ -189,20 +189,20 @@ class TxPayload
                 note = CommonUtils::editTextSynchronously(note).strip
                 note = note.size > 0 ? note : nil
                 item["note-1531"] = note
-                Cubes2::setAttribute(item["uuid"], "note-1531", note)
+                Cubes1::setAttribute(item["uuid"], "note-1531", note)
             end
             if TxPayload::friendlyToKey(option) == "todotextfile-1312" then
                 todotextfile = LucilleCore::askQuestionAnswerAsString("name or fragment: ")
                 if todotextfile != "" then
                     item["todotextfile-1312"] = todotextfile
-                    Cubes2::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
+                    Cubes1::setAttribute(item["uuid"], "todotextfile-1312", todotextfile)
                 end
             end
             if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
                 location = CommonUtils::interactivelySelectDesktopLocationOrNull()
                 next if location.nil?
                 nhash = AionCore::commitLocationReturnHash(Elizabeth.new(item["uuid"]), location)
-                Cubes2::setAttribute(item["uuid"], "aion-point-7c758c", nhash)
+                Cubes1::setAttribute(item["uuid"], "aion-point-7c758c", nhash)
             end
             if TxPayload::friendlyToKey(option) == "dx8UnitId-00286e29" then
                 puts "There is no edition of a Dx8Unit"
@@ -212,11 +212,11 @@ class TxPayload
             if TxPayload::friendlyToKey(option) == "url-e88a" then
                 url = LucilleCore::askQuestionAnswerAsString("url: ")
                 next if url == ""
-                Cubes2::setAttribute(item["uuid"], "url-e88a", url)
+                Cubes1::setAttribute(item["uuid"], "url-e88a", url)
             end
             if TxPayload::friendlyToKey(option) == "unique-string-c3e5" then
                 uniquestring = LucilleCore::askQuestionAnswerAsString("unique string (if needed use Nx01-#{SecureRandom.hex[0, 12]}): ")
-                Cubes2::setAttribute(item["uuid"], "unique-string-c3e5", uniquestring)
+                Cubes1::setAttribute(item["uuid"], "unique-string-c3e5", uniquestring)
             end
         }
     end

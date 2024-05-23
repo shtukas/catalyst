@@ -58,7 +58,7 @@ class Listing
     # Listing::listable(item)
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
-        return false if !DoNotShowUntil2::isVisible(item)
+        return false if !DoNotShowUntil1::isVisible(item)
         true
     end
 
@@ -66,7 +66,7 @@ class Listing
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
-        return false if !DoNotShowUntil2::isVisible(item)
+        return false if !DoNotShowUntil1::isVisible(item)
         return false if TmpSkip1::isSkipped(item)
         true
     end
@@ -81,9 +81,9 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         arrow = item["x:prefix:0859"] ? " (#{item["x:prefix:0859"]})" : ""
-        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil2::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item)}#{TxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
-        if !DoNotShowUntil2::isVisible(item) and !NxBalls::itemIsActive(item) then
+        if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
         end
 
@@ -110,11 +110,22 @@ class Listing
             NxOndates::muiItems(),
             NxBackups::muiItems(),
             NxFloats::muiItems(),
-            NxTodos::muiItemsOrphans(),
-            NxThreads::muiItemsOrphans(),
-            NxBufferInMonitors::muiItems(),
-            TxCores::muiItems(),
-            Waves::muiItemsNotInterruption()
+            [
+                NxThreads::muiItemsOrphans(),
+                NxBufferInMonitors::muiItems()
+            ].flatten.sort_by{|item|
+                (lambda {
+                    if item["mikuType"] == "NxThread" then
+                        return NxThreads::ratio(item)
+                    end
+                    if item["mikuType"] == "NxBufferInMonitor" then
+                        return NxBufferInMonitors::ratio()
+                    end
+                    if item["mikuType"] == "Wave" then
+                        return 0.6
+                    end
+                }).call()
+            }
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -168,10 +179,8 @@ class Listing
         spot.contest_entry("NxOndates::muiItems()", lambda{ NxOndates::muiItems() })
         spot.contest_entry("NxBackups::muiItems()", lambda{ NxBackups::muiItems() })
         spot.contest_entry("NxFloats::muiItems()", lambda{ NxFloats::muiItems() })
-        spot.contest_entry("NxTodos::muiItemsOrphans()", lambda{ NxTodos::muiItemsOrphans() })
         spot.contest_entry("NxThreads::muiItemsOrphans()", lambda{ NxThreads::muiItemsOrphans() })
         spot.contest_entry("NxBufferInMonitors::muiItems()", lambda{ NxBufferInMonitors::muiItems() })
-        spot.contest_entry("TxCores::muiItems()", lambda{ TxCores::muiItems() })
         spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
         spot.end_contest()
 

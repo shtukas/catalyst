@@ -6,7 +6,7 @@ class Catalyst
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
-            Cubes2::setAttribute(item["uuid"], key, value)
+            Cubes1::setAttribute(item["uuid"], key, value)
         }
     end
 
@@ -14,8 +14,7 @@ class Catalyst
     def self.program2(elements)
         loop {
 
-            elements = elements.map{|item| Cubes2::itemOrNull(item["uuid"]) }.compact
-            return if elements.empty?
+            elements = elements.map{|item| Cubes1::itemOrNull(item["uuid"]) }.compact
 
             system("clear")
 
@@ -74,26 +73,22 @@ class Catalyst
 
             puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
 
-            Cubes1::maintenance()
-
-            DoNotShowUntil1::maintenance()
-
             NxBackups::maintenance()
 
-            Cubes2::items().each{|item|
+            Cubes1::items().each{|item|
                 next if item["parentuuid-0032"].nil?
-                parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+                parent = Cubes1::itemOrNull(item["parentuuid-0032"])
                 if parent.nil? then
-                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
+                    Cubes1::setAttribute(item["uuid"], "parentuuid-0032", nil)
                     next
                 end
             }
 
-            Cubes2::items().each{|item|
+            Cubes1::items().each{|item|
                 next if item["donation-1601"].nil?
-                target = Cubes2::itemOrNull(item["donation-1601"])
+                target = Cubes1::itemOrNull(item["donation-1601"])
                 if target.nil? then
-                    Cubes2::setAttribute(item["uuid"], "donation-1601", nil)
+                    Cubes1::setAttribute(item["uuid"], "donation-1601", nil)
                     next
                 end
             }
@@ -104,7 +99,7 @@ class Catalyst
     def self.donationSuffix(item)
         return "" if item["donation-1601"].nil?
         uuid = item["donation-1601"]
-        item = Cubes2::itemOrNull(uuid)
+        item = Cubes1::itemOrNull(uuid)
         return "" if item.nil?
         " (#{item["description"]})".green
     end
@@ -128,7 +123,14 @@ class Catalyst
 
     # Catalyst::children(parent)
     def self.children(parent)
-        Cubes2::items()
+        if parent["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
+            return NxTodos::orphans()
+        end
+        if parent["uuid"] == "6dd9910e-49d8-4a6f-86fb-e9b3ba0c5900" then
+            return Waves::muiItemsNotInterruption()
+        end
+
+        Cubes1::items()
             .select{|item| item["parentuuid-0032"] == parent["uuid"] }
     end
 
@@ -140,78 +142,15 @@ class Catalyst
 
     # Catalyst::isOrphan(item)
     def self.isOrphan(item)
-        item["parentuuid-0032"].nil? or Cubes2::itemOrNull(item["parentuuid-0032"]).nil?
+        item["parentuuid-0032"].nil? or Cubes1::itemOrNull(item["parentuuid-0032"]).nil?
     end
 
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        core = TxCores::interactivelySelectOneOrNull()
-        return if core.nil?
-        Cubes2::setAttribute(item["uuid"], "donation-1601", core["uuid"])
-    end
-
-    # Catalyst::interactivelySetParentOrNothing(item, cursor)
-    def self.interactivelySetParentOrNothing(item, cursor)
-        if cursor.nil? then
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Catalyst::interactivelySetParentOrNothing(item, core)
-            return
-        end
-
-        if cursor["mikuType"] == "TxCore" or cursor["mikuType"] == "NxThread" then
-            puts PolyFunctions::toString(cursor)
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["select", "dive"])
-            return if option.nil?
-            if option == "select" then
-                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", cursor["uuid"])
-                return
-            end
-            if option == "dive" then
-                children = Catalyst::childrenInGlobalPositioningOrder(core)
-                                .select{|item| item["mikuType"] == "NxThread" }
-                if children.empty? then
-                    Cubes2::setAttribute(item["uuid"], "parentuuid-0032", cursor["uuid"])
-                    return
-                end
-                child = LucilleCore::selectEntityFromListOfEntitiesOrNull("select", children, lambda{|item| PolyFunctions::toString(item) })
-                if child.nil? then
-                    Catalyst::interactivelySetParentOrNothing(item, cursor)
-                    return
-                end
-                Catalyst::interactivelySetParentOrNothing(item, child)
-                return
-            end
-        end
-    end
-
-    # Catalyst::ratioOrNull(item)
-    def self.ratioOrNull(item)
-        return nil if item["hours"].nil?
-        if item["mikuType"] == "NxTodo" then
-            return NxTodos::ratio(item)
-        end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::ratio(item)
-        end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::ratio(item)
-        end
-        nil
-    end
-
-    # Catalyst::deepRatioMinOrNull(item)
-    def self.deepRatioMinOrNull(item)
-        r1 = Catalyst::ratioOrNull(item)
-        r2 = Catalyst::children(item)
-                .sort_by{|item| item["global-positioning"] || 0 }
-                .first(100) # we should in principle not need that but infinity has a lot of items which were former NxIce
-                .map{|c| Catalyst::deepRatioMinOrNull(c) }
-                .compact
-                .reduce(nil){|acc, value| [acc, value].compact.min }
-        return nil if (r1.nil? and r2.nil?)
-        [r1, r2].compact.min
+        thread = NxThreads::interactivelySelectOneOrNull()
+        return if thread.nil?
+        Cubes1::setAttribute(item["uuid"], "donation-1601", thread["uuid"])
     end
 
     # Catalyst::topPositionInParent(parent)
@@ -258,7 +197,7 @@ class Catalyst
         descriptions.zip(positions).each{|description, position|
             task = NxTodos::descriptionToTask1(parent, SecureRandom.hex, description)
             puts JSON.pretty_generate(task)
-            Cubes2::setAttribute(task["uuid"], "global-positioning", position)
+            Cubes1::setAttribute(task["uuid"], "global-positioning", position)
         }
     end
 

@@ -3,5 +3,4 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 
-CoreData::getData()
 Listing::main()

@@ -1,9 +1,9 @@
 
 class DoNotShowUntil1
 
-    # DoNotShowUntil1::instanceFilepath()
-    def self.instanceFilepath()
-        filepath = "#{Config::pathToCatalystDataRepository()}/DoNotShowUntil/DoNotShowUntil-#{Config::thisInstanceId()}.sqlite3"
+    # DoNotShowUntil1::getInstanceFilepathMakeIfMissing()
+    def self.getInstanceFilepathMakeIfMissing()
+        filepath = "#{Config::pathToCatalystDataRepository()}/DoNotShowUntil-20240523/DoNotShowUntil-#{Config::thisInstanceId()}.sqlite3"
         if !File.exist?(filepath) then
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
@@ -15,41 +15,42 @@ class DoNotShowUntil1
         filepath
     end
 
-    # DoNotShowUntil1::record_filepaths()
-    def self.record_filepaths()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
-            .select{|location| location[-7, 7] == ".record" }
-    end
-
-    # DoNotShowUntil1::maintenance()
-    def self.maintenance()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil")
-            .select{|location| location[-7, 7] == ".record" }
-            .each{|filepath|
-                record = JSON.parse(IO.read(filepath))
-                if record["unixtime"] < Time.new.to_i or Cubes2::itemOrNull(record["id"]).nil? then
-                    FileUtils.rm(filepath)
-                end
-            }
+    # DoNotShowUntil1::getInstancesFilepaths()
+    def self.getInstancesFilepaths()
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil-20240523")
+            .select{|location| location[-8, 8] == ".sqlite3" }
     end
 
     # DoNotShowUntil1::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
-        # not implemented
+        unixtimes = []
+        DoNotShowUntil1::getInstancesFilepaths().each{|filepath|
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute("select * from DoNotShowUntil where _id_=?", [id]) do |row|
+                unixtimes << row["_unixtime_"]
+            end
+            db.close
+        }
+        return nil if unixtimes.empty?
+        unixtimes.max
     end
 
     # DoNotShowUntil1::setUnixtime(id, unixtime)
     def self.setUnixtime(id, unixtime)
-        record = {
-            "id" => id,
-            "unixtime" => unixtime
-        }
-        filename = "#{CommonUtils::timeStringL22()}.record"
-        filepath = "#{Config::pathToCatalystDataRepository()}/DoNotShowUntil/#{filename}"
-        File.open(filepath, "w"){|f| f.puts(JSON.generate(record)) }
+        puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}".yellow
+
+        db = SQLite3::Database.new(DoNotShowUntil1::getInstanceFilepathMakeIfMissing())
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("delete from DoNotShowUntil where _id_=?", [id])
+        db.execute("insert into DoNotShowUntil (_id_, _unixtime_) values (?, ?)", [id, unixtime])
+        db.close
 
         XCache::set("747a75ad-05e7-4209-a876-9fe8a86c40dd:#{id}", unixtime)
-        puts "do not display '#{id}' until #{Time.at(unixtime).utc.iso8601}".yellow
     end
 
     # DoNotShowUntil1::isVisible(item)

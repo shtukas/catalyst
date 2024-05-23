@@ -51,11 +51,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
-            return
-        end
-
         if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
@@ -69,7 +64,7 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxFloat" then
-            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 
@@ -105,22 +100,22 @@ class PolyActions
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["postponing", "destroy"])
             return if option.nil?
             if option == "postponing" then
-                DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+                DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             end
             if option == "destroy" then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxThread" then
-            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
@@ -137,13 +132,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
-            return
-        end
-
         if item["mikuType"] == "NxBufferInMonitor" then
-            DoNotShowUntil2::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 
@@ -190,7 +180,7 @@ class PolyActions
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
@@ -208,7 +198,7 @@ class PolyActions
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
@@ -230,11 +220,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
-            return
-        end
-
         if item["mikuType"] == "NxBufferInMonitor" then
             return
         end
@@ -250,21 +235,21 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTodo" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
@@ -276,40 +261,28 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "TxCore" then
-            if Catalyst::children(item).size > 0 then
-                puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes2::destroy(item["uuid"])
+                Cubes1::destroy(item["uuid"])
             end
             return
         end
@@ -335,11 +308,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
-            return
-        end
-
         puts "PolyActions::program has not yet been implemented for miku type #{item["mikuType"]}"
         LucilleCore::pressEnterToContinue()
     end
@@ -358,7 +326,7 @@ class PolyActions
     def self.addTimeToItem(item, timeInSeconds)
         PolyFunctions::itemToBankingAccounts(item).each{|account|
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
-            Bank2::put(account["number"], timeInSeconds)
+            Bank1::put(account["number"], CommonUtils::today(), timeInSeconds)
         }
     end
 
@@ -372,6 +340,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Cubes2::setAttribute(item["uuid"], "description", description)
+        Cubes1::setAttribute(item["uuid"], "description", description)
     end
 end

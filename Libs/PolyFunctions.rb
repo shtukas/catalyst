@@ -16,17 +16,33 @@ class PolyFunctions
         # Special Features
 
         if item["parentuuid-0032"] then
-            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+            parent = Cubes1::itemOrNull(item["parentuuid-0032"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
         end
 
         if item["donation-1601"] then
-            target = Cubes2::itemOrNull(item["donation-1601"])
+            target = Cubes1::itemOrNull(item["donation-1601"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
+        end
+
+        if item["mikuType"] == "NxTodo" and item["parentuuid-0032"].nil? then
+            # orphan todos feeding the parent thread
+            accounts << {
+                "description" => "parent thread for orphan todos",
+                "number"      => "b83d12b6-9607-482f-8e89-239c1db49160"
+            }
+        end
+
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            # non interruption waves feeding the parent thread
+            accounts << {
+                "description" => "parent thread for waves non interruption",
+                "number"      => "6dd9910e-49d8-4a6f-86fb-e9b3ba0c5900"
+            }
         end
 
         accounts.reduce([]){|as, account|
@@ -78,9 +94,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
-        end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

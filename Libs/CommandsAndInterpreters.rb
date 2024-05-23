@@ -8,9 +8,9 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | reload | >> (natural Nxball action on the default item)",
+            "misc          : search | speed | commands | edit <n> | >> (natural Nxball action on the default item)",
         ].join("\n")
     end
 
@@ -20,7 +20,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
-                DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
+                DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
                 return
             end
         end
@@ -29,9 +29,9 @@ class CommandsAndInterpreters
         if Interpreting::match(">", input) then
             item = store.getDefault()
             return if item.nil?
-            core = TxCores::interactivelySelectOneOrNull()
+            core = NxThreads::interactivelySelectOneOrNull()
             return if core.nil?
-            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
+            Cubes1::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
             return
         end
 
@@ -40,6 +40,7 @@ class CommandsAndInterpreters
             return if item.nil?
             if !NxBalls::itemIsActive(item) then
                 PolyActions::start(item)
+                PolyActions::access(item)
                 return
             end
             if NxBalls::itemIsPaused(item) then
@@ -47,7 +48,7 @@ class CommandsAndInterpreters
                 return
             end
             if NxBalls::itemIsRunning(item) then
-                NxBalls::stop(item)
+                PolyActions::done(item)
                 return
             end
             return
@@ -82,11 +83,11 @@ class CommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            parent = Cubes2::itemOrNull(item["parentuuid-0032"])
+            parent = Cubes1::itemOrNull(item["parentuuid-0032"])
             if parent.nil? then
                 puts "This item has a parentuuid-0032 but I could not retrieve the corresponding parent. If you continue I am going to reset the parentuuid-0032"
                 LucilleCore::pressEnterToContinue()
-                Cubes2::setAttribute(item["uuid"], "parentuuid-0032", nil)
+                Cubes1::setAttribute(item["uuid"], "parentuuid-0032", nil)
                 return
             end
             Catalyst::interactivelyInsertAtPosition(parent, item["global-positioning"]-1)
@@ -98,11 +99,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("reload", input) then
-            CoreData::reloadDataFromScratch()
             return
         end
 
@@ -119,13 +115,13 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts Bank2::getRecords(item["uuid"])
+            puts Bank1::getRecords(item["uuid"]).sort_by{|record| record["_date_"] }
             LucilleCore::pressEnterToContinue()
             return
         end
 
         if Interpreting::match("backups", input) then
-            items = Cubes2::mikuType("NxBackup").sort_by{|item| item["description"] }
+            items = Cubes1::mikuType("NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
             return
         end
@@ -142,7 +138,9 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Catalyst::interactivelySetParentOrNothing(item, nil)
+            parent = NxThreads::interactivelySelectOneOrNull()
+            return if parent.nil?
+            Cubes1::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             return
         end
 
@@ -150,29 +148,17 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["TxCore", "NxThread", "NxTodo"].include?(item["mikuType"]) then
-                puts "You can only set hours to TxCore, NxThread and NxTodo"
+            if !["NxThread", "NxTodo"].include?(item["mikuType"]) then
+                puts "You can only set hours to NxThread and NxTodo"
                 LucilleCore::pressEnterToContinue()
                 return
             end
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
-            Cubes2::setAttribute(item["uuid"], "hours", hours)
+            Cubes1::setAttribute(item["uuid"], "hours", hours)
             if item["mikuType"] != "NxThread" then
-                Cubes2::setAttribute(item["uuid"], "mikuType", "NxThread")
+                Cubes1::setAttribute(item["uuid"], "mikuType", "NxThread")
             end
-            return
-        end
-
-        if Interpreting::match("cores", input) then
-            TxCores::program2()
-            return
-        end
-
-        if Interpreting::match("core", input) then
-            core = TxCores::interactivelyIssueNewOrNull()
-            return if core.nil?
-            puts JSON.pretty_generate(core)
             return
         end
 
@@ -180,9 +166,9 @@ class CommandsAndInterpreters
             thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
             puts JSON.pretty_generate(thread)
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Cubes2::setAttribute(thread["uuid"], "parentuuid-0032", core["uuid"])
+            parent = NxThreads::interactivelySelectOneOrNull()
+            return if parent.nil?
+            Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
             return
         end
 
@@ -196,7 +182,7 @@ class CommandsAndInterpreters
         if Interpreting::match("skip", input) then
             item = store.getDefault()
             return if item.nil?
-            Cubes2::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Cubes1::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -204,7 +190,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Cubes2::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Cubes1::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
             return
         end
 
@@ -212,9 +198,9 @@ class CommandsAndInterpreters
             item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            core = TxCores::interactivelySelectOneOrNull()
-            return if core.nil?
-            Cubes2::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
+            thread = NxThreads::interactivelySelectOneOrNull()
+            return if thread.nil?
+            Cubes1::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
             return
         end
 
@@ -258,8 +244,13 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("floats", input) then
-            floats = Cubes2::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
+            floats = Cubes1::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
             Catalyst::program2(floats)
+            return
+        end
+
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
@@ -335,7 +326,7 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             NxBalls::stop(item)
-            DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
+            DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
             return
         end
 
@@ -346,7 +337,7 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             NxBalls::stop(item)
-            DoNotShowUntil2::setUnixtime(item["uuid"], unixtime)
+            DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
             return
         end
 
@@ -395,14 +386,14 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("actives", input) then
-            items = Cubes2::items()
+            items = Cubes1::items()
                         .select{|item| item["active"] }
             Catalyst::program2(items)
             return
         end
 
         if Interpreting::match("ondates", input) then
-            elements = Cubes2::mikuType("NxOndate").sort_by{|item| item["datetime"] }
+            elements = Cubes1::mikuType("NxOndate").sort_by{|item| item["datetime"] }
             Catalyst::program2(elements)
             return
         end
@@ -443,7 +434,7 @@ class CommandsAndInterpreters
             return if item.nil?
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Cubes2::setAttribute(item["uuid"], "datetime", datetime)
+            Cubes1::setAttribute(item["uuid"], "datetime", datetime)
             return
         end
 
@@ -466,7 +457,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             if item["ordinal-1051"] then
-                Cubes2::setAttribute(item["uuid"], "ordinal-1051", nil)
+                Cubes1::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
@@ -477,7 +468,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             if item["ordinal-1051"] then
-                Cubes2::setAttribute(item["uuid"], "ordinal-1051", nil)
+                Cubes1::setAttribute(item["uuid"], "ordinal-1051", nil)
             end
             NxBalls::stop(item)
             return
