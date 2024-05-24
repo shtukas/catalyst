@@ -2,7 +2,7 @@ class NxThreads
 
     # NxThreads::interactivelyDecideHoursOrNull()
     def self.interactivelyDecideHoursOrNull()
-        hours = LucilleCore::askQuestionAnswerAsString("hours per week (optional, if you want to activate it): ")
+        hours = LucilleCore::askQuestionAnswerAsString("hours per week (optional): ")
         if hours == "" then
             hours = nil
         else

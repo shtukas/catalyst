@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n>",
+            "misc          : search | speed | commands | edit <n> | >> (transmute)",
         ].join("\n")
     end
 
@@ -47,6 +47,21 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubledots(item)
+            return
+        end
+
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Transmutations::transmute1(item)
+            return
+        end
+
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutations::transmute1(item)
             return
         end
 

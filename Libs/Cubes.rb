@@ -46,11 +46,12 @@ class Cubes1
 
     # Cubes1::items()
     def self.items()
+        duuids = Cubes1::deleteduuids()
         instancesFilepaths = Cubes1::getInstancesFilepaths()
 
         trace = "b674ef92-c8d9-4ef2-8d46-8c32b780f275:#{instancesFilepaths.sort}"
         if $ROWS_CACHE[trace] then
-            return $ROWS_CACHE[trace]
+            return $ROWS_CACHE[trace].select{|item| !duuids.include?(item["uuid"]) }
         end
 
         rows = []
@@ -66,7 +67,7 @@ class Cubes1
                 end
                 structure[row["_itemuuid_"]][row["_attrname_"]] = JSON.parse("#{row["_attrvalue_"]}")
             }
-        items = structure.values
+        items = structure.values.select{|item| !duuids.include?(item["uuid"]) }
 
         $ROWS_CACHE[trace] =  items
 
@@ -130,7 +131,7 @@ class Cubes1
 
         return $ROWS_CACHE[filepath] if $ROWS_CACHE[filepath]
 
-        puts "reading #{filepath} from scratch".yellow
+        #puts "reading #{filepath} from scratch".yellow
 
         rows = []
         db = SQLite3::Database.new(filepath)
@@ -176,22 +177,6 @@ class Cubes1
         db.execute("create table Attributes (_recorduuid_ string primary key, _updatetime_ float, _itemuuid_ string, _attrname_ string, _attrvalue_ string)")
         db.close
         filepath
-    end
-
-    # Cubes1::uuids()
-    def self.uuids()
-        uuids = []
-        Cubes1::getInstancesFilepaths().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select _itemuuid_ from Attributes", []) do |row|
-                uuids << row["_itemuuid_"]
-            end
-            db.close
-        }
-        uuids.uniq - Cubes1::deleteduuids()
     end
 
     # Cubes1::deleteduuids()
