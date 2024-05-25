@@ -97,12 +97,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTodo" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["postponing", "destroy"])
-            return if option.nil?
-            if option == "postponing" then
-                DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
-            end
-            if option == "destroy" then
+            if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Cubes1::destroy(item["uuid"])
             end
             return

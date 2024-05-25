@@ -236,7 +236,7 @@ class Listing
                 exit
             end
 
-            if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 3600)  then
+            if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400)  then
                 Catalyst::periodicPrimaryInstanceMaintenance()
             end
 
