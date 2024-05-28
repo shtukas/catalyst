@@ -29,7 +29,8 @@ class CommandsAndInterpreters
         if Interpreting::match(">", input) then
             item = store.getDefault()
             return if item.nil?
-            core = NxThreads::interactivelySelectOneOrNull()
+            datatrace = Catalyst::datatrace()
+            core = NxThreads::interactivelySelectOneOrNull(datatrace)
             return if core.nil?
             Cubes1::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
             return
@@ -79,7 +80,7 @@ class CommandsAndInterpreters
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            parent = Cubes1::itemOrNull(item["parentuuid-0032"])
+            parent = Cubes1::itemOrNull(Catalyst::datatrace(), item["parentuuid-0032"])
             if parent.nil? then
                 puts "This item has a parentuuid-0032 but I could not retrieve the corresponding parent. If you continue I am going to reset the parentuuid-0032"
                 LucilleCore::pressEnterToContinue()
@@ -102,7 +103,7 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
+            puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(nil, item))
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -117,7 +118,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("backups", input) then
-            items = Cubes1::mikuType("NxBackup").sort_by{|item| item["description"] }
+            datatrace = Catalyst::datatrace()
+            items = Cubes1::mikuType(datatrace, "NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
             return
         end
@@ -134,7 +136,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = NxThreads::interactivelySelectOneOrNull()
+            datatrace = Catalyst::datatrace()
+            parent = NxThreads::interactivelySelectOneOrNull(datatrace)
             return if parent.nil?
             Cubes1::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -162,7 +165,8 @@ class CommandsAndInterpreters
             thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
             puts JSON.pretty_generate(thread)
-            parent = NxThreads::interactivelySelectOneOrNull()
+            datatrace = Catalyst::datatrace()
+            parent = NxThreads::interactivelySelectOneOrNull(datatrace)
             return if parent.nil?
             Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -194,7 +198,8 @@ class CommandsAndInterpreters
             item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            thread = NxThreads::interactivelySelectOneOrNull()
+            datatrace = Catalyst::datatrace()
+            thread = NxThreads::interactivelySelectOneOrNull(datatraces)
             return if thread.nil?
             Cubes1::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
             return
@@ -240,7 +245,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("floats", input) then
-            floats = Cubes1::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
+            datatrace = Catalyst::datatrace()
+            floats = Cubes1::mikuType(datatrace, "NxFloat").sort_by{|item| item["unixtime"] }
             Catalyst::program2(floats)
             return
         end
@@ -381,15 +387,9 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("actives", input) then
-            items = Cubes1::items()
-                        .select{|item| item["active"] }
-            Catalyst::program2(items)
-            return
-        end
-
         if Interpreting::match("ondates", input) then
-            elements = Cubes1::mikuType("NxOndate").sort_by{|item| item["datetime"] }
+            datatrace = Catalyst::datatrace()
+            elements = Cubes1::mikuType(datatrace, "NxOndate").sort_by{|item| item["datetime"] }
             Catalyst::program2(elements)
             return
         end

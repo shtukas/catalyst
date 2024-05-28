@@ -115,7 +115,7 @@ class Anniversaries
         Cubes1::setAttribute(uuid, "repeatType", repeatType)
         Cubes1::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
 
-        Cubes1::itemOrNull(uuid)
+        Cubes1::itemOrNull(nil, uuid)
     end
 
     # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]
@@ -134,9 +134,9 @@ class Anniversaries
         Anniversaries::nextDateOrdinal(anniversary)[0] <= CommonUtils::today() 
     end
 
-    # Anniversaries::muiItems()
-    def self.muiItems()
-        Cubes1::mikuType("NxAnniversary")
+    # Anniversaries::muiItems(datatrace)
+    def self.muiItems(datatrace)
+        Cubes1::mikuType(datatrace, "NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end
 
@@ -178,7 +178,8 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Cubes1::mikuType("NxAnniversary")
+            datatrace = Catalyst::datatrace()
+            anniversaries = Cubes1::mikuType(datatrace, "NxAnniversary")
                               .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?

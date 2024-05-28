@@ -13,8 +13,9 @@ class Catalyst
     # Catalyst::program2(elements)
     def self.program2(elements)
         loop {
+            datatrace = Catalyst::datatrace()
 
-            elements = elements.map{|item| Cubes1::itemOrNull(item["uuid"]) }.compact
+            elements = elements.map{|item| Cubes1::itemOrNull(datatrace, item["uuid"]) }.compact
 
             system("clear")
 
@@ -25,7 +26,7 @@ class Catalyst
             elements
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
+                    puts Listing::toString2(datastrace, store, item)
                 }
 
             puts ""
@@ -51,10 +52,12 @@ class Catalyst
 
             puts ""
 
+            datatrace = Catalyst::datatrace()
+
             elements
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
+                    puts Listing::toString2(datatrace, store, item)
                 }
 
             puts ""
@@ -75,18 +78,18 @@ class Catalyst
 
             NxBackups::maintenance()
 
-            Cubes1::items().each{|item|
+            Cubes1::items(Catalyst::datatrace()).each{|item|
                 next if item["parentuuid-0032"].nil?
-                parent = Cubes1::itemOrNull(item["parentuuid-0032"])
+                parent = Cubes1::itemOrNull(Catalyst::datatrace(), item["parentuuid-0032"])
                 if parent.nil? then
                     Cubes1::setAttribute(item["uuid"], "parentuuid-0032", nil)
                     next
                 end
             }
 
-            Cubes1::items().each{|item|
+            Cubes1::items(Catalyst::datatrace()).each{|item|
                 next if item["donation-1601"].nil?
-                target = Cubes1::itemOrNull(item["donation-1601"])
+                target = Cubes1::itemOrNull(Catalyst::datatrace(), item["donation-1601"])
                 if target.nil? then
                     Cubes1::setAttribute(item["uuid"], "donation-1601", nil)
                     next
@@ -95,11 +98,11 @@ class Catalyst
         end
     end
 
-    # Catalyst::donationSuffix(item)
-    def self.donationSuffix(item)
+    # Catalyst::donationSuffix(datatrace, item)
+    def self.donationSuffix(datatrace, item)
         return "" if item["donation-1601"].nil?
         uuid = item["donation-1601"]
-        item = Cubes1::itemOrNull(uuid)
+        item = Cubes1::itemOrNull(datatrace, uuid)
         return "" if item.nil?
         " (#{item["description"]})".green
     end
@@ -121,47 +124,48 @@ class Catalyst
         nil
     end
 
-    # Catalyst::children(parent)
-    def self.children(parent)
+    # Catalyst::children(datatrace, parent)
+    def self.children(datatrace, parent)
         if parent["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
-            return NxTodos::orphans()
+            return NxTodos::orphans(datatrace)
         end
         if parent["uuid"] == "6dd9910e-49d8-4a6f-86fb-e9b3ba0c5900" then
-            return Waves::muiItemsNotInterruption()
+            return Waves::muiItemsNotInterruption(datatrace)
         end
 
-        Cubes1::items()
+        Cubes1::items(datatrace)
             .select{|item| item["parentuuid-0032"] == parent["uuid"] }
     end
 
-    # Catalyst::childrenInGlobalPositioningOrder(parent)
-    def self.childrenInGlobalPositioningOrder(parent)
-        Catalyst::children(parent)
+    # Catalyst::childrenInGlobalPositioningOrder(datatrace, parent)
+    def self.childrenInGlobalPositioningOrder(datatrace, parent)
+        Catalyst::children(datatrace, parent)
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # Catalyst::isOrphan(item)
-    def self.isOrphan(item)
-        item["parentuuid-0032"].nil? or Cubes1::itemOrNull(item["parentuuid-0032"]).nil?
+    # Catalyst::isOrphan(datatrace, item)
+    def self.isOrphan(datatrace, item)
+        item["parentuuid-0032"].nil? or Cubes1::itemOrNull(datatrace, item["parentuuid-0032"]).nil?
     end
 
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        thread = NxThreads::interactivelySelectOneOrNull()
+        datatrace = Catalyst::datatrace()
+        thread = NxThreads::interactivelySelectOneOrNull(datatrace)
         return if thread.nil?
         Cubes1::setAttribute(item["uuid"], "donation-1601", thread["uuid"])
     end
 
-    # Catalyst::topPositionInParent(parent)
-    def self.topPositionInParent(parent)
-        elements = Catalyst::children(parent)
+    # Catalyst::topPositionInParent(datatrace, parent)
+    def self.topPositionInParent(datatrace, parent)
+        elements = Catalyst::children(datatrace, parent)
         ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
     end
 
-    # Catalyst::insertionPositions(parent, position, count)
-    def self.insertionPositions(parent, position, count)
-        children = Catalyst::children(parent)
+    # Catalyst::insertionPositions(datatrace, parent, position, count)
+    def self.insertionPositions(datatrace, parent, position, count)
+        children = Catalyst::children(datatrace, parent)
         if children.empty? then
             return (1..count).to_a
         end
@@ -201,15 +205,15 @@ class Catalyst
         }
     end
 
-    # Catalyst::interactivelyPile(thread)
-    def self.interactivelyPile(thread)
-        position = Catalyst::topPositionInParent(thread) - 1
+    # Catalyst::interactivelyPile(datatrace, thread)
+    def self.interactivelyPile(datatrace, thread)
+        position = Catalyst::topPositionInParent(datatrace, thread) - 1
         Catalyst::interactivelyInsertAtPosition(thread, position)
     end
 
-    # Catalyst::interactivelySelectPositionInParent(parent)
-    def self.interactivelySelectPositionInParent(parent)
-        elements = Catalyst::childrenInGlobalPositioningOrder(parent)
+    # Catalyst::interactivelySelectPositionInParent(datatrace, parent)
+    def self.interactivelySelectPositionInParent(datatrace, parent)
+        elements = Catalyst::childrenInGlobalPositioningOrder(datatrace, parent)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -225,5 +229,10 @@ class Catalyst
         end
         position = position.to_f
         position
+    end
+
+    # Catalyst::datatrace()
+    def self.datatrace()
+        "#{Cubes1::datatrace()}:#{Cubes1::deleteduuidsTrace()}"
     end
 end

@@ -250,7 +250,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if Catalyst::children(item).size > 0 then
+            if Catalyst::children(Catalyst::datatrace(), item).size > 0 then
                 puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
                 LucilleCore::pressEnterToContinue()
                 return
@@ -319,7 +319,7 @@ class PolyActions
 
     # PolyActions::addTimeToItem(item, timeInSeconds)
     def self.addTimeToItem(item, timeInSeconds)
-        PolyFunctions::itemToBankingAccounts(item).each{|account|
+        PolyFunctions::itemToBankingAccounts(nil, item).each{|account|
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
             Bank1::put(account["number"], CommonUtils::today(), timeInSeconds)
         }

@@ -84,7 +84,7 @@ class NxBalls
     # NxBalls::start(item)
     def self.start(item)
         return if !NxBalls::itemIsBallFree(item)
-        accounts = PolyFunctions::itemToBankingAccounts(item)
+        accounts = PolyFunctions::itemToBankingAccounts(nil, item)
         accounts.each{|account|
             puts "starting account: (#{account["description"]}, #{account["number"]})"
         }
@@ -182,14 +182,14 @@ class NxBalls
         " #{NxBalls::nxBallToString(nxball)}"
     end
 
-    # NxBalls::activeItems()
-    def self.activeItems()
+    # NxBalls::activeItems(datatrace)
+    def self.activeItems(datatrace)
         NxBalls::all()
             .sort_by{|item| item["unixtime"] }
             .reverse
             .map{|ball| ball["itemuuid"] }
             .map{|itemuuid| 
-                ix = Cubes1::itemOrNull(itemuuid)
+                ix = Cubes1::itemOrNull(datatrace, itemuuid)
                 if ix.nil? then
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then

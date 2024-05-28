@@ -1,8 +1,11 @@
 # encoding: UTF-8
 
-$ROWS_CACHE = {}
-
 class Cubes1
+
+    # Cubes1::datatrace()
+    def self.datatrace()
+        Digest::SHA1.hexdigest(Cubes1::getInstancesFilepaths().join(":"))
+    end
 
     # ----------------------------------------
     # Interface
@@ -13,8 +16,13 @@ class Cubes1
         Cubes1::setAttribute(uuid, "mikuType", mikuType)
     end
 
-    # Cubes1::itemOrNull(uuid)
-    def self.itemOrNull(uuid)
+    # Cubes1::itemOrNull(datatrace, uuid)
+    def self.itemOrNull(datatrace, uuid)
+
+        if datatrace and InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}") then
+            return InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}")
+        end
+
         return nil if Cubes1::deleteduuids().include?(uuid)
         item = {}
         rows = []
@@ -41,19 +49,25 @@ class Cubes1
             .each{|row|
                 item[row["_attrname_"]] = JSON.parse("#{row["_attrvalue_"]}")
             }
+
+        if datatrace then
+            InMemoryCache::set("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}", item)
+        end
+
         item
     end
 
-    # Cubes1::items()
-    def self.items()
-        duuids = Cubes1::deleteduuids()
-        instancesFilepaths = Cubes1::getInstancesFilepaths()
+    # Cubes1::items(datatrace)
+    def self.items(datatrace)
 
-        trace = "b674ef92-c8d9-4ef2-8d46-8c32b780f275:#{instancesFilepaths.sort}"
-        if $ROWS_CACHE[trace] then
-            return $ROWS_CACHE[trace].select{|item| !duuids.include?(item["uuid"]) }
+        if datatrace and InMemoryCache::getOrNull("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}") then
+            return InMemoryCache::getOrNull("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}")
         end
 
+        #puts "Cubes1::items(#{datatrace})".yellow
+
+        duuids = Cubes1::deleteduuids()
+        instancesFilepaths = Cubes1::getInstancesFilepaths()
         rows = []
         structure = {}
         instancesFilepaths.each{|filepath|
@@ -67,16 +81,31 @@ class Cubes1
                 end
                 structure[row["_itemuuid_"]][row["_attrname_"]] = JSON.parse("#{row["_attrvalue_"]}")
             }
+        
         items = structure.values.select{|item| !duuids.include?(item["uuid"]) }
 
-        $ROWS_CACHE[trace] =  items
+        if datatrace then
+            InMemoryCache::set("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}", items)
+        end
 
         items
     end
 
-    # Cubes1::mikuType(mikuType)
-    def self.mikuType(mikuType)
-        Cubes1::items().select{|item| item["mikuType"] == mikuType }
+    # Cubes1::mikuType(datatrace, mikuType)
+    def self.mikuType(datatrace, mikuType)
+        if datatrace and InMemoryCache::getOrNull("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}") then
+            return InMemoryCache::getOrNull("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}")
+        end
+
+        #puts "Cubes1::mikuType(#{datatrace}, #{mikuType})".yellow
+
+        items = Cubes1::items(datatrace).select{|item| item["mikuType"] == mikuType }
+
+        if datatrace then
+            InMemoryCache::set("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}", items)
+        end
+
+        items
     end
 
     # Cubes1::setAttribute(uuid, attrname, attrvalue)
@@ -128,11 +157,6 @@ class Cubes1
 
     # Cubes1::readRows(filepath)
     def self.readRows(filepath)
-
-        return $ROWS_CACHE[filepath] if $ROWS_CACHE[filepath]
-
-        #puts "reading #{filepath} from scratch".yellow
-
         rows = []
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -149,9 +173,6 @@ class Cubes1
             }
         end
         db.close
-
-        $ROWS_CACHE[filepath] = rows
-
         rows
     end
 
@@ -184,6 +205,15 @@ class Cubes1
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DeletedCubes")
             .select{|filepath| filepath[-4, 4] == ".txt" }
             .map{|filepath| IO.read(filepath).strip }
+    end
+
+    # Cubes1::deleteduuidsTrace()
+    def self.deleteduuidsTrace()
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DeletedCubes")
+            .select{|filepath| filepath[-4, 4] == ".txt" }
+            .reduce(""){|acc, filepath|
+                Digest::SHA1.hexdigest("#{acc}:#{filepath}")
+            }
     end
 end
 

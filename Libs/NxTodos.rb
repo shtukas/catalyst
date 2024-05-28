@@ -10,7 +10,7 @@ class NxTodos
         Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::itemOrNull(uuid)
+        Cubes1::itemOrNull(nil, uuid)
     end
 
     # NxTodos::descriptionToTask1(parent, uuid, description)
@@ -20,7 +20,7 @@ class NxTodos
         Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes1::setAttribute(uuid, "description", description)
         Cubes1::setAttribute(uuid, "parentuuid-0032", parent["uuid"])
-        Cubes1::itemOrNull(uuid)
+        Cubes1::itemOrNull(nil, uuid)
     end
 
     # ------------------
@@ -47,9 +47,9 @@ class NxTodos
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTodos::icon(item)} #{item["description"]}#{NxTodos::ratioString(item)}"
     end
 
-    # NxTodos::orphans()
-    def self.orphans()
-        Cubes1::mikuType("NxTodo")
-            .select{|item| Catalyst::isOrphan(item) }
+    # NxTodos::orphans(datatrace)
+    def self.orphans(datatrace)
+        Cubes1::mikuType(datatrace, "NxTodo")
+            .select{|item| Catalyst::isOrphan(datatrace, item) }
     end
 end

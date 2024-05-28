@@ -26,8 +26,9 @@ class NxBackups
 
     # NxBackups::removeObsoleteItems()
     def self.removeObsoleteItems()
+        datatrace = Catalyst::datatrace()
         descriptions = NxBackups::descriptionsFromFiles()
-        Cubes1::mikuType("NxBackup").each{|item|
+        Cubes1::mikuType(datatrace, "NxBackup").each{|item|
             if !descriptions.include?(item["description"]) then
                 Cubes1::destroy(item["uuid"])
             end
@@ -36,8 +37,9 @@ class NxBackups
 
     # NxBackups::buildMissingItems()
     def self.buildMissingItems()
+        datatrace = Catalyst::datatrace()
         descriptionsFromFiles = NxBackups::descriptionsFromFiles()
-        descriptionsFromItems = Cubes1::mikuType("NxBackup").map{|item| item["description"] }
+        descriptionsFromItems = Cubes1::mikuType(datatrace, "NxBackup").map{|item| item["description"] }
         (descriptionsFromFiles - descriptionsFromItems).each{|description|
             uuid = SecureRandom.uuid
             Cubes1::itemInit(uuid, "NxBackup")
@@ -100,9 +102,9 @@ class NxBackups
         period <= Time.new.to_i
     end
 
-    # NxBackups::muiItems()
-    def self.muiItems()
-        Cubes1::mikuType("NxBackup").select{|item| NxBackups::itemIsDue(item) }
+    # NxBackups::muiItems(datatrace)
+    def self.muiItems(datatrace)
+        Cubes1::mikuType(datatrace, "NxBackup").select{|item| NxBackups::itemIsDue(item) }
     end
 
     # NxBackups::toString(item)
