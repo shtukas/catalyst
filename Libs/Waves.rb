@@ -114,7 +114,7 @@ class Waves
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
         Cubes1::itemInit(uuid, "Wave")
-        payload = TxPayload::interactivelyMakeNew(uuid)
+        payload = TxPayload::interactivelyMakeNew()
         payload.each{|k, v| Cubes1::setAttribute(uuid, k, v) }
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
         Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)

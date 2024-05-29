@@ -107,7 +107,7 @@ class TxPayload
     # TxPayload::access(item)
     def self.access(item)
         loop {
-            item = Cubes1::itemOrNull(datatrace, item["uuid"])
+            item = Cubes1::itemOrNull(Catalyst::datatrace(), item["uuid"])
             return if item.nil?
             puts "payload:#{TxPayload::suffix_string(item)}".green
             options = TxPayload::mapping().keys.map{|key| item[key] ? key : nil }.compact

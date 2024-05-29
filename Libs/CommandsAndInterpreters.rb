@@ -168,6 +168,7 @@ class CommandsAndInterpreters
             return if thread.nil?
             puts JSON.pretty_generate(thread)
             datatrace = Catalyst::datatrace()
+            puts "select parent"
             parent = NxThreads::interactivelySelectOneOrNull(datatrace)
             return if parent.nil?
             Cubes1::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
