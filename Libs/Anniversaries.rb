@@ -159,7 +159,8 @@ class Anniversaries
     # Anniversaries::program1(item)
     def self.program1(item)
         loop {
-            actions = ["update description", "update start date"]
+            puts PolyFunctions::toString(item).green
+            actions = ["update description", "update start date", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
@@ -171,6 +172,12 @@ class Anniversaries
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
                 Cubes1::setAttribute(item["uuid"], "startdate", startdate)
+            end
+            if action == "destroy" then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    Cubes1::destroy(item["uuid"])
+                    return
+                end
             end
         }
     end

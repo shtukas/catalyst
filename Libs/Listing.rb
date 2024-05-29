@@ -111,7 +111,7 @@ class Listing
             NxBackups::muiItems(datatrace),
             NxFloats::muiItems(datatrace),
             [
-                NxThreads::muiItemsOrphans(datatrace),
+                NxThreads::muiItems(datatrace),
                 NxBufferInMonitors::muiItems(datatrace)
             ].flatten.sort_by{|item|
                 (lambda {
@@ -179,7 +179,7 @@ class Listing
         spot.contest_entry("NxOndates::muiItems(nil)", lambda{ NxOndates::muiItems(nil) })
         spot.contest_entry("NxBackups::muiItems(nil)", lambda{ NxBackups::muiItems(nil) })
         spot.contest_entry("NxFloats::muiItems(nil)", lambda{ NxFloats::muiItems(nil) })
-        spot.contest_entry("NxThreads::muiItemsOrphans(nil)", lambda{ NxThreads::muiItemsOrphans(nil) })
+        spot.contest_entry("NxThreads::muiItems(nil)", lambda{ NxThreads::muiItems(nil) })
         spot.contest_entry("NxBufferInMonitors::muiItems(nil)", lambda{ NxBufferInMonitors::muiItems(nil) })
         spot.contest_entry("Waves::muiItemsNotInterruption(nil)", lambda{ Waves::muiItemsNotInterruption(nil) })
         spot.end_contest()

@@ -19,11 +19,18 @@ class Cubes1
     # Cubes1::itemOrNull(datatrace, uuid)
     def self.itemOrNull(datatrace, uuid)
 
+        #puts "Cubes1::itemOrNull(#{datatrace}, #{uuid}) (from memory)".yellow
+
         if datatrace and InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}") then
-            return InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}")
+            item = InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}")
+            if item == "NOTHING" then
+                return nil
+            end
+            return item
         end
 
-        return nil if Cubes1::deleteduuids().include?(uuid)
+        #puts "Cubes1::itemOrNull(#{datatrace}, #{uuid}) (from disk)".yellow
+
         item = {}
         rows = []
         Cubes1::getInstancesFilepaths().each{|filepath|
@@ -43,15 +50,22 @@ class Cubes1
             end
             db.close
         }
-        return nil if rows.empty?
+        if rows.empty? then
+            InMemoryCache::set("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}", "NOTHING")
+            return nil
+        end
         rows
             .sort_by{|row| row["_updatetime_"] }
             .each{|row|
                 item[row["_attrname_"]] = JSON.parse("#{row["_attrvalue_"]}")
             }
 
+        if item["IS-DELETED"] then
+            item = nil
+        end
+
         if datatrace then
-            InMemoryCache::set("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}", item)
+            InMemoryCache::set("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}", item || "NOTHING")
         end
 
         item
@@ -64,9 +78,8 @@ class Cubes1
             return InMemoryCache::getOrNull("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}")
         end
 
-        #puts "Cubes1::items(#{datatrace})".yellow
+        #puts "Cubes1::items(#{datatrace}) (from disk)".yellow
 
-        duuids = Cubes1::deleteduuids()
         instancesFilepaths = Cubes1::getInstancesFilepaths()
         rows = []
         structure = {}
@@ -82,7 +95,7 @@ class Cubes1
                 structure[row["_itemuuid_"]][row["_attrname_"]] = JSON.parse("#{row["_attrvalue_"]}")
             }
         
-        items = structure.values.select{|item| !duuids.include?(item["uuid"]) }
+        items = structure.values.select{|item| !item["IS-DELETED"] }
 
         if datatrace then
             InMemoryCache::set("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}", items)
@@ -97,7 +110,7 @@ class Cubes1
             return InMemoryCache::getOrNull("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}")
         end
 
-        #puts "Cubes1::mikuType(#{datatrace}, #{mikuType})".yellow
+        #puts "Cubes1::mikuType(#{datatrace}, #{mikuType}) (from disk)".yellow
 
         items = Cubes1::items(datatrace).select{|item| item["mikuType"] == mikuType }
 
@@ -148,8 +161,7 @@ class Cubes1
 
     # Cubes1::destroy(uuid)
     def self.destroy(uuid)
-        filepath = "#{Config::pathToCatalystDataRepository()}/DeletedCubes/#{(1000000*Time.new.to_f).to_i}.txt"
-        File.open(filepath, "w"){|f| f.puts(uuid) }
+        Cubes1::setAttribute(uuid, "IS-DELETED", true)
     end
 
     # ----------------------------------------
@@ -198,59 +210,5 @@ class Cubes1
         db.execute("create table Attributes (_recorduuid_ string primary key, _updatetime_ float, _itemuuid_ string, _attrname_ string, _attrvalue_ string)")
         db.close
         filepath
-    end
-
-    # Cubes1::deleteduuids()
-    def self.deleteduuids()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DeletedCubes")
-            .select{|filepath| filepath[-4, 4] == ".txt" }
-            .map{|filepath| IO.read(filepath).strip }
-    end
-
-    # Cubes1::deleteduuidsTrace()
-    def self.deleteduuidsTrace()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DeletedCubes")
-            .select{|filepath| filepath[-4, 4] == ".txt" }
-            .reduce(""){|acc, filepath|
-                Digest::SHA1.hexdigest("#{acc}:#{filepath}")
-            }
-    end
-end
-
-class Elizabeth
-
-    def initialize(uuid)
-        @uuid = uuid
-    end
-
-    def putBlob(datablob) # nhash
-        Datablobs::putBlob(datablob)
-    end
-
-    def filepathToContentHash(filepath)
-        "SHA256-#{Digest::SHA256.file(filepath).hexdigest}"
-    end
-
-    def getBlobOrNull(nhash)
-        Datablobs::getBlobOrNull(nhash)
-    end
-
-    def readBlobErrorIfNotFound(nhash)
-        blob = getBlobOrNull(nhash)
-        return blob if blob
-        raise "(error: ff339aa3-b7ea-4b92-a211-5fc1048c048b, nhash: #{nhash})"
-    end
-
-    def datablobCheck(nhash)
-        begin
-            blob = readBlobErrorIfNotFound(nhash)
-            status = ("SHA256-#{Digest::SHA256.hexdigest(blob)}" == nhash)
-            if !status then
-                puts "(error: 900a9a53-66a3-4860-be5e-dffa7a88c66d) incorrect blob, exists but doesn't have the right nhash: #{nhash}"
-            end
-            return status
-        rescue
-            false
-        end
     end
 end

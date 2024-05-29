@@ -217,15 +217,15 @@ class Catalyst
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next, <position>): ")
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
+        if position == "" then # default does next
+            position = "next"
+        end
         if position == "first" then
             return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
         end
         if position == "next" then
             return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        if position == "" then
-            position == rand
         end
         position = position.to_f
         position
@@ -233,6 +233,6 @@ class Catalyst
 
     # Catalyst::datatrace()
     def self.datatrace()
-        "#{Cubes1::datatrace()}:#{Cubes1::deleteduuidsTrace()}"
+        "#{Cubes1::datatrace()}"
     end
 end

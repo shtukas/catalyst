@@ -30,9 +30,11 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             datatrace = Catalyst::datatrace()
-            core = NxThreads::interactivelySelectOneOrNull(datatrace)
-            return if core.nil?
-            Cubes1::setAttribute(item["uuid"], "parentuuid-0032", core["uuid"])
+            thread = NxThreads::interactivelySelectOneOrNull(datatrace)
+            return if thread.nil?
+            Cubes1::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+            position = Catalyst::interactivelySelectPositionInParent(datatrace, thread)
+            Cubes1::setAttribute(item["uuid"], "global-positioning", position)
             return
         end
 
@@ -198,10 +200,11 @@ class CommandsAndInterpreters
             item = NxTodos::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            datatrace = Catalyst::datatrace()
-            thread = NxThreads::interactivelySelectOneOrNull(datatraces)
+            thread = NxThreads::interactivelySelectOneOrNull(Catalyst::datatrace())
             return if thread.nil?
             Cubes1::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+            position = Catalyst::interactivelySelectPositionInParent(datatrace, thread)
+            Cubes1::setAttribute(item["uuid"], "global-positioning", position)
             return
         end
 

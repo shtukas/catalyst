@@ -7,6 +7,8 @@ class NxTodos
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         Cubes1::itemInit(uuid, "NxTodo")
+        payload = TxPayload::interactivelyMakeNew(uuid)
+        payload.each{|k, v| Cubes1::setAttribute(uuid, k, v) }
         Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes1::setAttribute(uuid, "description", description)

@@ -66,9 +66,16 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInCompletionOrder(datatrace), lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxThreads::muiItemsOrphans(datatrace)
-    def self.muiItemsOrphans(datatrace)
+    # NxThreads::muiItems(datatrace)
+    def self.muiItems(datatrace)
         Cubes1::mikuType(datatrace, "NxThread")
+            .select{|thread|
+                if thread["do-not-show-if-empty"] then
+                    Catalyst::children(datatrace, thread).size > 0
+                else
+                    true
+                end
+            }
             .sort_by{|item| NxThreads::ratio(item) }
     end
 
@@ -103,7 +110,7 @@ class NxThreads
 
             puts ""
 
-            puts "todo | pile | insert | position * | sort | moves"
+            puts "todo | pile | insert | position * | sort | moves | do not show if empty"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -148,6 +155,11 @@ class NxThreads
                 t2 = NxThreads::interactivelySelectOneOrNull(datatrace)
                 next if t2.nil?
                 selected.each{|i| Cubes1::setAttribute(i["uuid"], "parentuuid-0032", t2["uuid"]) }
+                next
+            end
+
+            if input == "do not show if empty" then
+                Cubes1::setAttribute(thread["uuid"], "do-not-show-if-empty", true)
                 next
             end
 

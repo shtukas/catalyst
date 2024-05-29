@@ -6,6 +6,9 @@ class Prefix
         if items[0]["mikuType"] == "NxThread" then
             children = Catalyst::children(datatrace, items[0])
             children = children.sort_by{|i| (i["global-positioning"] || 0) }
+            if children.empty? then
+                return items
+            end
             return Prefix::addPrefix(datatrace, children.take(3) + items)
         end
         return items

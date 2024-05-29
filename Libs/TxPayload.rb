@@ -40,8 +40,8 @@ class TxPayload
         }
     end
 
-    # TxPayload::interactivelyMakeNew(uuid)
-    def self.interactivelyMakeNew(uuid)
+    # TxPayload::interactivelyMakeNew()
+    def self.interactivelyMakeNew()
         payload = {}
         options = TxPayload::mapping().keys.map{|key| TxPayload::keysToFriendly(key) }
         loop {
@@ -64,7 +64,7 @@ class TxPayload
             if TxPayload::friendlyToKey(option) == "aion-point-7c758c" then
                 location = CommonUtils::interactivelySelectDesktopLocationOrNull()
                 next if location.nil?
-                nhash = AionCore::commitLocationReturnHash(Elizabeth.new(item["uuid"]), location)
+                nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
                 payload["aion-point-7c758c"] = nhash
                 next
             end
