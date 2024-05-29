@@ -76,6 +76,7 @@ class NxThreads
                     true
                 end
             }
+            .select{|item| NxThreads::ratio(item) < 1 }
             .sort_by{|item| NxThreads::ratio(item) }
     end
 
