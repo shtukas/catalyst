@@ -27,12 +27,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            TxPayload::access(item)
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
 
         if item["mikuType"] == "NxTodo" then
-            TxPayload::access(item)
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
 
@@ -47,7 +47,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            TxPayload::access(item)
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
 
@@ -171,7 +171,7 @@ class PolyActions
 
         if item["mikuType"] == "NxTodo" then
             NxBalls::start(item)
-            TxPayload::access(item)
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then

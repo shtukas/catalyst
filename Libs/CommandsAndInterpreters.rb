@@ -130,7 +130,9 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            TxPayload::edit(item)
+            payload = UxPayload::makeNewOrNull()
+            return if payload.nil?
+            Cubes1::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             return
         end
 

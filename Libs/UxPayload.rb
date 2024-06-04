@@ -73,6 +73,7 @@ class UxPayload
 
     # UxPayload::access(itemuuid, payload)
     def self.access(itemuuid, payload)
+        return if payload.nil?
         if payload["type"] == "text" then
             puts payload["text"].strip
             LucilleCore::pressEnterToContinue()
@@ -91,6 +92,7 @@ class UxPayload
             puts "found: #{location}"
             system("open '#{location}'")
             LucilleCore::pressEnterToContinue()
+            return
         end
         if payload["type"] == "aion-point" then
             nhash = payload["nhash"]
@@ -102,6 +104,7 @@ class UxPayload
             AionCore::exportHashAtFolder(Elizabeth.new(), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
+            return
         end
         if payload["type"] == "Dx8Unit" then
             unitId = payload["id"]
@@ -111,11 +114,13 @@ class UxPayload
                 Dx8Units::destroy(unitId)
                 Cubes1::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
             end
+            return
         end
         if payload["type"] == "url" then
             url = payload["url"]
             CommonUtils::openUrlUsingSafari(url)
             LucilleCore::pressEnterToContinue()
+            return
         end
         if payload["type"] == "unique-string" then
             uniquestring = payload["uniquestring"]
@@ -128,12 +133,61 @@ class UxPayload
                 puts "could not locate: #{location}"
                 LucilleCore::pressEnterToContinue()
             end
+            return
         end
     end
 
     # UxPayload::edit(itemuuid, payload)
     def self.edit(itemuuid, payload)
+        return if payload.nil?
         puts "Edit of a UxPayload has not been implemented yet"
         LucilleCore::pressEnterToContinue()
+    end
+
+    # UxPayload::fsck(payload)
+    def self.fsck(payload)
+        if payload["type"] == "text" then
+            if payload["text"].nil? then
+                raise "could not find `text` attribute for payload #{payload}"
+            end
+            return
+        end
+        if payload["type"] == "todo-text-file-by-name" then
+            if payload["name"].nil? then
+                raise "could not find `name` attribute for payload #{payload}"
+            end
+            return
+        end
+        if payload["type"] == "aion-point" then
+            nhash = payload["nhash"]
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), nhash)
+            return
+        end
+        if payload["type"] == "Dx8Unit" then
+            if payload["id"].nil? then
+                raise "could not find `id` attribute for payload #{payload}"
+            end
+            return
+        end
+        if payload["type"] == "url" then
+            if payload["url"].nil? then
+                raise "could not find `url` attribute for payload #{payload}"
+            end
+            return
+        end
+        if payload["type"] == "unique-string" then
+            if payload["uniquestring"].nil? then
+                raise "could not find `uniquestring` attribute for payload #{payload}"
+            end
+            return
+        end
+        raise "unkown payload type: #{payload["type"]} at #{payload}"
+    end
+
+    # UxPayload::suffix_string(item)
+    def self.suffix_string(item)
+        payload = item["uxpayload-b4e4"]
+        return "" if payload.nil?
+        " (#{payload["type"]})".green
     end
 end
