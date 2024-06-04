@@ -1,5 +1,34 @@
 
 UxPayload:
+
+UxPayloads are stored in attribute `uxpayload-b4e4`.
+
 {
-    "type": 
+    "type" : "text"
+    "text" : String # contents
+}
+
+{
+    "type" : "todo-text-file-by-name"
+    "name" : String # name or name fragment of a text file
+}
+
+{
+    "type"  : "aion-point"
+    "nhash" : String # aion point root hash
+}
+
+{
+    "type" : "Dx8Unit"
+    "id"   : String # Dx8Unit Identifier
+}
+
+{
+    "type" : "url"
+    "url"  : String # URL
+}
+
+{
+    "type"         : "unique-string"
+    "uniquestring" : String # URL
 }
