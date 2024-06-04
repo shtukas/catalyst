@@ -110,22 +110,9 @@ class Listing
             NxOndates::muiItems(datatrace),
             NxBackups::muiItems(datatrace),
             NxFloats::muiItems(datatrace),
-            [
-                NxThreads::muiItems(datatrace),
-                NxBufferInMonitors::muiItems(datatrace)
-            ].flatten.sort_by{|item|
-                (lambda {
-                    if item["mikuType"] == "NxThread" then
-                        return NxThreads::ratio(item)
-                    end
-                    if item["mikuType"] == "NxBufferInMonitor" then
-                        return NxBufferInMonitors::ratio()
-                    end
-                    if item["mikuType"] == "Wave" then
-                        return 0.6
-                    end
-                }).call()
-            }
+            NxBufferInMonitors::muiItems(datatrace),
+            Waves::muiItemsNotInterruption(datatrace),
+            NxThreads::muiItems(datatrace),
         ]
             .flatten
             .select{|item| Listing::listable(item) }

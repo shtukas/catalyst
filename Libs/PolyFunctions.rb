@@ -37,14 +37,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            # non interruption waves feeding the parent thread
-            accounts << {
-                "description" => "parent thread for waves non interruption",
-                "number"      => "6dd9910e-49d8-4a6f-86fb-e9b3ba0c5900"
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

@@ -129,10 +129,6 @@ class Catalyst
         if parent["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
             return NxTodos::orphans(datatrace)
         end
-        if parent["uuid"] == "6dd9910e-49d8-4a6f-86fb-e9b3ba0c5900" then
-            return Waves::muiItemsNotInterruption(datatrace)
-        end
-
         Cubes1::items(datatrace)
             .select{|item| item["parentuuid-0032"] == parent["uuid"] }
     end
