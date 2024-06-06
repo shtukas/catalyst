@@ -498,10 +498,5 @@ class CommandsAndInterpreters
             Waves::program1()
             return
         end
-
-        if Interpreting::match("speed", input) then
-            LucilleCore::pressEnterToContinue()
-            return
-        end
     end
 end
