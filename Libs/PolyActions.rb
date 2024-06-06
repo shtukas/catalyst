@@ -250,7 +250,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            if Catalyst::children(Catalyst::datatrace(), item).size > 0 then
+            if Catalyst::children(item).size > 0 then
                 puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
                 LucilleCore::pressEnterToContinue()
                 return

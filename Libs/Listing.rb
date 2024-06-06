@@ -76,12 +76,12 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::toString2(datatrace, store, item)
-    def self.toString2(datatrace, store, item)
+    # Listing::toString2(store, item)
+    def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         arrow = item["x:prefix:0859"] ? " (#{item["x:prefix:0859"]})" : ""
-        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(datatrace, item)}"
+        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -98,21 +98,21 @@ class Listing
         line
     end
 
-    # Listing::items(datatrace)
-    def self.items(datatrace)
+    # Listing::items()
+    def self.items()
         [
-            NxBalls::activeItems(datatrace),
+            NxBalls::activeItems(),
             DropBox::items(),
             Desktop::muiItems(),
-            Anniversaries::muiItems(datatrace),
-            PhysicalTargets::muiItems(datatrace),
-            Waves::muiItemsInterruption(datatrace),
-            NxOndates::muiItems(datatrace),
-            NxBackups::muiItems(datatrace),
-            NxFloats::muiItems(datatrace),
-            NxBufferInMonitors::muiItems(datatrace),
-            Waves::muiItemsNotInterruption(datatrace),
-            NxThreads::muiItems(datatrace),
+            Anniversaries::muiItems(),
+            PhysicalTargets::muiItems(),
+            Waves::muiItemsInterruption(),
+            NxOndates::muiItems(),
+            NxBackups::muiItems(),
+            NxFloats::muiItems(),
+            NxBufferInMonitors::muiItems(),
+            Waves::muiItemsNotInterruption(),
+            NxThreads::muiItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -132,11 +132,11 @@ class Listing
         runningItems + pausedItems + nonActiveItems
     end
 
-    # Listing::items2(datatrace)
-    def self.items2(datatrace)
-        items = Listing::items(datatrace)
+    # Listing::items2()
+    def self.items2()
+        items = Listing::items()
         items = Listing::applyNxBallOrdering(items)
-        items = Prefix::addPrefix(datatrace, items)
+        items = Prefix::addPrefix(items)
         items
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
@@ -181,11 +181,10 @@ class Listing
         Listing::items2(nil)
         spot.end_unit()
 
-        datatrace = Catalyst::datatrace()
-        spot.start_unit("Listing::items2(datatrace).first(100) >> Listing::toString2(datatrace, store, item)")
+        spot.start_unit("Listing::items2().first(100) >> Listing::toString2(store, item)")
         store = ItemStore.new()
-        items = Listing::items2(datatrace).first(100)
-        items.each {|item| Listing::toString2(datatrace, store, item) }
+        items = Listing::items2().first(100)
+        items.each {|item| Listing::toString2(store, item) }
         spot.end_unit()
 
         LucilleCore::pressEnterToContinue()
@@ -233,14 +232,12 @@ class Listing
 
             system("clear")
 
-            datatrace = Catalyst::datatrace()
-
             spacecontrol.putsline ""
 
-            Listing::items2(datatrace)
+            Listing::items2()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(datatrace, store, item)
+                    line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }

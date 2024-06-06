@@ -2,11 +2,6 @@
 
 class Cubes1
 
-    # Cubes1::datatrace()
-    def self.datatrace()
-        Digest::SHA1.hexdigest(Cubes1::getInstancesFilepaths().join(":"))
-    end
-
     # ----------------------------------------
     # Interface
 
@@ -16,21 +11,8 @@ class Cubes1
         Cubes1::setAttribute(uuid, "mikuType", mikuType)
     end
 
-    # Cubes1::itemOrNull(datatrace, uuid)
-    def self.itemOrNull(datatrace, uuid)
-
-        #puts "Cubes1::itemOrNull(#{datatrace}, #{uuid}) (from memory)".yellow
-
-        if datatrace and InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}") then
-            item = InMemoryCache::getOrNull("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}")
-            if item == "NOTHING" then
-                return nil
-            end
-            return item
-        end
-
-        #puts "Cubes1::itemOrNull(#{datatrace}, #{uuid}) (from disk)".yellow
-
+    # Cubes1::itemOrNull(uuid)
+    def self.itemOrNull(uuid)
         item = {}
         rows = []
         Cubes1::getInstancesFilepaths().each{|filepath|
@@ -51,7 +33,6 @@ class Cubes1
             db.close
         }
         if rows.empty? then
-            InMemoryCache::set("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}", "NOTHING")
             return nil
         end
         rows
@@ -64,21 +45,11 @@ class Cubes1
             item = nil
         end
 
-        if datatrace then
-            InMemoryCache::set("31e555b3-5e19-44f2-84af-7d1dcd98b45e:#{datatrace}:#{uuid}", item || "NOTHING")
-        end
-
         item
     end
 
-    # Cubes1::items(datatrace)
-    def self.items(datatrace)
-
-        if datatrace and InMemoryCache::getOrNull("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}") then
-            return InMemoryCache::getOrNull("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}")
-        end
-
-        #puts "Cubes1::items(#{datatrace}) (from disk)".yellow
+    # Cubes1::items()
+    def self.items()
 
         instancesFilepaths = Cubes1::getInstancesFilepaths()
         rows = []
@@ -95,30 +66,12 @@ class Cubes1
                 structure[row["_itemuuid_"]][row["_attrname_"]] = JSON.parse("#{row["_attrvalue_"]}")
             }
         
-        items = structure.values.select{|item| !item["IS-DELETED"] }
-
-        if datatrace then
-            InMemoryCache::set("0a702a6f-943b-4897-9693-e0f3a564f5cc:#{datatrace}", items)
-        end
-
-        items
+        structure.values.select{|item| !item["IS-DELETED"] }
     end
 
-    # Cubes1::mikuType(datatrace, mikuType)
-    def self.mikuType(datatrace, mikuType)
-        if datatrace and InMemoryCache::getOrNull("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}") then
-            return InMemoryCache::getOrNull("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}")
-        end
-
-        #puts "Cubes1::mikuType(#{datatrace}, #{mikuType}) (from disk)".yellow
-
-        items = Cubes1::items(datatrace).select{|item| item["mikuType"] == mikuType }
-
-        if datatrace then
-            InMemoryCache::set("076692b1-ba75-4f94-bf16-e5d6ff33fcd9:#{datatrace}:#{mikuType}", items)
-        end
-
-        items
+    # Cubes1::mikuType(mikuType)
+    def self.mikuType(mikuType)
+        Cubes1::items().select{|item| item["mikuType"] == mikuType }
     end
 
     # Cubes1::setAttribute(uuid, attrname, attrvalue)

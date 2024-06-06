@@ -1,8 +1,8 @@
 
 class PolyFunctions
 
-    # PolyFunctions::itemToBankingAccounts(datatrace, item) # Array[{description, number}]
-    def self.itemToBankingAccounts(datatrace, item)
+    # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
+    def self.itemToBankingAccounts(item)
 
         accounts = []
 
@@ -16,16 +16,16 @@ class PolyFunctions
         # Special Features
 
         if item["parentuuid-0032"] then
-            parent = Cubes1::itemOrNull(datatrace, item["parentuuid-0032"])
+            parent = Cubes1::itemOrNull(item["parentuuid-0032"])
             if parent then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(datatrace, parent)
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
         end
 
         if item["donation-1601"] then
-            target = Cubes1::itemOrNull(datatrace, item["donation-1601"])
+            target = Cubes1::itemOrNull(item["donation-1601"])
             if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(datatrace, target)
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
         end
 

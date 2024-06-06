@@ -10,7 +10,7 @@ class NxFloats
         Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
         Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::itemOrNull(nil, uuid)
+        Cubes1::itemOrNull(uuid)
     end
 
     # ------------------
@@ -21,9 +21,9 @@ class NxFloats
         "🐠 #{item["description"]}"
     end
 
-    # NxFloats::muiItems(datatrace)
-    def self.muiItems(datatrace)
-        Cubes1::mikuType(datatrace, "NxFloat")
+    # NxFloats::muiItems()
+    def self.muiItems()
+        Cubes1::mikuType("NxFloat")
             .sort_by{|item| item["unixtime"] }
     end
 end

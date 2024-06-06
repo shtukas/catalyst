@@ -19,7 +19,7 @@ class PhysicalTargets
         Cubes1::setAttribute(uuid, "counter", 0)
         Cubes1::setAttribute(uuid, "lastUpdatedUnixtime", lastUpdatedUnixtime)
 
-        Cubes1::itemOrNull(nil, uuid)
+        Cubes1::itemOrNull(uuid)
     end
 
     # --------------------------------------------------------
@@ -30,15 +30,15 @@ class PhysicalTargets
         "💪 #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
     end
 
-    # PhysicalTargets::muiItems(datatrace)
-    def self.muiItems(datatrace)
-        Cubes1::mikuType(datatrace, "PhysicalTarget").each{|item|
+    # PhysicalTargets::muiItems()
+    def self.muiItems()
+        Cubes1::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
                 Cubes1::setAttribute(item["uuid"], "date", CommonUtils::today())
                 Cubes1::setAttribute(item["uuid"], "counter", 0)
             end
         }
-        Cubes1::mikuType(datatrace, "PhysicalTarget")
+        Cubes1::mikuType("PhysicalTarget")
             .select{|item| item["counter"] < item["dailyTarget"]}
             .select{|item| item["lastUpdatedUnixtime"].nil? or (Time.new.to_i - item["lastUpdatedUnixtime"]) > 3600 }
             .map{|item|

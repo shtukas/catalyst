@@ -12,10 +12,9 @@ class Transmutations
     # Transmutations::transmute2(item, targetMikyType)
     def self.transmute2(item, targetMikyType)
         if item["mikuType"] == "NxOndate" and targetMikyType == "NxTodo" then
-            datatrace = Catalyst::datatrace()
-            thread = NxThreads::interactivelySelectOneOrNull(datatrace)
+            thread = NxThreads::interactivelySelectOneOrNull()
             return if thread.nil?
-            position = Catalyst::interactivelySelectPositionInParent(datatrace, thread)
+            position = Catalyst::interactivelySelectPositionInParent(thread)
             Cubes1::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
             Cubes1::setAttribute(item["uuid"], "global-positioning", position)
             Cubes1::setAttribute(item["uuid"], "mikuType", "NxTodo")

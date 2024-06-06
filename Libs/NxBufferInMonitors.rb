@@ -22,11 +22,11 @@ class NxBufferInMonitors
             .size
     end
 
-    # NxBufferInMonitors::muiItems(datatrace)
-    def self.muiItems(datatrace)
+    # NxBufferInMonitors::muiItems()
+    def self.muiItems()
         return [] if NxBufferInMonitors::bufferInCardinal() == 0
         return [] if NxBufferInMonitors::ratio() >= 1
-        Cubes1::mikuType(datatrace, "NxBufferInMonitor")
+        Cubes1::mikuType("NxBufferInMonitor")
     end
 
     # NxBufferInMonitors::metric(item)

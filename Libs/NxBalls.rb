@@ -182,14 +182,14 @@ class NxBalls
         " #{NxBalls::nxBallToString(nxball)}"
     end
 
-    # NxBalls::activeItems(datatrace)
-    def self.activeItems(datatrace)
+    # NxBalls::activeItems()
+    def self.activeItems()
         NxBalls::all()
             .sort_by{|item| item["unixtime"] }
             .reverse
             .map{|ball| ball["itemuuid"] }
             .map{|itemuuid| 
-                ix = Cubes1::itemOrNull(datatrace, itemuuid)
+                ix = Cubes1::itemOrNull(itemuuid)
                 if ix.nil? then
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then

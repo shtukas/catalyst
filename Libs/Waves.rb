@@ -122,7 +122,7 @@ class Waves
         Cubes1::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
         Cubes1::setAttribute(uuid, "interruption", interruption)
         Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(nil, uuid)
+        Cubes1::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -138,27 +138,27 @@ class Waves
     # -------------------------------------------------------------------------
     # Data (2)
 
-    # Waves::muiItems(datatrace)
-    def self.muiItems(datatrace)
+    # Waves::muiItems()
+    def self.muiItems()
         isMuiItem = lambda { |item|
             b1 = Listing::listable(item)
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             b1 and b2
         }
-        Cubes1::mikuType(datatrace, "Wave")
+        Cubes1::mikuType("Wave")
             .select{|item| isMuiItem.call(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end
 
-    # Waves::muiItemsInterruption(datatrace)
-    def self.muiItemsInterruption(datatrace)
-        Waves::muiItems(datatrace)
+    # Waves::muiItemsInterruption()
+    def self.muiItemsInterruption()
+        Waves::muiItems()
             .select{|item| item["interruption"] }
     end
 
-    # Waves::muiItemsNotInterruption(datatrace)
-    def self.muiItemsNotInterruption(datatrace)
-        Waves::muiItems(datatrace)
+    # Waves::muiItemsNotInterruption()
+    def self.muiItemsNotInterruption()
+        Waves::muiItems()
             .select{|item| !item["interruption"] }
     end
 
@@ -221,7 +221,7 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = Cubes1::mikuType(Catalyst::datatrace(), "Wave")
+        items = Cubes1::mikuType("Wave")
         i1, i2 = items.partition{|item| DoNotShowUntil1::isVisible(item) }
         i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
         items = i1 + i2

@@ -12,7 +12,7 @@ class NxOndates
         Cubes1::setAttribute(uuid, "datetime", datetime)
         Cubes1::setAttribute(uuid, "description", description)
         Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(nil, uuid)
+        Cubes1::itemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueAtDatetimeNewOrNull(datetime)
@@ -25,7 +25,7 @@ class NxOndates
         Cubes1::setAttribute(uuid, "datetime", datetime)
         Cubes1::setAttribute(uuid, "description", description)
         Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(nil, uuid)
+        Cubes1::itemOrNull(uuid)
     end
 
     # ------------------
@@ -36,9 +36,9 @@ class NxOndates
         "🗓️  #{item["description"]}"
     end
 
-    # NxOndates::muiItems(datatrace)
-    def self.muiItems(datatrace)
-        Cubes1::mikuType(datatrace, "NxOndate")
+    # NxOndates::muiItems()
+    def self.muiItems()
+        Cubes1::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end
