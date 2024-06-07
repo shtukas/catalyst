@@ -226,6 +226,7 @@ class Listing
             if Config::isPrimaryInstance() then
                 Items::processJournal()
                 Bank1::processJournal()
+                DoNotShowUntil1::processJournal()
             end
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
