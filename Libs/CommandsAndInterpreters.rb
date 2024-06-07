@@ -104,7 +104,7 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(nil, item))
+            puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
             return
         end

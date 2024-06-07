@@ -1,9 +1,20 @@
 # encoding: UTF-8
 
+=begin
+
+journal item:
+    {
+      "uuid": "1f7aa2a2-61a0-43ad-9d18-ffc55a90b092",
+      "date": "2024-06-07",
+      "value": 360.0
+    }
+
+=end
+
 class Bank1
 
     # ----------------------------------
-    # Interface
+    # Core
 
     # Bank1::getInstanceFilepathMakeIfMissing()
     def self.getInstanceFilepathMakeIfMissing()
@@ -19,47 +30,9 @@ class Bank1
         filepath
     end
 
-    # Bank1::getDataFilepaths()
-    def self.getDataFilepaths()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
-            .select{|location| location[-8, 8] == ".sqlite3" }
-    end
-
-    # Bank1::getValueAtDate(uuid, date)
-    def self.getValueAtDate(uuid, date)
-        value = 0
-        Bank1::getDataFilepaths().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select * from Bank where _id_=? and _date_=?", [uuid, date]) do |row|
-                value = value + row["_value_"]
-            end
-            db.close
-        }
-        value
-    end
-
-    # Bank1::getValue(uuid)
-    def self.getValue(uuid)
-        value = 0
-        Bank1::getDataFilepaths().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select * from Bank where _id_=?", [uuid]) do |row|
-                value = value + row["_value_"]
-            end
-            db.close
-        }
-        value
-    end
-
-    # Bank1::put(uuid, date, value)
-    def self.put(uuid, date, value)
-        db = SQLite3::Database.new(Bank1::getInstanceFilepathMakeIfMissing())
+    # Bank1::putInDatabase(uuid, date, value)
+    def self.putInDatabase(uuid, date, value)
+        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/20240607-175857-039036.sqlite3")
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -67,23 +40,89 @@ class Bank1
         db.close
     end
 
-    # Bank1::getRecords(uuid)
-    def self.getRecords(uuid)
-        records = []
-        Bank1::getDataFilepaths().each{|filepath|
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("select * from Bank where _id_=?", [uuid]) do |row|
-                records << row
-            end
-            db.close
-        }
-        records
+    # Bank1::journal()
+    def self.journal()
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
+            .select{|location| location[-5, 5] == ".json" }
+            .map{|filepath| JSON.parse(IO.read(filepath)) }
+    end
+
+    # Bank1::processJournal()
+    def self.processJournal()
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
+            .select{|location| location[-5, 5] == ".json" }
+            .map{|filepath| 
+                record = JSON.parse(IO.read(filepath))
+                Bank1::putInDatabase(record["uuid"], record["date"], record["value"])
+                FileUtils.rm(filepath)
+            }
     end
 
     # ----------------------------------
+    # Interface
+
+    # Bank1::getValueAtDate(uuid, date)
+    def self.getValueAtDate(uuid, date)
+        value = 0
+        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/20240607-175857-039036.sqlite3")
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from Bank where _id_=? and _date_=?", [uuid, date]) do |row|
+            value = value + row["_value_"]
+        end
+        db.close
+        Bank1::journal().each{|record|
+            if record["uuid"] == uuid and record["date"] == date then
+                value = value + record["value"]
+            end
+        }
+        value
+    end
+
+    # Bank1::getValue(uuid)
+    def self.getValue(uuid)
+        value = 0
+        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/20240607-175857-039036.sqlite3")
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from Bank where _id_=?", [uuid]) do |row|
+            value = value + row["_value_"]
+        end
+        db.close
+        Bank1::journal().each{|record|
+            if record["uuid"] == uuid then
+                value = value + record["value"]
+            end
+        }
+        value
+    end
+
+    # Bank1::put(uuid, date, value)
+    def self.put(uuid, date, value)
+        update = {
+            "uuid"  => uuid,
+            "date"  => date,
+            "value" => value
+        }
+        filepath = "#{Config::pathToCatalystDataRepository()}/Bank/#{CommonUtils::timeStringL22()}.json"
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(update)) }
+    end
+
+    # Bank1::getRecords(uuid)
+    def self.getRecords(uuid)
+        records = []
+        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/20240607-175857-039036.sqlite3")
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from Bank where _id_=?", [uuid]) do |row|
+            records << row
+        end
+        db.close
+        records
+    end
 
     # Bank1::averageHoursPerDayOverThePastNDays(uuid, n)
     # n = 0 corresponds to today
