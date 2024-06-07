@@ -15,7 +15,7 @@ class Cubes1
     def self.itemOrNull(uuid)
         item = {}
         rows = []
-        Cubes1::getInstancesFilepaths().each{|filepath|
+        Cubes1::getDataFilepaths().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -51,7 +51,7 @@ class Cubes1
     # Cubes1::items()
     def self.items()
 
-        instancesFilepaths = Cubes1::getInstancesFilepaths()
+        instancesFilepaths = Cubes1::getDataFilepaths()
         rows = []
         structure = {}
         instancesFilepaths.each{|filepath|
@@ -88,7 +88,7 @@ class Cubes1
     # Cubes1::getAttributeOrNull(uuid, attrname)
     def self.getAttributeOrNull(uuid, attrname)
         rows = []
-        Cubes1::getInstancesFilepaths().each{|filepath|
+        Cubes1::getDataFilepaths().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -138,15 +138,15 @@ class Cubes1
         rows
     end
 
-    # Cubes1::getInstancesFilepaths()
-    def self.getInstancesFilepaths()
+    # Cubes1::getDataFilepaths()
+    def self.getDataFilepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Attributes-20240523")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 
     # Cubes1::getInstanceFilepathMakeIfMissing()
     def self.getInstanceFilepathMakeIfMissing()
-        filepath = Cubes1::getInstancesFilepaths()
+        filepath = Cubes1::getDataFilepaths()
                     .select{|filepath|
                         File.basename(filepath).include?("#{CommonUtils::today()}-#{Config::thisInstanceId()}")
                     }
@@ -172,5 +172,36 @@ class Cubes1
         db.execute("create table Attributes (_recorduuid_ string primary key, _updatetime_ float, _itemuuid_ string, _attrname_ string, _attrvalue_ string)")
         db.close
         filepath
+    end
+
+    # Cubes1::merge(filepath1, filepath2)
+    def self.merge(filepath1, filepath2)
+
+        # We copy the data from filepath2 into filepath1 and delete filepath2
+
+        db1 = SQLite3::Database.new(filepath1)
+        db1.busy_timeout = 117
+        db1.busy_handler { |count| true }
+        db1.results_as_hash = true
+
+        db2 = SQLite3::Database.new(filepath2)
+        db2.busy_timeout = 117
+        db2.busy_handler { |count| true }
+        db2.results_as_hash = true
+        db2.execute("select * from Attributes", []) do |row|
+            db1.execute("insert into Attributes (_recorduuid_, _updatetime_, _itemuuid_, _attrname_, _attrvalue_) values (?, ?, ?, ?, ?)", [SecureRandom.hex, row["_updatetime_"], row["_itemuuid_"], row["_attrname_"], row["_attrvalue_"]])
+        end
+        db2.close
+
+        db1.close
+
+        FileUtils.rm(filepath2)
+    end
+
+    # Cubes1::reduceDataFiles()
+    def self.reduceDataFiles()
+        filepaths = Cubes1::getDataFilepaths()
+        return if filepaths.size < 2
+        Cubes1::merge(filepaths[0], filepaths[1])
     end
 end

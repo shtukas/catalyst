@@ -15,8 +15,8 @@ class DoNotShowUntil1
         filepath
     end
 
-    # DoNotShowUntil1::getInstancesFilepaths()
-    def self.getInstancesFilepaths()
+    # DoNotShowUntil1::getDataFilepaths()
+    def self.getDataFilepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/DoNotShowUntil-20240523")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
@@ -24,7 +24,7 @@ class DoNotShowUntil1
     # DoNotShowUntil1::getUnixtimeOrNull(id)
     def self.getUnixtimeOrNull(id)
         unixtimes = []
-        DoNotShowUntil1::getInstancesFilepaths().each{|filepath|
+        DoNotShowUntil1::getDataFilepaths().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }

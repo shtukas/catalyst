@@ -19,8 +19,8 @@ class Bank1
         filepath
     end
 
-    # Bank1::getInstancesFilepaths()
-    def self.getInstancesFilepaths()
+    # Bank1::getDataFilepaths()
+    def self.getDataFilepaths()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank-20240517")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
@@ -28,7 +28,7 @@ class Bank1
     # Bank1::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
         value = 0
-        Bank1::getInstancesFilepaths().each{|filepath|
+        Bank1::getDataFilepaths().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -44,7 +44,7 @@ class Bank1
     # Bank1::getValue(uuid)
     def self.getValue(uuid)
         value = 0
-        Bank1::getInstancesFilepaths().each{|filepath|
+        Bank1::getDataFilepaths().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -70,7 +70,7 @@ class Bank1
     # Bank1::getRecords(uuid)
     def self.getRecords(uuid)
         records = []
-        Bank1::getInstancesFilepaths().each{|filepath|
+        Bank1::getDataFilepaths().each{|filepath|
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }

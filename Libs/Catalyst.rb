@@ -91,6 +91,8 @@ class Catalyst
                     next
                 end
             }
+
+            Cubes1::reduceDataFiles()
         end
     end
 
