@@ -76,16 +76,13 @@ class Cubes1
 
     # Cubes1::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        filepath = Cubes1::getInstanceFilepathMakeIfMissing()
+        filepath = Cubes1::newDatabase()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("insert into Attributes (_recorduuid_, _updatetime_, _itemuuid_, _attrname_, _attrvalue_) values (?, ?, ?, ?, ?)", [SecureRandom.hex, Time.new.to_f, uuid, attrname, JSON.generate(attrvalue)])
         db.close
-
-        # Renaming to keep the file content addressed for caching
-        FileUtils.mv(filepath, "#{Config::pathToCatalystDataRepository()}/Attributes-20240523/#{CommonUtils::today()}-#{Config::thisInstanceId()}-#{Digest::SHA1.file(filepath).hexdigest}.sqlite3")
     end
 
     # Cubes1::getAttributeOrNull(uuid, attrname)
@@ -156,6 +153,18 @@ class Cubes1
                     .first
         return filepath if filepath
         filepath = "#{Config::pathToCatalystDataRepository()}/Attributes-20240523/#{CommonUtils::today()}-#{Config::thisInstanceId()}.sqlite3"
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("create table Attributes (_recorduuid_ string primary key, _updatetime_ float, _itemuuid_ string, _attrname_ string, _attrvalue_ string)")
+        db.close
+        filepath
+    end
+
+    # Cubes1::newDatabase()
+    def self.newDatabase()
+        filepath = "#{Config::pathToCatalystDataRepository()}/Attributes-20240523/#{CommonUtils::timeStringL22()}.sqlite3"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }

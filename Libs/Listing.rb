@@ -112,7 +112,7 @@ class Listing
             NxFloats::muiItems(),
             NxBufferInMonitors::muiItems(),
             Waves::muiItemsNotInterruption(),
-            NxThreads::muiItems(),
+            #NxThreads::muiItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
