@@ -26,7 +26,7 @@ class NxBufferInMonitors
     def self.muiItems()
         return [] if NxBufferInMonitors::bufferInCardinal() == 0
         return [] if NxBufferInMonitors::ratio() >= 1
-        Cubes1::mikuType("NxBufferInMonitor")
+        Items::mikuType("NxBufferInMonitor")
     end
 
     # NxBufferInMonitors::metric(item)

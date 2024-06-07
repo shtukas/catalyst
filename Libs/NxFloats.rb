@@ -6,11 +6,11 @@ class NxFloats
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        Cubes1::itemInit(uuid, "NxFloat")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::itemOrNull(uuid)
+        Items::itemInit(uuid, "NxFloat")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::itemOrNull(uuid)
     end
 
     # ------------------
@@ -23,7 +23,7 @@ class NxFloats
 
     # NxFloats::muiItems()
     def self.muiItems()
-        Cubes1::mikuType("NxFloat")
+        Items::mikuType("NxFloat")
             .sort_by{|item| item["unixtime"] }
     end
 end

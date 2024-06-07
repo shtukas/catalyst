@@ -7,12 +7,12 @@ class NxOndates
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-        Cubes1::itemInit(uuid, "NxOndate")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", datetime)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(uuid)
+        Items::itemInit(uuid, "NxOndate")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", datetime)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::itemOrNull(uuid)
     end
 
     # NxOndates::interactivelyIssueAtDatetimeNewOrNull(datetime)
@@ -20,12 +20,12 @@ class NxOndates
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        Cubes1::itemInit(uuid, "NxOndate")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", datetime)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(uuid)
+        Items::itemInit(uuid, "NxOndate")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", datetime)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::itemOrNull(uuid)
     end
 
     # ------------------
@@ -38,7 +38,7 @@ class NxOndates
 
     # NxOndates::muiItems()
     def self.muiItems()
-        Cubes1::mikuType("NxOndate")
+        Items::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }
     end

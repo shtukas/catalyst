@@ -189,7 +189,7 @@ class NxBalls
             .reverse
             .map{|ball| ball["itemuuid"] }
             .map{|itemuuid| 
-                ix = Cubes1::itemOrNull(itemuuid)
+                ix = Items::itemOrNull(itemuuid)
                 if ix.nil? then
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then

@@ -6,22 +6,22 @@ class NxTodos
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Cubes1::itemInit(uuid, "NxTodo")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(uuid)
+        Items::itemInit(uuid, "NxTodo")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::itemOrNull(uuid)
     end
 
     # NxTodos::descriptionToTask1(parent, uuid, description)
     def self.descriptionToTask1(parent, uuid, description)
-        Cubes1::itemInit(uuid, "NxTodo")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::setAttribute(uuid, "parentuuid-0032", parent["uuid"])
-        Cubes1::itemOrNull(uuid)
+        Items::itemInit(uuid, "NxTodo")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "parentuuid-0032", parent["uuid"])
+        Items::itemOrNull(uuid)
     end
 
     # ------------------
@@ -50,7 +50,7 @@ class NxTodos
 
     # NxTodos::orphans()
     def self.orphans()
-        Cubes1::mikuType("NxTodo")
+        Items::mikuType("NxTodo")
             .select{|item| Catalyst::isOrphan(item) }
     end
 end

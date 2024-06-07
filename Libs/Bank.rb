@@ -7,7 +7,7 @@ class Bank1
 
     # Bank1::getInstanceFilepathMakeIfMissing()
     def self.getInstanceFilepathMakeIfMissing()
-        filepath = "#{Config::pathToCatalystDataRepository()}/Bank-20240517/Bank-#{Config::thisInstanceId()}.sqlite3"
+        filepath = "#{Config::pathToCatalystDataRepository()}/Bank/Bank-#{Config::thisInstanceId()}.sqlite3"
         if !File.exist?(filepath) then
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
@@ -21,7 +21,7 @@ class Bank1
 
     # Bank1::getDataFilepaths()
     def self.getDataFilepaths()
-        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank-20240517")
+        LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Bank")
             .select{|location| location[-8, 8] == ".sqlite3" }
     end
 

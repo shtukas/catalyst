@@ -85,7 +85,7 @@ class UxPayload
             if location.nil? then
                 puts "Could not resolve this todo text file: #{name1}"
                 if LucilleCore::askQuestionAnswerAsBoolean("reset payload ?") then
-                    Cubes1::setAttribute(itemuuid, "uxpayload-b4e4", nil)
+                    Items::setAttribute(itemuuid, "uxpayload-b4e4", nil)
                 end
                 return
             end
@@ -112,7 +112,7 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             if LucilleCore::askQuestionAnswerAsBoolean("destroy Dx8Unit '#{unitId}'") then
                 Dx8Units::destroy(unitId)
-                Cubes1::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
             end
             return
         end

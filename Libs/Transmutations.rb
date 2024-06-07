@@ -15,15 +15,15 @@ class Transmutations
             thread = NxThreads::interactivelySelectOneOrNull()
             return if thread.nil?
             position = Catalyst::interactivelySelectPositionInParent(thread)
-            Cubes1::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-            Cubes1::setAttribute(item["uuid"], "global-positioning", position)
-            Cubes1::setAttribute(item["uuid"], "mikuType", "NxTodo")
+            Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+            Items::setAttribute(item["uuid"], "global-positioning", position)
+            Items::setAttribute(item["uuid"], "mikuType", "NxTodo")
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikyType == "NxThread" then
             hours = NxThreads::interactivelyDecideHoursOrNull()
-            Cubes1::setAttribute(item["uuid"], "hours", hours)
-            Cubes1::setAttribute(item["uuid"], "mikuType", "NxThread")
+            Items::setAttribute(item["uuid"], "hours", hours)
+            Items::setAttribute(item["uuid"], "mikuType", "NxThread")
             return
         end
         raise "(error: 12ab0d2e-7c5d-491b) could not transmute #{item} at #{targetMikyType}"

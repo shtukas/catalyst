@@ -1,4 +1,4 @@
-Catalyst items are json object with at least 
+Catalyst items are json object with at least
     - uuid
     - mikuType
     - unixtime
@@ -22,3 +22,6 @@ Cross types conventions (all optional):
     # hierarchy
     - donation-1601       : null or String
     - parentuuid-0032     : null or uuid of the parent
+
+Database:
+    create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)

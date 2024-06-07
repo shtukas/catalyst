@@ -98,7 +98,7 @@ class PolyActions
 
         if item["mikuType"] == "NxTodo" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -110,7 +110,7 @@ class PolyActions
 
         if item["mikuType"] == "NxOndate" then
             if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -175,7 +175,7 @@ class PolyActions
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -193,7 +193,7 @@ class PolyActions
             LucilleCore::pressEnterToContinue()
             NxBalls::stop(item)
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -230,21 +230,21 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTodo" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -256,28 +256,28 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Cubes1::destroy(item["uuid"])
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -335,6 +335,6 @@ class PolyActions
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
-        Cubes1::setAttribute(item["uuid"], "description", description)
+        Items::setAttribute(item["uuid"], "description", description)
     end
 end

@@ -1,8 +1,0 @@
-
-Catalyst items have always been collections of attributes. Each top key of the object is independently set and doesn't itself have a clear structure (except if a simple type).
-
-During the Cube era, we maintained the object as a single unit on disk, but moving away from that era we are storing the attributes indenependently with the understanding that an item is then the collection of all attributes sharing the same uuid.
-
-record: (recordId, recordTime, itemUUID, attributeName, attributeValue)
-
-The recordTime is used to put a total ordering on all the records and notably a total ordering on the collection of various intermadiary values of a particular attribute of a particular itemUUID.

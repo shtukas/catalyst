@@ -20,12 +20,12 @@ class NxThreads
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         hours = NxThreads::interactivelyDecideHoursOrNull()
-        Cubes1::itemInit(uuid, "NxThread")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::setAttribute(uuid, "hours", hours)
-        Cubes1::itemOrNull(uuid)
+        Items::itemInit(uuid, "NxThread")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "hours", hours)
+        Items::itemOrNull(uuid)
     end
 
     # ------------------
@@ -57,7 +57,7 @@ class NxThreads
 
     # NxThreads::itemsInCompletionOrder()
     def self.itemsInCompletionOrder()
-        Cubes1::mikuType("NxThread")
+        Items::mikuType("NxThread")
             .sort_by{|item| NxThreads::ratio(item) }
     end
 
@@ -68,7 +68,7 @@ class NxThreads
 
     # NxThreads::muiItems()
     def self.muiItems()
-        Cubes1::mikuType("NxThread")
+        Items::mikuType("NxThread")
             .select{|thread|
                 if thread["do-not-show-if-empty"] then
                     Catalyst::children(thread).size > 0
@@ -87,7 +87,7 @@ class NxThreads
     def self.program1(thread)
         loop {
 
-            thread = Cubes1::itemOrNull(thread["uuid"])
+            thread = Items::itemOrNull(thread["uuid"])
             return if thread.nil?
 
             system("clear")
@@ -119,9 +119,9 @@ class NxThreads
                 todo = NxTodos::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
-                Cubes1::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
+                Items::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
                 position = Catalyst::interactivelySelectPositionInParent(thread)
-                Cubes1::setAttribute(todo["uuid"], "global-positioning", position)
+                Items::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
 
@@ -130,7 +130,7 @@ class NxThreads
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = Catalyst::interactivelySelectPositionInParent(thread)
-                Cubes1::setAttribute(i["uuid"], "global-positioning", position)
+                Items::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
 
@@ -142,7 +142,7 @@ class NxThreads
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Cubes1::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
+                    Items::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
                 }
                 next
             end
@@ -152,12 +152,12 @@ class NxThreads
                 next if selected.empty?
                 t2 = NxThreads::interactivelySelectOneOrNull()
                 next if t2.nil?
-                selected.each{|i| Cubes1::setAttribute(i["uuid"], "parentuuid-0032", t2["uuid"]) }
+                selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", t2["uuid"]) }
                 next
             end
 
             if input == "do not show if empty" then
-                Cubes1::setAttribute(thread["uuid"], "do-not-show-if-empty", true)
+                Items::setAttribute(thread["uuid"], "do-not-show-if-empty", true)
                 next
             end
 
@@ -198,7 +198,7 @@ class NxThreads
                 item = store.get(input[5, 99].strip.to_i)
                 next if item.nil?
                 hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-                Cubes1::setAttribute(item["uuid"], "hours", hours)
+                Items::setAttribute(item["uuid"], "hours", hours)
                 next
             end
  

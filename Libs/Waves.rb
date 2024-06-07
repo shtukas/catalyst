@@ -113,16 +113,16 @@ class Waves
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
-        Cubes1::itemInit(uuid, "Wave")
+        Items::itemInit(uuid, "Wave")
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Cubes1::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Cubes1::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Cubes1::setAttribute(uuid, "description", description)
-        Cubes1::setAttribute(uuid, "nx46", nx46)
-        Cubes1::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
-        Cubes1::setAttribute(uuid, "interruption", interruption)
-        Cubes1::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
-        Cubes1::itemOrNull(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "nx46", nx46)
+        Items::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        Items::setAttribute(uuid, "interruption", interruption)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -145,7 +145,7 @@ class Waves
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             b1 and b2
         }
-        Cubes1::mikuType("Wave")
+        Items::mikuType("Wave")
             .select{|item| isMuiItem.call(item) }
             .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
     end
@@ -169,12 +169,12 @@ class Waves
     def self.performWaveDone(item)
 
         # Removing flight information
-        Cubes1::setAttribute(item["uuid"], "flight-1742", nil)
+        Items::setAttribute(item["uuid"], "flight-1742", nil)
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
-        Cubes1::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Cubes1::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
+        Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Items::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
@@ -192,27 +192,27 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                Cubes1::setAttribute(item["uuid"], "description", description)
+                Items::setAttribute(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                Cubes1::setAttribute(item["uuid"], "nx46", nx46)
+                Items::setAttribute(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::performWaveDone(item)
                 return
             end
             if action == "set priority" then
-                Cubes1::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
+                Items::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
             end
             if action == "set days of the week" then
                 days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                Cubes1::setAttribute(item["uuid"], "onlyOnDays", days)
+                Items::setAttribute(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
-                    Cubes1::destroy(item["uuid"])
+                    Items::destroy(item["uuid"])
                     return
                 end
             end
@@ -221,7 +221,7 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = Cubes1::mikuType("Wave")
+        items = Items::mikuType("Wave")
         i1, i2 = items.partition{|item| DoNotShowUntil1::isVisible(item) }
         i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
         items = i1 + i2

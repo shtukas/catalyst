@@ -16,14 +16,14 @@ class PolyFunctions
         # Special Features
 
         if item["parentuuid-0032"] then
-            parent = Cubes1::itemOrNull(item["parentuuid-0032"])
+            parent = Items::itemOrNull(item["parentuuid-0032"])
             if parent then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
             end
         end
 
         if item["donation-1601"] then
-            target = Cubes1::itemOrNull(item["donation-1601"])
+            target = Items::itemOrNull(item["donation-1601"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
