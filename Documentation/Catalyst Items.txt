@@ -1,27 +1,15 @@
 Catalyst items are json object with at least
     - uuid
     - mikuType
-    - unixtime
 
 Cross types conventions (all optional):
 
     - doNotShowUntil      : unixtime
     - skip-0843           : unixtime (skipped until this time)
-    - open-cycle-1143     : uuid of the open cycle that this item represents
-    - global-positioning  : Float # used for ordering and sorting
-                            within the children of a core.
-
-    # Payload
-    - note-1531           : String
-    - todotextfile-1312   : fragment of name of a todo text file (must be located in Galaxy)
-    - aion-point-7c758c   : aion point root hash
-    - dx8UnitId-00286e29  : Dx8UnitId reference
-    - url-e88a            : URL
-    - unique-string-c3e5  : String
-
-    # hierarchy
-    - donation-1601       : null or String
-    - parentuuid-0032     : null or uuid of the parent
+    - global-positioning  : Float # ordering within the children of a parent.
+    - uxpayload-b4e4      : UxPayload
+    - donation-1601       : String
+    - parentuuid-0032     : uuid of the parent
 
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
