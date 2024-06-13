@@ -160,6 +160,26 @@ class Waves
     def self.muiItemsNotInterruption()
         Waves::muiItems()
             .select{|item| !item["interruption"] }
+            .select{|item| Listing::listable(item) }
+            .map{|item|
+                if item["flightdata"].nil? then
+                    unixtime = Time.new.to_f
+                    item["flightdata"] = unixtime
+                    Items::setAttribute(item["uuid"], "flightdata", unixtime)
+                end
+                item
+            }
+            .map{|item|
+                unixtime = item["flightdata"]
+                timediff = (Time.new.to_f - unixtime).to_f/86400 # in days
+                # We want (timediff: 0 -> 1, 2 -> ~0)
+                position = Math.exp(-timediff)
+                item["listing-1016"] = {
+                    "date"     => CommonUtils::today(),
+                    "position" => position
+                }
+                item
+            }
     end
 
     # -------------------------------------------------------------------------
@@ -169,7 +189,7 @@ class Waves
     def self.performWaveDone(item)
 
         # Removing flight information
-        Items::setAttribute(item["uuid"], "flight-1742", nil)
+        Items::setAttribute(item["uuid"], "flightdata", nil)
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"

@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+# Keep this file absolutely in sync with the same in Nyx
+
 =begin
 
 Updates:
@@ -26,6 +28,8 @@ class Items
 
     # ----------------------------------------
     # Core
+
+    # Keep this file absolutely in sync with the same in Nyx
 
     # Items::commitItemToDatabase(item)
     def self.commitItemToDatabase(item)
@@ -106,6 +110,8 @@ class Items
 
     # ----------------------------------------
     # Interface
+
+    # Keep this file absolutely in sync with the same in Nyx
 
     # Items::itemInit(uuid, mikuType)
     def self.itemInit(uuid, mikuType)

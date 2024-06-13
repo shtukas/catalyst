@@ -24,7 +24,7 @@ class Catalyst
             elements
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(datastrace, store, item)
+                    puts Listing::toString2(store, item)
                 }
 
             puts ""

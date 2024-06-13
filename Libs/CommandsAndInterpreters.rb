@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | random |destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
@@ -89,6 +89,17 @@ class CommandsAndInterpreters
                 return
             end
             Catalyst::interactivelyInsertAtPosition(parent, item["global-positioning"]-1)
+            return
+        end
+
+        if Interpreting::match("random", input) then
+            item = store.getDefault()
+            return if item.nil?
+            p1 = {
+                "date"     => CommonUtils::today(),
+                "position" => rand
+            }
+            Items::setAttribute(item["uuid"], "listing-1016", p1)
             return
         end
 
@@ -348,6 +359,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            puts "Do not show until: #{DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])}"
             LucilleCore::pressEnterToContinue()
             return
         end
@@ -357,6 +369,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             puts JSON.pretty_generate(item)
+            puts "Do not show until: #{DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])}"
             LucilleCore::pressEnterToContinue()
             return
         end

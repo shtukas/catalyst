@@ -69,15 +69,14 @@ class NxThreads
     # NxThreads::muiItems()
     def self.muiItems()
         Items::mikuType("NxThread")
-            .select{|thread|
-                if thread["do-not-show-if-empty"] then
-                    Catalyst::children(thread).size > 0
-                else
-                    true
-                end
-            }
             .select{|item| NxThreads::ratio(item) < 1 }
-            .sort_by{|item| NxThreads::ratio(item) }
+            .map{|item| 
+                item["listing-1016"] = {
+                    "date"     => CommonUtils::today(),
+                    "position" => NxThreads::ratio(item)
+                }
+                item
+            }
     end
 
     # ------------------
@@ -109,7 +108,7 @@ class NxThreads
 
             puts ""
 
-            puts "todo | pile | insert | position * | sort | moves | do not show if empty"
+            puts "todo | pile | insert | position * | sort | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -153,11 +152,6 @@ class NxThreads
                 t2 = NxThreads::interactivelySelectOneOrNull()
                 next if t2.nil?
                 selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", t2["uuid"]) }
-                next
-            end
-
-            if input == "do not show if empty" then
-                Items::setAttribute(thread["uuid"], "do-not-show-if-empty", true)
                 next
             end
 

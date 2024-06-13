@@ -14,6 +14,8 @@ Wave :
     "onlyOnDays"       : null or Array[week days names lowercase english] 
                          Indicates on which days the wave can show up
 
+    "flightdata"       : NxFlightData: unixtime
+
 Nx46 {
     "type"  : Nx46Type
     "value" : Nx46Value
