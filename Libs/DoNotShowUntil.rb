@@ -37,7 +37,7 @@ class DoNotShowUntil1
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("select * from DoNotShowUntil where _id_=?", [id]) do |row|
-            unixtimes = row["_unixtime_"]
+            unixtime = row["_unixtime_"]
         end
         db.close
 
