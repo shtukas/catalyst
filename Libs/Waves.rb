@@ -160,6 +160,17 @@ class Waves
     def self.muiItemsNotInterruption()
         Waves::muiItems()
             .select{|item| !item["interruption"] }
+            .map{|item|
+                if item["ratio-1123"].nil? or item["ratio-1123"]["date"] != CommonUtils::today() then
+                    dt = {
+                        "date" => CommonUtils::today(),
+                        "ratio" => rand - 0.1
+                    }
+                    Items::setAttribute(item["uuid"], "ratio-1123", dt)
+                    item["ratio-1123"] = dt
+                end
+                item
+            }
     end
 
     # -------------------------------------------------------------------------

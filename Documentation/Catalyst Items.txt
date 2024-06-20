@@ -11,6 +11,11 @@ Cross types conventions (all optional):
     - donation-1601       : String
     - parentuuid-0032     : uuid of the parent
 
+    - ratio-1123          : {
+        date : YYYY-MM-DD
+        ratio: Float
+    }
+
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
 

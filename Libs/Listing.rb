@@ -98,6 +98,20 @@ class Listing
         line
     end
 
+    # Listing::ratio(item)
+    def self.ratio(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::ratio(item)
+        end
+        if item["mikuType"] == "Wave" then
+            if item["ratio-1123"].nil? or item["ratio-1123"]["date"] != CommonUtils::today() then
+                raise "cannot Listing::ratio item: #{item}"
+            end
+            return item["ratio-1123"]["ratio"]
+        end
+        raise "cannot Listing::ratio item: #{item}"
+    end
+
     # Listing::items()
     def self.items()
         [
@@ -111,8 +125,10 @@ class Listing
             NxBackups::muiItems(),
             NxFloats::muiItems(),
             NxBufferInMonitors::muiItems(),
-            Waves::muiItemsNotInterruption(),
-            NxThreads::muiItems(),
+            [
+                Waves::muiItemsNotInterruption(),
+                NxThreads::muiItems()
+            ].flatten.sort_by{|item| Listing::ratio(item) }
         ]
             .flatten
             .select{|item| Listing::listable(item) }
