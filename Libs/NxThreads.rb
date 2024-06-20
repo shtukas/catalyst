@@ -70,13 +70,7 @@ class NxThreads
     def self.muiItems()
         Items::mikuType("NxThread")
             .select{|item| NxThreads::ratio(item) < 1 }
-            .map{|item| 
-                item["listing-1016"] = {
-                    "date"     => CommonUtils::today(),
-                    "position" => NxThreads::ratio(item)
-                }
-                item
-            }
+            .sort_by{|item| NxThreads::ratio(item) }
     end
 
     # ------------------
@@ -108,7 +102,7 @@ class NxThreads
 
             puts ""
 
-            puts "todo | pile | insert | position * | sort | moves"
+            puts "todo | pile | position * | sort | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"

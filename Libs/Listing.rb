@@ -111,8 +111,8 @@ class Listing
             NxBackups::muiItems(),
             NxFloats::muiItems(),
             NxBufferInMonitors::muiItems(),
+            Waves::muiItemsNotInterruption(),
             NxThreads::muiItems(),
-            Waves::muiItemsNotInterruption()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -135,8 +135,6 @@ class Listing
     # Listing::items2()
     def self.items2()
         items = Listing::items()
-        i1, i2 = items.partition{|item| item["listing-1016"] and item["listing-1016"]["date"] == CommonUtils::today() }
-        items = i2 + i1.sort_by{|item| item["listing-1016"]["position"] }
         items = Listing::applyNxBallOrdering(items)
         items = Prefix::addPrefix(items)
         items
