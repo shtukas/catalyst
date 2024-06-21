@@ -75,8 +75,17 @@ class UxPayload
     def self.access(itemuuid, payload)
         return if payload.nil?
         if payload["type"] == "text" then
-            puts payload["text"].strip
-            LucilleCore::pressEnterToContinue()
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file"])
+            return if option.nil?
+            if option == "in terminal" then
+                puts payload["text"].strip
+                LucilleCore::pressEnterToContinue()
+            end
+            if option == "in file" then
+                filepath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{SecureRandom.hex(5)}.txt"
+                File.open(filepath, "w"){|f| f.puts(payload["text"]) }
+                LucilleCore::pressEnterToContinue()
+            end
             return
         end
         if payload["type"] == "todo-text-file-by-name" then
