@@ -153,6 +153,13 @@ class Listing
         items = Listing::items()
         items = Listing::applyNxBallOrdering(items)
         items = Prefix::addPrefix(items)
+
+        if items[0]["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
+            if Catalyst::children(items[0]).empty? then
+                items.shift
+            end
+        end
+
         items
             .select{|item| Listing::listable(item) }
             .reduce([]){|selected, item|
