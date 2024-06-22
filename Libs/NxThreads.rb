@@ -66,11 +66,42 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInCompletionOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
+    # NxThreads::numberOfChildrenWithHourCaching(parent)
+    def self.numberOfChildrenWithHourCaching(parent)
+        # data:
+        #   - unixtime
+        #   - number
+        data = XCache::getOrNull("ab546cac-4b6a-4f59-a3e7-ea683a2e97f8:#{parent["uuid"]}")
+        if data then
+            data = JSON.parse(data)
+            if (Time.new.to_i - data["unixtime"]) < 3600 then
+                return data["number"]
+            end
+        end
+        number = Catalyst::children(parent).size
+        data = {
+            "unixtime" => Time.new.to_i,
+            "number" => number
+        }
+        XCache::set("ab546cac-4b6a-4f59-a3e7-ea683a2e97f8:#{parent["uuid"]}", JSON.generate(data))
+        number
+    end
+
     # NxThreads::muiItems()
     def self.muiItems()
         Items::mikuType("NxThread")
             .select{|item| NxThreads::ratio(item) < 1 }
             .sort_by{|item| NxThreads::ratio(item) }
+            .map{|item|
+                r = item
+                if item["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
+                    if NxThreads::numberOfChildrenWithHourCaching(item) == 0 then
+                        r = nil
+                    end
+                end
+                r
+            }
+            .compact
     end
 
     # ------------------

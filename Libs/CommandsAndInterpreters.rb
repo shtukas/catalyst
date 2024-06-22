@@ -52,14 +52,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Transmutations::transmute1(item)
-            return
-        end
-
-        if Interpreting::match(">> *", input) then
+        if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?

@@ -3,7 +3,7 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         if item["mikuType"] == "NxOndate" then
-            targetMikyType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", ["NxTodo", "NxThread"])
+            targetMikyType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", ["NxTodo", "NxThread", "Wave"])
             return if targetMikyType.nil?
             Transmutations::transmute2(item, targetMikyType)
         end
@@ -24,6 +24,14 @@ class Transmutations
             hours = NxThreads::interactivelyDecideHoursOrNull()
             Items::setAttribute(item["uuid"], "hours", hours)
             Items::setAttribute(item["uuid"], "mikuType", "NxThread")
+            return
+        end
+        if item["mikuType"] == "NxOndate" and targetMikyType == "Wave" then
+            nx46 = Waves::makeNx46InteractivelyOrNull()
+            return if nx46.nil?
+            Items::setAttribute(item["uuid"], "nx46", nx46)
+            Items::setAttribute(item["uuid"], "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+            Items::setAttribute(item["uuid"], "mikuType", "Wave")
             return
         end
         raise "(error: 12ab0d2e-7c5d-491b) could not transmute #{item} at #{targetMikyType}"
