@@ -67,6 +67,7 @@ class NxBackups
     # NxBackups::getLastUnixtimeForDescriptionOrZero(description)
     def self.getLastUnixtimeForDescriptionOrZero(description)
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/backups-lastest-times")
+            .select{|location| File.basename(location)[0, 1] != '.' }
             .select{|location| File.basename(location).include?(description) }
             .each{|filepath|
                 return DateTime.parse(IO.read(filepath).strip).to_time.to_i

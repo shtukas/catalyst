@@ -10,11 +10,8 @@ Cross types conventions (all optional):
     - uxpayload-b4e4      : UxPayload
     - donation-1601       : String
     - parentuuid-0032     : uuid of the parent
-
-    - ratio-1123          : {
-        date : YYYY-MM-DD
-        ratio: Float
-    }
+    - ratio-1123          : Lx126
+    - collection-0901     : String
 
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
@@ -23,3 +20,10 @@ Lx126 {
     "date"     : YYYY-MM-DD
     "position" : random number in [0, 1] for listing placement
 }
+
+Collections are markers that help aggregating the items that cannot be run now and need a particular condition to be true, for instance, being home, being online, being in the office etc.
+
+TxCollection
+    "uuid"     => String,
+    "mikuType" => "TxCollection",
+    "name"     => String

@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * |destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | >> * (set collection) | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
@@ -52,6 +52,16 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            collection = TxCollections::architectNewCollectionOrNull()
+            return if collection.nil?
+            TxCollections::setCollection(item, collection)
+            return
+        end
+
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -86,6 +96,14 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("donation * ", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Catalyst::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("condition * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?

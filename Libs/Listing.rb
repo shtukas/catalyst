@@ -68,6 +68,7 @@ class Listing
         return true if NxBalls::itemIsRunning(item)
         return false if !DoNotShowUntil1::isVisible(item)
         return false if TmpSkip1::isSkipped(item)
+        return false if item["mikuType"] == "TxCollection"
         true
     end
 
@@ -255,9 +256,22 @@ class Listing
 
             system("clear")
 
+            items = Listing::items2()
+
+            colls = TxCollections::listingItems(items)
+            if colls.size > 0 then
+                spacecontrol.putsline ""
+                colls
+                    .each{|item|
+                        store.register(item, Listing::canBeDefault(item))
+                        line = Listing::toString2(store, item)
+                        spacecontrol.putsline line
+                    }
+            end
+
             spacecontrol.putsline ""
 
-            Listing::items2()
+            items
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)

@@ -46,6 +46,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCollection" then
+            TxCollections::access(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -62,6 +67,7 @@ class PolyActions
     def self.done(item, confirmed = false)
 
         NxBalls::stop(item)
+        TxCollections::dropCollection(item)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
@@ -200,6 +206,11 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCollection" then
+            TxCollections::access(item)
             return
         end
 

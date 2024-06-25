@@ -87,6 +87,9 @@ class PolyFunctions
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end
+        if item["mikuType"] == "TxCollection" then
+            return TxCollections::toString(item)
+        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
