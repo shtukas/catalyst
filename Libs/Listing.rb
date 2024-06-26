@@ -99,18 +99,72 @@ class Listing
         line
     end
 
-    # Listing::ratio(item)
-    def self.ratio(item)
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::ratio(item)
+    # Listing::itemToFlightPath(item)
+    def self.itemToFlightPath(item)
+        if item["flightpath-1712"] then
+            return item["flightpath-1712"]
         end
-        if item["mikuType"] == "Wave" then
-            if item["ratio-1123"].nil? or item["ratio-1123"]["date"] != CommonUtils::today() then
-                raise "cannot Listing::ratio item: #{item}"
+        if item["mikuType"] == "PhysicalTarget" then
+            return {
+                "type"     => "fixed",
+                "position" => 0.0
+            }
+        end
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return {
+                "type"     => "fixed",
+                "position" => 0.05
+            }
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            if item["flightpath-1712"].nil? then
+                flightPath = {
+                    "type"          => "wave-non-interruption",
+                    "startUnixtime" => Time.new.to_f
+                }
+                Items::setAttribute(item["uuid"], "flightpath-1712", flightPath)
+                return flightPath
+            else
+                return item["flightpath-1712"]
             end
-            return item["ratio-1123"]["ratio"]
+
         end
-        raise "cannot Listing::ratio item: #{item}"
+        if item["mikuType"] == "NxOndate" then
+            return {
+                "type"     => "fixed",
+                "position" => 0.4
+            }
+        end
+        if item["mikuType"] == "NxFloat" then
+            return {
+                "type"     => "fixed",
+                "position" => 0.5
+            }
+        end
+        if item["mikuType"] == "NxBackup"then
+            return {
+                "type"     => "fixed",
+                "position" => 0.5
+            }
+        end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return {
+                "type"     => "fixed",
+                "position" => 0.6
+            }
+        end
+        if item["mikuType"] == "NxThread" then
+            return {
+                "type"     => "fixed",
+                "position" => NxThreads::ratio(item) + 0.1
+            }
+        end
+        raise "Listing::itemToFlightPath: I do not know how to flight path: #{item}"
+    end
+
+    # Listing::position(item)
+    def self.position(item)
+        FlightPaths::position(Listing::itemToFlightPath(item))
     end
 
     # Listing::items()
@@ -126,13 +180,12 @@ class Listing
             NxBackups::muiItems(),
             NxFloats::muiItems(),
             NxBufferInMonitors::muiItems(),
-            [
-                Waves::muiItemsNotInterruption(),
-                NxThreads::muiItems()
-            ].flatten.sort_by{|item| Listing::ratio(item) }
+            Waves::muiItemsNotInterruption(),
+            NxThreads::muiItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
+            .sort_by{|item| Listing::position(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -272,6 +325,7 @@ class Listing
             spacecontrol.putsline ""
 
             items
+                .select{|item| item["collection-0901"].nil? }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)

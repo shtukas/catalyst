@@ -68,6 +68,7 @@ class PolyActions
 
         NxBalls::stop(item)
         TxCollections::dropCollection(item)
+        Items::setAttribute(item["uuid"], "flightpath-1712", nil)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
