@@ -34,6 +34,9 @@ class CommandsAndInterpreters
             Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
             position = Catalyst::interactivelySelectPositionInParent(thread)
             Items::setAttribute(item["uuid"], "global-positioning", position)
+            parent = Catalyst::parentOrNull(item)
+            return if parent.nil?
+            Bank1::put(parent["uuid"], CommonUtils::today(), 60)
             return
         end
 

@@ -65,6 +65,12 @@ class Catalyst
         }
     end
 
+    # Catalyst::parentOrNull(item)
+    def self.parentOrNull(item)
+        return nil if item["parentuuid-0032"].nil?
+        Items::itemOrNull(item["parentuuid-0032"])
+    end
+
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
@@ -76,19 +82,15 @@ class Catalyst
             Items::items().each{|item|
                 next if item["parentuuid-0032"].nil?
                 parent = Items::itemOrNull(item["parentuuid-0032"])
-                if parent.nil? then
-                    Items::setAttribute(item["uuid"], "parentuuid-0032", nil)
-                    next
-                end
+                next if parent
+                Items::setAttribute(item["uuid"], "parentuuid-0032", nil)
             }
 
             Items::items().each{|item|
                 next if item["donation-1601"].nil?
                 target = Items::itemOrNull(item["donation-1601"])
-                if target.nil? then
-                    Items::setAttribute(item["uuid"], "donation-1601", nil)
-                    next
-                end
+                next if target
+                Items::setAttribute(item["uuid"], "donation-1601", nil)
             }
         end
     end
