@@ -80,9 +80,9 @@ class Listing
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : ""
-        arrow = item["x:prefix:0859"] ? " (#{item["x:prefix:0859"]})" : ""
-        line = "#{storePrefix} #{arrow} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        storePrefix = store ? "(#{store.prefixString()})" : "      "
+        arrow = item["x:position"] ? " (#{"%4.2f" % item["x:position"]})" : ""
+        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -170,7 +170,6 @@ class Listing
     # Listing::items()
     def self.items()
         [
-            NxBalls::activeItems(),
             DropBox::items(),
             Desktop::muiItems(),
             Anniversaries::muiItems(),
@@ -185,7 +184,11 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-            .sort_by{|item| Listing::position(item) }
+            .map{|item| 
+                item["x:position"] = Listing::position(item) 
+                item
+            }
+            .sort_by{|item| item["x:position"] }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -200,23 +203,6 @@ class Listing
         activeItems, nonActiveItems = items.partition{|item| NxBalls::itemIsActive(item) }
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
         runningItems + pausedItems + nonActiveItems
-    end
-
-    # Listing::items2()
-    def self.items2()
-        items = Listing::items()
-        items = Listing::applyNxBallOrdering(items)
-        items = Prefix::addPrefix(items)
-
-        items
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
     end
 
     # -----------------------------------------
@@ -248,13 +234,9 @@ class Listing
         Listing::items()
         spot.end_unit()
 
-        spot.start_unit("Listing::items2()")
-        Listing::items2()
-        spot.end_unit()
-
-        spot.start_unit("Listing::items2().first(100) >> Listing::toString2(store, item)")
+        spot.start_unit("Listing::items().first(100) >> Listing::toString2(store, item)")
         store = ItemStore.new()
-        items = Listing::items2().first(100)
+        items = Listing::items().first(100)
         items.each {|item| Listing::toString2(store, item) }
         spot.end_unit()
 
@@ -309,7 +291,7 @@ class Listing
 
             system("clear")
 
-            items = Listing::items2()
+            items = Listing::items()
 
             colls = TxCollections::listingItems(items)
             if colls.size > 0 then
@@ -324,8 +306,14 @@ class Listing
 
             spacecontrol.putsline ""
 
-            items
-                .select{|item| item["collection-0901"].nil? }
+            Prefix::addPrefix(NxBalls::activeItems() + items.select{|item| item["collection-0901"].nil? })
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
