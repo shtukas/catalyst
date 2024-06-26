@@ -50,8 +50,11 @@ class NxThreads
         " (#{"%6.2f" % (100 * NxThreads::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
-    # NxThreads::toString(item)
-    def self.toString(item)
+    # NxThreads::toString(item, context = nil)
+    def self.toString(item, context = nil)
+        if context == "thread-elements-listing" then
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
+        end
         "#{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
     end
 
@@ -128,7 +131,7 @@ class NxThreads
             Catalyst::childrenInGlobalPositioningOrder(thread)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
-                    puts Listing::toString2(store, element)
+                    puts Listing::toString2(store, element, "thread-elements-listing")
                 }
 
             puts ""

@@ -46,8 +46,8 @@ class PolyFunctions
         }
     end
 
-    # PolyFunctions::toString(item)
-    def self.toString(item)
+    # PolyFunctions::toString(item, context = nil)
+    def self.toString(item, context = nil)
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end
@@ -73,7 +73,7 @@ class PolyFunctions
             return NxTodos::toString(item)
         end
         if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
+            return NxThreads::toString(item, context)
         end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item)
