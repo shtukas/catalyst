@@ -9,6 +9,17 @@ class Prefix
             if children.empty? then
                 return items
             end
+            children = children.map{|child|
+                if child["mikuType"] == "NxThread" then
+                    if NxThreads::ratio(child) < 1 then
+                        child
+                    else
+                        nil
+                    end
+                else
+                    child
+                end
+            }.compact
             return Prefix::addPrefix(children.take(3) + items)
         end
         return items

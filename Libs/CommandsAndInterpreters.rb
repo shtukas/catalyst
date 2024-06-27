@@ -20,6 +20,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
+                Items::setAttribute(item["uuid"], "flightpath-1712", nil)
                 DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
                 return
             end
@@ -99,14 +100,6 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("donation * ", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("condition * ", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
