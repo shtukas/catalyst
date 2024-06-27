@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | >> * (set collection) | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
@@ -56,21 +56,32 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            collection = TxCollections::architectNewCollectionOrNull()
-            return if collection.nil?
-            TxCollections::setCollection(item, collection)
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute1(item)
+            return
+        end
+
+        if Interpreting::match("''", input) then
+            puts "activating condition toggle"
+            cx11 = Cx11s::interactivelySelectCx11OrNull()
+            return if cx11.nil?
+            cx11["status"] = !cx11["status"]
+            Cx11s::getItemsByConditionName(Items::items(), cx11["name"]).each{|item|
+                Cx11s::setCondition(item, cx11)
+            }
+            return
+        end
+
+        if Interpreting::match("'' *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            cx11 = Cx11s::architectNewOrNull()
+            return if cx11.nil?
+            Cx11s::setCondition(item, cx11)
             return
         end
 

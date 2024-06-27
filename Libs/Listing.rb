@@ -68,7 +68,7 @@ class Listing
         return true if NxBalls::itemIsRunning(item)
         return false if !DoNotShowUntil1::isVisible(item)
         return false if TmpSkip1::isSkipped(item)
-        return false if item["mikuType"] == "TxCollection"
+        return false if item["mikuType"] == "TxCondition"
         true
     end
 
@@ -293,10 +293,10 @@ class Listing
 
             items = Listing::items()
 
-            colls = TxCollections::listingItems(items)
-            if colls.size > 0 then
+            txConditions = TxConditions::listingItems(items)
+            if txConditions.size > 0 then
                 spacecontrol.putsline ""
-                colls
+                txConditions
                     .each{|item|
                         store.register(item, Listing::canBeDefault(item))
                         line = Listing::toString2(store, item)
@@ -306,7 +306,7 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Prefix::addPrefix(NxBalls::activeItems() + items.select{|item| item["collection-0901"].nil? })
+            Prefix::addPrefix(NxBalls::activeItems() + items.select{|item| Cx11s::itemShouldBeListed(item) })
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected

@@ -46,8 +46,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCollection" then
-            TxCollections::access(item)
+        if item["mikuType"] == "TxCondition" then
+            TxConditions::access(item)
             return
         end
 
@@ -67,7 +67,6 @@ class PolyActions
     def self.done(item, confirmed = false)
 
         NxBalls::stop(item)
-        TxCollections::dropCollection(item)
         Items::setAttribute(item["uuid"], "flightpath-1712", nil)
 
         if item["mikuType"] == "NxFloat" then
@@ -210,8 +209,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCollection" then
-            TxCollections::access(item)
+        if item["mikuType"] == "TxCondition" then
+            TxConditions::access(item)
             return
         end
 

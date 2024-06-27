@@ -1,0 +1,6 @@
+Conditions are markers that help aggregating the items that cannot be run now and need a particular condition to be true, for instance, being home, being online, being in the office etc.
+
+TxCondition
+    "uuid"     => String,
+    "mikuType" => "TxCondition",
+    "name"     => String

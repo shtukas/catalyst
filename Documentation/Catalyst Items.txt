@@ -10,20 +10,11 @@ Cross types conventions (all optional):
     - uxpayload-b4e4      : UxPayload
     - donation-1601       : String
     - parentuuid-0032     : uuid of the parent
-    - collection-0901     : String
+    - condition-0903      : Cx11
     - flightpath-1712     : Fx17
 
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
-
-
-
-Collections are markers that help aggregating the items that cannot be run now and need a particular condition to be true, for instance, being home, being online, being in the office etc.
-
-TxCollection
-    "uuid"     => String,
-    "mikuType" => "TxCollection",
-    "name"     => String
 
 Fx17
 {
@@ -33,4 +24,9 @@ Fx17
 {
     "type"          => "wave-non-interruption"
     "startUnixtime" => Unixtime
+}
+
+Cx11 {
+    name  : String
+    status: Boolean # true means that the condition is true, so the items can be shown in the main listing
 }
