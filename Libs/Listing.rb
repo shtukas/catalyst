@@ -82,7 +82,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         arrow = item["x:position"] ? " (#{"%4.2f" % item["x:position"]})" : ""
-        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}#{Cx11s::suffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow

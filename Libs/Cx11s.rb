@@ -60,4 +60,10 @@ class Cx11s
         cx11s = Cx11s::collectDistinctCx11sFromItems(Items::items())
         LucilleCore::selectEntityFromListOfEntitiesOrNull("cx11", cx11s, lambda{|item| Cx11s::toString(item) })
     end
+
+    # Cx11s::suffix(item)
+    def self.suffix(item)
+        return "" if item["condition-0903"].nil?
+        " (#{item["condition-0903"]["name"]})".green
+    end
 end
