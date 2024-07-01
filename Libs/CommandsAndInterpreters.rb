@@ -79,6 +79,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            puts "select Cx11 for '#{PolyFunctions::toString(item).green}'"
             cx11 = Cx11s::architectNewOrNull()
             return if cx11.nil?
             Cx11s::setCondition(item, cx11)
@@ -337,7 +338,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTodo"
-            Catalyst::interactivelySetParentOrNothing(item, nil)
+            NxThreads::move(item)
             return
         end
 

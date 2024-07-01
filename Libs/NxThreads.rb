@@ -228,4 +228,13 @@ class NxThreads
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
+
+    # NxThreads::move(item)
+    def self.move(item)
+        thread = NxThreads::interactivelySelectOneOrNull()
+        return if thread.nil?
+        position = Catalyst::interactivelySelectPositionInParent(thread)
+        Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+        Items::setAttribute(item["uuid"], "global-positioning", position)
+    end
 end

@@ -9,7 +9,10 @@ class TxConditions
 
     # TxConditions::access(txcondition)
     def self.access(txcondition)
-        l = lambda { Cx11s::getItemsByConditionName(Items::items(), txcondition["name"]) }
+        l = lambda { 
+            Cx11s::getItemsByConditionName(Items::items(), txcondition["name"])
+                .select{|item| Listing::listable(item) }
+        }
         Catalyst::program3(l)
     end
 
