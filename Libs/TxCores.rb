@@ -76,9 +76,9 @@ class TxCores
     # TxCores::childrenForPrefix(core)
     def self.childrenForPrefix(core)
         children = Catalyst::children(core)
-        c1, c2 = children.partition{|item| item["mikuType"] == "NxThread" }
+        c1, c2 = children.partition{|item| item["mikuType"] == "NxCollection" }
         [
-            c1.sort_by{|item| NxThreads::ratio(item) }.select{|item| NxThreads::ratio(item) < 1 },
+            c1.sort_by{|item| NxCollections::ratio(item) }.select{|item| NxCollections::ratio(item) < 1 },
             c2.sort_by{|i| (i["global-positioning"] || 0) }
         ].flatten
     end
@@ -130,7 +130,7 @@ class TxCores
             end
 
             if input == "thread" then
-                tx1 = NxThreads::interactivelyIssueNewOrNull()
+                tx1 = NxCollections::interactivelyIssueNewOrNull()
                 next if tx1.nil?
                 puts JSON.pretty_generate(tx1)
                 Items::setAttribute(tx1["uuid"], "parentuuid-0032", tx1["uuid"])

@@ -30,7 +30,7 @@ class CommandsAndInterpreters
         if Interpreting::match(">", input) then
             item = store.getDefault()
             return if item.nil?
-            thread = NxThreads::interactivelySelectOneOrNull()
+            thread = NxCollections::interactivelySelectOneOrNull()
             return if thread.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
             position = Catalyst::interactivelySelectPositionInParent(thread)
@@ -100,8 +100,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTask" and item["mikuType"] != "NxThread" then
-                puts "The item that you pile on need to be a NxTask or a NxThread"
+            if item["mikuType"] != "NxTask" and item["mikuType"] != "NxCollection" then
+                puts "The item that you pile on need to be a NxTask or a NxCollection"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -167,7 +167,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = NxThreads::interactivelySelectOneOrNull()
+            parent = NxCollections::interactivelySelectOneOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -177,26 +177,26 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxThread", "NxTask"].include?(item["mikuType"]) then
-                puts "You can only set hours to NxThread and NxTask"
+            if !["NxCollection", "NxTask"].include?(item["mikuType"]) then
+                puts "You can only set hours to NxCollection and NxTask"
                 LucilleCore::pressEnterToContinue()
                 return
             end
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
             Items::setAttribute(item["uuid"], "hours", hours)
-            if item["mikuType"] != "NxThread" then
-                Items::setAttribute(item["uuid"], "mikuType", "NxThread")
+            if item["mikuType"] != "NxCollection" then
+                Items::setAttribute(item["uuid"], "mikuType", "NxCollection")
             end
             return
         end
 
         if Interpreting::match("thread", input) then
-            thread = NxThreads::interactivelyIssueNewOrNull()
+            thread = NxCollections::interactivelyIssueNewOrNull()
             return if thread.nil?
             puts JSON.pretty_generate(thread)
             puts "select parent"
-            parent = NxThreads::interactivelySelectOneOrNull()
+            parent = NxCollections::interactivelySelectOneOrNull()
             return if parent.nil?
             Items::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -228,7 +228,7 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            thread = NxThreads::interactivelySelectOneOrNull()
+            thread = NxCollections::interactivelySelectOneOrNull()
             return if thread.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
             position = Catalyst::interactivelySelectPositionInParent(thread)
@@ -282,7 +282,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("threads", input) then
-            NxThreads::program2()
+            NxCollections::program2()
             return
         end
 
@@ -353,7 +353,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTask"
-            NxThreads::move(item)
+            NxCollections::move(item)
             return
         end
 
