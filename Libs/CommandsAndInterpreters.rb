@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | >> (transmute)",
         ].join("\n")
@@ -86,12 +86,22 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("move *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+            return if parent.nil?
+            selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"]) }
+            return
+        end
+
         if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTodo" and item["mikuType"] != "NxThread" then
-                puts "The item that you pile on need to be a NxTodo or a NxThread"
+            if item["mikuType"] != "NxTask" and item["mikuType"] != "NxThread" then
+                puts "The item that you pile on need to be a NxTask or a NxThread"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -167,8 +177,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxThread", "NxTodo"].include?(item["mikuType"]) then
-                puts "You can only set hours to NxThread and NxTodo"
+            if !["NxThread", "NxTask"].include?(item["mikuType"]) then
+                puts "You can only set hours to NxThread and NxTask"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -215,7 +225,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            item = NxTodos::interactivelyIssueNewOrNull()
+            item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             thread = NxThreads::interactivelySelectOneOrNull()
@@ -273,6 +283,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("threads", input) then
             NxThreads::program2()
+            return
+        end
+
+        if Interpreting::match("cores", input) then
+            TxCores::program2()
             return
         end
 
@@ -337,7 +352,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxTodo"
+            return if item["mikuType"] != "NxTask"
             NxThreads::move(item)
             return
         end

@@ -124,7 +124,7 @@ class Catalyst
     # Catalyst::children(parent)
     def self.children(parent)
         if parent["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
-            return NxTodos::orphans()
+            return NxTasks::orphans()
         end
         Items::items()
             .select{|item| item["parentuuid-0032"] == parent["uuid"] }
@@ -191,7 +191,7 @@ class Catalyst
         descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
         positions = Catalyst::insertionPositions(parent, position, descriptions.size)
         descriptions.zip(positions).each{|description, position|
-            task = NxTodos::descriptionToTask1(parent, SecureRandom.hex, description)
+            task = NxTasks::descriptionToTask1(parent, SecureRandom.hex, description)
             puts JSON.pretty_generate(task)
             Items::setAttribute(task["uuid"], "global-positioning", position)
         }
@@ -221,5 +221,20 @@ class Catalyst
         end
         position = position.to_f
         position
+    end
+
+    # Catalyst::interactivelySelectOneHierarchyParentOrNull(context)
+    def self.interactivelySelectOneHierarchyParentOrNull(context)
+        if context.nil? then
+            core = TxCores::interactivelySelectOneOrNull()
+            return nil if core.nil?
+            return Catalyst::interactivelySelectOneHierarchyParentOrNull(core)
+        end
+        elements = [context] + Catalyst::childrenInGlobalPositioningOrder(context)
+        element = LucilleCore::selectEntityFromListOfEntitiesOrNull("element", elements, lambda{|item| PolyFunctions::toString(item) })
+        if element["uuid"] == context["uuid"] then
+            return context
+        end
+        Catalyst::interactivelySelectOneHierarchyParentOrNull(element)
     end
 end

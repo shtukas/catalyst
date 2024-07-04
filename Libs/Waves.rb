@@ -138,8 +138,8 @@ class Waves
     # -------------------------------------------------------------------------
     # Data (2)
 
-    # Waves::muiItems()
-    def self.muiItems()
+    # Waves::listingItems()
+    def self.listingItems()
         isMuiItem = lambda { |item|
             b1 = Listing::listable(item)
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
@@ -152,14 +152,16 @@ class Waves
 
     # Waves::muiItemsInterruption()
     def self.muiItemsInterruption()
-        Waves::muiItems()
+        Waves::listingItems()
             .select{|item| item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
     # Waves::muiItemsNotInterruption()
     def self.muiItemsNotInterruption()
-        Waves::muiItems()
+        Waves::listingItems()
             .select{|item| !item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
     # -------------------------------------------------------------------------

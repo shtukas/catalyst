@@ -101,8 +101,8 @@ class NxBackups
         period <= Time.new.to_i
     end
 
-    # NxBackups::muiItems()
-    def self.muiItems()
+    # NxBackups::listingItems()
+    def self.listingItems()
         Items::mikuType("NxBackup").select{|item| NxBackups::itemIsDue(item) }
     end
 

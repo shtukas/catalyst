@@ -90,21 +90,14 @@ class NxThreads
         number
     end
 
-    # NxThreads::muiItems()
-    def self.muiItems()
-        Items::mikuType("NxThread")
-            .select{|item| NxThreads::ratio(item) < 1 }
-            .sort_by{|item| NxThreads::ratio(item) }
-            .map{|item|
-                r = item
-                if item["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
-                    if NxThreads::numberOfChildrenWithHourCaching(item) == 0 then
-                        r = nil
-                    end
-                end
-                r
-            }
-            .compact
+    # NxThreads::childrenForPrefix(thread)
+    def self.childrenForPrefix(thread)
+        children = Catalyst::children(thread)
+        c1, c2 = children.partition{|item| item["mikuType"] == "NxThread" }
+        [
+            c1.sort_by{|item| NxThreads::ratio(item) }.select{|item| NxThreads::ratio(item) < 1 },
+            c2.sort_by{|i| (i["global-positioning"] || 0) }
+        ].flatten
     end
 
     # ------------------
@@ -128,7 +121,12 @@ class NxThreads
 
             puts ""
 
-            Catalyst::childrenInGlobalPositioningOrder(thread)
+            children = Catalyst::childrenInGlobalPositioningOrder(thread)
+            uuids1 = ["85e2e9fe-ef3d-4f75-9330-2804c4bcd52b", "7cf30bc6-d791-4c0c-b03f-16c728396f22"]
+            if uuids1.include?(thread["uuid"]) then
+                children = children.first(40)
+            end
+            children
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element, "thread-elements-listing")
@@ -143,7 +141,7 @@ class NxThreads
             return if input == ""
 
             if input == "todo" then
-                todo = NxTodos::interactivelyIssueNewOrNull()
+                todo = NxTasks::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0032", thread["uuid"])
@@ -198,6 +196,7 @@ class NxThreads
             puts ""
 
             NxThreads::itemsInCompletionOrder()
+                .select{|item| item["parentuuid-0032"].nil? }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts Listing::toString2(store, item)

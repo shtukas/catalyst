@@ -22,8 +22,8 @@ class NxBufferInMonitors
             .size
     end
 
-    # NxBufferInMonitors::muiItems()
-    def self.muiItems()
+    # NxBufferInMonitors::listingItems()
+    def self.listingItems()
         return [] if NxBufferInMonitors::bufferInCardinal() == 0
         return [] if NxBufferInMonitors::ratio() >= 1
         Items::mikuType("NxBufferInMonitor")

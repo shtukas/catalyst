@@ -155,7 +155,7 @@ require_relative "InMemoryCache.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxLambdas.rb"
-require_relative "NxTodos.rb"
+require_relative "NxTasks.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxBufferInMonitors.rb"
@@ -173,6 +173,7 @@ require_relative "SectionsType0141.rb"
 require_relative "TmpSkip1.rb"
 require_relative "Transmutations.rb"
 require_relative "TxConditions.rb"
+require_relative "TxCores.rb"
 
 require_relative "UxPayload.rb"
 

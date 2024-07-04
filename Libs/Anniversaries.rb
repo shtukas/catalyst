@@ -134,8 +134,8 @@ class Anniversaries
         Anniversaries::nextDateOrdinal(anniversary)[0] <= CommonUtils::today() 
     end
 
-    # Anniversaries::muiItems()
-    def self.muiItems()
+    # Anniversaries::listingItems()
+    def self.listingItems()
         Items::mikuType("NxAnniversary")
             .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
     end

@@ -29,7 +29,7 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTodo" and item["parentuuid-0032"].nil? then
+        if item["mikuType"] == "NxTask" and item["parentuuid-0032"].nil? then
             # orphan todos feeding the parent thread
             accounts << {
                 "description" => "parent thread for orphan todos",
@@ -69,8 +69,8 @@ class PolyFunctions
         if item["mikuType"] == "NxLambda" then
             return item["description"]
         end
-        if item["mikuType"] == "NxTodo" then
-            return NxTodos::toString(item)
+        if item["mikuType"] == "NxTask" then
+            return NxTasks::toString(item)
         end
         if item["mikuType"] == "NxThread" then
             return NxThreads::toString(item, context)
@@ -89,6 +89,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "TxCondition" then
             return TxConditions::toString(item)
+        end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

@@ -30,8 +30,8 @@ class PhysicalTargets
         "💪 #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
     end
 
-    # PhysicalTargets::muiItems()
-    def self.muiItems()
+    # PhysicalTargets::listingItems()
+    def self.listingItems()
         Items::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
                 Items::setAttribute(item["uuid"], "date", CommonUtils::today())

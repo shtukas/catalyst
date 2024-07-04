@@ -21,8 +21,8 @@ class NxFloats
         "🐠 #{item["description"]}"
     end
 
-    # NxFloats::muiItems()
-    def self.muiItems()
+    # NxFloats::listingItems()
+    def self.listingItems()
         Items::mikuType("NxFloat")
             .sort_by{|item| item["unixtime"] }
     end

@@ -36,8 +36,8 @@ class NxOndates
         "🗓️  #{item["description"]}"
     end
 
-    # NxOndates::muiItems()
-    def self.muiItems()
+    # NxOndates::listingItems()
+    def self.listingItems()
         Items::mikuType("NxOndate")
             .select{|item| item["datetime"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["unixtime"] }

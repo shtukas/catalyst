@@ -21,8 +21,8 @@ class Desktop
         ].join("\n")
     end
 
-    # Desktop::muiItems()
-    def self.muiItems()
+    # Desktop::listingItems()
+    def self.listingItems()
         return [] if Desktop::contents() == ""
         [{
             "uuid"     => SecureRandom.uuid, # random uuid so that we can't hide it

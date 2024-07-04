@@ -99,96 +99,58 @@ class Listing
         line
     end
 
-    # Listing::itemToFlightPath(item)
-    def self.itemToFlightPath(item)
-        if item["flightpath-1712"] then
-            return item["flightpath-1712"]
-        end
-        if item["mikuType"] == "PhysicalTarget" then
-            return {
-                "type"     => "fixed",
-                "position" => 0.0
-            }
-        end
-        if item["mikuType"] == "Wave" and item["interruption"] then
-            return {
-                "type"     => "fixed",
-                "position" => 0.05
-            }
-        end
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            if item["flightpath-1712"].nil? then
-                flightPath = {
-                    "type"          => "wave-non-interruption",
-                    "startUnixtime" => Time.new.to_f
-                }
-                Items::setAttribute(item["uuid"], "flightpath-1712", flightPath)
-                return flightPath
-            else
-                return item["flightpath-1712"]
-            end
-
-        end
-        if item["mikuType"] == "NxOndate" then
-            return {
-                "type"     => "fixed",
-                "position" => 0.4
-            }
-        end
-        if item["mikuType"] == "NxFloat" then
-            return {
-                "type"     => "fixed",
-                "position" => 0.5
-            }
-        end
-        if item["mikuType"] == "NxBackup"then
-            return {
-                "type"     => "fixed",
-                "position" => 0.5
-            }
-        end
-        if item["mikuType"] == "NxBufferInMonitor" then
-            return {
-                "type"     => "fixed",
-                "position" => 0.6
-            }
-        end
-        if item["mikuType"] == "NxThread" then
-            return {
-                "type"     => "fixed",
-                "position" => NxThreads::ratio(item) + 0.1
-            }
-        end
-        raise "Listing::itemToFlightPath: I do not know how to flight path: #{item}"
-    end
-
     # Listing::position(item)
     def self.position(item)
-        FlightPaths::position(Listing::itemToFlightPath(item))
+        if item["mikuType"] == "PhysicalTarget" then
+            return 0.0
+        end
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return 0.05
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            return 0.4
+        end
+        if item["mikuType"] == "NxFloat" then
+            return 0.5
+        end
+        if item["mikuType"] == "NxBackup"then
+            return 0.55
+        end
+        if item["mikuType"] == "NxTask" then
+            return 0.66
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return 0.75
+        end
+        if item["mikuType"] == "NxBufferInMonitor" then
+            return NxBufferInMonitors::ratio()
+        end
+        if item["mikuType"] == "TxCore" then
+            return TxCores::ratio(item)
+        end
+        raise "Listing::position: I do not know how to flight path: #{item}"
     end
 
     # Listing::items()
     def self.items()
         [
             DropBox::items(),
-            Desktop::muiItems(),
-            Anniversaries::muiItems(),
-            PhysicalTargets::muiItems(),
+            Desktop::listingItems(),
+            Anniversaries::listingItems(),
+            PhysicalTargets::listingItems(),
             Waves::muiItemsInterruption(),
-            NxOndates::muiItems(),
-            NxBackups::muiItems(),
-            NxFloats::muiItems(),
-            NxBufferInMonitors::muiItems(),
+            NxOndates::listingItems(),
+            NxBackups::listingItems(),
+            NxFloats::listingItems(),
+            NxBufferInMonitors::listingItems(),
             Waves::muiItemsNotInterruption(),
-            NxThreads::muiItems()
+            NxTasks::orphans(),
+            TxCores::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-            .map{|item| 
-                item["x:position"] = Listing::position(item) 
-                item
-            }
-            .sort_by{|item| item["x:position"] }
+            .sort_by{|item| Listing::position(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -216,15 +178,15 @@ class Listing
         spot.start_contest()
         spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
-        spot.contest_entry("Desktop::muiItems()", lambda { Desktop::muiItems() })
-        spot.contest_entry("Anniversaries::muiItems()", lambda { Anniversaries::muiItems() })
-        spot.contest_entry("PhysicalTargets::muiItems()", lambda{ PhysicalTargets::muiItems() })
+        spot.contest_entry("Desktop::listingItems()", lambda { Desktop::listingItems() })
+        spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
+        spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
         spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
-        spot.contest_entry("NxOndates::muiItems()", lambda{ NxOndates::muiItems() })
-        spot.contest_entry("NxBackups::muiItems()", lambda{ NxBackups::muiItems() })
-        spot.contest_entry("NxFloats::muiItems()", lambda{ NxFloats::muiItems() })
-        spot.contest_entry("NxThreads::muiItems()", lambda{ NxThreads::muiItems() })
-        spot.contest_entry("NxBufferInMonitors::muiItems()", lambda{ NxBufferInMonitors::muiItems() })
+        spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
+        spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
+        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
+        spot.contest_entry("NxBufferInMonitors::listingItems()", lambda{ NxBufferInMonitors::listingItems() })
         spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
         spot.end_contest()
 
