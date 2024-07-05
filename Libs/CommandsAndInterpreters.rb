@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | todo | desktop | stack | float | thread | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | cores",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | >> (transmute)",
         ].join("\n")
@@ -184,7 +184,7 @@ class CommandsAndInterpreters
             end
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
-            Items::setAttribute(item["uuid"], "hours", hours)
+            Items::setAttribute(item["uuid"], "hours-1905", hours)
             if item["mikuType"] != "NxCollection" then
                 Items::setAttribute(item["uuid"], "mikuType", "NxCollection")
             end
@@ -278,11 +278,6 @@ class CommandsAndInterpreters
         if Interpreting::match("floats", input) then
             floats = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
             Catalyst::program2(floats)
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            NxCollections::program2()
             return
         end
 

@@ -6,4 +6,3 @@ NxCollection:
     - datetime        : DateTime Iso 8601 UTC Zulu
     - description     : String
     - parentuuid-0032 : String, optional, uuid of a timecore
-    - hours           : Float, optional

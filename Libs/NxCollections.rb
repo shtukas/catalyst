@@ -24,7 +24,7 @@ class NxCollections
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "hours", hours)
+        Items::setAttribute(uuid, "hours-1905", hours)
         Items::itemOrNull(uuid)
     end
 
@@ -38,16 +38,16 @@ class NxCollections
 
     # NxCollections::ratio(item)
     def self.ratio(item)
-        if item["hours"].nil? then
-            item["hours"] = 1
+        if item["hours-1905"].nil? then
+            item["hours-1905"] = 1
         end
-        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours"].to_f/7)
+        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours-1905"].to_f/7)
     end
 
     # NxCollections::ratioString(item)
     def self.ratioString(item)
-        return "" if item["hours"].nil?
-        " (#{"%6.2f" % (100 * NxCollections::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        return "" if item["hours-1905"].nil?
+        " (#{"%6.2f" % (100 * NxCollections::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
     # NxCollections::toString(item, context = nil)
@@ -181,49 +181,6 @@ class NxCollections
                 next
             end
 
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxCollections::program2()
-    def self.program2()
-        loop {
- 
-            system("clear")
- 
-            store = ItemStore.new()
- 
-            puts ""
-
-            NxCollections::itemsInCompletionOrder()
-                .select{|item| item["parentuuid-0032"].nil? }
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
-                }
- 
-            puts ""
-            puts "thread | hours *"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
- 
-            if input == "thread" then
-                thread = NxCollections::interactivelyIssueNewOrNull()
-                next if thread.nil?
-                puts JSON.pretty_generate(thread)
-                next
-            end
- 
-            if input.start_with?("hours") then
-                item = store.get(input[5, 99].strip.to_i)
-                next if item.nil?
-                hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-                Items::setAttribute(item["uuid"], "hours", hours)
-                next
-            end
- 
-            puts ""
             CommandsAndInterpreters::interpreter(input, store)
         }
     end

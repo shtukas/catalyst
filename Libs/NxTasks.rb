@@ -34,13 +34,13 @@ class NxTasks
 
     # NxTasks::ratio(item)
     def self.ratio(item)
-        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours"].to_f/7)
+        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours-1905"].to_f/7)
     end
 
     # NxTasks::ratioString(item)
     def self.ratioString(item)
-        return "" if item["hours"].nil?
-        " (#{"%6.2f" % (100 * NxTasks::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        return "" if item["hours-1905"].nil?
+        " (#{"%6.2f" % (100 * NxTasks::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
     # NxTasks::toString(item)
@@ -50,7 +50,22 @@ class NxTasks
 
     # NxTasks::orphans()
     def self.orphans()
-        Items::mikuType("NxTask")
-            .select{|item| Catalyst::isOrphan(item) }
+        data = XCache::getOrNull("0.04768800735473633")
+        if data then
+            data = JSON.parse(data)
+            if (Time.new.to_i - data["unixtime"]) < 3600 then
+                return data["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
+            end
+        end
+
+        items = Items::mikuType("NxTask")
+                    .select{|item| Catalyst::isOrphan(item) }
+
+        XCache::set("0.04768800735473633", JSON.generate({
+            "unixtime" => Time.new.to_i,
+            "items" => items
+        }))
+
+        items
     end
 end

@@ -24,7 +24,7 @@ class TxCores
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "hours", hours)
+        Items::setAttribute(uuid, "hours-1905", hours)
         Items::itemOrNull(uuid)
     end
 
@@ -38,16 +38,16 @@ class TxCores
 
     # TxCores::ratio(item)
     def self.ratio(item)
-        if item["hours"].nil? then
-            item["hours"] = 1
+        if item["hours-1905"].nil? then
+            item["hours-1905"] = 1
         end
-        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours"].to_f/7)
+        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours-1905"].to_f/7)
     end
 
     # TxCores::ratioString(item)
     def self.ratioString(item)
-        return "" if item["hours"].nil?
-        " (#{"%6.2f" % (100 * TxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        return "" if item["hours-1905"].nil?
+        " (#{"%6.2f" % (100 * TxCores::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
     # TxCores::toString(item)
@@ -113,7 +113,7 @@ class TxCores
 
             puts ""
 
-            puts "todo | thread | pile | position * | sort | moves"
+            puts "todo | thread | pile | position * | sort | move * | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -136,6 +136,16 @@ class TxCores
                 Items::setAttribute(tx1["uuid"], "parentuuid-0032", tx1["uuid"])
                 position = Catalyst::interactivelySelectPositionInParent(tx1)
                 Items::setAttribute(tx1["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input.start_with?("move") then
+                listord = input[4, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                t2 = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+                next if t2.nil?
+                Items::setAttribute(i["uuid"], "parentuuid-0032", t2["uuid"])
                 next
             end
 
@@ -207,7 +217,7 @@ class TxCores
                 item = store.get(input[5, 99].strip.to_i)
                 next if item.nil?
                 hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-                Items::setAttribute(item["uuid"], "hours", hours)
+                Items::setAttribute(item["uuid"], "hours-1905", hours)
                 next
             end
  

@@ -27,7 +27,7 @@ class Transmutations
         end
         if item["mikuType"] == "NxOndate" and targetMikyType == "NxCollection" then
             hours = NxCollections::interactivelyDecideHoursOrNull()
-            Items::setAttribute(item["uuid"], "hours", hours)
+            Items::setAttribute(item["uuid"], "hours-1905", hours)
             Items::setAttribute(item["uuid"], "mikuType", "NxCollection")
             return
         end
@@ -45,7 +45,7 @@ class Transmutations
                 hours = NxCollections::interactivelyDecideHoursOrNull()
                 break if hours
             }
-            Items::setAttribute(item["uuid"], "hours", hours)
+            Items::setAttribute(item["uuid"], "hours-1905", hours)
             Items::setAttribute(item["uuid"], "mikuType", "TxCore")
             return
         end
