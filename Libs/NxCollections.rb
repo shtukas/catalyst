@@ -134,13 +134,13 @@ class NxCollections
 
             puts ""
 
-            puts "todo | pile | position * | sort | moves"
+            puts "task | pile | position * | sort | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "todo" then
+            if input == "task" then
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
