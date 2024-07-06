@@ -39,7 +39,8 @@ class Transmutations
             nx46 = Waves::makeNx46InteractivelyOrNull()
             return if nx46.nil?
             Items::setAttribute(item["uuid"], "nx46", nx46)
-            Items::setAttribute(item["uuid"], "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+            Items::setAttribute(item["uuid"], "lastDoneUnixtime", 0)
+            Items::setAttribute(item["uuid"], "lastDoneDateTime", "1970-01-01T00:00:00Z")
             Items::setAttribute(item["uuid"], "mikuType", "Wave")
             return
         end

@@ -119,7 +119,8 @@ class Waves
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "nx46", nx46)
-        Items::setAttribute(uuid, "lastDoneDateTime", "#{Time.new.strftime("%Y")}-01-01T00:00:00Z")
+        Items::setAttribute(uuid, "lastDoneUnixtime", 0)
+        Items::setAttribute(uuid, "lastDoneDateTime", "1970-01-01T00:00:00Z")
         Items::setAttribute(uuid, "interruption", interruption)
         Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
         Items::itemOrNull(uuid)
@@ -130,7 +131,7 @@ class Waves
 
     # Waves::toString(item)
     def self.toString(item)
-        ago = "done: #{((Time.new.to_i - DateTime.parse(item["lastDoneDateTime"]).to_time.to_i).to_f/86400).round(2)} days ago"
+        ago = "done: #{((Time.new.to_i - item["lastDoneUnixtime"]).to_f/86400).round(2)} days ago"
         interruption = item["interruption"] ? " (interruption)" : ""
         "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])}) (#{ago})#{interruption}"
     end
@@ -147,7 +148,7 @@ class Waves
         }
         Items::mikuType("Wave")
             .select{|item| isMuiItem.call(item) }
-            .sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
+            .sort{|w1, w2| w1["lastDoneUnixtime"] <=> w2["lastDoneUnixtime"] }
     end
 
     # Waves::muiItemsInterruption()

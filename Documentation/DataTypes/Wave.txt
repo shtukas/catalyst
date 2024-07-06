@@ -7,7 +7,9 @@ Wave :
     "description"      : description
 
     "nx46"             : Nx46 # Wave pattern
-    "lastDoneDateTime" : DateTime Iso 8601 UTC Zulu
+    "lastDoneUnixtime" : Integer
+    "lastDoneDateTime" : DateTime Iso 8601 UTC Zulu 
+                         not used in the program, only exists for expose courtesy
 
     "interruption"     : null or boolean, indicates if the item is interruption (priority)
 
