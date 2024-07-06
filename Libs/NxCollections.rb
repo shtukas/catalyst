@@ -53,9 +53,12 @@ class NxCollections
     # NxCollections::toString(item, context = nil)
     def self.toString(item, context = nil)
         if context == "thread-elements-listing" then
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) (#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
         end
-        "#{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
+        if context == "main-listing-1315" then
+            return "#{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
+        end
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
     end
 
     # NxCollections::itemsInCompletionOrder()

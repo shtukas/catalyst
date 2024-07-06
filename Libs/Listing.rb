@@ -101,8 +101,11 @@ class Listing
 
     # Listing::position(item)
     def self.position(item)
+        if item["mikuType"] == "NxAnniversary" then
+            return 0.2
+        end
         if item["mikuType"] == "PhysicalTarget" then
-            return 0.0
+            return 0.4
         end
         if item["mikuType"] == "Wave" and item["interruption"] then
             return 0.05
@@ -129,7 +132,7 @@ class Listing
         if item["mikuType"] == "TxCore" then
             return TxCores::ratio(item)
         end
-        raise "Listing::position: I do not know how to flight path: #{item}"
+        raise "Listing::position: I do not know how to position: #{item}"
     end
 
     # Listing::items()
@@ -278,7 +281,7 @@ class Listing
                 }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
+                    line = Listing::toString2(store, item, "main-listing-1315")
                     status = spacecontrol.putsline line
                     break if !status
                 }

@@ -17,16 +17,20 @@ class Transmutations
     # Transmutations::transmute2(item, targetMikyType)
     def self.transmute2(item, targetMikyType)
         if item["mikuType"] == "NxOndate" and targetMikyType == "NxTask" then
-            thread = NxCollections::interactivelySelectOneOrNull()
-            return if thread.nil?
-            position = Catalyst::interactivelySelectPositionInParent(thread)
-            Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(parent)
+            return if parent.nil?
+            position = Catalyst::interactivelySelectPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             Items::setAttribute(item["uuid"], "global-positioning", position)
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikyType == "NxCollection" then
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(parent)
+            return if parent.nil?
+            position = Catalyst::interactivelySelectPositionInParent(parent)
             hours = NxCollections::interactivelyDecideHoursOrNull()
+            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             Items::setAttribute(item["uuid"], "hours-1905", hours)
             Items::setAttribute(item["uuid"], "mikuType", "NxCollection")
             return

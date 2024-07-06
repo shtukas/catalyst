@@ -185,9 +185,6 @@ class CommandsAndInterpreters
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
             Items::setAttribute(item["uuid"], "hours-1905", hours)
-            if item["mikuType"] != "NxCollection" then
-                Items::setAttribute(item["uuid"], "mikuType", "NxCollection")
-            end
             return
         end
 

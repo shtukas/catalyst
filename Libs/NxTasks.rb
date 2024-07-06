@@ -43,8 +43,11 @@ class NxTasks
         " (#{"%6.2f" % (100 * NxTasks::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
-    # NxTasks::toString(item)
-    def self.toString(item)
+    # NxTasks::toString(item, context)
+    def self.toString(item, context = nil)
+        if context == "main-listing-1315" then
+            return "#{NxTasks::icon(item)} #{item["description"]}#{NxTasks::ratioString(item)}"
+        end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTasks::icon(item)} #{item["description"]}#{NxTasks::ratioString(item)}"
     end
 

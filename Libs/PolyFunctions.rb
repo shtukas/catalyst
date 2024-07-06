@@ -70,7 +70,7 @@ class PolyFunctions
             return item["description"]
         end
         if item["mikuType"] == "NxTask" then
-            return NxTasks::toString(item)
+            return NxTasks::toString(item, context)
         end
         if item["mikuType"] == "NxCollection" then
             return NxCollections::toString(item, context)
