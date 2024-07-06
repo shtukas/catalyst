@@ -102,15 +102,14 @@ class Listing
     # Listing::position(item)
     def self.position(item)
         if item["mikuType"] == "NxAnniversary" then
-            return 0.2
+            return 0.1
         end
         if item["mikuType"] == "PhysicalTarget" then
-            return 0.4
+            return 0.2
         end
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return 0.05
+            return 0.3
         end
-
         if item["mikuType"] == "NxOndate" then
             return 0.4
         end
@@ -118,19 +117,19 @@ class Listing
             return 0.5
         end
         if item["mikuType"] == "NxBackup"then
-            return 0.55
+            return 0.6
         end
         if item["mikuType"] == "NxTask" then
-            return 0.66
+            return 0.7
         end
         if item["mikuType"] == "Wave" and !item["interruption"] then
-            return 0.75
+            return 0.8
         end
         if item["mikuType"] == "NxBufferInMonitor" then
-            return NxBufferInMonitors::ratio()
+            return 0.5 + 0.5 * NxBufferInMonitors::ratio()
         end
         if item["mikuType"] == "TxCore" then
-            return TxCores::ratio(item)
+            return 0.5 + 0.5 * TxCores::ratio(item)
         end
         raise "Listing::position: I do not know how to position: #{item}"
     end
