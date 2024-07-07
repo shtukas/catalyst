@@ -63,8 +63,8 @@ class PolyActions
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
-    # PolyActions::done(item, confirmed = false)
-    def self.done(item, confirmed = false)
+    # PolyActions::done(item)
+    def self.done(item)
 
         NxBalls::stop(item)
         Items::setAttribute(item["uuid"], "flightpath-1712", nil)
@@ -103,7 +103,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if !Catalyst::children(item).empty? then
+                puts "I cannot delete '#{PolyFunctions::toString(item).green}' because it has some direct children"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
             return
@@ -115,7 +120,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxOndate" then
-            if confirmed or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
             return
@@ -127,7 +132,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if confirmed or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
             return

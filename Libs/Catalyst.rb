@@ -155,52 +155,57 @@ class Catalyst
         ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
     end
 
-    # Catalyst::insertionPositions(parent, position, count)
-    def self.insertionPositions(parent, position, count)
-        children = Catalyst::children(parent)
-        if children.empty? then
-            return (1..count).to_a
-        end
-        childrens1 = children.select{|item| (item["global-positioning"] || 0) < position }
-        childrens2 = children.select{|item| (item["global-positioning"] || 0) > position }
-        if childrens1.empty? and childrens2.empty? then
-            # this should not happen
-            raise "(error: cb689a8d-5fb9-4b8d-80b7-1f30ecb4edca; parent: #{parent}, position: #{position}, count: #{count})"
-        end
-        if childrens1.size > 0 and childrens2.size == 0 then
-            x = position.ceil
-            return (x..x+count-1).to_a
-        end
-        if childrens1.size == 0 and childrens2.size > 0 then
-            x = position.floor - count
-            return (x..x+count-1).to_a
-        end
-        if childrens1.size > 0 and childrens2.size > 0 then
-            x1 = childrens1.map{|item| item["global-positioning"] || 0 }.max
-            x2 = childrens2.map{|item| item["global-positioning"] || 0 }.min
-            spread = 0.8*(x2 - x1)
-            shift  = 0.1*(x2 - x1)
-            return (0..count-1).to_a.map{|x| x1 + shift + spread*x.to_f/(count) }
-        end
-    end
-
-    # Catalyst::interactivelyInsertAtPosition(parent, position)
-    def self.interactivelyInsertAtPosition(parent, position)
+    # Catalyst::interactivelyGetLinesParentToChildren()
+    def self.interactivelyGetLinesParentToChildren()
         text = CommonUtils::editTextSynchronously("").strip
-        return if text == ""
-        descriptions = text.lines.map{|line| line.strip }.select{|line| line != "" }
-        positions = Catalyst::insertionPositions(parent, position, descriptions.size)
-        descriptions.zip(positions).each{|description, position|
-            task = NxTasks::descriptionToTask1(parent, SecureRandom.hex, description)
-            puts JSON.pretty_generate(task)
-            Items::setAttribute(task["uuid"], "global-positioning", position)
-        }
+        return [] if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .select{|line| line != "" }
+            .reverse
     end
 
-    # Catalyst::interactivelyPile(thread)
-    def self.interactivelyPile(thread)
-        position = Catalyst::topPositionInParent(thread) - 1
-        Catalyst::interactivelyInsertAtPosition(thread, position)
+    # Catalyst::interactivelyPile(target)
+    def self.interactivelyPile(target)
+        if target["mikuType"] == "NxTask" then
+            # We are making a task as child of another task, which is fine
+            # We we are going this recursively
+            cursor = target
+            Catalyst::interactivelyGetLinesParentToChildren()
+                .each{|description|
+                    item = NxTasks::descriptionToTask1(description)
+                    Items::setAttribute(item["uuid"], "parentuuid-0032", cursor["uuid"])
+                    cursor = item
+                }
+            return
+        end
+
+        if target["mikuType"] == "NxCollection" then
+            collection = target
+            Catalyst::interactivelyGetLinesParentToChildren()
+                .reverse
+                .each_with_index{|description, i|
+                    item = NxTasks::descriptionToTask1(description)
+                    Items::setAttribute(item["uuid"], "parentuuid-0032", collection["uuid"])
+                    Items::setAttribute(item["uuid"], "global-positioning", i)
+                }
+            return
+        end
+
+        if target["mikuType"] == "TxCore" then
+            collection = target
+            Catalyst::interactivelyGetLinesParentToChildren()
+                .reverse
+                .each_with_index{|description, i|
+                    item = NxTasks::descriptionToTask1(description)
+                    Items::setAttribute(item["uuid"], "parentuuid-0032", collection["uuid"])
+                    Items::setAttribute(item["uuid"], "global-positioning", i)
+                }
+            return
+        end
+
+        raise "(error: bc67f1ee-b3b1) cannot Catalyst::interactivelyPile for target #{target}"
     end
 
     # Catalyst::interactivelySelectPositionInParent(parent)
@@ -232,9 +237,16 @@ class Catalyst
         end
         elements = [context] + Catalyst::childrenInGlobalPositioningOrder(context)
         element = LucilleCore::selectEntityFromListOfEntitiesOrNull("element", elements, lambda{|item| PolyFunctions::toString(item) })
+        if element.nil? then
+            return context
+        end
         if element["uuid"] == context["uuid"] then
             return context
         end
-        Catalyst::interactivelySelectOneHierarchyParentOrNull(element)
+        if element["mikuType"] == "NxCollection" then
+            # A collection which is not the context, and therefore was a child of the context
+            return Catalyst::interactivelySelectOneHierarchyParentOrNull(element)
+        end
+        Catalyst::interactivelySelectOneHierarchyParentOrNull(context)
     end
 end

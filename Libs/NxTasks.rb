@@ -14,13 +14,13 @@ class NxTasks
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::descriptionToTask1(parent, uuid, description)
-    def self.descriptionToTask1(parent, uuid, description)
+    # NxTasks::descriptionToTask1(description)
+    def self.descriptionToTask1(description)
+        uuid = SecureRandom.hex
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "parentuuid-0032", parent["uuid"])
         Items::itemOrNull(uuid)
     end
 
@@ -57,7 +57,10 @@ class NxTasks
         if data then
             data = JSON.parse(data)
             if (Time.new.to_i - data["unixtime"]) < 3600 then
-                return data["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
+                return data["items"]
+                        .map{|item| Items::itemOrNull(item["uuid"]) }
+                        .compact
+                        .select{|item| item["parentuuid-0032"].nil? }
             end
         end
 

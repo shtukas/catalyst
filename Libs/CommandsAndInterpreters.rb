@@ -92,7 +92,9 @@ class CommandsAndInterpreters
             return if item.nil?
             parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
             return if parent.nil?
-            selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"]) }
+            position = Catalyst::interactivelySelectPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
+            Items::setAttribute(item["uuid"], "global-positioning", position)
             return
         end
 
@@ -100,24 +102,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] != "NxTask" and item["mikuType"] != "NxCollection" then
-                puts "The item that you pile on need to be a NxTask or a NxCollection"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if item["parentuuid-0032"].nil? then
-                puts "The item that you pile on need to have a parent"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            parent = Items::itemOrNull(item["parentuuid-0032"])
-            if parent.nil? then
-                puts "This item has a parentuuid-0032 but I could not retrieve the corresponding parent. If you continue I am going to reset the parentuuid-0032"
-                LucilleCore::pressEnterToContinue()
-                Items::setAttribute(item["uuid"], "parentuuid-0032", nil)
-                return
-            end
-            Catalyst::interactivelyInsertAtPosition(parent, item["global-positioning"]-1)
+            Catalyst::interactivelyPile(item)
             return
         end
 
