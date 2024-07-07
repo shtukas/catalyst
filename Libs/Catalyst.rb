@@ -123,9 +123,6 @@ class Catalyst
 
     # Catalyst::children(parent)
     def self.children(parent)
-        if parent["uuid"] == "b83d12b6-9607-482f-8e89-239c1db49160" then
-            return NxTasks::orphans()
-        end
         Items::items()
             .select{|item| item["parentuuid-0032"] == parent["uuid"] }
     end

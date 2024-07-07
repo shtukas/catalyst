@@ -11,8 +11,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        # Types
-
+        # ------------------------------------------------
         # Special Features
 
         if item["parentuuid-0032"] then
@@ -29,11 +28,14 @@ class PolyFunctions
             end
         end
 
+        # ------------------------------------------------
+        # Types
+
         if item["mikuType"] == "NxTask" and item["parentuuid-0032"].nil? then
             # orphan todos feeding the parent thread
             accounts << {
-                "description" => "parent thread for orphan todos",
-                "number"      => "b83d12b6-9607-482f-8e89-239c1db49160"
+                "description" => "infinity for orphan items",
+                "number"      => "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b"
             }
         end
 
