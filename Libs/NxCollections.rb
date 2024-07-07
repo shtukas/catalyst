@@ -125,8 +125,7 @@ class NxCollections
             puts ""
 
             children = Catalyst::childrenInGlobalPositioningOrder(thread)
-            uuids1 = ["85e2e9fe-ef3d-4f75-9330-2804c4bcd52b", "7cf30bc6-d791-4c0c-b03f-16c728396f22"]
-            if uuids1.include?(thread["uuid"]) then
+            if thread["uuid"] == TxCores::infinityuuid() then
                 children = children.first(40)
             end
             children

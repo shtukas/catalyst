@@ -83,6 +83,19 @@ class TxCores
         ].flatten
     end
 
+    # TxCores::infinityuuid()
+    def self.infinityuuid()
+        "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b"
+    end
+
+    # TxCores::childrenForInfinityPrefix()
+    def self.childrenForInfinityPrefix()
+        orphans = NxTasks::orphans()
+                    .sort_by{|item| item["unixtime"] }
+        return orphans if orphans.size > 0
+        TxCores::childrenForPrefix(Items::itemOrNull(TxCores::infinityuuid())) # infinity
+    end
+
     # ------------------
     # Ops
 

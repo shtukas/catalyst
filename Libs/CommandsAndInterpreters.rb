@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | >> (transmute)",
+            "misc          : search | speed | commands | edit <n> | > (move default) | >> (transmute default)",
         ].join("\n")
     end
 
@@ -26,18 +26,15 @@ class CommandsAndInterpreters
             end
         end
 
-        # This is to help with core: To Be Sorted
         if Interpreting::match(">", input) then
-            item = store.getDefault()
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
-            thread = NxCollections::interactivelySelectOneOrNull()
-            return if thread.nil?
-            Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-            position = Catalyst::interactivelySelectPositionInParent(thread)
-            Items::setAttribute(item["uuid"], "global-positioning", position)
-            parent = Catalyst::parentOrNull(item)
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
             return if parent.nil?
-            Bank1::put(parent["uuid"], CommonUtils::today(), 60)
+            position = Catalyst::interactivelySelectPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
+            Items::setAttribute(item["uuid"], "global-positioning", position)
             return
         end
 
@@ -53,14 +50,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubledots(item)
-            return
-        end
-
-        if Interpreting::match("transmute *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute1(item)
             return
         end
 
@@ -83,6 +72,14 @@ class CommandsAndInterpreters
             cx11 = Cx11s::architectNewOrNull()
             return if cx11.nil?
             Cx11s::setCondition(item, cx11)
+            return
+        end
+
+        if Interpreting::match("transmute *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutations::transmute1(item)
             return
         end
 

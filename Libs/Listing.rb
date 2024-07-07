@@ -147,7 +147,6 @@ class Listing
             NxFloats::listingItems(),
             NxBufferInMonitors::listingItems(),
             Waves::muiItemsNotInterruption(),
-            NxTasks::orphans(),
             TxCores::listingItems()
         ]
             .flatten
