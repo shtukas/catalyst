@@ -125,9 +125,6 @@ class Listing
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return 0.8
         end
-        if item["mikuType"] == "NxBufferInMonitor" then
-            return 0.5 + 0.5 * NxBufferInMonitors::ratio()
-        end
         if item["mikuType"] == "TxCore" then
             return 0.5 + 0.5 * TxCores::ratio(item)
         end
@@ -145,7 +142,6 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxFloats::listingItems(),
-            NxBufferInMonitors::listingItems(),
             Waves::muiItemsNotInterruption(),
             TxCores::listingItems()
         ]
@@ -187,7 +183,6 @@ class Listing
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
         spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
-        spot.contest_entry("NxBufferInMonitors::listingItems()", lambda{ NxBufferInMonitors::listingItems() })
         spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
         spot.end_contest()
 

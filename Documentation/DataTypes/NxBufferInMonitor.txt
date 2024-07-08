@@ -1,4 +1,0 @@
-
-NxBufferInMonitor:
-    - uuid         : String
-    - mikuType     : "NxBufferInMonitor"

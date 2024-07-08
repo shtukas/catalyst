@@ -35,7 +35,15 @@ class PolyFunctions
             # orphan todos feeding the parent thread
             accounts << {
                 "description" => "infinity for orphan items",
-                "number"      => "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b"
+                "number"      => TxCores::infinityuuid()
+            }
+        end
+
+        if item["mikuType"] == "NxBufferInItem" then
+            # orphan todos feeding the parent thread
+            accounts << {
+                "description" => "infinity for bufferIn items",
+                "number"      => TxCores::infinityuuid()
             }
         end
 
@@ -83,8 +91,8 @@ class PolyFunctions
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
         end
-        if item["mikuType"] == "NxBufferInMonitor" then
-            return NxBufferInMonitors::toString(item)
+        if item["mikuType"] == "NxBufferInItem" then
+            return NxBufferInItems::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)

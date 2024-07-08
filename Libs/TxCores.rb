@@ -90,6 +90,10 @@ class TxCores
 
     # TxCores::childrenForInfinityPrefix()
     def self.childrenForInfinityPrefix()
+        bufferIn = NxBufferInItems::items()
+                    .sort_by{|item| item["location"] }
+        return bufferIn if bufferIn.size > 0
+
         orphans = NxTasks::orphans()
                     .sort_by{|item| item["unixtime"] }
         return orphans if orphans.size > 0

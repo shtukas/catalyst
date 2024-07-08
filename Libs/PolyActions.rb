@@ -56,7 +56,22 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBufferInMonitor" then
+        if item["mikuType"] == "NxBufferInItem" then
+            location = item["location"]
+            if File.directory?(location) then
+                puts "opening '#{location}'"
+                system("open '#{location}'")
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if File.file?(location) then
+                puts "exporting '#{location}'"
+                desktopExport = "/Users/pascal/Desktop/catalyst-#{SecureRandom.hex(2)}"
+                FileUtils::mkdir(desktopExport)
+                LucilleCore::copyFileSystemLocation(location, desktopExport)
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             return
         end
 
@@ -138,8 +153,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBufferInMonitor" then
-            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+        if item["mikuType"] == "NxBufferInItem" then
+            LucilleCore::removeFileSystemLocation(item["location"])
             return
         end
 
@@ -236,7 +251,13 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBufferInMonitor" then
+        if item["mikuType"] == "NxBufferInItem" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxBalls::stop(item)
+                Items::destroy(item["uuid"])
+            end
             return
         end
 
@@ -310,7 +331,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBufferInMonitor" then
+        if item["mikuType"] == "NxBufferInItem" then
+            Items::destroy(item["uuid"])
             return
         end
 
