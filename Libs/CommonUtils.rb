@@ -74,6 +74,19 @@ class CommonUtils
         (0..diff).map{|i| CommonUtils::levenshteinDistance(str1, str2[i, str1.size]) }.min
     end
 
+    # CommonUtils::extract_digits(input_string)
+    def self.extract_digits(input_string)
+      # Use scan method with regex to find all digits
+      digits = input_string.scan(/\d/)
+      # Join the array of digits into a single string
+      digits.join
+    end
+
+    # CommonUtils::uuidToUnitIntervalReal(uuid)
+    def self.uuidToUnitIntervalReal(uuid)
+        "0.#{extract_digits(uuid)}".to_f
+    end
+
     # ----------------------------------------------------
     # Date Routines
 

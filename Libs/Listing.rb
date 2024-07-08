@@ -99,8 +99,8 @@ class Listing
         line
     end
 
-    # Listing::position(item)
-    def self.position(item)
+    # Listing::position1(item)
+    def self.position1(item)
         if item["mikuType"] == "NxAnniversary" then
             return 0.1
         end
@@ -131,6 +131,11 @@ class Listing
         raise "Listing::position: I do not know how to position: #{item}"
     end
 
+    # Listing::position2(item)
+    def self.position2(item)
+        Listing::position1(item) + 0.001*CommonUtils::uuidToUnitIntervalReal(item["uuid"])
+    end
+
     # Listing::items()
     def self.items()
         [
@@ -147,7 +152,7 @@ class Listing
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-            .sort_by{|item| Listing::position(item) }
+            .sort_by{|item| Listing::position2(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
