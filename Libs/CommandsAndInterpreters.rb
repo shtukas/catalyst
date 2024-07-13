@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push (<n>) # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
@@ -331,23 +331,15 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("push", input) then
-            item = store.getDefault()
-            return if item.nil?
-            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            return if unixtime.nil?
-            NxBalls::stop(item)
-            DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-            return
-        end
-
         if Interpreting::match("push *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            puts "push '#{PolyFunctions::toString(item).green}'"
             unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
             return if unixtime.nil?
             NxBalls::stop(item)
+            puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
             return
         end

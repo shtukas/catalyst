@@ -51,6 +51,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "TxCore" then
+            TxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -66,7 +71,7 @@ class PolyActions
             end
             if File.file?(location) then
                 puts "exporting '#{location}'"
-                desktopExport = "/Users/pascal/Desktop/catalyst-#{SecureRandom.hex(2)}"
+                desktopExport = "#{Config::userHomeDirectory()}/Desktop/catalyst-#{SecureRandom.hex(2)}"
                 FileUtils::mkdir(desktopExport)
                 LucilleCore::copyFileSystemLocation(location, desktopExport)
                 LucilleCore::pressEnterToContinue()
@@ -143,6 +148,10 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
             return
         end
 

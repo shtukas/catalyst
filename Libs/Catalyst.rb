@@ -141,9 +141,9 @@ class Catalyst
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        thread = NxCollections::interactivelySelectOneOrNull()
-        return if thread.nil?
-        Items::setAttribute(item["uuid"], "donation-1601", thread["uuid"])
+        target = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+        return if target.nil?
+        Items::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end
 
     # Catalyst::topPositionInParent(parent)

@@ -12,7 +12,7 @@ class NxBufferInItems
         NxBufferInItems::locations()
             .map{|location|
                 {
-                    "uuid"     => location,
+                    "uuid"     => Digest::SHA1.hexdigest("a2531d0e-e411-44b8-8de4-999f0d7790e2:#{location}"),
                     "mikuType" => "NxBufferInItem",
                     "location" => location
                 }
