@@ -149,7 +149,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = NxCollections::interactivelySelectOneOrNull()
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -175,7 +175,7 @@ class CommandsAndInterpreters
             return if thread.nil?
             puts JSON.pretty_generate(thread)
             puts "select parent"
-            parent = NxCollections::interactivelySelectOneOrNull()
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
             return if parent.nil?
             Items::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -207,10 +207,10 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            thread = NxCollections::interactivelySelectOneOrNull()
-            return if thread.nil?
-            Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-            position = Catalyst::interactivelySelectPositionInParent(thread)
+            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+            return if parent.nil?
+            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
+            position = Catalyst::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "global-positioning", position)
             return
         end

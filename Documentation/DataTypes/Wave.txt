@@ -16,15 +16,24 @@ Wave :
     "onlyOnDays"       : null or Array[week days names lowercase english] 
                          Indicates on which days the wave can show up
 
-Nx46 {
-    "type"  : Nx46Type
-    "value" : Nx46Value
+Nx46 
+{
+    "type"  : "sticky"
+    "value" : Integer
 }
-
-Nx46Type                        Nx46Value
-
-"sticky"                        Integer
-"every-n-hours"                 Float
-"every-n-days"                  Float
-"every-this-day-of-the-week"    'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'
-"every-this-day-of-the-month"   String, length 2, Day Number
+{
+    "type"  : "every-n-hours"
+    "value" : Float
+}
+{
+    "type"  : "every-n-days"
+    "value" : Float
+}
+{
+    "type"  : "every-this-day-of-the-week"
+    "value" : 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'
+}
+{
+    "type"  : "every-this-day-of-the-month"
+    "value" : String, length 2, Day Number
+}

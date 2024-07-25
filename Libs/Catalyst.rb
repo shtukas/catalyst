@@ -185,7 +185,7 @@ class Catalyst
                 .each_with_index{|description, i|
                     item = NxTasks::descriptionToTask1(description)
                     Items::setAttribute(item["uuid"], "parentuuid-0032", collection["uuid"])
-                    Items::setAttribute(item["uuid"], "global-positioning", i)
+                    Items::setAttribute(item["uuid"], "global-positioning", Catalyst::topPositionInParent(collection) - 1)
                 }
             return
         end
@@ -197,7 +197,7 @@ class Catalyst
                 .each_with_index{|description, i|
                     item = NxTasks::descriptionToTask1(description)
                     Items::setAttribute(item["uuid"], "parentuuid-0032", collection["uuid"])
-                    Items::setAttribute(item["uuid"], "global-positioning", i)
+                    Items::setAttribute(item["uuid"], "global-positioning", Catalyst::topPositionInParent(collection) - 1)
                 }
             return
         end
@@ -225,8 +225,8 @@ class Catalyst
         position
     end
 
-    # Catalyst::interactivelySelectOneHierarchyParentOrNull(context)
-    def self.interactivelySelectOneHierarchyParentOrNull(context)
+    # Catalyst::interactivelySelectOneHierarchyParentOrNull(context = nil)
+    def self.interactivelySelectOneHierarchyParentOrNull(context = nil)
         if context.nil? then
             core = TxCores::interactivelySelectOneOrNull()
             return nil if core.nil?

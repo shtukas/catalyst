@@ -67,11 +67,6 @@ class NxCollections
             .sort_by{|item| NxCollections::ratio(item) }
     end
 
-    # NxCollections::interactivelySelectOneOrNull()
-    def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxCollections::itemsInCompletionOrder(), lambda{|item| PolyFunctions::toString(item) })
-    end
-
     # NxCollections::numberOfChildrenWithHourCaching(parent)
     def self.numberOfChildrenWithHourCaching(parent)
         # data:
@@ -177,9 +172,9 @@ class NxCollections
             if input == "moves" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 next if selected.empty?
-                t2 = NxCollections::interactivelySelectOneOrNull()
-                next if t2.nil?
-                selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", t2["uuid"]) }
+                parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+                next if parent.nil?
+                selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"]) }
                 next
             end
 
@@ -189,7 +184,7 @@ class NxCollections
 
     # NxCollections::move(item)
     def self.move(item)
-        thread = NxCollections::interactivelySelectOneOrNull()
+        thread = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
         return if thread.nil?
         position = Catalyst::interactivelySelectPositionInParent(thread)
         Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
