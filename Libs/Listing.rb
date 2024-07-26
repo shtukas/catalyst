@@ -99,43 +99,6 @@ class Listing
         line
     end
 
-    # Listing::position1(item)
-    def self.position1(item)
-        if item["mikuType"] == "NxAnniversary" then
-            return 0.1
-        end
-        if item["mikuType"] == "PhysicalTarget" then
-            return 0.2
-        end
-        if item["mikuType"] == "Wave" and item["interruption"] then
-            return 0.3
-        end
-        if item["mikuType"] == "NxOndate" then
-            return 0.4
-        end
-        if item["mikuType"] == "NxFloat" then
-            return 0.5
-        end
-        if item["mikuType"] == "NxBackup"then
-            return 0.6
-        end
-        if item["mikuType"] == "NxTask" then
-            return 0.7
-        end
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            return 0.8
-        end
-        if item["mikuType"] == "TxCore" then
-            return 0.5 + 0.5 * TxCores::ratio(item)
-        end
-        raise "Listing::position: I do not know how to position: #{item}"
-    end
-
-    # Listing::position2(item)
-    def self.position2(item)
-        Listing::position1(item) + 0.001*CommonUtils::uuidToUnitIntervalReal(item["uuid"])
-    end
-
     # Listing::items()
     def self.items()
         [
@@ -147,12 +110,13 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             NxFloats::listingItems(),
-            Waves::muiItemsNotInterruption(),
-            TxCores::listingItems()
+            Waves::muiItemsNotInterruption1(),
+            NxMiniProjects::listingItems(),
+            TxCores::listingItems(),
+            Waves::muiItemsNotInterruption2(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
-            .sort_by{|item| Listing::position2(item) }
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected

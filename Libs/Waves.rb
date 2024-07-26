@@ -158,8 +158,15 @@ class Waves
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
-    # Waves::muiItemsNotInterruption()
-    def self.muiItemsNotInterruption()
+    # Waves::muiItemsNotInterruption1()
+    def self.muiItemsNotInterruption1()
+        Waves::listingItems()
+            .select{|item| !item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
+    end
+
+    # Waves::muiItemsNotInterruption2()
+    def self.muiItemsNotInterruption2()
         Waves::listingItems()
             .select{|item| !item["interruption"] }
             .sort_by{|item| item["lastDoneUnixtime"] }

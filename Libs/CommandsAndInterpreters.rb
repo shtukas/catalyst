@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | > (move default) | >> (transmute default)",
+            "misc          : search | speed | commands | edit <n> | > (move default)",
         ].join("\n")
     end
 
@@ -142,6 +142,14 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull()
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            return
+        end
+
+        if Interpreting::match("mini *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxMiniProjects::transformToMini(item)
             return
         end
 

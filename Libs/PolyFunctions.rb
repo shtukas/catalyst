@@ -91,6 +91,9 @@ class PolyFunctions
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)
         end
+        if item["mikuType"] == "NxMiniProject" then
+            return NxMiniProjects::toString(item)
+        end
         if item["mikuType"] == "NxBufferInItem" then
             return NxBufferInItems::toString(item)
         end

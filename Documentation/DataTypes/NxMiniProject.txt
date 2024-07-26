@@ -1,0 +1,8 @@
+
+NxMiniProject:
+    - uuid            : String
+    - mikuType        : "NxMiniProject"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - parentuuid-0032 : optional, uuid of a thread

@@ -161,6 +161,7 @@ require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
 require_relative "NxCollections.rb"
 require_relative "NxBufferInItems.rb"
+require_relative "NxMiniProjects.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
