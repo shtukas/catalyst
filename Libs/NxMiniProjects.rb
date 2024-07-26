@@ -11,7 +11,7 @@ class NxMiniProjects
 
     # NxMiniProjects::toString(item)
     def self.toString(item)
-        "#{NxMiniProjects::icon(item)} #{item["description"]}"
+        "#{NxMiniProjects::icon(item)} (#{"%6.3f" % Bank1::recoveredAverageHoursPerDay(item["uuid"])}) #{item["description"]}"
     end
 
     # NxMiniProjects::shouldDisplay()
