@@ -47,6 +47,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxMiniProject" then
+            accounts << {
+                "description" => "NxMiniProject (counter)",
+                "number"      => "FEF32089-A7B8-4ADF-8565-B8224E405287"
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

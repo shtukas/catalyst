@@ -31,6 +31,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxMiniProject" then
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -87,7 +92,6 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "flightpath-1712", nil)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
@@ -114,6 +118,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
+            return
+        end
+
+        if item["mikuType"] == "NxMiniProject" then
             return
         end
 
@@ -201,6 +209,12 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxMiniProject" then
+            NxBalls::start(item)
+            PolyActions::access(item)
             return
         end
 
@@ -313,6 +327,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxMiniProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

@@ -11,21 +11,10 @@ Cross types conventions (all optional):
     - donation-1601       : String
     - parentuuid-0032     : uuid of the parent
     - condition-0903      : Cx11
-    - flightpath-1712     : Fx17
     - hours-1905          : Float # listing priotirisation, optional except for TxCores
 
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
-
-Fx17
-{
-    "type"     => "fixed"
-    "position" => 0.1
-}
-{
-    "type"          => "wave-non-interruption"
-    "startUnixtime" => Unixtime
-}
 
 Cx11 {
     name  : String

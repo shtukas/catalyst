@@ -20,7 +20,6 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
-                Items::setAttribute(item["uuid"], "flightpath-1712", nil)
                 DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
                 return
             end

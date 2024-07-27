@@ -16,7 +16,7 @@ class NxMiniProjects
 
     # NxMiniProjects::shouldDisplay()
     def self.shouldDisplay()
-        true
+        Bank1::recoveredAverageHoursPerDay("FEF32089-A7B8-4ADF-8565-B8224E405287") < 2
     end
 
     # NxMiniProjects::listingItems()
