@@ -1,6 +1,19 @@
 
 class NxMiniProjects
 
+    # NxMiniProjects::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
+        uuid = SecureRandom.uuid
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return if description == ""
+        Items::itemInit(uuid, "NxMiniProject")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::itemOrNull(uuid)
+    end
+
     # ------------------
     # Data
 
@@ -23,10 +36,14 @@ class NxMiniProjects
     def self.listingItems()
         return [] if !NxMiniProjects::shouldDisplay()
         Items::mikuType("NxMiniProject")
+            .select{|item| Listing::listable(item) }
             .sort_by{|item| item["unixtime"] }
             .take(3)
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
+
+    # ------------------
+    # Operations
 
     # NxMiniProjects::transformToMini(item)
     def self.transformToMini(item)

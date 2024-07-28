@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | > (move default)",
@@ -258,6 +258,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("mini", input) then
+            NxMiniProjects::interactivelyIssueNewOrNull()
             return
         end
 
