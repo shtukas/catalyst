@@ -28,6 +28,16 @@ class NxOndates
         Items::itemOrNull(uuid)
     end
 
+    # NxOndates::interactivelyIssueAtTodayFromDescription(description)
+    def self.interactivelyIssueAtTodayFromDescription(description)
+        uuid = SecureRandom.uuid
+        Items::itemInit(uuid, "NxOndate")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", CommonUtils::today())
+        Items::setAttribute(uuid, "description", description)
+        Items::itemOrNull(uuid)
+    end
+
     # ------------------
     # Data
 

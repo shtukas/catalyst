@@ -7,10 +7,10 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini | pile",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | > (move default)",
+            "misc          : search | speed | commands | edit <n> | > (move default) | sort",
         ].join("\n")
     end
 
@@ -91,6 +91,33 @@ class CommandsAndInterpreters
             position = Catalyst::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             Items::setAttribute(item["uuid"], "global-positioning", position)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            items = Listing::items()
+            items = items.select{|item| Cx11s::itemShouldBeListed(item) }
+            items = Listing::applyListingOverridePosition(items)
+
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|item|
+                Items::setAttribute(item["uuid"], "listing-override-position-14", {
+                        "date" => CommonUtils::today(),
+                        "position" => Listing::getTopListingOverridePosition()-1
+                    })
+            }
+        end
+
+        if Interpreting::match("pile", input) then
+            Catalyst::interactivelyGetLinesParentToChildren()
+                .each{|description|
+                    item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
+                    Items::setAttribute(item["uuid"], "listing-override-position-14", {
+                        "date" => CommonUtils::today(),
+                        "position" => Listing::getTopListingOverridePosition()-1
+                    })
+                    cursor = item
+                }
             return
         end
 
@@ -267,8 +294,14 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("floats", input) then
-            floats = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
-            Catalyst::program2(floats)
+            items = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
+            Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("minis", input) then
+            items = Items::mikuType("NxMiniProject").sort_by{|item| item["unixtime"] }
+            Catalyst::program2(items)
             return
         end
 

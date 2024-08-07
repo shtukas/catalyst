@@ -101,7 +101,7 @@ class Listing
 
     # Listing::items()
     def self.items()
-        [
+        items = [
             DropBox::items(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
@@ -131,6 +131,17 @@ class Listing
         activeItems, nonActiveItems = items.partition{|item| NxBalls::itemIsActive(item) }
         runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
         runningItems + pausedItems + nonActiveItems
+    end
+
+    # Listing::applyListingOverridePosition(items)
+    def self.applyListingOverridePosition(items)
+        i1s, i2s = items.partition{|item| item["listing-override-position-14"] and item["listing-override-position-14"]["date"] == CommonUtils::today() }
+        i1s.sort_by{|item| item["listing-override-position-14"]["position"] } + i2s
+    end
+
+    # Listing::getTopListingOverridePosition()
+    def self.getTopListingOverridePosition()
+        ([0] + Listing::items().select{|item| item["listing-override-position-14"] and item["listing-override-position-14"]["date"] == CommonUtils::today()  }.map{|item| item["listing-override-position-14"]["position"] }).min
     end
 
     # -----------------------------------------
@@ -186,14 +197,6 @@ class Listing
         activeItems + pausedItems + items
     end
 
-    # Listing::main()
-    def self.main()
-        initialCodeTrace = CommonUtils::catalystTraceCode()
-        loop {
-            Listing::listing(initialCodeTrace)
-        }
-    end
-
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -233,7 +236,11 @@ class Listing
 
             spacecontrol.putsline ""
 
-            Prefix::addPrefix(NxBalls::activeItems() + items.select{|item| Cx11s::itemShouldBeListed(item) })
+            items = items.select{|item| Cx11s::itemShouldBeListed(item) }
+            items = Listing::applyListingOverridePosition(items)
+            items = NxBalls::activeItems() + items
+
+            Prefix::addPrefix(items)
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected
@@ -255,6 +262,14 @@ class Listing
             end
 
             CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # Listing::main()
+    def self.main()
+        initialCodeTrace = CommonUtils::catalystTraceCode()
+        loop {
+            Listing::listing(initialCodeTrace)
         }
     end
 end
