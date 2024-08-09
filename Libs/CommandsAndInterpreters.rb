@@ -437,7 +437,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("ondates", input) then
             elements = Items::mikuType("NxOndate").sort_by{|item| item["datetime"] }
-            Catalyst::program2(elements)
+            Catalyst::program2(elements, "ondates-listing")
             return
         end
 

@@ -122,6 +122,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxMiniProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
             return
         end
 

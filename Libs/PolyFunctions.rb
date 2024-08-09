@@ -93,7 +93,7 @@ class PolyFunctions
             return NxCollections::toString(item, context)
         end
         if item["mikuType"] == "NxOndate" then
-            return NxOndates::toString(item)
+            return NxOndates::toString(item, context)
         end
         if item["mikuType"] == "NxPool" then
             return NxPools::toString(item)

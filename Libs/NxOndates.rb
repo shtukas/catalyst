@@ -41,8 +41,11 @@ class NxOndates
     # ------------------
     # Data
 
-    # NxOndates::toString(item)
-    def self.toString(item)
+    # NxOndates::toString(item, context = nil)
+    def self.toString(item, context = nil)
+        if context == "ondates-listing" then
+            return "🗓️  (#{item["datetime"][0, 10]}) #{item["description"]}"
+        end
         "🗓️  #{item["description"]}"
     end
 
