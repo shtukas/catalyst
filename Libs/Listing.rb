@@ -133,15 +133,20 @@ class Listing
         runningItems + pausedItems + nonActiveItems
     end
 
+    # Listing::hasActiveListingOverridePosition(item)
+    def self.hasActiveListingOverridePosition(item)
+        item["listing-override-position-14"] and item["listing-override-position-14"]["date"] == CommonUtils::today()
+    end
+
     # Listing::applyListingOverridePosition(items)
     def self.applyListingOverridePosition(items)
-        i1s, i2s = items.partition{|item| item["listing-override-position-14"] and item["listing-override-position-14"]["date"] == CommonUtils::today() }
+        i1s, i2s = items.partition{|item| Listing::hasActiveListingOverridePosition(item) }
         i1s.sort_by{|item| item["listing-override-position-14"]["position"] } + i2s
     end
 
     # Listing::getTopListingOverridePosition()
     def self.getTopListingOverridePosition()
-        ([0] + Listing::items().select{|item| item["listing-override-position-14"] and item["listing-override-position-14"]["date"] == CommonUtils::today()  }.map{|item| item["listing-override-position-14"]["position"] }).min
+        ([0] + Listing::items().select{|item| Listing::hasActiveListingOverridePosition(item) }.map{|item| item["listing-override-position-14"]["position"] }).min
     end
 
     # -----------------------------------------
@@ -197,6 +202,22 @@ class Listing
         activeItems + pausedItems + items
     end
 
+    # Listing::injectSeparator1(items)
+    def self.injectSeparator1(items)
+        is1, is2 = items.partition{|item| Listing::hasActiveListingOverridePosition(item) }
+        if is1.empty? then
+            return items
+        end
+        [
+            is1,
+            {
+                "uuid" => SecureRandom.uuid,
+                "mikuType" => "NxSeparator1"
+            },
+            is2
+        ].flatten
+    end
+
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -239,6 +260,7 @@ class Listing
             items = items.select{|item| Cx11s::itemShouldBeListed(item) }
             items = Listing::applyListingOverridePosition(items)
             items = NxBalls::activeItems() + items
+            items = Listing::injectSeparator1(items)
 
             Prefix::addPrefix(items)
                 .reduce([]){|selected, item|

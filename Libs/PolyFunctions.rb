@@ -92,6 +92,9 @@ class PolyFunctions
         if item["mikuType"] == "NxCollection" then
             return NxCollections::toString(item, context)
         end
+        if item["mikuType"] == "NxSeparator1" then
+            return "✨"
+        end
         if item["mikuType"] == "NxOndate" then
             return NxOndates::toString(item, context)
         end

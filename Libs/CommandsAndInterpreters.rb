@@ -99,7 +99,7 @@ class CommandsAndInterpreters
             items = items.select{|item| Cx11s::itemShouldBeListed(item) }
             items = Listing::applyListingOverridePosition(items)
 
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items.take(20), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "listing-override-position-14", {
                         "date" => CommonUtils::today(),
