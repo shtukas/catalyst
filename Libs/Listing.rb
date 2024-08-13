@@ -149,6 +149,11 @@ class Listing
         ([0] + Listing::items().select{|item| Listing::hasActiveListingOverridePosition(item) }.map{|item| item["listing-override-position-14"]["position"] }).min
     end
 
+    # Listing::getBottomListingOverridePosition()
+    def self.getBottomListingOverridePosition()
+        ([0] + Listing::items().select{|item| Listing::hasActiveListingOverridePosition(item) }.map{|item| item["listing-override-position-14"]["position"] }).max
+    end
+
     # -----------------------------------------
     # Ops
 

@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | pick * | mini * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini | pile",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini | pile | puts",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | > (move default) | sort",
@@ -91,6 +91,28 @@ class CommandsAndInterpreters
             position = Catalyst::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             Items::setAttribute(item["uuid"], "global-positioning", position)
+            return
+        end
+
+        if Interpreting::match("pick *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if Listing::hasActiveListingOverridePosition(item)
+            Items::setAttribute(item["uuid"], "listing-override-position-14", {
+                "date" => CommonUtils::today(),
+                "position" => Listing::getBottomListingOverridePosition()+1
+            })
+            return
+        end
+
+        if Interpreting::match("puts", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
+            Items::setAttribute(item["uuid"], "listing-override-position-14", {
+                "date" => CommonUtils::today(),
+                "position" => Listing::getBottomListingOverridePosition()+1
+            })
             return
         end
 
