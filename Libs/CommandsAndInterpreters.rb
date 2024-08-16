@@ -7,10 +7,10 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | pick * | mini * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini | pile | puts",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | > (move default) | sort",
+            "misc          : search | speed | commands | edit <n> | > (move default) | @head <space separated list of indices, or *>",
         ].join("\n")
     end
 
@@ -106,23 +106,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("puts", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description: ")
-            item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
-            Items::setAttribute(item["uuid"], "listing-override-position-14", {
-                "date" => CommonUtils::today(),
-                "position" => Listing::getBottomListingOverridePosition()+1
-            })
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            items = Listing::items()
-            items = items.select{|item| Cx11s::itemShouldBeListed(item) }
-            items = Listing::applyListingOverridePosition(items)
-
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items.take(20), lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|item|
+        if input.start_with?("@head") then
+            indices = input[5, input.size].strip.split(' ').map{|i| i.strip }
+            items = indices.map{|i| 
+                if i == "*" then
+                    description = LucilleCore::askQuestionAnswerAsString("-> * description: ")
+                    NxOndates::interactivelyIssueAtTodayFromDescription(description)
+                else
+                    item = store.get(i.to_i)
+                    puts "-> #{PolyFunctions::toString(item)}"
+                    item
+                end
+            }
+            items.reverse.each{|item|
                 Items::setAttribute(item["uuid"], "listing-override-position-14", {
                         "date" => CommonUtils::today(),
                         "position" => Listing::getTopListingOverridePosition()-1
@@ -130,17 +126,24 @@ class CommandsAndInterpreters
             }
         end
 
-        if Interpreting::match("pile", input) then
-            Catalyst::interactivelyGetLinesParentToChildren()
-                .each{|description|
-                    item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
-                    Items::setAttribute(item["uuid"], "listing-override-position-14", {
+        if input.start_with?("@end") then
+            indices = input[4, input.size].strip.split(' ').map{|i| i.strip }
+            items = indices.map{|i| 
+                if i == "*" then
+                    description = LucilleCore::askQuestionAnswerAsString("-> * description: ")
+                    NxOndates::interactivelyIssueAtTodayFromDescription(description)
+                else
+                    item = store.get(i.to_i)
+                    puts "-> #{PolyFunctions::toString(item)}"
+                    item
+                end
+            }
+            items.each{|item|
+                Items::setAttribute(item["uuid"], "listing-override-position-14", {
                         "date" => CommonUtils::today(),
-                        "position" => Listing::getTopListingOverridePosition()-1
+                        "position" => Listing::getBottomListingOverridePosition()+1
                     })
-                    cursor = item
-                }
-            return
+            }
         end
 
         if Interpreting::match("pile *", input) then
