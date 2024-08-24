@@ -112,6 +112,6 @@ class NxBackups
         return "💾 #{item["description"]}" if period.nil?
         dueTime = NxBackups::dueTimeOrNull(item)
         return "💾 #{item["description"]}" if dueTime.nil?
-        "💾 #{item["description"]} (every #{period} days; due: #{Time.at(dueTime).utc.iso8601.gsub("T", " ")})"
+        "💾 #{item["description"]} (every #{period} days; due: #{Time.at(dueTime).utc.iso8601.gsub("T", " ")}, #{ ((Time.new.to_i-dueTime).to_f/86400).round(2) } days ago)"
     end
 end
