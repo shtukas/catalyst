@@ -153,12 +153,17 @@ class NxBalls
     # ---------------------------------
     # Data
 
-    # NxBalls::runningTime(item)
-    def self.runningTime(item)
+    # NxBalls::ballRunningTime(nxball)
+    def self.ballRunningTime(nxball)
+        Time.new.to_i - nxball["startunixtime"]
+    end
+
+    # NxBalls::itemRunningTimeOrZero(item)
+    def self.itemRunningTimeOrZero(item)
         return 0 if !NxBalls::itemIsRunning(item)
         nxball = NxBalls::getNxBallOrNull(item)
         return 0 if nxball.nil?
-        Time.new.to_i - nxball["startunixtime"]
+        NxBalls::ballRunningTime(item)
     end
 
     # NxBalls::nxBallToString(nxball)
@@ -202,5 +207,13 @@ class NxBalls
                 end
             }
             .compact
+    end
+
+    # NxBalls::shouldNotify()
+    def self.shouldNotify()
+        nxballs = NxBalls::all()
+                    .select{|nxball| nxball["type"] == "running" }
+                    .select{|nxball| NxBalls::ballRunningTime(nxball) > 3600 }
+        !nxballs.empty?
     end
 end

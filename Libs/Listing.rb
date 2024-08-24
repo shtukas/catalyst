@@ -295,6 +295,15 @@ class Listing
     # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
+        Thread.new {
+            loop {
+                (lambda {
+                    return if !NxBalls::shouldNotify()
+                    CommonUtils::onScreenNotification("Catalyst", "running ball is over running")
+                }).call()
+                sleep 120
+            }
+        }
         loop {
             Listing::listing(initialCodeTrace)
         }
