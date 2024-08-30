@@ -5,12 +5,13 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | pick * | mini * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini",
+            "stack special : pile * | pile",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | > (move default) | @head <space separated list of indices, or *>",
+            "misc          : search | speed | commands | edit <n> | > (move default)",
         ].join("\n")
     end
 
@@ -94,7 +95,22 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pick *", input) then
+        if Interpreting::match("pile", input) then
+            text = CommonUtils::editTextSynchronously("").strip
+            return if text == ""
+            text
+                .lines
+                .reverse
+                .map{|line|
+                    item = NxOndates::interactivelyIssueAtTodayFromDescription(line.strip)
+                    Items::setAttribute(item["uuid"], "listing-override-position-14", {
+                        "date" => CommonUtils::today(),
+                        "position" => Listing::getTopListingOverridePosition()-1
+                    })
+                }
+        end
+
+        if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
@@ -103,54 +119,6 @@ class CommandsAndInterpreters
                 "date" => CommonUtils::today(),
                 "position" => Listing::getBottomListingOverridePosition()+1
             })
-            return
-        end
-
-        if input.start_with?("@head") then
-            indices = input[5, input.size].strip.split(' ').map{|i| i.strip }
-            items = indices.map{|i| 
-                if i == "*" then
-                    description = LucilleCore::askQuestionAnswerAsString("-> * description: ")
-                    NxOndates::interactivelyIssueAtTodayFromDescription(description)
-                else
-                    item = store.get(i.to_i)
-                    puts "-> #{PolyFunctions::toString(item)}"
-                    item
-                end
-            }
-            items.reverse.each{|item|
-                Items::setAttribute(item["uuid"], "listing-override-position-14", {
-                        "date" => CommonUtils::today(),
-                        "position" => Listing::getTopListingOverridePosition()-1
-                    })
-            }
-        end
-
-        if input.start_with?("@end") then
-            indices = input[4, input.size].strip.split(' ').map{|i| i.strip }
-            items = indices.map{|i| 
-                if i == "*" then
-                    description = LucilleCore::askQuestionAnswerAsString("-> * description: ")
-                    NxOndates::interactivelyIssueAtTodayFromDescription(description)
-                else
-                    item = store.get(i.to_i)
-                    puts "-> #{PolyFunctions::toString(item)}"
-                    item
-                end
-            }
-            items.each{|item|
-                Items::setAttribute(item["uuid"], "listing-override-position-14", {
-                        "date" => CommonUtils::today(),
-                        "position" => Listing::getBottomListingOverridePosition()+1
-                    })
-            }
-        end
-
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::interactivelyPile(item)
             return
         end
 
