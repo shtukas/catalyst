@@ -110,9 +110,6 @@ class PolyFunctions
         if item["mikuType"] == "PhysicalTarget" then
             return PhysicalTargets::toString(item)
         end
-        if item["mikuType"] == "TxCondition" then
-            return TxConditions::toString(item)
-        end
         if item["mikuType"] == "TxCore" then
             return TxCores::toString(item)
         end

@@ -81,8 +81,8 @@ class Listing
     def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        arrow = item["x:position"] ? " (#{"%4.2f" % item["x:position"]})" : ""
-        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}#{Cx11s::suffix(item)}"
+        arrow = (item["lpx01"] and item["lpx01"]["position"]) ? " [#{"%7.2f" % item["lpx01"]["position"]}]" : "          "
+        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -133,25 +133,99 @@ class Listing
         runningItems + pausedItems + nonActiveItems
     end
 
-    # Listing::hasActiveListingOverridePosition(item)
-    def self.hasActiveListingOverridePosition(item)
-        item["listing-override-position-14"] and item["listing-override-position-14"]["date"] == CommonUtils::today()
+    # -----------------------------------------
+    # Data LPx01
+
+    # Listing::hasTwoConsecutiveWaves(items)
+    def self.hasTwoConsecutiveWaves(items)
+        loop {
+            return false if items.size < 2
+            if items[0]["mikuType"] == "Wave" and items[1]["mikuType"] == "Wave" then
+                return true
+            end
+            items.shift
+        }
+        false
     end
 
-    # Listing::applyListingOverridePosition(items)
-    def self.applyListingOverridePosition(items)
-        i1s, i2s = items.partition{|item| Listing::hasActiveListingOverridePosition(item) }
-        i1s.sort_by{|item| item["listing-override-position-14"]["position"] } + i2s
+    # Listing::hasNonWaves(items)
+    def self.hasNonWaves(items)
+        items.any?{|item| item["mikuType"] != "Wave" }
     end
 
-    # Listing::getTopListingOverridePosition()
-    def self.getTopListingOverridePosition()
-        ([0] + Listing::items().select{|item| Listing::hasActiveListingOverridePosition(item) }.map{|item| item["listing-override-position-14"]["position"] }).min
+    # Listing::hasNonWavesFollowedByTwoConsecutiveWaves(items)
+    def self.hasNonWavesFollowedByTwoConsecutiveWaves(items)
+        Listing::hasNonWaves(items) and Listing::hasTwoConsecutiveWaves(items)
     end
 
-    # Listing::getBottomListingOverridePosition()
-    def self.getBottomListingOverridePosition()
-        ([0] + Listing::items().select{|item| Listing::hasActiveListingOverridePosition(item) }.map{|item| item["listing-override-position-14"]["position"] }).max
+    # Listing::computeLPx01(items, cursor)
+    def self.computeLPx01(items, cursor)
+        if items.size == 0 then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => 1
+            }
+        end
+        if items.any?{|item| item["lpx01"].nil? } then
+            raise "I can't Listing::computeLPx01 on the input given"
+        end
+        # Ensuring that items are in order
+        items = items.sort_by{|item| item["lpx01"]["position"] }
+        topPosition = items.last["lpx01"]["position"] 
+
+        # removing the first 2 items
+        items.shift
+        items.shift
+
+        if cursor["mikuType"] == "wave" and cursor["interruption"] then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
+            }
+        end
+
+        if cursor["mikuType"] == "wave" and !cursor["interruption"] then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => (topPosition + 1).floor
+            }
+        end
+
+        if cursor["mikuType"] == "NxAnniversary" then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
+            }
+        end
+
+        loop {
+            break if items.none?{|item| item["mikuType"] == cursor["mikuType"] }
+            items.shift # removing the first item
+        }
+        # At this point there is no cursor["mikuType"] in the list of items
+
+        loop {
+            break if !Listing::hasNonWavesFollowedByTwoConsecutiveWaves(items)
+            items.shift # removing the first item
+        }
+        # At this point there is no cursor["mikuType"] in the list of items
+
+        if items.size == 0 then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => (topPosition + 1).floor
+            }
+        end
+        if items.size == 1 then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => (topPosition + 1).floor
+            }
+        end
+        {
+            "date" => CommonUtils::today(),
+            "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
+        }
     end
 
     # -----------------------------------------
@@ -207,22 +281,6 @@ class Listing
         activeItems + pausedItems + items
     end
 
-    # Listing::injectSeparator1(items)
-    def self.injectSeparator1(items)
-        is1, is2 = items.partition{|item| Listing::hasActiveListingOverridePosition(item) }
-        if is1.empty? then
-            return items
-        end
-        [
-            is1,
-            {
-                "uuid" => SecureRandom.uuid,
-                "mikuType" => "NxSeparator1"
-            },
-            is2
-        ].flatten
-    end
-
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -247,25 +305,23 @@ class Listing
 
             system("clear")
 
-            items = Listing::items()
+            items = nil
 
-            txConditions = TxConditions::listingItems(items)
-            if txConditions.size > 0 then
-                spacecontrol.putsline ""
-                txConditions
-                    .each{|item|
-                        store.register(item, Listing::canBeDefault(item))
-                        line = Listing::toString2(store, item)
-                        spacecontrol.putsline line
-                    }
-            end
+            loop {
+                items = Listing::items()
+                break if items.all?{|item| item["lpx01"] } 
+                items1, items2 = items.partition{|item| item["lpx01"] }
+                cursor = items2.shift
+                lpx01 = Listing::computeLPx01(items1, cursor)
+                puts JSON.pretty_generate(lpx01).yellow
+                Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
+            }
 
             spacecontrol.putsline ""
 
-            items = items.select{|item| Cx11s::itemShouldBeListed(item) }
-            items = Listing::applyListingOverridePosition(items)
+            items = items.sort_by{|item| item["lpx01"]["position"] }
+
             items = NxBalls::activeItems() + items
-            items = Listing::injectSeparator1(items)
 
             Prefix::addPrefix(items)
                 .reduce([]){|selected, item|

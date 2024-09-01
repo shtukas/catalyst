@@ -51,11 +51,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCondition" then
-            TxConditions::access(item)
-            return
-        end
-
         if item["mikuType"] == "TxCore" then
             TxCores::program1(item)
             return
@@ -94,6 +89,7 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxFloat" then
+            Items::setAttribute(item["uuid"], "lpx01", nil)
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
@@ -112,6 +108,7 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
+                Items::setAttribute(item["uuid"], "lpx01", nil)
                 NxBackups::setNowForDescription(item["description"])
             end
             return
@@ -129,6 +126,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
+            Items::setAttribute(item["uuid"], "lpx01", nil)
             Anniversaries::done(item["uuid"])
             return
         end
@@ -158,6 +156,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "PhysicalTarget" then
+            Items::setAttribute(item["uuid"], "lpx01", nil)
             PhysicalTargets::performUpdate(item)
             return
         end
@@ -168,6 +167,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+                Items::setAttribute(item["uuid"], "lpx01", nil)
                 Waves::performWaveDone(item)
             end
             return
@@ -252,11 +252,6 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             PhysicalTargets::performUpdate(item)
-            return
-        end
-
-        if item["mikuType"] == "TxCondition" then
-            TxConditions::access(item)
             return
         end
 

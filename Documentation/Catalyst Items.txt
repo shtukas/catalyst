@@ -10,14 +10,12 @@ Cross types conventions (all optional):
     - uxpayload-b4e4     : UxPayload
     - donation-1601      : String
     - parentuuid-0032    : uuid of the parent
-    - condition-0903     : Cx11
     - hours-1905         : Float # listing priotirisation, optional except for TxCores
-    - listing-override-position-14 : { date, position }
+    - lpx01              : LPx01
 
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
 
-Cx11
-    name  : String
-    status: Boolean # true means that the condition is true, 
-                    # so the items can be shown in the main listing
+LPx01
+    date    : Date  # date that we issued the listing
+    position: Float # position

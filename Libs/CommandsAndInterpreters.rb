@@ -8,7 +8,6 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
             "",
             "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini",
-            "stack special : pile * | pile",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | > (move default)",
@@ -53,28 +52,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("''", input) then
-            puts "activating condition toggle"
-            cx11 = Cx11s::interactivelySelectCx11OrNull()
-            return if cx11.nil?
-            cx11["status"] = !cx11["status"]
-            Cx11s::getItemsByConditionName(Items::items(), cx11["name"]).each{|item|
-                Cx11s::setCondition(item, cx11)
-            }
-            return
-        end
-
-        if Interpreting::match("'' *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            puts "select Cx11 for '#{PolyFunctions::toString(item).green}'"
-            cx11 = Cx11s::architectNewOrNull()
-            return if cx11.nil?
-            Cx11s::setCondition(item, cx11)
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -92,33 +69,6 @@ class CommandsAndInterpreters
             position = Catalyst::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             Items::setAttribute(item["uuid"], "global-positioning", position)
-            return
-        end
-
-        if Interpreting::match("pile", input) then
-            text = CommonUtils::editTextSynchronously("").strip
-            return if text == ""
-            text
-                .lines
-                .reverse
-                .map{|line|
-                    item = NxOndates::interactivelyIssueAtTodayFromDescription(line.strip)
-                    Items::setAttribute(item["uuid"], "listing-override-position-14", {
-                        "date" => CommonUtils::today(),
-                        "position" => Listing::getTopListingOverridePosition()-1
-                    })
-                }
-        end
-
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if Listing::hasActiveListingOverridePosition(item)
-            Items::setAttribute(item["uuid"], "listing-override-position-14", {
-                "date" => CommonUtils::today(),
-                "position" => Listing::getBottomListingOverridePosition()+1
-            })
             return
         end
 
@@ -492,9 +442,6 @@ class CommandsAndInterpreters
         if Interpreting::match("stop", input) then
             item = store.getDefault()
             return if item.nil?
-            if item["ordinal-1051"] then
-                Items::setAttribute(item["uuid"], "ordinal-1051", nil)
-            end
             NxBalls::stop(item)
             return
         end
@@ -503,9 +450,6 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["ordinal-1051"] then
-                Items::setAttribute(item["uuid"], "ordinal-1051", nil)
-            end
             NxBalls::stop(item)
             return
         end

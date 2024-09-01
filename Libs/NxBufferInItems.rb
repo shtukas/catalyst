@@ -21,6 +21,6 @@ class NxBufferInItems
 
     # NxBufferInItems::toString(item)
     def self.toString(item)
-        "[In] #{File.basename(item["location"])}"
+        "📥 #{File.basename(item["location"])}"
     end
 end
