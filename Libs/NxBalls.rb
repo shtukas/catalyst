@@ -171,7 +171,7 @@ class NxBalls
 
     # NxBalls::nxBallToString(nxball)
     def self.nxBallToString(nxball)
-        if nxball["type"] == "running" and nxball["isSequence"] then
+        if nxball["type"] == "running" then
             if nxball["isSequence"] then
                 return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequenceStart"]).to_f/3600).round(2)} hours ago)"
             else
