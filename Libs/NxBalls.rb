@@ -145,10 +145,11 @@ class NxBalls
             if nxball.nil? then
                 raise "(error: 10c69b0a-be67) how did that happen ? 🤔"
             end
+            startunixtime_v1        = nxball["startunixtime"]
             nxball["type"]          = "running"
             nxball["startunixtime"] = Time.new.to_i
             nxball["isSequence"]    = true
-            nxball["sequenceStart"] = nxball["startunixtime"]
+            nxball["sequenceStart"] = startunixtime_v1
             NxBalls::commitBall(item, nxball)
         end
     end
