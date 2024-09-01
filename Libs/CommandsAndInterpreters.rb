@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini",
+            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini | drop",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | > (move default)",
@@ -101,6 +101,19 @@ class CommandsAndInterpreters
         if Interpreting::match("backups", input) then
             items = Items::mikuType("NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("drop", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
+            position = ([1] + Listing::items().select{|item| item["lpx01"] }.map{|item| item["lpx01"]["position"] }).min
+            Items::setAttribute(item["uuid"], "lpx01", {
+                "date"     => CommonUtils::today(),
+                "position" => 0.5*position
+            })
+            Catalyst::interactivelySetDonation(item)
             return
         end
 

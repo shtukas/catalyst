@@ -232,7 +232,7 @@ class Catalyst
             return nil if core.nil?
             return Catalyst::interactivelySelectOneHierarchyParentOrNull(core)
         end
-        elements = [context] + Catalyst::childrenInGlobalPositioningOrder(context)
+        elements = [context] + Catalyst::childrenInGlobalPositioningOrder(context).take(CommonUtils::screenHeight()-3)
         element = LucilleCore::selectEntityFromListOfEntitiesOrNull("element", elements, lambda{|item| PolyFunctions::toString(item) })
         if element.nil? then
             return context

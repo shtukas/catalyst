@@ -31,7 +31,8 @@ class NxBalls
             "type"           => "running",
             "startunixtime"  => Time.new.to_i,
             "accounts"       => accounts,
-            "sequencestart"  => nil
+            "isSequence"     => false,
+            "sequenceStart"  => nil
         }
         NxBalls::commitBall(item, nxball)
     end
@@ -130,7 +131,6 @@ class NxBalls
             Bank1::put(account["number"], CommonUtils::today(), timespanInSeconds)
         }
         nxball["type"] = "paused"
-        nxball["sequencestart"] = nxball["sequencestart"] || Time.new.to_i
         NxBalls::commitBall(item, nxball)
     end
 
@@ -142,10 +142,13 @@ class NxBalls
         end
         if NxBalls::itemIsPaused(item) then
             nxball = NxBalls::getNxBallOrNull(item)
-            nxball["unixtime"]      = Time.new.to_f
+            if nxball.nil? then
+                raise "(error: 10c69b0a-be67) how did that happen ? 🤔"
+            end
             nxball["type"]          = "running"
             nxball["startunixtime"] = Time.new.to_i
-            nxball["sequencestart"] = nxball["sequencestart"] || nxball["startunixtime"]
+            nxball["isSequence"]    = true
+            nxball["sequenceStart"] = nxball["startunixtime"]
             NxBalls::commitBall(item, nxball)
         end
     end
@@ -168,11 +171,13 @@ class NxBalls
 
     # NxBalls::nxBallToString(nxball)
     def self.nxBallToString(nxball)
-        if nxball["type"] == "running" and nxball["sequencestart"] then
-            return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequencestart"]).to_f/3600).round(2)} hours ago)"
-        end
-        if nxball["type"] == "running" then
-            return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours)"
+        if nxball["type"] == "running" and nxball["isSequence"] then
+            if nxball["isSequence"] then
+                return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequenceStart"]).to_f/3600).round(2)} hours ago)"
+            else
+                return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours)"
+            end
+            
         end
         if nxball["type"] == "paused" then
             return "(nxball: paused)"
