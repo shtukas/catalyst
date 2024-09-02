@@ -313,7 +313,6 @@ class Listing
                 items1, items2 = items.partition{|item| item["lpx01"] }
                 cursor = items2.shift
                 lpx01 = Listing::computeLPx01(items1, cursor)
-                puts JSON.pretty_generate(lpx01).yellow
                 Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
             }
 

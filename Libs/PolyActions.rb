@@ -149,6 +149,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "TxCore" then
+            Items::setAttribute(item["uuid"], "lpx01", nil)
             return
         end
 
