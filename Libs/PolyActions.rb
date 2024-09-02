@@ -63,20 +63,7 @@ class PolyActions
 
         if item["mikuType"] == "NxBufferInItem" then
             location = item["location"]
-            if File.directory?(location) then
-                puts "opening '#{location}'"
-                system("open '#{location}'")
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if File.file?(location) then
-                puts "exporting '#{location}'"
-                desktopExport = "#{Config::userHomeDirectory()}/Desktop/catalyst-#{SecureRandom.hex(2)}"
-                FileUtils::mkdir(desktopExport)
-                LucilleCore::copyFileSystemLocation(location, desktopExport)
-                LucilleCore::pressEnterToContinue()
-                return
-            end
+            NxBufferInItems::accessLocation(location)
             return
         end
 
@@ -174,7 +161,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBufferInItem" then
-            LucilleCore::removeFileSystemLocation(item["location"])
+            if LucilleCore::askQuestionAnswerAsBoolean("Removing location '#{item["location"]}' ? ", true) then
+                LucilleCore::removeFileSystemLocation(item["location"])
+            end
             return
         end
 
@@ -273,12 +262,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBufferInItem" then
-            NxBalls::start(item)
+            infinityCore = Items::itemOrNull("85e2e9fe-ef3d-4f75-9330-2804c4bcd52b")
+            NxBalls::start(infinityCore)
             PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxBalls::stop(item)
-                Items::destroy(item["uuid"])
-            end
+            PolyActions::destroy(item)
+            NxBalls::stop(infinityCore)
             return
         end
 
@@ -360,7 +348,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBufferInItem" then
-            Items::destroy(item["uuid"])
+            if LucilleCore::askQuestionAnswerAsBoolean("Removing location '#{item["location"]}' ? ", true) then
+                LucilleCore::removeFileSystemLocation(item["location"])
+            end
             return
         end
 

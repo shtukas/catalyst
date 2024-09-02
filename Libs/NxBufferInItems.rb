@@ -23,4 +23,23 @@ class NxBufferInItems
     def self.toString(item)
         "📥 #{File.basename(item["location"])}"
     end
+
+    # NxBufferInItems::accessLocation(location)
+    def self.accessLocation(location)
+        if File.directory?(location) then
+            puts "opening '#{location}'"
+            system("open '#{location}'")
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+        if File.file?(location) then
+            puts "exporting '#{location}'"
+            exportLocation = "#{Config::userHomeDirectory()}/x-space/xcache-v1-days/#{CommonUtils::today()}/#{SecureRandom.hex(1)}-#{Time.new.to_i}"
+            FileUtils::mkpath(exportLocation)
+            LucilleCore::copyFileSystemLocation(location, exportLocation)
+            system("open '#{exportLocation}'")
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+    end
 end
