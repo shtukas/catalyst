@@ -105,7 +105,7 @@ class Listing
             DropBox::items(),
             Desktop::listingItems(),
             Anniversaries::listingItems(),
-            PhysicalTargets::listingItems(),
+            TargetNumbers::listingItems(),
             Waves::muiItemsInterruption(),
             NxOndates::listingItems(),
             NxBackups::listingItems(),
@@ -241,7 +241,7 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("Desktop::listingItems()", lambda { Desktop::listingItems() })
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
-        spot.contest_entry("PhysicalTargets::listingItems()", lambda{ PhysicalTargets::listingItems() })
+        spot.contest_entry("TargetNumbers::listingItems()", lambda{ TargetNumbers::listingItems() })
         spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
@@ -281,6 +281,31 @@ class Listing
         activeItems + pausedItems + items
     end
 
+    # Listing::itemsWithAllOrderingsApplied()
+    def self.itemsWithAllOrderingsApplied()
+        items = nil
+
+        loop {
+            items = Listing::items()
+            break if items.all?{|item| item["lpx01"] } 
+            items1, items2 = items.partition{|item| item["lpx01"] }
+            cursor = items2.shift
+            lpx01 = Listing::computeLPx01(items1, cursor)
+            Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
+        }
+
+        items = items.sort_by{|item| item["lpx01"]["position"] }
+
+        items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+
+        items
+    end
+
+    # Listing::itemsWithAllOrderingsAndExtensionsApplied()
+    def self.itemsWithAllOrderingsAndExtensionsApplied()
+        Prefix::addPrefix(Listing::itemsWithAllOrderingsApplied())
+    end
+
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -305,24 +330,11 @@ class Listing
 
             system("clear")
 
-            items = nil
-
-            loop {
-                items = Listing::items()
-                break if items.all?{|item| item["lpx01"] } 
-                items1, items2 = items.partition{|item| item["lpx01"] }
-                cursor = items2.shift
-                lpx01 = Listing::computeLPx01(items1, cursor)
-                Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
-            }
-
             spacecontrol.putsline ""
 
-            items = items.sort_by{|item| item["lpx01"]["position"] }
+            items = Listing::itemsWithAllOrderingsAndExtensionsApplied()
 
-            items = NxBalls::activeItems() + items
-
-            Prefix::addPrefix(items)
+            items
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected

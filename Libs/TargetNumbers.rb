@@ -1,9 +1,9 @@
 
 # encoding: UTF-8
 
-class PhysicalTargets
+class TargetNumbers
 
-    # PhysicalTargets::issueNewOrNull()
+    # TargetNumbers::issueNewOrNull()
     def self.issueNewOrNull()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
@@ -25,12 +25,12 @@ class PhysicalTargets
     # --------------------------------------------------------
     # Data
 
-    # PhysicalTargets::toString(item)
+    # TargetNumbers::toString(item)
     def self.toString(item)
         "💪 #{item["description"]} (done: #{item["counter"]}, remaining: #{item["dailyTarget"] - item["counter"]})"
     end
 
-    # PhysicalTargets::listingItems()
+    # TargetNumbers::listingItems()
     def self.listingItems()
         Items::mikuType("PhysicalTarget").each{|item|
             if item["date"] != CommonUtils::today() then
@@ -50,7 +50,7 @@ class PhysicalTargets
     # --------------------------------------------------------
     # Ops
 
-    # PhysicalTargets::performUpdate(item)
+    # TargetNumbers::performUpdate(item)
     def self.performUpdate(item)
         puts "> #{item["description"]}"
         count = LucilleCore::askQuestionAnswerAsString("#{item["description"]}: done count: ").to_i
@@ -58,8 +58,8 @@ class PhysicalTargets
         Items::setAttribute(item["uuid"], "lastUpdatedUnixtime", Time.new.to_i)
     end
 
-    # PhysicalTargets::access(item)
+    # TargetNumbers::access(item)
     def self.access(item)
-        PhysicalTargets::performUpdate(item)
+        TargetNumbers::performUpdate(item)
     end
 end

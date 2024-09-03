@@ -108,7 +108,7 @@ class PolyFunctions
             return NxBufferInItems::toString(item)
         end
         if item["mikuType"] == "PhysicalTarget" then
-            return PhysicalTargets::toString(item)
+            return TargetNumbers::toString(item)
         end
         if item["mikuType"] == "TxCore" then
             return TxCores::toString(item)

@@ -47,7 +47,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "PhysicalTarget" then
-            PhysicalTargets::access(item)
+            TargetNumbers::access(item)
             return
         end
 
@@ -144,7 +144,7 @@ class PolyActions
 
         if item["mikuType"] == "PhysicalTarget" then
             Items::setAttribute(item["uuid"], "lpx01", nil)
-            PhysicalTargets::performUpdate(item)
+            TargetNumbers::performUpdate(item)
             return
         end
 
@@ -172,107 +172,10 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::doubledots(item)
-    def self.doubledots(item)
-
-        if item["mikuType"] == "NxFloat" then
-            return
-        end
-
-        if item["mikuType"] == "DesktopTx1" then
-            Desktop::done()
-            return
-        end
-
-        if item["mikuType"] == "DropBox" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                DropBox::done(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            PolyActions::done(item)
-            return
-        end
-
-        if item["mikuType"] == "NxLambda" then
-            return
-        end
-
-        if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::done(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxMiniProject" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            NxBalls::start(item)
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            LucilleCore::pressEnterToContinue()
-            NxBalls::stop(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item).green}' is empty. Destroy:  ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxCollection" then
-            NxCollections::program1(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            if !NxBalls::itemIsActive(item) then
-                NxBalls::start(item)
-            end
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue()
-            NxBalls::stop(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "PhysicalTarget" then
-            PhysicalTargets::performUpdate(item)
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            if !NxBalls::itemIsActive(item) then
-                NxBalls::start(item)
-            end
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("completed : '#{PolyFunctions::toString(item).green} ? '", true) then
-                NxBalls::stop(item)
-                Waves::performWaveDone(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
-            return
-        end
-
-        if item["mikuType"] == "NxBufferInItem" then
-            infinityCore = Items::itemOrNull("85e2e9fe-ef3d-4f75-9330-2804c4bcd52b")
-            NxBalls::start(infinityCore)
-            PolyActions::access(item)
-            PolyActions::destroy(item)
-            NxBalls::stop(infinityCore)
-            return
-        end
-
-        puts "I do not know how to PolyActions::doubledots(#{JSON.pretty_generate(item)})"
-        raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
+    # PolyActions::stop(item)
+    def self.stop(item)
+        Items::setAttribute(item["uuid"], "lpx01", nil)
+        NxBalls::stop(item)
     end
 
     # PolyActions::destroy(item)

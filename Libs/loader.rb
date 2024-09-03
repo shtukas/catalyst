@@ -165,7 +165,7 @@ require_relative "NxMiniProjects.rb"
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
-require_relative "PhysicalTargets.rb"
+require_relative "TargetNumbers.rb"
 require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"

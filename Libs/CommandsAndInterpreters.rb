@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | move * | condition * | move * | transmute * | mini * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | transmute * | mini * | destroy *",
             "",
-            "makers        : anniversary | manual-countdown | wave | today | tomorrow | ondate | task | desktop | stack | float | thread | core | mini | drop",
+            "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini | drop",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
-            "NxBalls       : start | start (<n>) | stop | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | > (move default)",
+            "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
+            "misc          : search | speed | commands | edit <n> | sort",
         ].join("\n")
     end
 
@@ -25,33 +25,6 @@ class CommandsAndInterpreters
             end
         end
 
-        if Interpreting::match(">", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
-            return if parent.nil?
-            position = Catalyst::interactivelySelectPositionInParent(parent)
-            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-            Items::setAttribute(item["uuid"], "global-positioning", position)
-            return
-        end
-
-        if Interpreting::match("..", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::doubledots(item)
-            return
-        end
-
-        if Interpreting::match(".. *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            PolyActions::doubledots(item)
-            return
-        end
-
         if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -60,7 +33,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move *", input) then
+        if Interpreting::match("gps *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
@@ -175,6 +148,21 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            item = store.getDefault()
+            return if item.nil?
+            items = Listing::itemsWithAllOrderingsApplied().first(CommonUtils::screenHeight()-6)
+            selected, _ = LucilleCore::selectZeroOrMore("top", [], items, lambda {|item| PolyFunctions::toString(item) } )
+            selected.reverse.each{|item|
+                position = ([1] + Listing::items().select{|item| item["lpx01"] }.map{|item| item["lpx01"]["position"] }).min
+                Items::setAttribute(item["uuid"], "lpx01", {
+                    "date"     => CommonUtils::today(),
+                    "position" => 0.5*position
+                })
+            }
             return
         end
 
@@ -323,7 +311,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move *", input) then
+        if Interpreting::match("gps *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
@@ -379,8 +367,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("manual-countdown", input) then
-            PhysicalTargets::issueNewOrNull()
+        if Interpreting::match("target-number", input) then
+            TargetNumbers::issueNewOrNull()
             return
         end
 
@@ -455,7 +443,7 @@ class CommandsAndInterpreters
         if Interpreting::match("stop", input) then
             item = store.getDefault()
             return if item.nil?
-            NxBalls::stop(item)
+            PolyActions::stop(item)
             return
         end
 
@@ -463,7 +451,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxBalls::stop(item)
+            PolyActions::stop(item)
             return
         end
 
