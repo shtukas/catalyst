@@ -174,8 +174,10 @@ class PolyActions
 
     # PolyActions::stop(item)
     def self.stop(item)
-        Items::setAttribute(item["uuid"], "lpx01", nil)
         NxBalls::stop(item)
+        if LucilleCore::askQuestionAnswerAsBoolean("remove '#{PolyFunctions::toString(item).green}' from listing ? ") then
+            Items::setAttribute(item["uuid"], "lpx01", nil)
+        end
     end
 
     # PolyActions::destroy(item)

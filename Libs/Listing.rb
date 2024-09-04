@@ -136,65 +136,70 @@ class Listing
     # -----------------------------------------
     # Data LPx01
 
-    # Listing::hasTwoConsecutiveWaves(items)
-    def self.hasTwoConsecutiveWaves(items)
-        loop {
-            return false if items.size < 2
-            if items[0]["mikuType"] == "Wave" and items[1]["mikuType"] == "Wave" then
-                return true
-            end
-            items.shift
-        }
-        false
-    end
-
-    # Listing::hasNonWaves(items)
-    def self.hasNonWaves(items)
-        items.any?{|item| item["mikuType"] != "Wave" }
-    end
-
-    # Listing::hasNonWavesFollowedByTwoConsecutiveWaves(items)
-    def self.hasNonWavesFollowedByTwoConsecutiveWaves(items)
-        Listing::hasNonWaves(items) and Listing::hasTwoConsecutiveWaves(items)
-    end
-
     # Listing::computeLPx01(items, cursor)
     def self.computeLPx01(items, cursor)
+
+        # The expectation is that all items have a valid (present and carrying 
+        # today's date) LPx01, and are given in the position's order 
+        # and that the cursor doesn't have one valid LPx01, but the cursor 
+        # could already have a LPx01 issued on a previous day
+
+        if items.any?{|item| item["lpx01"].nil? } then
+            raise "(error: 87d2b22a) I can't Listing::computeLPx01 on the input given"
+        end
+
+        if cursor["lpx01"] and cursor["lpx01"]["date"] == CommonUtils::today() then
+            raise "(error: 2d39) I can't Listing::computeLPx01 on the input given"
+        end
+
         if items.size == 0 then
+            # If the cursor already had a LPx01 (necessarily from a previous date), 
+            # we just override it.
             return {
                 "date" => CommonUtils::today(),
                 "position" => 1
             }
         end
-        if items.any?{|item| item["lpx01"].nil? } then
-            raise "I can't Listing::computeLPx01 on the input given"
-        end
-        # Ensuring that items are in order
-        items = items.sort_by{|item| item["lpx01"]["position"] }
-        topPosition = items.last["lpx01"]["position"] 
 
-        # removing the first 2 items
-        items.shift
-        items.shift
-
-        if cursor["mikuType"] == "wave" and cursor["interruption"] then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
-            }
-        end
-
-        if cursor["mikuType"] == "wave" and !cursor["interruption"] then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => (topPosition + 1).floor
-            }
-        end
+        firstPosition = items.first["lpx01"]["position"] 
+        lastPosition = items.last["lpx01"]["position"] 
 
         if cursor["mikuType"] == "NxAnniversary" then
+            # We want to put the anniversary just after the third item
+            # between the third and the forth
+            items.shift
+            items.shift
             return {
                 "date" => CommonUtils::today(),
                 "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
+            }
+        end
+
+        if cursor["mikuType"] == "Wave" and cursor["interruption"] then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => 0.5 * firstPosition
+            }
+        end
+
+        if cursor["mikuType"] == "Wave" and !cursor["interruption"] then
+            if cursor["lpx01"] then
+                # We are just updating the date but keeping the same position
+                return {
+                    "date" => CommonUtils::today(),
+                    "position" => cursor["lpx01"]["position"]
+                }
+            end
+            return {
+                "date" => CommonUtils::today(),
+                "position" => (lastPosition + 1).floor
+            }
+        end
+
+        if cursor["lpx01"] then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => cursor["lpx01"]["position"]
             }
         end
 
@@ -204,24 +209,18 @@ class Listing
         }
         # At this point there is no cursor["mikuType"] in the list of items
 
-        loop {
-            break if !Listing::hasNonWavesFollowedByTwoConsecutiveWaves(items)
-            items.shift # removing the first item
-        }
-        # At this point there is no cursor["mikuType"] in the list of items
+        if items.size < 4 then
+            return {
+                "date" => CommonUtils::today(),
+                "position" => (lastPosition + 1).floor
+            }
+        end
 
-        if items.size == 0 then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => (topPosition + 1).floor
-            }
-        end
-        if items.size == 1 then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => (topPosition + 1).floor
-            }
-        end
+        # We now put the item as the new position 4 of the tail.
+
+        items.shift
+        items.shift
+
         {
             "date" => CommonUtils::today(),
             "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
@@ -283,21 +282,19 @@ class Listing
 
     # Listing::itemsWithAllOrderingsApplied()
     def self.itemsWithAllOrderingsApplied()
-        items = nil
-
         loop {
             items = Listing::items()
-            break if items.all?{|item| item["lpx01"] } 
-            items1, items2 = items.partition{|item| item["lpx01"] }
-            cursor = items2.shift
+            break if items.all?{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() } 
+            items1, items2 = items.partition{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() }
+            items1 = items1.sort_by{|item| item["lpx01"]["position"] }
+            cursor = items2.first
             lpx01 = Listing::computeLPx01(items1, cursor)
             Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
         }
 
+        items = Listing::items()
         items = items.sort_by{|item| item["lpx01"]["position"] }
-
         items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-
         items
     end
 
