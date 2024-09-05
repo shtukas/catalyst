@@ -181,7 +181,9 @@ class CommandsAndInterpreters
         if Interpreting::match("sort", input) then
             item = store.getDefault()
             return if item.nil?
-            items = Listing::itemsWithAllOrderingsApplied().first(CommonUtils::screenHeight()-6)
+            items = Listing::items()
+            items = items.sort_by{|item| item["lpx01"]["position"] }
+            items = items.first(CommonUtils::screenHeight()-6)
             selected, _ = LucilleCore::selectZeroOrMore("top", [], items, lambda {|item| PolyFunctions::toString(item) } )
             selected.reverse.each{|item|
                 position = ([1] + Listing::items().select{|item| item["lpx01"] }.map{|item| item["lpx01"]["position"] }).min

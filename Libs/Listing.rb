@@ -273,29 +273,6 @@ class Listing
         activeItems + pausedItems + items
     end
 
-    # Listing::itemsWithAllOrderingsApplied()
-    def self.itemsWithAllOrderingsApplied()
-        loop {
-            items = Listing::items()
-            break if items.all?{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() } 
-            items1, items2 = items.partition{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() }
-            items1 = items1.sort_by{|item| item["lpx01"]["position"] }
-            cursor = items2.first
-            lpx01 = Listing::computeLPx01(items1, cursor)
-            Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
-        }
-
-        items = Listing::items()
-        items = items.sort_by{|item| item["lpx01"]["position"] }
-        items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-        items
-    end
-
-    # Listing::itemsWithAllOrderingsAndExtensionsApplied()
-    def self.itemsWithAllOrderingsAndExtensionsApplied()
-        Prefix::addPrefix(Listing::itemsWithAllOrderingsApplied())
-    end
-
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -322,7 +299,20 @@ class Listing
 
             spacecontrol.putsline ""
 
-            items = Listing::itemsWithAllOrderingsAndExtensionsApplied()
+            loop {
+                items = Listing::items()
+                break if items.all?{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() } 
+                items1, items2 = items.partition{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() }
+                items1 = items1.sort_by{|item| item["lpx01"]["position"] }
+                cursor = items2.first
+                lpx01 = Listing::computeLPx01(items1, cursor)
+                Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
+            }
+
+            items = Listing::items()
+            items = items.sort_by{|item| item["lpx01"]["position"] }
+            items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+            items
 
             cx04s = Cx04::cx04s(items)
             if !cx04s.empty? then
@@ -334,6 +324,8 @@ class Listing
                 spacecontrol.putsline ""
             end
 
+            items = items.select{|item| item["cx04"].nil? }
+            items = Prefix::addPrefix(items)
             items
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then

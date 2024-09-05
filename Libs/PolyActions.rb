@@ -85,6 +85,72 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxAnniversary" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            PolyActions::done(item)
+            return
+        end
+
+        if item["mikuType"] == "NxLambda" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxMiniProject" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxTask" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCollection" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "PhysicalTarget" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "TxCore" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "Wave" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxBufferInItem" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to doubleDot #{item["mikuType"]}"
     end
 
