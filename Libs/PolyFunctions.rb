@@ -65,6 +65,9 @@ class PolyFunctions
 
     # PolyFunctions::toString(item, context = nil)
     def self.toString(item, context = nil)
+        if item["mikuType"] == "Cx04" then
+            return "[Cx04] #{item["description"]}"
+        end
         if item["mikuType"] == "DesktopTx1" then
             return item["announce"]
         end

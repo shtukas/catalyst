@@ -126,13 +126,6 @@ class Listing
             }
     end
 
-    # Listing::applyNxBallOrdering(items)
-    def self.applyNxBallOrdering(items)
-        activeItems, nonActiveItems = items.partition{|item| NxBalls::itemIsActive(item) }
-        runningItems, pausedItems = activeItems.partition{|item| NxBalls::itemIsRunning(item) }
-        runningItems + pausedItems + nonActiveItems
-    end
-
     # -----------------------------------------
     # Data LPx01
 
@@ -330,6 +323,16 @@ class Listing
             spacecontrol.putsline ""
 
             items = Listing::itemsWithAllOrderingsAndExtensionsApplied()
+
+            cx04s = Cx04::cx04s(items)
+            if !cx04s.empty? then
+                cx04s.each{|item|
+                    store.register(item, false)
+                    line = Listing::toString2(store, item, "main-listing-1315")
+                    status = spacecontrol.putsline line
+                }
+                spacecontrol.putsline ""
+            end
 
             items
                 .reduce([]){|selected, item|

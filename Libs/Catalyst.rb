@@ -36,35 +36,6 @@ class Catalyst
         }
     end
 
-    # Catalyst::program3(elementsLambda)
-    def self.program3(elementsLambda)
-        loop {
-
-            elements = elementsLambda.call()
-            return if elements.empty?
-
-            system("clear")
-
-            store = ItemStore.new()
-
-            puts ""
-
-            elements
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
-                }
-
-            puts ""
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            puts ""
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
     # Catalyst::parentOrNull(item)
     def self.parentOrNull(item)
         return nil if item["parentuuid-0032"].nil?

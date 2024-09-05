@@ -8,6 +8,13 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["mikuType"] == "Cx04" then
+            cx04 = item
+            items = Cx04::items(cx04)
+            Catalyst::program2(items, nil)
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -68,6 +75,17 @@ class PolyActions
         end
 
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
+    end
+
+    # PolyActions::doubleDot(item)
+    def self.doubleDot(item)
+
+        if item["mikuType"] == "Cx04" then
+            PolyActions::access(item)
+            return
+        end
+
+        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to doubleDot #{item["mikuType"]}"
     end
 
     # PolyActions::done(item)

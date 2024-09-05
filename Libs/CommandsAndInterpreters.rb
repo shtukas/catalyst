@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | transmute * | mini * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | transmute * | mini * | >> * | destroy *",
             "",
             "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini | drop",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
@@ -30,6 +30,33 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute1(item)
+            return
+        end
+
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            cx04 = Cx04::architectOrNull()
+            return if cx04.nil?
+            Items::setAttribute(item["uuid"], "cx04", cx04)
+            return
+        end
+
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            cx04 = Cx04::architectOrNull()
+            return if cx04.nil?
+            Items::setAttribute(item["uuid"], "cx04", cx04)
+            return
+        end
+
+        if Interpreting::match(".. *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            PolyActions::doubleDot(item)
             return
         end
 
