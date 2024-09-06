@@ -169,28 +169,6 @@ class Waves
     def self.muiItemsNotInterruption0()
         Waves::muiItemsNotInterruption()
             .select{|item| Listing::listable(item) }
-            .map{|item|
-                if item["reAx05"].nil? then
-                    item["reAx05"] = Time.new.to_i
-                    Items::setAttribute(item["uuid"], "reAx05", Time.new.to_i)
-                end
-                item
-            }
-    end
-
-
-
-    # Waves::muiItemsNotInterruption1()
-    def self.muiItemsNotInterruption1()
-        Waves::muiItemsNotInterruption0()
-            .select{|item| (Time.new.to_i - item["reAx05"]) > 86400*2 }
-
-    end
-
-    # Waves::muiItemsNotInterruption2()
-    def self.muiItemsNotInterruption2()
-        Waves::muiItemsNotInterruption0()
-            .select{|item| (Time.new.to_i - item["reAx05"]) <= 86400*2 }
     end
 
     # -------------------------------------------------------------------------
@@ -202,7 +180,6 @@ class Waves
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         Items::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-        Items::setAttribute(item["uuid"], "reAx05", nil)
 
         # We control display using DoNotShowUntil
         unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])

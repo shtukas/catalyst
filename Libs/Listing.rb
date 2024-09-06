@@ -101,18 +101,17 @@ class Listing
     # Listing::items()
     def self.items()
         items = [
+            Anniversaries::listingItems(),
+            Waves::muiItemsInterruption(),
+            NxFloats::listingItems(),
             DropBox::items(),
             Desktop::listingItems(),
-            Anniversaries::listingItems(),
-            TargetNumbers::listingItems(),
-            Waves::muiItemsInterruption(),
             NxOndates::listingItems(),
-            NxBackups::listingItems(),
-            NxFloats::listingItems(),
-            Waves::muiItemsNotInterruption1(),
             NxMiniProjects::listingItems(),
+            TargetNumbers::listingItems(),
+            Waves::muiItemsNotInterruption(),
+            NxBackups::listingItems(),
             TxCores::listingItems(),
-            Waves::muiItemsNotInterruption2(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }

@@ -11,10 +11,6 @@ Wave :
     "lastDoneDateTime" : DateTime Iso 8601 UTC Zulu 
                          not used in the program, only exists for expose courtesy
 
-    "reAx05"           : null or Integer
-                         switched back to null when the item is done
-                         set when the item is about to be displayed but is not set
-
     "interruption"     : null or boolean, indicates if the item is interruption (priority)
 
     "onlyOnDays"       : null or Array[week days names lowercase english] 
