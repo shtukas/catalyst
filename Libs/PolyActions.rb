@@ -160,7 +160,6 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxFloat" then
-            Items::setAttribute(item["uuid"], "lpx01", nil)
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
@@ -179,7 +178,6 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                Items::setAttribute(item["uuid"], "lpx01", nil)
                 NxBackups::setNowForDescription(item["description"])
             end
             return
@@ -197,7 +195,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            Items::setAttribute(item["uuid"], "lpx01", nil)
             Anniversaries::done(item["uuid"])
             return
         end
@@ -227,19 +224,16 @@ class PolyActions
         end
 
         if item["mikuType"] == "PhysicalTarget" then
-            Items::setAttribute(item["uuid"], "lpx01", nil)
             TargetNumbers::performUpdate(item)
             return
         end
 
         if item["mikuType"] == "TxCore" then
-            Items::setAttribute(item["uuid"], "lpx01", nil)
             return
         end
 
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Items::setAttribute(item["uuid"], "lpx01", nil)
                 Waves::performWaveDone(item)
             end
             return
@@ -260,7 +254,6 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         if LucilleCore::askQuestionAnswerAsBoolean("remove '#{PolyFunctions::toString(item).green}' from listing ? ") then
-            Items::setAttribute(item["uuid"], "lpx01", nil)
         end
     end
 

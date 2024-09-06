@@ -11,15 +11,10 @@ Cross types conventions (all optional):
     - donation-1601      : String
     - parentuuid-0032    : uuid of the parent
     - hours-1905         : Float # listing priotirisation, optional except for TxCores
-    - lpx01              : LPx01
     - cx04               : Cx04
 
 Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
-
-LPx01
-    date    : Date  # date that we issued the listing
-    position: Float # position
 
 Cx04
     uuid        : string

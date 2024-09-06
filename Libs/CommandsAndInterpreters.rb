@@ -7,10 +7,10 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | transmute * | mini * | >> * | destroy *",
             "",
-            "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini | drop",
+            "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort",
+            "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
 
@@ -111,19 +111,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("drop", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
-            position = ([1] + Listing::items().select{|item| item["lpx01"] }.map{|item| item["lpx01"]["position"] }).min
-            Items::setAttribute(item["uuid"], "lpx01", {
-                "date"     => CommonUtils::today(),
-                "position" => 0.5*position
-            })
-            Catalyst::interactivelySetDonation(item)
-            return
-        end
-
         if Interpreting::match("payload *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -182,23 +169,6 @@ class CommandsAndInterpreters
             item = NxOndates::interactivelyIssueAtDatetimeNewOrNull(CommonUtils::nowDatetimeIso8601())
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            item = store.getDefault()
-            return if item.nil?
-            items = Listing::items()
-            items = items.sort_by{|item| item["lpx01"]["position"] }
-            items = items.first(CommonUtils::screenHeight()-6)
-            selected, _ = LucilleCore::selectZeroOrMore("top", [], items, lambda {|item| PolyFunctions::toString(item) } )
-            selected.reverse.each{|item|
-                position = ([1] + Listing::items().select{|item| item["lpx01"] }.map{|item| item["lpx01"]["position"] }).min
-                Items::setAttribute(item["uuid"], "lpx01", {
-                    "date"     => CommonUtils::today(),
-                    "position" => 0.5*position
-                })
-            }
             return
         end
 
@@ -366,7 +336,6 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-            Items::setAttribute(item["uuid"], "lpx01", nil)
             return
         end
 

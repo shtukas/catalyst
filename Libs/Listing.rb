@@ -81,8 +81,7 @@ class Listing
     def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        arrow = (item["lpx01"] and item["lpx01"]["position"]) ? " [#{"%7.2f" % item["lpx01"]["position"]}]" : "          "
-        line = "#{storePrefix}#{arrow} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -124,100 +123,6 @@ class Listing
                     selected + [item]
                 end
             }
-    end
-
-    # -----------------------------------------
-    # Data LPx01
-
-    # Listing::computeLPx01(items, cursor)
-    def self.computeLPx01(items, cursor)
-
-        # The expectation is that all items have a valid (present and carrying 
-        # today's date) LPx01, and are given in the position's order 
-        # and that the cursor doesn't have one valid LPx01, but the cursor 
-        # could already have a LPx01 issued on a previous day
-
-        if items.any?{|item| item["lpx01"].nil? } then
-            raise "(error: 87d2b22a) I can't Listing::computeLPx01 on the input given"
-        end
-
-        if cursor["lpx01"] and cursor["lpx01"]["date"] == CommonUtils::today() then
-            raise "(error: 2d39) I can't Listing::computeLPx01 on the input given"
-        end
-
-        if items.size == 0 then
-            # If the cursor already had a LPx01 (necessarily from a previous date), 
-            # we just override it.
-            return {
-                "date" => CommonUtils::today(),
-                "position" => 1
-            }
-        end
-
-        firstPosition = items.first["lpx01"]["position"] 
-        lastPosition = items.last["lpx01"]["position"] 
-
-        if cursor["mikuType"] == "NxAnniversary" then
-            # We want to put the anniversary just after the third item
-            # between the third and the forth
-            items.shift
-            items.shift
-            return {
-                "date" => CommonUtils::today(),
-                "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
-            }
-        end
-
-        if cursor["mikuType"] == "Wave" and cursor["interruption"] then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => 0.5 * firstPosition
-            }
-        end
-
-        if cursor["mikuType"] == "Wave" and !cursor["interruption"] then
-            if cursor["lpx01"] then
-                # We are just updating the date but keeping the same position
-                return {
-                    "date" => CommonUtils::today(),
-                    "position" => cursor["lpx01"]["position"]
-                }
-            end
-            return {
-                "date" => CommonUtils::today(),
-                "position" => (lastPosition + 1).floor
-            }
-        end
-
-        if cursor["lpx01"] then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => cursor["lpx01"]["position"]
-            }
-        end
-
-        loop {
-            break if items.none?{|item| item["mikuType"] == cursor["mikuType"] }
-            items.shift # removing the first item
-        }
-        # At this point there is no cursor["mikuType"] in the list of items
-
-        if items.size < 4 then
-            return {
-                "date" => CommonUtils::today(),
-                "position" => (lastPosition + 1).floor
-            }
-        end
-
-        # We now put the item as the new position 4 of the tail.
-
-        items.shift
-        items.shift
-
-        {
-            "date" => CommonUtils::today(),
-            "position" => 0.5*(items[0]["lpx01"]["position"] + items[1]["lpx01"]["position"])
-        }
     end
 
     # -----------------------------------------
@@ -299,18 +204,7 @@ class Listing
 
             spacecontrol.putsline ""
 
-            loop {
-                items = Listing::items()
-                break if items.all?{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() } 
-                items1, items2 = items.partition{|item| item["lpx01"] and item["lpx01"]["date"] == CommonUtils::today() }
-                items1 = items1.sort_by{|item| item["lpx01"]["position"] }
-                cursor = items2.first
-                lpx01 = Listing::computeLPx01(items1, cursor)
-                Items::setAttribute(cursor["uuid"], "lpx01", lpx01)
-            }
-
             items = Listing::items()
-            items = items.sort_by{|item| item["lpx01"]["position"] }
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items
 
