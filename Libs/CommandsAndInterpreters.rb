@@ -366,6 +366,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+            Items::setAttribute(item["uuid"], "lpx01", nil)
             return
         end
 
