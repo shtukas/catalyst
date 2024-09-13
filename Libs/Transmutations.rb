@@ -3,11 +3,11 @@ class Transmutations
     # Transmutations::transmute1(item)
     def self.transmute1(item)
         if item["mikuType"] == "NxOndate" then
-            targetMikyType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", ["NxTask", "NxCollection", "Wave"])
+            targetMikyType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", ["NxTask", "NxThread", "Wave"])
             return if targetMikyType.nil?
             Transmutations::transmute2(item, targetMikyType)
         end
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxThread" then
             targetMikyType = LucilleCore::selectEntityFromListOfEntitiesOrNull("target", ["TxCore"])
             return if targetMikyType.nil?
             Transmutations::transmute2(item, targetMikyType)
@@ -25,14 +25,14 @@ class Transmutations
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end
-        if item["mikuType"] == "NxOndate" and targetMikyType == "NxCollection" then
+        if item["mikuType"] == "NxOndate" and targetMikyType == "NxThread" then
             parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(parent)
             return if parent.nil?
             position = Catalyst::interactivelySelectPositionInParent(parent)
-            hours = NxCollections::interactivelyDecideHoursOrNull()
+            hours = NxThreads::interactivelyDecideHoursOrNull()
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             Items::setAttribute(item["uuid"], "hours-1905", hours)
-            Items::setAttribute(item["uuid"], "mikuType", "NxCollection")
+            Items::setAttribute(item["uuid"], "mikuType", "NxThread")
             return
         end
         if item["mikuType"] == "NxOndate" and targetMikyType == "Wave" then
@@ -44,10 +44,10 @@ class Transmutations
             Items::setAttribute(item["uuid"], "mikuType", "Wave")
             return
         end
-        if item["mikuType"] == "NxCollection" and targetMikyType == "TxCore" then
+        if item["mikuType"] == "NxThread" and targetMikyType == "TxCore" then
             hours = nil
             loop {
-                hours = NxCollections::interactivelyDecideHoursOrNull()
+                hours = NxThreads::interactivelyDecideHoursOrNull()
                 break if hours
             }
             Items::setAttribute(item["uuid"], "hours-1905", hours)

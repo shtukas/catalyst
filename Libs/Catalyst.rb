@@ -149,7 +149,7 @@ class Catalyst
             return
         end
 
-        if target["mikuType"] == "NxCollection" then
+        if target["mikuType"] == "NxThread" then
             collection = target
             Catalyst::interactivelyGetLinesParentToChildren()
                 .reverse
@@ -211,7 +211,7 @@ class Catalyst
         if element["uuid"] == context["uuid"] then
             return context
         end
-        if element["mikuType"] == "NxCollection" then
+        if element["mikuType"] == "NxThread" then
             # A collection which is not the context, and therefore was a child of the context
             return Catalyst::interactivelySelectOneHierarchyParentOrNull(element)
         end

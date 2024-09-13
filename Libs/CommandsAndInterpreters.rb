@@ -143,8 +143,8 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxCollection", "NxTask"].include?(item["mikuType"]) then
-                puts "You can only set hours to NxCollection and NxTask"
+            if !["NxThread", "NxTask"].include?(item["mikuType"]) then
+                puts "You can only set hours to NxThread and NxTask"
                 LucilleCore::pressEnterToContinue()
                 return
             end
@@ -155,7 +155,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("thread", input) then
-            thread = NxCollections::interactivelyIssueNewOrNull()
+            thread = NxThreads::interactivelyIssueNewOrNull()
             return if thread.nil?
             puts JSON.pretty_generate(thread)
             puts "select parent"
@@ -322,7 +322,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTask"
-            NxCollections::move(item)
+            NxThreads::move(item)
             return
         end
 

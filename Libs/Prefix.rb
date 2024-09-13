@@ -11,8 +11,8 @@ class Prefix
             end
             return Prefix::addPrefix(children.take(3) + items)
         end
-        if items[0]["mikuType"] == "NxCollection" then
-            children = NxCollections::childrenForPrefix(items[0])
+        if items[0]["mikuType"] == "NxThread" then
+            children = NxThreads::childrenForPrefix(items[0])
                         .select{|item| Listing::listable(item) }
             if children.empty? then
                 return items

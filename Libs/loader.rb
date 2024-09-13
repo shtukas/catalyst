@@ -159,7 +159,7 @@ require_relative "NxTasks.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
-require_relative "NxCollections.rb"
+require_relative "NxThreads.rb"
 require_relative "NxBufferInItems.rb"
 require_relative "NxMiniProjects.rb"
 

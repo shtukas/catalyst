@@ -1,6 +1,6 @@
-class NxCollections
+class NxThreads
 
-    # NxCollections::interactivelyDecideHoursOrNull()
+    # NxThreads::interactivelyDecideHoursOrNull()
     def self.interactivelyDecideHoursOrNull()
         hours = LucilleCore::askQuestionAnswerAsString("hours per week (optional): ")
         if hours == "" then
@@ -14,13 +14,13 @@ class NxCollections
         hours
     end
 
-    # NxCollections::interactivelyIssueNewOrNull()
+    # NxThreads::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        hours = NxCollections::interactivelyDecideHoursOrNull()
-        Items::itemInit(uuid, "NxCollection")
+        hours = NxThreads::interactivelyDecideHoursOrNull()
+        Items::itemInit(uuid, "NxThread")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -31,12 +31,12 @@ class NxCollections
     # ------------------
     # Data
 
-    # NxCollections::icon(item)
+    # NxThreads::icon(item)
     def self.icon(item)
         "🪔"
     end
 
-    # NxCollections::ratio(item)
+    # NxThreads::ratio(item)
     def self.ratio(item)
         if item["hours-1905"].nil? then
             item["hours-1905"] = 1
@@ -44,30 +44,30 @@ class NxCollections
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(item["hours-1905"].to_f/7)
     end
 
-    # NxCollections::ratioString(item)
+    # NxThreads::ratioString(item)
     def self.ratioString(item)
         return "" if item["hours-1905"].nil?
-        " (#{"%6.2f" % (100 * NxCollections::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
+        " (#{"%6.2f" % (100 * NxThreads::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
-    # NxCollections::toString(item, context = nil)
+    # NxThreads::toString(item, context = nil)
     def self.toString(item, context = nil)
         if context == "thread-elements-listing" then
-            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) (#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
+            return "(#{"%7.3f" % (item["global-positioning"] || 0)}) (#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
         end
         if context == "main-listing-1315" then
-            return "#{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
+            return "#{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
         end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxCollections::icon(item)} #{item["description"]}#{NxCollections::ratioString(item)}"
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
     end
 
-    # NxCollections::itemsInCompletionOrder()
+    # NxThreads::itemsInCompletionOrder()
     def self.itemsInCompletionOrder()
-        Items::mikuType("NxCollection")
-            .sort_by{|item| NxCollections::ratio(item) }
+        Items::mikuType("NxThread")
+            .sort_by{|item| NxThreads::ratio(item) }
     end
 
-    # NxCollections::numberOfChildrenWithHourCaching(parent)
+    # NxThreads::numberOfChildrenWithHourCaching(parent)
     def self.numberOfChildrenWithHourCaching(parent)
         # data:
         #   - unixtime
@@ -88,12 +88,12 @@ class NxCollections
         number
     end
 
-    # NxCollections::childrenForPrefix(thread)
+    # NxThreads::childrenForPrefix(thread)
     def self.childrenForPrefix(thread)
         children = Catalyst::children(thread)
-        c1, c2 = children.partition{|item| item["mikuType"] == "NxCollection" }
+        c1, c2 = children.partition{|item| item["mikuType"] == "NxThread" }
         [
-            c1.sort_by{|item| NxCollections::ratio(item) }.select{|item| NxCollections::ratio(item) < 1 },
+            c1.sort_by{|item| NxThreads::ratio(item) }.select{|item| NxThreads::ratio(item) < 1 },
             c2.sort_by{|i| (i["global-positioning"] || 0) }
         ].flatten
     end
@@ -101,7 +101,7 @@ class NxCollections
     # ------------------
     # Ops
 
-    # NxCollections::program1(thread)
+    # NxThreads::program1(thread)
     def self.program1(thread)
         loop {
 
@@ -182,7 +182,7 @@ class NxCollections
         }
     end
 
-    # NxCollections::move(item)
+    # NxThreads::move(item)
     def self.move(item)
         thread = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
         return if thread.nil?

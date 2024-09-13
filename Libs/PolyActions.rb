@@ -48,8 +48,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
-            NxCollections::program1(item)
+        if item["mikuType"] == "NxThread" then
+            NxThreads::program1(item)
             return
         end
 
@@ -122,7 +122,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxThread" then
             NxBalls::start(item)
             PolyActions::access(item)
             return
@@ -211,7 +211,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxThread" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
@@ -283,7 +283,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCollection" then
+        if item["mikuType"] == "NxThread" then
             if Catalyst::children(item).size > 0 then
                 puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
                 LucilleCore::pressEnterToContinue()

@@ -92,8 +92,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item, context)
         end
-        if item["mikuType"] == "NxCollection" then
-            return NxCollections::toString(item, context)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::toString(item, context)
         end
         if item["mikuType"] == "NxSeparator1" then
             return "✨"
