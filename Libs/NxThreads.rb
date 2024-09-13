@@ -28,6 +28,19 @@ class NxThreads
         Items::itemOrNull(uuid)
     end
 
+    # NxThreads::architectThread()
+    def self.architectThread()
+        thread = nil
+        while thread.nil? do
+            thread = NxThreads::interactivelySelectOneOrNull()
+            if thread.nil? then
+                puts "You did not select a thread, Let's create one"
+                thread = NxThreads::interactivelyIssueNewOrNull()
+            end
+        end
+        thread
+    end
+
     # ------------------
     # Data
 
@@ -67,6 +80,12 @@ class NxThreads
             .sort_by{|item| NxThreads::ratio(item) }
     end
 
+    # NxThreads::itemsInNamingOrder()
+    def self.itemsInNamingOrder()
+        Items::mikuType("NxThread")
+            .sort_by{|item| item["description"] }
+    end
+
     # NxThreads::numberOfChildrenWithHourCaching(parent)
     def self.numberOfChildrenWithHourCaching(parent)
         # data:
@@ -96,6 +115,31 @@ class NxThreads
             c1.sort_by{|item| NxThreads::ratio(item) }.select{|item| NxThreads::ratio(item) < 1 },
             c2.sort_by{|i| (i["global-positioning"] || 0) }
         ].flatten
+    end
+
+    # NxThreads::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInNamingOrder(), lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # Catalyst::interactivelySelectPositionInThread(thread)
+    def self.interactivelySelectPositionInThread(thread)
+        elements = Catalyst::childrenInGlobalPositioningOrder(thread)
+        elements.first(20).each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
+        if position == "" then # default does next
+            position = "next"
+        end
+        if position == "first" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+        end
+        position = position.to_f
+        position
     end
 
     # ------------------

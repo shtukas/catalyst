@@ -191,10 +191,9 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
-            return if parent.nil?
-            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-            position = Catalyst::interactivelySelectPositionInParent(parent)
+            thread = NxThreads::architectThread()
+            Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+            position = Catalyst::interactivelySelectPositionInThread(thread)
             Items::setAttribute(item["uuid"], "global-positioning", position)
             return
         end
