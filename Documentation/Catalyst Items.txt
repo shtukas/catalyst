@@ -10,7 +10,7 @@ Cross types conventions (all optional):
     - uxpayload-b4e4     : UxPayload
     - donation-1601      : String
     - parentuuid-0032    : uuid of the parent
-    - hours-1905         : Float # listing priotirisation, optional except for TxCores
+    - hours-1905         : Float # listing priotarization
     - cx04               : Cx04
 
 Database:

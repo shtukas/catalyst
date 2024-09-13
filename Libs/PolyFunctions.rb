@@ -35,7 +35,7 @@ class PolyFunctions
             # orphan todos feeding the parent thread
             accounts << {
                 "description" => "infinity for orphan items",
-                "number"      => TxCores::infinityuuid()
+                "number"      => NxThreads::infinityuuid()
             }
         end
 
@@ -43,7 +43,7 @@ class PolyFunctions
             # orphan todos feeding the parent thread
             accounts << {
                 "description" => "infinity for bufferIn items",
-                "number"      => TxCores::infinityuuid()
+                "number"      => NxThreads::infinityuuid()
             }
         end
 
@@ -112,9 +112,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "PhysicalTarget" then
             return TargetNumbers::toString(item)
-        end
-        if item["mikuType"] == "TxCore" then
-            return TxCores::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

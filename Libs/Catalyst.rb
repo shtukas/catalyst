@@ -112,7 +112,7 @@ class Catalyst
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        target = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+        target = NxThreads::interactivelyIssueNewOrNull()
         return if target.nil?
         Items::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end
@@ -136,44 +136,27 @@ class Catalyst
 
     # Catalyst::interactivelyPile(target)
     def self.interactivelyPile(target)
+
         if target["mikuType"] == "NxTask" then
-            # We are making a task as child of another task, which is fine
-            # We we are going this recursively
-            cursor = target
-            Catalyst::interactivelyGetLinesParentToChildren()
-                .each{|description|
-                    item = NxTasks::descriptionToTask1(description)
-                    Items::setAttribute(item["uuid"], "parentuuid-0032", cursor["uuid"])
-                    cursor = item
-                }
+            parent = Catalyst::parentOrNull(item)
+            if parent["mikuType"] == "NxThread" then
+                Catalyst::interactivelyPile(parent)
+            end
             return
         end
 
         if target["mikuType"] == "NxThread" then
-            collection = target
+            thread = target
             Catalyst::interactivelyGetLinesParentToChildren()
                 .reverse
                 .each_with_index{|description, i|
                     item = NxTasks::descriptionToTask1(description)
-                    Items::setAttribute(item["uuid"], "parentuuid-0032", collection["uuid"])
-                    Items::setAttribute(item["uuid"], "global-positioning", Catalyst::topPositionInParent(collection) - 1)
+                    Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
+                    Items::setAttribute(item["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
                 }
             return
         end
 
-        if target["mikuType"] == "TxCore" then
-            collection = target
-            Catalyst::interactivelyGetLinesParentToChildren()
-                .reverse
-                .each_with_index{|description, i|
-                    item = NxTasks::descriptionToTask1(description)
-                    Items::setAttribute(item["uuid"], "parentuuid-0032", collection["uuid"])
-                    Items::setAttribute(item["uuid"], "global-positioning", Catalyst::topPositionInParent(collection) - 1)
-                }
-            return
-        end
-
-        raise "(error: bc67f1ee-b3b1) cannot Catalyst::interactivelyPile for target #{target}"
     end
 
     # Catalyst::interactivelySelectPositionInParent(parent)
@@ -194,27 +177,5 @@ class Catalyst
         end
         position = position.to_f
         position
-    end
-
-    # Catalyst::interactivelySelectOneHierarchyParentOrNull(context = nil)
-    def self.interactivelySelectOneHierarchyParentOrNull(context = nil)
-        if context.nil? then
-            core = TxCores::interactivelySelectOneOrNull()
-            return nil if core.nil?
-            return Catalyst::interactivelySelectOneHierarchyParentOrNull(core)
-        end
-        elements = [context] + Catalyst::childrenInGlobalPositioningOrder(context).take(CommonUtils::screenHeight()-3)
-        element = LucilleCore::selectEntityFromListOfEntitiesOrNull("element", elements, lambda{|item| PolyFunctions::toString(item) })
-        if element.nil? then
-            return context
-        end
-        if element["uuid"] == context["uuid"] then
-            return context
-        end
-        if element["mikuType"] == "NxThread" then
-            # A collection which is not the context, and therefore was a child of the context
-            return Catalyst::interactivelySelectOneHierarchyParentOrNull(element)
-        end
-        Catalyst::interactivelySelectOneHierarchyParentOrNull(context)
     end
 end

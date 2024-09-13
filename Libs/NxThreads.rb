@@ -46,7 +46,7 @@ class NxThreads
 
     # NxThreads::icon(item)
     def self.icon(item)
-        "🪔"
+        "🔹"
     end
 
     # NxThreads::ratio(item)
@@ -60,7 +60,7 @@ class NxThreads
     # NxThreads::ratioString(item)
     def self.ratioString(item)
         return "" if item["hours-1905"].nil?
-        " (#{"%6.2f" % (100 * NxThreads::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
+        "(#{"%6.2f" % (100 * NxThreads::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
     # NxThreads::toString(item, context = nil)
@@ -68,10 +68,7 @@ class NxThreads
         if context == "thread-elements-listing" then
             return "(#{"%7.3f" % (item["global-positioning"] || 0)}) (#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
         end
-        if context == "main-listing-1315" then
-            return "#{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
-        end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxThreads::icon(item)} #{item["description"]}#{NxThreads::ratioString(item)}"
+        "#{NxThreads::icon(item)} #{NxThreads::ratioString(item)} #{item["description"]}"
     end
 
     # NxThreads::itemsInCompletionOrder()
@@ -109,12 +106,7 @@ class NxThreads
 
     # NxThreads::childrenForPrefix(thread)
     def self.childrenForPrefix(thread)
-        children = Catalyst::children(thread)
-        c1, c2 = children.partition{|item| item["mikuType"] == "NxThread" }
-        [
-            c1.sort_by{|item| NxThreads::ratio(item) }.select{|item| NxThreads::ratio(item) < 1 },
-            c2.sort_by{|i| (i["global-positioning"] || 0) }
-        ].flatten
+        Catalyst::children(thread).sort_by{|i| (i["global-positioning"] || 0) }
     end
 
     # NxThreads::interactivelySelectOneOrNull()
@@ -122,7 +114,7 @@ class NxThreads
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInNamingOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # Catalyst::interactivelySelectPositionInThread(thread)
+    # NxThreads::interactivelySelectPositionInThread(thread)
     def self.interactivelySelectPositionInThread(thread)
         elements = Catalyst::childrenInGlobalPositioningOrder(thread)
         elements.first(20).each{|item|
@@ -140,6 +132,16 @@ class NxThreads
         end
         position = position.to_f
         position
+    end
+
+    # NxThreads::infinityuuid()
+    def self.infinityuuid()
+        "85e2e9fe-ef3d-4f75-9330-2804c4bcd52b"
+    end
+
+    # NxThreads::listingItems()
+    def self.listingItems()
+        NxThreads::itemsInCompletionOrder().select{|item| NxThreads::ratio(item) < 1 }
     end
 
     # ------------------
@@ -164,7 +166,7 @@ class NxThreads
             puts ""
 
             children = Catalyst::childrenInGlobalPositioningOrder(thread)
-            if thread["uuid"] == TxCores::infinityuuid() then
+            if thread["uuid"] == NxThreads::infinityuuid() then
                 children = children.first(40)
             end
             children
@@ -216,7 +218,7 @@ class NxThreads
             if input == "moves" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 next if selected.empty?
-                parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+                parent = NxThreads::interactivelyIssueNewOrNull()
                 next if parent.nil?
                 selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"]) }
                 next
@@ -226,9 +228,51 @@ class NxThreads
         }
     end
 
+    # NxThreads::program2()
+    def self.program2()
+        loop {
+ 
+            system("clear")
+ 
+            store = ItemStore.new()
+ 
+            puts ""
+ 
+            NxThreads::itemsInCompletionOrder()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts Listing::toString2(store, item)
+                }
+ 
+            puts ""
+            puts "thread | hours *"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+ 
+            if input == "thread" then
+                thread = NxThreads::interactivelyIssueNewOrNull()
+                next if thread.nil?
+                puts JSON.pretty_generate(thread)
+                next
+            end
+ 
+            if input.start_with?("hours") then
+                item = store.get(input[5, 99].strip.to_i)
+                next if item.nil?
+                hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+                Items::setAttribute(item["uuid"], "hours-1905", hours)
+                next
+            end
+ 
+            puts ""
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
     # NxThreads::move(item)
     def self.move(item)
-        thread = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+        thread = NxThreads::interactivelyIssueNewOrNull()
         return if thread.nil?
         position = Catalyst::interactivelySelectPositionInParent(thread)
         Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])

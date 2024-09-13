@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | transmute * | mini * | >> * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | pile * | transmute * | mini * | >> * | destroy *",
             "",
             "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis | threads",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n>",
         ].join("\n")
@@ -30,6 +30,14 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutations::transmute1(item)
+            return
+        end
+
+        if Interpreting::match("pile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Catalyst::interactivelyPile(item)
             return
         end
 
@@ -71,7 +79,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+            parent = NxThreads::interactivelyIssueNewOrNull()
             return if parent.nil?
             position = Catalyst::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
@@ -133,7 +141,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+            parent = NxThreads::interactivelyIssueNewOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -159,7 +167,7 @@ class CommandsAndInterpreters
             return if thread.nil?
             puts JSON.pretty_generate(thread)
             puts "select parent"
-            parent = Catalyst::interactivelySelectOneHierarchyParentOrNull(nil)
+            parent = NxThreads::interactivelyIssueNewOrNull()
             return if parent.nil?
             Items::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -193,7 +201,7 @@ class CommandsAndInterpreters
             puts JSON.pretty_generate(item)
             thread = NxThreads::architectThread()
             Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-            position = Catalyst::interactivelySelectPositionInThread(thread)
+            position = NxThreads::interactivelySelectPositionInThread(thread)
             Items::setAttribute(item["uuid"], "global-positioning", position)
             return
         end
@@ -248,14 +256,14 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("minis", input) then
-            items = Items::mikuType("NxMiniProject").sort_by{|item| item["unixtime"] }
-            Catalyst::program2(items)
+        if Interpreting::match("threads", input) then
+            NxThreads::program2()
             return
         end
 
-        if Interpreting::match("cores", input) then
-            TxCores::program2()
+        if Interpreting::match("minis", input) then
+            items = Items::mikuType("NxMiniProject").sort_by{|item| item["unixtime"] }
+            Catalyst::program2(items)
             return
         end
 

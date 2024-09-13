@@ -58,11 +58,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            TxCores::program1(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -123,18 +118,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end
 
         if item["mikuType"] == "PhysicalTarget" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "TxCore" then
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end
@@ -228,10 +216,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "TxCore" then
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -317,13 +301,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "TxCore" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

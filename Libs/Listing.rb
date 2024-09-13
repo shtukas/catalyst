@@ -109,9 +109,9 @@ class Listing
             NxOndates::listingItems(),
             NxMiniProjects::listingItems(),
             TargetNumbers::listingItems(),
-            Waves::muiItemsNotInterruption(),
+            NxThreads::listingItems(),
             NxBackups::listingItems(),
-            TxCores::listingItems(),
+            Waves::muiItemsNotInterruption(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -142,7 +142,6 @@ class Listing
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
-        spot.contest_entry("TxCores::listingItems()", lambda{ TxCores::listingItems() })
         spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
         spot.end_contest()
 
