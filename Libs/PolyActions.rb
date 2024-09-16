@@ -146,6 +146,8 @@ class PolyActions
     def self.done(item)
 
         NxBalls::stop(item)
+        flag = XCache::getFlag("1846e64c-3446-4b71-a462-dea8801f963f")
+        XCache::setFlag("1846e64c-3446-4b71-a462-dea8801f963f", !flag)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)

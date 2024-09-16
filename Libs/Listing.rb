@@ -216,6 +216,14 @@ class Listing
                 spacecontrol.putsline ""
             end
 
+            flag = XCache::getFlag("1846e64c-3446-4b71-a462-dea8801f963f")
+            isNonInterruptionWave = lambda{|item| item["mikuType"] == "Wave" and !item["interruption"] }
+            if flag then
+                items = items.select{|item| isNonInterruptionWave.call(item) or NxBalls::itemIsRunning(item) }
+            else
+                items = items.select{|item| !isNonInterruptionWave.call(item) or NxBalls::itemIsRunning(item) }
+            end
+
             items = items.select{|item| item["cx04"].nil? }
             items = Prefix::addPrefix(items)
             items
