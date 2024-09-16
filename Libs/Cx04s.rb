@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-class Cx04
+class Cx04 # condition clique
 
     # Cx04::cx04s(items)
     def self.cx04s(items)

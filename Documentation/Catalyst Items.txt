@@ -2,6 +2,9 @@ Catalyst items are json object with at least
     - uuid
     - mikuType
 
+Database:
+    create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
+
 Cross types conventions (all optional):
 
     - doNotShowUntil     : unixtime
@@ -11,12 +14,9 @@ Cross types conventions (all optional):
     - donation-1601      : String
     - parentuuid-0032    : uuid of the parent
     - hours-1905         : Float # listing priotarization
-    - cx04               : Cx04
+    - cx04               : Cx04 # condition clique
 
-Database:
-    create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
-
-Cx04
+Cx04 (condition clique)
     uuid        : string
     mikuType    : "Cx04"
     description : string
