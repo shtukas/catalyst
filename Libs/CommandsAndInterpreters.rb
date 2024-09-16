@@ -79,7 +79,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = NxThreads::interactivelyIssueNewOrNull()
+            parent = NxThreads::interactivelySelectOneOrNull()
             return if parent.nil?
             position = Catalyst::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
@@ -141,7 +141,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = NxThreads::interactivelyIssueNewOrNull()
+            parent = NxThreads::interactivelySelectOneOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
             return
@@ -163,13 +163,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("thread", input) then
-            thread = NxThreads::interactivelyIssueNewOrNull()
-            return if thread.nil?
-            puts JSON.pretty_generate(thread)
-            puts "select parent"
-            parent = NxThreads::interactivelyIssueNewOrNull()
-            return if parent.nil?
-            Items::setAttribute(thread["uuid"], "parentuuid-0032", parent["uuid"])
+            NxThreads::interactivelyIssueNewOrNull()
             return
         end
 

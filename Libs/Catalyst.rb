@@ -112,7 +112,7 @@ class Catalyst
     # Catalyst::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        target = NxThreads::interactivelyIssueNewOrNull()
+        target = NxThreads::interactivelySelectOneOrNull()
         return if target.nil?
         Items::setAttribute(item["uuid"], "donation-1601", target["uuid"])
     end

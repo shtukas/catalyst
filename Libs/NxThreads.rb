@@ -18,7 +18,7 @@ class NxThreads
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         hours = NxThreads::interactivelyDecideHoursOrNull()
         Items::itemInit(uuid, "NxThread")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
@@ -218,7 +218,7 @@ class NxThreads
             if input == "moves" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(thread), lambda{|i| PolyFunctions::toString(i) })
                 next if selected.empty?
-                parent = NxThreads::interactivelyIssueNewOrNull()
+                parent = NxThreads::interactivelySelectOneOrNull()
                 next if parent.nil?
                 selected.each{|i| Items::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"]) }
                 next
@@ -272,7 +272,7 @@ class NxThreads
 
     # NxThreads::move(item)
     def self.move(item)
-        thread = NxThreads::interactivelyIssueNewOrNull()
+        thread = NxThreads::architectThread()
         return if thread.nil?
         position = Catalyst::interactivelySelectPositionInParent(thread)
         Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
