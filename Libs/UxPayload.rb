@@ -5,6 +5,7 @@ class UxPayload
     def self.types()
         [
             "text",
+            "open cycle",
             "todo-text-file-by-name",
             "aion-point",
             "Dx8Unit",
@@ -67,6 +68,14 @@ class UxPayload
             return {
                 "type" => "unique-string",
                 "uniquestring" => uniquestring
+            }
+        end
+        if type == "open cycle" then
+            name1 = LucilleCore::askQuestionAnswerAsString("name (empty to abort): ")
+            return nil if name1 == ""
+            return {
+                "type" => "open cycle",
+                "name" => name1
             }
         end
     end
@@ -152,6 +161,21 @@ class UxPayload
             end
             return
         end
+        if payload["type"] == "open cycle" then
+            name1 = payload["name"]
+            puts "accessing open cycle: #{name1}"
+            location = Atlas::uniqueStringToLocationOrNull(name1)
+            if location then
+                puts "opening directory: #{location}"
+                system("open '#{location}'")
+                LucilleCore::pressEnterToContinue()
+            else
+                puts "could not locate: #{location}"
+                LucilleCore::pressEnterToContinue()
+            end
+            return
+        end
+
     end
 
     # UxPayload::edit(itemuuid, payload)
@@ -196,6 +220,9 @@ class UxPayload
             if payload["uniquestring"].nil? then
                 raise "could not find `uniquestring` attribute for payload #{payload}"
             end
+            return
+        end
+        if payload["type"] == "open cycle" then
             return
         end
         raise "unkown payload type: #{payload["type"]} at #{payload}"
