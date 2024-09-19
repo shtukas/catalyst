@@ -84,6 +84,7 @@ class UxPayload
             if option == "in file" then
                 filepath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{SecureRandom.hex(5)}.txt"
                 File.open(filepath, "w"){|f| f.puts(payload["text"]) }
+                system("open '#{filepath}'")
                 LucilleCore::pressEnterToContinue()
             end
             return
@@ -127,6 +128,7 @@ class UxPayload
         end
         if payload["type"] == "url" then
             url = payload["url"]
+            puts "url: #{url}"
             CommonUtils::openUrlUsingSafari(url)
             LucilleCore::pressEnterToContinue()
             return
