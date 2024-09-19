@@ -138,8 +138,14 @@ class UxPayload
             puts "accessing unique string: #{uniquestring}"
             location = Atlas::uniqueStringToLocationOrNull(uniquestring)
             if location then
-                puts "location: #{location}"
-                LucilleCore::pressEnterToContinue()
+                if File.file?(location) then
+                    puts "location: #{location}"
+                    LucilleCore::pressEnterToContinue()
+                else
+                    puts "opening directory: #{location}"
+                    system("open '#{location}'")
+                    LucilleCore::pressEnterToContinue()
+                end
             else
                 puts "could not locate: #{location}"
                 LucilleCore::pressEnterToContinue()
