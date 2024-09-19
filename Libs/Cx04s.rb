@@ -2,8 +2,8 @@
 
 class Cx04 # condition clique
 
-    # Cx04::cx04s(items)
-    def self.cx04s(items)
+    # Cx04::cx04sFromItems(items)
+    def self.cx04sFromItems(items)
         items
             .map{|item| item["cx04"] }
             .compact
@@ -19,7 +19,7 @@ class Cx04 # condition clique
     # Cx04::architectOrNull()
     def self.architectOrNull()
         items = Listing::items()
-        cx04s = Cx04::cx04s(items)
+        cx04s = Cx04::cx04sFromItems(items)
         if !cx04s.empty? then
             cx04 = LucilleCore::selectEntityFromListOfEntitiesOrNull("Cx04", cx04s, lambda{|item| PolyFunctions::toString(item) })
             return cx04 if cx04
@@ -35,8 +35,8 @@ class Cx04 # condition clique
         }
     end
 
-    # Cx04::items(cx04)
-    def self.items(cx04)
+    # Cx04::itemsForCx04(cx04)
+    def self.itemsForCx04(cx04)
         Listing::items()
             .select{|item| item["cx04"] and item["cx04"]["uuid"] == cx04["uuid"] }
     end

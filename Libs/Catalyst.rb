@@ -178,4 +178,22 @@ class Catalyst
         position = position.to_f
         position
     end
+
+    # Catalyst::interactivelyPush(item)
+    def self.interactivelyPush(item)
+        puts "push '#{PolyFunctions::toString(item).green}'"
+        unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+        return if unixtime.nil?
+        NxBalls::stop(item)
+        puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+        DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+    end
+
+    # Catalyst::pushByNHour(item, timeSpanInHours)
+    def self.pushByNHour(item, timeSpanInHours)
+        unixtime = Time.new.to_f + timeSpanInHours*3600
+        NxBalls::stop(item)
+        puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+        DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+    end
 end

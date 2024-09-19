@@ -10,7 +10,7 @@ class PolyActions
 
         if item["mikuType"] == "Cx04" then
             cx04 = item
-            items = Cx04::items(cx04)
+            items = Cx04::itemsForCx04(cx04)
             Catalyst::program2(items, nil)
             return
         end
@@ -72,82 +72,18 @@ class PolyActions
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
-    # PolyActions::doubleDot(item)
-    def self.doubleDot(item)
-
-        if item["mikuType"] == "Cx04" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxAnniversary" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            return
-        end
-
-        if item["mikuType"] == "NxFloat" then
-            PolyActions::done(item)
-            return
-        end
-
-        if item["mikuType"] == "NxLambda" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxMiniProject" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "PhysicalTarget" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxBufferInItem" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to doubleDot #{item["mikuType"]}"
+    # PolyActions::stop(item)
+    def self.stop(item)
+        NxBalls::stop(item)
     end
 
     # PolyActions::done(item)
     def self.done(item)
 
         NxBalls::stop(item)
-        flag = XCache::getFlag("1846e64c-3446-4b71-a462-dea8801f963f")
-        XCache::setFlag("1846e64c-3446-4b71-a462-dea8801f963f", !flag)
+
+        flag = XCache::getFlag("b9d81462-4e85-40a2-9c2f-cf7903be0a8a")
+        XCache::setFlag("b9d81462-4e85-40a2-9c2f-cf7903be0a8a", !flag)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
@@ -236,11 +172,78 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::stop(item)
-    def self.stop(item)
-        NxBalls::stop(item)
-        if LucilleCore::askQuestionAnswerAsBoolean("remove '#{PolyFunctions::toString(item).green}' from listing ? ") then
+    # PolyActions::doubleDot(item)
+    def self.doubleDot(item)
+
+        if item["mikuType"] == "Cx04" then
+            PolyActions::access(item)
+            return
         end
+
+        if item["mikuType"] == "NxAnniversary" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            return
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            PolyActions::done(item)
+            return
+        end
+
+        if item["mikuType"] == "NxLambda" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxOndate" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxMiniProject" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxTask" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "NxThread" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "PhysicalTarget" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["mikuType"] == "Wave" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::stop(item)
+                PolyActions::done(item)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxBufferInItem" then
+            NxBalls::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to doubleDot #{item["mikuType"]}"
     end
 
     # PolyActions::destroy(item)

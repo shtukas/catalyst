@@ -331,12 +331,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts "push '#{PolyFunctions::toString(item).green}'"
-            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            return if unixtime.nil?
-            NxBalls::stop(item)
-            puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-            DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+            Catalyst::interactivelyPush(item)
             return
         end
 

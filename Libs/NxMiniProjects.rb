@@ -36,7 +36,7 @@ class NxMiniProjects
     def self.listingItems()
         return [] if !NxMiniProjects::shouldDisplay()
         Items::mikuType("NxMiniProject")
-            .select{|item| Listing::listable(item) }
+            .select{|item| Listing::listable(item) and item["cx04"].nil? }
             .sort_by{|item| item["unixtime"] }
             .take(3)
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }

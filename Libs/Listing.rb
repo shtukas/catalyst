@@ -170,12 +170,6 @@ class Listing
         false
     end
 
-    # Listing::injectActiveItems(items, runningItems)
-    def self.injectActiveItems(items, runningItems)
-        activeItems, pausedItems = runningItems.partition{|item| NxBalls::itemIsRunning(item) }
-        activeItems + pausedItems + items
-    end
-
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -203,10 +197,8 @@ class Listing
             spacecontrol.putsline ""
 
             items = Listing::items()
-            items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-            items
 
-            cx04s = Cx04::cx04s(items)
+            cx04s = Cx04::cx04sFromItems(items)
             if !cx04s.empty? then
                 cx04s.each{|item|
                     store.register(item, false)
@@ -216,16 +208,16 @@ class Listing
                 spacecontrol.putsline ""
             end
 
-            flag = XCache::getFlag("1846e64c-3446-4b71-a462-dea8801f963f")
-            isNonInterruptionWave = lambda{|item| item["mikuType"] == "Wave" and !item["interruption"] }
-            if flag then
-                items = items.select{|item| isNonInterruptionWave.call(item) or NxBalls::itemIsRunning(item) }
-            else
-                items = items.select{|item| !isNonInterruptionWave.call(item) or NxBalls::itemIsRunning(item) }
+            items = items.select{|item| item["cx04"].nil? }
+
+            if XCache::getFlag("b9d81462-4e85-40a2-9c2f-cf7903be0a8a") then
+                items = items.reverse
             end
 
-            items = items.select{|item| item["cx04"].nil? }
+            items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+
             items = Prefix::addPrefix(items)
+
             items
                 .reduce([]){|selected, item|
                     if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
