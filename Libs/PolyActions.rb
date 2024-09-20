@@ -75,15 +75,14 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+        Items::setAttribute(item["uuid"], "listing45", nil)
     end
 
     # PolyActions::done(item)
     def self.done(item)
 
         NxBalls::stop(item)
-
-        flag = XCache::getFlag("b9d81462-4e85-40a2-9c2f-cf7903be0a8a")
-        XCache::setFlag("b9d81462-4e85-40a2-9c2f-cf7903be0a8a", !flag)
+        Items::setAttribute(item["uuid"], "listing45", nil)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)

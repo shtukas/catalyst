@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis | threads",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n>",
+            "misc          : search | speed | commands | edit <n> | sort",
         ].join("\n")
     end
 
@@ -164,6 +164,22 @@ class CommandsAndInterpreters
 
         if Interpreting::match("thread", input) then
             NxThreads::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            items = Listing::items()
+                        .select{|i| i["cx04"].nil? }
+                        .select{|i| i["listing45"] }
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|i|
+                firstPosition = Listing::items()
+                                .select{|i| i["cx04"].nil? }
+                                .select{|i| i["listing45"] }
+                                .map{|i| i["listing45"] }
+                                .reduce(0){|top, position| [top, position].min }
+                Items::setAttribute(i["uuid"], "listing45", firstPosition - 1)
+            }
             return
         end
 
