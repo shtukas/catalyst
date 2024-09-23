@@ -46,7 +46,7 @@ class NxTasks
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
         if context == "main-listing-1315" then
-            return "#{NxTasks::icon(item)} #{item["description"]}#{NxTasks::ratioString(item)}"
+            return "#{NxTasks::icon(item)} #{item["description"]} #{NxTasks::ratioString(item)}"
         end
         "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTasks::icon(item)} #{item["description"]}#{NxTasks::ratioString(item)}"
     end

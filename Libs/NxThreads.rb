@@ -77,12 +77,6 @@ class NxThreads
             .sort_by{|item| NxThreads::ratio(item) }
     end
 
-    # NxThreads::itemsInNamingOrder()
-    def self.itemsInNamingOrder()
-        Items::mikuType("NxThread")
-            .sort_by{|item| item["description"] }
-    end
-
     # NxThreads::numberOfChildrenWithHourCaching(parent)
     def self.numberOfChildrenWithHourCaching(parent)
         # data:
@@ -111,7 +105,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInNamingOrder(), lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", NxThreads::itemsInCompletionOrder(), lambda{|item| PolyFunctions::toString(item) })
     end
 
     # NxThreads::interactivelySelectPositionInThread(thread)

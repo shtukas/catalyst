@@ -188,7 +188,7 @@ class Listing
 
         puts "dispatch: '#{PolyFunctions::toString(i3).green}'"
 
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("dispatch mode", ["do now (default)", "set listing position", "position next", "done", "push", "push by 2 hours", "Cx04", "sort"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("dispatch mode", ["do now (default)", "set listing position", "position next", "done", "push", "push by 2 hours", "Cx04", "mini", "sort", "send command"])
 
         if option.nil? then
             PolyActions::doubleDot(i3)
@@ -262,6 +262,17 @@ class Listing
             return Listing::dispatch(
                 Listing::items().select{|i| i["cx04"].nil? }
             )
+        end
+
+        if option == "send command" then
+            command = LucilleCore::askQuestionAnswerAsString("> ")
+            CommandsAndInterpreters::interpreter(command, ItemStore.new())
+            return Listing::dispatch(i1s + [i3] + i2s)
+        end
+
+        if option == "mini" then
+            NxMiniProjects::transformToMini(i3)
+            return Listing::dispatch(i1s + i2s)
         end
     end
 
