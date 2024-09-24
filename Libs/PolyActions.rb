@@ -75,14 +75,12 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "listing45", nil)
     end
 
     # PolyActions::done(item)
     def self.done(item)
 
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "listing45", nil)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)

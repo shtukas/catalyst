@@ -170,112 +170,6 @@ class Listing
         false
     end
 
-    # Listing::dispatch(items)
-    def self.dispatch(items)
-        system('clear')
-
-        i1s, i2s = items.partition{|item| item["listing45"] }
-        i1s = i1s.sort_by{|i| i["listing45"] } 
-        if i2s.empty? then
-            return i1s
-        end
-        i3 = i2s.shift
-
-        puts "-- (dispatch) ---------"
-        i1s
-            .sort_by{|i| i["listing45"] }
-            .each{|i| puts "#{"%5.2f" % i["listing45"]} : #{PolyFunctions::toString(i)}" }
-
-        puts "dispatch: '#{PolyFunctions::toString(i3).green}'"
-
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("dispatch mode", ["do now (default)", "set listing position", "position next", "done", "push", "push by 2 hours", "Cx04", "mini", "sort", "send command"])
-
-        if option.nil? then
-            PolyActions::doubleDot(i3)
-            return Listing::dispatch(i1s + i2s)
-        end
-
-        if option == "do now (default)" then
-            PolyActions::doubleDot(i3)
-            return Listing::dispatch(i1s + i2s)
-        end
-
-        if option == "done" then
-            PolyActions::done(i3)
-            return Listing::dispatch(i1s + i2s)
-        end
-
-        if option == "Cx04" then
-            cx04 = Cx04::architectOrNull()
-            return Listing::dispatch(i1s + [i3] + i2s) if cx04.nil?
-            Items::setAttribute(i3["uuid"], "cx04", cx04)
-            return Listing::dispatch(i1s + i2s)
-        end
-
-        if option == "set listing position" then
-            position = LucilleCore::askQuestionAnswerAsString("position for '#{PolyFunctions::toString(i3).green}' : ").to_f
-            Items::setAttribute(i3["uuid"], "listing45", position)
-            i3["listing45"] =  position
-            return Listing::dispatch(i1s + [i3] + i2s)
-        end
-
-        if option == "position next" then
-            lastPosition = Listing::items()
-                            .select{|i| i["cx04"].nil? }
-                            .select{|i| i["listing45"] }
-                            .map{|i| i["listing45"] }
-                            .reduce(0){|top, position| [top, position].max }
-            Items::setAttribute(i3["uuid"], "listing45", lastPosition+1)
-            i3["listing45"] =  lastPosition
-            return Listing::dispatch(i1s + [i3] + i2s)
-        end
-
-        if option == "push" then
-            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            if unixtime.nil? then
-                return Listing::dispatch(i1s + [i3] + i2s)
-            end
-            NxBalls::stop(i3)
-            puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-            DoNotShowUntil1::setUnixtime(i3["uuid"], unixtime)
-            return Listing::dispatch(i1s + i2s)
-        end
-
-        if option == "push by 2 hours" then
-            unixtime = Time.new.to_i + 3600*2
-            NxBalls::stop(i3)
-            puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-            DoNotShowUntil1::setUnixtime(i3["uuid"], unixtime)
-            return Listing::dispatch(i1s + i2s)
-        end
-
-        if option == "sort" then
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], i1s, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|i|
-                firstPosition = Listing::items()
-                                .select{|i| i["cx04"].nil? }
-                                .select{|i| i["listing45"] }
-                                .map{|i| i["listing45"] }
-                                .reduce(0){|top, position| [top, position].min }
-                Items::setAttribute(i["uuid"], "listing45", firstPosition - 1)
-            }
-            return Listing::dispatch(
-                Listing::items().select{|i| i["cx04"].nil? }
-            )
-        end
-
-        if option == "send command" then
-            command = LucilleCore::askQuestionAnswerAsString("> ")
-            CommandsAndInterpreters::interpreter(command, ItemStore.new())
-            return Listing::dispatch(i1s + [i3] + i2s)
-        end
-
-        if option == "mini" then
-            NxMiniProjects::transformToMini(i3)
-            return Listing::dispatch(i1s + i2s)
-        end
-    end
-
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -304,12 +198,7 @@ class Listing
 
             cx04s = Cx04::cx04sFromItems(items)
 
-
             items = items.select{|item| item["cx04"].nil? }
-
-            items = Listing::dispatch(items)
-
-            items = items.sort_by{|item| item["listing45"] }
 
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
 

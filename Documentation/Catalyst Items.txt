@@ -15,7 +15,6 @@ Cross types conventions (all optional):
     - parentuuid-0032    : uuid of the parent
     - hours-1905         : Float # listing priotarization
     - cx04               : Cx04 # condition clique
-    - listing45          : Float
 
 Cx04s are used to aggregate items in cliques that are awaiting a particular condition
 Cx04 (condition clique)
