@@ -58,15 +58,16 @@ class NxMiniProjects
             return
         end
         if item["mikuType"] == "NxOndate" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxMiniProject")
             Items::setAttribute(item["uuid"], "unixtime", Time.new.to_i)
             Items::setAttribute(item["uuid"], "datetime", Time.new.utc.iso8601)
+            Items::setAttribute(item["uuid"], "mikuType", "NxMiniProject")
             return
         end
         if item["mikuType"] == "NxTask" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxMiniProject")
             Items::setAttribute(item["uuid"], "unixtime", Time.new.to_i)
             Items::setAttribute(item["uuid"], "datetime", Time.new.utc.iso8601)
+            Items::setAttribute(item["uuid"], "parentuuid-0032", nil)
+            Items::setAttribute(item["uuid"], "mikuType", "NxMiniProject")
             return
         end
         raise "(error: 2F279A66) cannot NxMiniProjects::transformToMini item: #{item}"
