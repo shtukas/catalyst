@@ -25,38 +25,11 @@ class CommandsAndInterpreters
             end
         end
 
-        if Interpreting::match("transmute *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute1(item)
-            return
-        end
-
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::interactivelyPile(item)
-            return
-        end
-
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            cx04 = Cx04::architectOrNull()
-            return if cx04.nil?
-            Items::setAttribute(item["uuid"], "cx04", cx04)
-            return
-        end
-
         if Interpreting::match(">> *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            cx04 = Cx04::architectOrNull()
-            return if cx04.nil?
-            Items::setAttribute(item["uuid"], "cx04", cx04)
+            Transmutations::transmute1(item)
             return
         end
 
@@ -72,6 +45,22 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
+            return
+        end
+
+        if Interpreting::match("transmute *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutations::transmute1(item)
+            return
+        end
+
+        if Interpreting::match("pile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Catalyst::interactivelyPile(item)
             return
         end
 

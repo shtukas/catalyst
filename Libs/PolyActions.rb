@@ -8,13 +8,6 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["mikuType"] == "Cx04" then
-            cx04 = item
-            items = Cx04::itemsForCx04(cx04)
-            Catalyst::program2(items, nil)
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
             return
@@ -171,11 +164,6 @@ class PolyActions
 
     # PolyActions::doubleDot(item)
     def self.doubleDot(item)
-
-        if item["mikuType"] == "Cx04" then
-            PolyActions::access(item)
-            return
-        end
 
         if item["mikuType"] == "NxAnniversary" then
             PolyActions::access(item)

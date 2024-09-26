@@ -196,10 +196,6 @@ class Listing
 
             items = Listing::items()
 
-            cx04s = Cx04::cx04sFromItems(items)
-
-            items = items.select{|item| item["cx04"].nil? }
-
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
 
             items = Prefix::addPrefix(items)
@@ -207,15 +203,6 @@ class Listing
             system("clear")
 
             spacecontrol.putsline ""
-
-            if !cx04s.empty? then
-                cx04s.each{|item|
-                    store.register(item, false)
-                    line = Listing::toString2(store, item, "main-listing-1315")
-                    status = spacecontrol.putsline line
-                }
-                spacecontrol.putsline ""
-            end
 
             items
                 .reduce([]){|selected, item|
