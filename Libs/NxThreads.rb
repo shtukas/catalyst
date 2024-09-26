@@ -171,7 +171,7 @@ class NxThreads
 
             puts ""
 
-            puts "task | pile | position * | sort | moves"
+            puts "task | pile | position * | sort | move * | moves"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -206,6 +206,18 @@ class NxThreads
                 selected.reverse.each{|i|
                     Items::setAttribute(i["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
                 }
+                next
+            end
+
+            if input.start_with?("move ") then
+                listord = input[5, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                parent = NxThreads::interactivelySelectOneOrNull()
+                next if parent.nil?
+                position = Catalyst::interactivelySelectPositionInParent(parent)
+                Items::setAttribute(i["uuid"], "parentuuid-0032", parent["uuid"])
+                Items::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
 

@@ -40,7 +40,7 @@ class NxTasks
     # NxTasks::ratioString(item)
     def self.ratioString(item)
         return "" if item["hours-1905"].nil?
-        " (#{"%6.2f" % (100 * NxTasks::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
+        "(#{"%6.2f" % (100 * NxTasks::ratio(item))} %; #{"%5.2f" % item["hours-1905"]} h/w)".yellow
     end
 
     # NxTasks::toString(item, context)
@@ -48,7 +48,7 @@ class NxTasks
         if context == "main-listing-1315" then
             return "#{NxTasks::icon(item)} #{item["description"]} #{NxTasks::ratioString(item)}"
         end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTasks::icon(item)} #{item["description"]}#{NxTasks::ratioString(item)}"
+        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTasks::icon(item)} #{item["description"]} #{NxTasks::ratioString(item)}"
     end
 
     # NxTasks::orphans()
