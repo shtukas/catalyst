@@ -107,11 +107,11 @@ class Listing
             DropBox::items(),
             Desktop::listingItems(),
             NxOndates::listingItems(),
-            NxMiniProjects::listingItems(),
             TargetNumbers::listingItems(),
-            NxThreads::listingItems(),
             NxBackups::listingItems(),
             Waves::muiItemsNotInterruption(),
+            NxMiniProjects::listingItems(),
+            NxThreads::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
