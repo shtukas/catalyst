@@ -8,6 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | pile * | transmute * | mini * | >> * | destroy *",
             "",
             "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini",
+            "stack         : pile | insert | sort",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis | threads",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n>",
@@ -105,6 +106,40 @@ class CommandsAndInterpreters
         if Interpreting::match("backups", input) then
             items = Items::mikuType("NxBackup").sort_by{|item| item["description"] }
             Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("pile", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
+            Items::setAttribute(item["uuid"], "list-pos-1610", {
+                "date" => CommonUtils::today(),
+                "position" => ListingPositions::getFirstPosition() - 1
+            })
+            return
+        end
+
+        if Interpreting::match("insert", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description: ")
+            return if description == ""
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
+            Items::setAttribute(item["uuid"], "list-pos-1610", {
+                "date" => CommonUtils::today(),
+                "position" => position
+            })
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], ListingPositions::itemsInOrder(), lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|i|
+                Items::setAttribute(i["uuid"], "list-pos-1610", {
+                    "date" => CommonUtils::today(),
+                    "position" => ListingPositions::getFirstPosition() - 1
+                })
+            }
             return
         end
 
