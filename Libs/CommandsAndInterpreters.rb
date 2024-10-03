@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | pile * | transmute * | mini * | >> * | destroy *",
             "",
             "makers        : anniversary | target-number | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini",
-            "stack         : pile | insert | sort",
+            "stack         : pile | insert | position * | sort",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis | threads",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n>",
@@ -125,6 +125,18 @@ class CommandsAndInterpreters
             return if description == ""
             position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
             item = NxOndates::interactivelyIssueAtTodayFromDescription(description)
+            Items::setAttribute(item["uuid"], "list-pos-1610", {
+                "date" => CommonUtils::today(),
+                "position" => position
+            })
+            return
+        end
+
+        if Interpreting::match("position * ", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
             Items::setAttribute(item["uuid"], "list-pos-1610", {
                 "date" => CommonUtils::today(),
                 "position" => position
