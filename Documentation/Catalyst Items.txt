@@ -9,7 +9,5 @@ Cross types conventions (all optional):
 
     - doNotShowUntil     : unixtime
     - skip-0843          : unixtime (skipped until this time)
-    - global-positioning : Float # ordering within the children of a parent.
     - uxpayload-b4e4     : UxPayload
-    - parentuuid-0032    : uuid of the parent
-    - hours-1905         : Float # commitment per week
+    - donation-1205      : String # uuid of target for donation

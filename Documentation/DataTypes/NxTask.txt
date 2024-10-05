@@ -5,4 +5,4 @@ NxTask:
     - unixtime        : Float
     - datetime        : DateTime Iso 8601 UTC Zulu
     - description     : String
-    - parentuuid-0032 : optional, uuid of a thread
+    - taskType-11     : DxTaskType

@@ -1,0 +1,16 @@
+
+DxTaskType:
+    - variant      : "on date"
+    - date         : YYYY-MM-DD
+
+DxTaskType:
+    - variant      : "general time commitment"
+    - hoursPerWeek : Float
+
+DxTaskType:
+    - variant      : "task with time commitment"
+    - hoursPerWeek : Float
+
+DxTaskType:
+    - variant      : "tail"
+    - position     : Float

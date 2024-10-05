@@ -14,10 +14,10 @@ class PolyFunctions
         # ------------------------------------------------
         # Special Features
 
-        if item["parentuuid-0032"] then
-            parent = Items::itemOrNull(item["parentuuid-0032"])
-            if parent then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+        if item["donation-1205"] then
+            target = Items::itemOrNull(item["donation-1205"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
         end
 
@@ -61,9 +61,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxSeparator1" then
             return "✨"
-        end
-        if item["mikuType"] == "NxOndate" then
-            return NxOndates::toString(item, context)
         end
         if item["mikuType"] == "NxBufferInItem" then
             return NxBufferInItems::toString(item)

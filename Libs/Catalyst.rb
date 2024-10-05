@@ -36,12 +36,6 @@ class Catalyst
         }
     end
 
-    # Catalyst::parentOrNull(item)
-    def self.parentOrNull(item)
-        return nil if item["parentuuid-0032"].nil?
-        Items::itemOrNull(item["parentuuid-0032"])
-    end
-
     # Catalyst::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
@@ -49,13 +43,6 @@ class Catalyst
             puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
 
             NxBackups::maintenance()
-
-            Items::items().each{|item|
-                next if item["parentuuid-0032"].nil?
-                parent = Items::itemOrNull(item["parentuuid-0032"])
-                next if parent
-                Items::setAttribute(item["uuid"], "parentuuid-0032", nil)
-            }
         end
     end
 
@@ -76,27 +63,12 @@ class Catalyst
         nil
     end
 
-    # Catalyst::children(parent)
-    def self.children(parent)
-        Items::items()
-            .select{|item| item["parentuuid-0032"] == parent["uuid"] }
-    end
-
-    # Catalyst::childrenInGlobalPositioningOrder(parent)
-    def self.childrenInGlobalPositioningOrder(parent)
-        Catalyst::children(parent)
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # Catalyst::isOrphan(item)
-    def self.isOrphan(item)
-        item["parentuuid-0032"].nil? or Items::itemOrNull(item["parentuuid-0032"]).nil?
-    end
-
-    # Catalyst::topPositionInParent(parent)
-    def self.topPositionInParent(parent)
-        elements = Catalyst::children(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
+    # Catalyst::donationSuffix(item)
+    def self.donationSuffix(item)
+        return "" if item["donation-1205"].nil?
+        target = Items::itemOrNull(item["donation-1205"])
+        return "" if target.nil?
+        " #{"(#{target["description"]})".yellow}"
     end
 
     # Catalyst::interactivelyGetLinesParentToChildren()
@@ -108,26 +80,6 @@ class Catalyst
             .map{|line| line.strip }
             .select{|line| line != "" }
             .reverse
-    end
-
-    # Catalyst::interactivelySelectPositionInParent(parent)
-    def self.interactivelySelectPositionInParent(parent)
-        elements = Catalyst::childrenInGlobalPositioningOrder(parent)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
-        if position == "" then # default does next
-            position = "next"
-        end
-        if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
-        end
-        position = position.to_f
-        position
     end
 
     # Catalyst::interactivelyPush(item)

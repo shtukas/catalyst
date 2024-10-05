@@ -81,7 +81,7 @@ class Listing
     def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -106,10 +106,10 @@ class Listing
             NxFloats::listingItems(),
             DropBox::items(),
             Desktop::listingItems(),
-            NxOndates::listingItems(),
             NxBackups::listingItems(),
-            Waves::muiItemsNotInterruption(),
+            NxTasks::dated(),
             NxTasks::managed(),
+            Waves::muiItemsNotInterruption(),
             NxTasks::tail(10),
         ]
             .flatten
@@ -137,7 +137,9 @@ class Listing
         spot.contest_entry("Desktop::listingItems()", lambda { Desktop::listingItems() })
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
         spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
-        spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
+        spot.contest_entry("NxTasks::dated()", lambda{ NxTasks::dated() })
+        spot.contest_entry("NxTasks::managed()", lambda{ NxTasks::managed() })
+        spot.contest_entry("NxTasks::tail(10)", lambda{ NxTasks::tail(10) })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
         spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })

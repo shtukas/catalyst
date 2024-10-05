@@ -26,11 +26,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOndate" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -94,18 +89,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if !Catalyst::children(item).empty? then
-                puts "I cannot delete '#{PolyFunctions::toString(item).green}' because it has some direct children"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
@@ -148,12 +131,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
-            NxBalls::start(item)
             PolyActions::access(item)
             return
         end
@@ -210,13 +187,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxOndate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
