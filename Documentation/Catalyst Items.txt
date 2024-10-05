@@ -14,4 +14,3 @@ Cross types conventions (all optional):
     - donation-1601      : String
     - parentuuid-0032    : uuid of the parent
     - hours-1905         : Float # listing priotarization
-    - list-pos-1610        : {"date": Date, "position": Float}

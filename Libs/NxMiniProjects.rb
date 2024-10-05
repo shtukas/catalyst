@@ -35,10 +35,15 @@ class NxMiniProjects
     # NxMiniProjects::listingItems()
     def self.listingItems()
         return [] if !NxMiniProjects::shouldDisplay()
+        # We return the first item that is listable
         Items::mikuType("NxMiniProject")
             .sort_by{|item| item["unixtime"] }
-            .take(3)
-            .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+            .each{|item|
+                if Listing::listable(item) then
+                    return [item]
+                end
+            }
+        []
     end
 
     # ------------------

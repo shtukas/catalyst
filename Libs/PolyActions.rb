@@ -46,11 +46,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "PhysicalTarget" then
-            TargetNumbers::access(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -139,11 +134,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "PhysicalTarget" then
-            TargetNumbers::performUpdate(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
@@ -203,11 +193,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "PhysicalTarget" then
             PolyActions::access(item)
             return
         end

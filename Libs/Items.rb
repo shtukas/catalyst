@@ -1,7 +1,5 @@
 # encoding: UTF-8
 
-# Keep this file absolutely in sync with the same in Nyx
-
 =begin
 
 Updates:

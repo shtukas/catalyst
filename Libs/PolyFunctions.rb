@@ -107,9 +107,6 @@ class PolyFunctions
         if item["mikuType"] == "NxBufferInItem" then
             return NxBufferInItems::toString(item)
         end
-        if item["mikuType"] == "PhysicalTarget" then
-            return TargetNumbers::toString(item)
-        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end

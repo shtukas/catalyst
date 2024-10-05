@@ -17,7 +17,7 @@ class Desktop
     def self.announce()
         [
             "Desktop:".green, 
-            Desktop::contents().lines.map{|line| "            #{line}" }.join()
+            Desktop::contents().lines.map{|line| "         #{line}" }.join()
         ].join("\n")
     end
 

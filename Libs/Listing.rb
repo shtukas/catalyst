@@ -107,7 +107,6 @@ class Listing
             DropBox::items(),
             Desktop::listingItems(),
             NxOndates::listingItems(),
-            TargetNumbers::listingItems(),
             NxBackups::listingItems(),
             Waves::muiItemsNotInterruption(),
             NxMiniProjects::listingItems(),
@@ -137,7 +136,6 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("Desktop::listingItems()", lambda { Desktop::listingItems() })
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
-        spot.contest_entry("TargetNumbers::listingItems()", lambda{ TargetNumbers::listingItems() })
         spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
         spot.contest_entry("NxOndates::listingItems()", lambda{ NxOndates::listingItems() })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })

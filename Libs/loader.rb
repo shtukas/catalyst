@@ -129,6 +129,7 @@ require_relative "Bank.rb"
 require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
+require_relative "CommandsAndInterpreters.rb"
 
 require_relative "DoNotShowUntil.rb"
 # DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
@@ -145,11 +146,9 @@ require_relative "Galaxy.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
+require_relative "InMemoryCache.rb"
 
 require_relative "Listing.rb"
-require_relative "CommandsAndInterpreters.rb"
-
-require_relative "InMemoryCache.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxLambdas.rb"
@@ -164,7 +163,6 @@ require_relative "NxMiniProjects.rb"
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
-require_relative "TargetNumbers.rb"
 require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
