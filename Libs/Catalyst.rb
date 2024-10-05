@@ -56,23 +56,7 @@ class Catalyst
                 next if parent
                 Items::setAttribute(item["uuid"], "parentuuid-0032", nil)
             }
-
-            Items::items().each{|item|
-                next if item["donation-1601"].nil?
-                target = Items::itemOrNull(item["donation-1601"])
-                next if target
-                Items::setAttribute(item["uuid"], "donation-1601", nil)
-            }
         end
-    end
-
-    # Catalyst::donationSuffix(item)
-    def self.donationSuffix(item)
-        return "" if item["donation-1601"].nil?
-        uuid = item["donation-1601"]
-        item = Items::itemOrNull(uuid)
-        return "" if item.nil?
-        " (#{item["description"]})".green
     end
 
     # Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
@@ -109,14 +93,6 @@ class Catalyst
         item["parentuuid-0032"].nil? or Items::itemOrNull(item["parentuuid-0032"]).nil?
     end
 
-    # Catalyst::interactivelySetDonation(item)
-    def self.interactivelySetDonation(item)
-        puts "Set donation for item: '#{PolyFunctions::toString(item)}'"
-        target = NxThreads::interactivelySelectOneOrNull()
-        return if target.nil?
-        Items::setAttribute(item["uuid"], "donation-1601", target["uuid"])
-    end
-
     # Catalyst::topPositionInParent(parent)
     def self.topPositionInParent(parent)
         elements = Catalyst::children(parent)
@@ -132,31 +108,6 @@ class Catalyst
             .map{|line| line.strip }
             .select{|line| line != "" }
             .reverse
-    end
-
-    # Catalyst::interactivelyPile(target)
-    def self.interactivelyPile(target)
-
-        if target["mikuType"] == "NxTask" then
-            parent = Catalyst::parentOrNull(item)
-            if parent["mikuType"] == "NxThread" then
-                Catalyst::interactivelyPile(parent)
-            end
-            return
-        end
-
-        if target["mikuType"] == "NxThread" then
-            thread = target
-            Catalyst::interactivelyGetLinesParentToChildren()
-                .reverse
-                .each_with_index{|description, i|
-                    item = NxTasks::descriptionToTask1(description)
-                    Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-                    Items::setAttribute(item["uuid"], "global-positioning", Catalyst::topPositionInParent(thread) - 1)
-                }
-            return
-        end
-
     end
 
     # Catalyst::interactivelySelectPositionInParent(parent)

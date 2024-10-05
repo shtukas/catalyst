@@ -6,9 +6,6 @@ class Fsck
         if item["mikuType"] == "NxAnniversary" then
             return
         end
-        if item["mikuType"] == "NxPool" then
-            return
-        end
         if item["mikuType"] == "Wave" then
             return
         end

@@ -156,19 +156,15 @@ require_relative "NxTasks.rb"
 require_relative "NxOndates.rb"
 require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
-require_relative "NxThreads.rb"
 require_relative "NxBufferInItems.rb"
-require_relative "NxMiniProjects.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
-require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
-require_relative "Transmutations.rb"
 
 require_relative "UxPayload.rb"
 

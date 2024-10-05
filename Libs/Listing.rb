@@ -81,7 +81,7 @@ class Listing
     def self.toString2(store, item, context = nil)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -109,8 +109,8 @@ class Listing
             NxOndates::listingItems(),
             NxBackups::listingItems(),
             Waves::muiItemsNotInterruption(),
-            NxMiniProjects::listingItems(),
-            NxThreads::listingItems(),
+            NxTasks::managed(),
+            NxTasks::tail(10),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -195,8 +195,6 @@ class Listing
             items = Listing::items()
 
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-
-            items = Prefix::addPrefix(items)
 
             system("clear")
 

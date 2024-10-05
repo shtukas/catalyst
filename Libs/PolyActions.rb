@@ -31,18 +31,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMiniProject" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            NxThreads::program1(item)
             return
         end
 
@@ -98,13 +88,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMiniProject" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
             return
@@ -119,11 +102,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             return
         end
 
@@ -180,19 +158,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxMiniProject" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end
@@ -242,26 +209,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            if Catalyst::children(item).size > 0 then
-                puts "You can't destroy thread '#{PolyFunctions::toString(item).green}' which is not empty"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxMiniProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

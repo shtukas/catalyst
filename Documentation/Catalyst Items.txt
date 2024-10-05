@@ -11,6 +11,5 @@ Cross types conventions (all optional):
     - skip-0843          : unixtime (skipped until this time)
     - global-positioning : Float # ordering within the children of a parent.
     - uxpayload-b4e4     : UxPayload
-    - donation-1601      : String
     - parentuuid-0032    : uuid of the parent
-    - hours-1905         : Float # listing priotarization
+    - hours-1905         : Float # commitment per week

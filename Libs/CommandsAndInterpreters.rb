@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | donation * | payload * | parent * | bank data * | hours * | gps * | pile * | transmute * | mini * | >> * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | hours * | transmute * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | ondate | task | desktop | float | thread | core | mini",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | minis | threads",
+            "makers        : anniversary | wave | today | tomorrow | ondate | task | desktop | float",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n>",
         ].join("\n")
@@ -25,14 +25,6 @@ class CommandsAndInterpreters
             end
         end
 
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute1(item)
-            return
-        end
-
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
@@ -45,42 +37,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::doubleDot(item)
-            return
-        end
-
-        if Interpreting::match("transmute *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutations::transmute1(item)
-            return
-        end
-
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::interactivelyPile(item)
-            return
-        end
-
-        if Interpreting::match("gps *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            parent = NxThreads::interactivelySelectOneOrNull()
-            return if parent.nil?
-            position = Catalyst::interactivelySelectPositionInParent(parent)
-            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-            Items::setAttribute(item["uuid"], "global-positioning", position)
-            return
-        end
-
-        if Interpreting::match("donation * ", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Catalyst::interactivelySetDonation(item)
             return
         end
 
@@ -118,41 +74,18 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("mini *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxMiniProjects::transformToMini(item)
-            return
-        end
-
-        if Interpreting::match("parent *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            parent = NxThreads::interactivelySelectOneOrNull()
-            return if parent.nil?
-            Items::setAttribute(item["uuid"], "parentuuid-0032", parent["uuid"])
-            return
-        end
-
         if Interpreting::match("hours *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if !["NxThread", "NxTask"].include?(item["mikuType"]) then
-                puts "You can only set hours to NxThread and NxTask"
+            if !["NxTask"].include?(item["mikuType"]) then
+                puts "You can only set hours to NxTask"
                 LucilleCore::pressEnterToContinue()
                 return
             end
             hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
             hours = (hours == 0) ? 1 : hours
             Items::setAttribute(item["uuid"], "hours-1905", hours)
-            return
-        end
-
-        if Interpreting::match("thread", input) then
-            NxThreads::interactivelyIssueNewOrNull()
             return
         end
 
@@ -182,10 +115,9 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            thread = NxThreads::architectThread()
-            Items::setAttribute(item["uuid"], "parentuuid-0032", thread["uuid"])
-            position = NxThreads::interactivelySelectPositionInThread(thread)
-            Items::setAttribute(item["uuid"], "global-positioning", position)
+            puts "At the moment I am setting the global positioning to 0 but you might want to improve that"
+            LucilleCore::pressEnterToContinue()
+            Items::setAttribute(item["uuid"], "global-positioning", 0)
             return
         end
 
@@ -228,24 +160,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("mini", input) then
-            NxMiniProjects::interactivelyIssueNewOrNull()
-            return
-        end
-
         if Interpreting::match("floats", input) then
             items = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
-            Catalyst::program2(items)
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            NxThreads::program2()
-            return
-        end
-
-        if Interpreting::match("minis", input) then
-            items = Items::mikuType("NxMiniProject").sort_by{|item| item["unixtime"] }
             Catalyst::program2(items)
             return
         end
@@ -304,15 +220,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
-            return
-        end
-
-        if Interpreting::match("gps *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            return if item["mikuType"] != "NxTask"
-            NxThreads::move(item)
             return
         end
 

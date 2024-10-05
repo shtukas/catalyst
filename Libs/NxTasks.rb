@@ -45,33 +45,27 @@ class NxTasks
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        if context == "main-listing-1315" then
-            return "#{NxTasks::icon(item)} #{item["description"]} #{NxTasks::ratioString(item)}"
+        if context == "main-listing-1315" and item["hours-1905"] then
+            return "🔺 #{NxTasks::ratioString(item)} #{item["description"]}"
         end
-        "(#{"%7.3f" % (item["global-positioning"] || 0)}) #{NxTasks::icon(item)} #{item["description"]} #{NxTasks::ratioString(item)}"
+        if context == "main-listing-1315" and !item["hours-1905"] then
+            return "#{NxTasks::icon(item)} (#{"%7.3f" % (item["global-positioning"] || 0)}) #{item["description"]}"
+        end
+        "#{NxTasks::icon(item)} #{item["description"]}"
     end
 
-    # NxTasks::orphans()
-    def self.orphans()
-        data = XCache::getOrNull("0.04768800735473633")
-        if data then
-            data = JSON.parse(data)
-            if (Time.new.to_i - data["unixtime"]) < 3600 then
-                return data["items"]
-                        .map{|item| Items::itemOrNull(item["uuid"]) }
-                        .compact
-                        .select{|item| item["parentuuid-0032"].nil? }
-            end
-        end
+    # NxTasks::managed()
+    def self.managed()
+        Items::mikuType("NxTask")
+            .select{|item| item["hours-1905"] }
+            .sort_by{|item| NxTasks::ratio(item) }
+            .select{|item| NxTasks::ratio(item) < 1 }
+    end
 
-        items = Items::mikuType("NxTask")
-                    .select{|item| Catalyst::isOrphan(item) }
-
-        XCache::set("0.04768800735473633", JSON.generate({
-            "unixtime" => Time.new.to_i,
-            "items" => items
-        }))
-
-        items
+    # NxTasks::tail(cardinal)
+    def self.tail(cardinal)
+        Items::mikuType("NxTask")
+            .sort_by{|item| item["global-positioning"] || 0 }
+            .first(cardinal)
     end
 end
