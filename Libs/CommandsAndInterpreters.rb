@@ -94,6 +94,7 @@ class CommandsAndInterpreters
                 return
             end
             taskType = NxTasks::interactivelyIssueDxTaskType()
+            puts JSON.pretty_generate(taskType)
             Items::setAttribute(item["uuid"], "taskType-11", taskType)
             return
         end
