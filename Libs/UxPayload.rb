@@ -187,6 +187,7 @@ class UxPayload
 
     # UxPayload::fsck(payload)
     def self.fsck(payload)
+        return if payload.nil?
         if payload["type"] == "text" then
             if payload["text"].nil? then
                 raise "could not find `text` attribute for payload #{payload}"

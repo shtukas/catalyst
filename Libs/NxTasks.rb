@@ -97,6 +97,11 @@ class NxTasks
         "#{NxTasks::icon(item)} #{NxTasks::taskTypeToString(item)} #{item["description"]}"
     end
 
+    # NxTasks::isTimeCommitment(item)
+    def self.isTimeCommitment(item)
+        item["taskType-11"]["variant"] == "general time commitment" or item["taskType-11"]["variant"] == "task with time commitment" 
+    end
+
     # NxTasks::dated()
     def self.dated()
         Items::mikuType("NxTask")
@@ -108,7 +113,7 @@ class NxTasks
     # NxTasks::managed()
     def self.managed()
         Items::mikuType("NxTask")
-            .select{|item| item["taskType-11"]["variant"] == "general time commitment" or item["taskType-11"]["variant"] == "task with time commitment" }
+            .select{|item| NxTasks::isTimeCommitment(item) }
             .sort_by{|item| NxTasks::ratio(item) }
             .select{|item| NxTasks::ratio(item) < 1 }
     end
@@ -238,7 +243,7 @@ class NxTasks
     # NxTasks::interactivelySelectManagedOrNull()
     def self.interactivelySelectManagedOrNull()
         items = Items::mikuType("NxTask")
-                    .select{|item| item["taskType-11"]["variant"] == "general time commitment" or item["taskType-11"]["variant"] == "task with time commitment" }
+                    .select{|item| NxTasks::isTimeCommitment(item) }
                     .sort_by{|item| NxTasks::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end

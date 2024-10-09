@@ -89,6 +89,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
+            if NxTasks::isTimeCommitment(item) then
+                DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
