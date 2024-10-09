@@ -155,6 +155,7 @@ class NxTasks
         item["taskType-11"]["position"]
     end
 
+    # NxTasks::between10And20Position()
     def self.between10And20Position()
         items = Items::mikuType("NxTask")
                 .select{|item| item["taskType-11"]["variant"] == "tail" }
@@ -222,7 +223,7 @@ class NxTasks
             if option == "between 10 and 20" then
                 return {
                     "variant"  => "tail",
-                    "position" => 0 # TODO
+                    "position" => NxTasks::between10And20Position()
                 }
             end
             if option == "absolute last" then

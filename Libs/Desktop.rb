@@ -25,7 +25,7 @@ class Desktop
     def self.listingItems()
         return [] if Desktop::contents() == ""
         [{
-            "uuid"     => SecureRandom.uuid, # random uuid so that we can't hide it
+            "uuid"     => "b5e0bf9f-7d77-4f60-a0be-907f27f5f4ca",
             "mikuType" => "DesktopTx1",
             "announce" => Desktop::announce()
         }]

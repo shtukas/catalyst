@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | task | desktop | float",
+            "makers        : anniversary | wave | today | tomorrow | task | desktop | float | todo",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n>",
@@ -127,6 +127,17 @@ class CommandsAndInterpreters
 
         if Interpreting::match("task", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("todo", input) then
+            taskType = {
+                "variant"  => "tail",
+                "position" => NxTasks::between10And20Position()
+            }
+            item = NxTasks::interactivelyIssueNewOrNullWithTaskType(taskType)
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
