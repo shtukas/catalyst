@@ -32,13 +32,24 @@ class NxTasks
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::descriptionToTask1(description)
-    def self.descriptionToTask1(description)
+    # NxTasks::locationToTailTask1(location, position)
+    def self.locationToTailTask1(location, position)
         uuid = SecureRandom.hex
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
+        payload = {
+            "type" => "aion-point",
+            "nhash" => nhash
+        }
+        taskType = {
+            "variant"  => "tail",
+            "position" => position
+        }
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "description", File.basename(location))
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "taskType-11", taskType)
         Items::itemOrNull(uuid)
     end
 
@@ -248,4 +259,20 @@ class NxTasks
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
+    # ------------------
+    # Data
+
+    # NxTasks::issueTailCurvePoint()
+    def self.issueTailCurvePoint()
+        repository = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/tailcurve"
+        cardinal = Items::mikuType("NxTask").size
+        unixtime = Time.new.to_i
+        filepath = "#{CommonUtils::timeStringL22()}.json"
+        filepath = "#{repository}/#{filepath}"
+        point = {
+            "unixtime" => unixtime,
+            "cardinal" => cardinal
+        }
+        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(point)) }
+    end
 end

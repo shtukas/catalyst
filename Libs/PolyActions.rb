@@ -94,6 +94,7 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                NxTasks::issueTailCurvePoint()
                 Items::destroy(item["uuid"])
             end
             return

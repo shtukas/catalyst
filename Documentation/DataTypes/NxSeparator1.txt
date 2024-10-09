@@ -1,4 +1,0 @@
-
-NxSeparator1:
-    - uuid            : String
-    - mikuType        : "NxSeparator1"

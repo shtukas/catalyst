@@ -59,9 +59,6 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item, context)
         end
-        if item["mikuType"] == "NxSeparator1" then
-            return "✨"
-        end
         if item["mikuType"] == "NxBufferInItem" then
             return NxBufferInItems::toString(item)
         end
