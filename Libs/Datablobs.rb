@@ -8,8 +8,8 @@ class Datablobs
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Datablobs"
     end
 
-    # Datablobs::putBlob(blob) # nhash
-    def self.putBlob(blob)
+    # Datablobs::putBlob(uuid, blob) # nhash
+    def self.putBlob(uuid, blob)
         nhash = "SHA256-#{Digest::SHA256.hexdigest(blob)}"
         folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
         if !File.exist?(folderpath) then
@@ -20,8 +20,8 @@ class Datablobs
         nhash
     end
 
-    # Datablobs::getBlobOrNull(nhash)
-    def self.getBlobOrNull(nhash) # data | nil
+    # Datablobs::getBlobOrNull(uuid, nhash)
+    def self.getBlobOrNull(uuid, nhash) # data | nil
         folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
         filepath = "#{folderpath}/#{nhash}.data"
         return nil if !File.exist?(filepath)
@@ -31,11 +31,12 @@ end
 
 class Elizabeth
 
-    def initialize()
+    def initialize(uuid)
+        @uuid = uuid
     end
 
     def putBlob(datablob) # nhash
-        Datablobs::putBlob(datablob)
+        Datablobs::putBlob(@uuid, datablob)
     end
 
     def filepathToContentHash(filepath)
@@ -43,7 +44,7 @@ class Elizabeth
     end
 
     def getBlobOrNull(nhash)
-        Datablobs::getBlobOrNull(nhash)
+        Datablobs::getBlobOrNull(@uuid, nhash)
     end
 
     def readBlobErrorIfNotFound(nhash)

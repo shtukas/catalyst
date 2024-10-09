@@ -6,7 +6,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull()
+        payload = UxPayload::makeNewOrNull(uuid)
         taskType = NxTasks::interactivelyIssueDxTaskType()
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
@@ -22,7 +22,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull()
+        payload = UxPayload::makeNewOrNull(uuid)
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)

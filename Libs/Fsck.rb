@@ -5,7 +5,7 @@ class Fsck
     def self.fsckOrError(item)
         puts "fsck item: #{JSON.pretty_generate(item)}"
 
-        UxPayload::fsck(item["uxpayload-b4e4"])
+        UxPayload::fsck(item["uuid"], item["uxpayload-b4e4"])
 
         if item["mikuType"] == "NxAnniversary" then
             return

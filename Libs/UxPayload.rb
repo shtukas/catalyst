@@ -19,8 +19,8 @@ class UxPayload
         LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayload::types())
     end
 
-    # UxPayload::makeNewOrNull()
-    def self.makeNewOrNull()
+    # UxPayload::makeNewOrNull(uuid)
+    def self.makeNewOrNull(uuid)
         type = UxPayload::interactivelySelectTypeOrNull()
         return nil if type.nil?
         if type == "text" then
@@ -40,7 +40,7 @@ class UxPayload
         if type == "aion-point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(Elizabeth.new(), location)
+            nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
             return {
                 "type" => "aion-point",
                 "nhash" => nhash
@@ -120,7 +120,7 @@ class UxPayload
             exportFoldername = "#{exportId}-aion-point"
             exportFolderpath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolderpath)
-            AionCore::exportHashAtFolder(Elizabeth.new(), nhash, exportFolderpath)
+            AionCore::exportHashAtFolder(Elizabeth.new(itemuuid), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -185,8 +185,8 @@ class UxPayload
         LucilleCore::pressEnterToContinue()
     end
 
-    # UxPayload::fsck(payload)
-    def self.fsck(payload)
+    # UxPayload::fsck(uuid, payload)
+    def self.fsck(uuid, payload)
         return if payload.nil?
         if payload["type"] == "text" then
             if payload["text"].nil? then
@@ -202,7 +202,7 @@ class UxPayload
         end
         if payload["type"] == "aion-point" then
             nhash = payload["nhash"]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(uuid), nhash)
             return
         end
         if payload["type"] == "Dx8Unit" then

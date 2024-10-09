@@ -122,7 +122,7 @@ class Waves
         Items::setAttribute(uuid, "lastDoneUnixtime", 0)
         Items::setAttribute(uuid, "lastDoneDateTime", "1970-01-01T00:00:00Z")
         Items::setAttribute(uuid, "interruption", interruption)
-        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
         Items::itemOrNull(uuid)
     end
 
