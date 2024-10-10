@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | task | desktop | float | todo",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | managed",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n>",
         ].join("\n")
@@ -184,6 +184,14 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             items = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
+            Catalyst::program2(items)
+            return
+        end
+
+        if Interpreting::match("managed", input) then
+            items = Items::mikuType("NxTask")
+                        .select{|item| NxTasks::isTimeCommitment(item) }
+                        .sort_by{|item| NxTasks::ratio(item) }
             Catalyst::program2(items)
             return
         end
