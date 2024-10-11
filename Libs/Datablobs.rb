@@ -8,24 +8,83 @@ class Datablobs
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Datablobs"
     end
 
-    # Datablobs::putBlob(uuid, blob) # nhash
-    def self.putBlob(uuid, blob)
-        nhash = "SHA256-#{Digest::SHA256.hexdigest(blob)}"
-        folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
-        if !File.exist?(folderpath) then
-            FileUtils.mkpath(folderpath)
-        end
-        filepath = "#{folderpath}/#{nhash}.data"
-        File.open(filepath, "w"){|f| f.write(blob) }
+    # Datablobs::uuidToFilepath(uuid)
+    def self.uuidToFilepath(uuid)
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Blades/#{uuid}.sqlite3"
+    end
+
+    # Datablobs::ensureFile(uuid)
+    def self.ensureFile(uuid)
+        filepath = Datablobs::uuidToFilepath(uuid)
+        return if File.exist?(filepath)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("CREATE TABLE datablobs (key string, datablob blob);", [])
+        db.commit
+        db.close
+    end
+
+    # Datablobs::deleteFile(uuid)
+    def self.deleteFile(uuid)
+        filepath = Datablobs::uuidToFilepath(uuid)
+        return if !File.exist?(filepath)
+        FileUtils.rm(filepath)
+    end
+
+    # Datablobs::putBlob(uuid, datablob) # nhash
+    def self.putBlob(uuid, datablob)
+        nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
+
+        # Version 1
+        #folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
+        #if !File.exist?(folderpath) then
+        #    FileUtils.mkpath(folderpath)
+        #end
+        #filepath = "#{folderpath}/#{nhash}.data"
+        #File.open(filepath, "w"){|f| f.write(blob) }
+
+        # Version 2
+        Datablobs::ensureFile(uuid)
+        filepath = Datablobs::uuidToFilepath(uuid)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from datablobs where key=?", [nhash])
+        db.execute("insert into datablobs (key, datablob) values (?, ?)", [nhash, datablob])
+        db.commit
+        db.close
+
         nhash
     end
 
     # Datablobs::getBlobOrNull(uuid, nhash)
     def self.getBlobOrNull(uuid, nhash) # data | nil
-        folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
-        filepath = "#{folderpath}/#{nhash}.data"
-        return nil if !File.exist?(filepath)
-        IO.read(filepath)
+        datablob = nil
+
+        # Version 1
+        #folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
+        #filepath = "#{folderpath}/#{nhash}.data"
+        #return nil if !File.exist?(filepath)
+        #IO.read(filepath)
+
+        # Version 2
+        Datablobs::ensureFile(uuid)
+        filepath = Datablobs::uuidToFilepath(uuid)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from datablobs where key=?", [nhash]) do |row|
+            datablob = row["datablob"]
+        end
+        db.close
+
+        datablob
     end
 end
 
