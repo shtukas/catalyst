@@ -160,13 +160,9 @@ class Waves
 
     # Waves::muiItemsNotInterruption()
     def self.muiItemsNotInterruption()
-        if (Time.new.hour < 9 or Time.new.hour >= 21) then
-            Waves::listingItems()
-                .select{|item| !item["interruption"] }
-                .sort_by{|item| item["lastDoneUnixtime"] }
-        else
-            []
-        end
+        Waves::listingItems()
+            .select{|item| !item["interruption"] }
+            .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
     # -------------------------------------------------------------------------
