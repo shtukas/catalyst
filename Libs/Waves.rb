@@ -162,7 +162,15 @@ class Waves
     def self.muiItemsNotInterruption()
         Waves::listingItems()
             .select{|item| !item["interruption"] }
-            .sort_by{|item| item["lastDoneUnixtime"] }
+            .map{|item|
+                if item["resurface-time"].nil? then
+                    resurface_time = Time.new.to_f
+                    item["resurface-time"] = resurface_time
+                    Items::setAttribute(item["uuid"], "resurface-time", resurface_time)
+                end
+                item
+            }
+            .sort_by{|item| item["resurface-time"] }
     end
 
     # -------------------------------------------------------------------------
@@ -170,6 +178,9 @@ class Waves
 
     # Waves::performWaveDone(item)
     def self.performWaveDone(item)
+        # Reset: resurface-time
+        Items::setAttribute(item["uuid"], "resurface-time", resurface_time)
+
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)

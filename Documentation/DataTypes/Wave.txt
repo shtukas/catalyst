@@ -16,6 +16,8 @@ Wave :
     "onlyOnDays"       : null or Array[week days names lowercase english] 
                          Indicates on which days the wave can show up
 
+    "resurface-time"   : unixtime
+
 Nx46 
 {
     "type"  : "sticky"
