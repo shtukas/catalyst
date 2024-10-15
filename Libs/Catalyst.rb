@@ -43,6 +43,14 @@ class Catalyst
             puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
 
             NxBackups::maintenance()
+
+            Items::items().each{|item|
+                next if item["donation-1205"].nil?
+                target = Items::itemOrNull(item["uuid"])
+                next if target
+                Items::setAttribute(item["uuid"], "donation-1205", nil)
+            }
+            
         end
     end
 
