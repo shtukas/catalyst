@@ -83,7 +83,7 @@ class NxBackups
                 FileUtils.rm(location)
             end
         }
-        filepath = "#{folderpath}/#{description}-#{Time.new.to_i}.txt"
+        filepath = "#{folderpath}/#{Time.new.to_i}-#{description}.txt"
         File.open(filepath, "w"){|f| f.puts(Time.new.utc.iso8601) }
     end
 

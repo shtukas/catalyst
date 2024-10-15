@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | task | desktop | float | todo",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | managed",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n>",
+            "misc          : search | speed | commands | edit <n> | tailcurve",
         ].join("\n")
     end
 
@@ -28,7 +28,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::doubleDot(item)
+            PolyActions::natural(item)
             return
         end
 
@@ -36,7 +36,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::doubleDot(item)
+            PolyActions::natural(item)
             return
         end
 
@@ -96,6 +96,13 @@ class CommandsAndInterpreters
             taskType = NxTasks::interactivelyIssueDxTaskType()
             puts JSON.pretty_generate(taskType)
             Items::setAttribute(item["uuid"], "taskType-11", taskType)
+            return
+        end
+
+        if Interpreting::match("tailcurve", input) then
+            numbers = TailCurve::numbers()
+            puts JSON.pretty_generate(numbers)
+            LucilleCore::pressEnterToContinue()
             return
         end
 

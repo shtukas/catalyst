@@ -36,12 +36,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBufferInItem" then
-            location = item["location"]
-            NxBufferInItems::accessLocation(location)
-            return
-        end
-
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
@@ -94,7 +88,7 @@ class PolyActions
                 return
             end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                NxTasks::issueTailCurvePoint()
+                TailCurve::issueTailCurvePoint()
                 Items::destroy(item["uuid"])
             end
             return
@@ -107,26 +101,25 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxBufferInItem" then
-            if LucilleCore::askQuestionAnswerAsBoolean("Removing location '#{item["location"]}' ? ", true) then
-                LucilleCore::removeFileSystemLocation(item["location"])
-            end
-            return
-        end
-
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::doubleDot(item)
-    def self.doubleDot(item)
+    # PolyActions::natural(item)
+    def self.natural(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            PolyActions::access(item)
+            Anniversaries::accessAndDone(item)
             return
         end
 
         if item["mikuType"] == "NxBackup" then
+            if NxBalls::itemIsRunning(item) then
+                PolyActions::done(item)
+                PolyActions::stop(item)
+            else
+                PolyActions::start(item)
+            end
             return
         end
 
@@ -136,33 +129,36 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxLambda" then
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            NxBalls::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                PolyActions::stop(item)
+            if NxBalls::itemIsRunning(item) then
                 PolyActions::done(item)
+                PolyActions::stop(item)
+            else
+                PolyActions::start(item)
             end
             return
         end
 
-        if item["mikuType"] == "NxBufferInItem" then
-            NxBalls::start(item)
-            PolyActions::access(item)
+        if item["mikuType"] == "NxTask" then
+            if NxBalls::itemIsRunning(item) then
+                PolyActions::stop(item)
+            else
+                PolyActions::start(item)
+                PolyActions::access(item)
+            end
             return
         end
 
-        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to doubleDot #{item["mikuType"]}"
+        if item["mikuType"] == "Wave" then
+            if NxBalls::itemIsRunning(item) then
+                PolyActions::done(item)
+            else
+                PolyActions::start(item)
+                PolyActions::access(item)
+            end
+            return
+        end
+
+        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to natural #{item["mikuType"]}"
     end
 
     # PolyActions::destroy(item)
@@ -201,13 +197,6 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxBufferInItem" then
-            if LucilleCore::askQuestionAnswerAsBoolean("Removing location '#{item["location"]}' ? ", true) then
-                LucilleCore::removeFileSystemLocation(item["location"])
             end
             return
         end

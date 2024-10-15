@@ -24,6 +24,15 @@ class PolyFunctions
         # ------------------------------------------------
         # Types
 
+        if item["mikuType"] == "Wave" then
+            accounts << {
+                "description" => "WaveIntradayControl",
+                "number"      => "ead40ab9-6f67-4244-9214-b7e7fe05991c"
+            }
+        end
+
+        # ------------------------------------------------
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
@@ -58,9 +67,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item, context)
-        end
-        if item["mikuType"] == "NxBufferInItem" then
-            return NxBufferInItems::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

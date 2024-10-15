@@ -31,6 +31,7 @@ class Datablobs
     def self.deleteFile(uuid)
         filepath = Datablobs::uuidToFilepath(uuid)
         return if !File.exist?(filepath)
+        puts "remove filepath: #{filepath}".yellow
         FileUtils.rm(filepath)
     end
 

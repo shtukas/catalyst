@@ -258,13 +258,18 @@ class NxTasks
                     .sort_by{|item| NxTasks::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
+end
 
-    # ------------------
-    # Data
+class TailCurve
 
-    # NxTasks::issueTailCurvePoint()
+    # TailCurve::repository()
+    def self.repository()
+        "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/tailcurve"
+    end
+
+    # TailCurve::issueTailCurvePoint()
     def self.issueTailCurvePoint()
-        repository = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/tailcurve"
+        repository = TailCurve::repository()
         cardinal = Items::mikuType("NxTask").size
         unixtime = Time.new.to_i
         filepath = "#{CommonUtils::timeStringL22()}.json"
@@ -274,5 +279,40 @@ class NxTasks
             "cardinal" => cardinal
         }
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(point)) }
+    end
+
+    # TailCurve::records()
+    def self.records()
+        LucilleCore::locationsAtFolder(TailCurve::repository())
+            .select{|location|
+                location[-5, 5] == ".json"
+            }
+            .map{|filepath|
+                JSON.parse(IO.read(filepath))
+            }
+    end
+
+    # TailCurve::oldestRecordAfterUnixtimeOrNull(unixtime)
+    def self.oldestRecordAfterUnixtimeOrNull(unixtime)
+        TailCurve::records()
+            .select{|record| record["unixtime"] >= unixtime }
+            .sort_by{|record| record["unixtime"] }
+            .first
+    end
+
+    # TailCurve::differentialAfterUnixtimeOrNull(unixtime)
+    def self.differentialAfterUnixtimeOrNull(unixtime)
+        record = TailCurve::oldestRecordAfterUnixtimeOrNull(unixtime)
+        return nil if record.nil?
+        Items::mikuType("NxTask").size - record["cardinal"]
+    end
+
+    # TailCurve::numbers()
+    def self.numbers()
+        {
+            "day" => TailCurve::differentialAfterUnixtimeOrNull(Time.new.to_i - 86400),
+            "week" => TailCurve::differentialAfterUnixtimeOrNull(Time.new.to_i - 86400*7),
+            "month" => TailCurve::differentialAfterUnixtimeOrNull(Time.new.to_i - 86400*30),
+        }
     end
 end

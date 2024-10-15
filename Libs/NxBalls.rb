@@ -82,6 +82,15 @@ class NxBalls
     # ---------------------------------
     # Ops
 
+    # NxBalls::commitToBank(description, accountNumber, timespanInSeconds)
+    def self.commitToBank(description, accountNumber, timespanInSeconds)
+        puts "adding #{timespanInSeconds} seconds to account: (#{description}, #{accountNumber})"
+        Bank1::put(accountNumber, CommonUtils::today(), timespanInSeconds)
+        if accountNumber == "ead40ab9-6f67-4244-9214-b7e7fe05991c" then
+            WaveIntradayControl::recordTime(timespanInSeconds)
+        end
+    end
+
     # NxBalls::start(item)
     def self.start(item)
         return if !NxBalls::itemIsBallFree(item)
@@ -110,8 +119,7 @@ class NxBalls
         end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
-            puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
-            Bank1::put(account["number"], CommonUtils::today(), timespanInSeconds)
+            NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
         timespanInSeconds
@@ -127,8 +135,7 @@ class NxBalls
         end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
-            puts "adding #{timespanInSeconds} seconds to account: (#{account["description"]}, #{account["number"]})"
-            Bank1::put(account["number"], CommonUtils::today(), timespanInSeconds)
+            NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds)
         }
         nxball["type"] = "paused"
         NxBalls::commitBall(item, nxball)

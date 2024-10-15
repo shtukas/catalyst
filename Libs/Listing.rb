@@ -108,8 +108,8 @@ class Listing
             Desktop::listingItems(),
             NxBackups::listingItems(),
             NxTasks::dated(),
-            NxTasks::managed(),
             Waves::muiItemsNotInterruption(),
+            NxTasks::managed(),
             NxTasks::tail(10),
         ]
             .flatten
