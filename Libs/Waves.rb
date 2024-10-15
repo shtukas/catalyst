@@ -197,7 +197,7 @@ class Waves
     def self.program2(item)
         loop {
             puts Waves::toString(item)
-            actions = ["update description", "update wave pattern", "perform done", "set priority", "set days of the week", "destroy"]
+            actions = ["update description", "update wave pattern", "perform done", "set priority", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
@@ -216,10 +216,6 @@ class Waves
             end
             if action == "set priority" then
                 Items::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
-            end
-            if action == "set days of the week" then
-                days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-                Items::setAttribute(item["uuid"], "onlyOnDays", days)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then

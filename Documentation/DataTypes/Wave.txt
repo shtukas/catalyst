@@ -13,9 +13,6 @@ Wave :
 
     "interruption"     : null or boolean, indicates if the item is interruption (priority)
 
-    "onlyOnDays"       : null or Array[week days names lowercase english] 
-                         Indicates on which days the wave can show up
-
     "resurface-time"   : unixtime
 
 Nx46 

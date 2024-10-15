@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | ondays * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | task | desktop | float | todo",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | managed",
@@ -37,6 +37,15 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::natural(item)
+            return
+        end
+
+        if Interpreting::match("ondays *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
+            Items::setAttribute(item["uuid"], "onlyOnDays", days)
             return
         end
 

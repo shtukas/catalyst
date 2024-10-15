@@ -59,6 +59,7 @@ class Listing
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
         return false if !DoNotShowUntil1::isVisible(item)
+        return false if (item["onlyOnDays"] and !item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName()))
         true
     end
 
