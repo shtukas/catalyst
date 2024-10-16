@@ -21,6 +21,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+                Items::setAttribute(item["uuid"], "blockListPos-06", nil)
                 return
             end
         end

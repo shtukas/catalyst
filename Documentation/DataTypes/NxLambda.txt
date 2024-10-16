@@ -1,8 +1,0 @@
-
-NxLambdas are program generated listing items that cally a lambda
-
-NxLambda:
-    "uuid"        : String
-    "mikuType"    : "NxLambda"
-    "description" : String
-    "lambda"      : Lambda

@@ -21,11 +21,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLambda" then
-            item["lambda"].call()
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -42,6 +37,7 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+        Items::setAttribute(item["uuid"], "blockListPos-06", nil)
     end
 
     # PolyActions::done(item)
@@ -70,10 +66,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 NxBackups::setNowForDescription(item["description"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxLambda" then
             return
         end
 
@@ -125,16 +117,6 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             PolyActions::done(item)
-            return
-        end
-
-        if item["mikuType"] == "NxLambda" then
-            if NxBalls::itemIsRunning(item) then
-                PolyActions::done(item)
-                PolyActions::stop(item)
-            else
-                PolyActions::start(item)
-            end
             return
         end
 
