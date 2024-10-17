@@ -101,56 +101,17 @@ class Listing
 
     # Listing::items()
     def self.items()
-        nxtasks = NxTasks::tail(10)
-        nxtasks.each{|item|
-            if item["blockListPos-06"].nil? or item["blockListPos-06"] != item["taskType-11"]["position"] then
-                position = item["taskType-11"]["position"]
-                Items::setAttribute(item["uuid"], "blockListPos-06", position)
-                item["blockListPos-06"] = position
-            end
-            item
-        }
-
-        position2 = nxtasks.drop(2).first["taskType-11"]["position"]
-        position10 = nxtasks.last["taskType-11"]["position"] # We take the last because we extracted 10 elements
-
-        waves = Waves::muiItemsNotInterruption()
-                .select{|item| Listing::listable(item) }
-                .map{|item|
-                    if item["blockListPos-06"].nil? then
-                        position = position2 + rand*(position10-position2)
-                        Items::setAttribute(item["uuid"], "blockListPos-06", position)
-                        item["blockListPos-06"] = position
-                    end
-                    item
-                }
-
-        managed = NxTasks::managed()
-                .select{|item| Listing::listable(item) }
-                .map{|item|
-                    if item["blockListPos-06"].nil? then
-                        position = position2 + rand*(position10-position2)
-                        Items::setAttribute(item["uuid"], "blockListPos-06", position)
-                        item["blockListPos-06"] = position
-                    end
-                    item
-                }
-
-        xblock = [
-            waves,
-            managed,
-            nxtasks
-        ].flatten.sort_by{|item| item["blockListPos-06"] }
-
-        items = [
+        [
             Anniversaries::listingItems(),
             Waves::muiItemsInterruption(),
             NxFloats::listingItems(),
             DropBox::items(),
             Desktop::listingItems(),
             NxBackups::listingItems(),
+            NxTasks::managed(),
             NxTasks::dated(),
-            xblock
+            Waves::muiItemsNotInterruption(),
+            NxTasks::tail(10)
         ]
             .flatten
             .select{|item| Listing::listable(item) }

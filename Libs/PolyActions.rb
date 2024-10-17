@@ -37,7 +37,6 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "blockListPos-06", nil)
     end
 
     # PolyActions::done(item)
