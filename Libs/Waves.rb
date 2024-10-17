@@ -160,7 +160,6 @@ class Waves
 
     # Waves::muiItemsNotInterruption()
     def self.muiItemsNotInterruption()
-        return [] if !WaveIntradayControl::shouldDisplay()
         Waves::listingItems()
             .select{|item| !item["interruption"] }
             .map{|item|
@@ -233,56 +232,5 @@ class Waves
         i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
         items = i1 + i2
         Catalyst::program2(items)
-    end
-end
-
-class WaveIntradayControl
-
-    # WaveIntradayControl::repository()
-    def self.repository()
-        "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/waves-intraday"
-    end
-
-    # WaveIntradayControl::recordTime(timeInSeconds)
-    def self.recordTime(timeInSeconds)
-        File.open("#{WaveIntradayControl::repository()}/#{CommonUtils::timeStringL22()}.json", "w"){|f|
-            f.puts(JSON.pretty_generate(
-                {
-                    "unixtime" => Time.new.to_i,
-                    "timespan" => timeInSeconds
-                }
-            ))
-        }
-    end
-
-    # WaveIntradayControl::records()
-    def self.records()
-        LucilleCore::locationsAtFolder(WaveIntradayControl::repository())
-            .select{|location|
-                location[-5, 5] == ".json"
-            }
-            .map{|filepath|
-                JSON.parse(IO.read(filepath))
-            }
-    end
-
-    # WaveIntradayControl::cummulatedTimeAfterHorizon(horizon)
-    def self.cummulatedTimeAfterHorizon(horizon)
-        WaveIntradayControl::records()
-            .select{|record|
-                record["unixtime"] >= horizon
-            }
-            .map{|record| record["timespan"] }
-            .inject(0, :+)
-    end
-
-    # WaveIntradayControl::cumulatedTimeOverThePastNHours(n)
-    def self.cumulatedTimeOverThePastNHours(n)
-        WaveIntradayControl::cummulatedTimeAfterHorizon(Time.new.to_i - n*3600)
-    end
-
-    # WaveIntradayControl::shouldDisplay()
-    def self.shouldDisplay()
-        WaveIntradayControl::cumulatedTimeOverThePastNHours(3) < 60*30 # 30 mins
     end
 end

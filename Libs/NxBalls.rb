@@ -86,9 +86,6 @@ class NxBalls
     def self.commitToBank(description, accountNumber, timespanInSeconds)
         puts "adding #{timespanInSeconds} seconds to account: (#{description}, #{accountNumber})"
         Bank1::put(accountNumber, CommonUtils::today(), timespanInSeconds)
-        if accountNumber == "ead40ab9-6f67-4244-9214-b7e7fe05991c" then
-            WaveIntradayControl::recordTime(timespanInSeconds)
-        end
     end
 
     # NxBalls::start(item)

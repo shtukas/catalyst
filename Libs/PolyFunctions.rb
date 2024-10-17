@@ -22,16 +22,6 @@ class PolyFunctions
         end
 
         # ------------------------------------------------
-        # Types
-
-        if item["mikuType"] == "Wave" then
-            accounts << {
-                "description" => "WaveIntradayControl",
-                "number"      => "ead40ab9-6f67-4244-9214-b7e7fe05991c"
-            }
-        end
-
-        # ------------------------------------------------
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
