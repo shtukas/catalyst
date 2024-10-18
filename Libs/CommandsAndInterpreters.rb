@@ -156,6 +156,7 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNullWithTaskType(taskType)
             return if item.nil?
             puts JSON.pretty_generate(item)
+            sleep 1
             return
         end
 

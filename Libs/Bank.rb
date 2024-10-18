@@ -121,6 +121,11 @@ class Bank1
             records << row
         end
         db.close
+        Bank1::journal().each{|record|
+            if record["uuid"] == uuid then
+                records << record
+            end
+        }
         records
     end
 
