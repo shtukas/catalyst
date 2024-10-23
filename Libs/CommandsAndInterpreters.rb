@@ -258,7 +258,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::done(item)
+            PolyActions::done(item, true)
             return
         end
 

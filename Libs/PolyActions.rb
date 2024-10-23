@@ -39,8 +39,8 @@ class PolyActions
         NxBalls::stop(item)
     end
 
-    # PolyActions::done(item)
-    def self.done(item)
+    # PolyActions::done(item, useTheForce = false)
+    def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
 
@@ -86,7 +86,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+            if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::performWaveDone(item)
             end
             return
@@ -131,7 +131,7 @@ class PolyActions
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ") then
                 PolyActions::stop(item)
-                PolyActions::done(item)
+                PolyActions::done(item, true)
             end
             return
         end
