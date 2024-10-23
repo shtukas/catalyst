@@ -96,8 +96,8 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::natural(item)
-    def self.natural(item)
+    # PolyActions::double(item)
+    def self.double(item)
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::accessAndDone(item)
@@ -105,12 +105,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            if NxBalls::itemIsRunning(item) then
-                PolyActions::done(item)
-                PolyActions::stop(item)
-            else
-                PolyActions::start(item)
-            end
+            PolyActions::done(item)
             return
         end
 
@@ -120,21 +115,23 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if NxBalls::itemIsRunning(item) then
+            PolyActions::start(item)
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::stop(item)
-            else
-                PolyActions::start(item)
-                PolyActions::access(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
+                    Items::destroy(item["uuid"])
+                end
             end
             return
         end
 
         if item["mikuType"] == "Wave" then
-            if NxBalls::itemIsRunning(item) then
+            PolyActions::start(item)
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ") then
+                PolyActions::stop(item)
                 PolyActions::done(item)
-            else
-                PolyActions::start(item)
-                PolyActions::access(item)
             end
             return
         end
@@ -210,6 +207,7 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
+        puts "start: '#{PolyFunctions::toString(item).green}' ? "
         NxBalls::start(item)
     end
 

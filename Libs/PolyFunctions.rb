@@ -22,6 +22,23 @@ class PolyFunctions
         end
 
         # ------------------------------------------------
+        # Special Features
+
+        if item["mikuType"] == "NxTask" then
+            accounts << {
+                "description" => "NxTask (General)",
+                "number"      => "Tasks:7514-469a-8761-1456f66101be"
+            }
+        end
+
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            accounts << {
+                "description" => "Wave NotInterruption (General)",
+                "number"      => "Waves:NotInterruption:7514-469a98"
+            }
+        end
+
+        # ------------------------------------------------
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then

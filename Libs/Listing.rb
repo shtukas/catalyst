@@ -101,6 +101,16 @@ class Listing
 
     # Listing::items()
     def self.items()
+        i1s = [
+            {
+                "items" => Waves::muiItemsNotInterruption(),
+                "rt"    => Bank1::recoveredAverageHoursPerDay("Waves:NotInterruption:7514-469a98")
+            },
+            {
+                "items" => NxTasks::tail(10),
+                "rt"    => Bank1::recoveredAverageHoursPerDay("Tasks:7514-469a-8761-1456f66101be")
+            }
+        ].sort_by{|packet| packet["rt"] }.map{|packet| packet["items"] }.flatten
         [
             Anniversaries::listingItems(),
             Waves::muiItemsInterruption(),
@@ -110,8 +120,7 @@ class Listing
             NxBackups::listingItems(),
             NxTasks::managed(),
             NxTasks::dated(),
-            Waves::muiItemsNotInterruption(),
-            NxTasks::tail(10)
+            i1s
         ]
             .flatten
             .select{|item| Listing::listable(item) }
