@@ -244,8 +244,8 @@ class NxTasks
 
         isTarget = lambda{|item|
             return false if !Listing::listable(item)
-            return false if Bank1::recoveredAverageHoursPerDay(item["uuid"]) >= 1
             return false if Bank1::getValue(item["uuid"]) > 0
+            return false if Bank1::recoveredAverageHoursPerDay(item["uuid"]) >= 1
             true
         }
 
@@ -271,8 +271,8 @@ class NxTasks
 
         isTarget = lambda{|item|
             return false if !Listing::listable(item)
-            return false if Bank1::recoveredAverageHoursPerDay(item["uuid"]) >= 1
             return false if Bank1::getValue(item["uuid"]) == 0
+            return false if Bank1::recoveredAverageHoursPerDay(item["uuid"]) >= 1
             true
         }
 
