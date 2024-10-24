@@ -129,7 +129,7 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             PolyActions::start(item)
             PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ") then
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 PolyActions::stop(item)
                 PolyActions::done(item, true)
             end

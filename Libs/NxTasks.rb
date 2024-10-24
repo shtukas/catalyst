@@ -113,44 +113,6 @@ class NxTasks
         item["taskType-11"]["variant"] == "general time commitment" or item["taskType-11"]["variant"] == "task with time commitment" 
     end
 
-    # NxTasks::dated()
-    def self.dated()
-        Items::mikuType("NxTask")
-            .select{|item| item["taskType-11"]["variant"] == "on date" }
-            .select{|item| item["taskType-11"]["date"] <= CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
-    end
-
-    # NxTasks::managed()
-    def self.managed()
-        Items::mikuType("NxTask")
-            .select{|item| NxTasks::isTimeCommitment(item) }
-            .sort_by{|item| NxTasks::ratio(item) }
-            .select{|item| NxTasks::ratio(item) < 1 }
-    end
-
-    # NxTasks::tail(cardinal)
-    def self.tail(cardinal)
-        Items::mikuType("NxTask")
-            .select{|item| item["taskType-11"]["variant"] == "tail" }
-            .sort_by{|item| item["taskType-11"]["position"] }
-            .reduce([]){|collection, item|
-                if collection.size >= cardinal then
-                    collection
-                else
-                    if Listing::listable(item) then
-                        if Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1 and Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600 then
-                            collection + [item]
-                        else
-                            collection
-                        end
-                    else
-                        collection
-                    end
-                end
-            }
-    end
-
     # NxTasks::firstTailPosition()
     def self.firstTailPosition()
         item = Items::mikuType("NxTask")
@@ -258,6 +220,80 @@ class NxTasks
                     .sort_by{|item| NxTasks::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
+
+    # -------------------------------------
+
+    # NxTasks::dated()
+    def self.dated()
+        Items::mikuType("NxTask")
+            .select{|item| item["taskType-11"]["variant"] == "on date" }
+            .select{|item| item["taskType-11"]["date"] <= CommonUtils::today() }
+            .sort_by{|item| item["unixtime"] }
+    end
+
+    # NxTasks::managed()
+    def self.managed()
+        Items::mikuType("NxTask")
+            .select{|item| NxTasks::isTimeCommitment(item) }
+            .sort_by{|item| NxTasks::ratio(item) }
+            .select{|item| NxTasks::ratio(item) < 1 }
+    end
+
+    # NxTasks::tail0(cardinal)
+    def self.tail0(cardinal)
+
+        isTarget = lambda{|item|
+            return false if !Listing::listable(item)
+            return false if Bank1::recoveredAverageHoursPerDay(item["uuid"]) >= 1
+            return false if Bank1::getValue(item["uuid"]) > 0
+            true
+        }
+
+        Items::mikuType("NxTask")
+            .select{|item| item["taskType-11"]["variant"] == "tail" }
+            .sort_by{|item| item["taskType-11"]["position"] }
+            .take(cardinal*2)
+            .reduce([]){|collection, item|
+                if collection.size >= cardinal then
+                    collection
+                else
+                    if isTarget.call(item) then
+                        collection + [item]
+                    else
+                        collection
+                    end
+                end
+            }
+    end
+
+    # NxTasks::tail1(cardinal)
+    def self.tail1(cardinal)
+
+        isTarget = lambda{|item|
+            return false if !Listing::listable(item)
+            return false if Bank1::recoveredAverageHoursPerDay(item["uuid"]) >= 1
+            return false if Bank1::getValue(item["uuid"]) == 0
+            true
+        }
+
+        Items::mikuType("NxTask")
+            .select{|item| item["taskType-11"]["variant"] == "tail" }
+            .sort_by{|item| item["taskType-11"]["position"] }
+            .take(cardinal*2)
+            .reduce([]){|collection, item|
+                if collection.size >= cardinal then
+                    collection
+                else
+                    if isTarget.call(item) then
+                        collection + [item]
+                    else
+                        collection
+                    end
+                end
+            }
+            .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+    end
+
 end
 
 class TailCurve

@@ -22,20 +22,29 @@ class PolyFunctions
         end
 
         # ------------------------------------------------
-        # Special Features
-
-        if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => "NxTask (General)",
-                "number"      => "Tasks:7514-469a-8761-1456f66101be"
-            }
-        end
+        # MikuType Features
 
         if item["mikuType"] == "Wave" and !item["interruption"] then
             accounts << {
                 "description" => "Wave NotInterruption (General)",
                 "number"      => "Waves:NotInterruption:7514-469a98"
             }
+        end
+
+        if item["mikuType"] == "NxTask" then
+            if Bank1::getValue(item["uuid"]) == 0 then
+                # Never done, so it goes to the Zero collection
+                accounts << {
+                    "description" => "NxTask (General, Zero)",
+                    "number"      => "Tasks:0:81be93ef-0cdd-49db-9fb8-b83d6b57f606"
+                }
+            else
+                # Already worked on, so it goes to the One collection
+                accounts << {
+                    "description" => "NxTask (General, One)",
+                    "number"      => "Tasks:1:fdf0cb3b-58bd-4c83-af46-9479c361c9c7"
+                }
+            end
         end
 
         # ------------------------------------------------

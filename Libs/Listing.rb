@@ -107,8 +107,12 @@ class Listing
                 "rt"    => Bank1::recoveredAverageHoursPerDay("Waves:NotInterruption:7514-469a98")
             },
             {
-                "items" => NxTasks::tail(10),
-                "rt"    => Bank1::recoveredAverageHoursPerDay("Tasks:7514-469a-8761-1456f66101be")
+                "items" => NxTasks::tail0(5),
+                "rt"    => Bank1::recoveredAverageHoursPerDay("Tasks:0:81be93ef-0cdd-49db-9fb8-b83d6b57f606")
+            },
+            {
+                "items" => NxTasks::tail1(5),
+                "rt"    => Bank1::recoveredAverageHoursPerDay("Tasks:1:fdf0cb3b-58bd-4c83-af46-9479c361c9c7")
             }
         ].sort_by{|packet| packet["rt"] }.map{|packet| packet["items"] }.flatten
         [
@@ -149,7 +153,8 @@ class Listing
         spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
         spot.contest_entry("NxTasks::dated()", lambda{ NxTasks::dated() })
         spot.contest_entry("NxTasks::managed()", lambda{ NxTasks::managed() })
-        spot.contest_entry("NxTasks::tail(10)", lambda{ NxTasks::tail(10) })
+        spot.contest_entry("NxTasks::tail0(10)", lambda{ NxTasks::tail0(10) })
+        spot.contest_entry("NxTasks::tail1(10)", lambda{ NxTasks::tail1(10) })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
         spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
