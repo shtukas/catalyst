@@ -226,7 +226,7 @@ class CommonUtils
 
     # CommonUtils::tomorrow()
     def self.tomorrow()
-        "#{CommonUtils::nDaysInTheFuture(1)}T01:00:00Z"
+        CommonUtils::nDaysInTheFuture(1)
     end
 
     # CommonUtils::getLocalTimeZone()
