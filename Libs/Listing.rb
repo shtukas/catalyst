@@ -78,11 +78,11 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::toString2(store, item, context = nil)
-    def self.toString2(store, item, context = nil)
+    # Listing::toString2(store, item)
+    def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix} #{PolyFunctions::toString(item, context)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -101,20 +101,6 @@ class Listing
 
     # Listing::items()
     def self.items()
-        i1s = [
-            {
-                "items" => Waves::muiItemsNotInterruption(),
-                "rt"    => Bank1::recoveredAverageHoursPerDay("Waves:NotInterruption:7514-469a98")
-            },
-            {
-                "items" => NxTasks::tail0(5),
-                "rt"    => Bank1::recoveredAverageHoursPerDay("Tasks:0:81be93ef-0cdd-49db-9fb8-b83d6b57f606")
-            },
-            {
-                "items" => NxTasks::tail1(5),
-                "rt"    => Bank1::recoveredAverageHoursPerDay("Tasks:1:fdf0cb3b-58bd-4c83-af46-9479c361c9c7")
-            }
-        ].sort_by{|packet| packet["rt"] }.map{|packet| packet["items"] }.flatten
         [
             Anniversaries::listingItems(),
             Waves::muiItemsInterruption(),
@@ -122,9 +108,10 @@ class Listing
             DropBox::items(),
             Desktop::listingItems(),
             NxBackups::listingItems(),
-            NxTasks::managed(),
-            NxTasks::dated(),
-            i1s
+            NxDateds::listingItems(),
+            NxCores::listingItems(),
+            Waves::muiItemsNotInterruption(),
+            NxTasks::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -227,7 +214,7 @@ class Listing
                 }
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item, "main-listing-1315")
+                    line = Listing::toString2(store, item)
                     status = spacecontrol.putsline line
                     break if !status
                 }

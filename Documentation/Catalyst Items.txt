@@ -13,3 +13,4 @@ Cross types conventions (all optional):
     - donation-1205      : String # uuid of target for donation
     - onlyOnDays         : null or Array[week days names lowercase english]
                            Indicates on which days the wave can show up
+    - parentuuid-0014    : uuid or null

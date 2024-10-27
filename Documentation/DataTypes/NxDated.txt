@@ -1,8 +1,9 @@
 
-NxTask:
+NxDated:
     - uuid               : String
-    - mikuType           : "NxTask"
+    - mikuType           : "NxDated"
     - unixtime           : Float
     - datetime           : DateTime Iso 8601 UTC Zulu
     - description        : String
-    - global-positioning : Float
+    - date               : YYYY-MM-DD
+                           DateTime, but we will truncate

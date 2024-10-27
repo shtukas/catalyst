@@ -26,6 +26,16 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDated" then
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -73,15 +83,22 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
-            if NxTasks::isTimeCommitment(item) then
-                DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
-                return
-            end
+        if item["mikuType"] == "NxDated" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                TailCurve::issueTailCurvePoint()
                 Items::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxTask" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
             return
         end
 
@@ -126,6 +143,23 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDated" then
+            PolyActions::start(item)
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::stop(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
+                    Items::destroy(item["uuid"])
+                end
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -136,7 +170,7 @@ class PolyActions
             return
         end
 
-        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to natural #{item["mikuType"]}"
+        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to double dots #{item["mikuType"]}"
     end
 
     # PolyActions::destroy(item)
@@ -165,6 +199,13 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxDated" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
@@ -173,6 +214,18 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
+            if !Catalyst::children(item).empty? then
+                puts "You cannot destroy core '#{PolyFunctions::toString(item).green}' because it has children."
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

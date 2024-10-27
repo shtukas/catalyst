@@ -7,10 +7,10 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | ondays * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | task | desktop | float | todo",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | managed",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | tailcurve",
+            "misc          : search | speed | commands | edit <n>",
         ].join("\n")
     end
 
@@ -87,40 +87,14 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            target = NxTasks::interactivelySelectManagedOrNull()
+            target = NxCores::interactivelySelectOrNull()
             return if target.nil?
             Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
             return
         end
 
-        if Interpreting::match("type *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "You can only apply type to a NxTask"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            taskType = NxTasks::interactivelyIssueDxTaskType()
-            puts JSON.pretty_generate(taskType)
-            Items::setAttribute(item["uuid"], "taskType-11", taskType)
-            return
-        end
-
-        if Interpreting::match("tailcurve", input) then
-            numbers = TailCurve::numbers()
-            puts JSON.pretty_generate(numbers)
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if Interpreting::match("today", input) then
-            taskType = {
-                "variant" => "on date",
-                "date"    => CommonUtils::today()
-            }
-            item = NxTasks::interactivelyIssueNewOrNullWithTaskType(taskType)
+            item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -141,22 +115,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("task", input) then
+        if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("todo", input) then
-            taskType = {
-                "variant"  => "tail",
-                "position" => NxTasks::between10And20Position()
-            }
-            item = NxTasks::interactivelyIssueNewOrNullWithTaskType(taskType)
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            sleep 1
             return
         end
 
@@ -205,11 +167,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("managed", input) then
-            items = Items::mikuType("NxTask")
-                        .select{|item| NxTasks::isTimeCommitment(item) }
-                        .sort_by{|item| NxTasks::ratio(item) }
-            Catalyst::program2(items)
+        if Interpreting::match("cores", input) then
+            NxCores::program2()
             return
         end
 
@@ -313,8 +272,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            elements = Items::mikuType("NxTask")
-                            .select{|item| item["taskType-11"]["variant"] == "on date" }
+            elements = Items::mikuType("NxDateds")
                             .sort_by{|item| item["datetime"] }
             Catalyst::program2(elements)
             return
@@ -401,11 +359,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("tomorrow", input) then
-            taskType = {
-                "variant" => "on date",
-                "date"    => CommonUtils::tomorrow()
-            }
-            item = NxTasks::interactivelyIssueNewOrNullWithTaskType(taskType)
+            item = NxDateds::interactivelyIssueTomorrowOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
