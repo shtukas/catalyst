@@ -15,63 +15,12 @@ class NxTasks
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::locationToTailTask1(location, position)
-    def self.locationToTailTask1(location, position)
-        uuid = SecureRandom.hex
-        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
-        payload = {
-            "type" => "aion-point",
-            "nhash" => nhash
-        }
-        taskType = {
-            "variant"  => "tail",
-            "position" => position
-        }
-        Items::itemInit(uuid, "NxTask")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", File.basename(location))
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "taskType-11", taskType)
-        Items::itemOrNull(uuid)
-    end
-
     # ------------------
     # Data
 
-    # NxTasks::taskTypeToString(item)
-    def self.taskTypeToString(item)
-        if item["taskType-11"]["variant"] == "on date" then
-            return "[#{item["taskType-11"]["date"]}]"
-        end
-        if item["taskType-11"]["variant"] == "tail" then
-            return "(#{"%6.2f" % item["taskType-11"]["position"]})"
-        end
-    end
-
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        "#{NxTasks::icon(item)} #{NxTasks::taskTypeToString(item)} #{item["description"]}"
-    end
-
-    # NxTasks::firstTailPosition()
-    def self.firstTailPosition()
-        item = Items::mikuType("NxTask")
-                .select{|item| item["taskType-11"]["variant"] == "tail" }
-                .sort_by{|item| item["taskType-11"]["position"] }
-                .first
-        return 1 if item.nil?
-        item["taskType-11"]["position"]
-    end
-
-    # NxTasks::lastTailPosition()
-    def self.lastTailPosition()
-        item = Items::mikuType("NxTask")
-                .select{|item| item["taskType-11"]["variant"] == "tail" }
-                .sort_by{|item| item["taskType-11"]["position"] }
-                .last
-        return 1 if item.nil?
-        item["taskType-11"]["position"]
+        "🔹 #{item["description"]}"
     end
 
     # NxTasks::between10And20Position()

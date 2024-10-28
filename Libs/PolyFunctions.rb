@@ -14,6 +14,13 @@ class PolyFunctions
         # ------------------------------------------------
         # Special Features
 
+        if item["parentuuid-0014"] then
+            target = Items::itemOrNull(item["parentuuid-0014"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
         if item["donation-1205"] then
             target = Items::itemOrNull(item["donation-1205"])
             if target then
@@ -27,24 +34,8 @@ class PolyFunctions
         if item["mikuType"] == "Wave" and !item["interruption"] then
             accounts << {
                 "description" => "Wave NotInterruption (General)",
-                "number"      => "Waves:NotInterruption:7514-469a98"
+                "number"      => "6fd7b098-98ac-4362-b5ce-6bd618cf6868"
             }
-        end
-
-        if item["mikuType"] == "NxTask" then
-            if Bank1::getValue(item["uuid"]) == 0 then
-                # Never done, so it goes to the Zero collection
-                accounts << {
-                    "description" => "NxTask (General, Zero)",
-                    "number"      => "Tasks:0:81be93ef-0cdd-49db-9fb8-b83d6b57f606"
-                }
-            else
-                # Already worked on, so it goes to the One collection
-                accounts << {
-                    "description" => "NxTask (General, One)",
-                    "number"      => "Tasks:1:fdf0cb3b-58bd-4c83-af46-9479c361c9c7"
-                }
-            end
         end
 
         # ------------------------------------------------

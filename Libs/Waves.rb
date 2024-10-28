@@ -151,26 +151,18 @@ class Waves
             .sort{|w1, w2| w1["lastDoneUnixtime"] <=> w2["lastDoneUnixtime"] }
     end
 
-    # Waves::muiItemsInterruption()
-    def self.muiItemsInterruption()
+    # Waves::listingItemsInterruption()
+    def self.listingItemsInterruption()
         Waves::listingItems()
             .select{|item| item["interruption"] }
             .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
-    # Waves::muiItemsNotInterruption()
-    def self.muiItemsNotInterruption()
+    # Waves::listingItemsNotInterruption()
+    def self.listingItemsNotInterruption()
+        return [] if Bank1::recoveredAverageHoursPerDay("6fd7b098-98ac-4362-b5ce-6bd618cf6868") >= 2
         Waves::listingItems()
             .select{|item| !item["interruption"] }
-            .map{|item|
-                if item["resurface-time"].nil? then
-                    resurface_time = Time.new.to_f
-                    item["resurface-time"] = resurface_time
-                    Items::setAttribute(item["uuid"], "resurface-time", resurface_time)
-                end
-                item
-            }
-            .sort_by{|item| item["resurface-time"] }
     end
 
     # -------------------------------------------------------------------------

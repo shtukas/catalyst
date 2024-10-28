@@ -103,14 +103,14 @@ class Listing
     def self.items()
         [
             Anniversaries::listingItems(),
-            Waves::muiItemsInterruption(),
+            Waves::listingItemsInterruption(),
             NxFloats::listingItems(),
             DropBox::items(),
             Desktop::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
-            NxCores::listingItems(),
-            Waves::muiItemsNotInterruption(),
+            Prefix::addPrefix(NxCores::listingItems()),
+            Waves::listingItemsNotInterruption(),
             NxTasks::listingItems()
         ]
             .flatten
@@ -137,14 +137,14 @@ class Listing
         spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
         spot.contest_entry("Desktop::listingItems()", lambda { Desktop::listingItems() })
         spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
-        spot.contest_entry("Waves::muiItemsInterruption()", lambda{ Waves::muiItemsInterruption() })
+        spot.contest_entry("Waves::listingItemsInterruption()", lambda{ Waves::listingItemsInterruption() })
         spot.contest_entry("NxTasks::dated()", lambda{ NxTasks::dated() })
         spot.contest_entry("NxTasks::managed()", lambda{ NxTasks::managed() })
         spot.contest_entry("NxTasks::tail0(10)", lambda{ NxTasks::tail0(10) })
         spot.contest_entry("NxTasks::tail1(10)", lambda{ NxTasks::tail1(10) })
         spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
         spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
-        spot.contest_entry("Waves::muiItemsNotInterruption()", lambda{ Waves::muiItemsNotInterruption() })
+        spot.contest_entry("Waves::listingItemsNotInterruption()", lambda{ Waves::listingItemsNotInterruption() })
         spot.end_contest()
 
         puts ""
