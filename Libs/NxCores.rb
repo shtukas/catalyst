@@ -43,6 +43,7 @@ class NxCores
     def self.listingItems()
         Items::mikuType("NxCore")
             .select{|item| Listing::listable(item) }
+            .select{|item| NxCores::ratio(item) < 1 }
             .sort_by{|item| NxCores::ratio(item) }
     end
 
