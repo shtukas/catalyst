@@ -160,7 +160,6 @@ class Waves
 
     # Waves::listingItemsNotInterruption()
     def self.listingItemsNotInterruption()
-        return [] if Bank1::recoveredAverageHoursPerDay("6fd7b098-98ac-4362-b5ce-6bd618cf6868") >= 2
         Waves::listingItems()
             .select{|item| !item["interruption"] }
     end

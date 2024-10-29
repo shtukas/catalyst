@@ -110,8 +110,6 @@ class Listing
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             Prefix::addPrefix(NxCores::listingItems()),
-            Waves::listingItemsNotInterruption(),
-            NxTasks::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }

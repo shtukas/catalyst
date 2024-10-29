@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | ondays * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
@@ -127,6 +127,15 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
+        end
+
+        if Interpreting::match("move *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
+            return if parent.nil?
+            Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
         end
 
         if Interpreting::match("add time *", input) then

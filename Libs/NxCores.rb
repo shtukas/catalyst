@@ -7,11 +7,13 @@ class NxCores
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
+        hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
         Items::itemInit(uuid, "NxCore")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "hours", hours)
         Items::itemOrNull(uuid)
     end
 

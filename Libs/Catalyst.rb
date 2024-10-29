@@ -102,6 +102,12 @@ class Catalyst
 
     # Catalyst::children(parent)
     def self.children(parent)
+        if parent["uuid"] == "bc300f69-e039-4288-ac1a-644974a32f48" then # Waves (Non Interruption)
+            return Waves::listingItemsNotInterruption()
+        end
+        if parent["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity
+            return NxTasks::listingItems()
+        end
         Items::items()
             .select{|item| item["parentuuid-0014"] == parent["uuid"] }
     end
@@ -142,5 +148,39 @@ class Catalyst
         end
         position = position.to_f
         position
+    end
+
+    # Catalyst::interactivelySelectParentInHierarchyOrNull(context: Item or Null)
+    def self.interactivelySelectParentInHierarchyOrNull(context)
+        # The hierarchy has the cores and then whatever is a children, all the way down
+
+        if context.nil? then
+            core = NxCores::interactivelySelectOrNull()
+            if core.nil? then
+                return nil
+            end
+            return Catalyst::interactivelySelectParentInHierarchyOrNull(core)
+        end
+
+        # We automatically return the context if it doesn't have any children 
+        # and otherwise choose between returning the context or diving into one of the children
+
+        if Catalyst::children(context).empty? then
+            return context
+        end
+        # We have a NxCore that has children
+        o1 = "select: '#{PolyFunctions::toString(context)}' (default)"
+        o2 = "select one from children"
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", [o1, o2])
+        if option.nil? or option == o1 then
+            return context
+        end
+        if option == o2 then
+            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", Catalyst::children(context), lambda{|item| PolyFunctions::toString(item) })
+            if child.nil? then
+                return Catalyst::interactivelySelectParentInHierarchyOrNull(context)
+            end
+            return Catalyst::interactivelySelectParentInHierarchyOrNull(child)
+        end
     end
 end
