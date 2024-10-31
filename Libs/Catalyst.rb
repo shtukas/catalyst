@@ -50,7 +50,14 @@ class Catalyst
                 next if target
                 Items::setAttribute(item["uuid"], "donation-1205", nil)
             }
-            
+
+            Items::items().each{|item|
+                next if item["parentuuid-0014"].nil?
+                target = Items::itemOrNull(item["uuid"])
+                next if target
+                Items::setAttribute(item["uuid"], "parentuuid-0014", nil)
+            }
+
         end
     end
 

@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort",
+            "misc          : search | speed | commands | edit <n> | sort | numbers",
         ].join("\n")
     end
 
@@ -150,7 +150,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
-            retuf item.nil?
+            return if item.nil?
             parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
@@ -208,6 +208,14 @@ class CommandsAndInterpreters
 
         if Interpreting::match("commands", input) then
             puts CommandsAndInterpreters::commands().yellow
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("numbers", input) then
+            puts "NxTasks: #{Items::mikuType("NxTask").count} items"
+            puts "Infinity Zero: #{Bank1::recoveredAverageHoursPerDay("054ec562-1166-4d7b-a646-b5695298c032")}"
+            puts "Infinity One : #{Bank1::recoveredAverageHoursPerDay("1df84f80-8546-476f-9ed9-84fa84d30a5e")}"
             LucilleCore::pressEnterToContinue()
             return
         end
