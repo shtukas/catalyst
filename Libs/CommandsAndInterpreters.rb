@@ -125,6 +125,9 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
+            # We need to position the item inside infinity
+            position = NxTasks::between10And20InfinityPosition()
+            Items::setAttribute(todo["uuid"], "global-positioning", position)
             puts JSON.pretty_generate(item)
             return
         end
@@ -132,7 +135,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
-            return if item.nil?
+            retuf item.nil?
             parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])

@@ -85,13 +85,13 @@ class NxCores
 
             puts ""
 
-            puts "task | pile | position * | sort"
+            puts "todo (here, with position selection) | pile | position * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            if input == "task" then
+            if input == "todo" then
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
