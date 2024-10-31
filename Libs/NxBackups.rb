@@ -9,14 +9,16 @@ NxBackup
 
 class NxBackups
 
-    # NxBackups::readUuidsFromFile()
+    # NxBackups::filepath()
     def self.filepath()
         "#{Config::pathToGalaxy()}/DataHub/Drives, Passwords, Backups and Lost Procedures.txt"
     end
 
-    # NxBackups::descriptionsFromFiles()
-    def self.descriptionsFromFiles()
-        IO.read(filepath)
+    # CommonUtils::timeStringL22()
+
+    # NxBackups::descriptionsFromDataFile()
+    def self.descriptionsFromDataFile()
+        IO.read(NxBackups::filepath())
             .lines
             .map{|l| l.strip }
             .select{|l| l.include?("::") }
@@ -26,7 +28,7 @@ class NxBackups
 
     # NxBackups::removeObsoleteItems()
     def self.removeObsoleteItems()
-        descriptions = NxBackups::descriptionsFromFiles()
+        descriptions = NxBackups::descriptionsFromDataFile()
         Items::mikuType("NxBackup").each{|item|
             if !descriptions.include?(item["description"]) then
                 Items::destroy(item["uuid"])
@@ -36,7 +38,7 @@ class NxBackups
 
     # NxBackups::buildMissingItems()
     def self.buildMissingItems()
-        descriptionsFromFiles = NxBackups::descriptionsFromFiles()
+        descriptionsFromFiles = NxBackups::descriptionsFromDataFile()
         descriptionsFromItems = Items::mikuType("NxBackup").map{|item| item["description"] }
         (descriptionsFromFiles - descriptionsFromItems).each{|description|
             uuid = SecureRandom.uuid
@@ -54,7 +56,7 @@ class NxBackups
 
     # NxBackups::getPeriodForDescriptionOrNull(description)
     def self.getPeriodForDescriptionOrNull(description)
-        line = IO.read(filepath)
+        line = IO.read(NxBackups::filepath())
                 .lines
                 .map{|l| l.strip }
                 .select{|l| l.include?("::") }

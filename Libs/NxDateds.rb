@@ -28,7 +28,7 @@ class NxDateds
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "date", CommonUtils::today())
+        Items::setAttribute(uuid, "date", Time.new.utc.iso8601)
         Items::itemOrNull(uuid)
     end
 
@@ -43,7 +43,7 @@ class NxDateds
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "date", CommonUtils::nDaysInTheFuture(1))
+        Items::setAttribute(uuid, "date", (Time.new + 86400).utc.iso8601)
         Items::itemOrNull(uuid)
     end
 
@@ -58,7 +58,7 @@ class NxDateds
     # NxDateds::listingItems()
     def self.listingItems()
         Items::mikuType("NxDated")
+            .select{|item| item["date"][0, 10] <= CommonUtils::today() }
             .sort_by{|item| item["date"] }
-            .select{|item| item["date"] <= CommonUtils::today() }
     end
 end

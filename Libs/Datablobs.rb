@@ -1,6 +1,8 @@
 
 # encoding: UTF-8
 
+# The datablobs are currently stored in blades, one per uuid.
+
 class Datablobs
 
     # Datablobs::repositoryPath()
