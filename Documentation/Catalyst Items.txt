@@ -14,3 +14,4 @@ Cross types conventions (all optional):
     - onlyOnDays         : null or Array[week days names lowercase english]
                            Indicates on which days the wave can show up
     - parentuuid-0014    : uuid or null
+    - lis-pos-36         : {date: Date, position: Float}

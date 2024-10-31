@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n>",
+            "misc          : search | speed | commands | edit <n> | sort",
         ].join("\n")
     end
 
@@ -64,6 +64,20 @@ class CommandsAndInterpreters
             return if item.nil?
             puts Bank1::getRecords(item["uuid"]).sort_by{|record| record["_date_"] }
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            items = Listing::items()
+            items = Listing::applyListingOrder(items)
+            i1s, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
+            i1s.reverse.each{|item|
+                data = {
+                    "date" => CommonUtils::today(),
+                    "position" => Listing::firstPosition()-1
+                }
+                Items::setAttribute(item["uuid"], "lis-pos-36", data)
+            }
             return
         end
 
@@ -127,7 +141,8 @@ class CommandsAndInterpreters
             return if item.nil?
             # We need to position the item inside infinity
             position = NxTasks::between10And20InfinityPosition()
-            Items::setAttribute(todo["uuid"], "global-positioning", position)
+            Items::setAttribute(item["uuid"], "global-positioning", position)
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end

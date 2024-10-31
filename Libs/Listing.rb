@@ -167,6 +167,20 @@ class Listing
         false
     end
 
+    # Listing::applyListingOrder(items)
+    def self.applyListingOrder(items)
+        # {date: , position:}
+        i1s, i2s = items.partition{|item| item["lis-pos-36"] and item["lis-pos-36"]["date"] == CommonUtils::today() }
+        i1s.sort_by{|item| item["lis-pos-36"]["position"] } + i2s
+    end
+
+    # Listing::firstPosition()
+    def self.firstPosition()
+        items = Listing::items()
+        i1s = items.select{|item| item["lis-pos-36"] and item["lis-pos-36"]["date"] == CommonUtils::today() }
+        ([1] + i1s.map{|item| item["lis-pos-36"]["position"] }).min
+    end
+
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -194,6 +208,8 @@ class Listing
             items = Listing::items()
 
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+
+            items = Listing::applyListingOrder(items)
 
             system("clear")
 
