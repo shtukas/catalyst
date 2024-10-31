@@ -109,7 +109,7 @@ class Listing
             Desktop::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
-            Prefix::addPrefix(NxCores::listingItems()),
+            NxCores::listingItems(),
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -210,6 +210,8 @@ class Listing
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
 
             items = Listing::applyListingOrder(items)
+
+            items =  Prefix::addPrefix(items)
 
             system("clear")
 
