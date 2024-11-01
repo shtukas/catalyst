@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | numbers | activate",
+            "misc          : search | speed | commands | edit <n> | sort | numbers | booster on|off",
         ].join("\n")
     end
 
@@ -89,8 +89,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("activate", input) then
+        if Interpreting::match("booster on", input) then
             XCache::setFlag("f5976ffc-4b91-43c4-abb4-e93b7d5a37dc:#{CommonUtils::today()}", true)
+            return
+        end
+
+        if Interpreting::match("booster off", input) then
+            XCache::setFlag("f5976ffc-4b91-43c4-abb4-e93b7d5a37dc:#{CommonUtils::today()}", false)
             return
         end
 
