@@ -149,7 +149,7 @@ class Waves
         Items::mikuType("Wave")
             .select{|item| isListingItem.call(item) }
             .map{|item|
-                if Time.new.hour < 15 then
+                if Time.new.hour < 15  or item["interruption"] then
                     item
                 else
                     item["rtime-32"] ? item : nil
