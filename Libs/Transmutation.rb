@@ -7,21 +7,7 @@ class Transmutation
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
         
         if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
-
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["infinity, 10 to 20 task", "hierarchical"])
-            return if option.nil?
-
-            if option == "infinity, 10 to 20 task" then
-                position = NxTasks::between10And20InfinityPosition()
-                Items::setAttribute(item["uuid"], "global-positioning", position)
-            end
-
-            if option == "hierarchical" then
-                parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
-                return if parent.nil?
-                Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
-            end
-
+            NxTasks::performItemPositioning(item)
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end

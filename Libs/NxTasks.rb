@@ -40,6 +40,23 @@ class NxTasks
         a + rand * (b - 1)
     end
 
+    # NxTasks::performItemPositioning(item)
+    def self.performItemPositioning(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["infinity, 10 to 20 task", "hierarchical"])
+        return if option.nil?
+
+        if option == "infinity, 10 to 20 task" then
+            position = NxTasks::between10And20InfinityPosition()
+            Items::setAttribute(item["uuid"], "global-positioning", position)
+        end
+
+        if option == "hierarchical" then
+            parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
+            return if parent.nil?
+            Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
+        end
+    end
+
     # -------------------------------------
 
     # NxTasks::listingItems()

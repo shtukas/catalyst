@@ -147,11 +147,8 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            # We need to position the item inside infinity
-            position = NxTasks::between10And20InfinityPosition()
-            Items::setAttribute(item["uuid"], "global-positioning", position)
-            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
+            NxTasks::performItemPositioning(item)
             return
         end
 
