@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | numbers",
+            "misc          : search | speed | commands | edit <n> | sort | numbers | activate",
         ].join("\n")
     end
 
@@ -86,6 +86,11 @@ class CommandsAndInterpreters
                 }
                 Items::setAttribute(item["uuid"], "lis-pos-36", data)
             }
+            return
+        end
+
+        if Interpreting::match("activate", input) then
+            XCache::setFlag("f5976ffc-4b91-43c4-abb4-e93b7d5a37dc:#{CommonUtils::today()}", true)
             return
         end
 
