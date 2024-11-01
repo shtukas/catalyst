@@ -51,7 +51,6 @@ class NxTasks
                 .select{|item| item["parentuuid-0014"].nil? }
                 .sort_by{|item| item["global-positioning"] }
 
-
         if r0 < r1 then
             # We want the Zero items, 5 of them
             items

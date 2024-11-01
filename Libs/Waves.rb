@@ -141,21 +141,28 @@ class Waves
 
     # Waves::listingItems()
     def self.listingItems()
-        isMuiItem = lambda { |item|
+        isListingItem = lambda { |item|
             b1 = Listing::listable(item)
             b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
             b1 and b2
         }
         Items::mikuType("Wave")
-            .select{|item| isMuiItem.call(item) }
-            .sort{|w1, w2| w1["lastDoneUnixtime"] <=> w2["lastDoneUnixtime"] }
+            .select{|item| isListingItem.call(item) }
+            .map{|item|
+                if item["rtime-32"].nil? then
+                    rtime = Time.new.utc.iso8601
+                    Items::setAttribute(item["uuid"], "rtime-32", rtime)
+                    item["rtime-32"] = rtime
+                end
+                item
+            }
+            .sort{|w1, w2| w1["rtime-32"] <=> w2["rtime-32"] }
     end
 
     # Waves::listingItemsInterruption()
     def self.listingItemsInterruption()
         Waves::listingItems()
             .select{|item| item["interruption"] }
-            .sort_by{|item| item["lastDoneUnixtime"] }
     end
 
     # Waves::listingItemsNotInterruption()
@@ -169,8 +176,8 @@ class Waves
 
     # Waves::performWaveDone(item)
     def self.performWaveDone(item)
-        # Reset: resurface-time
-        Items::setAttribute(item["uuid"], "resurface-time", nil)
+        # Reset: rtime-32
+        Items::setAttribute(item["uuid"], "rtime-32", nil)
 
         # Marking the item as being done 
         puts "done-ing: '#{Waves::toString(item).green}'"

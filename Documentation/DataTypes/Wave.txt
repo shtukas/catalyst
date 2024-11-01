@@ -13,7 +13,7 @@ Wave :
 
     "interruption"     : null or boolean, indicates if the item is interruption (priority)
 
-    "resurface-time"   : unixtime
+    "rtime-32"         : unixtime
 
 Nx46 
 {
