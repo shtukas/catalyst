@@ -70,7 +70,11 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts Bank1::getRecords(item["uuid"]).sort_by{|record| record["_date_"] }
+            Bank1::getRecords(item["uuid"])
+                .sort_by{|record| record["_date_"] }
+                .each{|record|
+                    puts "recorduuid: #{record["_recorduuid_"]}; uuid: #{record["_id_"]}, date: #{record["_date_"]}, value: #{"%9.2f" % record["_value_"]}"
+                }
             LucilleCore::pressEnterToContinue()
             return
         end
