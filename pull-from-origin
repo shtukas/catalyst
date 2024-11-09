@@ -1,4 +1,0 @@
-#!/bin/zsh
-
-cd ~/Galaxy/Software/github.com/shtukas/catalyst
-git pull

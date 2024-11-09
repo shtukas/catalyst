@@ -16,6 +16,19 @@ class NxTasks
         Items::itemOrNull(uuid)
     end
 
+    # NxTasks::locationToTask(description, location)
+    def self.locationToTask(description, location)
+        uuid = SecureRandom.uuid
+        payload = UxPayload::locationToPayload(uuid, location)
+        Items::itemInit(uuid, "NxTask")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "global-positioning", rand) # default value to ensure that the item has all the mandatory fields
+        Items::itemOrNull(uuid)
+    end
+
     # ------------------
     # Data
 
@@ -33,7 +46,7 @@ class NxTasks
             return 1
         end
         if items.size <= 10 then
-            return (items.last["global-positioning"] + 1).floor
+            return items.last["global-positioning"] + 1
         end
         a = items.first["global-positioning"]
         b = items.last["global-positioning"]
@@ -67,6 +80,7 @@ class NxTasks
         items = Items::mikuType("NxTask")
                 .select{|item| item["parentuuid-0014"].nil? }
                 .sort_by{|item| item["global-positioning"] }
+
 
         if r0 < r1 then
             # We want the Zero items, 5 of them

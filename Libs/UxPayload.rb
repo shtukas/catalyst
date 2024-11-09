@@ -19,6 +19,15 @@ class UxPayload
         LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayload::types())
     end
 
+    # UxPayload::locationToPayload(uuid, location)
+    def self.locationToPayload(uuid, location)
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
+        {
+            "type" => "aion-point",
+            "nhash" => nhash
+        }
+    end
+
     # UxPayload::makeNewOrNull(uuid)
     def self.makeNewOrNull(uuid)
         type = UxPayload::interactivelySelectTypeOrNull()
@@ -40,11 +49,7 @@ class UxPayload
         if type == "aion-point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
-            return {
-                "type" => "aion-point",
-                "nhash" => nhash
-            }
+            return UxPayload::locationToPayload(uuid, location)
         end
         if type == "Dx8Unit" then
             identifier = LucilleCore::askQuestionAnswerAsString("Dx8Unit identifier (empty to abort): ")
@@ -175,7 +180,6 @@ class UxPayload
             end
             return
         end
-
     end
 
     # UxPayload::edit(itemuuid, payload)

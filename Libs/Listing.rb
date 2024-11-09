@@ -163,16 +163,6 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::checkForCodeUpdates()
-    def self.checkForCodeUpdates()
-        if CommonUtils::isOnline() and (CommonUtils::localLastCommitId() != CommonUtils::remoteLastCommitId()) then
-            puts "Attempting to download new code"
-            output = `#{File.dirname(__FILE__)}/../pull-from-origin`.strip
-            return (output == "Already up to date.")
-        end
-        false
-    end
-
     # Listing::applyListingOrder(items)
     def self.applyListingOrder(items)
         # {date: , position:}
