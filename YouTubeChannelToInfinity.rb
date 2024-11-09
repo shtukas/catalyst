@@ -8,6 +8,23 @@ yt-dlp \
     "https://www.youtube.com/@veritasium/videos"
 =end
 
+youTubeURL = "https://www.youtube.com/@jomakaze/videos"
+tmpDirectoryName = SecureRandom.hex(5)
+
+puts "Downloading videos"
+
+query = <<-QUERY
+mkdir /Users/pascal/Desktop/#{tmpDirectoryName}
+cd /Users/pascal/Desktop/#{tmpDirectoryName}
+
+yt-dlp \
+    -o '%(upload_date)s-%(title)s-%(id)s.%(ext)s' \
+    -f 'bestvideo[height<=720]+bestaudio/best[height<=720]' \
+    "#{youTubeURL}"
+QUERY
+
+system(query)
+
 positions = Items::mikuType("NxTask")
             .select{|item| item["parentuuid-0014"].nil? }
             .sort_by{|item| item["global-positioning"] }
@@ -18,7 +35,7 @@ insertions = positions.zip(positions.drop(1))
     .map{|pair| 0.5 * (pair[0] + pair[1]) }
     .drop(10) # we skip the first 10 positions
 
-filepaths = LucilleCore::locationsAtFolder("/Users/pascal/Desktop/tmp1")
+filepaths = LucilleCore::locationsAtFolder("/Users/pascal/Desktop/#{tmpDirectoryName}")
 
 while insertions.size < filepaths.size do
     insertions << insertions.last + 1
@@ -32,7 +49,8 @@ coordinates.each{|filepath, position|
     Items::setAttribute(item["uuid"], "x:filepath", filepath)
     item = Items::itemOrNull(item["uuid"])
     puts JSON.pretty_generate(item)
-    LucilleCore::removeFileSystemLocation(filepath)
 }
+
+LucilleCore::removeFileSystemLocation("/Users/pascal/Desktop/#{tmpDirectoryName}")
 
 puts "process completed"

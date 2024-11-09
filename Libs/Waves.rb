@@ -149,14 +149,6 @@ class Waves
         Items::mikuType("Wave")
             .select{|item| isListingItem.call(item) }
             .map{|item|
-                if Time.new.hour < 15  or item["interruption"] then
-                    item
-                else
-                    item["rtime-32"] ? item : nil
-                end
-            }
-            .compact
-            .map{|item|
                 if item["rtime-32"].nil? then
                     rtime = Time.new.utc.iso8601
                     Items::setAttribute(item["uuid"], "rtime-32", rtime)
