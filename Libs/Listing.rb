@@ -115,6 +115,7 @@ class Listing
             Desktop::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
+            NxBufferIn::listingItems(),
             NxCores::listingItems(),
         ]
             .flatten

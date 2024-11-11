@@ -156,6 +156,7 @@ require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
+require_relative "NxBufferIn.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"

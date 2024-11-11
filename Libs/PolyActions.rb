@@ -17,6 +17,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBufferIn" then
+            return
+        end
+
         if item["mikuType"] == "NxFloat" then
             return
         end
@@ -78,6 +82,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxBufferIn" then
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::done(item["uuid"])
             return
@@ -123,6 +131,11 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             PolyActions::done(item)
+            return
+        end
+
+        if item["mikuType"] == "NxBufferIn" then
+            PolyActions::start(item)
             return
         end
 
@@ -217,6 +230,10 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxBufferIn" then
             return
         end
 
