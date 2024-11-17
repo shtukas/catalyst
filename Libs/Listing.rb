@@ -212,10 +212,6 @@ class Listing
                 items = Waves::listingItemsNotInterruption()
             end
 
-            if items.empty? and XCache::getFlag("f5976ffc-4b91-43c4-abb4-e93b7d5a37dc:#{CommonUtils::today()}") then
-                items = NxCores::booster()
-            end
-
             items =  Prefix::addPrefix(items)
 
             system("clear")
