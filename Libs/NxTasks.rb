@@ -67,6 +67,8 @@ class NxTasks
             parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
+            position = Catalyst::interactivelySelectPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "global-positioning", position)
         end
     end
 
