@@ -59,6 +59,6 @@ class NxDateds
     def self.listingItems()
         Items::mikuType("NxDated")
             .select{|item| item["date"][0, 10] <= CommonUtils::today() }
-            .sort_by{|item| item["date"] }
+            .sort_by{|item| item["unixtime"] }
     end
 end
