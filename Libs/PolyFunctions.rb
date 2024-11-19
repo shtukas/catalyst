@@ -84,9 +84,6 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxBufferIn" then
-            return "📁 ~/Galaxy/DataHub/Buffer-In"
-        end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
