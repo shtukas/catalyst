@@ -56,6 +56,16 @@ class PolyFunctions
             end
         end
 
+        if item["mikuType"] == "NxStrat" then
+            bottom = Items::itemOrNull(item["bottomuuid"])
+            if bottom then
+                accounts << {
+                    "description" => PolyFunctions::toString(bottom),
+                    "number"      => bottom["uuid"]
+                }
+            end
+        end
+
         # ------------------------------------------------
 
         accounts.reduce([]){|as, account|
@@ -86,6 +96,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
+        end
+        if item["mikuType"] == "NxStrat" then
+            return NxStrats::toString(item)
         end
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)

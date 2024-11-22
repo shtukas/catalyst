@@ -36,6 +36,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            return
+        end
+
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -91,6 +95,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
+            return if NxStrats::topOrNull(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
@@ -155,6 +167,18 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            return if NxStrats::topOrNull(item["uuid"])
+            PolyActions::start(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                PolyActions::stop(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
+                    Items::destroy(item["uuid"])
+                end
+            end
+            return
+        end
+
         if item["mikuType"] == "NxCore" then
             NxCores::program1(item)
             return
@@ -207,6 +231,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
+            return if NxStrats::topOrNull(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

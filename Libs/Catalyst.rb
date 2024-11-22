@@ -86,15 +86,14 @@ class Catalyst
         " #{"(#{target["description"]})".yellow}"
     end
 
-    # Catalyst::interactivelyGetLinesParentToChildren()
-    def self.interactivelyGetLinesParentToChildren()
+    # Catalyst::interactivelyGetLines()
+    def self.interactivelyGetLines()
         text = CommonUtils::editTextSynchronously("").strip
         return [] if text == ""
         text
             .lines
             .map{|line| line.strip }
             .select{|line| line != "" }
-            .reverse
     end
 
     # Catalyst::interactivelyPush(item)

@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | >> * (transmutation) | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
@@ -116,6 +116,18 @@ class CommandsAndInterpreters
             target = NxCores::interactivelySelectOrNull()
             return if target.nil?
             Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+            return
+        end
+
+        if Interpreting::match("pile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            cursor = item
+            Catalyst::interactivelyGetLines().reverse.each{|line|
+                strat = NxStrats::interactivelyIssueNewOrNull(line, cursor["uuid"])
+                cursor = strat
+            }
             return
         end
 
