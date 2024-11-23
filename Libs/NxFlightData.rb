@@ -61,12 +61,73 @@ class NxFlightData
     # ----------------------------------------------------------------
     # Listing support
 
+    # NxFlightData::theNext6am(unixtime)
+    def self.theNext6am(unixtime)
+        cursor = unixtime + 3600
+        loop {
+            break  if Time.at(cursor).hour == 6
+            cursor = cursor + 600
+        }
+        cursor
+    end
+
+    # NxFlightData::isSmoothSailingFlightData(flightdata)
+    def self.isSmoothSailingFlightData(flightdata)
+        cursor = Time.new.to_i
+        flightdata.each{|fd|
+            cursor = cursor + fd["duration"]
+            if Time.at(cursor).hour >= 21 then
+                cursor = NxFlightData::theNext6am(cursor)
+            end 
+            return false if Time.at(cursor).utc.iso8601 > fd["deadline"]
+        }
+        true
+    end
+
     # NxFlightData::constructFlightData(items, item)
     def self.constructFlightData(items, item)
-        {
+        flightdata = items.map{|item| item["flight-data-25"] }.sort_by{|fd| fd["position"] }
+
+        if flightdata.size == 0 then
+            return {
+                "uuid"       => SecureRandom.hex,
+                "mikuType"   => "NxFlightData",
+                "position"   => 1,
+                "duration"   => NxFlightData::itemToDuration(item),
+                "deadline"   => NxFlightData::itemToDeadline(item)
+            }
+        end
+
+        if flightdata.size == 1 then
+            return {
+                "uuid"       => SecureRandom.hex,
+                "mikuType"   => "NxFlightData",
+                "position"   => flightdata[0]["position"] + 1,
+                "duration"   => NxFlightData::itemToDuration(item),
+                "deadline"   => NxFlightData::itemToDeadline(item)
+            }
+        end
+
+        positions = flightdata.map{|fd| fd["position"] } # we have at least 2 of those
+        middlepositions = positions.zip(positions.drop(1)).take(positions.size-1).map{|p1, p2| 0.5*(p1+p2) }
+        middlepositions.each{|position|
+            fd = {
+                "uuid"       => SecureRandom.hex,
+                "mikuType"   => "NxFlightData",
+                "position"   => position,
+                "duration"   => NxFlightData::itemToDuration(item),
+                "deadline"   => NxFlightData::itemToDeadline(item)
+            }
+            simulation = flightdata + [fd]
+            if NxFlightData::isSmoothSailingFlightData(simulation) then
+                return fd
+            end
+        }
+
+        return {
             "uuid"       => SecureRandom.hex,
             "mikuType"   => "NxFlightData",
-            "position"   => 10 * rand,
+            "position"   => flightdata.last["position"] + 1,
             "duration"   => NxFlightData::itemToDuration(item),
             "deadline"   => NxFlightData::itemToDeadline(item)
         }
@@ -80,7 +141,7 @@ class NxFlightData
             item = p2.shift
             flightdata = NxFlightData::constructFlightData(p1, item)
             item["flight-data-25"] = flightdata
-            #Items::setAttribute(item["uuid"], "flight-data-25", flightdata)
+            Items::setAttribute(item["uuid"], "flight-data-25", flightdata)
             p1 << item
         }
 
@@ -104,7 +165,7 @@ class NxFlightData
         if flightdata.nil? then
             return "" 
         end
-        s = " (#{"%.2f" % flightdata["position"]}) [#{flightdata["deadline"]}]"
+        s = " (#{"%5.2f" % flightdata["position"]}) [#{flightdata["deadline"]}]"
         cursorETA = XCache::getOrNull("f1e2d0bb-6e3e-4381-8c79-d4732488da9c:#{flightdata["uuid"]}")
         if cursorETA then
             if cursorETA > flightdata["deadline"] then
