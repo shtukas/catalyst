@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | sort | numbers",
+            "misc          : search | speed | commands | edit <n> | numbers",
         ].join("\n")
     end
 
@@ -76,20 +76,6 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["_recorduuid_"]}; uuid: #{record["_id_"]}, date: #{record["_date_"]}, value: #{"%9.2f" % record["_value_"]}"
                 }
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            items = Listing::items()
-            items = Listing::applyListingOrder(items)
-            i1s, _ = LucilleCore::selectZeroOrMore("items", [], items, lambda{|item| PolyFunctions::toString(item) })
-            i1s.reverse.each{|item|
-                data = {
-                    "date" => CommonUtils::today(),
-                    "position" => Listing::firstPosition()-1
-                }
-                Items::setAttribute(item["uuid"], "lis-pos-36", data)
-            }
             return
         end
 

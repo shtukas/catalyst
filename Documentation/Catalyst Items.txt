@@ -11,7 +11,7 @@ Cross types conventions (all optional):
     - skip-0843          : unixtime (skipped until this time)
     - uxpayload-b4e4     : UxPayload
     - donation-1205      : String # uuid of target for donation
-    - onlyOnDays         : null or Array[week days names lowercase english]
+    - onlyOnDays         : Array[week days names lowercase english]
                            Indicates on which days the wave can show up
-    - parentuuid-0014    : uuid or null
-    - lis-pos-36         : {date: Date, position: Float}
+    - parentuuid-0014    : uuid
+    - flight-data-25     : NxFlightData

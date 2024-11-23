@@ -82,13 +82,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        listingPositionPrefix = 
-            if item["lis-pos-36"] and item["lis-pos-36"]["date"] == CommonUtils::today() then
-                "✨ "
-            else
-                ""
-            end
-        line = "#{storePrefix} #{listingPositionPrefix}#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix}#{NxFlightData::deadlineToString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -163,20 +157,6 @@ class Listing
         LucilleCore::pressEnterToContinue()
     end
 
-    # Listing::applyListingOrder(items)
-    def self.applyListingOrder(items)
-        # {date: , position:}
-        i1s, i2s = items.partition{|item| item["lis-pos-36"] and item["lis-pos-36"]["date"] == CommonUtils::today() }
-        i1s.sort_by{|item| item["lis-pos-36"]["position"] } + i2s
-    end
-
-    # Listing::firstPosition()
-    def self.firstPosition()
-        items = Listing::items()
-        i1s = items.select{|item| item["lis-pos-36"] and item["lis-pos-36"]["date"] == CommonUtils::today() }
-        ([1] + i1s.map{|item| item["lis-pos-36"]["position"] }).min
-    end
-
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
@@ -203,13 +183,9 @@ class Listing
 
             items = Listing::items()
 
+            items = NxFlightData::prepareForListing(items)
+
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-
-            items = Listing::applyListingOrder(items)
-
-            if items.empty? then
-                items = Waves::listingItemsNotInterruption()
-            end
 
             items =  Prefix::addPrefix(items)
 
