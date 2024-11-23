@@ -21,6 +21,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+                Items::setAttribute(item["uuid"], "flight-data-25", nil)
                 return
             end
         end
@@ -45,6 +46,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
+            Items::setAttribute(item["uuid"], "flight-data-25", nil)
             return
         end
 
