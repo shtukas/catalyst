@@ -218,12 +218,4 @@ class NxBalls
             }
             .compact
     end
-
-    # NxBalls::shouldNotify()
-    def self.shouldNotify()
-        nxballs = NxBalls::all()
-                    .select{|nxball| nxball["type"] == "running" }
-                    .select{|nxball| NxBalls::ballRunningTime(nxball) > 3600 }
-        !nxballs.empty?
-    end
 end

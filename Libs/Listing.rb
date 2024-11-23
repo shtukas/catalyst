@@ -224,8 +224,21 @@ class Listing
         Thread.new {
             loop {
                 (lambda {
-                    return if !NxBalls::shouldNotify()
-                    CommonUtils::onScreenNotification("Catalyst", "running ball is over running")
+                    NxBalls::all()
+                        .select{|nxball| nxball["type"] == "running" }
+                        .each{|nxball|
+                            item = Items::itemOrNull(nxball["itemuuid"])
+                            if item["mikuType"] == "Wave" then
+                                if NxBalls::ballRunningTime(nxball) > 60 then
+                                    CommonUtils::onScreenNotification("Catalyst", "Wave is over running")
+                                    sleep 2
+                                end
+                                next
+                            end
+                            if NxBalls::ballRunningTime(nxball) > 3600 then
+                                CommonUtils::onScreenNotification("Catalyst", "#{item["mikuType"]} is over running")
+                            end
+                        }
                 }).call()
                 sleep 120
             }
