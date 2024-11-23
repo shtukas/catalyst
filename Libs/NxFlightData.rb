@@ -52,7 +52,7 @@ class NxFlightData
         end
 
         if item["mikuType"] == "NxDated" then
-            return todayAt12DateTime
+            return [todayAt12DateTime, Time.at(Time.new.to_i+3600*2).utc.iso8601].max
         end
 
         raise "I do not know how to compute flight data deadline for #{item}"

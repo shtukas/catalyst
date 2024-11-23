@@ -85,7 +85,7 @@ class NxCores
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | position * | sort"
+            puts "todo (here, with position selection) | pile | position * | move * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -119,6 +119,15 @@ class NxCores
                 Items::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
+
+            if input.start_with?("move") then
+                listord = input[4, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                NxTasks::performItemPositioning(i)
+                next
+            end
+
 
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })

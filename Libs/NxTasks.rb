@@ -55,10 +55,9 @@ class NxTasks
 
     # NxTasks::performItemPositioning(item)
     def self.performItemPositioning(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["infinity, 10 to 20 task", "hierarchical"])
-        return if option.nil?
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["infinity, 10 to 20 task (default)", "hierarchical"])
 
-        if option == "infinity, 10 to 20 task" then
+        if option.nil? or option == "infinity, 10 to 20 task (default)" then
             position = NxTasks::between10And20InfinityPosition()
             Items::setAttribute(item["uuid"], "global-positioning", position)
         end
