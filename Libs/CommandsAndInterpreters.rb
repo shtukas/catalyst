@@ -285,6 +285,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::interactivelyPush(item)
+            Items::setAttribute(item["uuid"], "flight-data-25", nil)
             return
         end
 
