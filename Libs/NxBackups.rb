@@ -14,8 +14,6 @@ class NxBackups
         "#{Config::pathToGalaxy()}/DataHub/Drives, Passwords, Backups and Lost Procedures.txt"
     end
 
-    # CommonUtils::timeStringL22()
-
     # NxBackups::descriptionsFromDataFile()
     def self.descriptionsFromDataFile()
         IO.read(NxBackups::filepath())
@@ -24,7 +22,6 @@ class NxBackups
             .select{|l| l.include?("::") }
             .map{|line| line.split("::").first.strip }
     end
-
 
     # NxBackups::removeObsoleteItems()
     def self.removeObsoleteItems()

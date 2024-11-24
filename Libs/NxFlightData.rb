@@ -75,7 +75,7 @@ class NxFlightData
     def self.isSmoothSailingFlightData(flightdata)
         cursor = Time.new.to_i
         flightdata.each{|fd|
-            cursor = cursor + fd["duration"]
+            cursor = cursor + fd["duration"]*1.2 # + 20%
             if Time.at(cursor).hour >= 21 then
                 cursor = NxFlightData::theNext6am(cursor)
             end 

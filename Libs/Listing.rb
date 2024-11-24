@@ -229,7 +229,7 @@ class Listing
                         .each{|nxball|
                             item = Items::itemOrNull(nxball["itemuuid"])
                             if item["mikuType"] == "Wave" then
-                                if NxBalls::ballRunningTime(nxball) > 60 then
+                                if NxBalls::ballRunningTime(nxball) > 1800 then
                                     CommonUtils::onScreenNotification("Catalyst", "Wave is over running")
                                     sleep 2
                                 end
