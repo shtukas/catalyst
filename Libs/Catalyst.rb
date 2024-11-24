@@ -108,9 +108,6 @@ class Catalyst
 
     # Catalyst::children(parent)
     def self.children(parent)
-        if parent["uuid"] == "bc300f69-e039-4288-ac1a-644974a32f48" then # Waves (Non Interruption)
-            return Waves::listingItemsNotInterruption()
-        end
         if parent["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity
             return NxTasks::listingItems()
         end

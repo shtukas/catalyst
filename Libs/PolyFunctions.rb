@@ -31,13 +31,6 @@ class PolyFunctions
         # ------------------------------------------------
         # MikuType Features
 
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            accounts << {
-                "description" => "Waves (Non Interruption)",
-                "number"      => "bc300f69-e039-4288-ac1a-644974a32f48" # Waves (Non Interruption)
-            }
-        end
-
         if item["mikuType"] == "NxTask" then
             accounts << {
                 "description" => "Infinity",

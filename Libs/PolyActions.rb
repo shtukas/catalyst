@@ -51,14 +51,14 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "flight-data-25", nil)
+        Items::setAttribute(item["uuid"], "flight-data-27", nil)
     end
 
     # PolyActions::done(item, useTheForce = false)
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "flight-data-25", nil)
+        Items::setAttribute(item["uuid"], "flight-data-27", nil)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)

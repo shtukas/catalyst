@@ -110,6 +110,7 @@ class Listing
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxCores::listingItems(),
+            Waves::listingItemsNotInterruption()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -182,11 +183,9 @@ class Listing
             system("clear")
 
             items = Listing::items()
-
-            items = NxFlightData::prepareForListing(items)
-
+            items.each{|item| NxFlightData::ensureFlightData(item) }
+            items = NxFlightData::flyingItemsInOrder()
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-
             items =  Prefix::addPrefix(items)
 
             system("clear")

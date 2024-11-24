@@ -1,7 +1,6 @@
 
 NxFlightData:
-    - uuid       : string
-    - mikuType   : "NxFlightData"
-    - position   : Float
-    - duration   : Integer (seconds)
-    - deadline   : DateTime Iso 8601 UTC Zulu
+    - version            : Integer
+    - calculated-start   : Integer, Unixtime
+    - estimated-duration : Integer (seconds)
+    - eta                : DateTime Iso 8601 UTC Zulu
