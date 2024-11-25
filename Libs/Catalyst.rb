@@ -104,9 +104,9 @@ class Catalyst
         puts "push '#{PolyFunctions::toString(item).green}'"
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
-        NxBalls::stop(item)
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+        Catalyst::postposeItemToUnixtime(item, unixtime)
+
     end
 
     # Catalyst::children(parent)
@@ -187,6 +187,17 @@ class Catalyst
                 return Catalyst::interactivelySelectParentInHierarchyOrNull(context)
             end
             return Catalyst::interactivelySelectParentInHierarchyOrNull(child)
+        end
+    end
+
+    # Catalyst::postposeItemToUnixtime(item, unixtime)
+    def self.postposeItemToUnixtime(item, unixtime)
+        # We stop, set DoNotShowUntil1, and recompute the flight data
+        NxBalls::stop(item)
+        DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+        if (flightdata = item["flight-data-27"]) then
+            flightdata = NxFlightData::updateEstimatedStart(flightdata, unixtime)
+            Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
         end
     end
 end

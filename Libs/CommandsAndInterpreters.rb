@@ -20,8 +20,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
-                DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-                Items::setAttribute(item["uuid"], "flight-data-27", nil)
+                Catalyst::postposeItemToUnixtime(item, unixtime)
                 return
             end
         end
@@ -290,7 +289,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Catalyst::interactivelyPush(item)
-            Items::setAttribute(item["uuid"], "flight-data-27", nil)
             return
         end
 

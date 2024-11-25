@@ -2,7 +2,39 @@
 class NxFlightData
 
     # ----------------------------------------------------------------
+    # Utils
+
+    # NxFlightData::theNext6am(unixtime)
+    def self.theNext6am(unixtime)
+        cursor = unixtime + 3600
+        loop {
+            break  if Time.at(cursor).hour == 6
+            cursor = cursor + 600
+        }
+        cursor
+    end
+
+    # NxFlightData::isNight(unixtime)
+    def self.isNight(unixtime)
+        Time.at(unixtime).hour > 21 or Time.at(unixtime).hour < 6
+    end
+
+    # NxFlightData::identityOrTheNext6Am(unixtime)
+    def self.identityOrTheNext6Am(unixtime)
+        if NxFlightData::isNight(unixtime) then
+            NxFlightData::theNext6am(unixtime)
+        else
+            unixtime
+        end
+    end
+
+    # ----------------------------------------------------------------
     # Intelligence
+
+    # NxFlightData::version()
+    def self.version()
+        5
+    end
 
     # NxFlightData::itemToDuration(item)
     def self.itemToDuration(item)
@@ -43,35 +75,6 @@ class NxFlightData
 
     # ----------------------------------------------------------------
     # Listing support
-
-    # NxFlightData::theNext6am(unixtime)
-    def self.theNext6am(unixtime)
-        cursor = unixtime + 3600
-        loop {
-            break  if Time.at(cursor).hour == 6
-            cursor = cursor + 600
-        }
-        cursor
-    end
-
-    # NxFlightData::isNight(unixtime)
-    def self.isNight(unixtime)
-        Time.at(unixtime).hour > 21 or Time.at(unixtime).hour < 6
-    end
-
-    # NxFlightData::identityOrTheNext6Am(unixtime)
-    def self.identityOrTheNext6Am(unixtime)
-        if NxFlightData::isNight(unixtime) then
-            NxFlightData::theNext6am(unixtime)
-        else
-            unixtime
-        end
-    end
-
-    # NxFlightData::version()
-    def self.version()
-        5
-    end
 
     # NxFlightData::hasCorrectFlightData(item)
     def self.hasCorrectFlightData(item)
@@ -131,6 +134,13 @@ class NxFlightData
             s = s.red
         end
         s
+    end
+
+    # NxFlightData::updateEstimatedStart(flightdata, unixtime)
+    def self.updateEstimatedStart(flightdata, unixtime) # flightdata
+        flightdata["calculated-start"] = unixtime
+        flightdata["eta"] = Time.at( unixtime + flightdata["estimated-duration"] ).utc.iso8601
+        flightdata
     end
 end
 
