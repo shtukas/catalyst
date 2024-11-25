@@ -109,9 +109,10 @@ class NxFlightData
         return if NxFlightData::hasCorrectFlightData(item)
         duration = NxFlightData::itemToDuration(item)
         start = NxFlightData::findSpace(NxFlightData::flyingItemsInOrder(), duration)
+        start = [start, NxFlightData::itemToDeadline(item)].min
         flightdata = {
             "version"            => NxFlightData::version(),
-            "calculated-start"   => [start, NxFlightData::itemToDeadline(item)].min,
+            "calculated-start"   => start,
             "estimated-duration" => duration,
             "eta"                => Time.at(start+duration).utc.iso8601
         }
