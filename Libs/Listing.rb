@@ -196,7 +196,7 @@ class Listing
             end
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items =  Prefix::addPrefix(items)
-            items = items.select{|item| item["mikuType"] != "NxCore" }
+            #items = items.select{|item| item["mikuType"] != "NxCore" }
 
             system("clear")
 
