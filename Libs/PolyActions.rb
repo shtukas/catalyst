@@ -36,6 +36,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTimeCapsule" then
+            return if item["targetuuid"].nil?
+            target = Items::itemOrNull(item["targetuuid"])
+            return if target.nil?
+            PolyActions::access(target)
+            return
+        end
+
         if item["mikuType"] == "NxStrat" then
             return
         end
@@ -51,6 +59,9 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+        if item["mikuType"] == "NxTimeCapsule" then
+            return
+        end
         Items::setAttribute(item["uuid"], "flight-data-27", nil)
     end
 
@@ -58,6 +69,11 @@ class PolyActions
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
+
+        if item["mikuType"] == "NxTimeCapsule" then
+            return
+        end
+
         Items::setAttribute(item["uuid"], "flight-data-27", nil)
 
         if item["mikuType"] == "NxFloat" then
@@ -229,6 +245,10 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
+            return
+        end
+
+        if item["mikuType"] == "NxTimeCapsule" then
             return
         end
 

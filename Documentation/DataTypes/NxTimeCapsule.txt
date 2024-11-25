@@ -1,0 +1,10 @@
+
+NxTimeCapsule:
+    - uuid            : String
+    - mikuType        : "NxTimeCapsule"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - value           : algebraic integer
+    - flight-data-27  : NxFlightData # compulsory for this type
+    - targetuuid      : String

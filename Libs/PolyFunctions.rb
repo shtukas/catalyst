@@ -32,10 +32,8 @@ class PolyFunctions
         # MikuType Features
 
         if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => "Infinity",
-                "number"      => "427bbceb-923e-4feb-8232-05883553bb28" # Infinity
-            }
+            core = Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28") # Infinity
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
             if Bank1::getValue(item["uuid"]) == 0 then
                 accounts << {
                     "description" => "Infinity Zero",
@@ -55,6 +53,26 @@ class PolyFunctions
                 accounts << {
                     "description" => PolyFunctions::toString(bottom),
                     "number"      => bottom["uuid"]
+                }
+            end
+        end
+
+        if item["mikuType"] == "NxTimeCapsule" and item["targetuuid"] then
+            target = Items::itemOrNull(item["targetuuid"])
+            if target then
+                accounts << {
+                    "description" => PolyFunctions::toString(target),
+                    "number"      => target["uuid"]
+                }
+            end
+        end
+
+        if item["mikuType"] == "NxCore" then
+            capsule = NxCores::getFirstCapsuleForCoreOrNull(item)
+            if capsule then
+                accounts << {
+                    "description" => capsule["description"],
+                    "number"      => capsule["uuid"]
                 }
             end
         end
@@ -95,6 +113,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)
+        end
+        if item["mikuType"] == "NxTimeCapsule" then
+            return NxTimeCapsules::toString(item)
         end
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)

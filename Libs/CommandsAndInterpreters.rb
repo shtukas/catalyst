@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | numbers",
+            "misc          : search | speed | commands | edit <n> | numbers | capsule-generation",
         ].join("\n")
     end
 
@@ -78,6 +78,11 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["_recorduuid_"]}; uuid: #{record["_id_"]}, date: #{record["_date_"]}, value: #{"%9.2f" % record["_value_"]}"
                 }
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("capsule-generation", input) then
+            NxCores::issueNewWeekWorthOfCapsules()
             return
         end
 

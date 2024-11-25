@@ -109,8 +109,8 @@ class Listing
             Desktop::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
-            NxCores::listingItems(),
-            Waves::listingItemsNotInterruption()
+            Waves::listingItemsNotInterruption(),
+            NxTimeCapsules::listingItems()
         ]
             .flatten
             .select{|item| Listing::listable(item) }
@@ -187,6 +187,7 @@ class Listing
             items = NxFlightData::flyingItemsInOrder()
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items =  Prefix::addPrefix(items)
+            items = items.select{|item| item["mikuType"] != "NxCore" }
 
             system("clear")
 

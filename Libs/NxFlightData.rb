@@ -18,8 +18,25 @@ class NxFlightData
         if item["mikuType"] == "NxDated" then
             return 3600
         end
-        if item["mikuType"] == "NxCore" then
-            return  3600 # We need to refine that later by looking at how much time the core actually needs.
+        raise "I do not know how to compute flight data duration for #{item}"
+    end
+
+    # NxFlightData::itemToDeadline(item)
+    def self.itemToDeadline(item)
+        if item["mikuType"] == "NxAnniversary" then
+            return Time.new.to_i + 3600*2 # 2 hours
+        end
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return Time.new.to_i + 3600*2 # 2 hours
+        end
+        if item["mikuType"] == "Wave" and !item["interruption"] then
+            return Time.new.to_i + 86400*1.5 # 1.5 days
+        end
+        if item["mikuType"] == "NxBackup" then
+            return Time.new.to_i + 86400*3 # 3 days
+        end
+        if item["mikuType"] == "NxDated" then
+            return Time.new.to_i + 3600*2 # 2 hours
         end
         raise "I do not know how to compute flight data duration for #{item}"
     end
@@ -94,7 +111,7 @@ class NxFlightData
         start = NxFlightData::findSpace(NxFlightData::flyingItemsInOrder(), duration)
         flightdata = {
             "version"            => NxFlightData::version(),
-            "calculated-start"   => start,
+            "calculated-start"   => [start, NxFlightData::itemToDeadline(item)].min,
             "estimated-duration" => duration,
             "eta"                => Time.at(start+duration).utc.iso8601
         }
