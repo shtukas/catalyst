@@ -88,8 +88,13 @@ class NxFlightData
             .sort_by{|item| item["flight-data-27"]["calculated-start"] }
     end
 
-    # NxFlightData::findSpace(items, duration) # we return a calculated start time
-    def self.findSpace(items, duration)
+    # NxFlightData::calculateStartTime(items, item, duration) # we return a calculated start time
+    def self.calculateStartTime(items, item, duration)
+
+        if item["mikuType"] == "Wave" and item["nx46"]["type"] == "sticky" then
+            return Waves::nx46ToNextDisplayUnixtime(item["nx46"])
+        end
+
         if items.empty? then
             return NxFlightData::identityOrTheNext6Am(Time.new.to_i)
         end
@@ -104,14 +109,14 @@ class NxFlightData
         if end1 + duration <= start2 then
             return end1
         end
-        NxFlightData::findSpace(items.drop(1), duration)
+        NxFlightData::calculateStartTime(items.drop(1), item, duration)
     end
 
     # NxFlightData::ensureFlightData(item)
     def self.ensureFlightData(item)
         return if NxFlightData::hasCorrectFlightData(item)
         duration = NxFlightData::itemToDuration(item)
-        start = NxFlightData::findSpace(NxFlightData::flyingItemsInOrder(), duration)
+        start = NxFlightData::calculateStartTime(NxFlightData::flyingItemsInOrder(), item, duration)
         start = [start, NxFlightData::itemToDeadline(item)].min
         flightdata = {
             "version"            => NxFlightData::version(),

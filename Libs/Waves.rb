@@ -63,8 +63,8 @@ class Waves
         raise "e45c4622-4501-40e1-a44e-2948544df256"
     end
 
-    # Waves::computeNextDisplayTimeForNx46(nx46: Nx46)
-    def self.computeNextDisplayTimeForNx46(nx46)
+    # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46)
+    def self.nx46ToNextDisplayUnixtime(nx46)
         if nx46["type"] == 'sticky' then
             # unixtime1 is the time of the event happening today
             # It can still be ahead of us.
@@ -185,7 +185,7 @@ class Waves
         Items::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
 
         # We control display using DoNotShowUntil
-        unixtime = Waves::computeNextDisplayTimeForNx46(item["nx46"])
+        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"])
         puts "not shown until: #{Time.at(unixtime).to_s}"
         DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
     end
