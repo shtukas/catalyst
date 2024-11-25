@@ -26,4 +26,17 @@ class NxStrats
             .select{|item| item["bottomuuid"] == bottomuuid }
             .first
     end
+
+    # ------------------
+    # Ops
+
+    # NxStrats::garbageCollection()
+    def self.garbageCollection()
+        Items::mikuType("NxStrat").each{|item|
+            if Items::itemOrNull(item["bottomuuid"]).nil? then
+                Items::destroy(item["uuid"])
+            end
+        }
+    end
+
 end

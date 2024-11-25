@@ -58,6 +58,8 @@ class Catalyst
                 Items::setAttribute(item["uuid"], "parentuuid-0014", nil)
             }
 
+            NxStrats::garbageCollection()
+
         end
     end
 
