@@ -370,6 +370,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
+            Items::setAttribute(item["uuid"], "flight-data-27", nil)
             return
         end
 
