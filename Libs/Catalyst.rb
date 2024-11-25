@@ -60,6 +60,7 @@ class Catalyst
 
             NxStrats::garbageCollection()
 
+            NxTimeCapsules::maintenance()
         end
     end
 
