@@ -41,10 +41,12 @@ class NxTimeCapsules
                         .sort_by{|item| item["flight-data-27"]["calculated-start"] }
             firstPositive = capsules.select{|item| NxTimeCapsules::liveValue(item) >= 0 }.first
             firstNegative = capsules.select{|item| NxTimeCapsules::liveValue(item) < 0 }.first
-            if firstPositive and firstNegative then
-                Items::setAttribute(firstNegative["uuid"], "value", firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive))
-                Items::destroy(firstPositive["uuid"])
-            end
+            next if firstPositive.nil?
+            next if firstNegative.nil?
+            next if NxBalls::itemIsActive(firstPositive)
+            next if NxBalls::itemIsActive(firstNegative)
+            Items::setAttribute(firstNegative["uuid"], "value", firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive))
+            Items::destroy(firstPositive["uuid"])
         }
     end
 end
