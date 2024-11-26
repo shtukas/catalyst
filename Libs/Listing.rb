@@ -185,15 +185,15 @@ class Listing
             items = Listing::items()
             items.each{|item| NxFlightData::ensureFlightData(item) }
             items = NxFlightData::flyingItemsInOrder()
+            items = items.select{|item|
+                (lambda {
+                    return true if item["mikuType"] != "NxTimeCapsule"
+                    return true if NxBalls::itemIsActive(item)
+                    return true if NxTimeCapsules::liveValue(item) < 0
+                    false
+                }).call()
+            }
             items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
-            if items[0]["mikuType"] == "NxTimeCapsule" then
-                capsule = items[0]
-                if !NxBalls::itemIsActive(capsule) then
-                    if NxTimeCapsules::liveValue(capsule) > 0 then
-                        items = items.drop(1)
-                    end
-                end
-            end
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items =  Prefix::addPrefix(items)
 
