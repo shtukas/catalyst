@@ -7,10 +7,10 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | numbers | capsule-generation",
+            "misc          : search | speed | commands | edit <n> | numbers",
         ].join("\n")
     end
 
@@ -77,11 +77,6 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["_recorduuid_"]}; uuid: #{record["_id_"]}, date: #{record["_date_"]}, value: #{"%9.2f" % record["_value_"]}"
                 }
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("capsule-generation", input) then
-            NxCores::issueNewWeekWorthOfCapsules()
             return
         end
 
@@ -157,6 +152,13 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(item)
             NxTasks::performItemPositioning(item)
+            return
+        end
+
+        if Interpreting::match("longtask", input) then
+            item = NxLongTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 

@@ -3,4 +3,3 @@ NxFlightData:
     - version            : Integer
     - calculated-start   : Integer, Unixtime
     - estimated-duration : Integer (seconds)
-    - eta                : DateTime Iso 8601 UTC Zulu

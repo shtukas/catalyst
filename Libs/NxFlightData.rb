@@ -121,8 +121,7 @@ class NxFlightData
         flightdata = {
             "version"            => NxFlightData::version(),
             "calculated-start"   => start,
-            "estimated-duration" => duration,
-            "eta"                => Time.at(start+duration).utc.iso8601
+            "estimated-duration" => duration
         }
         puts JSON.pretty_generate(flightdata)
         Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
@@ -134,8 +133,8 @@ class NxFlightData
         if flightdata.nil? then
             return "" 
         end
-        s = " [#{flightdata["eta"]}]"
-        if flightdata["eta"] < Time.new.utc.iso8601 then
+        s = " [#{Time.at(flightdata["calculated-start"]).utc.iso8601}]"
+        if flightdata["calculated-start"] < Time.new.to_i then
             s = s.red
         end
         s
@@ -144,7 +143,6 @@ class NxFlightData
     # NxFlightData::updateEstimatedStart(flightdata, unixtime)
     def self.updateEstimatedStart(flightdata, unixtime) # flightdata
         flightdata["calculated-start"] = unixtime
-        flightdata["eta"] = Time.at( unixtime + flightdata["estimated-duration"] ).utc.iso8601
         flightdata
     end
 end

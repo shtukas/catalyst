@@ -56,36 +56,6 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxCores::issueNewWeekWorthOfCapsules()
-    def self.issueNewWeekWorthOfCapsules()
-        Items::mikuType("NxCore")
-            .each{|core|
-                # We issue 20 capsules per core
-                hours = core["hours"]
-                duration = (3600 * hours).to_f/20
-                startTimes = (1..20).map{|i| Time.new.to_i + 12*3600 + rand * 86400*5 }
-                flights = startTimes.map{|start|
-                    {
-                        "version"            => NxFlightData::version(),
-                        "calculated-start"   => start,
-                        "estimated-duration" => duration,
-                        "eta"                => Time.at(start+duration).utc.iso8601
-                    }
-                }
-                flights.each{|flightdata|
-                    NxTimeCapsules::issue("capsule for core: #{core["description"]}", -duration, flightdata, core["uuid"])
-                }
-            }
-    end
-
-    # NxCores::getFirstCapsuleForCoreOrNull(core)
-    def self.getFirstCapsuleForCoreOrNull(core)
-        Items::mikuType("NxTimeCapsule")
-            .select{|item| item["targetuuid"] == core["uuid"] }
-            .sort_by{|item| item["flight-data-27"]["calculated-start"] }
-            .first
-    end
-
     # ------------------
     # Ops
 
@@ -210,6 +180,15 @@ class NxCores
  
             puts ""
             CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # NxCores::maintenance()
+    def self.maintenance()
+        Items::mikuType("NxCore").each{|core|
+            if NxTimeCapsules::getCapsulesForTarget(core["uuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
+                NxTimeCapsules::constellation(core["uuid"], core["description"], 7, core["hours"])
+            end
         }
     end
 end
