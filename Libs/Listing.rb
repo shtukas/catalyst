@@ -82,7 +82,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix}#{NxFlightData::deadlineToString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Catalyst::donationSuffix(item)}"
+        line = "#{storePrefix}#{NxFlightData::deadlineToString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Operations::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -174,7 +174,7 @@ class Listing
             end
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
-                Catalyst::periodicPrimaryInstanceMaintenance()
+                Operations::periodicPrimaryInstanceMaintenance()
             end
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
@@ -185,14 +185,7 @@ class Listing
             items = Listing::items()
             items.each{|item| NxFlightData::ensureFlightData(item) }
             items = NxFlightData::flyingItemsInOrder()
-            items = items.select{|item|
-                (lambda {
-                    return true if item["mikuType"] != "NxTimeCapsule"
-                    return true if NxBalls::itemIsActive(item)
-                    return true if NxTimeCapsules::liveValue(item) < 0
-                    false
-                }).call()
-            }
+            items = items.select{|item| item["mikuType"] != "NxTimeCapsule" or NxBalls::itemIsActive(item) }
             items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items =  Prefix::addPrefix(items)

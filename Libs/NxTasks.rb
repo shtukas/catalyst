@@ -63,10 +63,10 @@ class NxTasks
         end
 
         if option == "hierarchical" then
-            parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
+            parent = Operations::interactivelySelectParentInHierarchyOrNull(nil)
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
-            position = Catalyst::interactivelySelectPositionInParent(parent)
+            position = Operations::interactivelySelectPositionInParent(parent)
             Items::setAttribute(item["uuid"], "global-positioning", position)
         end
     end
@@ -81,7 +81,6 @@ class NxTasks
         items = Items::mikuType("NxTask")
                 .select{|item| item["parentuuid-0014"].nil? }
                 .sort_by{|item| item["global-positioning"] }
-
 
         if r0 < r1 then
             # We want the Zero items, 5 of them

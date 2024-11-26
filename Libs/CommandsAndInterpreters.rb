@@ -20,7 +20,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
-                Catalyst::postposeItemToUnixtime(item, unixtime)
+                Operations::postposeItemToUnixtime(item, unixtime)
                 return
             end
         end
@@ -87,7 +87,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("backups", input) then
             items = Items::mikuType("NxBackup").sort_by{|item| item["description"] }
-            Catalyst::program2(items)
+            Operations::program2(items)
             return
         end
 
@@ -116,7 +116,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             cursor = item
-            Catalyst::interactivelyGetLines().reverse.each{|line|
+            Operations::interactivelyGetLines().reverse.each{|line|
                 strat = NxStrats::interactivelyIssueNewOrNull(line, cursor["uuid"])
                 cursor = strat
             }
@@ -164,7 +164,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = Catalyst::interactivelySelectParentInHierarchyOrNull(nil)
+            parent = Operations::interactivelySelectParentInHierarchyOrNull(nil)
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
         end
@@ -210,7 +210,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             items = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
-            Catalyst::program2(items)
+            Operations::program2(items)
             return
         end
 
@@ -252,7 +252,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Catalyst::editItem(item)
+            Operations::editItem(item)
             return
         end
 
@@ -288,16 +288,14 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Catalyst::interactivelyPush(item)
+            Operations::interactivelyPush(item)
             return
         end
 
         if Interpreting::match("expose", input) then
             item = store.getDefault()
             return if item.nil?
-            puts JSON.pretty_generate(item)
-            puts "Do not show until: #{DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])}"
-            LucilleCore::pressEnterToContinue()
+            Operations::expose(item)
             return
         end
 
@@ -305,9 +303,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            puts JSON.pretty_generate(item)
-            puts "Do not show until: #{DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])}"
-            LucilleCore::pressEnterToContinue()
+            Operations::expose(item)
             return
         end
 
@@ -329,7 +325,7 @@ class CommandsAndInterpreters
         if Interpreting::match("ondates", input) then
             elements = Items::mikuType("NxDated")
                             .sort_by{|item| item["datetime"] }
-            Catalyst::program2(elements)
+            Operations::program2(elements)
             return
         end
 

@@ -229,6 +229,6 @@ class Waves
         i1, i2 = items.partition{|item| DoNotShowUntil1::isVisible(item) }
         i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
         items = i1 + i2
-        Catalyst::program2(items)
+        Operations::program2(items)
     end
 end

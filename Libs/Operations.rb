@@ -1,7 +1,7 @@
 
-class Catalyst
+class Operations
 
-    # Catalyst::editItem(item)
+    # Operations::editItem(item)
     def self.editItem(item)
         item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
         item.to_a.each{|key, value|
@@ -9,7 +9,7 @@ class Catalyst
         }
     end
 
-    # Catalyst::program2(elements)
+    # Operations::program2(elements)
     def self.program2(elements)
         loop {
             elements = elements.map{|item| Items::itemOrNull(item["uuid"]) }.compact
@@ -36,11 +36,11 @@ class Catalyst
         }
     end
 
-    # Catalyst::periodicPrimaryInstanceMaintenance()
+    # Operations::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
 
-            puts "> Catalyst::periodicPrimaryInstanceMaintenance()"
+            puts "> Operations::periodicPrimaryInstanceMaintenance()"
 
             NxBackups::maintenance()
 
@@ -64,7 +64,7 @@ class Catalyst
         end
     end
 
-    # Catalyst::selectTodoTextFileLocationOrNull(todotextfile)
+    # Operations::selectTodoTextFileLocationOrNull(todotextfile)
     def self.selectTodoTextFileLocationOrNull(todotextfile)
         location = XCache::getOrNull("fcf91da7-0600-41aa-817a-7af95cd2570b:#{todotextfile}")
         if location and File.exist?(location) then
@@ -81,7 +81,7 @@ class Catalyst
         nil
     end
 
-    # Catalyst::donationSuffix(item)
+    # Operations::donationSuffix(item)
     def self.donationSuffix(item)
         return "" if item["donation-1205"].nil?
         target = Items::itemOrNull(item["donation-1205"])
@@ -89,7 +89,7 @@ class Catalyst
         " #{"(#{target["description"]})".yellow}"
     end
 
-    # Catalyst::interactivelyGetLines()
+    # Operations::interactivelyGetLines()
     def self.interactivelyGetLines()
         text = CommonUtils::editTextSynchronously("").strip
         return [] if text == ""
@@ -99,70 +99,36 @@ class Catalyst
             .select{|line| line != "" }
     end
 
-    # Catalyst::interactivelyPush(item)
+    # Operations::interactivelyPush(item)
     def self.interactivelyPush(item)
         puts "push '#{PolyFunctions::toString(item).green}'"
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        Catalyst::postposeItemToUnixtime(item, unixtime)
+        Operations::postposeItemToUnixtime(item, unixtime)
     end
 
-    # Catalyst::children(item)
-    def self.children(item)
-        if item["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity Core
-            return NxTasks::listingItems()
-        end
-        if item["mikuType"] == "NxTimeCapsule" and item["targetuuid"] then
-            return [Items::itemOrNull(item["targetuuid"])].compact
-        end
-        if item["mikuType"] == "NxStrat" then
-            return [NxStrats::topOrNull(item["uuid"])].compact
-        end
-        Items::items()
-            .select{|i| i["parentuuid-0014"] == item["uuid"] }
-    end
-
-    # Catalyst::parentOrNull(item)
-    def self.parentOrNull(item)
-        if item["parentuuid-0014"] then
-            return Items::itemOrNull(item["parentuuid-0014"])
-        end
-        if item["mikuType"] == "NxStrat" then
-            return [Items::itemOrNull(item["bottomuuid"])].compact
-        end
-        if (parent = NxTimeCapsules::getFirstCapsuleForTargetOrNull(item["uuid"])) then
-            return parent
-        end
-        if item["mikuType"] == "NxTask" then
-            # we have an NxTask withhout a parent
-            # The parent is the Infinity Core
-            return Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28")
-        end
-        nil
-    end
-
-    # Catalyst::childrenInGlobalPositioningOrder(parent)
+    # PolyFunctions::childrenInGlobalPositioningOrder(parent)
     def self.childrenInGlobalPositioningOrder(parent)
-        Catalyst::children(parent)
+        PolyFunctions::children(parent)
             .sort_by{|item| item["global-positioning"] || 0 }
     end
 
-    # Catalyst::firstPositionInParent(parent)
+    # Operations::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
-        elements = Catalyst::children(parent)
+        elements = PolyFunctions::children(parent)
         ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
     end
 
-    # Catalyst::lastPositionInParent(parent)
+    # Operations::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
-        elements = Catalyst::children(parent)
+        elements = PolyFunctions::children(parent)
         ([0] + elements.map{|item| item["global-positioning"] || 0 }).max
     end
 
-    # Catalyst::interactivelySelectPositionInParent(parent)
+    # Operations::interactivelySelectPositionInParent(parent)
     def self.interactivelySelectPositionInParent(parent)
-        elements = Catalyst::childrenInGlobalPositioningOrder(parent)
+        elements = PolyFunctions::childrenInGlobalPositioningOrder(parent)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -180,7 +146,7 @@ class Catalyst
         position
     end
 
-    # Catalyst::interactivelySelectParentInHierarchyOrNull(context: Item or Null)
+    # Operations::interactivelySelectParentInHierarchyOrNull(context: Item or Null)
     def self.interactivelySelectParentInHierarchyOrNull(context)
         # The hierarchy has the cores and then whatever is a children, all the way down
 
@@ -189,13 +155,13 @@ class Catalyst
             if core.nil? then
                 return nil
             end
-            return Catalyst::interactivelySelectParentInHierarchyOrNull(core)
+            return Operations::interactivelySelectParentInHierarchyOrNull(core)
         end
 
         # We automatically return the context if it doesn't have any children 
         # and otherwise choose between returning the context or diving into one of the children
 
-        if Catalyst::children(context).empty? then
+        if PolyFunctions::children(context).empty? then
             return context
         end
         # We have a NxCore that has children
@@ -206,15 +172,15 @@ class Catalyst
             return context
         end
         if option == o2 then
-            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", Catalyst::children(context), lambda{|item| PolyFunctions::toString(item) })
+            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", PolyFunctions::children(context), lambda{|item| PolyFunctions::toString(item) })
             if child.nil? then
-                return Catalyst::interactivelySelectParentInHierarchyOrNull(context)
+                return Operations::interactivelySelectParentInHierarchyOrNull(context)
             end
-            return Catalyst::interactivelySelectParentInHierarchyOrNull(child)
+            return Operations::interactivelySelectParentInHierarchyOrNull(child)
         end
     end
 
-    # Catalyst::postposeItemToUnixtime(item, unixtime)
+    # Operations::postposeItemToUnixtime(item, unixtime)
     def self.postposeItemToUnixtime(item, unixtime)
         # We stop, set DoNotShowUntil1, and recompute the flight data
         NxBalls::stop(item)
@@ -223,5 +189,15 @@ class Catalyst
             flightdata = NxFlightData::updateEstimatedStart(flightdata, unixtime)
             Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
         end
+    end
+
+    # Operations::expose(item)
+    def self.expose(item)
+        puts JSON.pretty_generate(item)
+        puts "Do not show until: #{DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])}"
+        if item["mikuType"] == "NxTimeCapsule" then
+            puts "live value: #{NxTimeCapsules::liveValue(item)}"
+        end
+        LucilleCore::pressEnterToContinue()
     end
 end

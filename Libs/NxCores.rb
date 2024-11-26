@@ -107,7 +107,7 @@ class NxCores
 
             puts ""
 
-            children = Catalyst::childrenInGlobalPositioningOrder(core)
+            children = PolyFunctions::childrenInGlobalPositioningOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -126,7 +126,7 @@ class NxCores
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
-                position = Catalyst::interactivelySelectPositionInParent(core)
+                position = Operations::interactivelySelectPositionInParent(core)
                 Items::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
@@ -136,7 +136,7 @@ class NxCores
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
-                position = Catalyst::firstPositionInParent(core) - 1
+                position = Operations::firstPositionInParent(core) - 1
                 Items::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
@@ -145,7 +145,7 @@ class NxCores
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = Catalyst::interactivelySelectPositionInParent(core)
+                position = Operations::interactivelySelectPositionInParent(core)
                 Items::setAttribute(i["uuid"], "global-positioning", position)
                 next
             end
@@ -160,9 +160,9 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Catalyst::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Items::setAttribute(i["uuid"], "global-positioning", Catalyst::firstPositionInParent(core) - 1)
+                    Items::setAttribute(i["uuid"], "global-positioning", Operations::firstPositionInParent(core) - 1)
                 }
                 next
             end

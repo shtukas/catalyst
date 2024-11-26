@@ -16,7 +16,7 @@ class CatalystSearch
             selected = Items::items()
                         .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
                         .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] }
-            Catalyst::program2(selected)
+            Operations::program2(selected)
         }
         nil
     end

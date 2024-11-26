@@ -275,7 +275,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            if !Catalyst::children(item).empty? then
+            if !PolyFunctions::children(item).empty? then
                 puts "You cannot destroy core '#{PolyFunctions::toString(item).green}' because it has children."
                 LucilleCore::pressEnterToContinue()
                 return

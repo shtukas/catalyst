@@ -11,7 +11,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if (parent = Catalyst::parentOrNull(item)) then
+        if (parent = PolyFunctions::parentOrNull(item)) then
             accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
         end
 
@@ -89,5 +89,39 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
+    end
+
+    # PolyFunctions::children(item)
+    def self.children(item)
+        if item["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity Core
+            return NxTasks::listingItems()
+        end
+        if item["mikuType"] == "NxTimeCapsule" and item["targetuuid"] then
+            return [Items::itemOrNull(item["targetuuid"])].compact
+        end
+        if item["mikuType"] == "NxStrat" then
+            return [NxStrats::topOrNull(item["uuid"])].compact
+        end
+        Items::items()
+            .select{|i| i["parentuuid-0014"] == item["uuid"] }
+    end
+
+    # PolyFunctions::parentOrNull(item)
+    def self.parentOrNull(item)
+        if item["parentuuid-0014"] then
+            return Items::itemOrNull(item["parentuuid-0014"])
+        end
+        if item["mikuType"] == "NxStrat" then
+            return [Items::itemOrNull(item["bottomuuid"])].compact
+        end
+        if (parent = NxTimeCapsules::getFirstCapsuleForTargetOrNull(item["uuid"])) then
+            return parent
+        end
+        if item["mikuType"] == "NxTask" then
+            # we have an NxTask withhout a parent
+            # The parent is the Infinity Core
+            return Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28")
+        end
+        nil
     end
 end

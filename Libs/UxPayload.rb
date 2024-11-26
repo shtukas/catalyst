@@ -105,7 +105,7 @@ class UxPayload
         end
         if payload["type"] == "todo-text-file-by-name" then
             name1 = payload["name"]
-            location = Catalyst::selectTodoTextFileLocationOrNull(name1)
+            location = Operations::selectTodoTextFileLocationOrNull(name1)
             if location.nil? then
                 puts "Could not resolve this todo text file: #{name1}"
                 if LucilleCore::askQuestionAnswerAsBoolean("reset payload ?") then

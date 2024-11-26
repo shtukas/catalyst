@@ -16,7 +16,7 @@ class Prefix
             return items
         end
         if items[0]["mikuType"] == "NxCore" then
-            children = Catalyst::children(items[0])
+            children = PolyFunctions::children(items[0])
                         .select{|item| Listing::listable(item) }
             if children.empty? then
                 return items

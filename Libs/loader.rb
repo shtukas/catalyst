@@ -126,7 +126,6 @@ require_relative "Atlas.rb"
 
 require_relative "Bank.rb"
 
-require_relative "Catalyst.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
 require_relative "CommandsAndInterpreters.rb"
@@ -159,6 +158,8 @@ require_relative "NxDateds.rb"
 require_relative "NxStrats.rb"
 require_relative "NxFlightData.rb"
 require_relative "NxTimeCapsules.rb"
+
+require_relative "Operations.rb"
 
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
