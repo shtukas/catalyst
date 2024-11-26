@@ -49,4 +49,12 @@ class NxTimeCapsules
             Items::destroy(firstPositive["uuid"])
         }
     end
+
+    # NxTimeCapsules::getFirstCapsuleForTargetOrNull(targetuuid)
+    def self.getFirstCapsuleForTargetOrNull(targetuuid)
+        Items::mikuType("NxTimeCapsule")
+            .select{|item| item["targetuuid"] == targetuuid }
+            .sort_by{|item| item["flight-data-27"]["calculated-start"] }
+            .first
+    end
 end

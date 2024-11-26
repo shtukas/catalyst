@@ -106,16 +106,40 @@ class Catalyst
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
         Catalyst::postposeItemToUnixtime(item, unixtime)
-
     end
 
-    # Catalyst::children(parent)
-    def self.children(parent)
-        if parent["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity
+    # Catalyst::children(item)
+    def self.children(item)
+        if item["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity Core
             return NxTasks::listingItems()
         end
+        if item["mikuType"] == "NxTimeCapsule" and item["targetuuid"] then
+            return [Items::itemOrNull(item["targetuuid"])].compact
+        end
+        if item["mikuType"] == "NxStrat" then
+            return [NxStrats::topOrNull(item["uuid"])].compact
+        end
         Items::items()
-            .select{|item| item["parentuuid-0014"] == parent["uuid"] }
+            .select{|i| i["parentuuid-0014"] == item["uuid"] }
+    end
+
+    # Catalyst::parentOrNull(item)
+    def self.parentOrNull(item)
+        if item["parentuuid-0014"] then
+            return Items::itemOrNull(item["parentuuid-0014"])
+        end
+        if item["mikuType"] == "NxStrat" then
+            return [Items::itemOrNull(item["bottomuuid"])].compact
+        end
+        if (parent = NxTimeCapsules::getFirstCapsuleForTargetOrNull(item["uuid"])) then
+            return parent
+        end
+        if item["mikuType"] == "NxTask" then
+            # we have an NxTask withhout a parent
+            # The parent is the Infinity Core
+            return Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28")
+        end
+        nil
     end
 
     # Catalyst::childrenInGlobalPositioningOrder(parent)

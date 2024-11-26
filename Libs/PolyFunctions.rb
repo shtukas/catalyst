@@ -11,15 +11,12 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        if (parent = Catalyst::parentOrNull(item)) then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+        end
+
         # ------------------------------------------------
         # Special Features
-
-        if item["parentuuid-0014"] then
-            target = Items::itemOrNull(item["parentuuid-0014"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
 
         if item["donation-1205"] then
             target = Items::itemOrNull(item["donation-1205"])
@@ -28,12 +25,7 @@ class PolyFunctions
             end
         end
 
-        # ------------------------------------------------
-        # MikuType Features
-
-        if item["mikuType"] == "NxTask" then
-            core = Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28") # Infinity
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(core)
+        if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
             if Bank1::getValue(item["uuid"]) == 0 then
                 accounts << {
                     "description" => "Infinity Zero",
@@ -43,36 +35,6 @@ class PolyFunctions
                 accounts << {
                     "description" => "Infinity One",
                     "number"      => "1df84f80-8546-476f-9ed9-84fa84d30a5e" # Infinity One
-                }
-            end
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            bottom = Items::itemOrNull(item["bottomuuid"])
-            if bottom then
-                accounts << {
-                    "description" => PolyFunctions::toString(bottom),
-                    "number"      => bottom["uuid"]
-                }
-            end
-        end
-
-        if item["mikuType"] == "NxTimeCapsule" and item["targetuuid"] then
-            target = Items::itemOrNull(item["targetuuid"])
-            if target then
-                accounts << {
-                    "description" => PolyFunctions::toString(target),
-                    "number"      => target["uuid"]
-                }
-            end
-        end
-
-        if item["mikuType"] == "NxCore" then
-            capsule = NxCores::getFirstCapsuleForCoreOrNull(item)
-            if capsule then
-                accounts << {
-                    "description" => capsule["description"],
-                    "number"      => capsule["uuid"]
                 }
             end
         end
