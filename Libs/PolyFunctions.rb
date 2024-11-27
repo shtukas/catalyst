@@ -22,6 +22,12 @@ class PolyFunctions
             target = Items::itemOrNull(item["donation-1205"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+                if (capsule = NxTimeCapsules::getFirstCapsuleForTargetOrNull(target["uuid"])) then
+                    accounts << {
+                        "description" => capsule["description"],
+                        "number"      => capsule["uuid"]
+                    }
+                end
             end
         end
 
