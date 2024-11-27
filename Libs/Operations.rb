@@ -60,8 +60,6 @@ class Operations
 
             NxStrats::garbageCollection()
 
-            NxTimeCapsules::maintenance()
-
             NxCores::maintenance()
 
             NxLongTasks::maintenance()

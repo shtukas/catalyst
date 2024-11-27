@@ -177,10 +177,7 @@ class Listing
                 Operations::periodicPrimaryInstanceMaintenance()
             end
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
-            store = ItemStore.new()
-
-            system("clear")
+            NxTimeCapsules::maintenance()
 
             items = Listing::items()
             items.each{|item| NxFlightData::ensureFlightData(item) }
@@ -190,6 +187,9 @@ class Listing
             items =  Prefix::addPrefix(items)
 
             system("clear")
+
+            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
+            store = ItemStore.new()
 
             spacecontrol.putsline ""
 

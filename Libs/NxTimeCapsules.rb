@@ -35,7 +35,6 @@ class NxTimeCapsules
     def self.maintenance()
         targetuuids = Items::mikuType("NxTimeCapsule").map{|item| item["targetuuid"] }.compact.uniq
         targetuuids.each{|targetuuid|
-            puts "targetuuid: #{targetuuid}"
             capsules = Items::mikuType("NxTimeCapsule")
                         .select{|item| item["targetuuid"] == targetuuid }
                         .sort_by{|item| item["flight-data-27"]["calculated-start"] }
@@ -45,6 +44,7 @@ class NxTimeCapsules
             next if firstNegative.nil?
             next if NxBalls::itemIsActive(firstPositive)
             next if NxBalls::itemIsActive(firstNegative)
+            puts "capsule merging for targetuuid: #{targetuuid}"
             Items::setAttribute(firstNegative["uuid"], "value", firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive))
             Items::destroy(firstPositive["uuid"])
         }
