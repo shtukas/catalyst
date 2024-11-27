@@ -94,37 +94,82 @@ class PolyFunctions
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
 
+    # PolyFunctions::parentOrNull(item)
+    def self.parentOrNull(item)
+        # The parent is the thing that we send a duplicate of the time to
+
+        # NxTask        -> the Infinity Core >> identityOrTheFirstCapsuleThatPointsToIt
+        # NxStrat       -> the bottom # interestingly
+        # NxTimeCapsule -> the target # if it exists
+        # item          -> the natural parentuuid-0014 parent >> identityOrTheFirstCapsuleThatPointsToIt
+
+        identityOrTheFirstCapsuleThatPointsToIt = lambda {|item|
+            if NxTimeCapsules::getCapsulesForTarget(item["uuid"]).size > 0 then
+                return NxTimeCapsules::getFirstCapsuleForTargetOrNull(item["uuid"])
+            end
+            item
+        }
+
+        if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
+            # we have an NxTask without a parent
+            # The parent is the Infinity Core
+            parent = Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28") # The Infinity Core
+            return nil if parent.nil?
+            return identityOrTheFirstCapsuleThatPointsToIt.call(parent)
+        end
+        if item["mikuType"] == "NxStrat" then
+            return Items::itemOrNull(item["bottomuuid"])
+        end
+        if item["mikuType"] == "NxTimeCapsule" then
+            return nil if item["targetuuid"].nil?
+            return Items::itemOrNull(item["targetuuid"])
+        end
+        if item["parentuuid-0014"] then
+            parent = Items::itemOrNull(item["parentuuid-0014"])
+            return nil if parent.nil?
+            return identityOrTheFirstCapsuleThatPointsToIt.call(parent)
+        end
+        nil
+    end
+
     # PolyFunctions::children(item)
     def self.children(item)
+        # Children are the things that display first
+
+        # Infinity Core -> NxTasks
+        # NxStrat       -> Top      # Interestingly
+        # If an element is the target of a capsule, then all the capsules are children
+        # Capsule       -> [the children of the target] # If the target exists
+        # Any element that the item is a parent of
+
+        identityOrTheCapsules = lambda {|item, children|
+            if NxTimeCapsules::getCapsulesForTarget(item["uuid"]).size > 0 then
+                return NxTimeCapsules::getCapsulesForTarget(item["uuid"])
+            end
+            children
+        }
+
         if item["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity Core
-            return NxTasks::listingItems()
-        end
-        if item["mikuType"] == "NxTimeCapsule" and item["targetuuid"] then
-            return [Items::itemOrNull(item["targetuuid"])].compact
+            return identityOrTheCapsules.call(item, Items::mikuType("NxTask"))
         end
         if item["mikuType"] == "NxStrat" then
             return [NxStrats::topOrNull(item["uuid"])].compact
         end
-        Items::items()
+
+        if item["mikuType"] == "NxTimeCapsule" then
+            return [] if item["targetuuid"].nil?
+            target = Items::itemOrNull(item["targetuuid"])
+            return [] if target.nil?
+            if target["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then # Infinity Core
+                return Items::mikuType("NxTask")
+            end
+            return Items::items().select{|i| i["parentuuid-0014"] == target["uuid"] }
+        end
+
+        children = Items::items()
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
+        identityOrTheCapsules.call(item, children)
     end
 
-    # PolyFunctions::parentOrNull(item)
-    def self.parentOrNull(item)
-        if item["parentuuid-0014"] then
-            return Items::itemOrNull(item["parentuuid-0014"])
-        end
-        if item["mikuType"] == "NxStrat" then
-            return [Items::itemOrNull(item["bottomuuid"])].compact
-        end
-        if (parent = NxTimeCapsules::getFirstCapsuleForTargetOrNull(item["uuid"])) then
-            return parent
-        end
-        if item["mikuType"] == "NxTask" then
-            # we have an NxTask withhout a parent
-            # The parent is the Infinity Core
-            return Items::itemOrNull("427bbceb-923e-4feb-8232-05883553bb28")
-        end
-        nil
-    end
+
 end

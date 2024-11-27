@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | capsules",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | numbers",
         ].join("\n")
@@ -218,6 +218,13 @@ class CommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             NxCores::program2()
+            return
+        end
+
+        if Interpreting::match("capsules", input) then
+            items = Items::mikuType("NxTimeCapsule")
+                        .sort_by{|item| item["flight-data-27"]["calculated-start"] }
+            Operations::program2(items)
             return
         end
 

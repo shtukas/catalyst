@@ -192,6 +192,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxTimeCapsule" then
+            PolyActions::start(item)
+            return
+        end
+
         if item["mikuType"] == "NxCore" then
             NxCores::program1(item)
             return
