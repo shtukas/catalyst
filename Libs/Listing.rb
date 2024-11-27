@@ -185,7 +185,6 @@ class Listing
             items = Listing::items()
             items.each{|item| NxFlightData::ensureFlightData(item) }
             items = NxFlightData::flyingItemsInOrder()
-            items = items.select{|item| item["mikuType"] != "NxTimeCapsule" or NxBalls::itemIsActive(item) }
             items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items =  Prefix::addPrefix(items)
