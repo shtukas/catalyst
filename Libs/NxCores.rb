@@ -192,7 +192,7 @@ class NxCores
     def self.maintenance()
         Items::mikuType("NxCore").each{|core|
             if NxTimeCapsules::getCapsulesForTarget(core["uuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
-                NxTimeCapsules::constellation(core["uuid"], core["description"], 7, core["hours"])
+                Constellation::constellationWithTimeControl(core["uuid"], core["description"], 6, core["hours"], 7)
             end
         }
     end

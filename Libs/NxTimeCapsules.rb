@@ -62,25 +62,6 @@ class NxTimeCapsules
             .first
     end
 
-    # NxTimeCapsules::constellation(targetuuid, description, spreadTimeSpanInDays, totalCapsuleTimeInHours)
-    def self.constellation(targetuuid, description, spreadTimeSpanInDays, totalCapsuleTimeInHours)
-        singleCapsuleDurationInSeconds = (3600 * totalCapsuleTimeInHours).to_f/20
-        startTimes = (1..20).map{|i| Time.new.to_i + 12*3600 + rand * 86400*spreadTimeSpanInDays }
-        flights = startTimes.map{|start|
-            {
-                "version"            => NxFlightData::version(),
-                "calculated-start"   => start,
-                "estimated-duration" => singleCapsuleDurationInSeconds 
-            }
-        }
-        flights
-            .sort_by{|flightdata| flightdata["calculated-start"] }
-            .each{|flightdata|
-                puts "constellation: launching capsule for `#{description}`, duration: #{singleCapsuleDurationInSeconds}, at #{Time.at(flightdata["calculated-start"]).utc.iso8601}"
-                NxTimeCapsules::issue("capsule for: #{description}", -singleCapsuleDurationInSeconds, flightdata, targetuuid)
-            }
-    end
-
     # NxTimeCapsules::program1(capsule)
     def self.program1(capsule)
         loop {

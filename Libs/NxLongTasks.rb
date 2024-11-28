@@ -29,7 +29,7 @@ class NxLongTasks
     def self.maintenance()
         Items::mikuType("NxLongTask").each{|item|
             if NxTimeCapsules::getCapsulesForTarget(item["uuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
-                NxTimeCapsules::constellation(item["uuid"], item["description"], 7, item["hoursPerDay"]*7)
+                Constellation::constellationWithTimeControl(item["uuid"], item["description"], 7, item["hoursPerDay"]*7, 7)
             end
         }
     end
