@@ -106,7 +106,7 @@ class Listing
             Waves::listingItemsInterruption(),
             NxFloats::listingItems(),
             DropBox::items(),
-            Desktop::listingItems(),
+            #Desktop::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             Waves::listingItemsNotInterruption(),
@@ -183,8 +183,8 @@ class Listing
             items.each{|item| NxFlightData::ensureFlightData(item) }
             items = NxFlightData::flyingItemsInOrder()
             items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
-            items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-            items =  Prefix::addPrefix(items)
+            items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
+            items = Prefix::addPrefix(items)
 
             system("clear")
 
