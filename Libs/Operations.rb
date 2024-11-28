@@ -110,7 +110,7 @@ class Operations
         Operations::postposeItemToUnixtime(item, unixtime)
     end
 
-    # PolyFunctions::childrenInGlobalPositioningOrder(parent)
+    # Operations::childrenInGlobalPositioningOrder(parent)
     def self.childrenInGlobalPositioningOrder(parent)
         PolyFunctions::children(parent)
             .sort_by{|item| item["global-positioning"] || 0 }
@@ -130,7 +130,7 @@ class Operations
 
     # Operations::interactivelySelectPositionInParent(parent)
     def self.interactivelySelectPositionInParent(parent)
-        elements = PolyFunctions::childrenInGlobalPositioningOrder(parent)
+        elements = Operations::childrenInGlobalPositioningOrder(parent)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }

@@ -14,21 +14,20 @@ class NxTimeCapsules
         Items::itemOrNull(uuid)
     end
 
+    # NxTimeCapsules::liveValue(capsule)
+    def self.liveValue(capsule)
+        capsule["value"] + Bank1::getValue(capsule["uuid"])
+    end
+
     # NxTimeCapsules::toString(item)
     def self.toString(item)
-        vx = item["value"] + Bank1::getValue(item["uuid"])
-        "⏱️  (#{vx}) #{item["description"]}"
+        "⏱️  (#{NxTimeCapsules::liveValue(item)}) #{item["description"]}"
     end
 
     # NxTimeCapsules::listingItems()
     def self.listingItems()
         Items::mikuType("NxTimeCapsule")
             .select{|item| item["value"] + Bank1::getValue(item["uuid"]) < 0 }
-    end
-
-    # NxTimeCapsules::liveValue(capsule)
-    def self.liveValue(capsule)
-        capsule["value"] + Bank1::getValue(capsule["uuid"])
     end
 
     # NxTimeCapsules::maintenance()
@@ -80,5 +79,45 @@ class NxTimeCapsules
                 puts "constellation: launching capsule for `#{description}`, duration: #{singleCapsuleDurationInSeconds}, at #{Time.at(flightdata["calculated-start"]).utc.iso8601}"
                 NxTimeCapsules::issue("capsule for: #{description}", -singleCapsuleDurationInSeconds, flightdata, targetuuid)
             }
+    end
+
+    # NxTimeCapsules::program1(capsule)
+    def self.program1(capsule)
+        loop {
+
+            capsule = Items::itemOrNull(capsule["uuid"])
+            return if capsule.nil?
+
+            system("clear")
+
+            store = ItemStore.new()
+
+            puts ""
+
+            store.register(capsule, false)
+            puts Listing::toString2(store, capsule)
+
+            puts ""
+
+            children = Operations::childrenInGlobalPositioningOrder(capsule)
+
+            if capsule["targetuuid"] == NxCores::infinityuuid() then
+                children = children.take(20)
+            end
+
+            children
+                .each{|element|
+                    store.register(element, Listing::canBeDefault(element))
+                    puts Listing::toString2(store, element)
+                }
+
+            puts ""
+
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            CommandsAndInterpreters::interpreter(input, store)
+        }
     end
 end

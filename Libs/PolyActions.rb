@@ -37,10 +37,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTimeCapsule" then
-            return if item["targetuuid"].nil?
-            target = Items::itemOrNull(item["targetuuid"])
-            return if target.nil?
-            PolyActions::access(target)
+            NxTimeCapsules::program1(item)
             return
         end
 
@@ -193,7 +190,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTimeCapsule" then
-            PolyActions::start(item)
+            PolyActions::access(item)
             return
         end
 

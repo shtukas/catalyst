@@ -56,6 +56,11 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
+    # NxCores::infinityuuid()
+    def self.infinityuuid()
+        "427bbceb-923e-4feb-8232-05883553bb28"
+    end
+
     # ------------------
     # Ops
 
@@ -77,7 +82,7 @@ class NxCores
 
             puts ""
 
-            children = PolyFunctions::childrenInGlobalPositioningOrder(core)
+            children = Operations::childrenInGlobalPositioningOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -130,7 +135,7 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Operations::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Items::setAttribute(i["uuid"], "global-positioning", Operations::firstPositionInParent(core) - 1)
                 }
