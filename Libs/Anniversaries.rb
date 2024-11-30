@@ -143,17 +143,9 @@ class Anniversaries
     # ----------------------------------------------------------------------------------
     # Operations
 
-    # Anniversaries::done(uuid)
-    def self.done(uuid)
-        Items::setAttribute(uuid, "lastCelebrationDate", Time.new.to_s[0, 10])
-    end
-
-    # Anniversaries::accessAndDone(anniversary)
-    def self.accessAndDone(anniversary)
-        puts Anniversaries::toString(anniversary)
-        if LucilleCore::askQuestionAnswerAsBoolean("done ? : ", true) then
-            Items::setAttribute(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
-        end
+    # Anniversaries::advance(anniversary)
+    def self.advance(anniversary)
+        Items::setAttribute(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
     end
 
     # Anniversaries::program1(item)

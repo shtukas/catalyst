@@ -9,7 +9,7 @@ class PolyActions
     def self.access(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::accessAndDone(item)
+            Anniversaries::advance(item)
             return
         end
 
@@ -92,13 +92,13 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                NxBackups::setNowForDescription(item["description"])
+                NxBackups::resetDescriptionDateTime(item["description"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::done(item["uuid"])
+            Anniversaries::advance(item)
             return
         end
 
@@ -132,13 +132,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
             return
         end
 
         if item["mikuType"] == "Wave" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Waves::performWaveDone(item)
+                Waves::advance(item)
             end
             return
         end
@@ -147,11 +146,11 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::double(item)
-    def self.double(item)
+    # PolyActions::perform(item)
+    def self.perform(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::accessAndDone(item)
+            Anniversaries::advance(item)
             return
         end
 
@@ -168,24 +167,52 @@ class PolyActions
         if item["mikuType"] == "NxTask" then
             PolyActions::start(item)
             PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
+                PolyActions::destroy(item)
+            else
+                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                    PolyActions::stop(item)
+                end
+            end
             return
         end
 
         if item["mikuType"] == "NxLongTask" then
             PolyActions::start(item)
             PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
+                PolyActions::destroy(item)
+            else
+                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                    PolyActions::stop(item)
+                end
+            end
             return
         end
 
         if item["mikuType"] == "NxDated" then
             PolyActions::start(item)
             PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
+                PolyActions::destroy(item)
+            else
+                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                    PolyActions::stop(item)
+                end
+            end
             return
         end
 
         if item["mikuType"] == "NxStrat" then
             PolyActions::start(item)
             PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
+                PolyActions::destroy(item)
+            else
+                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                    PolyActions::stop(item)
+                end
+            end
             return
         end
 
@@ -202,6 +229,9 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             PolyActions::start(item)
             PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
+                PolyActions::done(item, true)
+            end
             return
         end
 

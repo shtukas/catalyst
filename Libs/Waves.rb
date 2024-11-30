@@ -174,8 +174,8 @@ class Waves
     # -------------------------------------------------------------------------
     # Operations
 
-    # Waves::performWaveDone(item)
-    def self.performWaveDone(item)
+    # Waves::advance(item)
+    def self.advance(item)
         # Reset: rtime-32
         Items::setAttribute(item["uuid"], "rtime-32", nil)
 
@@ -208,7 +208,7 @@ class Waves
                 Items::setAttribute(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
-                Waves::performWaveDone(item)
+                Waves::advance(item)
                 return
             end
             if action == "set priority" then

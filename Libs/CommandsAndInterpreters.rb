@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | capsules | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | numbers",
+            "misc          : search | speed | commands | edit <n> | numbers | stream",
         ].join("\n")
     end
 
@@ -28,7 +28,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::double(item)
+            PolyActions::perform(item)
             return
         end
 
@@ -36,7 +36,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::double(item)
+            PolyActions::perform(item)
             return
         end
 
@@ -129,6 +129,11 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("stream", input) then
+            Listing::stream()
             return
         end
 

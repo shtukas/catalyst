@@ -123,6 +123,33 @@ class Listing
             }
     end
 
+    # Listing::itemsForListing()
+    def self.itemsForListing()
+        items = Listing::items()
+        items.each{|item| NxFlightData::ensureFlightData(item) }
+        items = NxFlightData::flyingItemsInOrder()
+        items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
+        items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
+        items = Prefix::addPrefix(items)
+        items
+    end
+
+    # Listing::stream()
+    def self.stream()
+        streamstart = Time.new.to_i
+        (lambda {
+            loop {
+                Listing::itemsForListing().each{|item|
+                    answer = LucilleCore::askQuestionAnswerAsString("Press to start: '#{PolyFunctions::toString(item).green}': (or `exit`) ")
+                    return if answer == "exit"
+                    PolyActions::perform(item)
+                }
+            }
+        }).call()
+        puts "Stream run time: #{((Time.new.to_i - streamstart).to_i/3600).round(2)} hours"
+        LucilleCore::pressEnterToContinue()
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -179,14 +206,9 @@ class Listing
 
             NxTimeCapsules::maintenance()
 
-            items = Listing::items()
-            items.each{|item| NxFlightData::ensureFlightData(item) }
-            items = NxFlightData::flyingItemsInOrder()
-            items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
-            items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
-            items = Prefix::addPrefix(items)
+            items = Listing::itemsForListing()
 
-            system("clear")
+            #system("clear")
 
             spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
