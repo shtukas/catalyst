@@ -140,13 +140,16 @@ class Listing
         (lambda {
             loop {
                 Listing::itemsForListing().each{|item|
+                    if item["mikuType"] == "NxCore"  then
+                        item = Prefix::addPrefix([item]).first
+                    end
                     answer = LucilleCore::askQuestionAnswerAsString("Press to start: '#{PolyFunctions::toString(item).green}': (or `exit`) ")
                     return if answer == "exit"
                     PolyActions::perform(item)
                 }
             }
         }).call()
-        puts "Stream run time: #{((Time.new.to_i - streamstart).to_i/3600).round(2)} hours"
+        puts "Stream run time: #{((Time.new.to_i - streamstart).to_f/3600).round(2)} hours"
         LucilleCore::pressEnterToContinue()
     end
 

@@ -168,7 +168,7 @@ class PolyActions
             PolyActions::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item)
+                PolyActions::destroy(item, true)
             else
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
@@ -181,7 +181,7 @@ class PolyActions
             PolyActions::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item)
+                PolyActions::destroy(item, true)
             else
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
@@ -194,7 +194,7 @@ class PolyActions
             PolyActions::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item)
+                PolyActions::destroy(item, true)
             else
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
@@ -207,7 +207,7 @@ class PolyActions
             PolyActions::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item)
+                PolyActions::destroy(item, true)
             else
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)

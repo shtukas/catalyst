@@ -44,7 +44,11 @@ class NxTimeCapsules
             next if NxBalls::itemIsActive(firstPositive)
             next if NxBalls::itemIsActive(firstNegative)
             puts "capsule merging for targetuuid: #{targetuuid}"
-            Items::setAttribute(firstNegative["uuid"], "value", firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive))
+            puts "positive: #{JSON.pretty_generate(firstPositive)}"
+            puts "negative: #{JSON.pretty_generate(firstNegative)}"
+            newValue = firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive)
+            puts "updating negative with new value: #{newValue}"
+            Items::setAttribute(firstNegative["uuid"], "value", newValue)
             Items::destroy(firstPositive["uuid"])
         }
     end
