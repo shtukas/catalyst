@@ -1,5 +1,5 @@
 
 NxFlightData:
-    - version            : Integer
+    - version            : 5
     - calculated-start   : Integer, Unixtime
     - estimated-duration : Integer (seconds)

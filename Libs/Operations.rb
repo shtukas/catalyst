@@ -101,9 +101,31 @@ class Operations
             .select{|line| line != "" }
     end
 
+    # Operations::resheduleAtTheEnd(item)
+    def self.resheduleAtTheEnd(item)
+        flightdata1 = NxFlightData::flyingItemsInOrder().map{|i| i["flight-data-27"] }.reverse.first
+        flightdata2 = {
+            "version" => 5,
+            "calculated-start" => flightdata1["calculated-start"] + flightdata1["estimated-duration"] + 3600,
+            "estimated-duration" => item["flight-data-27"]["estimated-duration"]
+        }
+        puts JSON.pretty_generate(flightdata2)
+        Items::setAttribute(item["uuid"], "flight-data-27", flightdata2)
+    end
+
     # Operations::interactivelyPush(item)
     def self.interactivelyPush(item)
         puts "push '#{PolyFunctions::toString(item).green}'"
+
+        if item["mikuType"] == "NxTimeCapsule" then
+            options = ["next available flight slot (default)", "manual"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+            if option == "next available flight slot (default)" or option.nil? then
+                Operations::resheduleAtTheEnd(item)
+                return
+            end
+        end
+
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"

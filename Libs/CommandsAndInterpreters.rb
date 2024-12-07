@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | --- (flight delay) | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | capsules | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | numbers | stream",
+            "misc          : search | speed | commands | edit <n> | numbers | stream | push-x",
         ].join("\n")
     end
 
@@ -37,6 +37,13 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::perform(item)
+            return
+        end
+
+        if Interpreting::match("---", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Operations::resheduleAtTheEnd(item)
             return
         end
 
