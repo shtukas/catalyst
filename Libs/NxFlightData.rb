@@ -74,7 +74,7 @@ class NxFlightData
     end
 
     # ----------------------------------------------------------------
-    # Listing support
+    # Data
 
     # NxFlightData::hasCorrectFlightData(item)
     def self.hasCorrectFlightData(item)
@@ -112,21 +112,6 @@ class NxFlightData
         NxFlightData::calculateStartTime(items.drop(1), item, duration)
     end
 
-    # NxFlightData::ensureFlightData(item)
-    def self.ensureFlightData(item)
-        return if NxFlightData::hasCorrectFlightData(item)
-        duration = NxFlightData::itemToDuration(item)
-        start = NxFlightData::calculateStartTime(NxFlightData::flyingItemsInOrder(), item, duration)
-        start = [start, NxFlightData::itemToDeadline(item)].min
-        flightdata = {
-            "version"            => NxFlightData::version(),
-            "calculated-start"   => start,
-            "estimated-duration" => duration
-        }
-        puts JSON.pretty_generate(flightdata)
-        Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
-    end
-
     # NxFlightData::deadlineToString(item)
     def self.deadlineToString(item)
         flightdata = item["flight-data-27"]
@@ -145,5 +130,51 @@ class NxFlightData
         flightdata["calculated-start"] = unixtime
         flightdata
     end
+
+    # ----------------------------------------------------------------
+    # Ops
+
+    # NxFlightData::ensureFlightData(item)
+    def self.ensureFlightData(item)
+        return if NxFlightData::hasCorrectFlightData(item)
+        duration = NxFlightData::itemToDuration(item)
+        start = NxFlightData::calculateStartTime(NxFlightData::flyingItemsInOrder(), item, duration)
+        start = [start, NxFlightData::itemToDeadline(item)].min
+        flightdata = {
+            "version"            => NxFlightData::version(),
+            "calculated-start"   => start,
+            "estimated-duration" => duration
+        }
+        puts JSON.pretty_generate(flightdata)
+        Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
+    end
+
+    # NxFlightData::resheduleItemAtTheEnd(item)
+    def self.resheduleItemAtTheEnd(item)
+        flightdata1 = NxFlightData::flyingItemsInOrder().map{|i| i["flight-data-27"] }.reverse.first
+        flightdata2 = {
+            "version" => 5,
+            "calculated-start" => flightdata1["calculated-start"] + flightdata1["estimated-duration"] + 3600,
+            "estimated-duration" => item["flight-data-27"]["estimated-duration"]
+        }
+        puts JSON.pretty_generate(item)
+        puts JSON.pretty_generate(flightdata2)
+        Items::setAttribute(item["uuid"], "flight-data-27", flightdata2)
+    end
+
+    # NxFlightData::rescheduleAllFlightData()
+    def self.rescheduleAllFlightData()
+        canBeAutomaticallyRescheduled = lambda {|item|
+            return false if NxBalls::itemIsActive(item)
+            return true if item["mikuType"] == "NxTimeCapsule"
+            return true if item["mikuType"] == "Wave" and !item["interruption"]
+            false
+        }
+        NxFlightData::flyingItemsInOrder().each {|item|
+            next if !canBeAutomaticallyRescheduled.call(item)
+            NxFlightData::resheduleItemAtTheEnd(item)
+        }
+    end
+
 end
 
