@@ -7,7 +7,6 @@ class Constellation
         startTimes = (1..20).map{|i| Time.new.to_i + 12*3600 + rand * 86400*spreadTimeSpanInDays }
         flights = startTimes.map{|start|
             {
-                "version"            => NxFlightData::version(),
                 "calculated-start"   => start,
                 "estimated-duration" => singleCapsuleDurationInSeconds 
             }

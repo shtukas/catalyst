@@ -41,7 +41,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("reschedule all flight data", input) then
-            NxFlightData::rescheduleAllFlightData()
+            NxFlightData::rescheduleAllLateFlightData()
             return
         end
 

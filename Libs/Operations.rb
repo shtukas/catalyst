@@ -197,8 +197,8 @@ class Operations
         # We stop, set DoNotShowUntil1, and recompute the flight data
         NxBalls::stop(item)
         DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-        if (flightdata = item["flight-data-27"]) then
-            flightdata = NxFlightData::updateEstimatedStart(flightdata, unixtime)
+        if item["flight-data-27"] then
+            flightdata = NxFlightData::updateEstimatedStart(item["flight-data-27"], unixtime)
             Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
         end
     end
@@ -206,7 +206,9 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        puts "Do not show until: #{DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])}"
+        unixtime = DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])
+        puts "Do not show until: #{unixtime}"
+        puts "Do not show until: #{Time.at(unixtime).utc.iso8601}"
         if item["mikuType"] == "NxTimeCapsule" then
             puts "live value: #{NxTimeCapsules::liveValue(item)}"
         end

@@ -1,5 +1,5 @@
 
 NxFlightData:
-    - version            : 5
     - calculated-start   : Integer, Unixtime
     - estimated-duration : Integer (seconds)
+    - hasBeenResheduled  : Boolean
