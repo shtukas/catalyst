@@ -108,11 +108,13 @@ class NxFlightData
         if flightdata.nil? then
             return "" 
         end
-        s = " [#{Time.at(flightdata["calculated-start"]).utc.iso8601}]"
         if flightdata["calculated-start"] < Time.new.to_i then
-            s = s.red
+            return " [#{Time.at(flightdata["calculated-start"]).utc.iso8601}]".red
         end
-        s
+        if Time.at(flightdata["calculated-start"]).utc.iso8601[0, 10] == CommonUtils::today() then
+            return " [#{Time.at(flightdata["calculated-start"]).utc.iso8601}]".yellow
+        end
+        " [#{Time.at(flightdata["calculated-start"]).utc.iso8601}]"
     end
 
     # NxFlightData::updateEstimatedStart(flightdata, unixtime)

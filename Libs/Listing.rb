@@ -128,7 +128,6 @@ class Listing
         items = Listing::items()
         items.each{|item| NxFlightData::ensureFlightData(item) }
         items = NxFlightData::flyingItemsInOrder().select{|item| Listing::listable(item) }
-        items = items.select{|item| Time.at(item["flight-data-27"]["calculated-start"]).to_s[0, 10] <= CommonUtils::today() }
         items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = Prefix::addPrefix(items)
         items
@@ -210,14 +209,6 @@ class Listing
             NxTimeCapsules::maintenance()
 
             items = Listing::itemsForListing()
-
-            if items.empty? then
-                item = NxFlightData::flyingItemsInOrder()
-                            .select{|item| item["flight-data-27"]["hasBeenResheduled"]}
-                            .select{|item| item["mikuType"] == "NxTimeCapsule" or (item["mikuType"] == "Wave" and !item["interruption"])}
-                            .first
-                items = [item].compact
-            end
 
             #system("clear")
 
