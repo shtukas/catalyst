@@ -128,6 +128,7 @@ class Listing
         items = Listing::items()
         items.each{|item| NxFlightData::ensureFlightData(item) }
         items = NxFlightData::flyingItemsInOrder().select{|item| Listing::listable(item) }
+        items = items.reject{|item| item["mikuType"] == "Wave" and item["flight-data-27"]["calculated-start"] > Time.new.to_i }
         items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = Prefix::addPrefix(items)
         items

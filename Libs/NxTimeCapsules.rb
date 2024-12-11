@@ -21,7 +21,9 @@ class NxTimeCapsules
 
     # NxTimeCapsules::toString(item)
     def self.toString(item)
-        "⏱️  (#{NxTimeCapsules::liveValue(item)}) #{item["description"]}"
+        target = Items::itemOrNull(item["targetuuid"])
+        return "(time capsule has no target)" if target.nil?
+        "⏱️  (#{NxTimeCapsules::liveValue(item)}) #{target["description"]}"
     end
 
     # NxTimeCapsules::listingItems()
