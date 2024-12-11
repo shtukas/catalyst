@@ -116,7 +116,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLongTask" then
+        if item["mikuType"] == "NxCapsuledTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
@@ -177,7 +177,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLongTask" then
+        if item["mikuType"] == "NxCapsuledTask" then
             PolyActions::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
@@ -297,7 +297,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLongTask" then
+        if item["mikuType"] == "NxCapsuledTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

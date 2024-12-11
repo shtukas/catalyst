@@ -62,7 +62,7 @@ class Operations
 
             NxCores::maintenance()
 
-            NxLongTasks::maintenance()
+            NxCapsuledTasks::maintenance()
         end
     end
 

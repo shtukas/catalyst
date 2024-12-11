@@ -1,0 +1,8 @@
+
+NxCapsuledTask:
+    - uuid          : String
+    - mikuType      : "NxCapsuledTask"
+    - unixtime      : Float
+    - datetime      : DateTime Iso 8601 UTC Zulu
+    - description   : String
+    - hoursPerWeek  : Float

@@ -88,8 +88,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
         end
-        if item["mikuType"] == "NxLongTask" then
-            return NxLongTasks::toString(item)
+        if item["mikuType"] == "NxCapsuledTask" then
+            return NxCapsuledTasks::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)

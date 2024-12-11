@@ -166,7 +166,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("longtask", input) then
-            item = NxLongTasks::interactivelyIssueNewOrNull()
+            item = NxCapsuledTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -239,7 +239,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("longtasks", input) then
-            items = Items::mikuType("NxLongTask")
+            items = Items::mikuType("NxCapsuledTask")
             Operations::program2(items)
             return
         end
