@@ -31,8 +31,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
+        if item["mikuType"] == "NxCapsuledTask" then
+            NxCapsuledTasks::program1(item)
             return
         end
 
@@ -131,7 +131,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxCapsuledTask" then
             return
         end
 
@@ -221,8 +221,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
+        if item["mikuType"] == "NxCapsuledTask" then
+            NxCapsuledTasks::program1(item)
             return
         end
 
@@ -304,7 +304,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxCapsuledTask" then
             if !PolyFunctions::children(item).empty? then
                 puts "You cannot destroy core '#{PolyFunctions::toString(item).green}' because it has children."
                 LucilleCore::pressEnterToContinue()

@@ -139,7 +139,7 @@ class Listing
         (lambda {
             loop {
                 Listing::itemsForListing().each{|item|
-                    if item["mikuType"] == "NxCore"  then
+                    if item["mikuType"] == "NxCapsuledTask"  then
                         item = Prefix::addPrefix([item]).first
                     end
                     answer = LucilleCore::askQuestionAnswerAsString("Press to start: '#{PolyFunctions::toString(item).green}': (or `exit`) ")

@@ -6,30 +6,193 @@ class NxCapsuledTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
         payload = UxPayload::makeNewOrNull(uuid)
+        hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
         Items::itemInit(uuid, "NxCapsuledTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "hoursPerWeek", hours)
+        Items::setAttribute(uuid, "hours", hours)
         Items::itemOrNull(uuid)
     end
 
     # ------------------
     # Data
 
+    # NxCapsuledTasks::ratio(item)
+    def self.ratio(item)
+        hours = item["hours"].to_f
+        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours/7)
+    end
+
+    # NxCapsuledTasks::ratioString(item)
+    def self.ratioString(item)
+        "(#{"%6.2f" % (100 * NxCapsuledTasks::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+    end
+
     # NxCapsuledTasks::toString(item)
     def self.toString(item)
-        "🐠 #{item["description"]}"
+        "⏱️  #{NxCapsuledTasks::ratioString(item)} #{item["description"]}"
+    end
+
+    # NxCapsuledTasks::itemsInRatioOrder()
+    def self.itemsInRatioOrder()
+        Items::mikuType("NxCapsuledTask").sort_by{|item| NxCapsuledTasks::ratio(item) }
+    end
+
+    # NxCapsuledTasks::listingItems()
+    def self.listingItems()
+        Items::mikuType("NxCapsuledTask")
+            .select{|item| Listing::listable(item) }
+            .select{|item| NxCapsuledTasks::ratio(item) < 1 }
+            .sort_by{|item| NxCapsuledTasks::ratio(item) }
+    end
+
+    # NxCapsuledTasks::interactivelySelectOrNull()
+    def self.interactivelySelectOrNull()
+        items = Items::mikuType("NxCapsuledTask")
+                    .sort_by{|item| NxCapsuledTasks::ratio(item) }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # NxCapsuledTasks::infinityuuid()
+    def self.infinityuuid()
+        "427bbceb-923e-4feb-8232-05883553bb28"
+    end
+
+    # ------------------
+    # Ops
+
+    # NxCapsuledTasks::program1(core)
+    def self.program1(core)
+        loop {
+
+            core = Items::itemOrNull(core["uuid"])
+            return if core.nil?
+
+            #system("clear")
+
+            store = ItemStore.new()
+
+            puts ""
+
+            store.register(core, false)
+            puts Listing::toString2(store, core)
+
+            puts ""
+
+            children = Operations::childrenInGlobalPositioningOrder(core)
+                .each{|element|
+                    store.register(element, Listing::canBeDefault(element))
+                    puts Listing::toString2(store, element)
+                }
+
+            puts ""
+
+            puts "todo (here, with position selection) | pile | position * | move * | sort"
+
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "todo" then
+                todo = NxTasks::interactivelyIssueNewOrNull()
+                next if todo.nil?
+                puts JSON.pretty_generate(todo)
+                Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
+                position = Operations::interactivelySelectPositionInParent(core)
+                Items::setAttribute(todo["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input == "pile" then
+                todo = NxTasks::interactivelyIssueNewOrNull()
+                next if todo.nil?
+                puts JSON.pretty_generate(todo)
+                Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
+                position = Operations::firstPositionInParent(core) - 1
+                Items::setAttribute(todo["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input.start_with?("position") then
+                listord = input[8, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                position = Operations::interactivelySelectPositionInParent(core)
+                Items::setAttribute(i["uuid"], "global-positioning", position)
+                next
+            end
+
+            if input.start_with?("move") then
+                listord = input[4, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                NxTasks::performItemPositioning(i)
+                next
+            end
+
+
+            if input == "sort" then
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Operations::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|i|
+                    Items::setAttribute(i["uuid"], "global-positioning", Operations::firstPositionInParent(core) - 1)
+                }
+                next
+            end
+
+            CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # NxCapsuledTasks::program2()
+    def self.program2()
+        loop {
+ 
+            # system("clear")
+ 
+            store = ItemStore.new()
+ 
+            puts ""
+
+            NxCapsuledTasks::itemsInRatioOrder()
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    puts Listing::toString2(store, item)
+                }
+ 
+            puts ""
+            puts "core | hours *"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+ 
+            if input == "core" then
+                core = NxCapsuledTasks::interactivelyIssueNewOrNull()
+                next if core.nil?
+                puts JSON.pretty_generate(core)
+                next
+            end
+ 
+            if input.start_with?("hours") then
+                item = store.get(input[5, 99].strip.to_i)
+                next if item.nil?
+                hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+                Items::setAttribute(item["uuid"], "hours", hours)
+                next
+            end
+ 
+            puts ""
+            CommandsAndInterpreters::interpreter(input, store)
+        }
     end
 
     # NxCapsuledTasks::maintenance()
     def self.maintenance()
         Items::mikuType("NxCapsuledTask").each{|item|
-            if NxTimeCapsules::getCapsulesForTarget(item["uuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
-                Constellation::constellationWithTimeControl(item["uuid"], item["description"], 7, item["hoursPerWeek"], 7)
+            if NxTimeCapsules::getCapsulesForTarget(item["targetuuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
+                Constellation::constellationWithTimeControl(item["uuid"], item["description"], 6, item["hours"], 7)
             end
         }
     end

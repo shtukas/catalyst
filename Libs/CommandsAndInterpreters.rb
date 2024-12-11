@@ -105,7 +105,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            target = NxCores::interactivelySelectOrNull()
+            target = NxCapsuledTasks::interactivelySelectOrNull()
             return if target.nil?
             Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
             return
@@ -176,7 +176,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = Operations::interactivelySelectParentInHierarchyOrNull(nil)
+            parent = NxCapsuledTasks::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
         end
@@ -227,7 +227,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("cores", input) then
-            NxCores::program2()
+            NxCapsuledTasks::program2()
             return
         end
 

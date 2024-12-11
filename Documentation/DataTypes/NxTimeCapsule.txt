@@ -7,4 +7,4 @@ NxTimeCapsule:
     - description     : String
     - value           : algebraic integer
     - flight-data-27  : NxFlightData # compulsory for this type
-    - targetuuid      : String
+    - targetuuid      : String # Target should be a NxCapsuledTask

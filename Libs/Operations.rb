@@ -60,8 +60,6 @@ class Operations
 
             NxStrats::garbageCollection()
 
-            NxCores::maintenance()
-
             NxCapsuledTasks::maintenance()
         end
     end
@@ -156,40 +154,6 @@ class Operations
         end
         position = position.to_f
         position
-    end
-
-    # Operations::interactivelySelectParentInHierarchyOrNull(context: Item or Null)
-    def self.interactivelySelectParentInHierarchyOrNull(context)
-        # The hierarchy has the cores and then whatever is a children, all the way down
-
-        if context.nil? then
-            core = NxCores::interactivelySelectOrNull()
-            if core.nil? then
-                return nil
-            end
-            return Operations::interactivelySelectParentInHierarchyOrNull(core)
-        end
-
-        # We automatically return the context if it doesn't have any children 
-        # and otherwise choose between returning the context or diving into one of the children
-
-        if PolyFunctions::children(context).empty? then
-            return context
-        end
-        # We have a NxCore that has children
-        o1 = "select: '#{PolyFunctions::toString(context)}' (default)"
-        o2 = "select one from children"
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", [o1, o2])
-        if option.nil? or option == o1 then
-            return context
-        end
-        if option == o2 then
-            child = LucilleCore::selectEntityFromListOfEntitiesOrNull("child", PolyFunctions::children(context), lambda{|item| PolyFunctions::toString(item) })
-            if child.nil? then
-                return Operations::interactivelySelectParentInHierarchyOrNull(context)
-            end
-            return Operations::interactivelySelectParentInHierarchyOrNull(child)
-        end
     end
 
     # Operations::postposeItemToUnixtime(item, unixtime)

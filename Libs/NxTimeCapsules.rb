@@ -1,7 +1,7 @@
 
 class NxTimeCapsules
 
-    # NxTimeCapsules::issue(description, value, flightdata, targetuuid or null)
+    # NxTimeCapsules::issue(description, value, flightdata, targetuuid)
     def self.issue(description, value, flightdata, targetuuid)
         uuid = SecureRandom.uuid
         Items::itemInit(uuid, "NxTimeCapsule")
@@ -32,6 +32,14 @@ class NxTimeCapsules
 
     # NxTimeCapsules::maintenance()
     def self.maintenance()
+        # Garbage collecting capsules without a target
+        Items::mikuType("NxTimeCapsule").each{|item|
+            if Items::itemOrNull(item["targetuuid"]).nil? then
+                Items::destroy(item["uuid"])
+            end
+        }
+
+        # Merging capsules of opposite live values
         targetuuids = Items::mikuType("NxTimeCapsule").map{|item| item["targetuuid"] }.compact.uniq
         targetuuids.each{|targetuuid|
             capsules = Items::mikuType("NxTimeCapsule")
@@ -44,8 +52,8 @@ class NxTimeCapsules
             next if NxBalls::itemIsActive(firstPositive)
             next if NxBalls::itemIsActive(firstNegative)
             puts "capsule merging for targetuuid: #{targetuuid}"
-            puts "positive: #{JSON.pretty_generate(firstPositive)}"
-            puts "negative: #{JSON.pretty_generate(firstNegative)}"
+            puts "positive: #{JSON.pretty_generate(firstPositive)} with live value #{NxTimeCapsules::liveValue(firstPositive)}"
+            puts "negative: #{JSON.pretty_generate(firstNegative)} with live value #{NxTimeCapsules::liveValue(firstNegative)}"
             newValue = firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive)
             puts "updating negative with new value: #{newValue}"
             Items::setAttribute(firstNegative["uuid"], "value", newValue)
@@ -86,7 +94,7 @@ class NxTimeCapsules
 
             children = Operations::childrenInGlobalPositioningOrder(capsule)
 
-            if capsule["targetuuid"] == NxCores::infinityuuid() then
+            if capsule["targetuuid"] == NxCapsuledTasks::infinityuuid() then
                 children = children.take(20)
             end
 
