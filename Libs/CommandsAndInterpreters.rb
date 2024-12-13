@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | capsuled | capsules | longtasks",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | capsules | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | speed | commands | edit <n> | numbers | stream | reschedule all flight data",
         ].join("\n")
@@ -226,7 +226,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("capsuled", input) then
+        if Interpreting::match("cores", input) then
             NxCapsuledTasks::program2()
             return
         end

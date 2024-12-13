@@ -117,9 +117,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCapsuledTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
             return
         end
 
@@ -128,10 +125,6 @@ class PolyActions
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
-            return
-        end
-
-        if item["mikuType"] == "NxCapsuledTask" then
             return
         end
 
@@ -165,19 +158,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item, true)
-            else
-                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
-                    PolyActions::stop(item)
-                end
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxCapsuledTask" then
             PolyActions::start(item)
             PolyActions::access(item)
             if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
@@ -238,10 +218,15 @@ class PolyActions
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to double dots #{item["mikuType"]}"
     end
 
-    # PolyActions::destroy(item)
-    def self.destroy(item)
+    # PolyActions::destroy(item, force)
+    def self.destroy(item, force = false)
 
         NxBalls::stop(item)
+
+        if force then
+            Items::destroy(item["uuid"])
+            return
+        end
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -298,15 +283,8 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCapsuledTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxCapsuledTask" then
             if !PolyFunctions::children(item).empty? then
-                puts "You cannot destroy core '#{PolyFunctions::toString(item).green}' because it has children."
+                puts "You cannot destroy NxCapsuledTask '#{PolyFunctions::toString(item).green}' because it has children."
                 LucilleCore::pressEnterToContinue()
                 return
             end
