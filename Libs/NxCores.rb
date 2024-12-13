@@ -155,6 +155,9 @@ class NxCores
             store = ItemStore.new()
  
             puts ""
+            weeklyTotal = Items::mikuType("NxCore").map{|item| item["hours"] }.sum
+            puts "weekly total: #{weeklyTotal} hours"
+            puts ""
 
             NxCores::itemsInRatioOrder()
                 .each{|item|
