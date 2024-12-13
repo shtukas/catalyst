@@ -201,13 +201,12 @@ class Listing
                 Items::processJournal()
                 Bank1::processJournal()
                 DoNotShowUntil1::processJournal()
+                NxTimeCapsules::maintenance()
             end
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
                 Operations::periodicPrimaryInstanceMaintenance()
             end
-
-            NxTimeCapsules::maintenance()
 
             items = Listing::itemsForListing()
 
