@@ -1,7 +1,7 @@
 
-NxCapsuledTask:
+NxCore:
     - uuid          : String
-    - mikuType      : "NxCapsuledTask"
+    - mikuType      : "NxCore"
     - unixtime      : Float
     - datetime      : DateTime Iso 8601 UTC Zulu
     - description   : String

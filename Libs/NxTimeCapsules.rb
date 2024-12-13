@@ -56,9 +56,7 @@ class NxTimeCapsules
             puts "capsule merging for targetuuid: #{targetuuid}"
             puts "positive: #{JSON.pretty_generate(firstPositive)} with live value #{NxTimeCapsules::liveValue(firstPositive)}"
             puts "negative: #{JSON.pretty_generate(firstNegative)} with live value #{NxTimeCapsules::liveValue(firstNegative)}"
-            newValue = firstNegative["value"] + NxTimeCapsules::liveValue(firstPositive)
-            puts "updating negative with new value: #{newValue}"
-            Items::setAttribute(firstNegative["uuid"], "value", newValue)
+            Bank1::put(firstNegative["uuid"], CommonUtils::today(), NxTimeCapsules::liveValue(firstPositive))
             Items::destroy(firstPositive["uuid"])
         }
     end
@@ -96,7 +94,7 @@ class NxTimeCapsules
 
             children = Operations::childrenInGlobalPositioningOrder(capsule)
 
-            if capsule["targetuuid"] == NxCapsuledTasks::infinityuuid() then
+            if capsule["targetuuid"] == NxCores::infinityuuid() then
                 children = children.take(20)
             end
 

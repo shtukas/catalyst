@@ -1,14 +1,14 @@
 
-class NxCapsuledTasks
+class NxCores
 
-    # NxCapsuledTasks::interactivelyIssueNewOrNull()
+    # NxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-        Items::itemInit(uuid, "NxCapsuledTask")
+        Items::itemInit(uuid, "NxCore")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -20,43 +20,43 @@ class NxCapsuledTasks
     # ------------------
     # Data
 
-    # NxCapsuledTasks::ratio(item)
+    # NxCores::ratio(item)
     def self.ratio(item)
         hours = item["hours"].to_f
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours/7)
     end
 
-    # NxCapsuledTasks::ratioString(item)
+    # NxCores::ratioString(item)
     def self.ratioString(item)
-        "(#{"%6.2f" % (100 * NxCapsuledTasks::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        "(#{"%6.2f" % (100 * NxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
-    # NxCapsuledTasks::toString(item)
+    # NxCores::toString(item)
     def self.toString(item)
-        "⏱️  #{NxCapsuledTasks::ratioString(item)} #{item["description"]}"
+        "⏱️  #{NxCores::ratioString(item)} #{item["description"]}"
     end
 
-    # NxCapsuledTasks::itemsInRatioOrder()
+    # NxCores::itemsInRatioOrder()
     def self.itemsInRatioOrder()
-        Items::mikuType("NxCapsuledTask").sort_by{|item| NxCapsuledTasks::ratio(item) }
+        Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
     end
 
-    # NxCapsuledTasks::listingItems()
+    # NxCores::listingItems()
     def self.listingItems()
-        Items::mikuType("NxCapsuledTask")
+        Items::mikuType("NxCore")
             .select{|item| Listing::listable(item) }
-            .select{|item| NxCapsuledTasks::ratio(item) < 1 }
-            .sort_by{|item| NxCapsuledTasks::ratio(item) }
+            .select{|item| NxCores::ratio(item) < 1 }
+            .sort_by{|item| NxCores::ratio(item) }
     end
 
-    # NxCapsuledTasks::interactivelySelectOrNull()
+    # NxCores::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        items = Items::mikuType("NxCapsuledTask")
-                    .sort_by{|item| NxCapsuledTasks::ratio(item) }
+        items = Items::mikuType("NxCore")
+                    .sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxCapsuledTasks::infinityuuid()
+    # NxCores::infinityuuid()
     def self.infinityuuid()
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
@@ -64,7 +64,7 @@ class NxCapsuledTasks
     # ------------------
     # Ops
 
-    # NxCapsuledTasks::program1(core)
+    # NxCores::program1(core)
     def self.program1(core)
         loop {
 
@@ -146,7 +146,7 @@ class NxCapsuledTasks
         }
     end
 
-    # NxCapsuledTasks::program2()
+    # NxCores::program2()
     def self.program2()
         loop {
  
@@ -156,7 +156,7 @@ class NxCapsuledTasks
  
             puts ""
 
-            NxCapsuledTasks::itemsInRatioOrder()
+            NxCores::itemsInRatioOrder()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts Listing::toString2(store, item)
@@ -169,7 +169,7 @@ class NxCapsuledTasks
             return if input == ""
  
             if input == "core" then
-                core = NxCapsuledTasks::interactivelyIssueNewOrNull()
+                core = NxCores::interactivelyIssueNewOrNull()
                 next if core.nil?
                 puts JSON.pretty_generate(core)
                 next
@@ -188,9 +188,9 @@ class NxCapsuledTasks
         }
     end
 
-    # NxCapsuledTasks::maintenance()
+    # NxCores::maintenance()
     def self.maintenance()
-        Items::mikuType("NxCapsuledTask").each{|item|
+        Items::mikuType("NxCore").each{|item|
             if NxTimeCapsules::getCapsulesForTarget(item["targetuuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
                 Constellation::constellationWithTimeControl(item["uuid"], item["description"], 6, item["hours"], 7)
             end

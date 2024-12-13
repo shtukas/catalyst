@@ -60,7 +60,7 @@ class Operations
 
             NxStrats::garbageCollection()
 
-            NxCapsuledTasks::maintenance()
+            NxCores::maintenance()
         end
     end
 

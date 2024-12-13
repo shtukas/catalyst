@@ -79,8 +79,8 @@ class PolyFunctions
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)
         end
-        if item["mikuType"] == "NxCapsuledTask" then
-            return NxCapsuledTasks::toString(item)
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
         end
         if item["mikuType"] == "NxTimeCapsule" then
             return NxTimeCapsules::toString(item)
@@ -88,8 +88,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
         end
-        if item["mikuType"] == "NxCapsuledTask" then
-            return NxCapsuledTasks::toString(item)
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
@@ -119,7 +119,7 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
             # we have an NxTask without a parent
             # The parent is the Infinity Core
-            parent = Items::itemOrNull(NxCapsuledTasks::infinityuuid()) # The Infinity Core
+            parent = Items::itemOrNull(NxCores::infinityuuid()) # The Infinity Core
             return nil if parent.nil?
             return identityOrTheFirstCapsuleThatPointsToIt.call(parent)
         end
@@ -161,7 +161,7 @@ class PolyFunctions
             children
         }
 
-        if item["uuid"] == NxCapsuledTasks::infinityuuid() then # Infinity Core
+        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             children = Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
             return identityOrTheCapsules.call(item, children)
         end
@@ -173,7 +173,7 @@ class PolyFunctions
             return [] if item["targetuuid"].nil?
             target = Items::itemOrNull(item["targetuuid"])
             return [] if target.nil?
-            if target["uuid"] == NxCapsuledTasks::infinityuuid() then # Infinity Core
+            if target["uuid"] == NxCores::infinityuuid() then # Infinity Core
                 return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
             end
             return Items::items().select{|i| i["parentuuid-0014"] == target["uuid"] }

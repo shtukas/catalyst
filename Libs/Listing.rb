@@ -129,6 +129,7 @@ class Listing
         items.each{|item| NxFlightData::ensureFlightData(item) }
         items = NxFlightData::flyingItemsInOrder().select{|item| Listing::listable(item) }
         items = items.reject{|item| item["mikuType"] == "Wave" and item["flight-data-27"]["calculated-start"] > Time.new.to_i }
+        items = items.reject{|item| item["mikuType"] == "NxTimeCapsule" and NxTimeCapsules::liveValue(item) >= 0 }
         items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = Prefix::addPrefix(items)
         items
@@ -140,7 +141,7 @@ class Listing
         (lambda {
             loop {
                 Listing::itemsForListing().each{|item|
-                    if item["mikuType"] == "NxCapsuledTask"  then
+                    if item["mikuType"] == "NxCore"  then
                         item = Prefix::addPrefix([item]).first
                     end
                     answer = LucilleCore::askQuestionAnswerAsString("Press to start: '#{PolyFunctions::toString(item).green}': (or `exit`) ")

@@ -105,7 +105,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            target = NxCapsuledTasks::interactivelySelectOrNull()
+            target = NxCores::interactivelySelectOrNull()
             return if target.nil?
             Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
             return
@@ -166,7 +166,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("longtask", input) then
-            item = NxCapsuledTasks::interactivelyIssueNewOrNull()
+            item = NxCores::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -176,7 +176,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            parent = NxCapsuledTasks::interactivelySelectOrNull()
+            parent = NxCores::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
         end
@@ -227,7 +227,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("cores", input) then
-            NxCapsuledTasks::program2()
+            NxCores::program2()
             return
         end
 
@@ -239,7 +239,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("longtasks", input) then
-            items = Items::mikuType("NxCapsuledTask")
+            items = Items::mikuType("NxCore")
             Operations::program2(items)
             return
         end
