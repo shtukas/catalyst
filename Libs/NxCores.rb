@@ -82,7 +82,12 @@ class NxCores
 
             puts ""
 
-            children = Operations::childrenInGlobalPositioningOrder(core)
+            [
+                PolyFunctions::naturalChildrenInGlobalPositioningOrder(core),
+                PolyFunctions::extendedChildrenInGlobalPositionOrder(core),
+                PolyFunctions::childrenForPrefix(core)
+            ]
+                .flatten
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -111,7 +116,7 @@ class NxCores
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
-                position = Operations::firstPositionInParent(core) - 1
+                position = PolyFunctions::firstPositionInParent(core) - 1
                 Items::setAttribute(todo["uuid"], "global-positioning", position)
                 next
             end
@@ -135,9 +140,9 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], Operations::childrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Items::setAttribute(i["uuid"], "global-positioning", Operations::firstPositionInParent(core) - 1)
+                    Items::setAttribute(i["uuid"], "global-positioning", PolyFunctions::firstPositionInParent(core) - 1)
                 }
                 next
             end

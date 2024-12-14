@@ -118,27 +118,9 @@ class Operations
         Operations::postposeItemToUnixtime(item, unixtime)
     end
 
-    # Operations::childrenInGlobalPositioningOrder(parent)
-    def self.childrenInGlobalPositioningOrder(parent)
-        PolyFunctions::children(parent)
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # Operations::firstPositionInParent(parent)
-    def self.firstPositionInParent(parent)
-        elements = PolyFunctions::children(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
-    end
-
-    # Operations::lastPositionInParent(parent)
-    def self.lastPositionInParent(parent)
-        elements = PolyFunctions::children(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).max
-    end
-
     # Operations::interactivelySelectPositionInParent(parent)
     def self.interactivelySelectPositionInParent(parent)
-        elements = Operations::childrenInGlobalPositioningOrder(parent)
+        elements = PolyFunctions::naturalChildrenInGlobalPositioningOrder(parent)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }

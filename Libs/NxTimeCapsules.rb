@@ -92,7 +92,7 @@ class NxTimeCapsules
 
             puts ""
 
-            children = Operations::childrenInGlobalPositioningOrder(capsule)
+            children = PolyFunctions::naturalChildrenInGlobalPositioningOrder(capsule)
 
             if capsule["targetuuid"] == NxCores::infinityuuid() then
                 children = children.take(20)

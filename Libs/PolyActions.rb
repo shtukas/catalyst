@@ -5,6 +5,12 @@ class PolyActions
 
     # function names in alphabetical order
 
+    # PolyActions::start(item)
+    def self.start(item)
+        puts "start: '#{PolyFunctions::toString(item).green}' ? "
+        NxBalls::start(item)
+    end
+
     # PolyActions::access(item)
     def self.access(item)
 
@@ -91,7 +97,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
+            if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 NxBackups::resetDescriptionDateTime(item["description"])
             end
             return
@@ -139,79 +145,95 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::perform(item)
-    def self.perform(item)
+    # PolyActions::natural(item)
+    def self.natural(item)
+
+        processWaveLike = lambda{|item|
+            if NxBalls::itemIsActive(item) then
+                if NxBalls::itemIsRunning(item) then
+                    PolyActions::done(item, true)
+                    return
+                end
+                if NxBalls::itemIsPaused(item) then
+                    NxBalls::pursue(item)
+                    return
+                end
+                raise "error 20241214-1023 at #{item["mikuType"]}"
+            else
+                PolyActions::start(item)
+                PolyActions::access(item)
+                return
+            end
+        }
+
+        processDestroyable = lambda {|item|
+            if NxBalls::itemIsActive(item) then
+                if NxBalls::itemIsRunning(item) then
+                    if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
+                        PolyActions::stop(item)
+                        PolyActions::destroy(item, true)
+                    else
+                        if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                            PolyActions::stop(item)
+                        end
+                    end
+                    return
+                end
+                if NxBalls::itemIsPaused(item) then
+                    NxBalls::pursue(item)
+                    return
+                end
+                raise "error 20241214-1023 at #{item["mikuType"]}"
+            else
+                PolyActions::start(item)
+                PolyActions::access(item)
+                return
+            end
+        }
+
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::advance(item)
+            processWaveLike.call(item)
             return
         end
 
         if item["mikuType"] == "NxBackup" then
-            PolyActions::done(item)
+            processWaveLike.call(item)
             return
         end
 
         if item["mikuType"] == "NxFloat" then
-            PolyActions::done(item)
+            processWaveLike.call(item)
             return
         end
 
         if item["mikuType"] == "NxTask" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item, true)
-            else
-                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
-                    PolyActions::stop(item)
-                end
-            end
+            processDestroyable.call(item)
             return
         end
 
         if item["mikuType"] == "NxDated" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item, true)
-            else
-                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
-                    PolyActions::stop(item)
-                end
-            end
+            processDestroyable.call(item)
             return
         end
 
         if item["mikuType"] == "NxStrat" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                PolyActions::destroy(item, true)
-            else
-                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
-                    PolyActions::stop(item)
-                end
-            end
+            processDestroyable.call(item)
             return
         end
 
         if item["mikuType"] == "NxTimeCapsule" then
-            PolyActions::access(item)
+            processWaveLike.call(item)
             return
         end
 
         if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
+            processWaveLike.call(item)
             return
         end
 
         if item["mikuType"] == "Wave" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
-                PolyActions::done(item, true)
-            end
+            processWaveLike.call(item)
             return
         end
 
@@ -283,7 +305,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            if !PolyFunctions::children(item).empty? then
+            if !PolyFunctions::naturalChildren(item).empty? then
                 puts "You cannot destroy NxCore '#{PolyFunctions::toString(item).green}' because it has children."
                 LucilleCore::pressEnterToContinue()
                 return
@@ -318,12 +340,6 @@ class PolyActions
     # PolyActions::pursue(item)
     def self.pursue(item)
         NxBalls::pursue(item)
-    end
-
-    # PolyActions::start(item)
-    def self.start(item)
-        puts "start: '#{PolyFunctions::toString(item).green}' ? "
-        NxBalls::start(item)
     end
 
     # PolyActions::addTimeToItem(item, timeInSeconds)

@@ -138,10 +138,33 @@ class PolyFunctions
         nil
     end
 
-    # PolyFunctions::children(item)
-    def self.children(item)
+    # PolyFunctions::naturalChildren(item)
+    def self.naturalChildren(item)
         Items::items()
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
+    end
+
+    # PolyFunctions::naturalChildrenInGlobalPositioningOrder(parent)
+    def self.naturalChildrenInGlobalPositioningOrder(parent)
+        PolyFunctions::naturalChildren(parent)
+            .sort_by{|item| item["global-positioning"] || 0 }
+    end
+
+    # PolyFunctions::extendedChildrenInGlobalPositionOrder(item)
+    def self.extendedChildrenInGlobalPositionOrder(item)
+        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
+            return Items::mikuType("NxTask").sort_by{|item| item["global-positioning"] || 0 }
+        end
+        if item["mikuType"] == "NxStrat" then
+            return [NxStrats::topOrNull(item["uuid"])].compact
+        end
+        if item["mikuType"] == "NxTimeCapsule" then
+            return [] if item["targetuuid"].nil?
+            target = Items::itemOrNull(item["targetuuid"])
+            return []
+            return PolyFunctions::extendedChildrenInGlobalPositionOrder(target)
+        end
+        []
     end
 
     # PolyFunctions::childrenForPrefix(item)
@@ -162,7 +185,10 @@ class PolyFunctions
         }
 
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            children = Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
+            children = Items::mikuType("NxTask")
+                        .select{|item| item["parentuuid-0014"].nil? }
+                        .first(3)
+                        .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
             return identityOrTheCapsules.call(item, children)
         end
         if item["mikuType"] == "NxStrat" then
@@ -174,14 +200,33 @@ class PolyFunctions
             target = Items::itemOrNull(item["targetuuid"])
             return [] if target.nil?
             if target["uuid"] == NxCores::infinityuuid() then # Infinity Core
-                return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
+                return Items::mikuType("NxTask")
+                        .select{|item| item["parentuuid-0014"].nil? }
+                        .first(3)
+                        .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
             end
-            return Items::items().select{|i| i["parentuuid-0014"] == target["uuid"] }
+            return Items::items()
+                    .select{|i| i["parentuuid-0014"] == target["uuid"] }
+                    .first(3)
+                    .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
         children = Items::items()
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
+
         identityOrTheCapsules.call(item, children)
+    end
+
+    # PolyFunctions::firstPositionInParent(parent)
+    def self.firstPositionInParent(parent)
+        elements = PolyFunctions::naturalChildren(parent)
+        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
+    end
+
+    # PolyFunctions::lastPositionInParent(parent)
+    def self.lastPositionInParent(parent)
+        elements = PolyFunctions::naturalChildren(parent)
+        ([0] + elements.map{|item| item["global-positioning"] || 0 }).max
     end
 
 end

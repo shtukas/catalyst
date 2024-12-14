@@ -146,7 +146,7 @@ class Listing
                     end
                     answer = LucilleCore::askQuestionAnswerAsString("Press to start: '#{PolyFunctions::toString(item).green}': (or `exit`) ")
                     return if answer == "exit"
-                    PolyActions::perform(item)
+                    PolyActions::natural(item)
                 }
             }
         }).call()
