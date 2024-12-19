@@ -148,14 +148,14 @@ class Waves
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"])
-        puts "not shown until: #{Time.at(unixtime).to_s}"
-
         NxGPS::reposition(item)
     end
 
     # Waves::program2(item)
     def self.program2(item)
         loop {
+            item = Items::itemOrNull(item["uuid"])
+            return if item.nil?
             puts Waves::toString(item)
             actions = ["update description", "update wave pattern", "perform done", "set priority", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
@@ -169,6 +169,7 @@ class Waves
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
                 Items::setAttribute(item["uuid"], "nx46", nx46)
+                NxGPS::reposition(item)
             end
             if action == "perform done" then
                 Waves::perform_done(item)

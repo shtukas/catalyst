@@ -21,9 +21,8 @@ class NxFloats
         "🐠 #{item["description"]}"
     end
 
-    # NxFloats::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxFloat")
-            .sort_by{|item| item["unixtime"] }
+    # NxFloats::next_unixtime()
+    def self.next_unixtime()
+        CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 # 6am tomorrow morning
     end
 end

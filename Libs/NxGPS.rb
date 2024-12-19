@@ -16,7 +16,9 @@ class NxGPS
         if item["mikuType"] == "Wave" then
             return Waves::next_unixtime(item)
         end
-
+        if item["mikuType"] == "NxFloat" then
+            return NxFloats::next_unixtime()
+        end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::next_unixtime(item)
         end
