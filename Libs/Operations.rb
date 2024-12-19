@@ -58,10 +58,6 @@ class Operations
                 Items::setAttribute(item["uuid"], "parentuuid-0014", nil)
             }
 
-            NxStrats::garbageCollection()
-
-            NxCores::maintenance()
-
             Operations::ensure_gps()
         end
     end
@@ -141,21 +137,13 @@ class Operations
 
     # Operations::postposeItemToUnixtime(item, unixtime)
     def self.postposeItemToUnixtime(item, unixtime)
-        # We stop, set DoNotShowUntil1, and recompute the flight data
         NxBalls::stop(item)
-        DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
         Items::setAttribute(item["uuid"], "gps-2119", unixtime)
     end
 
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
-        unixtime = DoNotShowUntil1::getUnixtimeOrNull(item["uuid"])
-        puts "Do not show until: #{unixtime}"
-        puts "Do not show until: #{Time.at(unixtime).utc.iso8601}"
-        if item["mikuType"] == "NxTimeCapsule" then
-            puts "live value: #{NxTimeCapsules::liveValue(item)}"
-        end
         LucilleCore::pressEnterToContinue()
     end
 end

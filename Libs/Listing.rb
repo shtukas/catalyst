@@ -58,7 +58,6 @@ class Listing
     # Listing::listable(item)
     def self.listable(item)
         return true if NxBalls::itemIsActive(item)
-        return false if !DoNotShowUntil1::isVisible(item)
         return false if (item["onlyOnDays"] and !item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName()))
         true
     end
@@ -67,7 +66,6 @@ class Listing
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
-        return false if !DoNotShowUntil1::isVisible(item)
         return false if TmpSkip1::isSkipped(item)
         return false if item["mikuType"] == "TxCondition"
         true
@@ -82,18 +80,18 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        gps = "[#{Time.at(item["gps-2119"]).to_s}]"
-        if Time.at(item['gps-2119']).to_s[0, 10] == CommonUtils::today() then
-            gps = gps.yellow
+        if item["gps-2119"] then
+            gps = "[#{Time.at(item["gps-2119"]).to_s}]"
+            if Time.at(item['gps-2119']).to_s[0, 10] == CommonUtils::today() then
+                gps = gps.yellow
+            end
+            if item['gps-2119'] < Time.new.to_i then
+                gps = gps.red
+            end
+        else
+            gps = ""
         end
-        if item['gps-2119'] < Time.new.to_i then
-            gps = gps.red
-        end
-        line = "#{storePrefix} #{gps} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Operations::donationSuffix(item)}"
-
-        if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
-            line = line.yellow
-        end
+        line = "#{storePrefix} #{gps} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -110,29 +108,9 @@ class Listing
     def self.itemsForListing()
         items = NxGPS::itemsInOrder().select{|item| Listing::listable(item) }
         items = items.reject{|item| item["mikuType"] == "Wave" and item["gps-2119"] > Time.new.to_i }
-        items = items.reject{|item| item["mikuType"] == "NxTimeCapsule" and NxTimeCapsules::liveValue(item) >= 0 }
         items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = Prefix::addPrefix(items)
         items
-    end
-
-    # Listing::stream()
-    def self.stream()
-        streamstart = Time.new.to_i
-        (lambda {
-            loop {
-                Listing::itemsForListing().each{|item|
-                    if item["mikuType"] == "NxCore"  then
-                        item = Prefix::addPrefix([item]).first
-                    end
-                    answer = LucilleCore::askQuestionAnswerAsString("Press to start: '#{PolyFunctions::toString(item).green}': (or `exit`) ")
-                    return if answer == "exit"
-                    PolyActions::natural(item)
-                }
-            }
-        }).call()
-        puts "Stream run time: #{((Time.new.to_i - streamstart).to_f/3600).round(2)} hours"
-        LucilleCore::pressEnterToContinue()
     end
 
     # -----------------------------------------
@@ -150,8 +128,6 @@ class Listing
             if Config::isPrimaryInstance() then
                 Items::processJournal()
                 Bank1::processJournal()
-                DoNotShowUntil1::processJournal()
-                NxTimeCapsules::maintenance()
             end
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then

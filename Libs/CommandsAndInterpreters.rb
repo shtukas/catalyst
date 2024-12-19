@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | transmute * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | transmute * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | capsules | longtasks",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | commands | edit <n> | numbers | stream",
+            "misc          : search | commands | edit <n> | numbers",
         ].join("\n")
     end
 
@@ -106,18 +106,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            cursor = item
-            Operations::interactivelyGetLines().reverse.each{|line|
-                strat = NxStrats::interactivelyIssueNewOrNull(line, cursor["uuid"])
-                cursor = strat
-            }
-            return
-        end
-
         if Interpreting::match("today", input) then
             item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
@@ -129,11 +117,6 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("stream", input) then
-            Listing::stream()
             return
         end
 
@@ -223,12 +206,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             NxCores::program2()
-            return
-        end
-
-        if Interpreting::match("capsules", input) then
-            items = Items::mikuType("NxTimeCapsule").sort_by{|item| item["gps-2119"] }
-            Operations::program2(items)
             return
         end
 

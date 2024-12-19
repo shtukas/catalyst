@@ -129,11 +129,7 @@ require_relative "Bank.rb"
 require_relative "CommonUtils.rb"
 require_relative "CatalystSearch.rb"
 require_relative "CommandsAndInterpreters.rb"
-require_relative "Constellations.rb"
 
-require_relative "DoNotShowUntil.rb"
-# DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-# DoNotShowUntil1::isVisible(item)
 require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
@@ -156,8 +152,6 @@ require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
-require_relative "NxStrats.rb"
-require_relative "NxTimeCapsules.rb"
 require_relative "NxGPS.rb"
 
 require_relative "Operations.rb"

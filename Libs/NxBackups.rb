@@ -101,9 +101,4 @@ class NxBackups
         end
         NxBackups::getLastUnixtimeForDescriptionOrZero(item["description"]) + period*86400
     end
-
-    # NxBackups::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", NxBackups::next_unixtime(item))
-    end
 end

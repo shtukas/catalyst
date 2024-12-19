@@ -22,12 +22,6 @@ class PolyFunctions
             target = Items::itemOrNull(item["donation-1205"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-                if (capsule = NxTimeCapsules::getFirstCapsuleForTargetOrNull(target["uuid"])) then
-                    accounts << {
-                        "description" => capsule["description"],
-                        "number"      => capsule["uuid"]
-                    }
-                end
             end
         end
 
@@ -76,14 +70,8 @@ class PolyFunctions
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
-        if item["mikuType"] == "NxStrat" then
-            return NxStrats::toString(item)
-        end
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)
-        end
-        if item["mikuType"] == "NxTimeCapsule" then
-            return NxTimeCapsules::toString(item)
         end
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
@@ -102,38 +90,17 @@ class PolyFunctions
 
     # PolyFunctions::parentOrNull(item)
     def self.parentOrNull(item)
-        # The parent is the thing that we send a duplicate of the time to
-
-        # NxTask        -> the Infinity Core >> identityOrTheFirstCapsuleThatPointsToIt
-        # NxStrat       -> the bottom # interestingly
-        # NxTimeCapsule -> the target # if it exists
-        # item          -> the natural parentuuid-0014 parent >> identityOrTheFirstCapsuleThatPointsToIt
-
-        identityOrTheFirstCapsuleThatPointsToIt = lambda {|item|
-            if NxTimeCapsules::getCapsulesForTarget(item["uuid"]).size > 0 then
-                return NxTimeCapsules::getFirstCapsuleForTargetOrNull(item["uuid"])
-            end
-            item
-        }
-
         if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
             # we have an NxTask without a parent
             # The parent is the Infinity Core
             parent = Items::itemOrNull(NxCores::infinityuuid()) # The Infinity Core
             return nil if parent.nil?
-            return identityOrTheFirstCapsuleThatPointsToIt.call(parent)
-        end
-        if item["mikuType"] == "NxStrat" then
-            return Items::itemOrNull(item["bottomuuid"])
-        end
-        if item["mikuType"] == "NxTimeCapsule" then
-            return nil if item["targetuuid"].nil?
-            return Items::itemOrNull(item["targetuuid"])
+            return parent
         end
         if item["parentuuid-0014"] then
             parent = Items::itemOrNull(item["parentuuid-0014"])
             return nil if parent.nil?
-            return identityOrTheFirstCapsuleThatPointsToIt.call(parent)
+            return parent
         end
         nil
     end
@@ -155,66 +122,18 @@ class PolyFunctions
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask").sort_by{|item| item["global-positioning"] || 0 }
         end
-        if item["mikuType"] == "NxStrat" then
-            return [NxStrats::topOrNull(item["uuid"])].compact
-        end
-        if item["mikuType"] == "NxTimeCapsule" then
-            return [] if item["targetuuid"].nil?
-            target = Items::itemOrNull(item["targetuuid"])
-            return []
-            return PolyFunctions::extendedChildrenInGlobalPositionOrder(target)
-        end
         []
     end
 
     # PolyFunctions::childrenForPrefix(item)
     def self.childrenForPrefix(item)
-        # Children are the things that display first
-
-        # Infinity Core -> NxTasks
-        # NxStrat       -> Top      # Interestingly
-        # If an element is the target of a capsule, then all the capsules are children
-        # Capsule       -> [the children of the target] # If the target exists
-        # Any element that the item is a parent of
-
-        identityOrTheCapsules = lambda {|item, children|
-            if NxTimeCapsules::getCapsulesForTarget(item["uuid"]).size > 0 then
-                return NxTimeCapsules::getCapsulesForTarget(item["uuid"])
-            end
-            children
-        }
-
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            children = Items::mikuType("NxTask")
+            return Items::mikuType("NxTask")
                         .select{|item| item["parentuuid-0014"].nil? }
                         .first(3)
                         .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-            return identityOrTheCapsules.call(item, children)
         end
-        if item["mikuType"] == "NxStrat" then
-            return [NxStrats::topOrNull(item["uuid"])].compact
-        end
-
-        if item["mikuType"] == "NxTimeCapsule" then
-            return [] if item["targetuuid"].nil?
-            target = Items::itemOrNull(item["targetuuid"])
-            return [] if target.nil?
-            if target["uuid"] == NxCores::infinityuuid() then # Infinity Core
-                return Items::mikuType("NxTask")
-                        .select{|item| item["parentuuid-0014"].nil? }
-                        .first(3)
-                        .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-            end
-            return Items::items()
-                    .select{|i| i["parentuuid-0014"] == target["uuid"] }
-                    .first(3)
-                    .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        children = Items::items()
-            .select{|i| i["parentuuid-0014"] == item["uuid"] }
-
-        identityOrTheCapsules.call(item, children)
+        Items::items().select{|i| i["parentuuid-0014"] == item["uuid"] }
     end
 
     # PolyFunctions::firstPositionInParent(parent)

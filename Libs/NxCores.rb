@@ -196,22 +196,8 @@ class NxCores
         }
     end
 
-    # NxCores::maintenance()
-    def self.maintenance()
-        Items::mikuType("NxCore").each{|item|
-            if NxTimeCapsules::getCapsulesForTarget(item["targetuuid"]).all?{|capsule| NxTimeCapsules::liveValue(capsule) >= 0 } then
-                Constellation::constellationWithTimeControl(item["uuid"], item["description"], 6, item["hours"], 7)
-            end
-        }
-    end
-
     # NxCores::next_unixtime(item)
     def self.next_unixtime(item)
         Time.new.to_i
-    end
-
-    # NxCores::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", NxCores::next_unixtime(item))
     end
 end

@@ -110,31 +110,26 @@ class Anniversaries
 
     # Anniversaries::toString(anniversary)
     def self.toString(anniversary)
-        difference = Date.parse(anniversary["startdate"]).to_time.to_i - Anniversaries::next_unixtime(item)
+        difference = Anniversaries::next_unixtime(anniversary) - Date.parse(anniversary["startdate"]).to_time.to_i
         difference = (lambda {
             if anniversary["repeatType"] == "weekly" then
                 return difference.to_f/(86400*7)
             end
-            if anniversary["repeatType"] == "montly" then
-                return difference.to_f/(86400*7*30.5)
+            if anniversary["repeatType"] == "monthly" then
+                return difference.to_f/(86400*30.5)
             end
             if anniversary["repeatType"] == "yearly" then
                 return difference.to_f/(86400*365.25)
             end
-            raise "(error: bac59236)"
+            raise "(error: bac59236) #{anniversary}"
         }).call()
-        "(anniversary) [#{anniversary["startdate"]}, #{date}, #{difference.to_s.ljust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
+        "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["gps-2119"]).to_s[0, 10]}, #{difference.to_s.ljust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
     # Anniversaries::next_unixtime(item)
     def self.next_unixtime(item)
         date = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
         Date.parse(date).to_time.to_i
-    end
-
-    # Anniversaries::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", Anniversaries::next_unixtime(item))
     end
 
     # ----------------------------------------------------------------------------------

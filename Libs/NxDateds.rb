@@ -59,12 +59,4 @@ class NxDateds
     def self.next_unixtime(item)
         Date.parse(item["date"]).to_time.to_i
     end
-
-    # ------------------
-    # Ops
-
-    # NxDateds::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", NxDateds::next_unixtime(item))
-    end
 end

@@ -41,15 +41,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTimeCapsule" then
-            NxTimeCapsules::program1(item)
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -68,13 +59,7 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxTimeCapsule" then
-            NxGPS::reposition(item)
-            return
-        end
-
         if item["mikuType"] == "NxFloat" then
-            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             NxGPS::reposition(item)
             return
         end
@@ -122,14 +107,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStrat" then
-            return if NxStrats::topOrNull(item["uuid"])
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::perform_done(item)
@@ -145,7 +122,13 @@ class PolyActions
     def self.natural(item)
 
         processWaveLike = lambda{|item|
-            if NxBalls::itemIsActive(item) then
+            if !NxBalls::itemIsActive(item) then
+                PolyActions::start(item)
+                PolyActions::access(item)
+                if !LucilleCore::askQuestionAnswerAsBoolean("continue ? ", false) then
+                    PolyActions::done(item, true)
+                end
+            else
                 if NxBalls::itemIsRunning(item) then
                     PolyActions::done(item, true)
                     return
@@ -155,15 +138,18 @@ class PolyActions
                     return
                 end
                 raise "error 20241214-1023 at #{item["mikuType"]}"
-            else
-                PolyActions::start(item)
-                PolyActions::access(item)
-                return
             end
         }
 
         processDestroyable = lambda {|item|
-            if NxBalls::itemIsActive(item) then
+            if !NxBalls::itemIsActive(item) then
+                PolyActions::start(item)
+                PolyActions::access(item)
+                if !LucilleCore::askQuestionAnswerAsBoolean("done and destroy ? ", false) then
+                    PolyActions::done(item, true)
+                    PolyActions::destroy(item, true)
+                end
+            else
                 if NxBalls::itemIsRunning(item) then
                     if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
                         PolyActions::stop(item)
@@ -180,13 +166,8 @@ class PolyActions
                     return
                 end
                 raise "error 20241214-1023 at #{item["mikuType"]}"
-            else
-                PolyActions::start(item)
-                PolyActions::access(item)
-                return
             end
         }
-
 
         if item["mikuType"] == "NxAnniversary" then
             processWaveLike.call(item)
@@ -210,16 +191,6 @@ class PolyActions
 
         if item["mikuType"] == "NxDated" then
             processDestroyable.call(item)
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            processDestroyable.call(item)
-            return
-        end
-
-        if item["mikuType"] == "NxTimeCapsule" then
-            processWaveLike.call(item)
             return
         end
 
@@ -274,19 +245,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTimeCapsule" then
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxStrat" then
-            return if NxStrats::topOrNull(item["uuid"])
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end
