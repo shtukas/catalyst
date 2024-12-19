@@ -209,9 +209,4 @@ class NxCores
     def self.next_unixtime(item)
         Time.new.to_i
     end
-
-    # NxCores::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", NxCores::next_unixtime(item))
-    end
 end

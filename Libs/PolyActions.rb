@@ -74,7 +74,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFloat" then
-            DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
             NxGPS::reposition(item)
             return
         end
@@ -145,7 +144,13 @@ class PolyActions
     def self.natural(item)
 
         processWaveLike = lambda{|item|
-            if NxBalls::itemIsActive(item) then
+            if !NxBalls::itemIsActive(item) then
+                PolyActions::start(item)
+                PolyActions::access(item)
+                if !LucilleCore::askQuestionAnswerAsBoolean("continue ? ", false) then
+                    PolyActions::done(item, true)
+                end
+            else
                 if NxBalls::itemIsRunning(item) then
                     PolyActions::done(item, true)
                     return
@@ -155,15 +160,18 @@ class PolyActions
                     return
                 end
                 raise "error 20241214-1023 at #{item["mikuType"]}"
-            else
-                PolyActions::start(item)
-                PolyActions::access(item)
-                return
             end
         }
 
         processDestroyable = lambda {|item|
-            if NxBalls::itemIsActive(item) then
+            if !NxBalls::itemIsActive(item) then
+                PolyActions::start(item)
+                PolyActions::access(item)
+                if !LucilleCore::askQuestionAnswerAsBoolean("done and destroy ? ", false) then
+                    PolyActions::done(item, true)
+                    PolyActions::destroy(item, true)
+                end
+            else
                 if NxBalls::itemIsRunning(item) then
                     if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
                         PolyActions::stop(item)
@@ -180,13 +188,8 @@ class PolyActions
                     return
                 end
                 raise "error 20241214-1023 at #{item["mikuType"]}"
-            else
-                PolyActions::start(item)
-                PolyActions::access(item)
-                return
             end
         }
-
 
         if item["mikuType"] == "NxAnniversary" then
             processWaveLike.call(item)

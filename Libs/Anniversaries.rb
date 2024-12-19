@@ -132,11 +132,6 @@ class Anniversaries
         Date.parse(date).to_time.to_i
     end
 
-    # Anniversaries::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", Anniversaries::next_unixtime(item))
-    end
-
     # ----------------------------------------------------------------------------------
     # Operations
 

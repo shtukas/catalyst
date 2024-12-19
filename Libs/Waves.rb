@@ -76,7 +76,6 @@ class Waves
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "nx46", nx46)
         Items::setAttribute(uuid, "lastDoneUnixtime", 0)
-        Items::setAttribute(uuid, "lastDoneDateTime", "1970-01-01T00:00:00Z")
         Items::setAttribute(uuid, "interruption", interruption)
         Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
         Items::itemOrNull(uuid)
@@ -144,27 +143,18 @@ class Waves
     # -------------------------------------------------------------------------
     # Operations
 
-    # Waves::gps_reposition(item)
-    def self.gps_reposition(item)
-        Items::setAttribute(item["uuid"], "gps-2119", Waves::next_unixtime(item))
-    end
-
     # Waves::perform_done(item)
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        Items::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
-
-        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"])
-        puts "not shown until: #{Time.at(unixtime).to_s}"
-        DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-
-        Waves::gps_reposition(item)
+        NxGPS::reposition(item)
     end
 
     # Waves::program2(item)
     def self.program2(item)
         loop {
+            item = Items::itemOrNull(item["uuid"])
+            return if item.nil?
             puts Waves::toString(item)
             actions = ["update description", "update wave pattern", "perform done", "set priority", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
@@ -178,6 +168,7 @@ class Waves
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
                 Items::setAttribute(item["uuid"], "nx46", nx46)
+                NxGPS::reposition(item)
             end
             if action == "perform done" then
                 Waves::perform_done(item)
@@ -197,10 +188,7 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = Items::mikuType("Wave")
-        i1, i2 = items.partition{|item| DoNotShowUntil1::isVisible(item) }
-        i1.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] } + i2.sort{|w1, w2| w1["lastDoneDateTime"] <=> w2["lastDoneDateTime"] }
-        items = i1 + i2
+        items = Items::mikuType("Wave").sort_by{|wave| w1["gps-2119"] }
         Operations::program2(items)
     end
 end
