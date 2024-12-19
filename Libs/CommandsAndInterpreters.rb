@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | transmute * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | longtasks",
@@ -46,15 +46,6 @@ class CommandsAndInterpreters
             return if item.nil?
             Transmutation::transmute2(item)
             NxGPS::reposition(item)
-            return
-        end
-
-        if Interpreting::match("ondays *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            days, _ = CommonUtils::interactivelySelectSomeDaysOfTheWeekLowercaseEnglish()
-            Items::setAttribute(item["uuid"], "onlyOnDays", days)
             return
         end
 

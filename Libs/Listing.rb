@@ -55,13 +55,6 @@ class Listing
     # -----------------------------------------
     # Data
 
-    # Listing::listable(item)
-    def self.listable(item)
-        return true if NxBalls::itemIsActive(item)
-        return false if (item["onlyOnDays"] and !item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName()))
-        true
-    end
-
     # Listing::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
@@ -81,7 +74,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         if item["gps-2119"] then
-            gps = "[#{Time.at(item["gps-2119"]).to_s}]"
+            gps = " [#{Time.at(item["gps-2119"]).to_s}]"
             if Time.at(item['gps-2119']).to_s[0, 10] == CommonUtils::today() then
                 gps = gps.yellow
             end
@@ -91,7 +84,7 @@ class Listing
         else
             gps = ""
         end
-        line = "#{storePrefix} #{gps} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}"
+        line = "#{storePrefix}#{gps} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -106,8 +99,10 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = NxGPS::itemsInOrder().select{|item| Listing::listable(item) }
-        items = items.reject{|item| item["mikuType"] == "Wave" and item["gps-2119"] > Time.new.to_i }
+        items = NxGPS::itemsInOrder()
+        items = items.select{|item| item["gps-2119"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
+        i1s, i2s = items.partition{|item| item['gps-2119'] < Time.new.to_i  }
+        items = i1s + NxCores::listingItems() + i2s
         items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = Prefix::addPrefix(items)
         items
