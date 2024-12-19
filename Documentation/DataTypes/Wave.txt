@@ -13,8 +13,6 @@ Wave :
 
     "interruption"     : null or boolean, indicates if the item is interruption (priority)
 
-    "rtime-32"         : unixtime
-
 Nx46 
 {
     "type"  : "sticky"

@@ -1,6 +1,9 @@
 
 class Anniversaries
 
+    # ----------------------------------------------------------------------------------
+    # Time Manipulations
+
     # Anniversaries::dateIsCorrect(date)
     def self.dateIsCorrect(date)
         begin
@@ -28,55 +31,48 @@ class Anniversaries
         date
     end
 
-    # Anniversaries::computeNextCelebrationDateOrdinal(startdate: String, repeatType: String, lastCelebrationDate: String) # [ date: String, ordinal: Int ]
-    def self.computeNextCelebrationDateOrdinal(startdate, repeatType, lastCelebrationDate)
-        cursordate = Date.parse(startdate)
-        cursorOrdinal = 0
-        if repeatType == "weekly" then
-            loop {
-                if cursordate.to_s > lastCelebrationDate then
-                    return [cursordate.to_s, cursorOrdinal]
-                end
-                cursordate = cursordate + 7
-                cursorOrdinal = cursorOrdinal + 1
-            }
+    # Anniversaries::datePlusNYearAnniversaryStyle(date: String, shiftInYears: Integer)
+    def self.datePlusNYearAnniversaryStyle(date, shiftInYears)
+        dateElements = [date[0, 4].to_i+shiftInYears, date[5, 2].to_i, date[8, 2].to_i]
+
+        date = "#{dateElements[0]}-#{dateElements[1].to_s.rjust(2, "0")}-#{dateElements[2].to_s.rjust(2, "0")}"
+
+        while !Anniversaries::dateIsCorrect(date) do
+            date = "#{date[0, 4]}-#{date[5, 2]}-#{(date[8, 2].to_i-1).to_s.rjust(2, "0")}"
         end
-        if repeatType == "monthly" then
-            loop {
-                if cursordate.to_s > lastCelebrationDate then
-                    return [cursordate.to_s, cursorOrdinal]
-                end
-                cursorOrdinal = cursorOrdinal + 1
-                cursordate = Date.parse(Anniversaries::datePlusNMonthAnniversaryStyle(startdate, cursorOrdinal))
-            }
-        end
-        if repeatType == "yearly" then
-            loop {
-                if cursordate.to_s > lastCelebrationDate then
-                    return [cursordate.to_s, cursorOrdinal]
-                end
-                cursorOrdinal = cursorOrdinal + 1
-                cursordate = "#{startdate[0, 4].to_i+cursorOrdinal}-#{startdate[5, 2]}-#{startdate[8, 2]}"
-                while !Anniversaries::dateIsCorrect(cursordate) do
-                    cursordate = "#{cursordate[0, 4]}-#{cursordate[5, 2]}-#{(cursordate[8, 2].to_i-1).to_s.rjust(2, "0")}"
-                end
-            }
-        end
+        date
     end
 
-    # Anniversaries::probeTests()
-    def self.runTests()
-        raise "72118532-21b3-4897-a6d1-7c21458b4624" if Anniversaries::datePlusNMonthAnniversaryStyle("2020-11-25", 1) != "2020-12-25"
-        raise "279b1ee3-728e-4883-9a4d-abf3b9a494d7" if Anniversaries::datePlusNMonthAnniversaryStyle("2020-12-25", 1) != "2021-01-25"
-        raise "5507b102-2651-4b57-ba7b-7e6c217bddba" if Anniversaries::datePlusNMonthAnniversaryStyle("2021-01-01", 1) != "2021-02-01"
-        raise "38e0536a-7943-4649-a002-6f65e9d88c0a" if Anniversaries::datePlusNMonthAnniversaryStyle("2021-01-31", 1) != "2021-02-28"
-        raise "cd8feeec-54bd-4a63-be2c-e279c77390ba" if Anniversaries::datePlusNMonthAnniversaryStyle("2021-01-31", 2) != "2021-03-31"
-        raise "d82394e7-708d-49a8-9d65-792a77093ce5" if Anniversaries::datePlusNMonthAnniversaryStyle("2021-01-31", 3) != "2021-04-30"
-        raise "8bb58535-b435-4bbe-9ded-76cf5d1ce6ad" if Anniversaries::datePlusNMonthAnniversaryStyle("2024-01-31", 1) != "2024-02-29"
-        raise "53ac9950-7df9-481d-a3cf-2ec07f566f89" if Anniversaries::datePlusNMonthAnniversaryStyle("2024-01-31", 2) != "2024-03-31"
-
-        raise "ff1f70da-1342-4a20-91cb-f5a86f66a44c" if Anniversaries::computeNextCelebrationDateOrdinal("2021-02-28", "yearly", "2022-01-01").join(", ") != "2022-02-28, 1"
-        raise "ff1f70da-1342-4a20-91cb-f5a86f66a44c" if Anniversaries::computeNextCelebrationDateOrdinal("2024-02-29", "yearly", "2025-01-01").join(", ") != "2025-02-28, 1"
+    # Anniversaries::computeNextCelebrationDate(startdate: String, repeatType: String) # date
+    def self.computeNextCelebrationDate(startdate, repeatType)
+        date = Date.parse(startdate)
+        today = Date.today()
+        if repeatType == "weekly" then
+            while date <= today do
+                date = date + 7
+            end 
+            return date.to_s
+        end
+        if repeatType == "monthly" then
+            counter = 0 
+            loop {
+                counter += 1
+                xdate = Anniversaries::datePlusNMonthAnniversaryStyle(date.to_s, counter)
+                if today < Date.parse(xdate) then
+                    return xdate
+                end
+            }
+         end
+        if repeatType == "yearly" then
+            counter = 0 
+            loop {
+                counter += 1
+                xdate = Anniversaries::datePlusNYearAnniversaryStyle(date.to_s, counter)
+                if today < Date.parse(xdate) then
+                    return xdate
+                end
+            }
+        end
     end
 
     # ----------------------------------------------------------------------------------
@@ -100,11 +96,6 @@ class Anniversaries
             return nil
         end
 
-        lastCelebrationDate = LucilleCore::askQuestionAnswerAsString("lastCelebrationDate (default to today): ")
-        if lastCelebrationDate == "" then
-            lastCelebrationDate = CommonUtils::today()
-        end
-
         uuid = SecureRandom.uuid
 
         Items::itemInit(uuid, "NxAnniversary")
@@ -113,40 +104,41 @@ class Anniversaries
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "startdate", startdate)
         Items::setAttribute(uuid, "repeatType", repeatType)
-        Items::setAttribute(uuid, "lastCelebrationDate", lastCelebrationDate)
 
         Items::itemOrNull(uuid)
     end
 
-    # Anniversaries::nextDateOrdinal(anniversary) # [ date: String, ordinal: Int ]
-    def self.nextDateOrdinal(anniversary)
-        Anniversaries::computeNextCelebrationDateOrdinal(anniversary["startdate"], anniversary["repeatType"], anniversary["lastCelebrationDate"] || "2001-01-01")
-    end
-
     # Anniversaries::toString(anniversary)
     def self.toString(anniversary)
-        date, n = Anniversaries::nextDateOrdinal(anniversary)
-        "(anniversary) [#{anniversary["startdate"]}, #{date}, #{n.to_s.ljust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
+        difference = Date.parse(anniversary["startdate"]).to_time.to_i - Anniversaries::next_unixtime(item)
+        difference = (lambda {
+            if anniversary["repeatType"] == "weekly" then
+                return difference.to_f/(86400*7)
+            end
+            if anniversary["repeatType"] == "montly" then
+                return difference.to_f/(86400*7*30.5)
+            end
+            if anniversary["repeatType"] == "yearly" then
+                return difference.to_f/(86400*365.25)
+            end
+            raise "(error: bac59236)"
+        }).call()
+        "(anniversary) [#{anniversary["startdate"]}, #{date}, #{difference.to_s.ljust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
-    # Anniversaries::isOpenToAcknowledgement(anniversary)
-    def self.isOpenToAcknowledgement(anniversary)
-        Anniversaries::nextDateOrdinal(anniversary)[0] <= CommonUtils::today() 
+    # Anniversaries::next_unixtime(item)
+    def self.next_unixtime(item)
+        date = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
+        Date.parse(date).to_time.to_i
     end
 
-    # Anniversaries::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxAnniversary")
-            .select{|anniversary| Anniversaries::isOpenToAcknowledgement(anniversary) }
+    # Anniversaries::gps_reposition(item)
+    def self.gps_reposition(item)
+        Items::setAttribute(item["uuid"], "gps-2119", Anniversaries::next_unixtime(item))
     end
 
     # ----------------------------------------------------------------------------------
     # Operations
-
-    # Anniversaries::advance(anniversary)
-    def self.advance(anniversary)
-        Items::setAttribute(anniversary["uuid"], "lastCelebrationDate", Time.new.to_s[0, 10])
-    end
 
     # Anniversaries::program1(item)
     def self.program1(item)
@@ -177,8 +169,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Items::mikuType("NxAnniversary")
-                              .sort{|i1, i2| Anniversaries::nextDateOrdinal(i1)[0] <=> Anniversaries::nextDateOrdinal(i2)[0] }
+            anniversaries = Items::mikuType("NxAnniversary").sort_by{|item| Anniversaries::next_unixtime(item) }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?
             Anniversaries::program1(anniversary)

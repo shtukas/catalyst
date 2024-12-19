@@ -9,6 +9,3 @@ NxAnniversary
 
     - "startdate"           : Date # YYYY-MM-DD
     - "repeatType"          : "weekly" | "monthly" | "yearly"
-    - "lastCelebrationDate" : Date
-
-    - "doNotShowUntil"      : Unixtime

@@ -157,8 +157,8 @@ require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxStrats.rb"
-require_relative "NxFlightData.rb"
 require_relative "NxTimeCapsules.rb"
+require_relative "NxGPS.rb"
 
 require_relative "Operations.rb"
 

@@ -15,7 +15,6 @@ class PolyActions
     def self.access(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::advance(item)
             return
         end
 
@@ -62,10 +61,6 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        if item["mikuType"] == "NxTimeCapsule" then
-            return
-        end
-        Items::setAttribute(item["uuid"], "flight-data-27", nil)
     end
 
     # PolyActions::done(item, useTheForce = false)
@@ -74,13 +69,13 @@ class PolyActions
         NxBalls::stop(item)
 
         if item["mikuType"] == "NxTimeCapsule" then
+            NxGPS::reposition(item)
             return
         end
 
-        Items::setAttribute(item["uuid"], "flight-data-27", nil)
-
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil1::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()+3600*6)
+            NxGPS::reposition(item)
             return
         end
 
@@ -98,13 +93,14 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                NxBackups::resetDescriptionDateTime(item["description"])
+                NxBackups::resetDoneDateTime(item["description"])
+                NxGPS::reposition(item)
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            Anniversaries::advance(item)
+            Anniversaries::gps_reposition(item)
             return
         end
 
@@ -136,7 +132,7 @@ class PolyActions
 
         if item["mikuType"] == "Wave" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Waves::advance(item)
+                Waves::perform_done(item)
             end
             return
         end

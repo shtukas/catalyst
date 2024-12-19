@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | >> * (transmutation) | destroy *",
+            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | ondays * | pile * | transmute * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | capsules | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | speed | commands | edit <n> | numbers | stream | reschedule all flight data",
+            "misc          : search | commands | edit <n> | numbers | stream",
         ].join("\n")
     end
 
@@ -40,17 +40,12 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("reschedule all flight data", input) then
-            NxFlightData::rescheduleAllLateFlightData()
-            return
-        end
-
-        if Interpreting::match(">> *", input) then
+        if Interpreting::match("transmute *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            Items::setAttribute(item["uuid"], "flight-data-27", nil)
+            NxGPS::reposition(item)
             return
         end
 
@@ -232,8 +227,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("capsules", input) then
-            items = Items::mikuType("NxTimeCapsule")
-                        .sort_by{|item| item["flight-data-27"]["calculated-start"] }
+            items = Items::mikuType("NxTimeCapsule").sort_by{|item| item["gps-2119"] }
             Operations::program2(items)
             return
         end
@@ -391,7 +385,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
-            Items::setAttribute(item["uuid"], "flight-data-27", nil)
+            NxGPS::reposition(item)
             return
         end
 
@@ -427,11 +421,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("search", input) then
             CatalystSearch::run()
-            return
-        end
-
-        if Interpreting::match("speed", input) then
-            Listing::speedTest()
             return
         end
 

@@ -82,7 +82,14 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix}#{NxFlightData::flightStartToString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Operations::donationSuffix(item)}"
+        gps = "[#{Time.at(item["gps-2119"]).to_s}]"
+        if Time.at(item['gps-2119']).to_s[0, 10] == CommonUtils::today() then
+            gps = gps.yellow
+        end
+        if item['gps-2119'] < Time.new.to_i then
+            gps = gps.red
+        end
+        line = "#{storePrefix} #{gps} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil1::suffixString(item)}#{Operations::donationSuffix(item)}"
 
         if !DoNotShowUntil1::isVisible(item) and !NxBalls::itemIsActive(item) then
             line = line.yellow
@@ -99,36 +106,10 @@ class Listing
         line
     end
 
-    # Listing::items()
-    def self.items()
-        [
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxFloats::listingItems(),
-            DropBox::items(),
-            #Desktop::listingItems(),
-            NxBackups::listingItems(),
-            NxDateds::listingItems(),
-            Waves::listingItemsNotInterruption(),
-            NxTimeCapsules::listingItems()
-        ]
-            .flatten
-            .select{|item| Listing::listable(item) }
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-    end
-
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = Listing::items()
-        items.each{|item| NxFlightData::ensureFlightData(item) }
-        items = NxFlightData::flyingItemsInOrder().select{|item| Listing::listable(item) }
-        items = items.reject{|item| item["mikuType"] == "Wave" and item["flight-data-27"]["calculated-start"] > Time.new.to_i }
+        items = NxGPS::itemsInOrder().select{|item| Listing::listable(item) }
+        items = items.reject{|item| item["mikuType"] == "Wave" and item["gps-2119"] > Time.new.to_i }
         items = items.reject{|item| item["mikuType"] == "NxTimeCapsule" and NxTimeCapsules::liveValue(item) >= 0 }
         items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = Prefix::addPrefix(items)
@@ -156,38 +137,6 @@ class Listing
 
     # -----------------------------------------
     # Ops
-
-    # Listing::speedTest()
-    def self.speedTest()
-
-        spot = Speedometer.new()
-
-        spot.start_contest()
-        spot.contest_entry("NxBalls::activeItems()", lambda{ NxBalls::activeItems() })
-        spot.contest_entry("DropBox::items()", lambda { DropBox::items() })
-        spot.contest_entry("Desktop::listingItems()", lambda { Desktop::listingItems() })
-        spot.contest_entry("Anniversaries::listingItems()", lambda { Anniversaries::listingItems() })
-        spot.contest_entry("Waves::listingItemsInterruption()", lambda{ Waves::listingItemsInterruption() })
-        spot.contest_entry("NxTasks::listingItems()", lambda{ NxTasks::listingItems() })
-        spot.contest_entry("NxBackups::listingItems()", lambda{ NxBackups::listingItems() })
-        spot.contest_entry("NxFloats::listingItems()", lambda{ NxFloats::listingItems() })
-        spot.contest_entry("Waves::listingItemsNotInterruption()", lambda{ Waves::listingItemsNotInterruption() })
-        spot.end_contest()
-
-        puts ""
-
-        spot.start_unit("Listing::items()")
-        Listing::items()
-        spot.end_unit()
-
-        spot.start_unit("Listing::items().first(100) >> Listing::toString2(store, item)")
-        store = ItemStore.new()
-        items = Listing::items().first(100)
-        items.each {|item| Listing::toString2(store, item) }
-        spot.end_unit()
-
-        LucilleCore::pressEnterToContinue()
-    end
 
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)

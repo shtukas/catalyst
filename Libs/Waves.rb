@@ -63,6 +63,28 @@ class Waves
         raise "e45c4622-4501-40e1-a44e-2948544df256"
     end
 
+    # Waves::issueNewWaveInteractivelyOrNull(uuid)
+    def self.issueNewWaveInteractivelyOrNull(uuid)
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
+        nx46 = Waves::makeNx46InteractivelyOrNull()
+        return nil if nx46.nil?
+        Items::itemInit(uuid, "Wave")
+        interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "nx46", nx46)
+        Items::setAttribute(uuid, "lastDoneUnixtime", 0)
+        Items::setAttribute(uuid, "lastDoneDateTime", "1970-01-01T00:00:00Z")
+        Items::setAttribute(uuid, "interruption", interruption)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
+        Items::itemOrNull(uuid)
+    end
+
+    # -------------------------------------------------------------------------
+    # Data
+
     # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46)
     def self.nx46ToNextDisplayUnixtime(nx46)
         if nx46["type"] == 'sticky' then
@@ -107,28 +129,6 @@ class Waves
         "#{item["type"]}: #{item["value"]}"
     end
 
-    # Waves::issueNewWaveInteractivelyOrNull(uuid)
-    def self.issueNewWaveInteractivelyOrNull(uuid)
-        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return nil if description == ""
-        nx46 = Waves::makeNx46InteractivelyOrNull()
-        return nil if nx46.nil?
-        Items::itemInit(uuid, "Wave")
-        interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "nx46", nx46)
-        Items::setAttribute(uuid, "lastDoneUnixtime", 0)
-        Items::setAttribute(uuid, "lastDoneDateTime", "1970-01-01T00:00:00Z")
-        Items::setAttribute(uuid, "interruption", interruption)
-        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
-        Items::itemOrNull(uuid)
-    end
-
-    # -------------------------------------------------------------------------
-    # Data (1)
-
     # Waves::toString(item)
     def self.toString(item)
         ago = "done: #{((Time.new.to_i - item["lastDoneUnixtime"]).to_f/86400).round(2)} days ago"
@@ -136,58 +136,30 @@ class Waves
         "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])}) (#{ago})#{interruption}"
     end
 
-    # -------------------------------------------------------------------------
-    # Data (2)
-
-    # Waves::listingItems()
-    def self.listingItems()
-        isListingItem = lambda { |item|
-            b1 = Listing::listable(item)
-            b2 = item["onlyOnDays"].nil? or item["onlyOnDays"].include?(CommonUtils::todayAsLowercaseEnglishWeekDayName())
-            b1 and b2
-        }
-        Items::mikuType("Wave")
-            .select{|item| isListingItem.call(item) }
-            .map{|item|
-                if item["rtime-32"].nil? then
-                    rtime = Time.new.utc.iso8601
-                    Items::setAttribute(item["uuid"], "rtime-32", rtime)
-                    item["rtime-32"] = rtime
-                end
-                item
-            }
-            .sort{|w1, w2| w1["rtime-32"] <=> w2["rtime-32"] }
-    end
-
-    # Waves::listingItemsInterruption()
-    def self.listingItemsInterruption()
-        Waves::listingItems()
-            .select{|item| item["interruption"] }
-    end
-
-    # Waves::listingItemsNotInterruption()
-    def self.listingItemsNotInterruption()
-        Waves::listingItems()
-            .select{|item| !item["interruption"] }
+    # Waves::next_unixtime(item)
+    def self.next_unixtime(item)
+        Waves::nx46ToNextDisplayUnixtime(item["nx46"])
     end
 
     # -------------------------------------------------------------------------
     # Operations
 
-    # Waves::advance(item)
-    def self.advance(item)
-        # Reset: rtime-32
-        Items::setAttribute(item["uuid"], "rtime-32", nil)
+    # Waves::gps_reposition(item)
+    def self.gps_reposition(item)
+        Items::setAttribute(item["uuid"], "gps-2119", Waves::next_unixtime(item))
+    end
 
-        # Marking the item as being done 
+    # Waves::perform_done(item)
+    def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         Items::setAttribute(item["uuid"], "lastDoneDateTime", Time.now.utc.iso8601)
 
-        # We control display using DoNotShowUntil
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"])
         puts "not shown until: #{Time.at(unixtime).to_s}"
         DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
+
+        Waves::gps_reposition(item)
     end
 
     # Waves::program2(item)
@@ -208,7 +180,7 @@ class Waves
                 Items::setAttribute(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
-                Waves::advance(item)
+                Waves::perform_done(item)
                 return
             end
             if action == "set priority" then

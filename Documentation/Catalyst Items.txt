@@ -14,4 +14,6 @@ Cross types conventions (all optional):
     - onlyOnDays         : Array[week days names lowercase english]
                            Indicates on which days the wave can show up
     - parentuuid-0014    : uuid
-    - flight-data-27     : NxFlightData
+
+    - gps-2119           : Float # although listed here, it's not really optional.
+                                 # we intend for each item ti have one.

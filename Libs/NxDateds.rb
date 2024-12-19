@@ -55,10 +55,16 @@ class NxDateds
         "🗓️  [#{item["date"][0, 10]}] #{item["description"]}"
     end
 
-    # NxDateds::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxDated")
-            .select{|item| item["date"][0, 10] <= CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
+    # NxDateds::next_unixtime(item)
+    def self.next_unixtime(item)
+        Date.parse(item["date"]).to_time.to_i
+    end
+
+    # ------------------
+    # Ops
+
+    # NxDateds::gps_reposition(item)
+    def self.gps_reposition(item)
+        Items::setAttribute(item["uuid"], "gps-2119", NxDateds::next_unixtime(item))
     end
 end

@@ -1,15 +1,15 @@
 
 class NxTimeCapsules
 
-    # NxTimeCapsules::issue(description, value, flightdata, targetuuid)
-    def self.issue(description, value, flightdata, targetuuid)
+    # NxTimeCapsules::issue(description, value, gps, targetuuid)
+    def self.issue(description, value, gps, targetuuid)
         uuid = SecureRandom.uuid
         Items::itemInit(uuid, "NxTimeCapsule")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "value", value)
-        Items::setAttribute(uuid, "flight-data-27", flightdata)
+        Items::setAttribute(uuid, "gps-2119", gps)
         Items::setAttribute(uuid, "targetuuid", targetuuid)
         Items::itemOrNull(uuid)
     end
@@ -46,7 +46,7 @@ class NxTimeCapsules
         targetuuids.each{|targetuuid|
             capsules = Items::mikuType("NxTimeCapsule")
                         .select{|item| item["targetuuid"] == targetuuid }
-                        .sort_by{|item| item["flight-data-27"]["calculated-start"] }
+                        .sort_by{|item| item["gps-2119"] }
             firstPositive = capsules.select{|item| NxTimeCapsules::liveValue(item) >= 0 }.first
             firstNegative = capsules.select{|item| NxTimeCapsules::liveValue(item) < 0 }.first
             next if firstPositive.nil?
@@ -70,7 +70,7 @@ class NxTimeCapsules
     # NxTimeCapsules::getFirstCapsuleForTargetOrNull(targetuuid)
     def self.getFirstCapsuleForTargetOrNull(targetuuid)
         NxTimeCapsules::getCapsulesForTarget(targetuuid)
-            .sort_by{|item| item["flight-data-27"]["calculated-start"] }
+            .sort_by{|item| item["gps-2119"] }
             .first
     end
 

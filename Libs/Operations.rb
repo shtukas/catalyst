@@ -61,7 +61,18 @@ class Operations
             NxStrats::garbageCollection()
 
             NxCores::maintenance()
+
+            Operations::ensure_gps()
         end
+    end
+
+    # Operations::ensure_gps()
+    def self.ensure_gps()
+        Items::items().each{|item|
+            next if item["mikuType"] == "NxTask"
+            next if item["gps-2119"]
+            NxGPS::reposition(item)
+        }
     end
 
     # Operations::selectTodoTextFileLocationOrNull(todotextfile)
@@ -102,20 +113,10 @@ class Operations
     # Operations::interactivelyPush(item)
     def self.interactivelyPush(item)
         puts "push '#{PolyFunctions::toString(item).green}'"
-
-        if item["mikuType"] == "NxTimeCapsule" then
-            options = ["next available flight slot (default)", "manual"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-            if option == "next available flight slot (default)" or option.nil? then
-                NxFlightData::resheduleItemAtTheEnd(item)
-                return
-            end
-        end
-
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        Operations::postposeItemToUnixtime(item, unixtime)
+        Items::setAttribute(item["uuid"], "gps-2119", unixtime)
     end
 
     # Operations::interactivelySelectPositionInParent(parent)
@@ -143,10 +144,7 @@ class Operations
         # We stop, set DoNotShowUntil1, and recompute the flight data
         NxBalls::stop(item)
         DoNotShowUntil1::setUnixtime(item["uuid"], unixtime)
-        if item["flight-data-27"] then
-            flightdata = NxFlightData::updateEstimatedStart(item["flight-data-27"], unixtime)
-            Items::setAttribute(item["uuid"], "flight-data-27", flightdata)
-        end
+        Items::setAttribute(item["uuid"], "gps-2119", unixtime)
     end
 
     # Operations::expose(item)

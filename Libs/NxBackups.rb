@@ -74,8 +74,8 @@ class NxBackups
         0
     end
 
-    # NxBackups::resetDescriptionDateTime(description)
-    def self.resetDescriptionDateTime(description)
+    # NxBackups::resetDoneDateTime(description)
+    def self.resetDoneDateTime(description)
         folderpath = "#{Config::pathToCatalystDataRepository()}/backups-lastest-times"
         LucilleCore::locationsAtFolder(folderpath).each{|location|
             if File.basename(location).include?(description) then
@@ -86,31 +86,24 @@ class NxBackups
         File.open(filepath, "w"){|f| f.puts(Time.new.utc.iso8601) }
     end
 
-    # NxBackups::dueTimeOrNull(item)
-    def self.dueTimeOrNull(item)
-        period = NxBackups::getPeriodForDescriptionOrNull(item["description"])
-        return nil if period.nil?
-        NxBackups::getLastUnixtimeForDescriptionOrZero(item["description"]) + period*86400
-    end
-
-    # NxBackups::itemIsDue(item)
-    def self.itemIsDue(item)
-        period = NxBackups::dueTimeOrNull(item)
-        return false if period.nil?
-        period <= Time.new.to_i
-    end
-
-    # NxBackups::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxBackup").select{|item| NxBackups::itemIsDue(item) }
-    end
-
     # NxBackups::toString(item)
     def self.toString(item)
         period = NxBackups::getPeriodForDescriptionOrNull(item["description"])
         return "💾 #{item["description"]}" if period.nil?
-        dueTime = NxBackups::dueTimeOrNull(item)
-        return "💾 #{item["description"]}" if dueTime.nil?
-        "💾 #{item["description"]} (every #{period} days; due: #{Time.at(dueTime).utc.iso8601.gsub("T", " ")}, #{ ((Time.new.to_i-dueTime).to_f/86400).round(2) } days ago)"
+        "💾 #{item["description"]} (every #{period} days)"
+    end
+
+    # NxBackups::next_unixtime(item)
+    def self.next_unixtime(item)
+        period = NxBackups::getPeriodForDescriptionOrNull(item["description"])
+        if period.nil? then
+            raise "(error: 790b7e91-3914) could not determined the period for backup item: #{item["description"]}"
+        end
+        NxBackups::getLastUnixtimeForDescriptionOrZero(item["description"]) + period*86400
+    end
+
+    # NxBackups::gps_reposition(item)
+    def self.gps_reposition(item)
+        Items::setAttribute(item["uuid"], "gps-2119", NxBackups::next_unixtime(item))
     end
 end
