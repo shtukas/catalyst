@@ -36,7 +36,7 @@ class NxGPS
     # NxGPS::reposition(item)
     def self.reposition(item)
         unixtime = NxGPS::next_unixtime(item)
-        puts "repositioning '#{PolyFunctions::toString(item)}' at #{Time.at(unixtime).to_s}"
+        puts "repositioning '#{PolyFunctions::toString(item)}' at #{Time.at(unixtime).to_s.green}"
         Items::setAttribute(item["uuid"], "gps-2119", unixtime)
     end
 end
