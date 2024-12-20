@@ -87,13 +87,6 @@ class Waves
     # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46)
     def self.nx46ToNextDisplayUnixtime(nx46)
         if nx46["type"] == 'sticky' then
-            # unixtime1 is the time of the event happening today
-            # It can still be ahead of us.
-            unixtime1 = (CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) - 86400) + nx46["value"].to_i*3600
-            if unixtime1 > Time.new.to_i then
-                return unixtime1
-            end
-            # We return the event happening tomorrow
             return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + nx46["value"].to_i*3600
         end
         if nx46["type"] == 'every-n-hours' then
