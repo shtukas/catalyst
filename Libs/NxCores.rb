@@ -194,9 +194,4 @@ class NxCores
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
-
-    # NxCores::next_unixtime(item)
-    def self.next_unixtime(item)
-        Time.new.to_i
-    end
 end

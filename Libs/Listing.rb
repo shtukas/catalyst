@@ -1,19 +1,4 @@
 
-class SpaceControl
-
-    def initialize(remaining_vertical_space)
-        @remaining_vertical_space = remaining_vertical_space
-    end
-
-    def putsline(line) # boolean
-        vspace = CommonUtils::verticalSize(line)
-        return false if vspace > @remaining_vertical_space
-        puts line
-        @remaining_vertical_space = @remaining_vertical_space - vspace
-        true
-    end
-end
-
 class Speedometer
     def initialize()
     end
@@ -133,10 +118,9 @@ class Listing
 
             #system("clear")
 
-            spacecontrol = SpaceControl.new(CommonUtils::screenHeight() - 4)
             store = ItemStore.new()
 
-            spacecontrol.putsline ""
+            puts ""
 
             items
                 .reduce([]){|selected, item|
@@ -149,8 +133,7 @@ class Listing
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
-                    status = spacecontrol.putsline line
-                    break if !status
+                    puts line
                 }
 
             puts ""
