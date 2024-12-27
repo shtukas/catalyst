@@ -75,6 +75,43 @@ class Anniversaries
         end
     end
 
+    # Anniversaries::difference_between_dates_in_specified_unit(date1, date2, unit)
+    def self.difference_between_dates_in_specified_unit(date1, date2, unit)
+        # unit is a repeat type: "weekly" | "monthly" | "yearly"
+
+
+
+        if unit == "weekly" then
+            date1 = Date.parse(date1)
+            date2 = Date.parse(date2)
+            counter = 0
+            loop {
+                return counter if (date1 + counter*7) >= date2
+                counter += 1
+            }
+        end
+
+        if unit == "monthly" then
+            counter = 0
+            loop {
+                if Anniversaries::datePlusNMonthAnniversaryStyle(date1, counter) >= date2 then
+                    return counter
+                end
+                counter += 1
+            }
+        end
+
+        if unit == "yearly" then
+            counter = 0
+            loop {
+                if Anniversaries::datePlusNYearAnniversaryStyle(date1, counter) >= date2 then
+                    return counter
+                end
+                counter += 1
+            }
+        end
+    end
+
     # ----------------------------------------------------------------------------------
     # Data
 
@@ -110,20 +147,9 @@ class Anniversaries
 
     # Anniversaries::toString(anniversary)
     def self.toString(anniversary)
-        difference = Anniversaries::next_unixtime(anniversary) - Date.parse(anniversary["startdate"]).to_time.to_i
-        difference = (lambda {
-            if anniversary["repeatType"] == "weekly" then
-                return difference.to_f/(86400*7)
-            end
-            if anniversary["repeatType"] == "monthly" then
-                return difference.to_f/(86400*30.5)
-            end
-            if anniversary["repeatType"] == "yearly" then
-                return difference.to_f/(86400*365.25)
-            end
-            raise "(error: bac59236) #{anniversary}"
-        }).call()
-        "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["gps-2119"]).to_s[0, 10]}, #{difference.to_s.ljust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
+        date2 = Time.at(anniversary["gps-2119"]).to_s[0, 10]
+        difference = Anniversaries::difference_between_dates_in_specified_unit(anniversary["startdate"], date2, anniversary["repeatType"])
+        "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["gps-2119"]).to_s[0, 10]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
     # Anniversaries::next_unixtime(item)
