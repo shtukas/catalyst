@@ -85,6 +85,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
+            Anniversaries::mark_next_celebration_date(item)
             Anniversaries::gps_reposition(item)
             return
         end

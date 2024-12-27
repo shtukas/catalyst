@@ -147,8 +147,7 @@ class Anniversaries
 
     # Anniversaries::toString(anniversary)
     def self.toString(anniversary)
-        date2 = Time.at(anniversary["gps-2119"]).to_s[0, 10]
-        difference = Anniversaries::difference_between_dates_in_specified_unit(anniversary["startdate"], date2, anniversary["repeatType"])
+        difference = Anniversaries::difference_between_dates_in_specified_unit(anniversary["startdate"], anniversary["next_celebration"], anniversary["repeatType"])
         "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["gps-2119"]).to_s[0, 10]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
@@ -160,6 +159,12 @@ class Anniversaries
 
     # ----------------------------------------------------------------------------------
     # Operations
+
+    # Anniversaries::mark_next_celebration_date(item)
+    def self.mark_next_celebration_date(item)
+        date = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
+        Items::setAttribute(item["uuid"], "next_celebration", date)
+    end
 
     # Anniversaries::program1(item)
     def self.program1(item)

@@ -9,3 +9,5 @@ NxAnniversary
 
     - "startdate"           : Date # YYYY-MM-DD
     - "repeatType"          : "weekly" | "monthly" | "yearly"
+
+    - "next_celebration"    : Date # YYYY-MM-DD , used for difference calculation when we display after the natural celebration time.
