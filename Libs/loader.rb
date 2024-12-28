@@ -153,6 +153,7 @@ require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxGPS.rb"
+require_relative "NxProjects.rb"
 
 require_relative "Operations.rb"
 

@@ -70,47 +70,4 @@ class NxTasks
             Items::setAttribute(item["uuid"], "global-positioning", position)
         end
     end
-
-    # -------------------------------------
-
-    # NxTasks::listingItems()
-    def self.listingItems()
-        r0 = Bank1::recoveredAverageHoursPerDay("054ec562-1166-4d7b-a646-b5695298c032") # Infinity Zero
-        r1 = Bank1::recoveredAverageHoursPerDay("1df84f80-8546-476f-9ed9-84fa84d30a5e") # Infinity One
-
-        items = Items::mikuType("NxTask")
-                .select{|item| item["parentuuid-0014"].nil? }
-                .sort_by{|item| item["global-positioning"] }
-
-        if r0 < r1 then
-            # We want the Zero items, 5 of them
-            items
-                .reduce([]){|collection, item|
-                    if collection.size < 5 then
-                        if Bank1::getValue(item["uuid"]) == 0  then
-                            collection + [item]
-                        else
-                            collection
-                        end
-                    else
-                        collection
-                    end
-                }
-        else
-            # We want the first 5 One items, in recovery order
-            items
-                .reduce([]){|collection, item|
-                    if collection.size < 5 then
-                        if Bank1::getValue(item["uuid"]) > 0  then
-                            collection + [item]
-                        else
-                            collection
-                        end
-                    else
-                        collection
-                    end
-                }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-    end
 end

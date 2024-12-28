@@ -82,8 +82,8 @@ class NxCores
             puts ""
 
             [
-                PolyFunctions::naturalChildrenInGlobalPositioningOrder(core),
-                PolyFunctions::extendedChildrenInGlobalPositionOrder(core),
+                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning"] || 0 },
+                PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning"] || 0 },
                 PolyFunctions::childrenForPrefix(core)
             ]
                 .flatten
@@ -139,7 +139,7 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildrenInGlobalPositioningOrder(core), lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning"] || 0 }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Items::setAttribute(i["uuid"], "global-positioning", PolyFunctions::firstPositionInParent(core) - 1)
                 }

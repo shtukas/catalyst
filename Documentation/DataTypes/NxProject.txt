@@ -1,0 +1,18 @@
+
+NxProject:
+    - uuid               : String
+    - mikuType           : "NxProject"
+    - unixtime           : Float
+    - datetime           : DateTime Iso 8601 UTC Zulu
+    - description        : String
+    - global-positioning : Float
+
+A NxProject is a task (NxTask) that wasn't done in one tries and is promoted to project NxProject.
+
+They are stratified by the time in their bank account.
+
+level: 0 between  0 and  5 hours , core uuid: 5bb75e03-eb92-4f10-b816-63f231c4d548
+level: 1 between  5 and 10 hours            : 26bb2eb2-6ba4-4182-a286-e4afafa75098
+level: 2 between 10 and 20 hours            : 5c4cfd8f-6f69-4575-9d1b-bb461a601c4b
+level: 3 between 20 and 50 hours            : e8116c6d-558e-4e35-818e-419bffe623c9
+level: 4 between 50+                        : 090446d4-9372-4dce-b59d-b4fc02813b3c

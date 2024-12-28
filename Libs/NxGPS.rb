@@ -22,13 +22,8 @@ class NxGPS
         if item["mikuType"] == "NxBackup" then
             return NxBackups::next_unixtime(item)
         end
-
         if item["mikuType"] == "NxDated" then
             return NxDateds::next_unixtime(item)
-        end
-
-        if item["mikuType"] == "NxCore" then
-            return NxCores::next_unixtime(item)
         end
         raise "(error: c21b8535) do not know how to reposition #{JSON.pretty_generate(item)}"
     end

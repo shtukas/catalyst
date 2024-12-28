@@ -111,16 +111,25 @@ class PolyFunctions
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
     end
 
-    # PolyFunctions::naturalChildrenInGlobalPositioningOrder(parent)
-    def self.naturalChildrenInGlobalPositioningOrder(parent)
-        PolyFunctions::naturalChildren(parent)
-            .sort_by{|item| item["global-positioning"] || 0 }
-    end
-
-    # PolyFunctions::extendedChildrenInGlobalPositionOrder(item)
-    def self.extendedChildrenInGlobalPositionOrder(item)
+    # PolyFunctions::computedChildren(item)
+    def self.computedChildren(item)
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return Items::mikuType("NxTask").sort_by{|item| item["global-positioning"] || 0 }
+            return Items::mikuType("NxTask")
+        end
+        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects (0)
+            return NxProjects::itemsPerLevel(0)
+        end
+        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects (1)
+            return NxProjects::itemsPerLevel(1)
+        end
+        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects (2)
+            return NxProjects::itemsPerLevel(2)
+        end
+        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects (3)
+            return NxProjects::itemsPerLevel(3)
+        end
+        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects (4)
+            return NxProjects::itemsPerLevel(4)
         end
         []
     end
@@ -147,5 +156,4 @@ class PolyFunctions
         elements = PolyFunctions::naturalChildren(parent)
         ([0] + elements.map{|item| item["global-positioning"] || 0 }).max
     end
-
 end

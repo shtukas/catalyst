@@ -66,6 +66,7 @@ class Operations
     def self.ensure_gps()
         Items::items().each{|item|
             next if item["mikuType"] == "NxTask"
+            next if item["mikuType"] == "NxCore"
             next if item["gps-2119"]
             NxGPS::reposition(item)
         }
@@ -117,7 +118,7 @@ class Operations
 
     # Operations::interactivelySelectPositionInParent(parent)
     def self.interactivelySelectPositionInParent(parent)
-        elements = PolyFunctions::naturalChildrenInGlobalPositioningOrder(parent)
+        elements = PolyFunctions::naturalChildren(parent).sort_by{|item| item["global-positioning"] || 0 }
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
