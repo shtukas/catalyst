@@ -147,4 +147,15 @@ class Operations
         puts JSON.pretty_generate(item)
         LucilleCore::pressEnterToContinue()
     end
+
+    # Operations::transformation1(item)
+    def self.transformation1(item)
+        if  ["NxDated", "NxTask"].include?(item["mikuType"]) then
+            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxDated, would you like to make it a NxProject ? ") then
+                Items::setAttribute(item["uuid"], "MikuType", "NxProject")
+                Items::setAttribute(item["uuid"], "gps-2119", nil)
+                return
+            end
+        end
+    end
 end

@@ -119,6 +119,9 @@ class NxBalls
             NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
+
+        Operations::transformation1(item)
+
         timespanInSeconds
     end
 
