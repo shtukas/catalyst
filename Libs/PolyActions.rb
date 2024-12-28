@@ -36,6 +36,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            return
+        end
+
         if item["mikuType"] == "NxCore" then
             NxCores::program1(item)
             return
@@ -111,6 +116,13 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::perform_done(item)
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
+                Items::destroy(item["uuid"])
             end
             return
         end
@@ -205,6 +217,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxProject" then
+            processWaveLike.call(item)
+            return
+        end
+
         raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to double dots #{item["mikuType"]}"
     end
 
@@ -266,6 +283,13 @@ class PolyActions
                 LucilleCore::pressEnterToContinue()
                 return
             end
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

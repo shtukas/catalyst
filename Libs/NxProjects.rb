@@ -3,7 +3,7 @@ class NxProjects
 
     # NxProjects::toString(item)
     def self.toString(item)
-        "🔹 #{item["description"]}"
+        "⛵️ #{item["description"]}"
     end
 
     # NxProjects::level(item)

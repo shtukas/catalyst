@@ -44,8 +44,10 @@ class NxCores
     # NxCores::listingItems()
     def self.listingItems()
         Items::mikuType("NxCore")
+            .select{|item| !item["description"].include?("NxProjects") or (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
             .select{|item| NxCores::ratio(item) < 1 }
             .sort_by{|item| NxCores::ratio(item) }
+
     end
 
     # NxCores::interactivelySelectOrNull()
