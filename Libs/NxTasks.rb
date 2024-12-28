@@ -37,20 +37,17 @@ class NxTasks
         "🔹 #{item["description"]}"
     end
 
-    # NxTasks::between10And20InfinityPosition()
-    def self.between10And20InfinityPosition()
-        items = Items::mikuType("NxTask")
-                .sort_by{|item| item["global-positioning"] }
-        items = items.drop(10).take(10)
-        if items.size == 0 then
-            return 1
+    # NxTasks::taskInsertionPosition()
+    def self.taskInsertionPosition()
+        items = Items::mikuType("NxTask").sort_by{|item| item["global-positioning"] }
+
+        while items.any?{|item| item["is_origin_24r4"] } do
+            items.shift
         end
-        if items.size <= 10 then
-            return items.last["global-positioning"] + 1
-        end
-        a = items.first["global-positioning"]
-        b = items.last["global-positioning"]
-        a + rand * (b - 1)
+
+        items = items.drop(1)
+
+        0.5 * (items[0]["global-positioning"] + items[1]["global-positioning"])
     end
 
     # NxTasks::performItemPositioning(item)
@@ -58,7 +55,7 @@ class NxTasks
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxCore"])
 
         if option.nil? or option == "Infinity, 10 to 20 task (default)" then
-            position = NxTasks::between10And20InfinityPosition()
+            position = NxTasks::taskInsertionPosition()
             Items::setAttribute(item["uuid"], "global-positioning", position)
         end
 
