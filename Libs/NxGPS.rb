@@ -4,6 +4,14 @@ class NxGPS
     # NxGPS::itemsInOrder()
     def self.itemsInOrder()
         Items::items()
+            .each{|item|
+                next if item["gps-2119"]
+                next if item["mikuType"] == "NxTask"
+                next if item["mikuType"] == "NxCore"
+                Items::setAttribute(item["uuid"], "gps-2119", NxGPS::next_unixtime(item))
+            }
+
+        Items::items()
             .select{|item| item["gps-2119"] }
             .sort_by{|item| item["gps-2119"] }
     end
