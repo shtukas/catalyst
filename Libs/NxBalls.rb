@@ -120,8 +120,6 @@ class NxBalls
         }
         NxBalls::destroyNxBall(item)
 
-        Operations::transformation1(item)
-
         timespanInSeconds
     end
 

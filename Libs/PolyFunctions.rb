@@ -25,18 +25,11 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
-            if Bank1::getValue(item["uuid"]) == 0 then
-                accounts << {
-                    "description" => "Infinity Zero",
-                    "number"      => "054ec562-1166-4d7b-a646-b5695298c032" # Infinity Zero
-                }
-            else
-                accounts << {
-                    "description" => "Infinity One",
-                    "number"      => "1df84f80-8546-476f-9ed9-84fa84d30a5e" # Infinity One
-                }
-            end
+        if item["mikuType"] == "NxDated" then
+            accounts << {
+                "description" => "NxDated contributing to Core Infinity",
+                "number"      => "427bbceb-923e-4feb-8232-05883553bb28"
+            }
         end
 
         # ------------------------------------------------

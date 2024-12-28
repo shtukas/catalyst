@@ -138,19 +138,9 @@ class PolyActions
             if !NxBalls::itemIsActive(item) then
                 PolyActions::start(item)
                 PolyActions::access(item)
-                if !LucilleCore::askQuestionAnswerAsBoolean("continue ? ", false) then
+                if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
                     PolyActions::done(item, true)
                 end
-            else
-                if NxBalls::itemIsRunning(item) then
-                    PolyActions::done(item, true)
-                    return
-                end
-                if NxBalls::itemIsPaused(item) then
-                    NxBalls::pursue(item)
-                    return
-                end
-                raise "error 20241214-1023 at #{item["mikuType"]}"
             end
         }
 
@@ -158,27 +148,16 @@ class PolyActions
             if !NxBalls::itemIsActive(item) then
                 PolyActions::start(item)
                 PolyActions::access(item)
-                if !LucilleCore::askQuestionAnswerAsBoolean("done and destroy ? ", false) then
+                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy ? ") then
                     PolyActions::done(item, true)
                     PolyActions::destroy(item, true)
-                end
-            else
-                if NxBalls::itemIsRunning(item) then
-                    if LucilleCore::askQuestionAnswerAsBoolean("stop & destroy ? ") then
-                        PolyActions::stop(item)
-                        PolyActions::destroy(item, true)
-                    else
-                        if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
-                            PolyActions::stop(item)
-                        end
-                    end
                     return
                 end
-                if NxBalls::itemIsPaused(item) then
-                    NxBalls::pursue(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                    PolyActions::stop(item)
+                    Operations::transformation1(item)
                     return
                 end
-                raise "error 20241214-1023 at #{item["mikuType"]}"
             end
         }
 

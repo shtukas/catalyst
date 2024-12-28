@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
-            "misc          : search | commands | edit <n> | numbers",
+            "misc          : search | commands | edit <n>",
         ].join("\n")
     end
 
@@ -212,14 +212,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("numbers", input) then
-            puts "NxTasks: #{Items::mikuType("NxTask").count} items"
-            puts "Infinity Zero: #{Bank1::recoveredAverageHoursPerDay("054ec562-1166-4d7b-a646-b5695298c032")}"
-            puts "Infinity One : #{Bank1::recoveredAverageHoursPerDay("1df84f80-8546-476f-9ed9-84fa84d30a5e")}"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if Interpreting::match("description", input) then
             item = store.getDefault()
             return if item.nil?
@@ -376,6 +368,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::stop(item)
+            Operations::transformation1(item)
             return
         end
 
@@ -384,6 +377,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::stop(item)
+            Operations::transformation1(item)
             return
         end
 
