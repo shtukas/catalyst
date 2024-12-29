@@ -67,6 +67,7 @@ class Operations
         Items::items().each{|item|
             next if item["mikuType"] == "NxTask"
             next if item["mikuType"] == "NxCore"
+            next if item["mikuType"] == "NxProject"
             next if item["gps-2119"]
             NxGPS::reposition(item)
         }
