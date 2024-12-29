@@ -187,7 +187,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            processWaveLike.call(item)
+            NxCores::program1(item)
             return
         end
 
