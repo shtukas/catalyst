@@ -7,8 +7,8 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | longtask",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | longtasks",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | commands | edit <n>",
         ].join("\n")
@@ -134,7 +134,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("longtask", input) then
+        if Interpreting::match("core", input) then
             item = NxCores::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
@@ -200,7 +200,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("longtasks", input) then
+        if Interpreting::match("cores", input) then
             items = Items::mikuType("NxCore")
             Operations::program2(items)
             return
