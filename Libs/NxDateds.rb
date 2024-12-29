@@ -29,6 +29,7 @@ class NxDateds
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "date", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "gps-2119", Time.new.to_i + 3600*2)
         Items::itemOrNull(uuid)
     end
 
