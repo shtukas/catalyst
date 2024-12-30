@@ -88,7 +88,7 @@ class Listing
         items = items.select{|item| item["gps-2119"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
         i1s, i2s = items.partition{|item| item['gps-2119'] < Time.new.to_i  }
         items = i1s + NxCores::listingItems() + i2s
-        items = Desktop::listingItems() + items.take(10) + NxBalls::activeItems() + items.drop(10)
+        items = NxBalls::activeItems() + Desktop::listingItems() + items
         items = Prefix::addPrefix(items)
         items
     end

@@ -153,7 +153,10 @@ class PolyFunctions
         if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects (4)
             return NxProjects::itemsPerLevel(4).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
-        Items::items().select{|i| i["parentuuid-0014"] == item["uuid"] }
+        Items::items()
+            .select{|i| i["parentuuid-0014"] == item["uuid"] }
+            .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+            .reverse
     end
 
     # PolyFunctions::firstPositionInParent(parent)
