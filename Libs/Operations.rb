@@ -152,7 +152,7 @@ class Operations
     # Operations::transformation1(item)
     def self.transformation1(item)
         if  ["NxDated", "NxTask"].include?(item["mikuType"]) then
-            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxDated, would you like to make it a NxProject ? ") then
+            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a #{item["mikuType"]}, would you like to make it a NxProject ? ") then
                 Items::setAttribute(item["uuid"], "mikuType", "NxProject")
                 Items::setAttribute(item["uuid"], "gps-2119", nil)
                 return
