@@ -41,7 +41,7 @@ class NxTasks
     def self.taskInsertionPosition()
         items = Items::mikuType("NxTask").sort_by{|item| item["global-positioning"] }
 
-        while items.any?{|item| item["is_origin_24r4"] } do
+        while items.any?{|item| !item["is_origin_24r4"] } do
             items.shift
         end
 

@@ -19,6 +19,7 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
+                return if item["mikuType"] == "NxCore" # We are not pushing NxCores
                 NxBalls::stop(item)
                 Operations::postposeItemToUnixtime(item, unixtime)
                 return
@@ -267,6 +268,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            return if item["mikuType"] == "NxCore" # we are not pushing NxCores
             Operations::interactivelyPush(item)
             return
         end
