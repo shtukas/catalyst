@@ -63,6 +63,16 @@ class NxCores
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
+    # NxCores::totalHoursPerWeek()
+    def self.totalHoursPerWeek()
+        Items::mikuType("NxCore").map{|item| item["hours"] }.sum
+    end
+
+    # NxCores::bankingCorrectionFactor()
+    def self.bankingCorrectionFactor()
+        [NxCores::totalHoursPerWeek().to_f/60 , 1].max
+    end
+
     # ------------------
     # Ops
 
@@ -161,8 +171,8 @@ class NxCores
             store = ItemStore.new()
  
             puts ""
-            weeklyTotal = Items::mikuType("NxCore").map{|item| item["hours"] }.sum
-            puts "weekly total: #{weeklyTotal} hours"
+            puts "weekly total     : #{NxCores::totalHoursPerWeek()} hours"
+            puts "correction factor: #{NxCores::bankingCorrectionFactor()}"
             puts ""
 
             NxCores::inRatioOrder()

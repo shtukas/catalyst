@@ -116,7 +116,7 @@ class NxBalls
         end
         timespanInSeconds = Time.new.to_i - nxball["startunixtime"]
         nxball["accounts"].each{|account|
-            NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds)
+            NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds * NxCores::bankingCorrectionFactor())
         }
         NxBalls::destroyNxBall(item)
 
