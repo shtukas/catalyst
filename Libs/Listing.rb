@@ -156,6 +156,7 @@ class Listing
                         .select{|nxball| nxball["type"] == "running" }
                         .each{|nxball|
                             item = Items::itemOrNull(nxball["itemuuid"])
+                            next if item.nil?
                             if item["mikuType"] == "Wave" then
                                 if NxBalls::ballRunningTime(nxball) > 1800 then
                                     CommonUtils::onScreenNotification("Catalyst", "Wave is over running")
