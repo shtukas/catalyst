@@ -12,7 +12,16 @@ class Datablobs
 
     # Datablobs::uuidToFilepath(uuid)
     def self.uuidToFilepath(uuid)
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Blades/#{uuid}.sqlite3"
+        filepath1 = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Blades/#{uuid}.sqlite3"
+        return filepath1 if File.exist?(filepath1)
+        if !File.exist?("/Volumes/Orbital1/Data") then
+            puts "I need Orbital 1, please plug and"
+            LucilleCore::pressEnterToContinue()
+        end
+        filepath2 = "/Volumes/Orbital1/Data/Catalyst/Blades/#{uuid}.sqlite3"
+        return filepath1 if !File.exist?(filepath2)
+        FileUtils.mv(filepath2, filepath1)
+        filepath1
     end
 
     # Datablobs::ensureFile(uuid)

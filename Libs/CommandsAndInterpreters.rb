@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores | projects",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | commands | edit <n>",
         ].join("\n")
@@ -201,8 +201,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
-            items = Items::mikuType("NxCore")
+        if Interpreting::match("projects", input) then
+            items = Items::mikuType("NxProject")
             Operations::program2(items)
             return
         end

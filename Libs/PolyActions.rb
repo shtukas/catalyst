@@ -18,6 +18,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxVirtualLine" then
+            return
+        end
+
         if item["mikuType"] == "NxBackup" then
             return
         end
@@ -63,6 +67,12 @@ class PolyActions
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
+
+        if item["mikuType"] == "NxVirtualLine" then
+            puts "You cannot `done` a NxVirtualLine."
+            LucilleCore::pressEnterToContinue()
+            return
+        end
 
         if item["mikuType"] == "NxFloat" then
             NxGPS::reposition(item)
@@ -161,6 +171,10 @@ class PolyActions
             end
         }
 
+        if item["mikuType"] == "NxVirtualLine" then
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             processWaveLike.call(item)
             return
@@ -211,6 +225,12 @@ class PolyActions
 
         if force then
             Items::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxVirtualLine" then
+            puts "You cannot destroy a NxVirtualLine"
+            LucilleCore::pressEnterToContinue()
             return
         end
 

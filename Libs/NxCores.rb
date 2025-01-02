@@ -58,6 +58,14 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
+    # NxCores::interactivelySelectWithoutProjectsOrNull()
+    def self.interactivelySelectWithoutProjectsOrNull()
+        items = Items::mikuType("NxCore")
+                    .select{|item| !item["description"].start_with?("NxProjects") }
+                    .sort_by{|item| NxCores::ratio(item) }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
+    end
+
     # NxCores::infinityuuid()
     def self.infinityuuid()
         "427bbceb-923e-4feb-8232-05883553bb28"
@@ -78,6 +86,13 @@ class NxCores
 
     # NxCores::program1(core)
     def self.program1(core)
+
+        if core["description"].start_with?("[open cycle]") then
+            puts "You cannot { land on / program } #{PolyFunctions::toString(core).green} (starts with `[open cycle]`)"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         loop {
 
             core = Items::itemOrNull(core["uuid"])
