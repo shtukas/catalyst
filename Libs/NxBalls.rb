@@ -32,7 +32,8 @@ class NxBalls
             "startunixtime"  => Time.new.to_i,
             "accounts"       => accounts,
             "isSequence"     => false,
-            "sequenceStart"  => nil
+            "sequenceStart"  => nil,
+            "item"           => item
         }
         NxBalls::commitBall(item, nxball)
     end
@@ -77,6 +78,70 @@ class NxBalls
     # NxBalls::itemIsBallFree(item)
     def self.itemIsBallFree(item)
         NxBalls::getNxBallOrNull(item).nil?
+    end
+
+    # ---------------------------------
+    # Data
+
+    # NxBalls::ballRunningTime(nxball)
+    def self.ballRunningTime(nxball)
+        Time.new.to_i - nxball["startunixtime"]
+    end
+
+    # NxBalls::itemRunningTimeOrZero(item)
+    def self.itemRunningTimeOrZero(item)
+        return 0 if !NxBalls::itemIsRunning(item)
+        nxball = NxBalls::getNxBallOrNull(item)
+        return 0 if nxball.nil?
+        NxBalls::ballRunningTime(item)
+    end
+
+    # NxBalls::nxBallToString(nxball)
+    def self.nxBallToString(nxball)
+        if nxball["type"] == "running" then
+            if nxball["isSequence"] then
+                return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequenceStart"]).to_f/3600).round(2)} hours ago)"
+            else
+                return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours)"
+            end
+            
+        end
+        if nxball["type"] == "paused" then
+            return "(nxball: paused)"
+        end
+        raise "(error: 93abde39-fd9d-4aa5-8e56-d09cf47a0f46) nxball: #{nxball}"
+    end
+
+    # NxBalls::nxballSuffixStatusIfRelevant(item)
+    def self.nxballSuffixStatusIfRelevant(item)
+        nxball = NxBalls::getNxBallOrNull(item)
+        return "" if nxball.nil?
+        " #{NxBalls::nxBallToString(nxball)}"
+    end
+
+    # NxBalls::activeItems()
+    def self.activeItems()
+        NxBalls::all()
+            .map{|ball|
+                # identity or nil
+                (lambda {|ball|
+                    if ball["item"]["mikuType"] == "NxVirtualLine" then
+                        return ball["item"]
+                    end
+                    itemuuid = ball["itemuuid"]
+                    ix = Items::itemOrNull(itemuuid)
+                    if ix then
+                        return ix
+                    end
+                    filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
+                    if File.exist?(filepath) then
+                        puts "garbage collecting NxBall: #{filepath}".green
+                        FileUtils.rm(filepath)
+                    end
+                    nil
+                }).call(ball)
+            }
+            .compact
     end
 
     # ---------------------------------
@@ -157,66 +222,5 @@ class NxBalls
             nxball["sequenceStart"] = startunixtime_v1
             NxBalls::commitBall(item, nxball)
         end
-    end
-
-    # ---------------------------------
-    # Data
-
-    # NxBalls::ballRunningTime(nxball)
-    def self.ballRunningTime(nxball)
-        Time.new.to_i - nxball["startunixtime"]
-    end
-
-    # NxBalls::itemRunningTimeOrZero(item)
-    def self.itemRunningTimeOrZero(item)
-        return 0 if !NxBalls::itemIsRunning(item)
-        nxball = NxBalls::getNxBallOrNull(item)
-        return 0 if nxball.nil?
-        NxBalls::ballRunningTime(item)
-    end
-
-    # NxBalls::nxBallToString(nxball)
-    def self.nxBallToString(nxball)
-        if nxball["type"] == "running" then
-            if nxball["isSequence"] then
-                return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours, sequence started #{((Time.new.to_i - nxball["sequenceStart"]).to_f/3600).round(2)} hours ago)"
-            else
-                return "(nxball: running for #{((Time.new.to_i - nxball["startunixtime"]).to_f/3600).round(2)} hours)"
-            end
-            
-        end
-        if nxball["type"] == "paused" then
-            return "(nxball: paused)"
-        end
-        raise "(error: 93abde39-fd9d-4aa5-8e56-d09cf47a0f46) nxball: #{nxball}"
-    end
-
-    # NxBalls::nxballSuffixStatusIfRelevant(item)
-    def self.nxballSuffixStatusIfRelevant(item)
-        nxball = NxBalls::getNxBallOrNull(item)
-        return "" if nxball.nil?
-        " #{NxBalls::nxBallToString(nxball)}"
-    end
-
-    # NxBalls::activeItems()
-    def self.activeItems()
-        NxBalls::all()
-            .sort_by{|item| item["unixtime"] }
-            .reverse
-            .map{|ball| ball["itemuuid"] }
-            .map{|itemuuid| 
-                ix = Items::itemOrNull(itemuuid)
-                if ix.nil? then
-                    filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
-                    if File.exist?(filepath) then
-                        puts "garbage collecting NxBall: #{filepath}".green
-                        FileUtils.rm(filepath)
-                    end
-                    nil
-                else
-                    ix
-                end
-            }
-            .compact
     end
 end

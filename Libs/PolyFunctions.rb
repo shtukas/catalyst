@@ -168,7 +168,7 @@ class PolyFunctions
             filepath = "#{Config::pathToGalaxy()}/Open Cycles/#{name1}/CATALYST.txt"
             line = IO.read(filepath).strip.lines.first.strip
             return [{
-                "uuid"          => "38d06be4-eba8-4b45-96ae-a6b26ba5d6e5-#{Digest::SHA1.hexdigest(line)}",
+                "uuid"          => Digest::SHA1.hexdigest("38d06be4-eba8-4b45-96ae-a6b26ba5d6e5-#{filepath}-#{line}"),
                 "mikuType"      => "NxVirtualLine",
                 "line"          => line,
                 "donation-1205" => item["uuid"]
