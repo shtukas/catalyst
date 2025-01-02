@@ -5,22 +5,20 @@
 
 class Datablobs
 
-    # Datablobs::repositoryPath()
-    def self.repositoryPath()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Datablobs"
-    end
-
     # Datablobs::uuidToFilepath(uuid)
     def self.uuidToFilepath(uuid)
         filepath1 = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Blades/#{uuid}.sqlite3"
-        return filepath1 if File.exist?(filepath1)
-        if !File.exist?("/Volumes/Orbital1/Data") then
-            puts "I need Orbital 1, please plug and"
-            LucilleCore::pressEnterToContinue()
+        if !File.exist?(filepath1) then
+            return filepath1
         end
-        filepath2 = "/Volumes/Orbital1/Data/Catalyst/Blades/#{uuid}.sqlite3"
-        return filepath1 if !File.exist?(filepath2)
-        FileUtils.mv(filepath2, filepath1)
+        if File.size?(filepath1).nil? then
+            if !File.exist?("/Volumes/Orbital1/Data") then
+                puts "I need Orbital 1, please plug and"
+                LucilleCore::pressEnterToContinue()
+            end
+            filepath2 = "/Volumes/Orbital1/Data/Catalyst/Blades/#{uuid}.sqlite3"
+            FileUtils.mv(filepath2, filepath1)
+        end
         filepath1
     end
 
@@ -49,16 +47,6 @@ class Datablobs
     # Datablobs::putBlob(uuid, datablob) # nhash
     def self.putBlob(uuid, datablob)
         nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
-
-        # Version 1
-        #folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
-        #if !File.exist?(folderpath) then
-        #    FileUtils.mkpath(folderpath)
-        #end
-        #filepath = "#{folderpath}/#{nhash}.data"
-        #File.open(filepath, "w"){|f| f.write(blob) }
-
-        # Version 2
         Datablobs::ensureFile(uuid)
         filepath = Datablobs::uuidToFilepath(uuid)
         db = SQLite3::Database.new(filepath)
@@ -70,21 +58,12 @@ class Datablobs
         db.execute("insert into datablobs (key, datablob) values (?, ?)", [nhash, datablob])
         db.commit
         db.close
-
         nhash
     end
 
     # Datablobs::getBlobOrNull(uuid, nhash)
     def self.getBlobOrNull(uuid, nhash) # data | nil
         datablob = nil
-
-        # Version 1
-        #folderpath = "#{Datablobs::repositoryPath()}/#{nhash[7, 2]}/#{nhash[9, 2]}"
-        #filepath = "#{folderpath}/#{nhash}.data"
-        #return nil if !File.exist?(filepath)
-        #IO.read(filepath)
-
-        # Version 2
         Datablobs::ensureFile(uuid)
         filepath = Datablobs::uuidToFilepath(uuid)
         db = SQLite3::Database.new(filepath)
@@ -95,7 +74,6 @@ class Datablobs
             datablob = row["datablob"]
         end
         db.close
-
         datablob
     end
 end
