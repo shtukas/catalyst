@@ -82,7 +82,7 @@ class PolyFunctions
             return NxProjects::toString(item)
         end
         if item["mikuType"] == "NxVirtualLine" then
-            return "▫️ #{item["line"]}"
+            return "▫️  #{item["line"]}"
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
@@ -167,11 +167,11 @@ class PolyFunctions
             name1 = item["description"][12, item["description"].size].strip
             filepath = "#{Config::pathToGalaxy()}/Open Cycles/#{name1}/CATALYST.txt"
             line = IO.read(filepath).strip.lines.first.strip
-            return {
+            return [{
                 "uuid"     => SecureRandom.hex,
                 "mikuType" => "NxVirtualLine",
                 "line"     => line
-            }
+            }]
         end
 
         Items::items()
