@@ -90,6 +90,17 @@ class Listing
         items = i1s + NxCores::listingItems() + i2s
         items = NxBalls::activeItems() + Desktop::listingItems() + items
         items = Prefix::addPrefix(items)
+
+        if items.empty? then
+            items = [
+                {
+                    "uuid"          => "6638b62e-7608-444d-a513-1fc090e3e7d5",
+                    "mikuType"      => "NxVirtualLine",
+                    "line"          => "😴"
+                }
+            ]
+        end
+
         items
     end
 
