@@ -85,18 +85,17 @@ class Waves
     # Data
 
     # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46)
-    def self.nx46ToNextDisplayUnixtime(nx46)
+    def self.nx46ToNextDisplayUnixtime(nx46, cursor)
         if nx46["type"] == 'sticky' then
             return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + nx46["value"].to_i*3600
         end
         if nx46["type"] == 'every-n-hours' then
-            return Time.new.to_i+3600 * nx46["value"].to_f
+            return cursor+3600 * nx46["value"].to_f
         end
         if nx46["type"] == 'every-n-days' then
-            return Time.new.to_i+86400 * nx46["value"].to_f
+            return cursor+86400 * nx46["value"].to_f
         end
         if nx46["type"] == 'every-this-day-of-the-month' then
-            cursor = Time.new.to_i + 86400
             while Time.at(cursor).strftime("%d") != nx46["value"].rjust(2, "0") do
                 cursor = cursor + 3600
             end
@@ -104,7 +103,6 @@ class Waves
         end
         if nx46["type"] == 'every-this-day-of-the-week' then
             mapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-            cursor = Time.new.to_i + 86400
             while mapping[Time.at(cursor).wday] != nx46["value"] do
                 cursor = cursor + 3600
             end
@@ -130,7 +128,7 @@ class Waves
 
     # Waves::next_unixtime(item)
     def self.next_unixtime(item)
-        Waves::nx46ToNextDisplayUnixtime(item["nx46"])
+        Waves::nx46ToNextDisplayUnixtime(item["nx46"], item["gps-2119"])
     end
 
     # -------------------------------------------------------------------------
@@ -140,7 +138,7 @@ class Waves
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"])
+        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], item["gps-2119"])
         NxGPS::reposition(item)
     end
 
