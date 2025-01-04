@@ -84,7 +84,7 @@ class Waves
     # -------------------------------------------------------------------------
     # Data
 
-    # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46)
+    # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
     def self.nx46ToNextDisplayUnixtime(nx46, cursor)
         if nx46["type"] == 'sticky' then
             return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + nx46["value"].to_i*3600
@@ -128,7 +128,7 @@ class Waves
 
     # Waves::next_unixtime(item)
     def self.next_unixtime(item)
-        Waves::nx46ToNextDisplayUnixtime(item["nx46"], item["gps-2119"])
+        Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["gps-2119"], Time.new.to_i].max)
     end
 
     # -------------------------------------------------------------------------
@@ -138,7 +138,7 @@ class Waves
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], item["gps-2119"])
+        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["gps-2119"], Time.new.to_i].max)
         NxGPS::reposition(item)
     end
 
