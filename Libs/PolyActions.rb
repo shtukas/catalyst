@@ -18,10 +18,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxVirtualLine" then
-            return
-        end
-
         if item["mikuType"] == "NxBackup" then
             return
         end
@@ -40,7 +36,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "NxLongTask" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
@@ -68,14 +64,8 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxVirtualLine" then
-            puts "You cannot `done` a NxVirtualLine."
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxFloat" then
-            NxGPS::reposition(item)
+            ListingPositioning::reposition(item)
             return
         end
 
@@ -85,7 +75,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "DropBox" then
-            if LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
                 DropBox::done(item["uuid"])
             end
             return
@@ -94,14 +84,14 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 NxBackups::resetDoneDateTime(item["description"])
-                NxGPS::reposition(item)
+                ListingPositioning::reposition(item)
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
-            NxGPS::reposition(item)
+            ListingPositioning::reposition(item)
             return
         end
 
@@ -113,9 +103,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
+            puts "`done` is not implemented for NxTasks, you either `dismiss` for the day, or `destroy`"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if item["mikuType"] == "NxLongTask" then
+            puts "`done` is not implemented for NxLongTasks, you either `dismiss` for the day, or `destroy`"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -126,13 +121,6 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::perform_done(item)
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
-                Items::destroy(item["uuid"])
             end
             return
         end
@@ -171,10 +159,6 @@ class PolyActions
             end
         }
 
-        if item["mikuType"] == "NxVirtualLine" then
-            return
-        end
-
         if item["mikuType"] == "NxAnniversary" then
             processWaveLike.call(item)
             return
@@ -210,7 +194,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "NxLongTask" then
             processWaveLike.call(item)
             return
         end
@@ -225,12 +209,6 @@ class PolyActions
 
         if force then
             Items::destroy(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxVirtualLine" then
-            puts "You cannot destroy a NxVirtualLine"
-            LucilleCore::pressEnterToContinue()
             return
         end
 
@@ -288,7 +266,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "NxLongTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

@@ -148,7 +148,7 @@ class Anniversaries
     # Anniversaries::toString(anniversary)
     def self.toString(anniversary)
         difference = Anniversaries::difference_between_dates_in_specified_unit(anniversary["startdate"], anniversary["next_celebration"], anniversary["repeatType"])
-        "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["gps-2119"]).to_s[0, 10]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
+        "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["listing-positioning-2141"]).to_s[0, 10]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
     # Anniversaries::next_unixtime(item)

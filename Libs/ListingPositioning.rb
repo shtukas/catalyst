@@ -1,23 +1,23 @@
 
-class NxGPS
+class ListingPositioning
 
-    # NxGPS::itemsInOrder()
+    # ListingPositioning::itemsInOrder()
     def self.itemsInOrder()
         Items::items()
             .each{|item|
-                next if item["gps-2119"]
+                next if item["listing-positioning-2141"]
                 next if item["mikuType"] == "NxTask"
                 next if item["mikuType"] == "NxCore"
-                next if item["mikuType"] == "NxProject"
-                Items::setAttribute(item["uuid"], "gps-2119", NxGPS::next_unixtime(item))
+                next if item["mikuType"] == "NxLongTask"
+                Items::setAttribute(item["uuid"], "listing-positioning-2141", ListingPositioning::next_unixtime(item))
             }
 
         Items::items()
-            .select{|item| item["gps-2119"] }
-            .sort_by{|item| item["gps-2119"] }
+            .select{|item| item["listing-positioning-2141"] }
+            .sort_by{|item| item["listing-positioning-2141"] }
     end
 
-    # NxGPS::next_unixtime(item)
+    # ListingPositioning::next_unixtime(item)
     def self.next_unixtime(item)
         if item["mikuType"] == "NxAnniversary" then
             return Anniversaries::next_unixtime(item)
@@ -37,11 +37,11 @@ class NxGPS
         raise "(error: c21b8535) do not know how to reposition #{JSON.pretty_generate(item)}"
     end
 
-    # NxGPS::reposition(item)
+    # ListingPositioning::reposition(item)
     def self.reposition(item)
-        unixtime = NxGPS::next_unixtime(item)
+        unixtime = ListingPositioning::next_unixtime(item)
         puts "repositioning '#{PolyFunctions::toString(item)}' at #{Time.at(unixtime).to_s.green}"
-        Items::setAttribute(item["uuid"], "gps-2119", unixtime)
+        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
     end
 end
 

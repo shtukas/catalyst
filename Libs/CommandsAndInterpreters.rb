@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | push <n> # do not show until | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores | projects",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores | longtasks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | commands | edit <n>",
         ].join("\n")
@@ -19,7 +19,6 @@ class CommandsAndInterpreters
 
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
-                return if item["mikuType"] == "NxCore" # We are not pushing NxCores
                 NxBalls::stop(item)
                 Operations::postposeItemToUnixtime(item, unixtime)
                 return
@@ -46,7 +45,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            NxGPS::reposition(item)
+            ListingPositioning::reposition(item)
             return
         end
 
@@ -201,8 +200,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("projects", input) then
-            items = Items::mikuType("NxProject")
+        if Interpreting::match("longtasks", input) then
+            items = Items::mikuType("NxLongTask")
             Operations::program2(items)
             return
         end
@@ -268,7 +267,6 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] == "NxCore" # we are not pushing NxCores
             Operations::interactivelyPush(item)
             return
         end
@@ -347,7 +345,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
-            NxGPS::reposition(item)
+            ListingPositioning::reposition(item)
             return
         end
 

@@ -32,10 +32,10 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxProject" then
+        if item["mikuType"] == "NxLongTask" then
             accounts << {
-                "description" => "NxProject contributing to corresponding Core: Projects (n)",
-                "number"      => NxProjects::itemToAccountingParentUUID(item)
+                "description" => "NxLongTask contributing to corresponding Core: Projects (n)",
+                "number"      => NxLongTasks::itemToAccountingParentUUID(item)
             }
         end
 
@@ -85,11 +85,8 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
-        end
-        if item["mikuType"] == "NxVirtualLine" then
-            return item["line"]
+        if item["mikuType"] == "NxLongTask" then
+            return NxLongTasks::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
@@ -122,20 +119,20 @@ class PolyFunctions
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
         end
-        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects Level 0
-            return NxProjects::itemsPerLevel(0)
+        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxLongTasks Level 0
+            return NxLongTasks::itemsPerLevel(0)
         end
-        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects Level 1
-            return NxProjects::itemsPerLevel(1)
+        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxLongTasks Level 1
+            return NxLongTasks::itemsPerLevel(1)
         end
-        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects Level 2
-            return NxProjects::itemsPerLevel(2)
+        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxLongTasks Level 2
+            return NxLongTasks::itemsPerLevel(2)
         end
-        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects Level 3
-            return NxProjects::itemsPerLevel(3)
+        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxLongTasks Level 3
+            return NxLongTasks::itemsPerLevel(3)
         end
-        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects Level 4
-            return NxProjects::itemsPerLevel(4)
+        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxLongTasks Level 4
+            return NxLongTasks::itemsPerLevel(4)
         end
         []
     end
@@ -143,60 +140,65 @@ class PolyFunctions
     # PolyFunctions::childrenForPrefix(item)
     def self.childrenForPrefix(item)
 
+        metricForInfinityPrefixPositioning = lambda {|item|
+            return 0.4 if Bank1::getValue(item["uuid"]) == 0
+            Bank1::recoveredAverageHoursPerDay(item["uuid"])
+        }
+
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
-                        .select{|item| item["parentuuid-0014"].nil? }
-                        .first(3)
-                        .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+                    .select{|item| item["parentuuid-0014"].nil? }
+                    .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                    .sort_by{|item| item["global-positioning-4233"] || 0 }
+                    .first(3)
+                    .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
         end
 
-        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects Level 0
-            return NxProjects::itemsPerLevel(0).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxLongTasks Level 0
+            return NxLongTasks::itemsPerLevel(0)
+                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects Level 1
-            return NxProjects::itemsPerLevel(1).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxLongTasks Level 1
+            return NxLongTasks::itemsPerLevel(1)
+                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects Level 2
-            return NxProjects::itemsPerLevel(2).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxLongTasks Level 2
+            return NxLongTasks::itemsPerLevel(2)
+                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects Level 3
-            return NxProjects::itemsPerLevel(3).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxLongTasks Level 3
+            return NxLongTasks::itemsPerLevel(3)
+                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects Level 4
-            return NxProjects::itemsPerLevel(4).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        if item["mikuType"] == "NxCore" and item["description"].start_with?("[open cycle]") then
-            name1 = item["description"][12, item["description"].size].strip
-            filepath = "#{Config::pathToGalaxy()}/Open Cycles/#{name1}/CATALYST.txt"
-            line = IO.read(filepath).strip.lines.first.strip
-            return [{
-                "uuid"          => Digest::SHA1.hexdigest("38d06be4-eba8-4b45-96ae-a6b26ba5d6e5-#{filepath}-#{line}"),
-                "mikuType"      => "NxVirtualLine",
-                "line"          => line,
-                "donation-1205" => item["uuid"]
-            }]
+        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxLongTasks Level 4
+            return NxLongTasks::itemsPerLevel(4)
+                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
         Items::items()
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
-            .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-            .reverse
+            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+            .sort_by{|item| item["global-positioning-4233"] || 0 }
     end
 
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
         elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).min
+        ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
         elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["global-positioning"] || 0 }).max
+        ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).max
     end
 end

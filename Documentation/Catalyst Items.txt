@@ -6,12 +6,10 @@ Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
 
 Cross types conventions (all optional):
-
-    - doNotShowUntil     : unixtime
     - skip-0843          : unixtime (skipped until this time)
     - uxpayload-b4e4     : UxPayload
     - donation-1205      : String # uuid of target for donation
     - parentuuid-0014    : uuid
 
-    - gps-2119           : Float # although listed here, it's not really optional.
-                                 # we intend for each item ti have one.
+    - global-positioning-4233  : Float # mostly used to order children inside regular cores
+    - listing-positioning-2141 : Float

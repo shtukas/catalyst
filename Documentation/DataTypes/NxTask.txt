@@ -5,7 +5,7 @@ NxTask:
     - unixtime           : Float
     - datetime           : DateTime Iso 8601 UTC Zulu
     - description        : String
-    - global-positioning : Float
+    - global-positioning-4233 : Float
     - is_origin_24r4     : Boolean
 
 `is_origin_24r4` indicates that a NxTask was origin (pre: 2024-12-28T21:05:52Z), we position any new tasks in betwen those.

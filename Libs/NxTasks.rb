@@ -12,7 +12,7 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "global-positioning", rand) # default value to ensure that the item has all the mandatory fields
+        Items::setAttribute(uuid, "global-positioning-4233", rand) # default value to ensure that the item has all the mandatory fields
         Items::itemOrNull(uuid)
     end
 
@@ -25,7 +25,7 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "global-positioning", rand) # default value to ensure that the item has all the mandatory fields
+        Items::setAttribute(uuid, "global-positioning-4233", rand) # default value to ensure that the item has all the mandatory fields
         Items::itemOrNull(uuid)
     end
 
@@ -39,7 +39,7 @@ class NxTasks
 
     # NxTasks::taskInsertionPosition()
     def self.taskInsertionPosition()
-        items = Items::mikuType("NxTask").sort_by{|item| item["global-positioning"] }
+        items = Items::mikuType("NxTask").sort_by{|item| item["global-positioning-4233"] }
 
         while items.any?{|item| !item["is_origin_24r4"] } do
             items.shift
@@ -47,7 +47,7 @@ class NxTasks
 
         items = items.drop(1)
 
-        0.5 * (items[0]["global-positioning"] + items[1]["global-positioning"])
+        0.5 * (items[0]["global-positioning-4233"] + items[1]["global-positioning-4233"])
     end
 
     # NxTasks::performItemPositioning(item)
@@ -56,15 +56,15 @@ class NxTasks
 
         if option.nil? or option == "Infinity, 10 to 20 task (default)" then
             position = NxTasks::taskInsertionPosition()
-            Items::setAttribute(item["uuid"], "global-positioning", position)
+            Items::setAttribute(item["uuid"], "global-positioning-4233", position)
         end
 
         if option == "NxCore" then
             parent = NxCores::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
-            position = Operations::interactivelySelectPositionInParent(parent)
-            Items::setAttribute(item["uuid"], "global-positioning", position)
+            position = Operations::interactivelySelectGlobalPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "global-positioning-4233", position)
         end
     end
 end

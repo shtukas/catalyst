@@ -6,3 +6,5 @@ NxCore:
     - datetime      : DateTime Iso 8601 UTC Zulu
     - description   : String
     - hours         : Float
+
+NxCores contain tasks or long tasks.

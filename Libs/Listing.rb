@@ -54,22 +54,25 @@ class Listing
         item["interruption"]
     end
 
+    # Listing::listingPositioningAsString(item)
+    def self.listingPositioningAsString(item)
+        return "" if ["NxCore", "NxTask", "NxLongTask"].include?(item["mikuType"])
+        return "" if item["listing-positioning-2141"].nil?
+        positioning = " [#{Time.at(item["listing-positioning-2141"]).to_s}]"
+        if Time.at(item['listing-positioning-2141']).to_s[0, 10] == CommonUtils::today() then
+            positioning = positioning.yellow
+        end
+        if item['listing-positioning-2141'] < Time.new.to_i then
+            positioning = positioning.red
+        end
+        positioning
+    end
+
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        if item["gps-2119"] then
-            gps = " [#{Time.at(item["gps-2119"]).to_s}]"
-            if Time.at(item['gps-2119']).to_s[0, 10] == CommonUtils::today() then
-                gps = gps.yellow
-            end
-            if item['gps-2119'] < Time.new.to_i then
-                gps = gps.red
-            end
-        else
-            gps = ""
-        end
-        line = "#{storePrefix}#{gps} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}"
+        line = "#{storePrefix}#{Listing::listingPositioningAsString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -84,23 +87,12 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = NxGPS::itemsInOrder()
-        items = items.select{|item| item["gps-2119"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
-        i1s, i2s = items.partition{|item| item['gps-2119'] < Time.new.to_i  }
+        items = ListingPositioning::itemsInOrder()
+        items = items.select{|item| item["listing-positioning-2141"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
+        i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i  }
         items = i1s + NxCores::listingItems() + i2s
         items = NxBalls::activeItems() + Desktop::listingItems() + items
         items = Prefix::addPrefix(items)
-
-        if items.empty? then
-            items = [
-                {
-                    "uuid"          => "6638b62e-7608-444d-a513-1fc090e3e7d5",
-                    "mikuType"      => "NxVirtualLine",
-                    "line"          => "😴"
-                }
-            ]
-        end
-
         items
     end
 

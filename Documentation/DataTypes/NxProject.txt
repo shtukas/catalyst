@@ -1,12 +1,12 @@
 
-NxProject:
+NxLongTask:
     - uuid               : String
-    - mikuType           : "NxProject"
+    - mikuType           : "NxLongTask"
     - unixtime           : Float
     - datetime           : DateTime Iso 8601 UTC Zulu
     - description        : String
 
-A NxProject is a task (NxTask) that wasn't done in one tries and is promoted to project NxProject.
+A NxLongTask is a task (NxTask) that wasn't done in one tries and is promoted to project NxLongTask.
 
 They are stratified by the time in their bank account.
 

@@ -67,9 +67,9 @@ class Operations
         Items::items().each{|item|
             next if item["mikuType"] == "NxTask"
             next if item["mikuType"] == "NxCore"
-            next if item["mikuType"] == "NxProject"
-            next if item["gps-2119"]
-            NxGPS::reposition(item)
+            next if item["mikuType"] == "NxLongTask"
+            next if item["listing-positioning-2141"]
+            ListingPositioning::reposition(item)
         }
     end
 
@@ -114,12 +114,12 @@ class Operations
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        Items::setAttribute(item["uuid"], "gps-2119", unixtime)
+        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
     end
 
-    # Operations::interactivelySelectPositionInParent(parent)
-    def self.interactivelySelectPositionInParent(parent)
-        elements = PolyFunctions::naturalChildren(parent).sort_by{|item| item["global-positioning"] || 0 }
+    # Operations::interactivelySelectGlobalPositionInParent(parent)
+    def self.interactivelySelectGlobalPositionInParent(parent)
+        elements = PolyFunctions::naturalChildren(parent).sort_by{|item| item["global-positioning-4233"] || 0 }
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -128,10 +128,10 @@ class Operations
             position = "next"
         end
         if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).min - 1
+            return ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).min - 1
         end
         if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning"] || 0 }).max + 1
+            return ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).max + 1
         end
         position = position.to_f
         position
@@ -140,7 +140,7 @@ class Operations
     # Operations::postposeItemToUnixtime(item, unixtime)
     def self.postposeItemToUnixtime(item, unixtime)
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "gps-2119", unixtime)
+        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
     end
 
     # Operations::expose(item)
@@ -153,9 +153,9 @@ class Operations
     # Operations::transformation1(item)
     def self.transformation1(item)
         if  ["NxDated", "NxTask"].include?(item["mikuType"]) then
-            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a #{item["mikuType"]}, would you like to make it a NxProject ? ") then
-                Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-                Items::setAttribute(item["uuid"], "gps-2119", nil)
+            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a #{item["mikuType"]}, would you like to make it a NxLongTask ? ") then
+                Items::setAttribute(item["uuid"], "mikuType", "NxLongTask")
+                Items::setAttribute(item["uuid"], "listing-positioning-2141", nil)
                 return
             end
         end

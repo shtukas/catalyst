@@ -44,8 +44,8 @@ class NxCores
     # NxCores::listingItems()
     def self.listingItems()
         Items::mikuType("NxCore")
-            .select{|item| item["gps-2119"].nil? or item["gps-2119"] < Time.new.to_i }
-            .select{|item| !item["description"].include?("NxProjects") or (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
+            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
+            .select{|item| !item["description"].include?("NxLongTasks") or (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
             .select{|item| NxCores::ratio(item) < 1 }
             .sort_by{|item| NxCores::ratio(item) }
 
@@ -61,7 +61,7 @@ class NxCores
     # NxCores::interactivelySelectWithoutProjectsOrNull()
     def self.interactivelySelectWithoutProjectsOrNull()
         items = Items::mikuType("NxCore")
-                    .select{|item| !item["description"].start_with?("NxProjects") }
+                    .select{|item| !item["description"].start_with?("NxLongTasks") }
                     .sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
@@ -110,10 +110,11 @@ class NxCores
             puts ""
 
             [
-                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning"] || 0 },
-                PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning"] || 0 }
+                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 },
+                PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 }
             ]
                 .flatten
+                .sort_by{|item| item["global-positioning-4233"] || 0 }
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -132,8 +133,8 @@ class NxCores
                 next if todo.nil?
                 puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
-                position = Operations::interactivelySelectPositionInParent(core)
-                Items::setAttribute(todo["uuid"], "global-positioning", position)
+                position = Operations::interactivelySelectGlobalPositionInParent(core)
+                Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
                 next
             end
 
@@ -143,7 +144,7 @@ class NxCores
                 puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
                 position = PolyFunctions::firstPositionInParent(core) - 1
-                Items::setAttribute(todo["uuid"], "global-positioning", position)
+                Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
                 next
             end
 
@@ -151,8 +152,8 @@ class NxCores
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = Operations::interactivelySelectPositionInParent(core)
-                Items::setAttribute(i["uuid"], "global-positioning", position)
+                position = Operations::interactivelySelectGlobalPositionInParent(core)
+                Items::setAttribute(i["uuid"], "global-positioning-4233", position)
                 next
             end
 
@@ -166,9 +167,9 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning"] || 0 }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Items::setAttribute(i["uuid"], "global-positioning", PolyFunctions::firstPositionInParent(core) - 1)
+                    Items::setAttribute(i["uuid"], "global-positioning-4233", PolyFunctions::firstPositionInParent(core) - 1)
                 }
                 next
             end

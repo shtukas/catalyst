@@ -130,7 +130,7 @@ class Waves
 
     # Waves::next_unixtime(item)
     def self.next_unixtime(item)
-        Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["gps-2119"], Time.new.to_i].max)
+        Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].max)
     end
 
     # -------------------------------------------------------------------------
@@ -140,8 +140,8 @@ class Waves
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["gps-2119"], Time.new.to_i].max)
-        NxGPS::reposition(item)
+        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].max)
+        ListingPositioning::reposition(item)
     end
 
     # Waves::program2(item)
@@ -162,7 +162,7 @@ class Waves
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
                 Items::setAttribute(item["uuid"], "nx46", nx46)
-                NxGPS::reposition(item)
+                ListingPositioning::reposition(item)
             end
             if action == "perform done" then
                 Waves::perform_done(item)
@@ -182,7 +182,7 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = Items::mikuType("Wave").sort_by{|wave| wave["gps-2119"] }
+        items = Items::mikuType("Wave").sort_by{|wave| wave["listing-positioning-2141"] }
         Operations::program2(items)
     end
 end

@@ -1,5 +1,0 @@
-
-NxVirtualLine:
-    - uuid     : String
-    - mikuType : "NxVirtualLine"
-    - line     : String

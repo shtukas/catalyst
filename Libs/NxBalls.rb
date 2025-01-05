@@ -123,11 +123,7 @@ class NxBalls
     def self.activeItems()
         NxBalls::all()
             .map{|ball|
-                # identity or nil
                 (lambda {|ball|
-                    if ball["item"]["mikuType"] == "NxVirtualLine" then
-                        return ball["item"]
-                    end
                     itemuuid = ball["itemuuid"]
                     ix = Items::itemOrNull(itemuuid)
                     if ix then
