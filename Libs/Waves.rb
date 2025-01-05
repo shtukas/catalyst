@@ -96,12 +96,14 @@ class Waves
             return cursor+86400 * nx46["value"].to_f
         end
         if nx46["type"] == 'every-this-day-of-the-month' then
+            cursor = cursor + 86400
             while Time.at(cursor).strftime("%d") != nx46["value"].rjust(2, "0") do
                 cursor = cursor + 3600
             end
            return cursor
         end
         if nx46["type"] == 'every-this-day-of-the-week' then
+            cursor = cursor + 86400
             mapping = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
             while mapping[Time.at(cursor).wday] != nx46["value"] do
                 cursor = cursor + 3600
