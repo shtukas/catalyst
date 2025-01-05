@@ -32,6 +32,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxProject" then
+            accounts << {
+                "description" => "NxProject contributing to corresponding Core: Projects (n)",
+                "number"      => NxProjects::itemToAccountingParentUUID(item)
+            }
+        end
+
         # ------------------------------------------------
 
         accounts.reduce([]){|as, account|
@@ -115,19 +122,19 @@ class PolyFunctions
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
         end
-        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects (0)
+        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects Level 0
             return NxProjects::itemsPerLevel(0)
         end
-        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects (1)
+        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects Level 1
             return NxProjects::itemsPerLevel(1)
         end
-        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects (2)
+        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects Level 2
             return NxProjects::itemsPerLevel(2)
         end
-        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects (3)
+        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects Level 3
             return NxProjects::itemsPerLevel(3)
         end
-        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects (4)
+        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects Level 4
             return NxProjects::itemsPerLevel(4)
         end
         []
@@ -143,23 +150,23 @@ class PolyFunctions
                         .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects (0)
+        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxProjects Level 0
             return NxProjects::itemsPerLevel(0).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects (1)
+        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxProjects Level 1
             return NxProjects::itemsPerLevel(1).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects (2)
+        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxProjects Level 2
             return NxProjects::itemsPerLevel(2).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects (3)
+        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxProjects Level 3
             return NxProjects::itemsPerLevel(3).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
-        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects (4)
+        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxProjects Level 4
             return NxProjects::itemsPerLevel(4).sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
         end
 
