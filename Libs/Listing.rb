@@ -88,6 +88,9 @@ class Listing
     # Listing::itemsForListing()
     def self.itemsForListing()
         items = ListingPositioning::itemsInOrder()
+        if !Config::isPrimaryInstance() then
+            items = items.reject{|item| item["mikuType"] == "NxBackup" }
+        end
         items = items.select{|item| item["listing-positioning-2141"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i  }
         items = i1s + NxCores::listingItems() + i2s
@@ -111,6 +114,7 @@ class Listing
             if Config::isPrimaryInstance() then
                 Items::processJournal()
                 Bank1::processJournal()
+                NxBackups::processNotificationChannel()
             end
 
             if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then

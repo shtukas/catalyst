@@ -83,7 +83,6 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                NxBackups::resetDoneDateTime(item["description"])
                 ListingPositioning::reposition(item)
             end
             return
