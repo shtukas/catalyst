@@ -145,14 +145,20 @@ class PolyActions
             if !NxBalls::itemIsActive(item) then
                 PolyActions::start(item)
                 PolyActions::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("done and destroy ? ") then
-                    PolyActions::done(item, true)
+                if LucilleCore::askQuestionAnswerAsBoolean("stop and destroy ? ") then
+                    PolyActions::stop(item)
                     PolyActions::destroy(item, true)
                     return
                 end
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
-                    Operations::transformation1(item)
+                    if  ["NxDated", "NxTask"].include?(item["mikuType"]) then
+                        if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a #{item["mikuType"]}, would you like to make it a NxLongTask ? ") then
+                            Items::setAttribute(item["uuid"], "mikuType", "NxLongTask")
+                            Items::setAttribute(item["uuid"], "listing-positioning-2141", nil)
+                            return
+                        end
+                    end
                     return
                 end
             end

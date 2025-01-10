@@ -147,15 +147,4 @@ class Operations
         puts "recovered average hours per day: #{Bank1::recoveredAverageHoursPerDay(item["uuid"])}"
         LucilleCore::pressEnterToContinue()
     end
-
-    # Operations::transformation1(item)
-    def self.transformation1(item)
-        if  ["NxDated", "NxTask"].include?(item["mikuType"]) then
-            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a #{item["mikuType"]}, would you like to make it a NxLongTask ? ") then
-                Items::setAttribute(item["uuid"], "mikuType", "NxLongTask")
-                Items::setAttribute(item["uuid"], "listing-positioning-2141", nil)
-                return
-            end
-        end
-    end
 end

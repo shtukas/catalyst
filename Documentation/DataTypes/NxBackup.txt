@@ -1,6 +1,6 @@
 
 NxBackup
-    - "uuid"        : String
-    - "mikuType"    : "NxBackup"
-    - "description" : String
-    - period        : Integer # period in days
+    - uuid        : String
+    - mikuType    : "NxBackup"
+    - description : String
+    - period      : Integer # period in days
