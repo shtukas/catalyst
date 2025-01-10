@@ -145,9 +145,22 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["mikuType"] == "NxDated" then
+                return if !LucilleCore::askQuestionAnswerAsBoolean("You are attempting to move a #{item["mikuType"]}, confirm making it a NxTask", true)
+            end
             parent = NxCores::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
+            position = Operations::interactivelySelectGlobalPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "global-positioning-4233", position)
+
+            # We are making the mikuType change last to avoid putting the item in
+            # an inconsistent state if the process was interrupted.
+            if item["mikuType"] == "NxDated" then
+                Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+                Items::setAttribute(item["uuid"], "listing-positioning-2141", nil)
+            end
+            return
         end
 
         if Interpreting::match("add time *", input) then
