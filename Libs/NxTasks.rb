@@ -47,6 +47,12 @@ class NxTasks
 
         items = items.drop(1)
 
+        return rand if items.size == 0
+
+        if items.size < 2 then
+            return items.last["global-positioning-4233"] + 1
+        end
+
         0.5 * (items[0]["global-positioning-4233"] + items[1]["global-positioning-4233"])
     end
 
