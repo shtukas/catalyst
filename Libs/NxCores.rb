@@ -122,7 +122,7 @@ class NxCores
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | position * | move * | sort"
+            puts "todo (here, with position selection) | pile | position * | move * | sort | set present prefix"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -171,6 +171,12 @@ class NxCores
                 selected.reverse.each{|i|
                     Items::setAttribute(i["uuid"], "global-positioning-4233", PolyFunctions::firstPositionInParent(core) - 1)
                 }
+                next
+            end
+
+            if input == "set present prefix" then
+                presentPrefix = LucilleCore::askQuestionAnswerAsBoolean("present prefix ? ")
+                Items::setAttribute(core["uuid"], "presentPrefix", presentPrefix)
                 next
             end
 

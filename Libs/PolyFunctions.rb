@@ -145,6 +145,15 @@ class PolyFunctions
             Bank1::recoveredAverageHoursPerDay(item["uuid"])
         }
 
+        shouldPresentPrefix = lambda {|indicator|
+            return true if indicator.nil?
+            indicator
+        }
+
+        if item["mikuType"] == "NxCore" and !shouldPresentPrefix.call(item["presentPrefix"]) then
+            return []
+        end
+
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
                     .select{|item| item["parentuuid-0014"].nil? }

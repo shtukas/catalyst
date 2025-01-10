@@ -6,5 +6,9 @@ NxCore:
     - datetime      : DateTime Iso 8601 UTC Zulu
     - description   : String
     - hours         : Float
+    - presentPrefix : null or boolean 
+                      default to true and otherwise indicates 
+                      whether to prefix some children. Was introduced to avoid 
+                      presenting Guardian
 
 NxCores contain tasks or long tasks.
