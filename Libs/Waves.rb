@@ -130,7 +130,7 @@ class Waves
 
     # Waves::next_unixtime(item)
     def self.next_unixtime(item)
-        Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].max)
+        Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].compact.max)
     end
 
     # -------------------------------------------------------------------------
