@@ -117,7 +117,7 @@ class PolyFunctions
     # PolyFunctions::computedChildren(item)
     def self.computedChildren(item)
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return Items::mikuType("NxTask")
+            return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
         end
         if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxLongTasks Level 0
             return NxLongTasks::itemsPerLevel(0)
