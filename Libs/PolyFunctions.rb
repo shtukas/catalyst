@@ -145,15 +145,6 @@ class PolyFunctions
             Bank1::recoveredAverageHoursPerDay(item["uuid"])
         }
 
-        shouldPresentPrefix = lambda {|indicator|
-            return true if indicator.nil?
-            indicator
-        }
-
-        if item["mikuType"] == "NxCore" and !shouldPresentPrefix.call(item["presentPrefix"]) then
-            return []
-        end
-
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
                     .select{|item| item["parentuuid-0014"].nil? }
@@ -163,34 +154,26 @@ class PolyFunctions
                     .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
         end
 
-        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxLongTasks Level 0
-            return NxLongTasks::itemsPerLevel(0)
-                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxLongTasks Level 1
-            return NxLongTasks::itemsPerLevel(1)
-                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxLongTasks Level 2
-            return NxLongTasks::itemsPerLevel(2)
-                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxLongTasks Level 3
-            return NxLongTasks::itemsPerLevel(3)
-                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-        end
-
-        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxLongTasks Level 4
-            return NxLongTasks::itemsPerLevel(4)
-                .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+        if item["mikuType"] == "NxCore" then
+            # "choice", "top3-bank-order", "all-bank-order", "strictly-sequential"
+            if item["prefixMode"] == "choice" then
+                return []
+            end
+            if item["prefixMode"] == "top3-bank-order" then
+                return PolyFunctions::computedChildren(item)
+                        .sort_by{|item| item["global-positioning-4233"] || 0 }
+                        .first(3)
+                        .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
+            end
+            if item["prefixMode"] == "all-bank-order" then
+                return PolyFunctions::computedChildren(item)
+                        .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+            end
+            if item["prefixMode"] == "strictly-sequential" then
+                return PolyFunctions::computedChildren(item)
+                        .sort_by{|item| item["global-positioning-4233"] || 0 }
+            end
+            raise "(error: fd0a9a9b) #{JSON.pretty_generate(item)}"
         end
 
         Items::items()

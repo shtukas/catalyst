@@ -8,13 +8,24 @@ class NxCores
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+        prefixMode = NxCores::interactivelySelectPrefixMode()
         Items::itemInit(uuid, "NxCore")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "hours", hours)
+        Items::setAttribute(uuid, "prefixMode", prefixMode)
         Items::itemOrNull(uuid)
+    end
+
+    # NxCores::interactivelySelectPrefixMode()
+    def self.interactivelySelectPrefixMode()
+        loop {
+            options = ["strictly-sequential", "choice", "top3-bank-order", "all-bank-order"]
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("prefix mode", options)
+            return option if option
+        }
     end
 
     # ------------------
@@ -122,7 +133,7 @@ class NxCores
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | position * | move * | sort | set present prefix"
+            puts "todo (here, with position selection) | pile | position * | move * | sort | set prefix mode"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -174,9 +185,8 @@ class NxCores
                 next
             end
 
-            if input == "set present prefix" then
-                presentPrefix = LucilleCore::askQuestionAnswerAsBoolean("present prefix ? ")
-                Items::setAttribute(core["uuid"], "presentPrefix", presentPrefix)
+            if input == "set prefix mode" then
+                Items::setAttribute(core["uuid"], "prefixMode", NxCores::interactivelySelectPrefixMode())
                 next
             end
 
