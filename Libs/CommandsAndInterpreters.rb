@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores | longtasks",
@@ -86,6 +86,15 @@ class CommandsAndInterpreters
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             return
         end
+
+        if Interpreting::match("pile *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxStrats::pile(item)
+            return
+        end
+
 
         if Interpreting::match("donation *", input) then
             _, listord = Interpreting::tokenizer(input)

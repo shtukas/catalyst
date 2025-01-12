@@ -22,6 +22,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            return
+        end
+
         if item["mikuType"] == "NxFloat" then
             return
         end
@@ -71,6 +75,18 @@ class PolyActions
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
+            if NxStrats::parentOrNull(item) then
+                puts "You cannot destroy a NxStrat that has a top"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::destroy(item["uuid"])
+            end
             return
         end
 
@@ -179,6 +195,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxStrat" then
+            processDestroyable.call(item)
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             processDestroyable.call(item)
             return
@@ -225,6 +246,13 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxStrat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

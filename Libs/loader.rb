@@ -145,6 +145,7 @@ require_relative "Items.rb"
 require_relative "InMemoryCache.rb"
 
 require_relative "Listing.rb"
+require_relative "ListingPositioning.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
@@ -152,8 +153,8 @@ require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
-require_relative "ListingPositioning.rb"
 require_relative "NxLongTasks.rb"
+require_relative "NxStrats.rb"
 
 require_relative "Operations.rb"
 

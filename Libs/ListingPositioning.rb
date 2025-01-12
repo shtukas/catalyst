@@ -9,6 +9,7 @@ class ListingPositioning
                 next if item["mikuType"] == "NxTask"
                 next if item["mikuType"] == "NxCore"
                 next if item["mikuType"] == "NxLongTask"
+                next if item["mikuType"] == "NxStrat"
                 Items::setAttribute(item["uuid"], "listing-positioning-2141", ListingPositioning::next_unixtime(item))
             }
 

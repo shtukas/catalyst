@@ -39,6 +39,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxStrat" then
+            bottom = Items::itemOrNull(item["bottomuuid"])
+            if bottom then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
+            end
+        end
+
         # ------------------------------------------------
 
         accounts.reduce([]){|as, account|
@@ -78,6 +85,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)
+        end
+        if item["mikuType"] == "NxStrat" then
+            return NxStrats::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
@@ -144,6 +154,11 @@ class PolyFunctions
             return 0.4 if Bank1::getValue(item["uuid"]) == 0
             Bank1::recoveredAverageHoursPerDay(item["uuid"])
         }
+
+
+        if st = NxStrats::parentOrNull(item) then
+            return [st]
+        end
 
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
