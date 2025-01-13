@@ -69,13 +69,6 @@ class NxStacks
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxStacks::interactivelySelectWithoutProjectsOrNull()
-    def self.interactivelySelectWithoutProjectsOrNull()
-        items = Items::mikuType("NxStack")
-                    .sort_by{|item| NxStacks::ratio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
-    end
-
     # NxStacks::infinityuuid()
     def self.infinityuuid()
         "427bbceb-923e-4feb-8232-05883553bb28"
@@ -171,7 +164,7 @@ class NxStacks
                 listord = input[4, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                NxTasks::performItemPositioning(i)
+                NxTasks::performItemPositioningInStack(i)
                 next
             end
 

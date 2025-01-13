@@ -7,14 +7,14 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
-        engine = NxEngines::interactivelyIssueNew()
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "global-positioning-4233", rand) # default value to ensure that the item has all the mandatory fields
-        Items::setAttribute(uuid, "engine-1706", engine)
+        item = Items::itemOrNull(uuid)
+        NxTasks::performGeneralItemPositioning(item)
         Items::itemOrNull(uuid)
     end
 
@@ -39,7 +39,7 @@ class NxTasks
         if item["engine-1706"] then
             return item["engine-1706"]["version"] == 1 ? "🔺" : "🔹"
         end
-        "▫️"
+        "▫️ "
     end
 
     # NxTasks::toString(item, context)
@@ -87,8 +87,8 @@ class NxTasks
     # ------------------
     # Ops
 
-    # NxTasks::performItemPositioning(item)
-    def self.performItemPositioning(item)
+    # NxTasks::performItemPositioningInStack(item)
+    def self.performItemPositioningInStack(item)
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxStack"])
 
         if option.nil? or option == "Infinity, 10 to 20 task (default)" then
@@ -102,6 +102,22 @@ class NxTasks
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
             position = Operations::interactivelySelectGlobalPositionInParent(parent)
             Items::setAttribute(item["uuid"], "global-positioning-4233", position)
+        end
+    end
+
+    # NxTasks::performGeneralItemPositioning(item)
+    def self.performGeneralItemPositioning(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["activation", "storage in stack"])
+        if option.nil? then
+            NxTasks::performGeneralItemPositioning(item)
+            return
+        end
+        if option == "activation" then
+            engine = NxEngines::interactivelyIssueNew()
+            Items::setAttribute(item["uuid"], "engine-1706", engine)
+        end
+        if option == "storage in stack" then
+            NxTasks::performItemPositioningInStack(item)
         end
     end
 end

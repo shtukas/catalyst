@@ -162,7 +162,6 @@ class CommandsAndInterpreters
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            NxTasks::performItemPositioning(item)
             return
         end
 
