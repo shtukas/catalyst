@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile1 * | pile+ * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | stack",
-            "              : transmute * | to-ondate * | ",
+            "              : transmute * | to-ondate * | to-task *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | stacks | active items",
             "NxTask        : engine *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
