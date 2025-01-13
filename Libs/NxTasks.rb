@@ -50,21 +50,17 @@ class NxTasks
 
     # NxTasks::taskInsertionPosition()
     def self.taskInsertionPosition()
-        items = Items::mikuType("NxTask").sort_by{|item| item["global-positioning-4233"] }
+        positions = Items::mikuType("NxTask")
+                        .map{|item| item["global-positioning-4233"] || 0 }
+                        .sort
 
-        while items.any?{|item| !item["is_origin_24r4"] } do
-            items.shift
+        positions = positions.drop(10).take(10)
+
+        if position.size < 2 then
+            return positions.last + 1
         end
 
-        items = items.drop(1)
-
-        return rand if items.size == 0
-
-        if items.size < 2 then
-            return items.last["global-positioning-4233"] + 1
-        end
-
-        0.5 * (items[0]["global-positioning-4233"] + items[1]["global-positioning-4233"])
+        0.5 * (position.first + position.last)
     end
 
     # NxTasks::listingPhase1()
@@ -82,6 +78,20 @@ class NxTasks
             .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 2 }
             .select{|item| activestacksuuids.include?(item["engine-1706"]["targetuuid"]) }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+    end
+
+    # NxTasks::activeItems()
+    def self.activeItems()
+
+        items1 = Items::mikuType("NxTask")
+                .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 1 }
+                .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
+
+        items2 = Items::mikuType("NxTask")
+                .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 2 }
+                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+
+        items1 + items2
     end
 
     # ------------------

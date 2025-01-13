@@ -11,6 +11,14 @@ class Transmutation
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end
+        if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
+            datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+            Items::setAttribute(uuid, "date", datetime)
+            Items::setAttribute(item["uuid"], "engine-1706", nil)
+            Items::setAttribute(item["uuid"], "engine-1706", nil)
+            Items::setAttribute(item["uuid"], "mikuType", "NxDated")
+            return
+        end
         puts "I do not know how to transmute mikuType #{item["mikuType"]} to #{targetMikuType}. Aborting."
         exit
     end

@@ -5,12 +5,13 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile1 * | pile+ * | destroy *",
             "",
-            "NxTask        : engine *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | stack",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | stacks",
-            "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
+            "              : transmute * | to-ondate * | ",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | stacks | active items",
+            "NxTask        : engine *",
+            "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
             "misc          : search | commands | edit <n>",
         ].join("\n")
     end
@@ -47,6 +48,22 @@ class CommandsAndInterpreters
             return if item.nil?
             Transmutation::transmute2(item)
             ListingPositioning::reposition(item)
+            return
+        end
+
+        if Interpreting::match("to-ondate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutation::transmute1(item, "NxDated")
+            return
+        end
+
+        if Interpreting::match("to-task *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutation::transmute1(item, "NxTask")
             return
         end
 
@@ -176,14 +193,12 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+
             if item["mikuType"] == "NxDated" then
                 return if !LucilleCore::askQuestionAnswerAsBoolean("You are attempting to move a #{item["mikuType"]}, confirm making it a NxTask", true)
             end
-            parent = NxStacks::interactivelySelectOrNull()
-            return if parent.nil?
-            Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
-            position = Operations::interactivelySelectGlobalPositionInParent(parent)
-            Items::setAttribute(item["uuid"], "global-positioning-4233", position)
+
+            NxTasks::performItemPositioningInStack(item)
 
             # We are making the mikuType change last to avoid putting the item in
             # an inconsistent state if the process was interrupted.
@@ -236,6 +251,11 @@ class CommandsAndInterpreters
         if Interpreting::match("floats", input) then
             items = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
             Operations::program2(items)
+            return
+        end
+
+        if Interpreting::match("active items", input) then
+            Operations::program2(NxTasks::activeItems())
             return
         end
 
