@@ -72,7 +72,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix}#{Listing::listingPositioningAsString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}"
+        line = "#{storePrefix}#{Listing::listingPositioningAsString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Operations::donationSuffix(item)}#{Operations::parentingSuffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow

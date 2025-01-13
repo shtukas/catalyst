@@ -27,7 +27,7 @@ class PolyFunctions
 
         if item["engine-1706"] and item["engine-1706"]["version"] == 2 then
             target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
-            if bottom then
+            if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
         end

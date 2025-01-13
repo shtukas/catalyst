@@ -96,6 +96,14 @@ class Operations
         " #{"(#{target["description"]})".yellow}"
     end
 
+    # Operations::parentingSuffix(item)
+    def self.parentingSuffix(item)
+        return "" if item["parentuuid-0014"].nil?
+        target = Items::itemOrNull(item["parentuuid-0014"])
+        return "" if target.nil?
+        " #{"(#{target["description"]})".yellow}"
+    end
+
     # Operations::interactivelyGetLines()
     def self.interactivelyGetLines()
         text = CommonUtils::editTextSynchronously("").strip
