@@ -40,11 +40,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLongTask" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
         if item["mikuType"] == "NxCore" then
             NxCores::program1(item)
             return
@@ -123,12 +118,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLongTask" then
-            puts "`done` is not implemented for NxLongTasks, you either `dismiss` for the day, or `destroy`"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxCore" then
             return
         end
@@ -168,13 +157,6 @@ class PolyActions
                 end
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
-                    if  ["NxDated", "NxTask"].include?(item["mikuType"]) then
-                        if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a #{item["mikuType"]}, would you like to make it a NxLongTask ? ") then
-                            Items::setAttribute(item["uuid"], "mikuType", "NxLongTask")
-                            Items::setAttribute(item["uuid"], "listing-positioning-2141", nil)
-                            return
-                        end
-                    end
                     return
                 end
             end
@@ -216,11 +198,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            processWaveLike.call(item)
-            return
-        end
-
-        if item["mikuType"] == "NxLongTask" then
             processWaveLike.call(item)
             return
         end
@@ -293,13 +270,6 @@ class PolyActions
                 LucilleCore::pressEnterToContinue()
                 return
             end
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxLongTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

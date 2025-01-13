@@ -56,7 +56,7 @@ class Listing
 
     # Listing::listingPositioningAsString(item)
     def self.listingPositioningAsString(item)
-        return "" if ["NxCore", "NxTask", "NxLongTask"].include?(item["mikuType"])
+        return "" if ["NxCore", "NxTask"].include?(item["mikuType"])
         return "" if item["listing-positioning-2141"].nil?
         positioning = " [#{Time.at(item["listing-positioning-2141"]).to_s}]"
         if Time.at(item['listing-positioning-2141']).to_s[0, 10] == CommonUtils::today() then
@@ -93,7 +93,7 @@ class Listing
         end
         items = items.select{|item| item["listing-positioning-2141"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i  }
-        items = i1s + NxCores::listingItems() + i2s
+        items = i1s + NxTasks::listingPhase1() + NxTasks::listingPhase2() + NxCores::listingItems() + i2s
         items = NxBalls::activeItems() + Desktop::listingItems() + items
         items = Prefix::addPrefix(items)
         items

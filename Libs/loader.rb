@@ -153,7 +153,6 @@ require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
-require_relative "NxLongTasks.rb"
 require_relative "NxStrats.rb"
 require_relative "NxEngines.rb"
 

@@ -32,13 +32,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxLongTask" then
-            accounts << {
-                "description" => "NxLongTask contributing to corresponding Core: Projects (n)",
-                "number"      => NxLongTasks::itemToAccountingParentUUID(item)
-            }
-        end
-
         if item["mikuType"] == "NxStrat" then
             bottom = Items::itemOrNull(item["bottomuuid"])
             if bottom then
@@ -95,9 +88,6 @@ class PolyFunctions
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
-        if item["mikuType"] == "NxLongTask" then
-            return NxLongTasks::toString(item)
-        end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
 
@@ -128,21 +118,6 @@ class PolyFunctions
     def self.computedChildren(item)
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
-        end
-        if item["uuid"] == "5bb75e03-eb92-4f10-b816-63f231c4d548" then # NxLongTasks Level 0
-            return NxLongTasks::itemsPerLevel(0)
-        end
-        if item["uuid"] == "26bb2eb2-6ba4-4182-a286-e4afafa75098" then # NxLongTasks Level 1
-            return NxLongTasks::itemsPerLevel(1)
-        end
-        if item["uuid"] == "5c4cfd8f-6f69-4575-9d1b-bb461a601c4b" then # NxLongTasks Level 2
-            return NxLongTasks::itemsPerLevel(2)
-        end
-        if item["uuid"] == "e8116c6d-558e-4e35-818e-419bffe623c9" then # NxLongTasks Level 3
-            return NxLongTasks::itemsPerLevel(3)
-        end
-        if item["uuid"] == "090446d4-9372-4dce-b59d-b4fc02813b3c" then # NxLongTasks Level 4
-            return NxLongTasks::itemsPerLevel(4)
         end
         []
     end

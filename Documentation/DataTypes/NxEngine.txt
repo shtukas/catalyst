@@ -1,3 +1,8 @@
 NxEngine
-    "version" : 1
-    "hours"   : Float # hours per week
+    "version"    : 1
+    "hours"      : Float # hours per week
+
+NxEngine
+    "version"    : 2
+    "targetuuid" : stack's uuid # active but not driven by an hours commitment.
+

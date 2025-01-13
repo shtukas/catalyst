@@ -5,11 +5,32 @@ class NxEngines
 
     # NxEngines::interactivelyIssueNew()
     def self.interactivelyIssueNew()
-        hours = LucilleCore::askQuestionAnswerAsString("hours (per week) : ").to_f
-        {
-            "version" => 1,
-            "hours"   => hours
+        lambda1 = lambda {|version|
+            return "hours commitment" if version == 1
+            return "managed through donation" if version == 2
+            raise "(error: 43599c66)"
         }
+        version = LucilleCore::selectEntityFromListOfEntitiesOrNull("version", [1, 2], lambda1)
+        return nil if version.nil?
+
+        if version == 1 then
+            hours = LucilleCore::askQuestionAnswerAsString("hours (per week) : ").to_f
+            return {
+                "version" => 1,
+                "hours"   => hours
+            }
+        end
+
+        if version == 2 then
+            stack = NxCores::interactivelySelectOrNull()
+            return nil if stack.nil?
+            return {
+                "version"    => 2,
+                "targetuuid" => stack["uuid"]
+            }
+        end
+
+        nil
     end
 
     # ------------------
@@ -21,8 +42,15 @@ class NxEngines
         [Bank1::recoveredAverageHoursPerDay(itemuuid), 0].max.to_f/(hours/7)
     end
 
-    # NxEngines::toString(itemuuid, engine)
-    def self.toString(itemuuid, engine)
-        "(#{"%6.2f" % (100 * NxEngines::ratio(itemuuid, engine))} %; #{"%5.2f" % engine["hours"]} h/w)".yellow
+    # NxEngines::toStringSuffix(itemuuid, engine)
+    def self.toStringSuffix(itemuuid, engine)
+        return "" if engine.nil?
+        if engine["version"] == 1 then
+            return " (#{"%6.2f" % (100 * NxEngines::ratio(itemuuid, engine))} %; #{"%5.2f" % engine["hours"]} h/w)".yellow
+        end
+        if engine["version"] == 2 then
+            return " (rt: #{Bank1::recoveredAverageHoursPerDay(itemuuid)})".yellow
+        end
+        raise "(error: 84be9938)"
     end
 end

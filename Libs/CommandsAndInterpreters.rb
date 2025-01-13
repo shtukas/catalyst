@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | engine * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores | longtasks",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | commands | edit <n>",
         ].join("\n")
@@ -241,12 +241,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("cores", input) then
             NxCores::program2()
-            return
-        end
-
-        if Interpreting::match("longtasks", input) then
-            items = Items::mikuType("NxLongTask")
-            Operations::program2(items)
             return
         end
 

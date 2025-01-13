@@ -56,7 +56,7 @@ class NxCores
     def self.listingItems()
         Items::mikuType("NxCore")
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
-            .select{|item| !item["description"].include?("NxLongTasks") or (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
+            .select{|item| (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
             .select{|item| NxCores::ratio(item) < 1 }
             .sort_by{|item| NxCores::ratio(item) }
 
@@ -72,7 +72,6 @@ class NxCores
     # NxCores::interactivelySelectWithoutProjectsOrNull()
     def self.interactivelySelectWithoutProjectsOrNull()
         items = Items::mikuType("NxCore")
-                    .select{|item| !item["description"].start_with?("NxLongTasks") }
                     .sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
