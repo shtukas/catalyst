@@ -8,8 +8,8 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | destroy *",
             "",
             "NxTask        : engine *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | stack",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | stacks",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",
             "misc          : search | commands | edit <n>",
         ].join("\n")
@@ -123,7 +123,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            target = NxCores::interactivelySelectOrNull()
+            target = NxStacks::interactivelySelectOrNull()
             return if target.nil?
             Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
             return
@@ -166,8 +166,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("core", input) then
-            item = NxCores::interactivelyIssueNewOrNull()
+        if Interpreting::match("stack", input) then
+            item = NxStacks::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -180,7 +180,7 @@ class CommandsAndInterpreters
             if item["mikuType"] == "NxDated" then
                 return if !LucilleCore::askQuestionAnswerAsBoolean("You are attempting to move a #{item["mikuType"]}, confirm making it a NxTask", true)
             end
-            parent = NxCores::interactivelySelectOrNull()
+            parent = NxStacks::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
             position = Operations::interactivelySelectGlobalPositionInParent(parent)
@@ -240,8 +240,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
-            NxCores::program2()
+        if Interpreting::match("stacks", input) then
+            NxStacks::program2()
             return
         end
 

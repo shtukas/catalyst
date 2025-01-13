@@ -1,15 +1,15 @@
 
-class NxCores
+class NxStacks
 
-    # NxCores::interactivelyIssueNewOrNull()
+    # NxStacks::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-        prefixMode = NxCores::interactivelySelectPrefixMode()
-        Items::itemInit(uuid, "NxCore")
+        prefixMode = NxStacks::interactivelySelectPrefixMode()
+        Items::itemInit(uuid, "NxStack")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -19,7 +19,7 @@ class NxCores
         Items::itemOrNull(uuid)
     end
 
-    # NxCores::interactivelySelectPrefixMode()
+    # NxStacks::interactivelySelectPrefixMode()
     def self.interactivelySelectPrefixMode()
         loop {
             options = ["strictly-sequential", "choice", "top3-bank-order", "all-bank-order"]
@@ -31,70 +31,70 @@ class NxCores
     # ------------------
     # Data
 
-    # NxCores::ratio(item)
+    # NxStacks::ratio(item)
     def self.ratio(item)
         hours = item["hours"].to_f
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours/7)
     end
 
-    # NxCores::ratioString(item)
+    # NxStacks::ratioString(item)
     def self.ratioString(item)
-        "(#{"%6.2f" % (100 * NxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        "(#{"%6.2f" % (100 * NxStacks::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
-    # NxCores::toString(item)
+    # NxStacks::toString(item)
     def self.toString(item)
-        "⏱️  #{NxCores::ratioString(item)} #{item["description"]}"
+        "⏱️  #{NxStacks::ratioString(item)} #{item["description"]}"
     end
 
-    # NxCores::inRatioOrder()
+    # NxStacks::inRatioOrder()
     def self.inRatioOrder()
-        Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
+        Items::mikuType("NxStack").sort_by{|item| NxStacks::ratio(item) }
     end
 
-    # NxCores::listingItems()
+    # NxStacks::listingItems()
     def self.listingItems()
-        Items::mikuType("NxCore")
+        Items::mikuType("NxStack")
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
             .select{|item| (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
-            .select{|item| NxCores::ratio(item) < 1 }
-            .sort_by{|item| NxCores::ratio(item) }
+            .select{|item| NxStacks::ratio(item) < 1 }
+            .sort_by{|item| NxStacks::ratio(item) }
 
     end
 
-    # NxCores::interactivelySelectOrNull()
+    # NxStacks::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        items = Items::mikuType("NxCore")
-                    .sort_by{|item| NxCores::ratio(item) }
+        items = Items::mikuType("NxStack")
+                    .sort_by{|item| NxStacks::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxCores::interactivelySelectWithoutProjectsOrNull()
+    # NxStacks::interactivelySelectWithoutProjectsOrNull()
     def self.interactivelySelectWithoutProjectsOrNull()
-        items = Items::mikuType("NxCore")
-                    .sort_by{|item| NxCores::ratio(item) }
+        items = Items::mikuType("NxStack")
+                    .sort_by{|item| NxStacks::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxCores::infinityuuid()
+    # NxStacks::infinityuuid()
     def self.infinityuuid()
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
-    # NxCores::totalHoursPerWeek()
+    # NxStacks::totalHoursPerWeek()
     def self.totalHoursPerWeek()
-        Items::mikuType("NxCore").map{|item| item["hours"] }.sum
+        Items::mikuType("NxStack").map{|item| item["hours"] }.sum
     end
 
-    # NxCores::bankingCorrectionFactor()
+    # NxStacks::bankingCorrectionFactor()
     def self.bankingCorrectionFactor()
-        [NxCores::totalHoursPerWeek().to_f/60 , 1].max
+        [NxStacks::totalHoursPerWeek().to_f/60 , 1].max
     end
 
     # ------------------
     # Ops
 
-    # NxCores::program1(core)
+    # NxStacks::program1(core)
     def self.program1(core)
 
         if core["description"].start_with?("[open cycle]") then
@@ -185,7 +185,7 @@ class NxCores
             end
 
             if input == "set prefix mode" then
-                Items::setAttribute(core["uuid"], "prefixMode", NxCores::interactivelySelectPrefixMode())
+                Items::setAttribute(core["uuid"], "prefixMode", NxStacks::interactivelySelectPrefixMode())
                 next
             end
 
@@ -193,7 +193,7 @@ class NxCores
         }
     end
 
-    # NxCores::program2()
+    # NxStacks::program2()
     def self.program2()
         loop {
  
@@ -202,11 +202,11 @@ class NxCores
             store = ItemStore.new()
  
             puts ""
-            puts "weekly total     : #{NxCores::totalHoursPerWeek()} hours"
-            puts "correction factor: #{NxCores::bankingCorrectionFactor()}"
+            puts "weekly total     : #{NxStacks::totalHoursPerWeek()} hours"
+            puts "correction factor: #{NxStacks::bankingCorrectionFactor()}"
             puts ""
 
-            NxCores::inRatioOrder()
+            NxStacks::inRatioOrder()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts Listing::toString2(store, item)
@@ -219,7 +219,7 @@ class NxCores
             return if input == ""
  
             if input == "core" then
-                core = NxCores::interactivelyIssueNewOrNull()
+                core = NxStacks::interactivelyIssueNewOrNull()
                 next if core.nil?
                 puts JSON.pretty_generate(core)
                 next

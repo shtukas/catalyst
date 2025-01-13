@@ -1,11 +1,11 @@
 
-NxCore:
+NxStack:
     - uuid          : String
-    - mikuType      : "NxCore"
+    - mikuType      : "NxStack"
     - unixtime      : Float
     - datetime      : DateTime Iso 8601 UTC Zulu
     - description   : String
     - hours         : Float
     - prefixMode    : "choice", "top3-bank-order", "all-bank-order", "strictly-sequential"
 
-NxCores contain tasks or long tasks.
+NxStacks contain tasks or long tasks.

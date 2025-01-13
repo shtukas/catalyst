@@ -86,15 +86,15 @@ class NxTasks
 
     # NxTasks::performItemPositioning(item)
     def self.performItemPositioning(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxCore"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxStack"])
 
         if option.nil? or option == "Infinity, 10 to 20 task (default)" then
             position = NxTasks::taskInsertionPosition()
             Items::setAttribute(item["uuid"], "global-positioning-4233", position)
         end
 
-        if option == "NxCore" then
-            parent = NxCores::interactivelySelectOrNull()
+        if option == "NxStack" then
+            parent = NxStacks::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
             position = Operations::interactivelySelectGlobalPositionInParent(parent)

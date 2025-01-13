@@ -77,14 +77,14 @@ class PolyFunctions
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
+        if item["mikuType"] == "NxStack" then
+            return NxStacks::toString(item)
         end
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
+        if item["mikuType"] == "NxStack" then
+            return NxStacks::toString(item)
         end
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)
@@ -103,7 +103,7 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
             # we have an NxTask without a parent
             # The parent is the Infinity Core
-            parent = Items::itemOrNull(NxCores::infinityuuid()) # The Infinity Core
+            parent = Items::itemOrNull(NxStacks::infinityuuid()) # The Infinity Core
             return nil if parent.nil?
             return parent
         end
@@ -123,7 +123,7 @@ class PolyFunctions
 
     # PolyFunctions::computedChildren(item)
     def self.computedChildren(item)
-        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
+        if item["uuid"] == NxStacks::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
         end
         []
@@ -142,7 +142,7 @@ class PolyFunctions
             return [st]
         end
 
-        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
+        if item["uuid"] == NxStacks::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
                     .select{|item| item["parentuuid-0014"].nil? }
                     .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
@@ -151,7 +151,7 @@ class PolyFunctions
                     .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxStack" then
             # "choice", "top3-bank-order", "all-bank-order", "strictly-sequential"
             if item["prefixMode"] == "choice" then
                 return []

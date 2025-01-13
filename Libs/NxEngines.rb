@@ -22,7 +22,7 @@ class NxEngines
         end
 
         if version == 2 then
-            stack = NxCores::interactivelySelectOrNull()
+            stack = NxStacks::interactivelySelectOrNull()
             return nil if stack.nil?
             return {
                 "version"    => 2,
