@@ -44,12 +44,6 @@ class NxTasks
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        if item["engine-1706"] and item["engine-1706"]["version"] == 2 then
-            if item["donation-1205"] != item["engine-1706"]["targetuuid"] then
-                Items::setAttribute(item["uuid"], "donation-1205", item["engine-1706"]["targetuuid"])
-            end
-        end
-
         engine = item["engine-1706"] # can be null
         "#{NxTasks::icon(item)}#{NxEngines::toStringSuffix(item["uuid"], engine)} #{item["description"]}"
     end
