@@ -66,6 +66,7 @@ class Operations
             next if item["mikuType"] == "NxTask"
             next if item["mikuType"] == "NxCore"
             next if item["mikuType"] == "NxLongTask"
+            next if item["mikuType"] == "NxStrat"
             next if item["listing-positioning-2141"]
             ListingPositioning::reposition(item)
         }

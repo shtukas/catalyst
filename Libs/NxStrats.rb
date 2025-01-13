@@ -20,8 +20,16 @@ class NxStrats
         "✨ #{item["description"]}"
     end
 
-    # NxStrats::pile(item)
-    def self.pile(item)
+    # NxStrats::pile_one(item)
+    def self.pile_one(item)
+        puts "pile(1) on #{PolyFunctions::toString(item).green}"
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        NxStrats::interactivelyIssueNewOrNull(description, item["uuid"])
+    end
+
+    # NxStrats::pile_plus(item)
+    def self.pile_plus(item)
+        puts "pile(+) on #{PolyFunctions::toString(item).green}"
         text = CommonUtils::editTextSynchronously("")
         lines = text.strip.lines.map{|line| line.strip }
         lines = lines.reverse
