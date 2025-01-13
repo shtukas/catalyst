@@ -71,13 +71,16 @@ class NxTasks
     def self.listingPhase1()
         Items::mikuType("NxTask")
             .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 1 }
+            .select{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) < 1 }
             .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
     end
 
     # NxTasks::listingPhase2()
     def self.listingPhase2()
+        activestacksuuids = NxStacks::listingItems().map{|item| item["uuid"] }
         Items::mikuType("NxTask")
             .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 2 }
+            .select{|item| activestacksuuids.include?(item["engine-1706"]["targetuuid"]) }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
 

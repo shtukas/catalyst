@@ -15,9 +15,11 @@ class NxEngines
 
         if version == 1 then
             hours = LucilleCore::askQuestionAnswerAsString("hours (per week) : ").to_f
+            stack = NxStacks::interactivelySelectOrNull()
             return {
                 "version" => 1,
-                "hours"   => hours
+                "hours"   => hours,
+                "targetuuid" => stack["uuid"]
             }
         end
 

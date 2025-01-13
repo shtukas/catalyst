@@ -190,4 +190,28 @@ class PolyFunctions
         elements = PolyFunctions::naturalChildren(parent)
         ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).max
     end
+
+    # PolyFunctions::donationSuffix(item)
+    def self.donationSuffix(item)
+        return "" if item["donation-1205"].nil?
+        target = Items::itemOrNull(item["donation-1205"])
+        return "" if target.nil?
+        " #{"(d: #{target["description"]})".yellow}"
+    end
+
+    # PolyFunctions::parentingSuffix(item)
+    def self.parentingSuffix(item)
+        return "" if item["parentuuid-0014"].nil?
+        target = Items::itemOrNull(item["parentuuid-0014"])
+        return "" if target.nil?
+        " #{"(p: #{target["description"]})".yellow}"
+    end
+
+    # PolyFunctions::engineDonationSuffix(item)
+    def self.engineDonationSuffix(item)
+        return "" if item["engine-1706"].nil?
+        target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
+        return "" if target.nil?
+        " #{"(e: #{target["description"]})".yellow}"
+    end
 end

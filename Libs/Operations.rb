@@ -88,31 +88,6 @@ class Operations
         nil
     end
 
-    # Operations::donationSuffix(item)
-    def self.donationSuffix(item)
-        return "" if item["donation-1205"].nil?
-        target = Items::itemOrNull(item["donation-1205"])
-        return "" if target.nil?
-        " #{"(d: #{target["description"]})".yellow}"
-    end
-
-    # Operations::parentingSuffix(item)
-    def self.parentingSuffix(item)
-        return "" if item["parentuuid-0014"].nil?
-        target = Items::itemOrNull(item["parentuuid-0014"])
-        return "" if target.nil?
-        " #{"(p: #{target["description"]})".yellow}"
-    end
-
-    # Operations::engineDonationSuffix(item)
-    def self.engineDonationSuffix(item)
-        return "" if item["engine-1706"].nil?
-        return "" if item["engine-1706"]["version"] != 2
-        target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
-        return "" if target.nil?
-        " #{"(e: #{target["description"]})".yellow}"
-    end
-
     # Operations::interactivelyGetLines()
     def self.interactivelyGetLines()
         text = CommonUtils::editTextSynchronously("").strip
