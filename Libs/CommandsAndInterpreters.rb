@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | engine * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores | longtasks",
@@ -46,6 +46,20 @@ class CommandsAndInterpreters
             return if item.nil?
             Transmutation::transmute2(item)
             ListingPositioning::reposition(item)
+            return
+        end
+
+        if Interpreting::match("engine *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            if item["mikuType"] != "NxTask" then
+                puts "We can only add NxEngines to NxTasks"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
+            engine = NxEngines::interactivelyIssueNew()
+            Items::setAttribute(item["uuid"], "engine-1706", engine)
             return
         end
 

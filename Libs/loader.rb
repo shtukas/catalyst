@@ -155,6 +155,7 @@ require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxLongTasks.rb"
 require_relative "NxStrats.rb"
+require_relative "NxEngines.rb"
 
 require_relative "Operations.rb"
 

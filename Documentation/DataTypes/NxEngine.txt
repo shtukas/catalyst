@@ -1,0 +1,3 @@
+NxEngine
+    "version" : 1
+    "hours"   : Float # hours per week
