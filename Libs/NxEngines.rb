@@ -6,8 +6,8 @@ class NxEngines
     # NxEngines::interactivelyIssueNew()
     def self.interactivelyIssueNew()
         lambda1 = lambda {|version|
-            return "hours commitment + donation" if version == 1
-            return "automatically managed + donation" if version == 2
+            return "automatically managed" if version == 2
+            return "hours commitment" if version == 1
             raise "(error: 43599c66)"
         }
         version = LucilleCore::selectEntityFromListOfEntitiesOrNull("version", [1, 2], lambda1)

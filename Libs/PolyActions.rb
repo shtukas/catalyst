@@ -113,8 +113,9 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            puts "`done` is not implemented for NxTasks, you either `dismiss` for the day, or `destroy`"
-            LucilleCore::pressEnterToContinue()
+            if LucilleCore::askQuestionAnswerAsBoolean("confirm destroying: '#{PolyFunctions::toString(item).green} ? '") then
+                Items::destroy(item["uuid"])
+            end
             return
         end
 
@@ -157,6 +158,12 @@ class PolyActions
                 end
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
+                    if item["mikuType"] == "NxTask" and item["engine-1706"].nil? then
+                        if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxTask. Add Engine ? ") then
+                            engine = NxEngines::interactivelyIssueNew()
+                            Items::setAttribute(item["uuid"], "engine-1706", engine)
+                        end
+                    end
                     return
                 end
             end
