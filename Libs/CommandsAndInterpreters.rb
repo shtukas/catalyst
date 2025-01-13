@@ -5,8 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | engine * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | transmute * | pile1 * | pile+ * | destroy *",
             "",
+            "NxTask        : engine *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause | pursue",

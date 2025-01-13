@@ -25,6 +25,13 @@ class PolyFunctions
             end
         end
 
+        if item["engine-1706"] and item["engine-1706"]["version"] == 2 then
+            target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
+            if bottom then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+
         if item["mikuType"] == "NxDated" then
             accounts << {
                 "description" => "NxDated contributing to Core Infinity",
