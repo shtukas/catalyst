@@ -76,7 +76,7 @@ class NxStacks
 
     # NxStacks::bankingCorrectionFactor()
     def self.bankingCorrectionFactor()
-        [NxStacks::totalHoursPerWeek().to_f/60 , 1].max
+        [NxStacks::totalHoursPerWeek().to_f/84 , 1].max
     end
 
     # ------------------
