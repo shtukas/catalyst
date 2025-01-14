@@ -91,7 +91,8 @@ class Listing
         if !Config::isPrimaryInstance() then
             items = items.reject{|item| item["mikuType"] == "NxBackup" }
         end
-        items = items.select{|item| item["listing-positioning-2141"] < CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() }
+        unixtime = CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+        items = items.select{|item| item["listing-positioning-2141"] < unixtime }
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i  }
         items = i1s + NxTasks::listingPhase1() + NxTasks::listingPhase2() + NxStacks::listingItems() + i2s
         items = NxBalls::activeItems() + Desktop::listingItems() + items

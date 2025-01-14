@@ -12,7 +12,7 @@ class CommandsAndInterpreters
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | stacks | active items",
             "NxTask        : engine *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n>",
+            "misc          : search | commands | edit <n> | speed",
         ].join("\n")
     end
 
@@ -458,6 +458,12 @@ class CommandsAndInterpreters
 
         if input == "waves" then
             Waves::program1()
+            return
+        end
+
+        if input == "speed" then
+            Operations::speed()
+            LucilleCore::pressEnterToContinue()
             return
         end
     end

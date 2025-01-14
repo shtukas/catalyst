@@ -56,16 +56,13 @@ class NxStacks
     def self.listingItems()
         Items::mikuType("NxStack")
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
-            .select{|item| (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item)).size > 0 }
             .select{|item| NxStacks::ratio(item) < 1 }
             .sort_by{|item| NxStacks::ratio(item) }
-
     end
 
     # NxStacks::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        items = Items::mikuType("NxStack")
-                    .sort_by{|item| NxStacks::ratio(item) }
+        items = Items::mikuType("NxStack").sort_by{|item| NxStacks::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 

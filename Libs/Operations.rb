@@ -139,4 +139,22 @@ class Operations
         puts "recovered average hours per day: #{Bank1::recoveredAverageHoursPerDay(item["uuid"])}"
         LucilleCore::pressEnterToContinue()
     end
+
+    # Operations::speed()
+    def self.speed()
+        measure = lambda {|n, l|
+            t1 = Time.new.to_f
+            l.call()
+            dt = Time.new.to_f - t1
+            puts "#{n}: #{dt}"
+        }
+
+        Listing::itemsForListing() # to enable caching
+
+        measure.call("ListingPositioning::itemsInOrder()", lambda { ListingPositioning::itemsInOrder() })
+        measure.call("NxTasks::listingPhase1()", lambda { NxTasks::listingPhase1() })
+        measure.call("NxTasks::listingPhase2()", lambda { NxTasks::listingPhase2() })
+        measure.call("NxStacks::listingItems()", lambda { NxStacks::listingItems() })
+        measure.call("Listing::itemsForListing()", lambda { Listing::itemsForListing() })
+    end
 end

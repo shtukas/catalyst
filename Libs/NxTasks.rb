@@ -63,10 +63,26 @@ class NxTasks
         0.5 * (position.first + position.last)
     end
 
+    # NxTasks::getItemsEngine(version)
+    def self.getItemsEngine(version)
+        key = "b4f88486-69d2:#{version}"
+        packet = InMemoryCache::getOrNull(key)
+        if packet and (Time.new.to_i - packet["unixtime"]) < 600 then
+            return packet["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
+        end
+        items = Items::mikuType("NxTask")
+                    .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == version }
+        packet = {
+            "unixtime" => Time.new.to_i,
+            "items" => items
+        }
+        InMemoryCache::set(key, packet)
+        items
+    end
+
     # NxTasks::listingPhase1()
     def self.listingPhase1()
-        Items::mikuType("NxTask")
-            .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 1 }
+        NxTasks::getItemsEngine(1)
             .select{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) < 1 }
             .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
     end
@@ -74,8 +90,7 @@ class NxTasks
     # NxTasks::listingPhase2()
     def self.listingPhase2()
         activestacksuuids = NxStacks::listingItems().map{|item| item["uuid"] }
-        Items::mikuType("NxTask")
-            .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 2 }
+        NxTasks::getItemsEngine(2)
             .select{|item| activestacksuuids.include?(item["engine-1706"]["targetuuid"]) }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
