@@ -34,8 +34,15 @@ class PolyFunctions
 
         if item["mikuType"] == "NxDated" then
             accounts << {
-                "description" => "NxDated contributing to Core Infinity",
-                "number"      => "427bbceb-923e-4feb-8232-05883553bb28"
+                "description" => "NxDated contributing to Stack Infinity",
+                "number"      => NxStacks::infinityuuid()
+            }
+        end
+
+        if item["mikuType"] == "Wave" then
+            accounts << {
+                "description" => "Wave contributing to Stack Infinity",
+                "number"      => NxStacks::infinityuuid()
             }
         end
 
@@ -45,6 +52,8 @@ class PolyFunctions
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
         end
+
+
 
         # ------------------------------------------------
 
