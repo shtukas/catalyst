@@ -138,6 +138,7 @@ class Listing
                         selected + [item]
                     end
                 }
+                .take(CommonUtils::screenHeight()-7)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)

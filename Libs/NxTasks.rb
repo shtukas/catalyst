@@ -91,6 +91,9 @@ class NxTasks
     def self.listingPhase2()
         activestacksuuids = NxStacks::listingItems().map{|item| item["uuid"] }
         NxTasks::getItemsEngine(2)
+            .select{|item|
+                item["uuid"] != "b5c3c45c-0436-4f63-b443-227c20586100" or NxTaskSpecialCircumstances::bufferInHasItems()
+            }
             .select{|item| activestacksuuids.include?(item["engine-1706"]["targetuuid"]) }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
@@ -144,5 +147,14 @@ class NxTasks
         if option == "storage in stack" then
             NxTasks::performItemPositioningInStack(item)
         end
+    end
+end
+
+class NxTaskSpecialCircumstances
+
+    # NxTaskSpecialCircumstances::bufferInHasItems()
+    def self.bufferInHasItems()
+        directory = "#{Config::pathToGalaxy()}/DataHub/Buffer-In"
+        LucilleCore::locationsAtFolder(directory).size > 0
     end
 end
