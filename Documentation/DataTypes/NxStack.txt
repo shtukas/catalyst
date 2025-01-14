@@ -6,6 +6,5 @@ NxStack:
     - datetime      : DateTime Iso 8601 UTC Zulu
     - description   : String
     - hours         : Float
-    - prefixMode    : "choice", "top3-bank-order", "all-bank-order", "strictly-sequential"
 
 NxStacks contain tasks or long tasks.

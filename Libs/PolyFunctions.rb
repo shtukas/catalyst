@@ -152,25 +152,8 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxStack" then
-            # "choice", "top3-bank-order", "all-bank-order", "strictly-sequential"
-            if item["prefixMode"] == "choice" then
-                return []
-            end
-            if item["prefixMode"] == "top3-bank-order" then
-                return PolyFunctions::computedChildren(item)
-                        .sort_by{|item| item["global-positioning-4233"] || 0 }
-                        .first(3)
-                        .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
-            end
-            if item["prefixMode"] == "all-bank-order" then
-                return PolyFunctions::computedChildren(item)
-                        .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-            end
-            if item["prefixMode"] == "strictly-sequential" then
-                return PolyFunctions::computedChildren(item)
-                        .sort_by{|item| item["global-positioning-4233"] || 0 }
-            end
-            raise "(error: fd0a9a9b) #{JSON.pretty_generate(item)}"
+            return PolyFunctions::computedChildren(item)
+                .sort_by{|item| item["global-positioning-4233"] || 0 }
         end
 
         Items::items()

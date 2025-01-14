@@ -8,14 +8,12 @@ class NxStacks
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-        prefixMode = NxStacks::interactivelySelectPrefixMode()
         Items::itemInit(uuid, "NxStack")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "hours", hours)
-        Items::setAttribute(uuid, "prefixMode", prefixMode)
         Items::itemOrNull(uuid)
     end
 
@@ -122,7 +120,7 @@ class NxStacks
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | position * | move * | sort | set prefix mode"
+            puts "todo (here, with position selection) | pile | position * | move * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -171,11 +169,6 @@ class NxStacks
                 selected.reverse.each{|i|
                     Items::setAttribute(i["uuid"], "global-positioning-4233", PolyFunctions::firstPositionInParent(core) - 1)
                 }
-                next
-            end
-
-            if input == "set prefix mode" then
-                Items::setAttribute(core["uuid"], "prefixMode", NxStacks::interactivelySelectPrefixMode())
                 next
             end
 
