@@ -56,11 +56,11 @@ class NxTasks
 
         positions = positions.drop(10).take(10)
 
-        if position.size < 2 then
+        if positions.size < 2 then
             return positions.last + 1
         end
 
-        0.5 * (position.first + position.last)
+        0.5 * (positions.first + positions.last)
     end
 
     # NxTasks::getItemsEngine(version)
