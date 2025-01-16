@@ -108,11 +108,11 @@ class NxStacks
             puts ""
 
             [
-                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 },
-                PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 }
+                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] },
+                PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning-4233"] }
             ]
                 .flatten
-                .sort_by{|item| item["global-positioning-4233"] || 0 }
+                .sort_by{|item| item["global-positioning-4233"] }
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -165,7 +165,7 @@ class NxStacks
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     Items::setAttribute(i["uuid"], "global-positioning-4233", PolyFunctions::firstPositionInParent(core) - 1)
                 }

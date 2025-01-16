@@ -51,7 +51,7 @@ class NxEngines
             return " (#{"%6.2f" % (100 * NxEngines::ratio(itemuuid, engine))} %; #{"%5.2f" % engine["hours"]} h/w)".yellow
         end
         if engine["version"] == 2 then
-            return " (rt: #{Bank1::recoveredAverageHoursPerDay(itemuuid)})".yellow
+            return " (rt: #{"%4.2f" %Bank1::recoveredAverageHoursPerDay(itemuuid)})".yellow
         end
         raise "(error: 84be9938)"
     end

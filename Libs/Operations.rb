@@ -109,7 +109,7 @@ class Operations
 
     # Operations::interactivelySelectGlobalPositionInParent(parent)
     def self.interactivelySelectGlobalPositionInParent(parent)
-        elements = PolyFunctions::naturalChildren(parent).sort_by{|item| item["global-positioning-4233"] || 0 }
+        elements = PolyFunctions::naturalChildren(parent).sort_by{|item| item["global-positioning-4233"] }
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -118,10 +118,10 @@ class Operations
             position = "next"
         end
         if position == "first" then
-            return ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).min - 1
+            return ([0] + elements.map{|item| item["global-positioning-4233"] }).min - 1
         end
         if position == "next" then
-            return ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).max + 1
+            return ([0] + elements.map{|item| item["global-positioning-4233"] }).max + 1
         end
         position = position.to_f
         position

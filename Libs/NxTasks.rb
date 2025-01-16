@@ -51,7 +51,7 @@ class NxTasks
     # NxTasks::taskInsertionPosition()
     def self.taskInsertionPosition()
         positions = Items::mikuType("NxTask")
-                        .map{|item| item["global-positioning-4233"] || 0 }
+                        .map{|item| item["global-positioning-4233"] }
                         .sort
 
         positions = positions.drop(10).take(10)

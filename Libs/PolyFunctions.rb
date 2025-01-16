@@ -155,32 +155,32 @@ class PolyFunctions
             return Items::mikuType("NxTask")
                     .select{|item| item["parentuuid-0014"].nil? }
                     .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-                    .sort_by{|item| item["global-positioning-4233"] || 0 }
+                    .sort_by{|item| item["global-positioning-4233"] }
                     .first(3)
                     .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
         end
 
         if item["mikuType"] == "NxStack" then
             return PolyFunctions::computedChildren(item)
-                .sort_by{|item| item["global-positioning-4233"] || 0 }
+                .sort_by{|item| item["global-positioning-4233"] }
         end
 
         Items::items()
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
-            .sort_by{|item| item["global-positioning-4233"] || 0 }
+            .sort_by{|item| item["global-positioning-4233"] }
     end
 
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
         elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).min
+        ([0] + elements.map{|item| item["global-positioning-4233"] }).min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
         elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["global-positioning-4233"] || 0 }).max
+        ([0] + elements.map{|item| item["global-positioning-4233"] }).max
     end
 
     # PolyFunctions::donationSuffix(item)
