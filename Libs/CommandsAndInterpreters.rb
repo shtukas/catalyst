@@ -140,9 +140,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            target = NxStacks::interactivelySelectOrNull()
-            return if target.nil?
-            Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+            Operations::setDonation(item)
             return
         end
 

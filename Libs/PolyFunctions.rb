@@ -206,4 +206,10 @@ class PolyFunctions
         return "" if target.nil?
         " #{"(e: #{target["description"]})".yellow}"
     end
+
+    # PolyFunctions::interactivelySelectDonationTargetOrNull()
+    def self.interactivelySelectDonationTargetOrNull()
+        items = NxTasks::activeItems() + Items::mikuType("NxStack").sort_by{|item| NxStacks::ratio(item) }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
+    end
 end

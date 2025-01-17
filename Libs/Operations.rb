@@ -157,4 +157,12 @@ class Operations
         measure.call("NxStacks::listingItems()", lambda { NxStacks::listingItems() })
         measure.call("Listing::itemsForListing()", lambda { Listing::itemsForListing() })
     end
+
+    # Operations::setDonation(item)
+    def self.setDonation(item)
+        target = PolyFunctions::interactivelySelectDonationTargetOrNull()
+        return if target.nil?
+        return if item["uuid"] == target["uuid"]
+        Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+    end
 end
