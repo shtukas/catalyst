@@ -95,7 +95,7 @@ class Listing
         items = items.select{|item| item["listing-positioning-2141"] < unixtime }
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i  }
         items = i1s + NxTasks::listingPhase1() + NxTasks::listingPhase2() + NxStacks::listingItems() + i2s
-        items = NxBalls::activeItems() + Desktop::listingItems() + items
+        items = Desktop::listingItems() + items + NxBalls::activeItems()
         items = Prefix::addPrefix(items)
         items
     end
