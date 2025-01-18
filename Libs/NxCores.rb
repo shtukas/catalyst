@@ -1,14 +1,14 @@
 
-class NxStacks
+class NxCores
 
-    # NxStacks::interactivelyIssueNewOrNull()
+    # NxCores::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-        Items::itemInit(uuid, "NxStack")
+        Items::itemInit(uuid, "NxCore")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -17,7 +17,7 @@ class NxStacks
         Items::itemOrNull(uuid)
     end
 
-    # NxStacks::interactivelySelectPrefixMode()
+    # NxCores::interactivelySelectPrefixMode()
     def self.interactivelySelectPrefixMode()
         loop {
             options = ["strictly-sequential", "choice", "top3-bank-order", "all-bank-order"]
@@ -29,60 +29,60 @@ class NxStacks
     # ------------------
     # Data
 
-    # NxStacks::ratio(item)
+    # NxCores::ratio(item)
     def self.ratio(item)
         hours = item["hours"].to_f
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours/7)
     end
 
-    # NxStacks::ratioString(item)
+    # NxCores::ratioString(item)
     def self.ratioString(item)
-        "(#{"%6.2f" % (100 * NxStacks::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+        "(#{"%6.2f" % (100 * NxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
-    # NxStacks::toString(item)
+    # NxCores::toString(item)
     def self.toString(item)
-        "⏱️  #{NxStacks::ratioString(item)} #{item["description"]}"
+        "⏱️  #{NxCores::ratioString(item)} #{item["description"]}"
     end
 
-    # NxStacks::inRatioOrder()
+    # NxCores::inRatioOrder()
     def self.inRatioOrder()
-        Items::mikuType("NxStack").sort_by{|item| NxStacks::ratio(item) }
+        Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
     end
 
-    # NxStacks::listingItems()
+    # NxCores::listingItems()
     def self.listingItems()
-        Items::mikuType("NxStack")
+        Items::mikuType("NxCore")
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
-            .select{|item| NxStacks::ratio(item) < 1 }
-            .sort_by{|item| NxStacks::ratio(item) }
+            .select{|item| NxCores::ratio(item) < 1 }
+            .sort_by{|item| NxCores::ratio(item) }
     end
 
-    # NxStacks::interactivelySelectOrNull()
+    # NxCores::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        items = Items::mikuType("NxStack").sort_by{|item| NxStacks::ratio(item) }
+        items = Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # NxStacks::infinityuuid()
+    # NxCores::infinityuuid()
     def self.infinityuuid()
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
-    # NxStacks::totalHoursPerWeek()
+    # NxCores::totalHoursPerWeek()
     def self.totalHoursPerWeek()
-        Items::mikuType("NxStack").map{|item| item["hours"] }.sum
+        Items::mikuType("NxCore").map{|item| item["hours"] }.sum
     end
 
-    # NxStacks::bankingCorrectionFactor()
+    # NxCores::bankingCorrectionFactor()
     def self.bankingCorrectionFactor()
-        [NxStacks::totalHoursPerWeek().to_f/84 , 1].max
+        [NxCores::totalHoursPerWeek().to_f/84 , 1].max
     end
 
     # ------------------
     # Ops
 
-    # NxStacks::program1(core)
+    # NxCores::program1(core)
     def self.program1(core)
 
         if core["description"].start_with?("[open cycle]") then
@@ -176,7 +176,7 @@ class NxStacks
         }
     end
 
-    # NxStacks::program2()
+    # NxCores::program2()
     def self.program2()
         loop {
  
@@ -185,11 +185,11 @@ class NxStacks
             store = ItemStore.new()
  
             puts ""
-            puts "weekly total     : #{NxStacks::totalHoursPerWeek()} hours"
-            puts "correction factor: #{NxStacks::bankingCorrectionFactor()}"
+            puts "weekly total     : #{NxCores::totalHoursPerWeek()} hours"
+            puts "correction factor: #{NxCores::bankingCorrectionFactor()}"
             puts ""
 
-            NxStacks::inRatioOrder()
+            NxCores::inRatioOrder()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     puts Listing::toString2(store, item)
@@ -202,7 +202,7 @@ class NxStacks
             return if input == ""
  
             if input == "core" then
-                core = NxStacks::interactivelyIssueNewOrNull()
+                core = NxCores::interactivelyIssueNewOrNull()
                 next if core.nil?
                 puts JSON.pretty_generate(core)
                 next

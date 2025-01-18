@@ -7,9 +7,9 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile1 * | pile+ * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | stack",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
             "              : transmute * | to-ondate * | to-task *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | stacks | active items",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxTask        : engine *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
             "misc          : search | commands | edit <n> | speed",
@@ -105,7 +105,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("backups", input) then
             items = Items::mikuType("NxBackup")
-                        .sort_by{|item| item["listing-positioning-2141"] }
+                        .sort_by{|item| item["description"] }
             Operations::program2(items)
             return
         end
@@ -181,8 +181,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack", input) then
-            item = NxStacks::interactivelyIssueNewOrNull()
+        if Interpreting::match("core", input) then
+            item = NxCores::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -258,8 +258,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stacks", input) then
-            NxStacks::program2()
+        if Interpreting::match("cores", input) then
+            NxCores::program2()
             return
         end
 

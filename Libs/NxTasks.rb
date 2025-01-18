@@ -90,13 +90,13 @@ class NxTasks
 
     # NxTasks::listingPhase2()
     def self.listingPhase2()
-        activestacksuuids = NxStacks::listingItems().map{|item| item["uuid"] }
+        activecoresuuids = NxCores::listingItems().map{|item| item["uuid"] }
         NxTasks::getItemsEngine(2)
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
             .select{|item|
                 item["uuid"] != "b5c3c45c-0436-4f63-b443-227c20586100" or NxTaskSpecialCircumstances::bufferInHasItems()
             }
-            .select{|item| activestacksuuids.include?(item["engine-1706"]["targetuuid"]) }
+            .select{|item| activecoresuuids.include?(item["engine-1706"]["targetuuid"]) }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
 
@@ -119,15 +119,15 @@ class NxTasks
 
     # NxTasks::performItemPositioningInStack(item)
     def self.performItemPositioningInStack(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxStack"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxCore"])
 
         if option.nil? or option == "Infinity, 10 to 20 task (default)" then
             position = NxTasks::taskInsertionPosition()
             Items::setAttribute(item["uuid"], "global-positioning-4233", position)
         end
 
-        if option == "NxStack" then
-            parent = NxStacks::interactivelySelectOrNull()
+        if option == "NxCore" then
+            parent = NxCores::interactivelySelectOrNull()
             return if parent.nil?
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
             position = Operations::interactivelySelectGlobalPositionInParent(parent)
@@ -137,7 +137,7 @@ class NxTasks
 
     # NxTasks::performGeneralItemPositioning(item)
     def self.performGeneralItemPositioning(item)
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["activation", "storage in stack"])
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["activation", "storage in core"])
         if option.nil? then
             NxTasks::performGeneralItemPositioning(item)
             return
@@ -146,7 +146,7 @@ class NxTasks
             engine = NxEngines::interactivelyIssueNew()
             Items::setAttribute(item["uuid"], "engine-1706", engine)
         end
-        if option == "storage in stack" then
+        if option == "storage in core" then
             NxTasks::performItemPositioningInStack(item)
         end
     end

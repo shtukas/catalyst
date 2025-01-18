@@ -15,20 +15,20 @@ class NxEngines
 
         if version == 1 then
             hours = LucilleCore::askQuestionAnswerAsString("hours (per week) : ").to_f
-            stack = NxStacks::interactivelySelectOrNull()
+            target = NxCores::interactivelySelectOrNull()
             return {
                 "version" => 1,
                 "hours"   => hours,
-                "targetuuid" => stack["uuid"]
+                "targetuuid" => target["uuid"]
             }
         end
 
         if version == 2 then
-            stack = NxStacks::interactivelySelectOrNull()
-            return nil if stack.nil?
+            target = NxCores::interactivelySelectOrNull()
+            return nil if target.nil?
             return {
                 "version"    => 2,
-                "targetuuid" => stack["uuid"]
+                "targetuuid" => target["uuid"]
             }
         end
 

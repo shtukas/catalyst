@@ -64,7 +64,7 @@ class Operations
     def self.ensure_gps()
         Items::items().each{|item|
             next if item["mikuType"] == "NxTask"
-            next if item["mikuType"] == "NxStack"
+            next if item["mikuType"] == "NxCore"
             next if item["mikuType"] == "NxStrat"
             next if item["listing-positioning-2141"]
             ListingPositioning::reposition(item)
@@ -154,7 +154,7 @@ class Operations
         measure.call("ListingPositioning::itemsInOrder()", lambda { ListingPositioning::itemsInOrder() })
         measure.call("NxTasks::listingPhase1()", lambda { NxTasks::listingPhase1() })
         measure.call("NxTasks::listingPhase2()", lambda { NxTasks::listingPhase2() })
-        measure.call("NxStacks::listingItems()", lambda { NxStacks::listingItems() })
+        measure.call("NxCores::listingItems()", lambda { NxCores::listingItems() })
         measure.call("Listing::itemsForListing()", lambda { Listing::itemsForListing() })
     end
 

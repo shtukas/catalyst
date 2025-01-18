@@ -35,14 +35,14 @@ class PolyFunctions
         if item["mikuType"] == "NxDated" then
             accounts << {
                 "description" => "NxDated contributing to Stack Infinity",
-                "number"      => NxStacks::infinityuuid()
+                "number"      => NxCores::infinityuuid()
             }
         end
 
         if item["mikuType"] == "Wave" then
             accounts << {
                 "description" => "Wave contributing to Stack Infinity",
-                "number"      => NxStacks::infinityuuid()
+                "number"      => NxCores::infinityuuid()
             }
         end
 
@@ -86,14 +86,14 @@ class PolyFunctions
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
-        if item["mikuType"] == "NxStack" then
-            return NxStacks::toString(item)
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
         end
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
         end
-        if item["mikuType"] == "NxStack" then
-            return NxStacks::toString(item)
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
         end
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)
@@ -112,7 +112,7 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
             # we have an NxTask without a parent
             # The parent is the Infinity Core
-            parent = Items::itemOrNull(NxStacks::infinityuuid()) # The Infinity Core
+            parent = Items::itemOrNull(NxCores::infinityuuid()) # The Infinity Core
             return nil if parent.nil?
             return parent
         end
@@ -132,7 +132,7 @@ class PolyFunctions
 
     # PolyFunctions::computedChildren(item)
     def self.computedChildren(item)
-        if item["uuid"] == NxStacks::infinityuuid() then # Infinity Core
+        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
         end
         []
@@ -151,7 +151,7 @@ class PolyFunctions
             return [st]
         end
 
-        if item["uuid"] == NxStacks::infinityuuid() then # Infinity Core
+        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
                     .select{|item| item["parentuuid-0014"].nil? }
                     .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
@@ -160,7 +160,7 @@ class PolyFunctions
                     .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
         end
 
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxCore" then
             return PolyFunctions::computedChildren(item)
                 .sort_by{|item| item["global-positioning-4233"] }
         end
@@ -209,7 +209,7 @@ class PolyFunctions
 
     # PolyFunctions::interactivelySelectDonationTargetOrNull()
     def self.interactivelySelectDonationTargetOrNull()
-        items = NxTasks::activeItems() + Items::mikuType("NxStack").sort_by{|item| NxStacks::ratio(item) }
+        items = NxTasks::activeItems() + Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 end

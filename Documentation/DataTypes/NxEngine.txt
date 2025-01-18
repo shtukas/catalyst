@@ -2,9 +2,9 @@
 NxEngine
     "version"    : 1
     "hours"      : Float # active and driven by commitment ; hours per week
-    "targetuuid" : stack's uuid # donation target
+    "targetuuid" : core's uuid # donation target
 
 NxEngine
     "version"    : 2
-    "targetuuid" : stack's uuid # donation target
+    "targetuuid" : core's uuid # donation target
 

@@ -40,8 +40,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStack" then
-            NxStacks::program1(item)
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
             return
         end
 
@@ -119,7 +119,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxCore" then
             return
         end
 
@@ -199,8 +199,8 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStack" then
-            NxStacks::program1(item)
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
             return
         end
 
@@ -271,9 +271,9 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxCore" then
             if !PolyFunctions::naturalChildren(item).empty? then
-                puts "You cannot destroy NxStack '#{PolyFunctions::toString(item).green}' because it has children."
+                puts "You cannot destroy NxCore '#{PolyFunctions::toString(item).green}' because it has children."
                 LucilleCore::pressEnterToContinue()
                 return
             end

@@ -7,13 +7,13 @@ class ListingPositioning
             .each{|item|
                 next if item["listing-positioning-2141"]
                 next if item["mikuType"] == "NxTask"
-                next if item["mikuType"] == "NxStack"
+                next if item["mikuType"] == "NxCore"
                 next if item["mikuType"] == "NxStrat"
                 Items::setAttribute(item["uuid"], "listing-positioning-2141", ListingPositioning::next_unixtime(item))
             }
 
         Items::items()
-            .reject{|item| ["NxStack", "NxTask"].include?(item["mikuType"]) }
+            .reject{|item| ["NxCore", "NxTask"].include?(item["mikuType"]) }
             .select{|item| item["listing-positioning-2141"] }
             .sort_by{|item| item["listing-positioning-2141"] }
     end
