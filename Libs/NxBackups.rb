@@ -9,7 +9,7 @@ class NxBackups
 
     # NxBackups::toString(item)
     def self.toString(item)
-        "💾 #{item["description"]} (every #{item["period"]} days)"
+        "💾 [backup] #{item["description"]} (every #{item["period"]} days)"
     end
 
     # NxBackups::next_unixtime(item)

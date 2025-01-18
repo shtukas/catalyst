@@ -127,7 +127,7 @@ require_relative "Atlas.rb"
 require_relative "Bank.rb"
 
 require_relative "CommonUtils.rb"
-require_relative "CatalystSearch.rb"
+require_relative "Search.rb"
 require_relative "CommandsAndInterpreters.rb"
 
 require_relative "Dx8Units.rb"

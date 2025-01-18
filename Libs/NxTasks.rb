@@ -83,6 +83,7 @@ class NxTasks
     # NxTasks::listingPhase1()
     def self.listingPhase1()
         NxTasks::getItemsEngine(1)
+            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
             .select{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) < 1 }
             .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
     end
@@ -91,6 +92,7 @@ class NxTasks
     def self.listingPhase2()
         activestacksuuids = NxStacks::listingItems().map{|item| item["uuid"] }
         NxTasks::getItemsEngine(2)
+            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
             .select{|item|
                 item["uuid"] != "b5c3c45c-0436-4f63-b443-227c20586100" or NxTaskSpecialCircumstances::bufferInHasItems()
             }

@@ -1,6 +1,6 @@
-class CatalystSearch
+class Search
 
-    # CatalystSearch::run()
+    # Search::run()
     def self.run()
         loop {
             system('clear')

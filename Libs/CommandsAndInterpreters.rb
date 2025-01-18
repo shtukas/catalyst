@@ -104,7 +104,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("backups", input) then
-            items = Items::mikuType("NxBackup").sort_by{|item| item["description"] }
+            items = Items::mikuType("NxBackup")
+                        .sort_by{|item| item["listing-positioning-2141"] }
             Operations::program2(items)
             return
         end
@@ -436,7 +437,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("search", input) then
-            CatalystSearch::run()
+            Search::run()
             return
         end
 
