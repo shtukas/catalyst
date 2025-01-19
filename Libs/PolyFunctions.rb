@@ -1,6 +1,26 @@
 
 class PolyFunctions
 
+    # PolyFunctions::itemToBankAccountForExtendedDonation(item) # Array[{description, number}]
+    def self.itemToBankAccountForExtendedDonation(item)
+        if item["engine-1706"] then
+            target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
+            if target then
+                return PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+        if item["donation-1205"] then
+            target = Items::itemOrNull(item["donation-1205"])
+            if target then
+                return PolyFunctions::itemToBankingAccounts(target)
+            end
+        end
+        if (parent = PolyFunctions::parentOrNull(item)) then
+            return PolyFunctions::itemToBankingAccounts(parent)
+        end
+        []
+    end
+
     # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
     def self.itemToBankingAccounts(item)
 
@@ -11,28 +31,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        # ------------------------------------------------
-
-        if item["engine-1706"] then
-            target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
-        if item["donation-1205"] and item["engine-1706"].nil? then
-            target = Items::itemOrNull(item["donation-1205"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
-        if (parent = PolyFunctions::parentOrNull(item)) and item["donation-1205"].nil? and item["engine-1706"].nil? then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
-        end
-
-        # ------------------------------------------------
-        # Special Features
+        accounts = accounts + PolyFunctions::itemToBankAccountForExtendedDonation(item)
 
         if item["mikuType"] == "NxStrat" then
             bottom = Items::itemOrNull(item["bottomuuid"])
@@ -40,8 +39,6 @@ class PolyFunctions
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
         end
-
-        # ------------------------------------------------
 
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
