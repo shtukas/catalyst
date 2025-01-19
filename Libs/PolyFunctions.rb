@@ -11,40 +11,28 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if (parent = PolyFunctions::parentOrNull(item)) then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
-        end
-
         # ------------------------------------------------
-        # Special Features
 
-        if item["donation-1205"] then
-            target = Items::itemOrNull(item["donation-1205"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
-        if item["engine-1706"] and item["engine-1706"]["version"] == 2 then
+        if item["engine-1706"] then
             target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
             if target then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
             end
         end
 
-        if item["mikuType"] == "NxDated" then
-            accounts << {
-                "description" => "NxDated contributing to Stack Infinity",
-                "number"      => NxCores::infinityuuid()
-            }
+        if item["donation-1205"] and item["engine-1706"].nil? then
+            target = Items::itemOrNull(item["donation-1205"])
+            if target then
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
+            end
         end
 
-        if item["mikuType"] == "Wave" then
-            accounts << {
-                "description" => "Wave contributing to Stack Infinity",
-                "number"      => NxCores::infinityuuid()
-            }
+        if (parent = PolyFunctions::parentOrNull(item)) and item["donation-1205"].nil? and item["engine-1706"].nil? then
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
         end
+
+        # ------------------------------------------------
+        # Special Features
 
         if item["mikuType"] == "NxStrat" then
             bottom = Items::itemOrNull(item["bottomuuid"])
@@ -52,8 +40,6 @@ class PolyFunctions
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
         end
-
-
 
         # ------------------------------------------------
 
@@ -183,24 +169,27 @@ class PolyFunctions
         ([0] + elements.map{|item| item["global-positioning-4233"] }).max
     end
 
-    # PolyFunctions::donationSuffix(item)
-    def self.donationSuffix(item)
-        return "" if item["donation-1205"].nil?
-        target = Items::itemOrNull(item["donation-1205"])
-        return "" if target.nil?
-        " #{"(d: #{target["description"]})".yellow}"
-    end
-
     # PolyFunctions::parentingSuffix(item)
     def self.parentingSuffix(item)
+        return "" if item["engine-1706"]
+        return "" if item["donation-1205"]
         return "" if item["parentuuid-0014"].nil?
         target = Items::itemOrNull(item["parentuuid-0014"])
         return "" if target.nil?
         " #{"(p: #{target["description"]})".yellow}"
     end
 
-    # PolyFunctions::engineDonationSuffix(item)
-    def self.engineDonationSuffix(item)
+    # PolyFunctions::donationSuffix(item)
+    def self.donationSuffix(item)
+        return "" if item["engine-1706"]
+        return "" if item["donation-1205"].nil?
+        target = Items::itemOrNull(item["donation-1205"])
+        return "" if target.nil?
+        " #{"(d: #{target["description"]})".yellow}"
+    end
+
+    # PolyFunctions::engineSuffix(item)
+    def self.engineSuffix(item)
         return "" if item["engine-1706"].nil?
         target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
         return "" if target.nil?

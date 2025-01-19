@@ -72,7 +72,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix}#{Listing::listingPositioningAsString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{PolyFunctions::engineDonationSuffix(item)}"
+        line = "#{storePrefix}#{Listing::listingPositioningAsString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{PolyFunctions::engineSuffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -93,7 +93,7 @@ class Listing
         end
         unixtime = CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
         items = items.select{|item| item["listing-positioning-2141"] < unixtime }
-        i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i  }
+        i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i }
         items = i1s + NxTasks::listingPhase1() + NxTasks::listingPhase2() + NxCores::listingItems() + i2s
         items = Desktop::listingItems() + items + NxBalls::activeItems()
         items = Prefix::addPrefix(items)
