@@ -87,7 +87,7 @@ class Waves
     # Waves::nx46ToNextDisplayUnixtime(nx46: Nx46, cursor: Unixtime)
     def self.nx46ToNextDisplayUnixtime(nx46, cursor)
         if nx46["type"] == 'sticky' then
-            return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + nx46["value"].to_i*3600
+            return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) + nx46["value"].to_i*3600 + rand
         end
         if nx46["type"] == 'every-n-hours' then
             return cursor+3600 * nx46["value"].to_f

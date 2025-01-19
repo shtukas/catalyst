@@ -22,7 +22,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
-                Operations::postposeItemToUnixtime(item, unixtime)
+                Operations::postposeItemToUnixtime(item, unixtime + rand)
                 return
             end
         end
@@ -177,6 +177,8 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
+            NxTasks::performGeneralItemPositioning(item)
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end

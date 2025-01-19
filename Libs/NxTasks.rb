@@ -13,8 +13,6 @@ class NxTasks
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "global-positioning-4233", rand) # default value to ensure that the item has all the mandatory fields
-        item = Items::itemOrNull(uuid)
-        NxTasks::performGeneralItemPositioning(item)
         Items::itemOrNull(uuid)
     end
 

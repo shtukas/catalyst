@@ -129,20 +129,23 @@ class NxCores
             if input == "todo" then
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 next if todo.nil?
-                puts JSON.pretty_generate(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
                 position = Operations::interactivelySelectGlobalPositionInParent(core)
                 Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
+                todo = Items::itemOrNull(todo["uuid"])
+                puts JSON.pretty_generate(todo)
                 next
             end
 
             if input == "pile" then
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 next if todo.nil?
-                puts JSON.pretty_generate(todo)
+                NxTasks::performGeneralItemPositioning(todo)
                 Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
                 position = PolyFunctions::firstPositionInParent(core) - 1
                 Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
+                todo = Items::itemOrNull(todo["uuid"])
+                puts JSON.pretty_generate(todo)
                 next
             end
 
