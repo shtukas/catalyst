@@ -99,8 +99,8 @@ class Listing
             lambda { NxTasks::listingPhase1() }, # items with a time commitment engine
             lambda { NxTasks::listingPhase2() }, # items entirely managed by a core
             lambda { NxCores::listingItems() },  # cores
-            lambda { i2s },                      # items today, near future
             lambda { NxTasks::listingPhase3() }, # infinity items without engine
+            lambda { i2s },                      # items today, near future
         ]
         items = PolyFunctions::firstNonEmptyResult(lambdas)
         items = Desktop::listingItems() + items + NxBalls::activeItems()
