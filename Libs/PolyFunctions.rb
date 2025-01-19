@@ -201,4 +201,35 @@ class PolyFunctions
         items = NxTasks::activeItems() + Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
+
+    # PolyFunctions::measure(experimentname, lambda)
+    def self.measure(experimentname, lambda)
+        t1 = Time.new.to_f
+        result = lambda.call()
+        puts "measure: #{experimentname}: #{Time.new.to_f-t1}"
+        result
+    end
+
+    # PolyFunctions::evaluateWithCache(key, lambda)
+    def self.evaluateWithCache(key, lambda)
+        key = "6f2cbffb-9dc7-4f5f-85de-abd9777c56ee:#{key}"
+        result = XCache::getOrNull(key)
+        return JSON.parse(result) if result
+        puts "compute: #{key}"
+        result = lambda.call()
+        XCache::set(key, JSON.generate(result))
+        result
+    end
+
+    # PolyFunctions::firstNonEmptyResult(lambdas)
+    def self.firstNonEmptyResult(lambdas)
+        # Takes a sequence of lambdas that all return an array and return the
+        # first such non empty array.
+        # Only the necessary lambdas are evaluated
+        lambdas.each{|l|
+            result = l.call()
+            return result if !result.empty?
+        }
+        []
+    end
 end

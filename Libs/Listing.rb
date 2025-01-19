@@ -87,14 +87,22 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = ListingPositioning::itemsInOrder()
+        items = ListingPositioning::itemsInOrder() # items with a listing position
         if !Config::isPrimaryInstance() then
-            items = items.reject{|item| item["mikuType"] == "NxBackup" }
+            items = items.reject{|item| item["mikuType"] == "NxBackup" } # we only show backup items on alexandra
         end
         unixtime = CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
-        items = items.select{|item| item["listing-positioning-2141"] < unixtime }
-        i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i }
-        items = i1s + NxTasks::listingPhase1() + NxTasks::listingPhase2() + NxCores::listingItems() + i2s
+        items = items.select{|item| item["listing-positioning-2141"] < unixtime } # we keep items with a deadline today, not afterwards
+        i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i } # we split today in before and after now
+        lambdas = [
+            lambda { i1s },                      # items today, late running
+            lambda { NxTasks::listingPhase1() }, # items with a time commitment engine
+            lambda { NxTasks::listingPhase2() }, # items entirely managed by a core
+            lambda { NxCores::listingItems() },  # cores
+            lambda { i2s },                      # items today, near future
+            lambda { NxTasks::listingPhase3() }, # infinity items without engine
+        ]
+        items = PolyFunctions::firstNonEmptyResult(lambdas)
         items = Desktop::listingItems() + items + NxBalls::activeItems()
         items = Prefix::addPrefix(items)
         items
@@ -103,24 +111,31 @@ class Listing
     # -----------------------------------------
     # Ops
 
+    # Listing::preliminaries(initialCodeTrace)
+    def self.preliminaries(initialCodeTrace)
+        if CommonUtils::catalystTraceCode() != initialCodeTrace then
+            puts "Code change detected"
+            exit
+        end
+
+        if Config::isPrimaryInstance() then
+            Items::processJournal()
+            Bank1::processJournal()
+            NxBackups::processNotificationChannel()
+        end
+
+        if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
+            Operations::periodicPrimaryInstanceMaintenance()
+        end
+    end
+
     # Listing::listing(initialCodeTrace)
     def self.listing(initialCodeTrace)
         loop {
 
-            if CommonUtils::catalystTraceCode() != initialCodeTrace then
-                puts "Code change detected"
-                exit
-            end
+            Listing::preliminaries(initialCodeTrace)
 
-            if Config::isPrimaryInstance() then
-                Items::processJournal()
-                Bank1::processJournal()
-                NxBackups::processNotificationChannel()
-            end
-
-            if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
-                Operations::periodicPrimaryInstanceMaintenance()
-            end
+            t1 = Time.new.to_f
 
             items = Listing::itemsForListing()
 
@@ -138,14 +153,15 @@ class Listing
                         selected + [item]
                     end
                 }
-                .take(CommonUtils::screenHeight()-7)
+                .take(CommonUtils::screenHeight()-4)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
                     puts line
                 }
 
-            puts ""
+            puts "(rendered in #{(Time.new.to_f - t1).round(3)} s)"
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return

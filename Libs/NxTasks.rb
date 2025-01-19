@@ -65,19 +65,8 @@ class NxTasks
 
     # NxTasks::getItemsEngine(version)
     def self.getItemsEngine(version)
-        key = "b4f88486-69d2:#{version}"
-        packet = InMemoryCache::getOrNull(key)
-        if packet and (Time.new.to_i - packet["unixtime"]) < 600 then
-            return packet["items"].map{|item| Items::itemOrNull(item["uuid"]) }.compact
-        end
-        items = Items::mikuType("NxTask")
-                    .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == version }
-        packet = {
-            "unixtime" => Time.new.to_i,
-            "items" => items
-        }
-        InMemoryCache::set(key, packet)
-        items
+        Items::mikuType("NxTask")
+            .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == version }
     end
 
     # NxTasks::listingPhase1()
@@ -93,11 +82,17 @@ class NxTasks
         activecoresuuids = NxCores::listingItems().map{|item| item["uuid"] }
         NxTasks::getItemsEngine(2)
             .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
-            .select{|item|
-                item["uuid"] != "b5c3c45c-0436-4f63-b443-227c20586100" or NxTaskSpecialCircumstances::bufferInHasItems()
-            }
+            .select{|item| item["uuid"] != "b5c3c45c-0436-4f63-b443-227c20586100" or NxTaskSpecialCircumstances::bufferInHasItems() }
             .select{|item| activecoresuuids.include?(item["engine-1706"]["targetuuid"]) }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
+    end
+
+    # NxTasks::listingPhase3()
+    def self.listingPhase3()
+        Items::mikuType("NxTask")
+            .select{|item| item["engine-1706"].nil? and item["parentuuid-0014"].nil? }
+            .sort_by{|item| item["global-positioning-4233"] }
+            .take(10)
     end
 
     # NxTasks::activeItems()

@@ -154,8 +154,8 @@ class Operations
         measure.call("ListingPositioning::itemsInOrder()", lambda { ListingPositioning::itemsInOrder() })
         measure.call("NxTasks::listingPhase1()", lambda { NxTasks::listingPhase1() })
         measure.call("NxTasks::listingPhase2()", lambda { NxTasks::listingPhase2() })
+        measure.call("NxTasks::listingPhase3()", lambda { NxTasks::listingPhase3() })
         measure.call("NxCores::listingItems()", lambda { NxCores::listingItems() })
-        measure.call("Listing::itemsForListing()", lambda { Listing::itemsForListing() })
     end
 
     # Operations::setDonation(item)

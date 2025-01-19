@@ -13,7 +13,7 @@ class ListingPositioning
             }
 
         Items::items()
-            .reject{|item| ["NxCore", "NxTask"].include?(item["mikuType"]) }
+            .reject{|item| ["NxCore", "NxTask", "NxStrat"].include?(item["mikuType"]) }
             .select{|item| item["listing-positioning-2141"] }
             .sort_by{|item| item["listing-positioning-2141"] }
     end
