@@ -210,17 +210,6 @@ class PolyFunctions
         result
     end
 
-    # PolyFunctions::evaluateWithCache(key, lambda)
-    def self.evaluateWithCache(key, lambda)
-        key = "6f2cbffb-9dc7-4f5f-85de-abd9777c56ee:#{key}"
-        result = XCache::getOrNull(key)
-        return JSON.parse(result) if result
-        puts "compute: #{key}"
-        result = lambda.call()
-        XCache::set(key, JSON.generate(result))
-        result
-    end
-
     # PolyFunctions::firstNonEmptyResult(lambdas)
     def self.firstNonEmptyResult(lambdas)
         # Takes a sequence of lambdas that all return an array and return the
