@@ -56,12 +56,12 @@ class Operations
                 Items::setAttribute(item["uuid"], "parentuuid-0014", nil)
             }
 
-            Operations::ensure_gps()
+            Operations::ensure_listing_positioning()
         end
     end
 
-    # Operations::ensure_gps()
-    def self.ensure_gps()
+    # Operations::ensure_listing_positioning()
+    def self.ensure_listing_positioning()
         Items::items().each{|item|
             next if item["mikuType"] == "NxTask"
             next if item["mikuType"] == "NxCore"

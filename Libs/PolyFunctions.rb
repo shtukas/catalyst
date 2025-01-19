@@ -88,17 +88,13 @@ class PolyFunctions
 
     # PolyFunctions::parentOrNull(item)
     def self.parentOrNull(item)
-        if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? then
-            # we have an NxTask without a parent
+        if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? and item["engine-1706"].nil? then
+            # we have an NxTask without a parent and without an engine
             # The parent is the Infinity Core
-            parent = Items::itemOrNull(NxCores::infinityuuid()) # The Infinity Core
-            return nil if parent.nil?
-            return parent
+            return Items::itemOrNull(NxCores::infinityuuid())
         end
         if item["parentuuid-0014"] then
-            parent = Items::itemOrNull(item["parentuuid-0014"])
-            return nil if parent.nil?
-            return parent
+            return Items::itemOrNull(item["parentuuid-0014"])
         end
         nil
     end
@@ -112,7 +108,9 @@ class PolyFunctions
     # PolyFunctions::computedChildren(item)
     def self.computedChildren(item)
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return Items::mikuType("NxTask").select{|item| item["parentuuid-0014"].nil? }
+            return Items::mikuType("NxTask")
+                        .select{|item| item["parentuuid-0014"].nil? }
+                        .select{|item| item["engine-1706"].nil? }
         end
         []
     end

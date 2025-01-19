@@ -143,7 +143,7 @@ class Listing
 
             store = ItemStore.new()
 
-            puts ""
+            puts "-" * (CommonUtils::screenWidth() - 2)
 
             items
                 .reduce([]){|selected, item|
