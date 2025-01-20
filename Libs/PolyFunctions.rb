@@ -197,16 +197,4 @@ class PolyFunctions
         puts "measure: #{experimentname}: #{Time.new.to_f-t1}"
         result
     end
-
-    # PolyFunctions::firstNonEmptyResult(lambdas)
-    def self.firstNonEmptyResult(lambdas)
-        # Takes a sequence of lambdas that all return an array and return the
-        # first such non empty array.
-        # Only the necessary lambdas are evaluated
-        lambdas.each{|l|
-            result = l.call()
-            return result if !result.empty?
-        }
-        []
-    end
 end
