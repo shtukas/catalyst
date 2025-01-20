@@ -144,7 +144,7 @@ class Items
         trace = LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Items")
                         .reduce(""){|trace, location| Digest::SHA1.hexdigest("#{trace}:#{File.mtime(location)}") }
 
-        items = InMemoryCache::getOrNull("5ab5557d-d9aa-46a6-abbe-fef363620d98: #{trace}")
+        items = InMemoryCache::getOrNull("5ab5557d-d9aa-46a6-abbe-fef363620d98:#{trace}")
         return items if items
 
         items = []
@@ -158,7 +158,7 @@ class Items
         db.close
         items = Items::upgradeItemsWithAttributesJournal(items, Items::attributesJournal())
 
-        InMemoryCache::set("5ab5557d-d9aa-46a6-abbe-fef363620d98: #{trace}", items)
+        InMemoryCache::set("5ab5557d-d9aa-46a6-abbe-fef363620d98:#{trace}", items)
         items
     end
 
@@ -169,7 +169,7 @@ class Items
         trace = LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Items")
                         .reduce(""){|trace, location| Digest::SHA1.hexdigest("#{trace}:#{File.mtime(location)}") }
 
-        items = InMemoryCache::getOrNull("41182940-e0f0-4acc-8a22-699797d25baf: #{trace}")
+        items = InMemoryCache::getOrNull("41182940-e0f0-4acc-8a22-699797d25baf:#{trace}:#{mikuType}")
         return items if items
 
         items = []
@@ -184,7 +184,7 @@ class Items
         items = Items::upgradeItemsWithAttributesJournal(items, Items::attributesJournal())
             .select{|item| item["mikuType"] == mikuType }
 
-        InMemoryCache::set("41182940-e0f0-4acc-8a22-699797d25baf: #{trace}", items)
+        InMemoryCache::set("41182940-e0f0-4acc-8a22-699797d25baf:#{trace}:#{mikuType}", items)
         items
     end
 
