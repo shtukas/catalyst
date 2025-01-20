@@ -139,8 +139,16 @@ class Items
 
     # Items::items()
     def self.items()
+        databasefilepath = "#{Config::pathToCatalystDataRepository()}/Items/20240607-155704-609823.sqlite3"
+
+        trace = LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Items")
+                        .reduce(""){|trace, location| Digest::SHA1.hexdigest("#{trace}:#{File.mtime(location)}") }
+
+        items = InMemoryCache::getOrNull("5ab5557d-d9aa-46a6-abbe-fef363620d98: #{trace}")
+        return items if items
+
         items = []
-        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Items/20240607-155704-609823.sqlite3")
+        db = SQLite3::Database.new(databasefilepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -148,11 +156,22 @@ class Items
             items << JSON.parse(row["_item_"])
         end
         db.close
-        Items::upgradeItemsWithAttributesJournal(items, Items::attributesJournal())
+        items = Items::upgradeItemsWithAttributesJournal(items, Items::attributesJournal())
+
+        InMemoryCache::set("5ab5557d-d9aa-46a6-abbe-fef363620d98: #{trace}", items)
+        items
     end
 
     # Items::mikuType(mikuType)
     def self.mikuType(mikuType)
+        databasefilepath = "#{Config::pathToCatalystDataRepository()}/Items/20240607-155704-609823.sqlite3"
+
+        trace = LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Items")
+                        .reduce(""){|trace, location| Digest::SHA1.hexdigest("#{trace}:#{File.mtime(location)}") }
+
+        items = InMemoryCache::getOrNull("41182940-e0f0-4acc-8a22-699797d25baf: #{trace}")
+        return items if items
+
         items = []
         db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Items/20240607-155704-609823.sqlite3")
         db.busy_timeout = 117
@@ -162,8 +181,11 @@ class Items
             items << JSON.parse(row["_item_"])
         end
         db.close
-        Items::upgradeItemsWithAttributesJournal(items, Items::attributesJournal())
+        items = Items::upgradeItemsWithAttributesJournal(items, Items::attributesJournal())
             .select{|item| item["mikuType"] == mikuType }
+
+        InMemoryCache::set("41182940-e0f0-4acc-8a22-699797d25baf: #{trace}", items)
+        items
     end
 
     # Items::setAttribute(uuid, attrname, attrvalue)

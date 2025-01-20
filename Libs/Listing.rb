@@ -96,13 +96,13 @@ class Listing
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i } # we split today in before and after now
         items =
             i1s                      + # items today, late running
-            NxTasks::listingPhase1() + # items with a time commitment engine
-            NxTasks::listingPhase2() + # items entirely managed by a core
-            NxCores::listingItems()  + # cores
-            NxTasks::listingPhase3() + # infinity items without engine
-            i2s                        # items today, near future
-        items = Desktop::listingItems() + items + NxBalls::activeItems()
-        items = Prefix::addPrefix(items)
+            NxTasks::listingPhase1() + [] # items with a time commitment engine
+        #    NxTasks::listingPhase2() + # items entirely managed by a core
+        #    NxCores::listingItems()  + # cores
+        #    NxTasks::listingPhase3() + # infinity items without engine
+        #    i2s                        # items today, near future
+        #items = Desktop::listingItems() + items + NxBalls::activeItems()
+        #items = Prefix::addPrefix(items)
         items
     end
 
