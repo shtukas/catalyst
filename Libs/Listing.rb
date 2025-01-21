@@ -223,8 +223,8 @@ class Listing
                 }
             puts "(game1: rendered in #{(Time.new.to_f - t1).round(3)} s)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "''" then
-                
+            if input == "exit" then
+                return
             end
             CommandsAndInterpreters::interpreter(input, store)
         }
