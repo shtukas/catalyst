@@ -209,6 +209,7 @@ class Listing
     # Listing::game1()
     def self.game1()
         loop {
+            system('clear')
             t1 = Time.new.to_f
             items = Listing::itemsForListing()
             store = ItemStore.new()
