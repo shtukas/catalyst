@@ -167,7 +167,7 @@ class Listing
             end
 
             if input == "game1" then
-                Listing::game1()
+                Listing::game1(initialCodeTrace)
                 next
             end
 
@@ -206,14 +206,14 @@ class Listing
         }
     end
 
-    # Listing::game1()
-    def self.game1()
+    # Listing::game1(initialCodeTrace)
+    def self.game1(initialCodeTrace)
         loop {
+            Listing::preliminaries(initialCodeTrace)
             system('clear')
             t1 = Time.new.to_f
-            items = Listing::itemsForListing()
             store = ItemStore.new()
-            items = items.take(1)
+            items = Listing::itemsForListing().take(1)
             items = Prefix::addPrefix(items)
             items
                 .each{|item|
@@ -223,8 +223,8 @@ class Listing
                 }
             puts "(game1: rendered in #{(Time.new.to_f - t1).round(3)} s)"
             input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "exit" then
-                return
+            if input == "''" then
+                
             end
             CommandsAndInterpreters::interpreter(input, store)
         }

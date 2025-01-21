@@ -95,7 +95,6 @@ class NxTasks
 
     # NxTasks::activeItems()
     def self.activeItems()
-
         items1 = Items::mikuType("NxTask")
                 .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 1 }
                 .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
