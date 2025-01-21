@@ -96,14 +96,20 @@ class Listing
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i } # we split today in before and after now
         items =
             i1s                      + # items today, late running
-            NxTasks::listingPhase1() + [] # items with a time commitment engine
+            NxTasks::listingPhase1() + # items with a time commitment engine
             NxTasks::listingPhase2() + # items entirely managed by a core
             NxCores::listingItems()  + # cores
             NxTasks::listingPhase3() + # infinity items without engine
             i2s                        # items today, near future
         items = Desktop::listingItems() + items + NxBalls::activeItems()
-        items = Prefix::addPrefix(items)
         items
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
     end
 
     # -----------------------------------------
@@ -136,6 +142,7 @@ class Listing
             t1 = Time.new.to_f
 
             items = Listing::itemsForListing()
+            items = Prefix::addPrefix(items)
 
             #system("clear")
 
@@ -144,13 +151,6 @@ class Listing
             puts "-" * (CommonUtils::screenWidth() - 2)
 
             items
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
                 .take(CommonUtils::screenHeight()-4)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
@@ -161,8 +161,14 @@ class Listing
             puts "(rendered in #{(Time.new.to_f - t1).round(3)} s)"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
+
             if input == "exit" then
                 return
+            end
+
+            if input == "game1" then
+                Listing::game1()
+                next
             end
 
             CommandsAndInterpreters::interpreter(input, store)
@@ -197,6 +203,29 @@ class Listing
         }
         loop {
             Listing::listing(initialCodeTrace)
+        }
+    end
+
+    # Listing::game1()
+    def self.game1()
+        loop {
+            t1 = Time.new.to_f
+            items = Listing::itemsForListing()
+            store = ItemStore.new()
+            items = items.take(1)
+            items = Prefix::addPrefix(items)
+            items
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    line = Listing::toString2(store, item)
+                    puts line
+                }
+            puts "(game1: rendered in #{(Time.new.to_f - t1).round(3)} s)"
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            if input == "exit" then
+                return
+            end
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 end
