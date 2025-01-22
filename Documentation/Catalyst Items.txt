@@ -10,4 +10,4 @@ Cross types conventions (all optional):
     - uxpayload-b4e4     : UxPayload
     - donation-1205      : String # uuid of target for donation
     - parentuuid-0014    : uuid
-    - global-positioning-4233  : Float # mostly used to order children inside regular cores
+    - global-positioning-4233 : Float # mostly used to order children inside regular cores
