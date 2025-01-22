@@ -5,7 +5,7 @@ class DoNotShowUntil
     def self.getUnixtimeOrNull(id)
         filepath = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/DoNotShowUntil/#{id}.data"
         return nil if !File.exist?(filepath)
-        IO.read(filepath).strip
+        IO.read(filepath).strip.to_f
     end
 
     # DoNotShowUntil::setUnixtime(id, unixtime)

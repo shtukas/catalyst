@@ -92,6 +92,7 @@ class Listing
                     selected + [item]
                 end
             }
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # -----------------------------------------
@@ -151,6 +152,8 @@ class Listing
             store = ItemStore.new()
 
             puts ""
+
+            items = items.take(CommonUtils::screenHeight()-5)
 
             items
                 .each{|item|
