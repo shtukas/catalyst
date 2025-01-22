@@ -30,20 +30,72 @@ class NxTasks
     end
 
     # ------------------
-    # Data
+    # Data (1)
+
+    # NxTasks::isActive(item)
+    def self.isActive(item)
+        item["donation-1205"] or item["hours-2037"]
+    end
+
+    # NxTasks::isInfinity(item)
+    def self.isInfinity(item)
+        (item["donation-1205"].nil? or item["hours-2037"].nil?) and item["parentuuid-0014"].nil?
+    end
+
+    # NxTasks::coreItem(item)
+    def self.coreItem(item)
+        item["parentuuid-0014"]
+    end
+
+    # ------------------
+    # Data (2)
 
     # NxTasks::icon(item)
     def self.icon(item)
-        if item["engine-1706"] then
-            return item["engine-1706"]["version"] == 1 ? "🔺" : "🔹"
+        if NxTasks::isActive(item) then
+            return "🔺"
         end
-        "▫️ "
+        if NxTasks::coreItem(item) then
+            return "🔹"
+        end
+        if NxTasks::isInfinity(item)then
+            return "▫️ "
+        end
+
+        raise "(error: 2158-raiko)"
+    end
+
+    # NxTasks::toStringSuffix(item)
+    def self.toStringSuffix(item)
+        if item["donation-1205"] and item["hours-2037"] then
+            target = Items::itemOrNull(item["donation-1205"])
+            if target.nil? then
+                Items::setAttribute(item["uuid"], "donation-1205", nil)
+                return NxTasks::toStringSuffix(item)
+            end
+            return " (#{item["hours-2037"]}/week for #{target["description"]})"
+        end
+
+        if item["donation-1205"] and item["hours-2037"].nil? then
+            target = Items::itemOrNull(item["donation-1205"])
+            if target.nil? then
+                Items::setAttribute(item["uuid"], "donation-1205", nil)
+                return NxTasks::toStringSuffix(item)
+            end
+            return " (d: #{target["description"]})"
+        end
+
+        if item["donation-1205"].nil? and item["hours-2037"] then
+            return " (commitment: #{item["hours-2037"]}/week)"
+        end
+
+        ""
     end
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
         engine = item["engine-1706"] # can be null
-        "#{NxTasks::icon(item)}#{NxEngines::toStringSuffix(item["uuid"], engine)} #{item["description"]}"
+        "#{NxTasks::icon(item)}#{NxTasks::ratioSuffix(item)} #{item["description"]}#{NxTasks::toStringSuffix(item).yellow}"
     end
 
     # NxTasks::taskInsertionPosition()
@@ -61,62 +113,28 @@ class NxTasks
         0.5 * (positions.first + positions.last)
     end
 
-    # NxTasks::getItemsEngine(version)
-    def self.getItemsEngine(version)
-        data = XCache::getOrNull("2b2c6ce5-cca1-4014-968c-4756c62dbb14:#{version}")
-        return JSON.parse(data) if data
-
-        data = Items::mikuType("NxTask")
-            .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == version }
-
-        XCache::set("2b2c6ce5-cca1-4014-968c-4756c62dbb14:#{version}", JSON.generate(data))
-        data
+    # NxTasks::ratio(item)
+    def self.ratio(item)
+        hours = item["hours-2037"] ? item["hours-2037"] : 1
+        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
     end
 
-    # NxTasks::listingPhase1()
-    def self.listingPhase1()
-        NxTasks::getItemsEngine(1)
-            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
-            .select{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) < 1 }
-            .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
-    end
-
-    # NxTasks::listingPhase2()
-    def self.listingPhase2()
-        activecoresuuids = NxCores::listingItems().map{|item| item["uuid"] }
-        NxTasks::getItemsEngine(2)
-            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
-            .select{|item| item["uuid"] != "b5c3c45c-0436-4f63-b443-227c20586100" or NxTaskSpecialCircumstances::bufferInHasItems() }
-            .select{|item| activecoresuuids.include?(item["engine-1706"]["targetuuid"]) }
-            .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-    end
-
-    # NxTasks::listingPhase3()
-    def self.listingPhase3()
-        Items::mikuType("NxTask")
-            .select{|item| item["engine-1706"].nil? and item["parentuuid-0014"].nil? }
-            .sort_by{|item| item["global-positioning-4233"] }
-            .take(10)
+    # NxTasks::ratioSuffix(item)
+    def self.ratioSuffix(item)
+        " (#{"%5.3f" % NxTasks::ratio(item)})".green
     end
 
     # NxTasks::activeItems()
     def self.activeItems()
-        items1 = Items::mikuType("NxTask")
-                .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 1 }
-                .sort_by{|item| NxEngines::ratio(item["uuid"], item["engine-1706"]) }
-
-        items2 = Items::mikuType("NxTask")
-                .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == 2 }
-                .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
-
-        items1 + items2
+        Items::mikuType("NxTask")
+            .select{|item| NxTasks::isActive(item) }
     end
 
     # ------------------
     # Ops
 
-    # NxTasks::performItemPositioningInStack(item)
-    def self.performItemPositioningInStack(item)
+    # NxTasks::performItemPositioningInCore(item)
+    def self.performItemPositioningInCore(item)
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["Infinity, 10 to 20 task (default)", "NxCore"])
 
         if option.nil? or option == "Infinity, 10 to 20 task (default)" then
@@ -133,6 +151,22 @@ class NxTasks
         end
     end
 
+    # NxTasks::performActivation(item)
+    def self.performActivation(item)
+        parent = NxCores::interactivelySelectOrNull()
+        if parent.nil? then
+            Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
+            position = Operations::interactivelySelectGlobalPositionInParent(parent)
+            Items::setAttribute(item["uuid"], "global-positioning-4233", position)
+        end
+
+        hours = LucilleCore::askQuestionAnswerAsString("set weekly hours (empty to void) : ")
+        if hours != "" then
+            hours = hours.to_f
+            Items::setAttribute(item["uuid"], "hours-2037", hours)
+        end
+    end
+
     # NxTasks::performGeneralItemPositioning(item)
     def self.performGeneralItemPositioning(item)
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["activation", "storage in core"])
@@ -141,11 +175,11 @@ class NxTasks
             return
         end
         if option == "activation" then
-            engine = NxEngines::interactivelyIssueNew()
+            engine = NxTasks::interactivelyIssueNew()
             Items::setAttribute(item["uuid"], "engine-1706", engine)
         end
         if option == "storage in core" then
-            NxTasks::performItemPositioningInStack(item)
+            NxTasks::performItemPositioningInCore(item)
         end
     end
 end

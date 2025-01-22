@@ -6,4 +6,3 @@ NxDated:
     - datetime           : DateTime Iso 8601 UTC Zulu
     - description        : String
     - date               : YYYY-MM-DD
-                           DateTime Iso 8601 UTC Zulu, but we will truncate

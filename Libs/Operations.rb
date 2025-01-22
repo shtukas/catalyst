@@ -55,20 +55,7 @@ class Operations
                 next if target
                 Items::setAttribute(item["uuid"], "parentuuid-0014", nil)
             }
-
-            Operations::ensure_listing_positioning()
         end
-    end
-
-    # Operations::ensure_listing_positioning()
-    def self.ensure_listing_positioning()
-        Items::items().each{|item|
-            next if item["mikuType"] == "NxTask"
-            next if item["mikuType"] == "NxCore"
-            next if item["mikuType"] == "NxStrat"
-            next if item["listing-positioning-2141"]
-            Listing::reposition(item)
-        }
     end
 
     # Operations::selectTodoTextFileLocationOrNull(todotextfile)
@@ -104,7 +91,7 @@ class Operations
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
+        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 
     # Operations::interactivelySelectGlobalPositionInParent(parent)
@@ -127,35 +114,11 @@ class Operations
         position
     end
 
-    # Operations::postposeItemToUnixtime(item, unixtime)
-    def self.postposeItemToUnixtime(item, unixtime)
-        NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
-    end
-
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
         puts "recovered average hours per day: #{Bank1::recoveredAverageHoursPerDay(item["uuid"])}"
         LucilleCore::pressEnterToContinue()
-    end
-
-    # Operations::speed()
-    def self.speed()
-        measure = lambda {|n, l|
-            t1 = Time.new.to_f
-            l.call()
-            dt = Time.new.to_f - t1
-            puts "#{n}: #{dt}"
-        }
-
-        Listing::itemsForListing() # to enable caching
-
-        measure.call("Listing::itemsInOrder()", lambda { Listing::itemsInOrder() })
-        measure.call("NxTasks::listingPhase1()", lambda { NxTasks::listingPhase1() })
-        measure.call("NxTasks::listingPhase2()", lambda { NxTasks::listingPhase2() })
-        measure.call("NxTasks::listingPhase3()", lambda { NxTasks::listingPhase3() })
-        measure.call("NxCores::listingItems()", lambda { NxCores::listingItems() })
     end
 
     # Operations::setDonation(item)

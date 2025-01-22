@@ -1,9 +1,11 @@
 
 NxTask:
-    - uuid               : String
-    - mikuType           : "NxTask"
-    - unixtime           : Float
-    - datetime           : DateTime Iso 8601 UTC Zulu
-    - description        : String
+    - uuid                    : String
+    - mikuType                : "NxTask"
+    - unixtime                : Float
+    - datetime                : DateTime Iso 8601 UTC Zulu
+    - description             : String
     - global-positioning-4233 : Float
-    - engine-1706        : NxEngine
+
+    - hours-2037              : Float  | null # hours per week
+    - donation-1205           : String | null # uuid of target for donation

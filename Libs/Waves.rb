@@ -124,13 +124,13 @@ class Waves
     # Waves::toString(item)
     def self.toString(item)
         ago = "done: #{((Time.new.to_i - item["lastDoneUnixtime"]).to_f/86400).round(2)} days ago"
-        interruption = item["interruption"] ? " (interruption)" : ""
+        interruption = item["interruption"] ? " (interruption)".red : ""
         "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])}) (#{ago})#{interruption}"
     end
 
-    # Waves::next_unixtime(item)
-    def self.next_unixtime(item)
-        Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].compact.max)
+    # Waves::listingItems()
+    def self.listingItems()
+        Items::mikuType("Wave").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # -------------------------------------------------------------------------
@@ -140,8 +140,8 @@ class Waves
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].max)
-        Listing::reposition(item)
+        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
+        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 
     # Waves::program2(item)
@@ -162,7 +162,6 @@ class Waves
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
                 Items::setAttribute(item["uuid"], "nx46", nx46)
-                Listing::reposition(item)
             end
             if action == "perform done" then
                 Waves::perform_done(item)
@@ -182,7 +181,7 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = Items::mikuType("Wave").sort_by{|wave| wave["listing-positioning-2141"] }
+        items = Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 }
         Operations::program2(items)
     end
 end

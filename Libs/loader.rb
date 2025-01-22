@@ -134,6 +134,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "Datablobs.rb"
+require_relative "DoNotShowUntil.rb"
 
 require_relative "Fsck.rb"
 
@@ -145,6 +146,7 @@ require_relative "Items.rb"
 require_relative "InMemoryCache.rb"
 
 require_relative "Listing.rb"
+require_relative "ListingMetric.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
@@ -153,7 +155,6 @@ require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxStrats.rb"
-require_relative "NxEngines.rb"
 
 require_relative "Operations.rb"
 

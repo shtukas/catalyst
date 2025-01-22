@@ -69,7 +69,7 @@ class PolyActions
         })
 
         if item["mikuType"] == "NxFloat" then
-            Listing::reposition(item)
+            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6)
             return
         end
 
@@ -99,14 +99,13 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                Listing::reposition(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
-            Listing::reposition(item)
             return
         end
 

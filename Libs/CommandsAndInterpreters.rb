@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
             "              : transmute * | to-ondate * | to-task *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
-            "NxTask        : engine *",
+            "NxTask        : activate *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
             "misc          : search | commands | edit <n> | speed",
         ].join("\n")
@@ -22,7 +22,6 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
-                Operations::postposeItemToUnixtime(item, unixtime + rand)
                 return
             end
         end
@@ -47,7 +46,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            Listing::reposition(item)
             return
         end
 
@@ -64,20 +62,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute1(item, "NxTask")
-            return
-        end
-
-        if Interpreting::match("engine *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            if item["mikuType"] != "NxTask" then
-                puts "We can only add NxEngines to NxTasks"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            engine = NxEngines::interactivelyIssueNew()
-            Items::setAttribute(item["uuid"], "engine-1706", engine)
             return
         end
 
@@ -117,6 +101,14 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            return
+        end
+
+        if Interpreting::match("activate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            NxTasks::performActivation(item)
             return
         end
 
@@ -199,13 +191,12 @@ class CommandsAndInterpreters
                 return if !LucilleCore::askQuestionAnswerAsBoolean("You are attempting to move a #{item["mikuType"]}, confirm making it a NxTask", true)
             end
 
-            NxTasks::performItemPositioningInStack(item)
+            NxTasks::performGeneralItemPositioning(item)
 
             # We are making the mikuType change last to avoid putting the item in
             # an inconsistent state if the process was interrupted.
             if item["mikuType"] == "NxDated" then
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-                Items::setAttribute(item["uuid"], "listing-positioning-2141", nil)
             end
             return
         end
@@ -256,7 +247,8 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("active items", input) then
-            Operations::program2(NxTasks::activeItems())
+            items = NxTasks::activeItems().sort_by{|item| NxTasks::ratio(item) }
+            Operations::program2(items)
             return
         end
 
@@ -404,7 +396,6 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
-            Listing::reposition(item)
             return
         end
 
@@ -459,12 +450,6 @@ class CommandsAndInterpreters
 
         if input == "waves" then
             Waves::program1()
-            return
-        end
-
-        if input == "speed" then
-            Operations::speed()
-            LucilleCore::pressEnterToContinue()
             return
         end
     end

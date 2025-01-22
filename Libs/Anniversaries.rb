@@ -148,13 +148,12 @@ class Anniversaries
     # Anniversaries::toString(anniversary)
     def self.toString(anniversary)
         difference = Anniversaries::difference_between_dates_in_specified_unit(anniversary["startdate"], anniversary["next_celebration"], anniversary["repeatType"])
-        "(anniversary) [#{anniversary["startdate"]}, #{Time.at(anniversary["listing-positioning-2141"]).to_s[0, 10]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
+        "(anniversary) [#{anniversary["startdate"]}, #{anniversary["next_celebration"]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
-    # Anniversaries::next_unixtime(item)
-    def self.next_unixtime(item)
-        date = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
-        Date.parse(date).to_time.to_i
+    # Anniversaries::listingItems()
+    def self.listingItems()
+        Items::mikuType("NxAnniversary").select{|item| item["next_celebration"] <= CommonUtils::today() }
     end
 
     # ----------------------------------------------------------------------------------
@@ -195,7 +194,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Items::mikuType("NxAnniversary").sort_by{|item| Anniversaries::next_unixtime(item) }
+            anniversaries = Items::mikuType("NxAnniversary").sort_by{|item| item["next_celebration"] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?
             Anniversaries::program1(anniversary)

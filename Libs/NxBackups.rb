@@ -12,9 +12,9 @@ class NxBackups
         "💾 [backup] #{item["description"]} (every #{item["period"]} days)"
     end
 
-    # NxBackups::next_unixtime(item)
-    def self.next_unixtime(item)
-        Time.new.to_i + item["period"]*86400
+    # NxBackups::listingItems()
+    def self.listingItems()
+        Items::mikuType("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # NxBackups::processNotificationChannel()
@@ -25,7 +25,7 @@ class NxBackups
             description = message["payload"]["description"]
             item = NxBackups::getItemByDescriptionOrNull(description)
             next if item.nil?
-            Listing::reposition(item)
+            DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
             FileUtils.rm(filepath)
         }
     end

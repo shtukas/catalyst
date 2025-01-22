@@ -1,3 +1,0 @@
-
-DoNotShowUntil.sqlite3
-create table DoNotShowUntil (_id_ string primary key, _unixtime_ float);

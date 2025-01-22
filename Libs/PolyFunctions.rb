@@ -118,23 +118,15 @@ class PolyFunctions
     # PolyFunctions::childrenForPrefix(item)
     def self.childrenForPrefix(item)
 
-        metricForInfinityPrefixPositioning = lambda {|item|
-            return 0.4 if Bank1::getValue(item["uuid"]) == 0
-            Bank1::recoveredAverageHoursPerDay(item["uuid"])
-        }
-
-
         if st = NxStrats::parentOrNull(item) then
             return [st]
         end
 
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
             return Items::mikuType("NxTask")
-                    .select{|item| item["parentuuid-0014"].nil? }
-                    .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
+                    .select{|item| item["donation-1205"].nil? and item["hours-2037"].nil? and item["parentuuid-0014"].nil? }
                     .sort_by{|item| item["global-positioning-4233"] }
                     .first(3)
-                    .sort_by{|item| metricForInfinityPrefixPositioning.call(item) }
         end
 
         if item["mikuType"] == "NxCore" then
@@ -144,7 +136,6 @@ class PolyFunctions
 
         Items::items()
             .select{|i| i["parentuuid-0014"] == item["uuid"] }
-            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] <= Time.new.to_i }
             .sort_by{|item| item["global-positioning-4233"] }
     end
 
@@ -170,18 +161,11 @@ class PolyFunctions
 
     # PolyFunctions::donationSuffix(item)
     def self.donationSuffix(item)
+        return "" if item["mikuType"] == "NxTask" # we have dedicated display for NxTask
         return "" if item["donation-1205"].nil?
         target = Items::itemOrNull(item["donation-1205"])
         return "" if target.nil?
         " #{"(d: #{target["description"]})".yellow}"
-    end
-
-    # PolyFunctions::engineSuffix(item)
-    def self.engineSuffix(item)
-        return "" if item["engine-1706"].nil?
-        target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
-        return "" if target.nil?
-        " #{"(e: #{target["description"]})".yellow}"
     end
 
     # PolyFunctions::interactivelySelectDonationTargetOrNull()

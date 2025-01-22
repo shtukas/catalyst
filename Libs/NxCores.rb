@@ -53,7 +53,6 @@ class NxCores
     # NxCores::listingItems()
     def self.listingItems()
         Items::mikuType("NxCore")
-            .select{|item| item["listing-positioning-2141"].nil? or item["listing-positioning-2141"] < Time.new.to_i }
             .select{|item| NxCores::ratio(item) < 1 }
             .sort_by{|item| NxCores::ratio(item) }
     end
@@ -162,7 +161,7 @@ class NxCores
                 listord = input[4, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                NxTasks::performItemPositioningInStack(i)
+                NxTasks::performItemPositioningInCore(i)
                 next
             end
 

@@ -54,25 +54,11 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::listingPositioningAsString(item)
-    def self.listingPositioningAsString(item)
-        return "" if ["NxCore", "NxTask"].include?(item["mikuType"])
-        return "" if item["listing-positioning-2141"].nil?
-        positioning = " [#{Time.at(item["listing-positioning-2141"]).to_s}]"
-        if Time.at(item['listing-positioning-2141']).to_s[0, 10] == CommonUtils::today() then
-            positioning = positioning.yellow
-        end
-        if item['listing-positioning-2141'] < Time.new.to_i then
-            positioning = positioning.red
-        end
-        positioning
-    end
-
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix}#{Listing::listingPositioningAsString(item)} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{PolyFunctions::engineSuffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -85,61 +71,20 @@ class Listing
         line
     end
 
-    # Listing::itemsInOrder()
-    def self.itemsInOrder()
-        Items::items()
-            .each{|item|
-                next if item["listing-positioning-2141"]
-                next if item["mikuType"] == "NxTask"
-                next if item["mikuType"] == "NxCore"
-                next if item["mikuType"] == "NxStrat"
-                Items::setAttribute(item["uuid"], "listing-positioning-2141", Listing::next_unixtime(item))
-            }
-
-        Items::items()
-            .reject{|item| ["NxCore", "NxTask", "NxStrat"].include?(item["mikuType"]) }
-            .select{|item| item["listing-positioning-2141"] }
-            .sort_by{|item| item["listing-positioning-2141"] }
-    end
-
-    # Listing::next_unixtime(item)
-    def self.next_unixtime(item)
-        if item["mikuType"] == "NxAnniversary" then
-            return Anniversaries::next_unixtime(item)
-        end
-        if item["mikuType"] == "Wave" then
-            return Waves::next_unixtime(item)
-        end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::next_unixtime()
-        end
-        if item["mikuType"] == "NxBackup" then
-            return NxBackups::next_unixtime(item)
-        end
-        if item["mikuType"] == "NxDated" then
-            return NxDateds::next_unixtime(item)
-        end
-        raise "(error: c21b8535) do not know how to reposition #{JSON.pretty_generate(item)}"
-    end
-
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = Listing::itemsInOrder() # items with a listing position
-        if !Config::isPrimaryInstance() then
-            items = items.reject{|item| item["mikuType"] == "NxBackup" } # we only show backup items on alexandra
-        end
-        unixtime = CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
-        items = items.select{|item| item["listing-positioning-2141"] < unixtime } # we keep items with a deadline today, not afterwards
-        i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i } # we split today in before and after now
-        items =
-            Desktop::listingItems()  +
-            i1s                      + # items today, late running
-            NxTasks::listingPhase1() + # items with a time commitment engine
-            NxTasks::listingPhase2() + # items entirely managed by a core
-            NxCores::listingItems()  + # cores
-            NxTasks::listingPhase3() + # infinity items without engine
-            i2s                        # items today, near future
-        items
+
+        [
+            Anniversaries::listingItems(),
+            NxBackups::listingItems(),
+            Config::isPrimaryInstance() ? NxDateds::listingItems() : [],
+            NxFloats::listingItems(),
+            NxCores::listingItems(),
+            NxTasks::activeItems(),
+            Waves::listingItems(),
+            NxCores::listingItems()
+        ]
+            .flatten
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
                     selected
@@ -149,26 +94,8 @@ class Listing
             }
     end
 
-    # Listing::itemsForListingCached()
-    def self.itemsForListingCached()
-        data = XCache::getOrNull("74e3f0ff-cd23-470a-bb99-974d2fbeb09a")
-        return JSON.parse(data) if data
-
-        data = Listing::itemsForListing()
-
-        XCache::set("74e3f0ff-cd23-470a-bb99-974d2fbeb09a", JSON.generate(data))
-        data
-    end
-
     # -----------------------------------------
     # Ops
-
-    # Listing::reposition(item)
-    def self.reposition(item)
-        unixtime = Listing::next_unixtime(item)
-        puts "repositioning '#{PolyFunctions::toString(item)}' at #{Time.at(unixtime).to_s.green}"
-        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
-    end
 
     # Listing::preliminaries(initialCodeTrace)
     def self.preliminaries(initialCodeTrace)
@@ -196,7 +123,18 @@ class Listing
 
             t1 = Time.new.to_f
 
-            items = Listing::itemsForListingCached()
+            items = Listing::itemsForListing()
+            items = items
+                .map{|item|
+                    {
+                        "item" => item,
+                        "ratio" => ListingMetric::metric(item)
+                    }
+                }
+                .select{|packet| packet["ratio"] }
+                .sort_by{|packet| packet["ratio"] }
+                .reverse
+                .map{|packet| packet["item"] }
             items = Prefix::addPrefix(items)
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items = items
@@ -212,10 +150,9 @@ class Listing
 
             store = ItemStore.new()
 
-            puts "-" * (CommonUtils::screenWidth() - 2)
+            puts ""
 
             items
-                .take(CommonUtils::screenHeight()-4)
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = Listing::toString2(store, item)
