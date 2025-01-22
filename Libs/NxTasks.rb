@@ -63,8 +63,14 @@ class NxTasks
 
     # NxTasks::getItemsEngine(version)
     def self.getItemsEngine(version)
-        Items::mikuType("NxTask")
+        data = XCache::getOrNull("2b2c6ce5-cca1-4014-968c-4756c62dbb14:#{version}")
+        return JSON.parse(data) if data
+
+        data = Items::mikuType("NxTask")
             .select{|item| item["engine-1706"] and item["engine-1706"]["version"] == version }
+
+        XCache::set("2b2c6ce5-cca1-4014-968c-4756c62dbb14:#{version}", JSON.generate(data))
+        data
     end
 
     # NxTasks::listingPhase1()

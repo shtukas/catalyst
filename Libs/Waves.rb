@@ -141,7 +141,7 @@ class Waves
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], [item["listing-positioning-2141"], Time.new.to_i].max)
-        ListingPositioning::reposition(item)
+        Listing::reposition(item)
     end
 
     # Waves::program2(item)
@@ -162,7 +162,7 @@ class Waves
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
                 Items::setAttribute(item["uuid"], "nx46", nx46)
-                ListingPositioning::reposition(item)
+                Listing::reposition(item)
             end
             if action == "perform done" then
                 Waves::perform_done(item)

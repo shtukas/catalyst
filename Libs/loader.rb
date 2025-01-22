@@ -145,7 +145,6 @@ require_relative "Items.rb"
 require_relative "InMemoryCache.rb"
 
 require_relative "Listing.rb"
-require_relative "ListingPositioning.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
@@ -164,6 +163,7 @@ require_relative "PolyFunctions.rb"
 require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
+require_relative "SigOps.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"

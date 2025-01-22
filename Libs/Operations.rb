@@ -67,7 +67,7 @@ class Operations
             next if item["mikuType"] == "NxCore"
             next if item["mikuType"] == "NxStrat"
             next if item["listing-positioning-2141"]
-            ListingPositioning::reposition(item)
+            Listing::reposition(item)
         }
     end
 
@@ -151,7 +151,7 @@ class Operations
 
         Listing::itemsForListing() # to enable caching
 
-        measure.call("ListingPositioning::itemsInOrder()", lambda { ListingPositioning::itemsInOrder() })
+        measure.call("Listing::itemsInOrder()", lambda { Listing::itemsInOrder() })
         measure.call("NxTasks::listingPhase1()", lambda { NxTasks::listingPhase1() })
         measure.call("NxTasks::listingPhase2()", lambda { NxTasks::listingPhase2() })
         measure.call("NxTasks::listingPhase3()", lambda { NxTasks::listingPhase3() })

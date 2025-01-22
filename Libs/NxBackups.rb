@@ -25,7 +25,7 @@ class NxBackups
             description = message["payload"]["description"]
             item = NxBackups::getItemByDescriptionOrNull(description)
             next if item.nil?
-            ListingPositioning::reposition(item)
+            Listing::reposition(item)
             FileUtils.rm(filepath)
         }
     end

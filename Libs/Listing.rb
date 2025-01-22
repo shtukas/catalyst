@@ -85,9 +85,46 @@ class Listing
         line
     end
 
+    # Listing::itemsInOrder()
+    def self.itemsInOrder()
+        Items::items()
+            .each{|item|
+                next if item["listing-positioning-2141"]
+                next if item["mikuType"] == "NxTask"
+                next if item["mikuType"] == "NxCore"
+                next if item["mikuType"] == "NxStrat"
+                Items::setAttribute(item["uuid"], "listing-positioning-2141", Listing::next_unixtime(item))
+            }
+
+        Items::items()
+            .reject{|item| ["NxCore", "NxTask", "NxStrat"].include?(item["mikuType"]) }
+            .select{|item| item["listing-positioning-2141"] }
+            .sort_by{|item| item["listing-positioning-2141"] }
+    end
+
+    # Listing::next_unixtime(item)
+    def self.next_unixtime(item)
+        if item["mikuType"] == "NxAnniversary" then
+            return Anniversaries::next_unixtime(item)
+        end
+        if item["mikuType"] == "Wave" then
+            return Waves::next_unixtime(item)
+        end
+        if item["mikuType"] == "NxFloat" then
+            return NxFloats::next_unixtime()
+        end
+        if item["mikuType"] == "NxBackup" then
+            return NxBackups::next_unixtime(item)
+        end
+        if item["mikuType"] == "NxDated" then
+            return NxDateds::next_unixtime(item)
+        end
+        raise "(error: c21b8535) do not know how to reposition #{JSON.pretty_generate(item)}"
+    end
+
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = ListingPositioning::itemsInOrder() # items with a listing position
+        items = Listing::itemsInOrder() # items with a listing position
         if !Config::isPrimaryInstance() then
             items = items.reject{|item| item["mikuType"] == "NxBackup" } # we only show backup items on alexandra
         end
@@ -95,13 +132,13 @@ class Listing
         items = items.select{|item| item["listing-positioning-2141"] < unixtime } # we keep items with a deadline today, not afterwards
         i1s, i2s = items.partition{|item| item['listing-positioning-2141'] < Time.new.to_i } # we split today in before and after now
         items =
+            Desktop::listingItems()  +
             i1s                      + # items today, late running
             NxTasks::listingPhase1() + # items with a time commitment engine
             NxTasks::listingPhase2() + # items entirely managed by a core
             NxCores::listingItems()  + # cores
             NxTasks::listingPhase3() + # infinity items without engine
             i2s                        # items today, near future
-        items = Desktop::listingItems() + items + NxBalls::activeItems()
         items
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
@@ -112,8 +149,26 @@ class Listing
             }
     end
 
+    # Listing::itemsForListingCached()
+    def self.itemsForListingCached()
+        data = XCache::getOrNull("74e3f0ff-cd23-470a-bb99-974d2fbeb09a")
+        return JSON.parse(data) if data
+
+        data = Listing::itemsForListing()
+
+        XCache::set("74e3f0ff-cd23-470a-bb99-974d2fbeb09a", JSON.generate(data))
+        data
+    end
+
     # -----------------------------------------
     # Ops
+
+    # Listing::reposition(item)
+    def self.reposition(item)
+        unixtime = Listing::next_unixtime(item)
+        puts "repositioning '#{PolyFunctions::toString(item)}' at #{Time.at(unixtime).to_s.green}"
+        Items::setAttribute(item["uuid"], "listing-positioning-2141", unixtime)
+    end
 
     # Listing::preliminaries(initialCodeTrace)
     def self.preliminaries(initialCodeTrace)
@@ -141,8 +196,17 @@ class Listing
 
             t1 = Time.new.to_f
 
-            items = Listing::itemsForListing()
+            items = Listing::itemsForListingCached()
             items = Prefix::addPrefix(items)
+            items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+            items = items
+                .reduce([]){|selected, item|
+                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected
+                    else
+                        selected + [item]
+                    end
+                }
 
             #system("clear")
 
@@ -164,11 +228,6 @@ class Listing
 
             if input == "exit" then
                 return
-            end
-
-            if input == "game1" then
-                Listing::game1(initialCodeTrace)
-                next
             end
 
             CommandsAndInterpreters::interpreter(input, store)
@@ -203,30 +262,6 @@ class Listing
         }
         loop {
             Listing::listing(initialCodeTrace)
-        }
-    end
-
-    # Listing::game1(initialCodeTrace)
-    def self.game1(initialCodeTrace)
-        loop {
-            Listing::preliminaries(initialCodeTrace)
-            system('clear')
-            t1 = Time.new.to_f
-            store = ItemStore.new()
-            items = Listing::itemsForListing().take(1)
-            items = Prefix::addPrefix(items)
-            items
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
-                    puts line
-                }
-            puts "(game1: rendered in #{(Time.new.to_f - t1).round(3)} s)"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "exit" then
-                return
-            end
-            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 end

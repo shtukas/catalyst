@@ -47,7 +47,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            ListingPositioning::reposition(item)
+            Listing::reposition(item)
             return
         end
 
@@ -404,7 +404,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
-            ListingPositioning::reposition(item)
+            Listing::reposition(item)
             return
         end
 

@@ -63,8 +63,13 @@ class PolyActions
 
         NxBalls::stop(item)
 
+        SigOps::incoming({
+            "type" => "done",
+            "uuid" => item["uuid"]
+        })
+
         if item["mikuType"] == "NxFloat" then
-            ListingPositioning::reposition(item)
+            Listing::reposition(item)
             return
         end
 
@@ -94,14 +99,14 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
-                ListingPositioning::reposition(item)
+                Listing::reposition(item)
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
-            ListingPositioning::reposition(item)
+            Listing::reposition(item)
             return
         end
 
@@ -216,6 +221,11 @@ class PolyActions
     def self.destroy(item, force = false)
 
         NxBalls::stop(item)
+
+        SigOps::incoming({
+            "type" => "done",
+            "uuid" => item["uuid"]
+        })
 
         if force then
             Items::destroy(item["uuid"])
