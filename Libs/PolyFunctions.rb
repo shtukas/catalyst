@@ -108,34 +108,17 @@ class PolyFunctions
     # PolyFunctions::computedChildren(item)
     def self.computedChildren(item)
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return Items::mikuType("NxTask")
-                        .select{|item| item["parentuuid-0014"].nil? }
-                        .select{|item| item["engine-1706"].nil? }
+            return Items::mikuType("NxTask").select{|item| NxTasks::isOrphan(item) }
         end
         []
     end
 
     # PolyFunctions::childrenForPrefix(item)
     def self.childrenForPrefix(item)
-
         if st = NxStrats::parentOrNull(item) then
             return [st]
         end
-
-        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return Items::mikuType("NxTask")
-                    .select{|item| item["donation-1205"].nil? and item["hours-2037"].nil? and item["parentuuid-0014"].nil? }
-                    .sort_by{|item| item["global-positioning-4233"] }
-                    .first(3)
-        end
-
-        if item["mikuType"] == "NxCore" then
-            return PolyFunctions::computedChildren(item)
-                .sort_by{|item| item["global-positioning-4233"] }
-        end
-
-        Items::items()
-            .select{|i| i["parentuuid-0014"] == item["uuid"] }
+        (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item))
             .sort_by{|item| item["global-positioning-4233"] }
     end
 
@@ -180,5 +163,12 @@ class PolyFunctions
         result = lambda.call()
         puts "measure: #{experimentname}: #{Time.new.to_f-t1}"
         result
+    end
+
+    # PolyFunctions::ratio(item)
+    def self.ratio(item)
+        return NxTasks::ratio(item) if NxTasks::isActive(item)
+        return NxCores::ratio(item) if item["mikuType"] == "NxCore"
+        raise "(error: 1931-e258c72b)"
     end
 end

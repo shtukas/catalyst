@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile1 * | pile+ * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | core",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | core",
             "              : transmute * | to-ondate * | to-task *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxTask        : activate *",
@@ -102,6 +102,16 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            return
+        end
+
+        if Interpreting::match("on *", input) then
+            _, weekdayName = Interpreting::tokenizer(input)
+            return if !["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].include?(weekdayName)
+            date = CommonUtils::selectDateOfNextNonTodayWeekDay(weekdayName)
+            item = NxDateds::interactivelyIssueAtGivenDateOrNull(date)
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 

@@ -40,9 +40,14 @@ class NxCores
         "(#{"%6.2f" % (100 * NxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
     end
 
+    # NxCores::ratioPrelude(item)
+    def self.ratioPrelude(item)
+        "(#{"%5.3f" % NxCores::ratio(item)})".green
+    end
+
     # NxCores::toString(item)
     def self.toString(item)
-        "⏱️  #{NxCores::ratioString(item)} #{item["description"]}"
+        "⏱️  #{NxCores::ratioPrelude(item)} #{item["description"]} #{NxCores::ratioString(item)}"
     end
 
     # NxCores::inRatioOrder()

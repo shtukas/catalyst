@@ -23,31 +23,23 @@ class ListingMetric
         if item["mikuType"] == "NxTask" and NxTasks::isActive(item) and item["hours-2037"] then
             ratio = NxTasks::ratio(item)
             return nil if ratio >= 1
-            return 6 + 0.9 - 0.01*ratio
+            return 6 + 0.9 - 0.001*ratio
         end
 
         if item["mikuType"] == "NxTask" and NxTasks::isActive(item) and item["hours-2037"].nil? then
             ratio = NxTasks::ratio(item)
             return nil if ratio >= 1
-            return 5 + 0.9 - 0.01*ratio
+            return 5 + 0.9 - 0.001*ratio
         end
 
         if item["mikuType"] == "NxBackup" then
             return 4
         end
 
-        if item["mikuType"] == "NxTask" and NxTasks::coreItem(item) then
-            return 3 + 0.9 - 0.01*Math.log(item['global-positioning-4233'] || 1)
-        end
-
-        if item["mikuType"] == "NxTask" and NxTasks::isInfinity(item) then
-            return 2 + 0.9 - 0.01*Math.log(item['global-positioning-4233'] || 1)
-        end
-
         if item["mikuType"] == "NxCore" then
             ratio = NxCores::ratio(item)
             return nil if ratio >= 1
-            return 1 + 0.9 - 0.01*ratio
+            return 3 + 0.9 - 0.001*ratio
         end
 
         if item["mikuType"] == "Wave" and !item["interruption"] then

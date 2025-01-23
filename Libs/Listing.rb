@@ -74,7 +74,7 @@ class Listing
     # Listing::itemsForListing()
     def self.itemsForListing()
 
-        [
+        items = [
             Anniversaries::listingItems(),
             NxBackups::listingItems(),
             Config::isPrimaryInstance() ? NxDateds::listingItems() : [],
@@ -93,6 +93,25 @@ class Listing
                 end
             }
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .map{|item|
+                {
+                    "item" => item,
+                    "ratio" => ListingMetric::metric(item)
+                }
+            }
+            .select{|packet| packet["ratio"] }
+            .sort_by{|packet| packet["ratio"] }
+            .reverse
+            .map{|packet| packet["item"] }
+
+        return items if items.size > 0
+
+        [
+            NxTasks::activeItems(),
+            Items::mikuType("NxCore")
+        ]
+            .flatten
+            .sort_by{|item| PolyFunctions::ratio(item) }
     end
 
     # -----------------------------------------
@@ -125,17 +144,6 @@ class Listing
             t1 = Time.new.to_f
 
             items = Listing::itemsForListing()
-            items = items
-                .map{|item|
-                    {
-                        "item" => item,
-                        "ratio" => ListingMetric::metric(item)
-                    }
-                }
-                .select{|packet| packet["ratio"] }
-                .sort_by{|packet| packet["ratio"] }
-                .reverse
-                .map{|packet| packet["item"] }
             items = Prefix::addPrefix(items)
             items = items.take(10) + NxBalls::activeItems() + items.drop(10)
             items = items

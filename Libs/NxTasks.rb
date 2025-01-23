@@ -37,14 +37,14 @@ class NxTasks
         item["donation-1205"] or item["hours-2037"]
     end
 
-    # NxTasks::isInfinity(item)
-    def self.isInfinity(item)
-        (item["donation-1205"].nil? or item["hours-2037"].nil?) and item["parentuuid-0014"].nil?
+    # NxTasks::isCoreItem(item)
+    def self.isCoreItem(item)
+        item["parentuuid-0014"]
     end
 
-    # NxTasks::coreItem(item)
-    def self.coreItem(item)
-        item["parentuuid-0014"]
+    # NxTasks::isOrphan(item)
+    def self.isOrphan(item)
+        !NxTasks::isActive(item) and !NxTasks::isCoreItem(item)
     end
 
     # ------------------
@@ -58,23 +58,23 @@ class NxTasks
         if NxTasks::isActive(item) and item["hours-2037"].nil? then
             return "🔺"
         end
-        if NxTasks::coreItem(item) then
+        if NxTasks::isCoreItem(item) then
             return "🔹"
         end
-        if NxTasks::isInfinity(item)then
+        if NxTasks::isOrphan(item)then
             return "▫️ "
         end
 
         raise "(error: 2158-raiko)"
     end
 
-    # NxTasks::toStringSuffix(item)
-    def self.toStringSuffix(item)
+    # NxTasks::activitySuffix(item)
+    def self.activitySuffix(item)
         if item["donation-1205"] and item["hours-2037"] then
             target = Items::itemOrNull(item["donation-1205"])
             if target.nil? then
                 Items::setAttribute(item["uuid"], "donation-1205", nil)
-                return NxTasks::toStringSuffix(item)
+                return NxTasks::activitySuffix(item)
             end
             return " (#{item["hours-2037"]} hour/week for #{target["description"]})"
         end
@@ -83,7 +83,7 @@ class NxTasks
             target = Items::itemOrNull(item["donation-1205"])
             if target.nil? then
                 Items::setAttribute(item["uuid"], "donation-1205", nil)
-                return NxTasks::toStringSuffix(item)
+                return NxTasks::activitySuffix(item)
             end
             return " (d: #{target["description"]})"
         end
@@ -95,10 +95,15 @@ class NxTasks
         ""
     end
 
+    # NxTasks::ratioPrelude(item)
+    def self.ratioPrelude(item)
+        return "" if !NxTasks::isActive(item)
+        " (#{"%5.3f" % NxTasks::ratio(item)})".green
+    end
+
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        engine = item["engine-1706"] # can be null
-        "#{NxTasks::icon(item)}#{NxTasks::ratioSuffix(item)} #{item["description"]}#{NxTasks::toStringSuffix(item).yellow}"
+        "#{NxTasks::icon(item)}#{NxTasks::ratioPrelude(item)} #{item["description"]}#{NxTasks::activitySuffix(item).yellow}"
     end
 
     # NxTasks::taskInsertionPosition()
@@ -118,13 +123,9 @@ class NxTasks
 
     # NxTasks::ratio(item)
     def self.ratio(item)
+        raise "(error 1930) #{item}" if !NxTasks::isActive(item)
         hours = item["hours-2037"] ? item["hours-2037"] : 7
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
-    end
-
-    # NxTasks::ratioSuffix(item)
-    def self.ratioSuffix(item)
-        " (#{"%5.3f" % NxTasks::ratio(item)})".green
     end
 
     # NxTasks::activeItems()
@@ -157,7 +158,7 @@ class NxTasks
     # NxTasks::performActivation(item)
     def self.performActivation(item)
         parent = NxCores::interactivelySelectOrNull()
-        if parent.nil? then
+        if !parent.nil? then
             Items::setAttribute(item["uuid"], "parentuuid-0014", parent["uuid"])
             position = Operations::interactivelySelectGlobalPositionInParent(parent)
             Items::setAttribute(item["uuid"], "global-positioning-4233", position)
