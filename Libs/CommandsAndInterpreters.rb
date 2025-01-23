@@ -22,6 +22,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 return
             end
         end
