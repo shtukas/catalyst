@@ -108,7 +108,7 @@ class PolyFunctions
     # PolyFunctions::computedChildren(item)
     def self.computedChildren(item)
         if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return Items::mikuType("NxTask").select{|item| NxTasks::isOrphan(item) }
+            return NxTasks::orphanItems().sort_by{|item| item["global-positioning-4233"] }
         end
         []
     end

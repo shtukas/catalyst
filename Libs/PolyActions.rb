@@ -281,6 +281,11 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
+            if item["uuid"] == NxCores::infinityuuid() then
+                puts "You cannot destroy the Infinity core"
+                LucilleCore::pressEnterToContinue()
+                return
+            end
             if !PolyFunctions::naturalChildren(item).empty? then
                 puts "You cannot destroy NxCore '#{PolyFunctions::toString(item).green}' because it has children."
                 LucilleCore::pressEnterToContinue()

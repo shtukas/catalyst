@@ -134,6 +134,12 @@ class NxTasks
             .select{|item| NxTasks::isActive(item) }
     end
 
+    # NxTasks::orphanItems()
+    def self.orphanItems()
+        Items::mikuType("NxTask")
+            .select{|item| NxTasks::isOrphan(item) }
+    end
+
     # ------------------
     # Ops
 

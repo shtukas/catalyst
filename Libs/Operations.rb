@@ -55,6 +55,13 @@ class Operations
                 next if target
                 Items::setAttribute(item["uuid"], "parentuuid-0014", nil)
             }
+
+            loop {
+                break if NxTasks::activeItems().size >= 10
+                item = NxTasks::orphanItems().sort_by{|item| item["global-positioning-4233"] }.first
+                break if item.nil?
+                Items::setAttribute(item["uuid"], "parentuuid-0014", NxCores::infinityuuid())
+            }
         end
     end
 
