@@ -52,7 +52,10 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
-        if NxTasks::isActive(item) then
+        if NxTasks::isActive(item) and item["hours-2037"] then
+            return "🔥"
+        end
+        if NxTasks::isActive(item) and item["hours-2037"].nil? then
             return "🔺"
         end
         if NxTasks::coreItem(item) then
@@ -73,7 +76,7 @@ class NxTasks
                 Items::setAttribute(item["uuid"], "donation-1205", nil)
                 return NxTasks::toStringSuffix(item)
             end
-            return " (#{item["hours-2037"]}/week for #{target["description"]})"
+            return " (#{item["hours-2037"]} hour/week for #{target["description"]})"
         end
 
         if item["donation-1205"] and item["hours-2037"].nil? then
@@ -115,7 +118,7 @@ class NxTasks
 
     # NxTasks::ratio(item)
     def self.ratio(item)
-        hours = item["hours-2037"] ? item["hours-2037"] : 1
+        hours = item["hours-2037"] ? item["hours-2037"] : 7
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
     end
 

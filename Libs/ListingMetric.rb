@@ -5,22 +5,28 @@ class ListingMetric
     def self.metric(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            return 9
+            return 10
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return 8
+            return 9
         end
 
         if item["mikuType"] == "NxDated" then
-            return 7
+            return 8
         end
 
         if item["mikuType"] == "NxFloat" then
-            return 6
+            return 7
         end
 
-        if item["mikuType"] == "NxTask" and NxTasks::isActive(item) then
+        if item["mikuType"] == "NxTask" and NxTasks::isActive(item) and item["hours-2037"] then
+            ratio = NxTasks::ratio(item)
+            return nil if ratio >= 1
+            return 6 + 0.9 - 0.01*ratio
+        end
+
+        if item["mikuType"] == "NxTask" and NxTasks::isActive(item) and item["hours-2037"].nil? then
             ratio = NxTasks::ratio(item)
             return nil if ratio >= 1
             return 5 + 0.9 - 0.01*ratio
