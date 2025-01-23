@@ -42,6 +42,12 @@ class ListingMetric
             return 3 + 0.9 - 0.001*ratio
         end
 
+        if item["mikuType"] == "NxMonitor" then
+            ratio = NxMonitors::ratio(item)
+            return nil if ratio >= 1
+            return 2 + 0.9 - 0.001*ratio
+        end
+
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return 0
         end

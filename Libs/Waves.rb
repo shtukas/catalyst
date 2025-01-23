@@ -181,7 +181,6 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        items = Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 }
-        Operations::program2(items)
+        Operations::program3(lambda { Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 } })
     end
 end

@@ -82,7 +82,8 @@ class Listing
             NxCores::listingItems(),
             NxTasks::activeItems(),
             Waves::listingItems(),
-            NxCores::listingItems()
+            NxCores::listingItems(),
+            NxMonitors::listingItems()
         ]
             .flatten
             .reduce([]){|selected, item|
@@ -108,7 +109,8 @@ class Listing
 
         [
             NxTasks::activeItems(),
-            Items::mikuType("NxCore")
+            Items::mikuType("NxCore"),
+            NxMonitors::listingItems()
         ]
             .flatten
             .sort_by{|item| PolyFunctions::ratio(item) }

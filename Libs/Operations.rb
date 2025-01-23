@@ -9,10 +9,10 @@ class Operations
         }
     end
 
-    # Operations::program2(elements)
-    def self.program2(elements)
+    # Operations::program3(lx)
+    def self.program3(lx)
         loop {
-            elements = elements.map{|item| Items::itemOrNull(item["uuid"]) }.compact
+            elements = lx.call()
 
             system("clear")
 

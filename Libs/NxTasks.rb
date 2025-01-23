@@ -193,12 +193,3 @@ class NxTasks
         end
     end
 end
-
-class NxTaskSpecialCircumstances
-
-    # NxTaskSpecialCircumstances::bufferInHasItems()
-    def self.bufferInHasItems()
-        directory = "#{Config::pathToGalaxy()}/DataHub/Buffer-In"
-        LucilleCore::locationsAtFolder(directory).size > 0
-    end
-end

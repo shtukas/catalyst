@@ -89,9 +89,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("backups", input) then
-            items = Items::mikuType("NxBackup")
-                        .sort_by{|item| item["description"] }
-            Operations::program2(items)
+            Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
             return
         end
 
@@ -252,14 +250,13 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("floats", input) then
-            items = Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] }
-            Operations::program2(items)
+            Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
             return
         end
 
         if Interpreting::match("active items", input) then
-            items = NxTasks::activeItems().sort_by{|item| NxTasks::ratio(item) }
-            Operations::program2(items)
+            lx = lambda { PolyFunctions::activeItems().sort_by{|item| PolyFunctions::ratio(item) } }
+            Operations::program3(lx)
             return
         end
 
@@ -364,9 +361,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            elements = Items::mikuType("NxDated")
-                            .sort_by{|item| item["datetime"] }
-            Operations::program2(elements)
+            Operations::program3(lambda { Items::mikuType("NxDated").sort_by{|item| item["datetime"] }})
             return
         end
 
