@@ -5,18 +5,22 @@ class ListingMetric
     def self.metric(item)
 
         if item["mikuType"] == "NxAnniversary" then
-            return 10
+            return 11
         end
 
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return 9
+            return 10
         end
 
         if item["mikuType"] == "NxDated" then
-            return 8
+            return 9
         end
 
         if item["mikuType"] == "NxFloat" then
+            return 8
+        end
+
+        if item["mikuType"] == "Wave" and !item["interruption"] then
             return 7
         end
 
@@ -36,20 +40,16 @@ class ListingMetric
             return 4
         end
 
-        if item["mikuType"] == "NxCore" then
-            ratio = NxCores::ratio(item)
+        if item["mikuType"] == "NxMonitor" then
+            ratio = NxMonitors::ratio(item)
             return nil if ratio >= 1
             return 3 + 0.9 - 0.001*ratio
         end
 
-        if item["mikuType"] == "NxMonitor" then
-            ratio = NxMonitors::ratio(item)
+        if item["mikuType"] == "NxCore" then
+            ratio = NxCores::ratio(item)
             return nil if ratio >= 1
             return 2 + 0.9 - 0.001*ratio
-        end
-
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            return 0
         end
 
         raise "I do not know how to metric #{item}"
