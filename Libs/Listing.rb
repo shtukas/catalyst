@@ -77,7 +77,7 @@ class Listing
         items = [
             Anniversaries::listingItems(),
             NxBackups::listingItems(),
-            Config::isPrimaryInstance() ? NxDateds::listingItems() : [],
+            NxDateds::listingItems(),
             NxFloats::listingItems(),
             NxCores::listingItems(),
             NxTasks::activeItems(),

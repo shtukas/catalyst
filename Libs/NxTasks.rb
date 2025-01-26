@@ -29,6 +29,17 @@ class NxTasks
         Items::itemOrNull(uuid)
     end
 
+    # NxTasks::descriptionToTask(description)
+    def self.descriptionToTask(description)
+        uuid = SecureRandom.uuid
+        Items::itemInit(uuid, "NxTask")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "global-positioning-4233", rand) # default value to ensure that the item has all the mandatory fields
+        Items::itemOrNull(uuid)
+    end
+
     # ------------------
     # Data (1)
 

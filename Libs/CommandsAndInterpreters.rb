@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile1 * | pile+ * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | core",
-            "              : transmute * | to-ondate * | to-task *",
+            "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxTask        : activate *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
@@ -47,22 +47,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            return
-        end
-
-        if Interpreting::match("to-ondate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutation::transmute1(item, "NxDated")
-            return
-        end
-
-        if Interpreting::match("to-task *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutation::transmute1(item, "NxTask")
             return
         end
 
@@ -121,19 +105,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile1 *", input) then
+        if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxStrats::pile_one(item)
-            return
-        end
-
-        if Interpreting::match("pile+ *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxStrats::pile_plus(item)
+            NxStrats::pile(item)
             return
         end
 

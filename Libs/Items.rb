@@ -80,6 +80,7 @@ class Items
     def self.attributesJournal()
         LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/Items")
             .select{|location| location[-5, 5] == ".json" }
+            .sort
             .map{|filepath| JSON.parse(IO.read(filepath)) }
     end
 

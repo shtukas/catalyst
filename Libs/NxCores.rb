@@ -124,7 +124,7 @@ class NxCores
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | position * | move * | sort"
+            puts "todo (here, with position selection) | hours | pile | position * | move * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -141,15 +141,24 @@ class NxCores
                 next
             end
 
+            if input == "hours" then
+                hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
+                Items::setAttribute(core["uuid"], "hours", hours)
+                next
+            end
+
             if input == "pile" then
-                todo = NxTasks::interactivelyIssueNewOrNull()
-                next if todo.nil?
-                NxTasks::performGeneralItemPositioning(todo)
-                Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
-                position = PolyFunctions::firstPositionInParent(core) - 1
-                Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
-                todo = Items::itemOrNull(todo["uuid"])
-                puts JSON.pretty_generate(todo)
+                text = CommonUtils::editTextSynchronously("")
+                lines = text.strip.lines.map{|line| line.strip }
+                lines = lines.reverse
+                lines.each{|line|
+                    todo = NxTasks::descriptionToTask(line)
+                    Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
+                    position = PolyFunctions::firstPositionInParent(core) - 1
+                    Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
+                    todo = Items::itemOrNull(todo["uuid"])
+                    puts JSON.pretty_generate(todo)
+                }
                 next
             end
 
