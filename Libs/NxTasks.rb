@@ -196,8 +196,7 @@ class NxTasks
             return
         end
         if option == "activation" then
-            engine = NxTasks::interactivelyIssueNew()
-            Items::setAttribute(item["uuid"], "engine-1706", engine)
+            NxTasks::performActivation(item)
         end
         if option == "storage in core" then
             NxTasks::performItemPositioningInCore(item)
