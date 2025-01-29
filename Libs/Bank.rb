@@ -108,6 +108,7 @@ class Bank1
         }
         filepath = "#{Config::pathToCatalystDataRepository()}/Bank/#{CommonUtils::timeStringL22()}.json"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(update)) }
+        XCache::destroy("21a49255-d882-45a1-984c-8f32e5eccf77:#{uuid}")
     end
 
     # Bank1::getRecords(uuid)
@@ -141,6 +142,10 @@ class Bank1
 
     # Bank1::recoveredAverageHoursPerDay(uuid)
     def self.recoveredAverageHoursPerDay(uuid)
-        (0..6).map{|n| Bank1::averageHoursPerDayOverThePastNDays(uuid, n) }.max
+        value = XCache::getOrNull("21a49255-d882-45a1-984c-8f32e5eccf77:#{uuid}")
+        return value.to_f if value
+        value = (0..6).map{|n| Bank1::averageHoursPerDayOverThePastNDays(uuid, n) }.max
+        XCache::set("21a49255-d882-45a1-984c-8f32e5eccf77:#{uuid}", value)
+        value
     end
 end

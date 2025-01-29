@@ -122,4 +122,9 @@ class Precomputations
     def self.mikuTypeHasBeenUpdated()
         XCache::set("e2bfa276-0f40-4ed1-90c9-7bd158c236e1", SecureRandom.hex)
     end
+
+    # Precomputations::bankAccountHasBeenUpdated(uuid)
+    def self.bankAccountHasBeenUpdated(uuid)
+        XCache::set("e2bfa276-0f40-4ed1-90c9-7bd158c236e1", SecureRandom.hex)
+    end
 end
