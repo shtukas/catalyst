@@ -54,11 +54,19 @@ class Listing
         item["interruption"]
     end
 
+    # Listing::ratioPrefix(item)
+    def self.ratioPrefix(item)
+        return "" if item["mikuType"] == "NxStrat"
+        metric = ListingMetric::metricOrNull(item)
+        return "" if metric.nil?
+        "(#{"%5.3f" % metric}) "
+    end
+
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{Listing::ratioPrefix(item)}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -73,8 +81,7 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-
-        items = [
+        [
             Anniversaries::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
@@ -83,37 +90,22 @@ class Listing
             NxTasks::activeItems(),
             Waves::listingItems(),
             NxCores::listingItems(),
-            NxMonitors::listingItems()
-        ]
-            .flatten
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .map{|item|
-                {
-                    "item" => item,
-                    "ratio" => ListingMetric::metric(item)
-                }
-            }
-            .select{|packet| packet["ratio"] }
-            .sort_by{|packet| packet["ratio"] }
-            .reverse
-            .map{|packet| packet["item"] }
-
-        return items if items.size > 0
-
-        [
             NxTasks::activeItems(),
             Items::mikuType("NxCore"),
             NxMonitors::listingItems()
         ]
             .flatten
-            .sort_by{|item| PolyFunctions::ratio(item) }
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .map{|item|
+                {
+                    "item" => item,
+                    "ratio" => ListingMetric::metricOrNull(item)
+                }
+            }
+            .select{|packet| packet["ratio"] }
+            .select{|packet| packet["ratio"] < 1 }
+            .sort_by{|packet| packet["ratio"] }
+            .map{|packet| packet["item"] }
     end
 
     # -----------------------------------------
