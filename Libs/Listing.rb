@@ -62,11 +62,8 @@ class Listing
         "(#{"%5.3f" % metric}) "
     end
 
-    # Listing::toString2(store, item, usePrecomputation = false)
-    def self.toString2(store, item, usePrecomputation = false)
-        if usePrecomputation then
-            return Precomputations::itemToListingToString2(store, item)
-        end
+    # Listing::toString2(store, item)
+    def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         line = "#{Listing::ratioPrefix(item)}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{DoNotShowUntil::suffix(item)}"
@@ -82,16 +79,16 @@ class Listing
         line
     end
 
-    # Listing::itemsForListing(usePrecomputation =  true)
-    def self.itemsForListing(usePrecomputation =  true)
+    # Listing::itemsForListing()
+    def self.itemsForListing()
         [
-            Anniversaries::listingItems(usePrecomputation),
-            NxBackups::listingItems(usePrecomputation),
-            NxDateds::listingItems(usePrecomputation),
-            NxFloats::listingItems(usePrecomputation),
-            NxCores::listingItems(usePrecomputation),
-            NxTasks::activeItems(usePrecomputation),
-            Waves::listingItems(usePrecomputation),
+            Anniversaries::listingItems(),
+            NxBackups::listingItems(),
+            NxDateds::listingItems(),
+            NxFloats::listingItems(),
+            NxCores::listingItems(),
+            NxTasks::activeItems(),
+            Waves::listingItems(),
             NxMonitors::listingItems()
         ]
             .flatten
@@ -129,12 +126,12 @@ class Listing
         end
     end
 
-    # Listing::listingOnce(printer, usePrecomputation = false)
-    def self.listingOnce(printer, usePrecomputation = false)
+    # Listing::listingOnce(printer)
+    def self.listingOnce(printer)
         t1 = Time.new.to_f
 
-        items = Listing::itemsForListing(usePrecomputation)
-        items = Prefix::addPrefix(items, usePrecomputation)
+        items = Listing::itemsForListing()
+        items = Prefix::addPrefix(items)
         items = items.take(10) + NxBalls::activeItems() + items.drop(10)
         items = items
             .reduce([]){|selected, item|
@@ -154,7 +151,7 @@ class Listing
         items
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                line = Listing::toString2(store, item, usePrecomputation)
+                line = Listing::toString2(store, item)
                 printer.call(line)
             }
 
@@ -170,7 +167,7 @@ class Listing
     def self.runContinuousListing(initialCodeTrace)
         loop {
             Listing::preliminaries(initialCodeTrace)
-            store = Listing::listingOnce(lambda{|line| puts line }, true)
+            store = Listing::listingOnce(lambda{|line| puts line })
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return

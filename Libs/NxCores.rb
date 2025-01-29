@@ -55,11 +55,8 @@ class NxCores
         Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
     end
 
-    # NxCores::listingItems(usePrecomputation = false)
-    def self.listingItems(usePrecomputation = false)
-        if usePrecomputation then
-            return Precomputations::coresForListing()
-        end
+    # NxCores::listingItems()
+    def self.listingItems()
         Items::mikuType("NxCore")
             .select{|item| NxCores::ratio(item) < 1 }
             .sort_by{|item| NxCores::ratio(item) }

@@ -10,7 +10,6 @@ class Transmutation
             NxTasks::performGeneralItemPositioning(item)
             Items::setAttribute(item["uuid"], "global-positioning-4233", rand)
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            Precomputations::mikuTypeHasBeenUpdated()
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
@@ -19,7 +18,6 @@ class Transmutation
             Items::setAttribute(item["uuid"], "engine-1706", nil)
             Items::setAttribute(item["uuid"], "engine-1706", nil)
             Items::setAttribute(item["uuid"], "mikuType", "NxDated")
-            Precomputations::mikuTypeHasBeenUpdated()
             return
         end
         puts "I do not know how to transmute mikuType #{item["mikuType"]} to #{targetMikuType}. Aborting."

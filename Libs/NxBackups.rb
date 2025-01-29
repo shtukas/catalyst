@@ -12,11 +12,8 @@ class NxBackups
         "💾 [backup] #{item["description"]} (every #{item["period"]} days)"
     end
 
-    # NxBackups::listingItems(usePrecomputation = false)
-    def self.listingItems(usePrecomputation = false)
-        if usePrecomputation then
-            return Precomputations::backupsForListing()
-        end
+    # NxBackups::listingItems()
+    def self.listingItems()
         Items::mikuType("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 

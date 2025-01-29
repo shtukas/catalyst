@@ -1,13 +1,8 @@
 
 class ListingMetric
 
-    # ListingMetric::metricOrNull(item, usePrecomputation = false)
-    def self.metricOrNull(item, usePrecomputation = false)
-
-        if usePrecomputation then
-            return Precomputations::listingMetricOrNull(item)
-        end
-
+    # ListingMetric::metricOrNull(item)
+    def self.metricOrNull(item)
         if item["mikuType"] == "NxAnniversary" then
             return NxFlightData::itemToListingMetric(item)
         end

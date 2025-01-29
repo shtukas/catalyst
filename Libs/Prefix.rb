@@ -1,13 +1,10 @@
 
 class Prefix
-    # Prefix::addPrefix(items, usePrecomputation = false)
-    def self.addPrefix(items, usePrecomputation = false)
-        if usePrecomputation then
-            return Precomputations::addPrefix(items)
-        end
+    # Prefix::addPrefix(items)
+    def self.addPrefix(items)
         return [] if items.empty?
         children = PolyFunctions::childrenForPrefix(items[0])
         return items if children.empty?
-        Prefix::addPrefix(children.take(3) + items, usePrecomputation)
+        Prefix::addPrefix(children.take(3) + items)
     end
 end

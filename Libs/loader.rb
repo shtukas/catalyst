@@ -165,7 +165,6 @@ require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 require_relative "Prefix.rb"
-require_relative "Precomputations.rb"
 
 require_relative "SectionsType0141.rb"
 

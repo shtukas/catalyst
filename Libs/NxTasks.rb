@@ -139,11 +139,8 @@ class NxTasks
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
     end
 
-    # NxTasks::activeItems(usePrecomputation = false)
-    def self.activeItems(usePrecomputation = false)
-        if usePrecomputation then
-            return Precomputations::activeItems()
-        end
+    # NxTasks::activeItems()
+    def self.activeItems()
         Items::mikuType("NxTask")
             .select{|item| NxTasks::isActive(item) }
     end

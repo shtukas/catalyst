@@ -228,15 +228,9 @@ class CommandsAndInterpreters
 
         if Interpreting::match("speed", input) then
             t1 = Time.new.to_f
-            Listing::listingOnce(lambda{|line| }, false)
+            Listing::listingOnce(lambda{|line| })
             t2 = Time.new.to_f
-            puts "Listing::listingOnce() in #{(t2-t1).round(3)} seconds without precomputation"
-
-            t1 = Time.new.to_f
-            Listing::listingOnce(lambda{|line| }, true)
-            t2 = Time.new.to_f
-            puts "Listing::listingOnce() in #{(t2-t1).round(3)} seconds with precomputation"
-
+            puts "Listing::listingOnce() in #{(t2-t1).round(3)} seconds"
             LucilleCore::pressEnterToContinue()
             return
         end
