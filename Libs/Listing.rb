@@ -129,49 +129,52 @@ class Listing
         end
     end
 
-    # Listing::listing(initialCodeTrace)
-    def self.listing(initialCodeTrace)
+    # Listing::listingOnce(printer)
+    def self.listingOnce(printer)
+        t1 = Time.new.to_f
+
+        items = Listing::itemsForListing()
+        items = Prefix::addPrefix(items)
+        items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+        items = items
+            .reduce([]){|selected, item|
+                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected
+                else
+                    selected + [item]
+                end
+            }
+
+        store = ItemStore.new()
+
+        printer.call("")
+
+        items = items.take(CommonUtils::screenHeight()-5)
+
+        items
+            .each{|item|
+                store.register(item, Listing::canBeDefault(item))
+                line = Listing::toString2(store, item)
+                printer.call(line)
+            }
+
+        renderingTime = Time.new.to_f - t1
+        if renderingTime > 1 then
+            printer.call("(rendered in #{(Time.new.to_f - t1).round(3)} s)".red)
+        end
+
+        store
+    end
+
+    # Listing::runContinuousListing(initialCodeTrace)
+    def self.runContinuousListing(initialCodeTrace)
         loop {
-
             Listing::preliminaries(initialCodeTrace)
-
-            t1 = Time.new.to_f
-
-            items = Listing::itemsForListing()
-            items = Prefix::addPrefix(items)
-            items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-            items = items
-                .reduce([]){|selected, item|
-                    if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected
-                    else
-                        selected + [item]
-                    end
-                }
-
-            #system("clear")
-
-            store = ItemStore.new()
-
-            puts ""
-
-            items = items.take(CommonUtils::screenHeight()-5)
-
-            items
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
-                    puts line
-                }
-
-            puts "(rendered in #{(Time.new.to_f - t1).round(3)} s)"
-
+            store = Listing::listingOnce(lambda{|line| puts line })
             input = LucilleCore::askQuestionAnswerAsString("> ")
-
             if input == "exit" then
                 return
             end
-
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
@@ -203,7 +206,7 @@ class Listing
             }
         }
         loop {
-            Listing::listing(initialCodeTrace)
+            Listing::runContinuousListing(initialCodeTrace)
         }
     end
 end

@@ -6,9 +6,9 @@ Database:
     create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
 
 Cross types conventions (all optional):
-    - skip-0843          : unixtime (skipped until this time)
-    - uxpayload-b4e4     : UxPayload
-    - donation-1205      : String # uuid of target for donation
-    - parentuuid-0014    : uuid
+    - skip-0843               : unixtime (skipped until this time)
+    - uxpayload-b4e4          : UxPayload
+    - donation-1205           : String # uuid of target for donation
+    - parentuuid-0014         : uuid
     - global-positioning-4233 : Float # mostly used to order children inside regular cores
-    - flight-1753        : NxFlightData
+    - flight-1753             : NxFlightData
