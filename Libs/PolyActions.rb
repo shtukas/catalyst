@@ -62,11 +62,7 @@ class PolyActions
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
-
-        SigOps::incoming({
-            "type" => "done",
-            "uuid" => item["uuid"]
-        })
+        NxFlightData::detatch(item)
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
@@ -220,11 +216,6 @@ class PolyActions
     def self.destroy(item, force = false)
 
         NxBalls::stop(item)
-
-        SigOps::incoming({
-            "type" => "done",
-            "uuid" => item["uuid"]
-        })
 
         if force then
             Items::destroy(item["uuid"])

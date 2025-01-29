@@ -167,7 +167,6 @@ require_relative "PolyFunctions.rb"
 require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
-require_relative "SigOps.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"

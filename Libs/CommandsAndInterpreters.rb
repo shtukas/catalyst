@@ -225,11 +225,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
+        if Interpreting::match("speed", input) then
             t1 = Time.new.to_f
             Listing::listingOnce(lambda{|line| })
             t2 = Time.new.to_f
-            puts "Listing::listingOnce() in #{t2-t1} seconds"
+            puts "Listing::listingOnce() in #{(t2-t1).round(3)} seconds"
             LucilleCore::pressEnterToContinue()
             return
         end

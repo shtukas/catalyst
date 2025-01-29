@@ -99,4 +99,9 @@ class NxFlightData
         flightdata = NxFlightData::getFlightData(item)
         NxFlightData::dataToPosition(flightdata)
     end
+
+    # NxFlightData::detatch(item)
+    def self.detatch(item)
+        Items::setAttribute(item["uuid"], "flight-1753", nil)
+    end
 end
