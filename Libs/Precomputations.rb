@@ -1,16 +1,25 @@
 
 class Precomputations
 
+    # Precomputations::general_key_prefix()
+    def self.general_key_prefix()
+        prefix = XCache::getOrNull("e2bfa276-0f40-4ed1-90c9-7bd158c236e1")
+        return prefix if prefix
+        prefix = SecureRandom.hex
+        XCache::set("e2bfa276-0f40-4ed1-90c9-7bd158c236e1", prefix)
+        prefix
+    end
+
     # Precomputations::getDataOrNull(datasetname)
     def self.getDataOrNull(datasetname)
-        data = XCache::getOrNull("980ac3ff-09e7-4785-8301-66a0a05ce883:#{CommonUtils::today()}:#{datasetname}")
+        data = XCache::getOrNull("#{Precomputations::general_key_prefix()}:980ac3ff-09e7-4785-8301-66a0a05ce883:#{CommonUtils::today()}:#{datasetname}")
         return nil if data.nil?
         JSON.parse(data)
     end
 
     # Precomputations::setData(datasetname, data)
     def self.setData(datasetname, data)
-        XCache::set("980ac3ff-09e7-4785-8301-66a0a05ce883:#{CommonUtils::today()}:#{datasetname}", JSON.generate(data))
+        XCache::set("#{Precomputations::general_key_prefix()}:980ac3ff-09e7-4785-8301-66a0a05ce883:#{CommonUtils::today()}:#{datasetname}", JSON.generate(data))
     end
 
     # Precomputations::anniversariesForListing()
@@ -102,5 +111,15 @@ class Precomputations
         items = Prefix::addPrefix(items)
         Precomputations::setData(key, items)
         items
-    end    
+    end
+
+    # Precomputations::itemHasBeenUpdatedNotMikuType(item)
+    def self.itemHasBeenUpdatedNotMikuType(item)
+
+    end
+
+    # Precomputations::mikuTypeHasBeenUpdated()
+    def self.mikuTypeHasBeenUpdated()
+        XCache::set("e2bfa276-0f40-4ed1-90c9-7bd158c236e1", SecureRandom.hex)
+    end
 end
