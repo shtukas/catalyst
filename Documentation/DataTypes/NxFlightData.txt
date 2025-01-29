@@ -1,12 +1,10 @@
-
 NXFlightData:
     - startTime       : Float # unixtime
     - startPosition   : Float
     - targetTime      : Float # unixtime
     - targetPosition  : Float
+    - random          : Float
 
 The positions are given as listing metric
 
 We have a linear progression during 90% of the time to target and then we land exponentially on the target
-
-

@@ -23,6 +23,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                NxFlightData::detatch(item)
                 return
             end
         end

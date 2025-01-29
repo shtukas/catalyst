@@ -34,7 +34,8 @@ class NxFlightData
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.5,
                 "targetTime"     => Time.new.to_f + 3600*3,
-                "targetPosition" => 0
+                "targetPosition" => 0,
+                "random"         => rand*0.001
             }
         end
 
@@ -43,7 +44,8 @@ class NxFlightData
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.5,
                 "targetTime"     => Time.new.to_f + 3600*3,
-                "targetPosition" => 0
+                "targetPosition" => 0,
+                "random"         => rand*0.001
             }
         end
 
@@ -52,7 +54,8 @@ class NxFlightData
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.5,
                 "targetTime"     => Time.new.to_f + 3600*6,
-                "targetPosition" => 0.2
+                "targetPosition" => 0.2,
+                "random"         => rand*0.001
             }
         end
 
@@ -61,7 +64,8 @@ class NxFlightData
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.7,
                 "targetTime"     => Time.new.to_f + 3600*6,
-                "targetPosition" => 0.2
+                "targetPosition" => 0.2,
+                "random"         => rand*0.001
             }
         end
 
@@ -70,7 +74,8 @@ class NxFlightData
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 1.0,
                 "targetTime"     => Time.new.to_f + 3600*36,
-                "targetPosition" => 0.2
+                "targetPosition" => 0.2,
+                "random"         => rand*0.001
             }
         end
 
@@ -79,7 +84,8 @@ class NxFlightData
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 1.0,
                 "targetTime"     => Time.new.to_f + 3600*36,
-                "targetPosition" => 0.2
+                "targetPosition" => 0.2,
+                "random"         => rand*0.001
             }
         end
 
@@ -97,7 +103,7 @@ class NxFlightData
     # NxFlightData::itemToListingMetric(item)
     def self.itemToListingMetric(item)
         flightdata = NxFlightData::getFlightData(item)
-        NxFlightData::dataToPosition(flightdata)
+        NxFlightData::dataToPosition(flightdata) + flightdata["random"]
     end
 
     # NxFlightData::detatch(item)
