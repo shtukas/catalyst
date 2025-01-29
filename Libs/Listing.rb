@@ -57,7 +57,7 @@ class Listing
     # Listing::ratioPrefix(item)
     def self.ratioPrefix(item)
         return "" if item["mikuType"] == "NxStrat"
-        metric = ListingMetric::metricOrNull(item)
+        metric = ListingMetric::metric(item)
         return "" if metric.nil?
         "(#{"%5.3f" % metric}) "
     end
@@ -87,7 +87,7 @@ class Listing
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             NxCores::listingItems(),
-            NxTasks::activeItems(),
+            NxTasks::listingItems(),
             Waves::listingItems(),
             NxMonitors::listingItems()
         ]
@@ -96,12 +96,10 @@ class Listing
             .map{|item|
                 {
                     "item" => item,
-                    "ratio" => ListingMetric::metricOrNull(item)
+                    "metric" => ListingMetric::metric(item)
                 }
             }
-            .select{|packet| packet["ratio"] }
-            .select{|packet| packet["ratio"] < 1 }
-            .sort_by{|packet| packet["ratio"] }
+            .sort_by{|packet| packet["metric"] }
             .map{|packet| packet["item"] }
     end
 

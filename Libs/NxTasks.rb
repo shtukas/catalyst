@@ -141,8 +141,12 @@ class NxTasks
 
     # NxTasks::activeItems()
     def self.activeItems()
-        Items::mikuType("NxTask")
-            .select{|item| NxTasks::isActive(item) }
+        Items::mikuType("NxTask").select{|item| NxTasks::isActive(item) }
+    end
+
+    # NxTasks::listingItems()
+    def self.listingItems()
+        NxTasks::activeItems().select{|item| NxTasks::ratio(item) < 1}
     end
 
     # NxTasks::orphanItems()

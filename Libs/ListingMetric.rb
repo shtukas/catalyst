@@ -1,8 +1,8 @@
 
 class ListingMetric
 
-    # ListingMetric::metricOrNull(item)
-    def self.metricOrNull(item)
+    # ListingMetric::metric(item)
+    def self.metric(item)
         if item["mikuType"] == "NxAnniversary" then
             return NxFlightData::itemToListingMetric(item)
         end
@@ -28,21 +28,15 @@ class ListingMetric
         end
 
         if item["mikuType"] == "NxTask" and NxTasks::isActive(item) then
-            ratio = NxTasks::ratio(item)
-            return nil if ratio > 1
-            return 0.5 + 0.5*ratio
+            return 0.2 + 0.8*NxTasks::ratio(item)
         end
 
         if item["mikuType"] == "NxMonitor" then
-            ratio = NxMonitors::ratio(item)
-            return nil if ratio > 1
-            return 0.5 + 0.5*ratio
+            return 0.2 + 0.8*NxMonitors::ratio(item)
         end
 
         if item["mikuType"] == "NxCore" then
-            ratio = NxCores::ratio(item)
-            return nil if ratio > 1
-            return 0.5 + 0.5*ratio
+            return 0.2 + 0.8*NxCores::ratio(item)
         end
 
         raise "I do not know how to metric #{item}"
