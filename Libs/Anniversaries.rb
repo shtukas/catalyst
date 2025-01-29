@@ -151,8 +151,11 @@ class Anniversaries
         "(anniversary) [#{anniversary["startdate"]}, #{anniversary["next_celebration"]}, #{difference.to_s.rjust(4)}, #{anniversary["repeatType"].ljust(7)}] #{anniversary["description"]}"
     end
 
-    # Anniversaries::listingItems()
-    def self.listingItems()
+    # Anniversaries::listingItems(usePrecomputation = false)
+    def self.listingItems(usePrecomputation = false)
+        if usePrecomputation then
+            return Precomputations::anniversariesForListing()
+        end
         Items::mikuType("NxAnniversary").select{|item| item["next_celebration"] <= CommonUtils::today() }
     end
 

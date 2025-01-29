@@ -70,8 +70,11 @@ class NxDateds
         "🗓️  [#{item["date"][0, 10]}] #{item["description"]}"
     end
 
-    # NxDateds::listingItems()
-    def self.listingItems()
+    # NxDateds::listingItems(usePrecomputation = false)
+    def self.listingItems(usePrecomputation = false)
+        if usePrecomputation then
+            return Precomputations::datedForListing()
+        end
         Items::mikuType("NxDated").select{|item| item["date"] <= CommonUtils::today() }
     end
 end

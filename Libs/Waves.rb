@@ -128,8 +128,11 @@ class Waves
         "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])}) (#{ago})#{interruption}"
     end
 
-    # Waves::listingItems()
-    def self.listingItems()
+    # Waves::listingItems(usePrecomputation = false)
+    def self.listingItems(usePrecomputation = false)
+        if usePrecomputation then
+            return Precomputations::wavesForListing()
+        end
         Items::mikuType("Wave").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 

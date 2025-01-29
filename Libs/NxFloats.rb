@@ -21,8 +21,11 @@ class NxFloats
         "🐠 #{item["description"]}"
     end
 
-    # NxFloats::listingItems()
-    def self.listingItems()
+    # NxFloats::listingItems(usePrecomputation = false)
+    def self.listingItems(usePrecomputation = false)
+        if usePrecomputation then
+            return Precomputations::floatsForListing()
+        end
         Items::mikuType("NxFloat")
     end
 end
