@@ -170,9 +170,15 @@ class PolyFunctions
 
     # PolyFunctions::ratio(item)
     def self.ratio(item)
-        return NxTasks::ratio(item) if NxTasks::isActive(item)
-        return NxCores::ratio(item) if item["mikuType"] == "NxCore"
-        return NxMonitors::ratio(item) if item["mikuType"] == "NxMonitor"
+        if item["mikuType"] == "NxCore" then
+            return NxCores::ratio(item)
+        end
+        if NxTasks::isActive(item) then
+            return NxTasks::activeItemRatio(item)
+        end
+        if item["mikuType"] == "NxMonitor" then
+            return NxMonitors::ratio(item)
+        end
         raise "(error: 1931-e258c72b)"
     end
 

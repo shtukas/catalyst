@@ -23,7 +23,7 @@ class Operations
             elements
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
+                    puts Listing::toString3(store, item)
                 }
 
             puts ""

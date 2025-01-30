@@ -6,8 +6,8 @@ class NxMonitors
         "🪄 #{"(#{"%5.3f" % NxMonitors::ratio(item)})".green} #{item["description"]}"
     end
 
-    # NxMonitors::listingItems()
-    def self.listingItems()
+    # NxMonitors::activeItems()
+    def self.activeItems()
         items = []
 
         item = Items::itemOrNull("b9dc200c-c8ec-4917-b93b-e78da7fea84e")
@@ -16,6 +16,11 @@ class NxMonitors
         end
 
         items
+    end
+
+    # NxMonitors::listingItems()
+    def self.listingItems()
+        NxMonitors::activeItems()
     end
 
     # NxMonitors::ratio(item)

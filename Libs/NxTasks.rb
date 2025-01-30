@@ -45,6 +45,7 @@ class NxTasks
 
     # NxTasks::isActive(item)
     def self.isActive(item)
+        return false if item["mikuType"] != "NxTask"
         item["donation-1205"] or item["hours-2037"]
     end
 
@@ -109,7 +110,7 @@ class NxTasks
     # NxTasks::ratioPrelude(item)
     def self.ratioPrelude(item)
         return "" if !NxTasks::isActive(item)
-        " (#{"%5.3f" % NxTasks::ratio(item)})".green
+        " (#{"%5.3f" % NxTasks::activeItemRatio(item)})".green
     end
 
     # NxTasks::toString(item, context)
@@ -132,8 +133,8 @@ class NxTasks
         0.5 * (positions.first + positions.last)
     end
 
-    # NxTasks::ratio(item)
-    def self.ratio(item)
+    # NxTasks::activeItemRatio(item)
+    def self.activeItemRatio(item)
         raise "(error 1930) #{item}" if !NxTasks::isActive(item)
         hours = item["hours-2037"] ? item["hours-2037"] : 7
         [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours.to_f/7)
@@ -146,7 +147,7 @@ class NxTasks
 
     # NxTasks::listingItems()
     def self.listingItems()
-        NxTasks::activeItems().select{|item| NxTasks::ratio(item) < 1}
+        NxTasks::activeItems().select{|item| NxTasks::activeItemRatio(item) < 1}
     end
 
     # NxTasks::orphanItems()

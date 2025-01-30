@@ -28,7 +28,7 @@ class ListingMetric
         end
 
         if item["mikuType"] == "NxTask" and NxTasks::isActive(item) then
-            return 0.2 + 0.8*NxTasks::ratio(item)
+            return 0.2 + 0.8*NxTasks::activeItemRatio(item)
         end
 
         if item["mikuType"] == "NxMonitor" then
