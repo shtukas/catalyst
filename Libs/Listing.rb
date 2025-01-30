@@ -112,14 +112,7 @@ class Listing
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .map{|item|
-                {
-                    "item" => item,
-                    "metric" => ListingMetric::metric(item)
-                }
-            }
-            .sort_by{|packet| packet["metric"] }
-            .map{|packet| packet["item"] }
+            .sort_by{|item| ListingMetric::metric(item) }
     end
 
     # -----------------------------------------
