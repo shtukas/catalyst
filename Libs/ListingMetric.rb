@@ -39,6 +39,10 @@ class ListingMetric
             return 0.2 + 0.8*NxCores::ratio(item)
         end
 
+        if item["mikuType"] == "NxStackPriority" then
+            return item["position"] || 0
+        end
+
         raise "I do not know how to metric #{item}"
     end
 end

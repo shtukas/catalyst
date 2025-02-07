@@ -14,6 +14,10 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["mikuType"] == "NxStackPriority" then
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             return
         end
@@ -63,6 +67,13 @@ class PolyActions
 
         NxBalls::stop(item)
         NxFlightData::detatch(item)
+
+        if item["mikuType"] == "NxStackPriority" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
+            return
+        end
 
         if item["mikuType"] == "NxFloat" then
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
@@ -169,6 +180,11 @@ class PolyActions
             end
         }
 
+        if item["mikuType"] == "NxStackPriority" then
+            processDestroyable.call(item)
+            return
+        end
+
         if item["mikuType"] == "NxAnniversary" then
             processWaveLike.call(item)
             return
@@ -219,6 +235,13 @@ class PolyActions
 
         if force then
             Items::destroy(item["uuid"])
+            return
+        end
+
+        if item["mikuType"] == "NxStackPriority" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+            end
             return
         end
 

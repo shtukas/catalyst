@@ -108,7 +108,8 @@ class Listing
             NxCores::listingItems(),
             NxTasks::listingItems(),
             Waves::listingItems(),
-            NxMonitors::listingItems()
+            NxMonitors::listingItems(),
+            Items::mikuType("NxStackPriority")
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }

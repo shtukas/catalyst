@@ -80,6 +80,9 @@ class PolyFunctions
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)
         end
+        if item["mikuType"] == "NxStackPriority" then
+            return NxStackPriorities::toString(item)
+        end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end

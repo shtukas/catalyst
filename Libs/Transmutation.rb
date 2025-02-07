@@ -12,6 +12,10 @@ class Transmutation
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end
+        if item["mikuType"] == "NxDated" and targetMikuType == "NxFloat" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
+            return
+        end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(uuid, "date", datetime)
@@ -27,7 +31,7 @@ class Transmutation
     # Transmutation::transmute2(item)
     def self.transmute2(item)
         if item["mikuType"] == "NxDated" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxFloat"])
         end
         Transmutation::transmute1(item, targetMikuType)
     end

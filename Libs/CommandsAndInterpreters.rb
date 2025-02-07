@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | core",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | core | priority",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxTask        : activate *",
@@ -75,6 +75,17 @@ class CommandsAndInterpreters
 
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
+            return
+        end
+
+        if Interpreting::match("priority", input) then
+            NxBalls::activeItems().each{|item| NxBalls::pause(item) }
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ''
+            item = NxStackPriorities::interactivelyIssueNewOrNull(description)
+            Operations::setDonation(item)
+            item = Items::itemOrNull(item["uuid"])
+            NxBalls::start(item)
             return
         end
 
