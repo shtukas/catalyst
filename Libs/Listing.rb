@@ -57,6 +57,7 @@ class Listing
     # Listing::ratioPrefix(item)
     def self.ratioPrefix(item)
         return "" if item["mikuType"] == "NxStrat"
+        return "" if item["mikuType"] == "NxTask" and !NxTasks::isActive(item) # those come from Prefixing
         metric = ListingMetric::metric(item)
         return "" if metric.nil?
         "(#{"%5.3f" % metric}) "
@@ -106,7 +107,7 @@ class Listing
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             NxCores::listingItems(),
-            NxTasks::listingItems(),
+            NxTasks::activeItemsForListing(),
             Waves::listingItems(),
             NxMonitors::listingItems(),
             Items::mikuType("NxStackPriority")
