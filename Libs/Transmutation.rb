@@ -24,15 +24,25 @@ class Transmutation
             Items::setAttribute(item["uuid"], "mikuType", "NxDated")
             return
         end
+        if item["mikuType"] == "NxTask" and targetMikuType == "NxFloat" then
+            Items::setAttribute(item["uuid"], "engine-1706", nil)
+            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
+            return
+        end
         puts "I do not know how to transmute mikuType #{item["mikuType"]} to #{targetMikuType}. Aborting."
         exit
     end
 
     # Transmutation::transmute2(item)
     def self.transmute2(item)
+        targetMikuType = nil
         if item["mikuType"] == "NxDated" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxFloat"])
         end
+        if item["mikuType"] == "NxTask" then
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat"])
+        end
+        return if targetMikuType.nil?
         Transmutation::transmute1(item, targetMikuType)
     end
 end
