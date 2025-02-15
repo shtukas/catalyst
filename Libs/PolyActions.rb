@@ -14,6 +14,11 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["mikuType"] == "NxLambda" then
+            NxLambdas::run(item)
+            return
+        end
+
         if item["mikuType"] == "NxStackPriority" then
             return
         end
@@ -67,6 +72,10 @@ class PolyActions
 
         NxBalls::stop(item)
         NxFlightData::detatch(item)
+
+        if item["mikuType"] == "NxLambda" then
+            return
+        end
 
         if item["mikuType"] == "NxStackPriority" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
@@ -180,6 +189,11 @@ class PolyActions
             end
         }
 
+        if item["mikuType"] == "NxLambda" then
+            NxLambdas::run(item)
+            return
+        end
+
         if item["mikuType"] == "NxStackPriority" then
             processDestroyable.call(item)
             return
@@ -232,6 +246,10 @@ class PolyActions
     def self.destroy(item, force = false)
 
         NxBalls::stop(item)
+
+        if item["mikuType"] == "NxLambda" then
+            return
+        end
 
         if force then
             Items::destroy(item["uuid"])

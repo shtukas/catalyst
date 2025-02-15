@@ -101,7 +101,7 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-        [
+        items = [
             Anniversaries::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
@@ -113,8 +113,36 @@ class Listing
             Items::mikuType("NxStackPriority")
         ]
             .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .sort_by{|item| ListingMetric::metric(item) }
+
+        itemsListing = []
+        itemsSituations = []
+
+        items.each{|item|
+            if item["flight-1753"] and item["flight-1753"]["version"].nil? then
+                itemsListing << item
+                next
+            end
+            if item["flight-1753"] and item["flight-1753"]["version"] == 2 then
+                itemsListing << item
+                next
+            end
+            if item["flight-1753"] and item["flight-1753"]["version"] == 3 then
+                itemsSituations << item
+                next
+            end
+            itemsListing << item
+        }
+
+        i1s = itemsListing
+                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+                .sort_by{|item| ListingMetric::metric(item) }
+
+        situations = itemsSituations.map{|item| item["flight-1753"]["situation"] }.uniq
+
+        {
+            "listingItems" => i1s,
+            "situations" => situations
+        }
     end
 
     # -----------------------------------------
@@ -144,17 +172,18 @@ class Listing
 
         Timings::start()
 
-        items = Listing::itemsForListing()
+        package = Listing::itemsForListing()
 
-        Timings::lap("Listing::itemsForListing()")
+        items = package["listingItems"]
+        situations = package["situations"]
 
         items = Prefix::addPrefix(items)
 
-        Timings::lap("Prefix::addPrefix(items)")
+        Timings::lap("17:47")
 
         items = items.take(10) + NxBalls::activeItems() + items.drop(10)
 
-        Timings::lap("NxBalls::activeItems()")
+        Timings::lap("19:30")
 
         items = items
             .reduce([]){|selected, item|
@@ -174,6 +203,21 @@ class Listing
         items = items.take(CommonUtils::screenHeight()-5)
 
         Timings::lap("22:09")
+
+        situations.each{|situation|
+            l = lambda {
+                l2 = lambda {
+                    Items::items()
+                        .select{|item| item["flight-1753"] and item["flight-1753"]["version"] == 3 and item["flight-1753"]["situation"] == situation }
+                        .sort_by{|item| item["flight-1753"]["unixtime"] }
+                }
+                Operations::program3(l2)
+            }
+            item = NxLambdas::interactivelyIssueNewOrNull("situation: #{situation}", l)
+            store.register(item, false)
+            line = Listing::toString2(store, item)
+            printer.call(line)
+        }
 
         items
             .each{|item|

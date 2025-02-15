@@ -3,6 +3,9 @@ class ListingMetric
 
     # ListingMetric::metric(item)
     def self.metric(item)
+        if item["mikuType"] == "NxLambda" then
+            return 0.1
+        end
         if item["mikuType"] == "NxAnniversary" then
             return NxFlightData::itemToListingMetric(item)
         end

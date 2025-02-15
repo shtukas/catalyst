@@ -31,6 +31,7 @@ class NxFlightData
     def self.itemToFlightData(item)
         if item["mikuType"] == "NxAnniversary" then
             return {
+                "version"        => 2,
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.5,
                 "targetTime"     => Time.new.to_f + 3600*3,
@@ -41,6 +42,7 @@ class NxFlightData
 
         if item["mikuType"] == "Wave" and item["interruption"] then
             return {
+                "version"        => 2,
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.5,
                 "targetTime"     => Time.new.to_f + 3600*3,
@@ -51,6 +53,7 @@ class NxFlightData
 
         if item["mikuType"] == "NxDated" then
             return {
+                "version"        => 2,
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.5,
                 "targetTime"     => Time.new.to_f + 3600*6,
@@ -61,6 +64,7 @@ class NxFlightData
 
         if item["mikuType"] == "NxFloat" then
             return {
+                "version"        => 2,
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 0.7,
                 "targetTime"     => Time.new.to_f + 3600*6,
@@ -71,6 +75,7 @@ class NxFlightData
 
         if item["mikuType"] == "Wave" and !item["interruption"] then
             return {
+                "version"        => 2,
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 1.0,
                 "targetTime"     => Time.new.to_f + 3600*36,
@@ -81,6 +86,7 @@ class NxFlightData
 
         if item["mikuType"] == "NxBackup" then
             return {
+                "version"        => 2,
                 "startTime"      => Time.new.to_f,
                 "startPosition"  => 1.0,
                 "targetTime"     => Time.new.to_f + 3600*36,
@@ -108,6 +114,31 @@ class NxFlightData
 
     # NxFlightData::detatch(item)
     def self.detatch(item)
+        return if item["mikuType"] == "NxLambda"
         Items::setAttribute(item["uuid"], "flight-1753", nil)
+    end
+
+    # NxFlightData::issueCondition(item, situation)
+    def self.issueCondition(item, situation)
+        data = {
+            "version"   => 3,
+            "unixtime"  => Time.new.to_f,
+            "situation" =>  situation
+        }
+        Items::setAttribute(item["uuid"], "flight-1753", data)
+    end
+
+    # NxFlightData::interactivelyDetermineSituationOrNull()
+    def self.interactivelyDetermineSituationOrNull()
+        situations = Items::items()
+                        .select{|item| item["flight-1753"] and item["flight-1753"]["version"] == 3 }
+                        .map{|item| item["flight-1753"]["situation"] }
+                        .uniq
+        if situations.size > 0 then
+            situation = LucilleCore::selectEntityFromListOfEntitiesOrNull("situation", situations)
+            return situation if situation
+        end
+        situation = LucilleCore::askQuestionAnswerAsString("situation (empty to abort) : ")
+        situation.size > 0 ? situation : nil
     end
 end

@@ -165,6 +165,7 @@ class NxBalls
 
     # NxBalls::stop(item) # timespanInSeconds
     def self.stop(item) # timespanInSeconds
+        return if item["mikuType"] == "NxLambda"
         if NxBalls::itemIsBallFree(item) then
             NxBalls::destroyNxBall(item)
             return 0 

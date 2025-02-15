@@ -1,10 +1,23 @@
-NXFlightData:
+NxFlightData: # legacy, no longer created
     - startTime       : Float # unixtime
     - startPosition   : Float
     - targetTime      : Float # unixtime
     - targetPosition  : Float
     - random          : Float
 
-The positions are given as listing metric
+NxFlightData:
+    - version         : 2
+    - startTime       : Float # unixtime
+    - startPosition   : Float
+    - targetTime      : Float # unixtime
+    - targetPosition  : Float
+    - random          : Float
 
-We have a linear progression during 90% of the time to target and then we land exponentially on the target
+Version 2:
+    - The positions are given as listing metric
+    - We have a linear progression during 90% of the time to target and then we land exponentially on the target
+
+NxFlightData:
+    - version   : 3
+    - unixtime  : Float
+    - situation : string
