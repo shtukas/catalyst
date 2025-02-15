@@ -1,5 +1,5 @@
 
-class Speedometer
+class Timings
     def initialize()
     end
 
@@ -142,9 +142,20 @@ class Listing
     def self.listingOnce(printer)
         t1 = Time.new.to_f
 
+        Timings::start()
+
         items = Listing::itemsForListing()
+
+        Timings::lap("Listing::itemsForListing()")
+
         items = Prefix::addPrefix(items)
+
+        Timings::lap("Prefix::addPrefix(items)")
+
         items = items.take(10) + NxBalls::activeItems() + items.drop(10)
+
+        Timings::lap("NxBalls::activeItems()")
+
         items = items
             .reduce([]){|selected, item|
                 if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
@@ -154,11 +165,15 @@ class Listing
                 end
             }
 
+        Timings::lap("22:08")
+
         store = ItemStore.new()
 
         printer.call("")
 
         items = items.take(CommonUtils::screenHeight()-5)
+
+        Timings::lap("22:09")
 
         items
             .each{|item|
@@ -166,6 +181,8 @@ class Listing
                 line = Listing::toString2(store, item)
                 printer.call(line)
             }
+
+        Timings::lap("22:10")
 
         renderingTime = Time.new.to_f - t1
         if renderingTime > 1 then
