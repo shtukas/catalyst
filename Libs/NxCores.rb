@@ -112,11 +112,11 @@ class NxCores
             puts ""
 
             [
-                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] },
+                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 },
                 PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning-4233"] }
             ]
                 .flatten
-                .sort_by{|item| item["global-positioning-4233"] }
+                .sort_by{|item| item["global-positioning-4233"] || 0 }
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)

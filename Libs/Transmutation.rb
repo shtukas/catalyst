@@ -8,7 +8,6 @@ class Transmutation
         
         if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
             NxTasks::performGeneralItemPositioning(item)
-            Items::setAttribute(item["uuid"], "global-positioning-4233", rand)
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end
