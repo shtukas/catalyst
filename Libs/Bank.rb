@@ -11,6 +11,16 @@ journal item:
 
 =end
 
+$Nx2E076AFD = nil
+
+Thread.new {
+    sleep 1
+    loop {
+        $Nx2E076AFD = CommonUtils::locationTrace("#{Config::pathToCatalystDataRepository()}/Bank")
+        sleep 120
+    }
+}
+
 class Bank1
 
     # ----------------------------------
@@ -108,8 +118,7 @@ class Bank1
         }
         filepath = "#{Config::pathToCatalystDataRepository()}/Bank/#{CommonUtils::timeStringL22()}.json"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(update)) }
-        key = "21a49255-d882-45a1-984c-8f32e5eccf77:#{CommonUtils::today()}:#{uuid}"
-        XCache::destroy(key)
+        $Nx2E076AFD = SecureRandom.hex
     end
 
     # Bank1::getRecords(uuid)
@@ -143,7 +152,7 @@ class Bank1
 
     # Bank1::recoveredAverageHoursPerDay(uuid)
     def self.recoveredAverageHoursPerDay(uuid)
-        key = "21a49255-d882-45a1-984c-8f32e5eccf77:#{CommonUtils::today()}:#{uuid}"
+        key = "#{$Nx2E076AFD}:21a49255-d882-45a1-984c-8f32e5eccf77:#{uuid}"
         value = XCache::getOrNull(key)
         return value.to_f if value
         value = (0..6).map{|n| Bank1::averageHoursPerDayOverThePastNDays(uuid, n) }.max
