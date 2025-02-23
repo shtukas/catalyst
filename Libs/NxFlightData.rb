@@ -118,8 +118,8 @@ class NxFlightData
         Items::setAttribute(item["uuid"], "flight-1753", nil)
     end
 
-    # NxFlightData::issueCondition(item, situation)
-    def self.issueCondition(item, situation)
+    # NxFlightData::issueSituation(item, situation)
+    def self.issueSituation(item, situation)
         data = {
             "version"   => 3,
             "unixtime"  => Time.new.to_f,

@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile * | >> * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile * | >> * | <> * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | core | priority",
             "              : transmute *",
@@ -47,7 +47,14 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             situation = NxFlightData::interactivelyDetermineSituationOrNull()
-            NxFlightData::issueCondition(item, situation)
+            NxFlightData::issueSituation(item, situation)
+            return
+        end
+
+        if Interpreting::match("<>", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Items::setAttribute(item["uuid"], "flight-1753", nil)
             return
         end
 
