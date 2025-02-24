@@ -172,10 +172,16 @@ class Listing
 
         Timings::start()
 
+        Timings::lap("17:20")
+
         package = Listing::itemsForListing()
+
+        Timings::lap("17:30")
 
         items = package["listingItems"]
         situations = package["situations"]
+
+        Timings::lap("17:40")
 
         items = Prefix::addPrefix(items)
 
