@@ -5,12 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | move * | pile * | >> * | <> * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | pile * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | core | priority",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
-            "NxTask        : activate *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
             "misc          : search | commands | edit <n> | speed",
         ].join("\n")
@@ -23,7 +22,6 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                NxFlightData::detatch(item)
                 return
             end
         end
@@ -40,21 +38,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::natural(item)
-            return
-        end
-
-        if Interpreting::match(">>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            situation = NxFlightData::interactivelyDetermineSituationOrNull()
-            NxFlightData::issueSituation(item, situation)
-            return
-        end
-
-        if Interpreting::match("<>", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "flight-1753", nil)
             return
         end
 
@@ -124,14 +107,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("activate *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxTasks::performActivation(item)
-            return
-        end
-
         if Interpreting::match("pile *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -180,8 +155,6 @@ class CommandsAndInterpreters
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
             return if item.nil?
-            NxTasks::performGeneralItemPositioning(item)
-            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
@@ -190,25 +163,6 @@ class CommandsAndInterpreters
             item = NxCores::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-
-            if item["mikuType"] == "NxDated" then
-                return if !LucilleCore::askQuestionAnswerAsBoolean("You are attempting to move a #{item["mikuType"]}, confirm making it a NxTask", true)
-            end
-
-            NxTasks::performGeneralItemPositioning(item)
-
-            # We are making the mikuType change last to avoid putting the item in
-            # an inconsistent state if the process was interrupted.
-            if item["mikuType"] == "NxDated" then
-                Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            end
             return
         end
 
@@ -262,12 +216,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("active items", input) then
-            lx = lambda { PolyFunctions::activeItems().sort_by{|item| PolyFunctions::ratio(item) } }
-            Operations::program3(lx)
             return
         end
 

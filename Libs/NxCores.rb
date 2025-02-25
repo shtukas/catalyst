@@ -78,11 +78,6 @@ class NxCores
         Items::mikuType("NxCore").map{|item| item["hours"] }.sum
     end
 
-    # NxCores::bankingCorrectionFactor()
-    def self.bankingCorrectionFactor()
-        [NxCores::totalHoursPerWeek().to_f/84 , 1].max
-    end
-
     # ------------------
     # Ops
 
@@ -111,12 +106,8 @@ class NxCores
 
             puts ""
 
-            [
-                PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] || 0 },
-                PolyFunctions::computedChildren(core).sort_by{|item| item["global-positioning-4233"] }
-            ]
-                .flatten
-                .sort_by{|item| item["global-positioning-4233"] || 0 }
+            PolyFunctions::naturalChildren(core)
+                .sort_by{|item| item["nx1940"]["position"] }
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -131,12 +122,12 @@ class NxCores
             return if input == ""
 
             if input == "todo" then
-                todo = NxTasks::interactivelyIssueNewOrNull()
-                next if todo.nil?
-                Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
                 position = Operations::interactivelySelectGlobalPositionInParent(core)
-                Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
-                todo = Items::itemOrNull(todo["uuid"])
+                nx1940 = {
+                    "position" => position,
+                    "coreuuid"                => core["uuid"]
+                }
+                todo = NxTasks::interactivelyIssueNewOrNull(nx1940)
                 puts JSON.pretty_generate(todo)
                 next
             end
@@ -152,11 +143,12 @@ class NxCores
                 lines = text.strip.lines.map{|line| line.strip }
                 lines = lines.reverse
                 lines.each{|line|
-                    todo = NxTasks::descriptionToTask(line)
-                    Items::setAttribute(todo["uuid"], "parentuuid-0014", core["uuid"])
                     position = PolyFunctions::firstPositionInParent(core) - 1
-                    Items::setAttribute(todo["uuid"], "global-positioning-4233", position)
-                    todo = Items::itemOrNull(todo["uuid"])
+                    nx1940 = {
+                        "position" => position,
+                        "coreuuid"                => core["uuid"]
+                    }
+                    todo = NxTasks::descriptionToTask(line, nx1940)
                     puts JSON.pretty_generate(todo)
                 }
                 next
@@ -167,7 +159,11 @@ class NxCores
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = Operations::interactivelySelectGlobalPositionInParent(core)
-                Items::setAttribute(i["uuid"], "global-positioning-4233", position)
+                nx1940 = {
+                    "position" => position,
+                    "coreuuid"                => core["uuid"]
+                }
+                Items::setAttribute(i["uuid"], "nx1940", nx1940)
                 next
             end
 
@@ -175,15 +171,20 @@ class NxCores
                 listord = input[4, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                NxTasks::performItemPositioningInCore(i)
+                NxTasks::performItemPositioning(i)
                 next
             end
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["global-positioning-4233"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["nx1940"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    Items::setAttribute(i["uuid"], "global-positioning-4233", PolyFunctions::firstPositionInParent(core) - 1)
+                position = PolyFunctions::firstPositionInParent(core) - 1
+                nx1940 = {
+                    "position" => position,
+                    "coreuuid"                => core["uuid"]
+                }
+                    Items::setAttribute(i["uuid"], "nx1940", nx1940)
                 }
                 next
             end
@@ -202,7 +203,6 @@ class NxCores
  
             puts ""
             puts "weekly total     : #{NxCores::totalHoursPerWeek()} hours"
-            puts "correction factor: #{NxCores::bankingCorrectionFactor()}"
             puts ""
 
             NxCores::inRatioOrder()

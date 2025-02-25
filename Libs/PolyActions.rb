@@ -71,7 +71,6 @@ class PolyActions
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
-        NxFlightData::detatch(item)
 
         if item["mikuType"] == "NxLambda" then
             return

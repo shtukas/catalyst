@@ -25,10 +25,12 @@ QUERY
 
 system(query)
 
+raise "This script needs updating, we are no longer using global-positioning-4233 or parentuuid-0014"
+
 positions = Items::mikuType("NxTask")
             .select{|item| item["parentuuid-0014"].nil? }
-            .sort_by{|item| item["global-positioning-4233"] }
-            .map{|item| item["global-positioning-4233"] }
+            .sort_by{|item| item["nx1940"]["position"] }
+            .map{|item| item["nx1940"]["position"] }
 
 insertions = positions.zip(positions.drop(1))
     .select{|pair| pair.compact.size == 2 }

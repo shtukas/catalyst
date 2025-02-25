@@ -5,7 +5,9 @@ NxTask:
     - unixtime                : Float
     - datetime                : DateTime Iso 8601 UTC Zulu
     - description             : String
-    - global-positioning-4233 : Float
+    - nx1940                  : Nx1940
 
-    - hours-2037              : Float  | null # hours per week
-    - donation-1205           : String | null # uuid of target for donation
+Nx1940 {
+    position : Float,
+    coreuuid                : String
+}

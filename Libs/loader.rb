@@ -146,7 +146,6 @@ require_relative "Items.rb"
 require_relative "InMemoryCache.rb"
 
 require_relative "Listing.rb"
-require_relative "ListingMetric.rb"
 
 require_relative "NxMonitors.rb"
 
@@ -157,7 +156,6 @@ require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxStrats.rb"
-require_relative "NxFlightData.rb"
 require_relative "NxStackPriorities.rb"
 require_relative "NxLambdas.rb"
 

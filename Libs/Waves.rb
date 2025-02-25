@@ -128,9 +128,14 @@ class Waves
         "🌊 #{item["description"]} (#{Waves::nx46ToString(item["nx46"])}) (#{ago})#{interruption}"
     end
 
-    # Waves::listingItems()
-    def self.listingItems()
-        Items::mikuType("Wave").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+    # Waves::listingItemsInterruption()
+    def self.listingItemsInterruption()
+        Items::mikuType("Wave").select{|item| item["interruption"]}
+    end
+
+    # Waves::listingItemsNonInterruption()
+    def self.listingItemsNonInterruption()
+        Items::mikuType("Wave").select{|item| !item["interruption"]}
     end
 
     # -------------------------------------------------------------------------

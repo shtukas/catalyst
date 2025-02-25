@@ -54,21 +54,12 @@ class Listing
         item["interruption"]
     end
 
-    # Listing::ratioPrefix(item)
-    def self.ratioPrefix(item)
-        return "" if item["mikuType"] == "NxStrat"
-        return "" if item["mikuType"] == "NxTask" and !NxTasks::isActive(item) # those come from Prefixing
-        metric = ListingMetric::metric(item)
-        return "" if metric.nil?
-        "(#{"%5.3f" % metric}) "
-    end
-
     # Regular main listing 
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{Listing::ratioPrefix(item)}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{DoNotShowUntil::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{PolyFunctions::parentingSuffix(item)}#{DoNotShowUntil::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -101,48 +92,20 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-        items = [
+        [
+            Items::mikuType("NxStackPriority"),
             Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
-            NxCores::listingItems(),
-            NxTasks::activeItemsForListing(),
-            Waves::listingItems(),
             NxMonitors::listingItems(),
-            Items::mikuType("NxStackPriority")
+            NxTasks::itemsForListing(),
+            Waves::listingItemsNonInterruption(),
+            NxCores::inRatioOrder(),
         ]
             .flatten
-
-        itemsListing = []
-        itemsSituations = []
-
-        items.each{|item|
-            if item["flight-1753"] and item["flight-1753"]["version"].nil? then
-                itemsListing << item
-                next
-            end
-            if item["flight-1753"] and item["flight-1753"]["version"] == 2 then
-                itemsListing << item
-                next
-            end
-            if item["flight-1753"] and item["flight-1753"]["version"] == 3 then
-                itemsSituations << item
-                next
-            end
-            itemsListing << item
-        }
-
-        i1s = itemsListing
-                .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-                .sort_by{|item| ListingMetric::metric(item) }
-
-        situations = itemsSituations.map{|item| item["flight-1753"]["situation"] }.uniq
-
-        {
-            "listingItems" => i1s,
-            "situations" => situations
-        }
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # -----------------------------------------
@@ -174,12 +137,7 @@ class Listing
 
         Timings::lap("17:20")
 
-        package = Listing::itemsForListing()
-
-        Timings::lap("17:30")
-
-        items = package["listingItems"]
-        situations = package["situations"]
+        items = Listing::itemsForListing()
 
         Timings::lap("17:40")
 
@@ -209,21 +167,6 @@ class Listing
         items = items.take(CommonUtils::screenHeight()-5)
 
         Timings::lap("22:09")
-
-        situations.each{|situation|
-            l = lambda {
-                l2 = lambda {
-                    Items::items()
-                        .select{|item| item["flight-1753"] and item["flight-1753"]["version"] == 3 and item["flight-1753"]["situation"] == situation }
-                        .sort_by{|item| item["flight-1753"]["unixtime"] }
-                }
-                Operations::program3(l2)
-            }
-            item = NxLambdas::interactivelyIssueNewOrNull("situation: #{situation}", l)
-            store.register(item, false)
-            line = Listing::toString2(store, item)
-            printer.call(line)
-        }
 
         items
             .each{|item|

@@ -97,29 +97,14 @@ class PolyFunctions
 
     # PolyFunctions::parentOrNull(item)
     def self.parentOrNull(item)
-        if item["mikuType"] == "NxTask" and item["parentuuid-0014"].nil? and item["engine-1706"].nil? then
-            # we have an NxTask without a parent and without an engine
-            # The parent is the Infinity Core
-            return Items::itemOrNull(NxCores::infinityuuid())
-        end
-        if item["parentuuid-0014"] then
-            return Items::itemOrNull(item["parentuuid-0014"])
-        end
-        nil
+        return nil if item["mikuType"] != "NxTask"
+        Items::itemOrNull(item["nx1940"]["coreuuid"])
     end
 
     # PolyFunctions::naturalChildren(item)
     def self.naturalChildren(item)
         Items::items()
-            .select{|i| i["parentuuid-0014"] == item["uuid"] }
-    end
-
-    # PolyFunctions::computedChildren(item)
-    def self.computedChildren(item)
-        if item["uuid"] == NxCores::infinityuuid() then # Infinity Core
-            return NxTasks::orphanItems().sort_by{|item| item["global-positioning-4233"] }
-        end
-        []
+            .select{|i| i["nx1940"] and i["nx1940"]["coreuuid"] == item["uuid"] }
     end
 
     # PolyFunctions::childrenForPrefix(item)
@@ -127,28 +112,26 @@ class PolyFunctions
         if st = NxStrats::parentOrNull(item) then
             return [st]
         end
-        (PolyFunctions::naturalChildren(item) + PolyFunctions::computedChildren(item))
-            .sort_by{|item| item["global-positioning-4233"] }
+        PolyFunctions::naturalChildren(item).sort_by{|item| item["nx1940"]["position"] }
     end
 
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
         elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["global-positioning-4233"] }).min
+        ([0] + elements.map{|item| item["nx1940"]["position"] }).min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
         elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["global-positioning-4233"] }).max
+        ([0] + elements.map{|item| item["nx1940"]["position"] }).max
     end
 
     # PolyFunctions::parentingSuffix(item)
     def self.parentingSuffix(item)
-        return "" if item["parentuuid-0014"].nil?
-        target = Items::itemOrNull(item["parentuuid-0014"])
-        return "" if target.nil?
-        " #{"(p: #{target["description"]})".yellow}"
+        parent = PolyFunctions::parentOrNull(item)
+        return "" if parent.nil?
+        " #{"(p: #{parent["description"]})".yellow}"
     end
 
     # PolyFunctions::donationSuffix(item)
@@ -162,7 +145,7 @@ class PolyFunctions
 
     # PolyFunctions::interactivelySelectDonationTargetOrNull()
     def self.interactivelySelectDonationTargetOrNull()
-        items = NxTasks::activeItems() + Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
+        items = Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
         LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
@@ -179,21 +162,9 @@ class PolyFunctions
         if item["mikuType"] == "NxCore" then
             return NxCores::ratio(item)
         end
-        if NxTasks::isActive(item) then
-            return NxTasks::activeItemRatio(item)
-        end
         if item["mikuType"] == "NxMonitor" then
             return NxMonitors::ratio(item)
         end
         raise "(error: 1931-e258c72b)"
-    end
-
-    # PolyFunctions::activeItems()
-    def self.activeItems()
-        [
-            NxTasks::activeItems(),
-            Items::mikuType("NxCore"),
-            NxMonitors::listingItems()
-        ].flatten
     end
 end
