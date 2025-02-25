@@ -59,6 +59,7 @@ class NxCores
     def self.listingItems()
         Items::mikuType("NxCore")
             .select{|item| NxCores::ratio(item) < 1 }
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
             .sort_by{|item| NxCores::ratio(item) }
     end
 
