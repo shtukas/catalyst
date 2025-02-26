@@ -51,7 +51,8 @@ class NxTasks
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        "#{NxTasks::icon(item)} #{item["description"]} @ #{item["nx1940"]["position"]}"
+        px = "(#{item["nx1940"]["position"]})".yellow
+        "#{NxTasks::icon(item)} #{item["description"]} #{px}"
     end
 
     # NxTasks::itemsForListing()
