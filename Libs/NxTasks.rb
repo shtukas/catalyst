@@ -84,8 +84,8 @@ class NxTasks
         }
         position = Operations::interactivelySelectGlobalPositionInParent(parent)
         {
-            "task-gl0-pos1" => position,
-            "coreuuid"      => parent["uuid"]
+            "position" => position,
+            "coreuuid" => parent["uuid"]
         }
     end
 
