@@ -16,6 +16,5 @@ If we have a problem after upgrading Ruby, for instance sqlite3 is not working, 
 brew reinstall sqlite
 gem uninstall sqlite3
 gem install sqlite3 --platform=ruby
-bundle pristine sqlite3
 bundle install
 ```

@@ -203,7 +203,7 @@ class NxCores
             store = ItemStore.new()
  
             puts ""
-            puts "weekly total     : #{NxCores::totalHoursPerWeek()} hours"
+            puts "weekly total: #{NxCores::totalHoursPerWeek()} hours"
             puts ""
 
             NxCores::inRatioOrder()
