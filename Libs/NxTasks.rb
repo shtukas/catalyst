@@ -64,7 +64,7 @@ class NxTasks
                 if items.size >= 10 then
                     items
                 else
-                    if activecoreuuids.include?(item["nx1940"]["coreuuid"]) and DoNotShowUntil::isVisible(item["uuid"]) and Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1 then
+                    if NxBalls::itemIsActive(item) or (activecoreuuids.include?(item["nx1940"]["coreuuid"]) and DoNotShowUntil::isVisible(item["uuid"]) and Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1) then
                         items + [item]
                     else
                         items
