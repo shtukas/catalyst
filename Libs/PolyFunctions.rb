@@ -131,7 +131,7 @@ class PolyFunctions
     def self.parentingSuffix(item)
         parent = PolyFunctions::parentOrNull(item)
         return "" if parent.nil?
-        " #{"(p: #{parent["description"]})".yellow}"
+        " #{"(#{parent["description"]})".yellow}"
     end
 
     # PolyFunctions::donationSuffix(item)
