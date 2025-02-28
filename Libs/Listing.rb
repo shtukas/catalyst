@@ -102,7 +102,7 @@ class Listing
             NxMonitors::listingItems(),
             NxTasks::itemsForListing(),
             Waves::listingItemsNonInterruption(),
-            NxCores::inRatioOrder(),
+            NxCores::listingItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
