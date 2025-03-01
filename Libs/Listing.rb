@@ -92,18 +92,29 @@ class Listing
 
     # Listing::itemsForListing()
     def self.itemsForListing()
-        [
-            Items::mikuType("NxStackPriority"),
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxBackups::listingItems(),
-            NxDateds::listingItems(),
-            NxFloats::listingItems(),
-            NxMonitors::listingItems(),
-            NxTasks::itemsForListing(),
-            Waves::listingItemsNonInterruption(),
-            NxCores::listingItems(),
-        ]
+        Timings::lap("17:25")
+        i1 = Items::mikuType("NxStackPriority")
+        Timings::lap("17:26")
+        i2 = Anniversaries::listingItems()
+        Timings::lap("17:27")
+        i3 = Waves::listingItemsInterruption()
+        Timings::lap("17:28")
+        i4 = NxBackups::listingItems()
+        Timings::lap("17:29")
+        i5 = NxDateds::listingItems()
+        Timings::lap("17:30")
+        i6 = NxFloats::listingItems()
+        Timings::lap("17:31")
+        i7 = NxMonitors::listingItems()
+        Timings::lap("17:32")
+        i8 = NxTasks::itemsForListing()
+        Timings::lap("17:33")
+        i9 = Waves::listingItemsNonInterruption()
+        Timings::lap("17:34")
+        i10 = NxCores::listingItems()
+        Timings::lap("17:35")
+
+        (i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10)
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end

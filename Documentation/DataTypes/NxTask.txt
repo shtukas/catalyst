@@ -11,3 +11,13 @@ Nx1940 {
     position : Float,
     coreuuid                : String
 }
+
+Nx1941 {
+    position : Float,
+    core     : NxCore
+}
+
+NxCore:
+    - uuid          : String
+    - description   : String
+    - hours         : Float
