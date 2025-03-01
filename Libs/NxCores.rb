@@ -5,68 +5,48 @@ class NxCores
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
-        payload = UxPayload::makeNewOrNull(uuid)
+        return nil if description == ""
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-        Items::itemInit(uuid, "NxCore")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "hours", hours)
-        Items::itemOrNull(uuid)
+        {
+            "uuid"        => SecureRandom.uuid,
+            "description" => description,
+            "hours"       => hours
+        }
     end
 
-    # NxCores::interactivelySelectPrefixMode()
-    def self.interactivelySelectPrefixMode()
+    # NxCores::makeNx1941()
+    def self.makeNx1941()
+        core = nil
         loop {
-            options = ["strictly-sequential", "choice", "top3-bank-order", "all-bank-order"]
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("prefix mode", options)
-            return option if option
+            core = NxCores::interactivelySelectOrNull()
+            break if core
+            core = NxCores::interactivelyIssueNewOrNull()
+            break if core
+        }
+        position = NxCores::interactivelySelectGlobalPositionInCore(core)
+        {
+            "position" => position,
+            "core" => core
         }
     end
 
     # ------------------
     # Data
 
-    # NxCores::ratio(item)
-    def self.ratio(item)
-        hours = item["hours"].to_f
-        [Bank1::recoveredAverageHoursPerDay(item["uuid"]), 0].max.to_f/(hours/7)
+    # NxCores::ratio(core)
+    def self.ratio(core)
+        hours = core["hours"].to_f
+        [Bank1::recoveredAverageHoursPerDay(core["uuid"]), 0].max.to_f/(hours/7)
     end
 
-    # NxCores::ratioString(item)
-    def self.ratioString(item)
-        "(#{"%6.2f" % (100 * NxCores::ratio(item))} %; #{"%5.2f" % item["hours"]} h/w)".yellow
+    # NxCores::shouldShow(core)
+    def self.shouldShow(core)
+        Bank1::recoveredAverageHoursPerDay(core["uuid"]) < (core["hours"].to_f/7)
     end
 
-    # NxCores::ratioPrelude(item)
-    def self.ratioPrelude(item)
-        "(#{"%5.3f" % NxCores::ratio(item)})".green
-    end
-
-    # NxCores::toString(item)
-    def self.toString(item)
-        "⏱️  #{NxCores::ratioPrelude(item)} #{item["description"]} #{NxCores::ratioString(item)}"
-    end
-
-    # NxCores::inRatioOrder()
-    def self.inRatioOrder()
-        Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
-    end
-
-    # NxCores::listingItems()
-    def self.listingItems()
-        Items::mikuType("NxCore")
-            .select{|item| NxCores::ratio(item) < 1 }
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .sort_by{|item| NxCores::ratio(item) }
-    end
-
-    # NxCores::interactivelySelectOrNull()
-    def self.interactivelySelectOrNull()
-        items = Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
+    # NxCores::ratioString(core)
+    def self.ratioString(core)
+        "(#{"%6.2f" % (100 * NxCores::ratio(core))} %; #{"%5.2f" % core["hours"]} h/w)".yellow
     end
 
     # NxCores::infinityuuid()
@@ -74,9 +54,73 @@ class NxCores
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
+    # NxCores::cores()
+    def self.cores()
+        Items::mikuType("NxTask")
+            .map{|item| item["nx1941"]["core"] }
+            .reduce([]){|cores, core|
+                if cores.map{|c| c["uuid"] }.include?(core["uuid"]) then
+                    cores
+                else
+                    cores + [core]
+                end
+            }
+    end
+
     # NxCores::totalHoursPerWeek()
     def self.totalHoursPerWeek()
-        Items::mikuType("NxCore").map{|item| item["hours"] }.sum
+        NxCores::cores().map{|item| item["hours"] }.inject(0, :+)
+    end
+
+    # NxCores::coresInRatioOrder()
+    def self.coresInRatioOrder()
+        NxCores::cores().sort_by{|core| NxCores::ratio(core) }
+    end
+
+    # NxCores::interactivelySelectOrNull()
+    def self.interactivelySelectOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}" })
+    end
+
+    # NxCores::coreuuid2NxTasksInOrder(core)
+    def self.coreuuid2NxTasksInOrder(core)
+        Items::mikuType("NxTask")
+            .select{|item| item["nx1941"]["core"]["uuid"] == core["uuid"] }
+            .sort_by{|item| item["nx1941"]["position"] }
+    end
+
+    # NxCores::firstPositionInCore(core)
+    def self.firstPositionInCore(core)
+        items = NxCores::coreuuid2NxTasksInOrder(core)
+        return 1 if items.empty?
+        items.first["nx1941"]["position"]
+    end
+
+    # NxCores::lastPositionInCore(core)
+    def self.lastPositionInCore(core)
+        items = NxCores::coreuuid2NxTasksInOrder(core)
+        return 1 if items.empty?
+        items.last["nx1941"]["position"]
+    end
+
+    # NxCores::interactivelySelectGlobalPositionInCore(core)
+    def self.interactivelySelectGlobalPositionInCore(core)
+        elements = NxCores::coreuuid2NxTasksInOrder(core)
+        elements.first(20).each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
+        if position == "" then # default does next
+            position = "next"
+        end
+        if position == "first" then
+            return ([0] + elements.map{|item| item["nx1941"]["position"] }).min - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["nx1941"]["position"] }).max + 1
+        end
+        position = position.to_f
+        position
     end
 
     # ------------------
@@ -85,16 +129,7 @@ class NxCores
     # NxCores::program1(core)
     def self.program1(core)
 
-        if core["description"].start_with?("[open cycle]") then
-            puts "You cannot { land on / program } #{PolyFunctions::toString(core).green} (starts with `[open cycle]`)"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         loop {
-
-            core = Items::itemOrNull(core["uuid"])
-            return if core.nil?
 
             #system("clear")
 
@@ -102,13 +137,7 @@ class NxCores
 
             puts ""
 
-            store.register(core, false)
-            puts Listing::toString2(store, core)
-
-            puts ""
-
-            PolyFunctions::naturalChildren(core)
-                .sort_by{|item| item["nx1940"]["position"] }
+            NxCores::coreuuid2NxTasksInOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -123,12 +152,12 @@ class NxCores
             return if input == ""
 
             if input == "todo" then
-                position = Operations::interactivelySelectGlobalPositionInParent(core)
-                nx1940 = {
+                position = NxCores::interactivelySelectGlobalPositionInCore(core)
+                nx1941 = {
                     "position" => position,
-                    "coreuuid"                => core["uuid"]
+                    "core"     => core
                 }
-                todo = NxTasks::interactivelyIssueNewOrNull(nx1940)
+                todo = NxTasks::interactivelyIssueNewOrNull(nx1941)
                 puts JSON.pretty_generate(todo)
                 next
             end
@@ -144,12 +173,12 @@ class NxCores
                 lines = text.strip.lines.map{|line| line.strip }
                 lines = lines.reverse
                 lines.each{|line|
-                    position = PolyFunctions::firstPositionInParent(core) - 1
-                    nx1940 = {
+                    position = NxCores::firstPositionInCore(core) - 1
+                    nx1941 = {
                         "position" => position,
-                        "coreuuid"                => core["uuid"]
+                        "core"     => core
                     }
-                    todo = NxTasks::descriptionToTask(line, nx1940)
+                    todo = NxTasks::descriptionToTask(line, nx1941)
                     puts JSON.pretty_generate(todo)
                 }
                 next
@@ -159,12 +188,12 @@ class NxCores
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = Operations::interactivelySelectGlobalPositionInParent(core)
-                nx1940 = {
+                position = NxCores::interactivelySelectGlobalPositionInCore(core)
+                nx1941 = {
                     "position" => position,
-                    "coreuuid"                => core["uuid"]
+                    "core"     => core
                 }
-                Items::setAttribute(i["uuid"], "nx1940", nx1940)
+                Items::setAttribute(i["uuid"], "nx1941", nx1941)
                 next
             end
 
@@ -178,14 +207,14 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::naturalChildren(core).sort_by{|item| item["nx1940"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::coreuuid2NxTasksInOrder(core).sort_by{|item| item["nx1941"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                position = PolyFunctions::firstPositionInParent(core) - 1
-                nx1940 = {
-                    "position" => position,
-                    "coreuuid"                => core["uuid"]
-                }
-                    Items::setAttribute(i["uuid"], "nx1940", nx1940)
+                    position = NxCores::firstPositionInCore(core) - 1
+                    nx1941 = {
+                        "position" => position,
+                        "core"     => core
+                    }
+                    Items::setAttribute(i["uuid"], "nx1941", nx1941)
                 }
                 next
             end
@@ -197,44 +226,10 @@ class NxCores
     # NxCores::program2()
     def self.program2()
         loop {
- 
-            # system("clear")
- 
-            store = ItemStore.new()
- 
-            puts ""
             puts "weekly total: #{NxCores::totalHoursPerWeek()} hours"
-            puts ""
-
-            NxCores::inRatioOrder()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
-                }
- 
-            puts ""
-            puts "core | hours *"
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
- 
-            if input == "core" then
-                core = NxCores::interactivelyIssueNewOrNull()
-                next if core.nil?
-                puts JSON.pretty_generate(core)
-                next
-            end
- 
-            if input.start_with?("hours") then
-                item = store.get(input[5, 99].strip.to_i)
-                next if item.nil?
-                hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-                Items::setAttribute(item["uuid"], "hours", hours)
-                next
-            end
- 
-            puts ""
-            CommandsAndInterpreters::interpreter(input, store)
+            core = NxCores::interactivelySelectOrNull()
+            break if core.nil?
+            NxCores::program1(core)
         }
     end
 end

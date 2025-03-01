@@ -11,22 +11,11 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["engine-1706"] then
-            target = Items::itemOrNull(item["engine-1706"]["targetuuid"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
         if item["donation-1205"] then
-            target = Items::itemOrNull(item["donation-1205"])
-            if target then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target)
-            end
-        end
-
-        if (parent = PolyFunctions::parentOrNull(item)) then
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent)
+            accounts << {
+                "description" => "(donation: #{item["donation-1205"]})",
+                "number"      => item["donation-1205"]
+            }
         end
 
         if item["mikuType"] == "NxStrat" then
@@ -34,6 +23,14 @@ class PolyFunctions
             if bottom then
                 accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
             end
+        end
+
+        if item["mikuType"] == "NxTask" then
+            core = item["nx1941"]["core"]
+            accounts << {
+                "description" => "(core: #{core["description"]})",
+                "number"      => core["uuid"]
+            }
         end
 
         accounts.reduce([]){|as, account|
@@ -68,14 +65,8 @@ class PolyFunctions
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
-        end
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
-        end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
         end
         if item["mikuType"] == "NxMonitor" then
             return NxMonitors::toString(item)
@@ -95,43 +86,12 @@ class PolyFunctions
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
     end
 
-    # PolyFunctions::parentOrNull(item)
-    def self.parentOrNull(item)
-        return nil if item["mikuType"] != "NxTask"
-        Items::itemOrNull(item["nx1940"]["coreuuid"])
-    end
-
-    # PolyFunctions::naturalChildren(item)
-    def self.naturalChildren(item)
-        Items::items()
-            .select{|i| i["nx1940"] and i["nx1940"]["coreuuid"] == item["uuid"] }
-    end
-
     # PolyFunctions::childrenForPrefix(item)
     def self.childrenForPrefix(item)
         if st = NxStrats::parentOrNull(item) then
             return [st]
         end
-        PolyFunctions::naturalChildren(item).sort_by{|item| item["nx1940"]["position"] }
-    end
-
-    # PolyFunctions::firstPositionInParent(parent)
-    def self.firstPositionInParent(parent)
-        elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["nx1940"]["position"] }).min
-    end
-
-    # PolyFunctions::lastPositionInParent(parent)
-    def self.lastPositionInParent(parent)
-        elements = PolyFunctions::naturalChildren(parent)
-        ([0] + elements.map{|item| item["nx1940"]["position"] }).max
-    end
-
-    # PolyFunctions::parentingSuffix(item)
-    def self.parentingSuffix(item)
-        parent = PolyFunctions::parentOrNull(item)
-        return "" if parent.nil?
-        " #{"(#{parent["description"]})".yellow}"
+        []
     end
 
     # PolyFunctions::donationSuffix(item)
@@ -141,12 +101,6 @@ class PolyFunctions
         target = Items::itemOrNull(item["donation-1205"])
         return "" if target.nil?
         " #{"(d: #{target["description"]})".yellow}"
-    end
-
-    # PolyFunctions::interactivelySelectDonationTargetOrNull()
-    def self.interactivelySelectDonationTargetOrNull()
-        items = Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("target", items, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # PolyFunctions::measure(experimentname, lambda)

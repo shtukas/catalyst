@@ -1,16 +1,11 @@
 
 NxTask:
-    - uuid                    : String
-    - mikuType                : "NxTask"
-    - unixtime                : Float
-    - datetime                : DateTime Iso 8601 UTC Zulu
-    - description             : String
-    - nx1940                  : Nx1940
-
-Nx1940 {
-    position : Float,
-    coreuuid                : String
-}
+    - uuid         : String
+    - mikuType     : "NxTask"
+    - unixtime     : Float
+    - datetime     : DateTime Iso 8601 UTC Zulu
+    - description  : String
+    - nx1941       : Nx1941
 
 Nx1941 {
     position : Float,

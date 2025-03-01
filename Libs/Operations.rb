@@ -87,26 +87,6 @@ class Operations
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 
-    # Operations::interactivelySelectGlobalPositionInParent(parent)
-    def self.interactivelySelectGlobalPositionInParent(parent)
-        elements = PolyFunctions::naturalChildren(parent).sort_by{|item| item["nx1940"]["position"] }
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
-        if position == "" then # default does next
-            position = "next"
-        end
-        if position == "first" then
-            return ([0] + elements.map{|item| item["nx1940"]["position"] }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["nx1940"]["position"] }).max + 1
-        end
-        position = position.to_f
-        position
-    end
-
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
@@ -116,9 +96,8 @@ class Operations
 
     # Operations::setDonation(item)
     def self.setDonation(item)
-        target = PolyFunctions::interactivelySelectDonationTargetOrNull()
-        return if target.nil?
-        return if item["uuid"] == target["uuid"]
-        Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+        core = NxCores::interactivelySelectOrNull()
+        return if core.nil?
+        Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])
     end
 end

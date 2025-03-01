@@ -49,11 +49,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
@@ -138,10 +133,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
                 Waves::perform_done(item)
@@ -177,12 +168,6 @@ class PolyActions
                 end
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
-                    if item["mikuType"] == "NxTask" and item["engine-1706"].nil? then
-                        if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxTask. Add Engine ? ") then
-                            engine = NxEngines::interactivelyIssueNew()
-                            Items::setAttribute(item["uuid"], "engine-1706", engine)
-                        end
-                    end
                     return
                 end
             end
@@ -225,11 +210,6 @@ class PolyActions
 
         if item["mikuType"] == "NxDated" then
             processDestroyable.call(item)
-            return
-        end
-
-        if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
             return
         end
 
@@ -305,23 +285,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::destroy(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxCore" then
-            if item["uuid"] == NxCores::infinityuuid() then
-                puts "You cannot destroy the Infinity core"
-                LucilleCore::pressEnterToContinue()
-                return
-            end
-            if !PolyFunctions::naturalChildren(item).empty? then
-                puts "You cannot destroy NxCore '#{PolyFunctions::toString(item).green}' because it has children."
-                LucilleCore::pressEnterToContinue()
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
             end

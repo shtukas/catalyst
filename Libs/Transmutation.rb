@@ -18,13 +18,10 @@ class Transmutation
         if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(uuid, "date", datetime)
-            Items::setAttribute(item["uuid"], "engine-1706", nil)
-            Items::setAttribute(item["uuid"], "engine-1706", nil)
             Items::setAttribute(item["uuid"], "mikuType", "NxDated")
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxFloat" then
-            Items::setAttribute(item["uuid"], "engine-1706", nil)
             Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
             return
         end

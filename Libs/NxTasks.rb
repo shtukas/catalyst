@@ -1,24 +1,24 @@
 
 class NxTasks
 
-    # NxTasks::interactivelyIssueNewOrNull(nx1940 = nil)
-    def self.interactivelyIssueNewOrNull(nx1940 = nil)
+    # NxTasks::interactivelyIssueNewOrNull(nx1941 = nil)
+    def self.interactivelyIssueNewOrNull(nx1941 = nil)
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
-        nx1940 = nx1940 || NxTasks::makeNx1940()
+        nx1941 = nx1941 || NxCores::makeNx1941()
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "nx1940", nx1940)
+        Items::setAttribute(uuid, "nx1941", nx1941)
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::locationToTask(description, location, nx1940)
-    def self.locationToTask(description, location, nx1940)
+    # NxTasks::locationToTask(description, location, nx1941)
+    def self.locationToTask(description, location, nx1941)
         uuid = SecureRandom.uuid
         payload = UxPayload::locationToPayload(uuid, location)
         Items::itemInit(uuid, "NxTask")
@@ -26,73 +26,64 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "nx1940", nx1940)
+        Items::setAttribute(uuid, "nx1941", nx1941)
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::descriptionToTask(description, nx1940)
-    def self.descriptionToTask(description, nx1940)
+    # NxTasks::descriptionToTask(description, nx1941)
+    def self.descriptionToTask(description, nx1941)
         uuid = SecureRandom.uuid
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "nx1940", nx1940)
+        Items::setAttribute(uuid, "nx1941", nx1941)
         Items::itemOrNull(uuid)
     end
 
     # ------------------
     # Data (2)
 
-    # NxTasks::icon(item)
-    def self.icon(item)
-        "🔹"
-    end
-
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        px = "(#{item["nx1940"]["position"]})".yellow
-        "#{NxTasks::icon(item)} #{item["description"]} #{px}"
+        px = "(#{item["nx1941"]["position"]} @ #{item["nx1941"]["core"]["description"]})".yellow
+        "🔹 #{item["description"]} #{px}"
     end
 
     # NxTasks::itemsForListing()
     def self.itemsForListing()
-        activecoreuuids = NxCores::listingItems().map{|core| core["uuid"] }
-        Items::mikuType("NxTask")
-            .sort_by{|item| item["nx1940"]["position"] }
-            .reduce([]){|items, item|
-                if items.size >= 10 then
-                    items
+
+        struct_zero = {
+            "coreShouldShow" => {},
+            "items" => []
+        }
+
+        struct_final = Items::mikuType("NxTask")
+            .sort_by{|item| item["nx1941"]["position"] }
+            .reduce(struct_zero){|struct, item|
+                if struct["items"].size >= 10 then
+                    # nothing happens
                 else
-                    if NxBalls::itemIsActive(item) or (activecoreuuids.include?(item["nx1940"]["coreuuid"]) and DoNotShowUntil::isVisible(item["uuid"]) and Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1) then
-                        items + [item]
-                    else
-                        items
+                    core = item["nx1941"]["core"]
+                    if struct["coreShouldShow"][core["uuid"]].nil? then
+                        struct["coreShouldShow"][core["uuid"]] = NxCores::shouldShow(core)
+                    end
+                    if NxBalls::itemIsActive(item) or (struct["coreShouldShow"][core["uuid"]] and DoNotShowUntil::isVisible(item["uuid"])) then
+                        struct["items"] = struct["items"] + [item]
                     end
                 end
+                struct
             }
+
+        struct_final["items"]
     end
 
     # ------------------
     # Ops
 
-    # NxTasks::makeNx1940()
-    def self.makeNx1940()
-        parent = nil
-        loop {
-            parent = NxCores::interactivelySelectOrNull()
-            break if parent
-        }
-        position = Operations::interactivelySelectGlobalPositionInParent(parent)
-        {
-            "position" => position,
-            "coreuuid" => parent["uuid"]
-        }
-    end
-
     # NxTasks::performItemPositioning(item)
     def self.performItemPositioning(item)
-        nx1940 = NxTasks::makeNx1940()
-        Items::setAttribute(item["uuid"], "nx1940", nx1940)
+        nx1941 = NxCores::makeNx1941()
+        Items::setAttribute(item["uuid"], "nx1941", nx1941)
     end
 end
