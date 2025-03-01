@@ -114,10 +114,10 @@ class NxCores
             position = "next"
         end
         if position == "first" then
-            return ([0] + elements.map{|item| item["nx1941"]["position"] }).min - 1
+            return ([0] + elements.map{|item| item["nx1941"]["position"] }).min.floor - 1
         end
         if position == "next" then
-            return ([0] + elements.map{|item| item["nx1941"]["position"] }).max + 1
+            return ([0] + elements.map{|item| item["nx1941"]["position"] }).max.ceil + 1
         end
         position = position.to_f
         position
