@@ -82,8 +82,8 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}" })
     end
 
-    # NxCores::coreuuid2NxTasksInOrder(core)
-    def self.coreuuid2NxTasksInOrder(core)
+    # NxCores::core2NxTasksInOrder(core)
+    def self.core2NxTasksInOrder(core)
         Items::mikuType("NxTask")
             .select{|item| item["nx1941"]["core"]["uuid"] == core["uuid"] }
             .sort_by{|item| item["nx1941"]["position"] }
@@ -91,21 +91,21 @@ class NxCores
 
     # NxCores::firstPositionInCore(core)
     def self.firstPositionInCore(core)
-        items = NxCores::coreuuid2NxTasksInOrder(core)
+        items = NxCores::core2NxTasksInOrder(core)
         return 1 if items.empty?
         items.first["nx1941"]["position"]
     end
 
     # NxCores::lastPositionInCore(core)
     def self.lastPositionInCore(core)
-        items = NxCores::coreuuid2NxTasksInOrder(core)
+        items = NxCores::core2NxTasksInOrder(core)
         return 1 if items.empty?
         items.last["nx1941"]["position"]
     end
 
     # NxCores::interactivelySelectGlobalPositionInCore(core)
     def self.interactivelySelectGlobalPositionInCore(core)
-        elements = NxCores::coreuuid2NxTasksInOrder(core)
+        elements = NxCores::core2NxTasksInOrder(core)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -137,7 +137,7 @@ class NxCores
 
             puts ""
 
-            NxCores::coreuuid2NxTasksInOrder(core)
+            NxCores::core2NxTasksInOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -207,7 +207,7 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::coreuuid2NxTasksInOrder(core).sort_by{|item| item["nx1941"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::core2NxTasksInOrder(core).sort_by{|item| item["nx1941"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     position = NxCores::firstPositionInCore(core) - 1
                     nx1941 = {

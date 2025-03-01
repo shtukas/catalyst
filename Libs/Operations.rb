@@ -48,6 +48,21 @@ class Operations
                 next if target
                 Items::setAttribute(item["uuid"], "donation-1205", nil)
             }
+
+            if NxTasks::activeItems().map{|item| item['nx1608']["hours"] }.inject(0, :+) < 20 then
+                task = Items::mikuType("NxTask")
+                        .select{|item| item["nx1941"] }
+                        .select{|item| item["nx1941"]["core"]["uuid"] == NxCores::infinityuuid() }
+                        .select{|item| item["nx1608"].nil? }
+                        .sort_by{|item| item["nx1941"]["position"] }
+                        .first
+                if task then
+                    puts "promiting to active item: #{JSON.pretty_generate(task)}"
+                    Items::setAttribute(task["uuid"], "nx1608", {
+                        "hours" => 7
+                    })
+                end
+            end
         end
     end
 

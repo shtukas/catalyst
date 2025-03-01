@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | pile * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | pile * | activate * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
             "misc          : search | commands | edit <n> | speed",
         ].join("\n")
@@ -130,6 +130,12 @@ class CommandsAndInterpreters
             return
         end
 
+        if input == 'active items' then
+            lx = lambda { NxTasks::activeItemsInRatioOrder() }
+            Operations::program3(lx)
+            return
+        end
+
         if Interpreting::match("ondate", input) then
             item = NxDateds::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -237,6 +243,18 @@ class CommandsAndInterpreters
             PolyActions::editDescription(item)
             return
         end
+
+        if Interpreting::match("activate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
+            return if nx1608.nil?
+            Items::setAttribute(item["uuid"], "nx1608", nx1608)
+            return
+        end
+
 
         if Interpreting::match("edit *", input) then
             _, listord = Interpreting::tokenizer(input)
