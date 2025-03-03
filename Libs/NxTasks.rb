@@ -8,7 +8,7 @@ class NxTasks
         return if description == ""
         payload = UxPayload::makeNewOrNull(uuid)
         nx1941 = nx1941 || NxCores::makeNx1941()
-        nn1608 = NxTasks::interactivelyMakeNx1608OrNull()
+        nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
