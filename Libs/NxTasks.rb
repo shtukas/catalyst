@@ -92,7 +92,10 @@ class NxTasks
 
     # NxTasks::interactivelyMakeNx1608OrNull()
     def self.interactivelyMakeNx1608OrNull()
-        hours = LucilleCore::askQuestionAnswerAsString("(active ?) hours per week: ").to_f
+        hours = LucilleCore::askQuestionAnswerAsString("(active ?) hours per week (empty for none): ")
+        return nil if hours == ""
+        hours = hours.to_f
+        return nil if hours == 0
         {
             "hours" => hours
         }
