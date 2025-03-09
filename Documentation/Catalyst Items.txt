@@ -3,7 +3,7 @@ Catalyst items are json object with at least
     - mikuType
 
 Database:
-    create table Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
+    create table Items (_uuid_ TEXT primary key, _mikuType_ TEXT, _item_ TEXT)
 
 Cross types conventions (all optional):
     - skip-0843               : unixtime (skipped until this time)
