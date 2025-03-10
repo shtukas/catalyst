@@ -5,13 +5,13 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | pile * | activate * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | activate * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n> | speed",
+            "misc          : search | commands | edit <n> | speed | push core",
         ].join("\n")
     end
 
@@ -289,6 +289,16 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
+            return
+        end
+
+        if Interpreting::match("push core", input) then
+            core = NxCores::interactivelySelectOrNull()
+            return if core.nil?
+            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+            return if unixtime.nil?
+            puts "pushing core: '#{core["description"].green}', until '#{Time.at(unixtime).to_s.green}'"
+            DoNotShowUntil::setUnixtime(core["uuid"], unixtime)
             return
         end
 

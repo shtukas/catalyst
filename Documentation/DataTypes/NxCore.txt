@@ -1,8 +1,0 @@
-
-NxCore:
-    - uuid          : String
-    - mikuType      : "NxCore"
-    - unixtime      : Float
-    - datetime      : DateTime Iso 8601 UTC Zulu
-    - description   : String
-    - hours         : Float

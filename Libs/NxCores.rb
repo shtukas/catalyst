@@ -41,6 +41,7 @@ class NxCores
 
     # NxCores::shouldShow(core)
     def self.shouldShow(core)
+        return false if !DoNotShowUntil::isVisible(core["uuid"])
         Bank1::recoveredAverageHoursPerDay(core["uuid"]) < (core["hours"].to_f/7)
     end
 
