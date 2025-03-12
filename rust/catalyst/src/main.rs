@@ -6,7 +6,7 @@ use nxanniversaries::NxAnniversary;
 
 mod nxfloats;
 mod items;
-use items::{get_items, Item};
+use items::{get_partial_items_1, get_partial_items_2, PartialItem};
 
 fn get_anniversaries_from_database() -> NxAnniversary {
     return NxAnniversary {
@@ -26,8 +26,8 @@ fn print_listing1(listing: Vec<NxAnniversary>) {
     });
 }
 
-fn print_listing2(items: Vec<Item>) {
-    items.iter().for_each(|item: &Item| {
+fn print_listing2(items: Vec<PartialItem>) {
+    items.iter().for_each(|item: &PartialItem| {
         println!("Item from the (real) database: {:?}", item)
     });
 }
@@ -36,7 +36,7 @@ fn main() {
     let anniversary: NxAnniversary = get_anniversaries_from_database();
     print_listing1(vec![anniversary]);
 
-    let conn = Connection::open("/Users/pascal/Galaxy/DataHub/Catalyst/data/Items/20240607-155704-609823.sqlite3").unwrap();
-    let items = get_items(&conn).unwrap();
+
+    let items = get_partial_items_2();
     print_listing2(items);
 }
