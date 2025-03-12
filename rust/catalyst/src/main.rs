@@ -1,17 +1,12 @@
+use serde_json::{Value as JSONValue};
+use rusqlite::{Connection, Error};
+
 mod nxanniversaries;
 use nxanniversaries::NxAnniversary;
 
 mod nxfloats;
-
-use serde_json::{Value as JSONValue};
-use rusqlite::{Connection, Error};
-
-//#[derive(Serialize, Deserialize)]
-#[derive(Debug)]
-struct Item {
-    uuid: String,
-    raw_object: JSONValue
-}
+mod items;
+use items::{get_items, Item};
 
 fn get_anniversaries_from_database() -> NxAnniversary {
     return NxAnniversary {
@@ -23,31 +18,6 @@ fn get_anniversaries_from_database() -> NxAnniversary {
         repeatType: "montly".into(),
         next_celebration: "2025-04-01".into(),
     };
-}
-
-fn string_to_json_value(str: &String) -> JSONValue {
-    serde_json::from_str(str).expect("error during JSON deserialisation")
-}
-
-fn get_items(conn: &Connection) -> Result<Vec<Item>, Error> {
-    let mut stmt = conn.prepare("select _uuid_, _item_ from Items")?;
-    let rows = stmt.query_map([], |row| {
-        // Items (_uuid_ string primary key, _mikuType_ string, _item_ string)
-        let uuid: String = row.get(0).unwrap();
-        let item: String = row.get(1).unwrap();
-        Ok((uuid, item))
-    })?;
-    let mut answer = Vec::new();
-    for element in rows {
-        let tuple = element.unwrap();
-        answer.push(
-            Item{
-                uuid: tuple.0,
-                raw_object: string_to_json_value(&tuple.1)
-            }
-        );
-    }
-    Ok(answer)
 }
 
 fn print_listing1(listing: Vec<NxAnniversary>) {
