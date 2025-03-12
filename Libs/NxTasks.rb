@@ -85,7 +85,7 @@ class NxTasks
                     if struct["coreShouldShow"][core["uuid"]].nil? then
                         struct["coreShouldShow"][core["uuid"]] = NxCores::shouldShow(core)
                     end
-                    if NxBalls::itemIsActive(item) or (struct["coreShouldShow"][core["uuid"]] and DoNotShowUntil::isVisible(item["uuid"])) then
+                    if NxBalls::itemIsActive(item) or (struct["coreShouldShow"][core["uuid"]] and DoNotShowUntil::isVisible(item["uuid"]) and Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1) then
                         struct["items"] = struct["items"] + [item]
                     end
                 end
