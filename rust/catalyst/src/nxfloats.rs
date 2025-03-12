@@ -14,6 +14,17 @@ impl NxFloat {
     }
 }
 
+fn listing_items() -> Vec<NxFloat> {
+    let float = NxFloat {
+        uuid: "283b363f-f375-41bc-bcf3-94a9be193bf9".into(),
+        mikuType: "NxFloat".into(),
+        unixtime: 1741778973.into(),
+        datetime: "2025-03-12T11:29:50Z".into(),
+        description: "testing floats".into()
+    };
+    vec![float]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
