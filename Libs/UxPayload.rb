@@ -136,7 +136,7 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             if LucilleCore::askQuestionAnswerAsBoolean("destroy Dx8Unit '#{unitId}'") then
                 Dx8Units::destroy(unitId)
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
+                Items::setAttribute(itemuuid, "uxpayload-b4e4", nil)
             end
             return
         end
