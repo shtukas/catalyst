@@ -1,17 +1,10 @@
+mod nxanniversaries;
+use nxanniversaries::NxAnniversary;
+
+mod nxfloats;
+
 use serde_json::{Value as JSONValue};
-
 use rusqlite::{Connection, Error};
-
-#[derive(Debug)]
-struct NxAnniversary {
-    uuid: String,
-    mikuType: String,
-    unixtime: i64,
-    datetime: String,
-    startdate: String,
-    repeatType: String,
-    next_celebration: String,
-}
 
 //#[derive(Serialize, Deserialize)]
 #[derive(Debug)]
