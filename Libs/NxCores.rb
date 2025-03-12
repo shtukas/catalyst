@@ -80,7 +80,8 @@ class NxCores
 
     # NxCores::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}" })
+        l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), l)
     end
 
     # NxCores::core2NxTasksInOrder(core)

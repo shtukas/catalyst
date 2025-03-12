@@ -20,8 +20,16 @@ class DoNotShowUntil
         unixtime.nil? or unixtime <= Time.new.to_i
     end
 
-    # DoNotShowUntil::suffix(item)
-    def self.suffix(item)
+    # DoNotShowUntil::suffix1(identifer)
+    def self.suffix1(identifer)
+        unixtime = DoNotShowUntil::getUnixtimeOrNull(identifer)
+        return "" if unixtime.nil?
+        return "" if unixtime < Time.new.to_i
+        " (dot not show until: #{Time.at(unixtime).to_s})".yellow
+    end
+
+    # DoNotShowUntil::suffix2(item)
+    def self.suffix2(item)
         unixtime = DoNotShowUntil::getUnixtimeOrNull(item["uuid"])
         return "" if unixtime.nil?
         return "" if unixtime < Time.new.to_i
