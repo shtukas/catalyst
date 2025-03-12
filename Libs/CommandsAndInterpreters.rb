@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n> | speed | push core",
+            "misc          : search | commands | edit <n> | speed | push core | fsck-all | probe-head",
         ].join("\n")
     end
 
@@ -91,7 +91,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            payload = UxPayload::makeNewOrNull(item["uuid"])
+            payload = UxPayload::makeNewOrNull()
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             return
@@ -127,6 +127,25 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("fsck-all", input) then
+            Fsck::fsckAll()
+            return
+        end
+
+        if Interpreting::match("probe-head", input) then
+            Items::items()
+                .select{|item| item["mikuType"] != "NxTask" }
+                .each{|item|
+                    UxPayload::probe(item["uxpayload-b4e4"])
+                }
+            NxTasks::itemsInPositionOrder()
+                .first(100)
+                .each{|item|
+                    UxPayload::probe(item["uxpayload-b4e4"])
+                }
             return
         end
 

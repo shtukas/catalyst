@@ -5,87 +5,75 @@
 
 class Datablobs
 
-    # Datablobs::uuidToFilepath(uuid)
-    def self.uuidToFilepath(uuid)
-        filepath1 = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/Blades/#{uuid}.sqlite3"
-        if !File.exist?(filepath1) then
-            return filepath1
-        end
-        if File.size?(filepath1).nil? then
-            if !File.exist?("/Volumes/Orbital1/Data") then
-                puts "I need Orbital 1, please plug and"
-                LucilleCore::pressEnterToContinue()
-            end
-            filepath2 = "/Volumes/Orbital1/Data/Catalyst/Blades/#{uuid}.sqlite3"
-            FileUtils.mv(filepath2, filepath1)
-        end
-        filepath1
-    end
-
-    # Datablobs::ensureFile(uuid)
-    def self.ensureFile(uuid)
-        filepath = Datablobs::uuidToFilepath(uuid)
-        return if File.exist?(filepath)
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("CREATE TABLE datablobs (key string, datablob blob);", [])
-        db.commit
-        db.close
-    end
-
-    # Datablobs::deleteFile(uuid)
-    def self.deleteFile(uuid)
-        filepath = Datablobs::uuidToFilepath(uuid)
-        return if !File.exist?(filepath)
-        puts "remove filepath: #{filepath}".yellow
-        FileUtils.rm(filepath)
-    end
-
-    # Datablobs::putBlob(uuid, datablob) # nhash
-    def self.putBlob(uuid, datablob)
+    # Datablobs::putBlob(datablob) # nhash
+    def self.putBlob(datablob)
         nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
-        Datablobs::ensureFile(uuid)
-        filepath = Datablobs::uuidToFilepath(uuid)
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from datablobs where key=?", [nhash])
-        db.execute("insert into datablobs (key, datablob) values (?, ?)", [nhash, datablob])
-        db.commit
-        db.close
+        repositoryFilePath = "#{Config::pathToCatalystDataRepository()}/Datablobs"
+        folderpath = "#{repositoryFilePath}/2024/#{nhash[7, 2]}/#{nhash[9, 2]}"
+        if !File.exist?(folderpath) then
+            FileUtils.mkpath(folderpath)
+        end
+        filepath = "#{folderpath}/#{nhash}.data"
+        File.open(filepath, "w"){|f| f.write(datablob) }
         nhash
     end
 
-    # Datablobs::getBlobOrNull(uuid, nhash)
-    def self.getBlobOrNull(uuid, nhash) # data | nil
-        datablob = nil
-        Datablobs::ensureFile(uuid)
-        filepath = Datablobs::uuidToFilepath(uuid)
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from datablobs where key=?", [nhash]) do |row|
-            datablob = row["datablob"]
+    # Datablobs::getBlobOrNull(nhash, canWriteToXCache)
+    def self.getBlobOrNull(nhash, canWriteToXCache) # data | nil
+
+        # First we try XCache
+
+        datablob = XCache::getOrNull("5cfe0b88-7ebd-46a6-aeda-b9b9284d7bd3:#{nhash}")
+        if datablob then
+            return datablob
         end
-        db.close
-        datablob
+
+        # Then we try Galaxy's Datablob folder
+
+        repositoryFilePath = "#{Config::pathToCatalystDataRepository()}/Datablobs"
+        folderpath = "#{repositoryFilePath}/2024/#{nhash[7, 2]}/#{nhash[9, 2]}"
+        filepath = "#{folderpath}/#{nhash}.data"
+        if File.exist?(filepath) and canWriteToXCache then
+            datablob = IO.read(filepath)
+            puts "Writing datablob to XCache, #{nhash}".yellow
+            XCache::set("5cfe0b88-7ebd-46a6-aeda-b9b9284d7bd3:#{nhash}", datablob)
+            return datablob
+        end
+
+        # Then we try Orbital1
+
+        repositoryFilePath = "/Volumes/Orbital1/Data/Catalyst/Datablobs"
+        loop {
+            break if File.exist?(repositoryFilePath)
+            puts "I need to look up a datablob on Orbital1. Please plug and"
+            LucilleCore::pressEnterToContinue()
+        }
+
+        folderpath = "#{repositoryFilePath}/2024/#{nhash[7, 2]}/#{nhash[9, 2]}"
+        filepath = "#{folderpath}/#{nhash}.data"
+        if File.exist?(filepath) then
+            puts "reading from Orbital 1, #{nhash}".yellow
+            datablob = IO.read(filepath)
+            if canWriteToXCache then
+                # We are not moving datablobs from Orbital1 to XCache during a global fsck
+                puts "Writing datablob to XCache, #{nhash}".yellow
+                XCache::set("5cfe0b88-7ebd-46a6-aeda-b9b9284d7bd3:#{nhash}", datablob)
+            end
+            return datablob
+        end
+
+        nil
     end
 end
 
 class Elizabeth
 
-    def initialize(uuid)
-        @uuid = uuid
+    def initialize(canWriteToXCache)
+        @canWriteToXCache = canWriteToXCache
     end
 
     def putBlob(datablob) # nhash
-        Datablobs::putBlob(@uuid, datablob)
+        Datablobs::putBlob(datablob)
     end
 
     def filepathToContentHash(filepath)
@@ -93,7 +81,7 @@ class Elizabeth
     end
 
     def getBlobOrNull(nhash)
-        Datablobs::getBlobOrNull(@uuid, nhash)
+        Datablobs::getBlobOrNull(nhash, @canWriteToXCache)
     end
 
     def readBlobErrorIfNotFound(nhash)

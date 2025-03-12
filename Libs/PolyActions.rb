@@ -40,17 +40,17 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            UxPayload::access(item["uxpayload-b4e4"])
             return
         end
 
         if item["mikuType"] == "NxDated" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            UxPayload::access(item["uxpayload-b4e4"])
             return
         end
 
         if item["mikuType"] == "Wave" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            UxPayload::access(item["uxpayload-b4e4"])
             return
         end
 

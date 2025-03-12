@@ -207,7 +207,6 @@ class Items
             "uuid" => uuid,
         }
         Items::issueUpdate(update)
-        Datablobs::deleteFile(uuid)
     end
 
     # Items::processJournal()

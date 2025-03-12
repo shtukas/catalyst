@@ -8,7 +8,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull(uuid)
+        payload = UxPayload::makeNewOrNull()
         nx1941 = nx1941 || NxCores::makeNx1941()
         nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
         Items::itemInit(uuid, "NxTask")
@@ -24,7 +24,7 @@ class NxTasks
     # NxTasks::locationToTask(description, location, nx1941)
     def self.locationToTask(description, location, nx1941)
         uuid = SecureRandom.uuid
-        payload = UxPayload::locationToPayload(uuid, location)
+        payload = UxPayload::locationToPayload(location)
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
@@ -59,6 +59,12 @@ class NxTasks
         px1 = item["nx1608"] ? " (#{NxTasks::activeItemRatio(item)})".yellow : ''
         px2 = " (#{item["nx1941"]["position"]} @ #{item["nx1941"]["core"]["description"]})".yellow
         "#{NxTasks::icon(item)} #{item["description"]}#{px1}#{px2}"
+    end
+
+    # NxTasks::itemsInPositionOrder()
+    def self.itemsInPositionOrder()
+        Items::mikuType("NxTask")
+            .sort_by{|item| item["nx1941"]["position"] }
     end
 
     # NxTasks::itemsForListing()
