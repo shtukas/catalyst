@@ -188,6 +188,10 @@ class Listing
 
         Timings::lap("22:10")
 
+        if items.empty? then
+            puts "synk 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/sink.txt")}"
+        end
+
         renderingTime = Time.new.to_f - t1
         if renderingTime > 1 then
             printer.call("(rendered in #{(Time.new.to_f - t1).round(3)} s)".red)
