@@ -105,8 +105,6 @@ class Listing
         Timings::lap("17:30")
         i6 = NxFloats::listingItems()
         Timings::lap("17:31")
-        i7 = NxMonitors::listingItems()
-        Timings::lap("17:32")
         i8 = Waves::listingItemsNonInterruption()
         Timings::lap("17:33")
         i9 = NxTasks::activeItemsForListing()
@@ -114,7 +112,7 @@ class Listing
         i10 = NxTasks::itemsForListing()
         Timings::lap("17:35")
 
-        (i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10)
+        (i1 + i2 + i3 + i4 + i5 + i6 + i8 + i9 + i10)
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
@@ -138,6 +136,8 @@ class Listing
         if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
             Operations::periodicPrimaryInstanceMaintenance()
         end
+
+        Operations::pickUpBufferIn()
     end
 
     # Listing::listingOnce(printer)

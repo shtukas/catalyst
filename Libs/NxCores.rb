@@ -30,6 +30,18 @@ class NxCores
         }
     end
 
+    # NxCores::makeNewTopNx1941InInfinityOrNull()
+    def self.makeNewTopNx1941InInfinityOrNull()
+        coreuuid = NxCores::infinityuuid()
+        core = NxCores::selectCoreByUUIDOrNull(coreuuid)
+        return nil if core.nil?
+        position = NxCores::random_10_20_position_in_core(core)
+        {
+            "position" => position,
+            "core" => core
+        }
+    end
+
     # ------------------
     # Data
 
@@ -105,6 +117,18 @@ class NxCores
         items.last["nx1941"]["position"]
     end
 
+    # NxCores::random_10_20_position_in_core(core)
+    def self.random_10_20_position_in_core(core)
+        items = NxCores::core2NxTasksInOrder(core)
+        if items.size < 20 then
+            return NxCores::lastPositionInCore(core) + 1
+        end
+        positions = items.drop(10).take(10).map{|item| item["nx1941"]["position"] }
+        first = positions.first
+        last = positions.last
+        first + rand * (last - first)
+    end
+
     # NxCores::interactivelySelectGlobalPositionInCore(core)
     def self.interactivelySelectGlobalPositionInCore(core)
         elements = NxCores::core2NxTasksInOrder(core)
@@ -123,6 +147,11 @@ class NxCores
         end
         position = position.to_f
         position
+    end
+
+    # NxCores::selectCoreByUUIDOrNull(coreuuid)
+    def self.selectCoreByUUIDOrNull(coreuuid)
+        NxCores::cores().select{|core| core["uuid"] == coreuuid }.first
     end
 
     # ------------------

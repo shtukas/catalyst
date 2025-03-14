@@ -115,4 +115,20 @@ class Operations
         return if core.nil?
         Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])
     end
+
+    # Operations::pickUpBufferIn()
+    def self.pickUpBufferIn()
+        buffer_in_location = "#{Config::userHomeDirectory()}/Desktop/Buffer-In"
+        if File.exist?(buffer_in_location) then
+            LucilleCore::locationsAtFolder(buffer_in_location).each{|location|
+                puts location.yellow
+                nx1941 = NxCores::makeNewTopNx1941InInfinityOrNull()
+                next if nx1941.nil?
+                description = File.basename(location)
+                task = NxTasks::locationToTask(description, location, nx1941)
+                puts JSON.pretty_generate(task)
+                LucilleCore::removeFileSystemLocation(location)
+            }
+        end
+    end
 end

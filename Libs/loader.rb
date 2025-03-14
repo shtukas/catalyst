@@ -147,8 +147,6 @@ require_relative "InMemoryCache.rb"
 
 require_relative "Listing.rb"
 
-require_relative "NxMonitors.rb"
-
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxBackups.rb"

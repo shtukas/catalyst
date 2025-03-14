@@ -68,9 +68,6 @@ class PolyFunctions
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
         end
-        if item["mikuType"] == "NxMonitor" then
-            return NxMonitors::toString(item)
-        end
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)
         end
@@ -115,9 +112,6 @@ class PolyFunctions
     def self.ratio(item)
         if item["mikuType"] == "NxCore" then
             return NxCores::ratio(item)
-        end
-        if item["mikuType"] == "NxMonitor" then
-            return NxMonitors::ratio(item)
         end
         raise "(error: 1931-e258c72b)"
     end

@@ -129,10 +129,6 @@ class NxBalls
                     if ix then
                         return ix
                     end
-                    ix = NxMonitors::listingItems().select{|item| item["uuid"] == itemuuid }
-                    if ix then
-                        return ix
-                    end
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then
                         puts "garbage collecting NxBall: #{filepath}".green
