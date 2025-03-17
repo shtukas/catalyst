@@ -161,14 +161,11 @@ class PolyActions
             if !NxBalls::itemIsActive(item) then
                 PolyActions::start(item)
                 PolyActions::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("stop and destroy ? ") then
-                    PolyActions::stop(item)
-                    PolyActions::destroy(item, true)
-                    return
-                end
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
-                    return
+                    if LucilleCore::askQuestionAnswerAsBoolean("destroy ? ") then
+                        PolyActions::destroy(item, true)
+                    end
                 end
             end
         }
