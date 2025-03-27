@@ -91,13 +91,26 @@ class PolyFunctions
         []
     end
 
+    # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
+    def self.get_name_of_donation_target_or_identity(donation_target_id)
+        target = Items::itemOrNull(donation_target_id)
+        if target then
+            return target["description"]
+        end
+
+        core = NxCores::selectCoreByUUIDOrNull(donation_target_id)
+        if core then
+            return core["description"]
+        end
+
+        donation_target_id
+    end
+
     # PolyFunctions::donationSuffix(item)
     def self.donationSuffix(item)
         return "" if item["mikuType"] == "NxTask" # we have dedicated display for NxTask
         return "" if item["donation-1205"].nil?
-        target = Items::itemOrNull(item["donation-1205"])
-        return "" if target.nil?
-        " #{"(d: #{target["description"]})".yellow}"
+        " #{"(d: #{PolyFunctions::get_name_of_donation_target_or_identity(item["donation-1205"])})".yellow}"
     end
 
     # PolyFunctions::measure(experimentname, lambda)

@@ -1,0 +1,4 @@
+NxCore:
+    - uuid          : String
+    - description   : String
+    - hours         : Float # hours per week

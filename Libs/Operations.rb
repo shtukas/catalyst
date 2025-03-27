@@ -42,13 +42,6 @@ class Operations
 
             puts "> Operations::periodicPrimaryInstanceMaintenance()"
 
-            Items::items().each{|item|
-                next if item["donation-1205"].nil?
-                target = Items::itemOrNull(item["uuid"])
-                next if target
-                Items::setAttribute(item["uuid"], "donation-1205", nil)
-            }
-
             if NxTasks::activeItems().map{|item| item['nx1608']["hours"] }.inject(0, :+) < 20 then
                 task = Items::mikuType("NxTask")
                         .select{|item| item["nx1941"] }
