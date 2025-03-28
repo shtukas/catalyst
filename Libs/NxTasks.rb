@@ -144,6 +144,10 @@ class NxTasks
         NxTasks::activeItemsCached()
             .sort_by{|item| NxTasks::activeItemRatio(item) }
             .select{|item| NxTasks::activeItemRatio(item) < 1 }
+            .select{|item|
+                core = item["nx1941"]["core"]
+                NxCores::shouldShow(core)
+            }
     end
 
     # ------------------
