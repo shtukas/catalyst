@@ -269,7 +269,7 @@ class Listing
                     end
                     if items.size > 0 and Listing::get_mode() == "moon" then
                         Listing::set_mode("normal")
-                        system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something...'")
+                        system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something @ #{CommonUtils::nowDatetimeIso8601()}'")
                         next
                     end
                 }
