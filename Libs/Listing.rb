@@ -267,6 +267,7 @@ class Listing
                         end
                     end
                 end
+                sleep 60
             }
         }
 
