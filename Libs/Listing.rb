@@ -252,24 +252,29 @@ class Listing
             }
         }
 
-        Thread.new {
-            loop {
-                if Config::isPrimaryInstance() then
+        if Config::isPrimaryInstance() then
+            Thread.new {
+                loop {
+                    sleep 60
                     items = Listing::itemsForListing()
-                    if items.empty? then
-                        if Listing::get_mode() == "normal" then
-                            Listing::set_mode("moon")
-                        end
-                    else
-                        if Listing::get_mode() == "moon" then
-                            Listing::set_mode("normal")
-                            system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something...'")
-                        end
+                    if items.size == 0 and Listing::get_mode() == "normal" then
+                        Listing::set_mode("moon")
+                        next
                     end
-                end
-                sleep 60
+                    if items.size == 0 and Listing::get_mode() == "moon" then
+                        next
+                    end
+                    if items.size > 0 and Listing::get_mode() == "normal" then
+                        next
+                    end
+                    if items.size > 0 and Listing::get_mode() == "moon" then
+                        Listing::set_mode("normal")
+                        system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something...'")
+                        next
+                    end
+                }
             }
-        }
+        end
 
         loop {
             Listing::runContinuousListing(initialCodeTrace)
