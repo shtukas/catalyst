@@ -204,19 +204,6 @@ class Listing
             puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/sink.txt")}"
         end
 
-        if Config::isPrimaryInstance() then
-            if items.empty? then
-                if Listing::get_mode() == "normal" then
-                    Listing::set_mode("moon")
-                end
-            else
-                if Listing::get_mode() == "moon" then
-                    Listing::set_mode("normal")
-                    system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something...'")
-                end
-            end
-        end
-
         renderingTime = Time.new.to_f - t1
         if renderingTime > 1 then
             printer.call("(rendered in #{(Time.new.to_f - t1).round(3)} s)".red)
@@ -264,6 +251,25 @@ class Listing
                 sleep 120
             }
         }
+
+        Thread.new {
+            loop {
+                if Config::isPrimaryInstance() then
+                    items = Listing::itemsForListing()
+                    if items.empty? then
+                        if Listing::get_mode() == "normal" then
+                            Listing::set_mode("moon")
+                        end
+                    else
+                        if Listing::get_mode() == "moon" then
+                            Listing::set_mode("normal")
+                            system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something...'")
+                        end
+                    end
+                end
+            }
+        }
+
         loop {
             Listing::runContinuousListing(initialCodeTrace)
         }
