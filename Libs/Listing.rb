@@ -140,6 +140,18 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
+    # Listing::get_mode()
+    def self.get_mode()
+        mode = XCache::getOrNull("74ec18a3-5f93-42f9-a178-a7be7088457f")
+        return "normal" if mode.nil?
+        mode
+    end
+
+    # Listing::set_mode(mode)
+    def self.set_mode(mode)
+        XCache::set("74ec18a3-5f93-42f9-a178-a7be7088457f", mode)
+    end
+
     # Listing::listingOnce(printer)
     def self.listingOnce(printer)
         t1 = Time.new.to_f
@@ -189,7 +201,20 @@ class Listing
         Timings::lap("22:10")
 
         if items.empty? then
-            puts "synk 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/sink.txt")}"
+            puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/sink.txt")}"
+        end
+
+        if Config::isPrimaryInstance() then
+            if items.empty? then
+                if Listing::get_mode() == "normal" then
+                    Listing::set_mode("moon")
+                end
+            else
+                if Listing::get_mode() == "moon" then
+                    Listing::set_mode("normal")
+                    system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something...'")
+                end
+            end
         end
 
         renderingTime = Time.new.to_f - t1
