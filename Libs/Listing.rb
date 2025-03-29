@@ -140,18 +140,6 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
-    # Listing::get_mode()
-    def self.get_mode()
-        mode = XCache::getOrNull("74ec18a3-5f93-42f9-a178-a7be7088457f")
-        return "normal" if mode.nil?
-        mode
-    end
-
-    # Listing::set_mode(mode)
-    def self.set_mode(mode)
-        XCache::set("74ec18a3-5f93-42f9-a178-a7be7088457f", mode)
-    end
-
     # Listing::listingOnce(printer)
     def self.listingOnce(printer)
         t1 = Time.new.to_f
@@ -251,30 +239,6 @@ class Listing
                 sleep 120
             }
         }
-
-        if Config::isPrimaryInstance() then
-            Thread.new {
-                loop {
-                    sleep 60
-                    items = Listing::itemsForListing()
-                    if items.size == 0 and Listing::get_mode() == "normal" then
-                        Listing::set_mode("moon")
-                        next
-                    end
-                    if items.size == 0 and Listing::get_mode() == "moon" then
-                        next
-                    end
-                    if items.size > 0 and Listing::get_mode() == "normal" then
-                        next
-                    end
-                    if items.size > 0 and Listing::get_mode() == "moon" then
-                        Listing::set_mode("normal")
-                        system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'catalyst' 'moon: I have something @ #{CommonUtils::nowDatetimeIso8601()}'")
-                        next
-                    end
-                }
-            }
-        end
 
         loop {
             Listing::runContinuousListing(initialCodeTrace)
