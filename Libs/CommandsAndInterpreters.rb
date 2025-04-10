@@ -22,6 +22,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                Listing::removeItemFromCache(item["uuid"])
                 return
             end
         end
@@ -46,6 +47,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -292,6 +294,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -300,6 +303,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -308,6 +312,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -401,6 +406,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 
