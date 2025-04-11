@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n> | speed | push core | fsck-all | probe-head",
+            "misc          : search | commands | edit <n> | push core | fsck-all | probe-head",
         ].join("\n")
     end
 
@@ -122,6 +122,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::setDonation(item)
+            Listing::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -168,6 +169,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Listing::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -176,6 +178,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Listing::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -222,15 +225,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
-            return
-        end
-
-        if Interpreting::match("speed", input) then
-            t1 = Time.new.to_f
-            Listing::listingOnce(lambda{|line| })
-            t2 = Time.new.to_f
-            puts "Listing::listingOnce() in #{(t2-t1).round(3)} seconds"
-            LucilleCore::pressEnterToContinue()
             return
         end
 

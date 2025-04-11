@@ -99,6 +99,21 @@ class Listing
         XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e2", JSON.generate(items))
     end
 
+    # Listing::refreshItemInCache(uuid)
+    def self.refreshItemInCache(uuid)
+        item = Items::itemOrNull(uuid)
+        return if item.nil?
+        items = JSON.parse(XCache::getOrDefaultValue("a703683f-764f-47fb-ba9c-bf1f154490e2", "[]"))
+        items = items.map{|i|
+            if i["uuid"] == uuid then
+                item
+            else
+                i
+            end
+        }
+        XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e2", JSON.generate(items))
+    end
+
     # -----------------------------------------
     # Ops
 
