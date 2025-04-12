@@ -152,7 +152,7 @@ class Listing
             }
 
         if items.empty? then
-            puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/sink.txt")}"
+            puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/moon.txt")}"
         end
 
         renderingTime = Time.new.to_f - t1
