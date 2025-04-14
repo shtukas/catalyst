@@ -164,7 +164,7 @@ class Listing
         end
 
         t = Listing::trump()
-        if t and t <= 8 then
+        if t and (t <= 8 or t >= 9) then
             puts "trump: #{t}".red
         end
 
