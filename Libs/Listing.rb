@@ -140,6 +140,7 @@ class Listing
     def self.listingOnce(printer)
         t1 = Time.new.to_f
 
+        NxDateds::processPastItems()
         items = Listing::itemsForListing3()
 
         store = ItemStore.new()

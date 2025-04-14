@@ -30,7 +30,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::natural(item)
+            PolyActions::double_dots(item)
             Listing::refreshItemInCache(item["uuid"])
             return
         end
@@ -39,7 +39,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::natural(item)
+            PolyActions::double_dots(item)
             Listing::refreshItemInCache(item["uuid"])
             return
         end
@@ -319,6 +319,7 @@ class CommandsAndInterpreters
             return if unixtime.nil?
             puts "pushing core: '#{core["description"].green}', until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil::setUnixtime(core["uuid"], unixtime)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -326,7 +327,9 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            PolyActions::stop(item)
             Operations::interactivelyPush(item)
+            Listing::removeItemFromCache(item["uuid"])
             return
         end
 

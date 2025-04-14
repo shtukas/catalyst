@@ -72,6 +72,52 @@ class NxDateds
 
     # NxDateds::listingItems()
     def self.listingItems()
-        Items::mikuType("NxDated").select{|item| item["date"] <= CommonUtils::today() }
+        items = Items::mikuType("NxDated")
+            .select{|item| item["date"] <= CommonUtils::today() }
+            .sort_by{|item| item["date"] }
+    end
+
+    # ---------------
+    # Ops
+
+    # NxDateds::redate(item)
+    def self.redate(item)
+        NxBalls::stop(item)
+        datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+        Items::setAttribute(item["uuid"], "date", datetime)
+    end
+
+    # NxDateds::processPastItems()
+    def self.processPastItems()
+        NxDateds::listingItems().each{|item|
+            if item["date"] < CommonUtils::today() then
+                puts "Past ondate: #{NxDateds::toString(item)}".yellow
+                options = ["already done", "do now", "redate", "transmute (to task, float)"]
+                option = nil
+                loop {
+                    option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+                    break if option
+                }
+                if option == "already done" then
+                    PolyActions::done(item)
+                    Listing::removeItemFromCache(item["uuid"])
+                end
+                if option == "do now" then
+                    Operations::setDonation(item)
+                    item = Items::itemOrNull(item["uuid"])
+                    PolyActions::double_dots(item)
+                    Listing::removeItemFromCache(item["uuid"])
+                end
+                if option == "redate" then
+                    NxDateds::redate(item)
+                    Listing::removeItemFromCache(item["uuid"])
+                end
+                if option == "transmute (to task, float)" then
+                    Transmutation::transmute2(item)
+                    Listing::removeItemFromCache(item["uuid"])
+                end
+            end
+        } 
+
     end
 end

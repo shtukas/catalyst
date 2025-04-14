@@ -144,8 +144,8 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::natural(item)
-    def self.natural(item)
+    # PolyActions::double_dots(item)
+    def self.double_dots(item)
 
         processWaveLike = lambda{|item|
             if !NxBalls::itemIsActive(item) then

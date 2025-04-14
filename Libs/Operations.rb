@@ -88,6 +88,7 @@ class Operations
 
     # Operations::interactivelyPush(item)
     def self.interactivelyPush(item)
+        PolyActions::stop(item)
         puts "push '#{PolyFunctions::toString(item).green}'"
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?

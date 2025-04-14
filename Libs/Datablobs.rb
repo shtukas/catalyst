@@ -42,10 +42,10 @@ class Datablobs
 
         # Then we try Orbital1
 
-        repositoryFilePath = "/Volumes/Orbital1/Data/Catalyst/Datablobs"
+        repositoryFilePath = "/Volumes/Orbital1B/Data/NxBuckets/Dx027-Catalyst-Datablobs"
         loop {
             break if File.exist?(repositoryFilePath)
-            puts "I need to look up a datablob on Orbital1. Please plug and"
+            puts "I need to look up a datablob on Orbital1B. Please plug and"
             LucilleCore::pressEnterToContinue()
         }
 
