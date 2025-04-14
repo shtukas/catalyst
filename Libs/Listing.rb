@@ -136,8 +136,8 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
-    # Listing::listingOnce(printer)
-    def self.listingOnce(printer)
+    # Listing::display_listing(printer)
+    def self.display_listing(printer)
         t1 = Time.new.to_f
 
         NxDateds::processPastItems()
@@ -162,19 +162,6 @@ class Listing
         end
 
         store
-    end
-
-    # Listing::runContinuousListing(initialCodeTrace)
-    def self.runContinuousListing(initialCodeTrace)
-        loop {
-            Listing::preliminaries(initialCodeTrace)
-            store = Listing::listingOnce(lambda{|line| puts line })
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "exit" then
-                return
-            end
-            CommandsAndInterpreters::interpreter(input, store)
-        }
     end
 
     # Listing::main()
@@ -209,12 +196,23 @@ class Listing
             loop {
                 sleep 60
                 items = Listing::itemsForListing2()
+
+
+
+
+
                 XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e2", JSON.generate(items))
             }
         }
 
         loop {
-            Listing::runContinuousListing(initialCodeTrace)
+            Listing::preliminaries(initialCodeTrace)
+            store = Listing::display_listing(lambda{|line| puts line })
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            if input == "exit" then
+                return
+            end
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 end
