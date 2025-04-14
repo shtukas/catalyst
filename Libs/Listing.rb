@@ -136,6 +136,13 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
+    # Listing::trump()
+    def self.trump()
+        t = `trump`
+        return nil if t == ""
+        t.to_f
+    end
+
     # Listing::display_listing(printer)
     def self.display_listing(printer)
         t1 = Time.new.to_f
@@ -154,6 +161,11 @@ class Listing
 
         if items.empty? then
             puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/moon.txt")}"
+        end
+
+        t = Listing::trump()
+        if t and t <= 8 then
+            puts "trump: #{t}".red
         end
 
         renderingTime = Time.new.to_f - t1
