@@ -31,7 +31,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::double_dots(item)
-            Listing::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -40,7 +39,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::double_dots(item)
-            Listing::refreshItemInCache(item["uuid"])
             return
         end
 
