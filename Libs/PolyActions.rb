@@ -327,11 +327,6 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-        if item["mikuType"] == "NxBackup" then
-            puts "There is no description edit for Backups (inherited from the file)"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""

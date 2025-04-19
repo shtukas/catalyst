@@ -2,6 +2,20 @@
 
 class NxBackups
 
+    # NxBackups::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
+        uuid = SecureRandom.uuid
+        description = LucilleCore::askQuestionAnswerAsString("description: ")
+        return nil if description == ""
+        period = LucilleCore::askQuestionAnswerAsString("period in days: ").to_f
+        Items::itemInit(uuid, "NxBackup")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "period", period)
+        Items::itemOrNull(uuid)
+    end
+
     # NxBackups::getItemByDescriptionOrNull(description)
     def self.getItemByDescriptionOrNull(description)
         Items::mikuType("NxBackup").select{|item| item["description"] == description }.first

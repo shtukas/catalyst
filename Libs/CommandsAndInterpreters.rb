@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | activate * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
@@ -182,9 +182,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo", input) then
-            item = NxTasks::interactivelyIssueNewOrNull()
-            return if item.nil?
+        if Interpreting::match("backup", input) then
+            item = NxBackups::interactivelyIssueNewOrNull()
             puts JSON.pretty_generate(item)
             return
         end
