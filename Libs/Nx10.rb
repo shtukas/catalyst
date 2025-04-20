@@ -30,7 +30,11 @@ class Nx10
             if packet["item"]["uuid"] == uuid then
                 item = Items::itemOrNull(uuid)
                 if item then
-                    packet["item"] = item
+                    packet = {
+                        "item" => item,
+                        "line" => Nx10::toString3(item)
+                    }
+                    puts JSON.pretty_generate(packet)
                     packet
                 else
                     nil
@@ -45,15 +49,12 @@ class Nx10
 
     # Nx10::makeAndPublishNx10()
     def self.makeAndPublishNx10()
-        store = ItemStore.new()
         items = Nx10::itemsForListing2()
         data = items
                 .map{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
                     {
                         "item" => item,
-                        "line" => line
+                        "line" => Nx10::toString3(item)
                     }
                 }
         XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e3", JSON.generate(data))
@@ -62,5 +63,38 @@ class Nx10
     # Nx10::getNx10FromCache()
     def self.getNx10FromCache()
         JSON.parse(XCache::getOrDefaultValue("a703683f-764f-47fb-ba9c-bf1f154490e3", "[]"))
+    end
+
+    # Regular main listing
+    # Nx10::toString3(item)
+    def self.toString3(item)
+        return nil if item.nil?
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}"
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+        line
+    end
+
+    # Nx10::run_display(store, printer)
+    def self.run_display(store, printer)
+        NxDateds::processPastItems()
+        printer.call("")
+        data = Nx10::getNx10FromCache()
+        data
+            .each{|packet|
+                item = packet["item"]
+                line = packet["line"]
+                store.register(item, Listing::canBeDefault(item))
+                line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
+                printer.call(line)
+            }
+        if data.empty? then
+            puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/moon.txt")}"
+        end
+        store
     end
 end

@@ -222,6 +222,11 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("todo", input) then
+            NxTasks::interactivelyIssueNewOrNull()
+            return
+        end
+
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
             return
@@ -410,6 +415,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::start(item)
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -418,6 +424,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::start(item)
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -425,6 +432,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::stop(item)
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -433,6 +441,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::stop(item)
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 

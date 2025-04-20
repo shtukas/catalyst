@@ -93,25 +93,6 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
-    # Listing::run_display(printer)
-    def self.run_display(printer)
-        NxDateds::processPastItems()
-        store = ItemStore.new()
-        printer.call("")
-        data = Nx10::getNx10FromCache()
-        data
-            .each{|packet|
-                item = packet["item"]
-                line = packet["line"]
-                store.register(item, Listing::canBeDefault(item))
-                printer.call(line)
-            }
-        if data.empty? then
-            puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/moon.txt")}"
-        end
-        store
-    end
-
     # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
@@ -151,7 +132,8 @@ class Listing
 
         loop {
             Listing::preliminaries(initialCodeTrace)
-            store = Listing::run_display(lambda{|line| puts line })
+            store = ItemStore.new()
+            store = Nx10::run_display(store, lambda{|line| puts line })
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return
