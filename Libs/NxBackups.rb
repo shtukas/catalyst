@@ -41,6 +41,7 @@ class NxBackups
             next if item.nil?
             DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
             FileUtils.rm(filepath)
+            Nx10::removeItemFromCache(item["uuid"])
         }
     end
 end

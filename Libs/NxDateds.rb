@@ -100,21 +100,21 @@ class NxDateds
                 }
                 if option == "already done" then
                     PolyActions::done(item)
-                    Listing::removeItemFromCache(item["uuid"])
+                    Nx10::removeItemFromCache(item["uuid"])
                 end
                 if option == "do now" then
                     Operations::setDonation(item)
                     item = Items::itemOrNull(item["uuid"])
                     PolyActions::double_dots(item)
-                    Listing::removeItemFromCache(item["uuid"])
+                    Nx10::removeItemFromCache(item["uuid"])
                 end
                 if option == "redate" then
                     NxDateds::redate(item)
-                    Listing::removeItemFromCache(item["uuid"])
+                    Nx10::removeItemFromCache(item["uuid"])
                 end
                 if option == "transmute (to task, float)" then
                     Transmutation::transmute2(item)
-                    Listing::removeItemFromCache(item["uuid"])
+                    Nx10::removeItemFromCache(item["uuid"])
                 end
             end
         } 

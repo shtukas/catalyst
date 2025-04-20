@@ -55,62 +55,19 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-        i1 = Items::mikuType("NxStackPriority")
-        i2 = Anniversaries::listingItems()
-        i3 = Waves::listingItemsInterruption()
-        i4 = NxBackups::listingItems()
-        i5 = NxDateds::listingItems()
-        i6 = NxFloats::listingItems()
-        i8 = Waves::listingItemsNonInterruption()
-        i9 = NxTasks::activeItemsForListing()
-        i10 = NxTasks::itemsForListing()
-
-        (i1 + i2 + i3 + i4 + i5 + i6 + i8 + i9 + i10)
+        [
+            Items::mikuType("NxStackPriority"),
+            Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxBackups::listingItems(),
+            NxDateds::listingItems(),
+            NxFloats::listingItems(),
+            Waves::listingItemsNonInterruption(),
+            NxTasks::activeItemsForListing(),
+            NxTasks::itemsForListing()
+        ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-    end
-
-    # Listing::itemsForListing2()
-    def self.itemsForListing2()
-        items = Listing::itemsForListing1()
-        items = Prefix::addPrefix(items)
-        items = items.take(10) + NxBalls::activeItems() + items.drop(10)
-        items = items
-            .reduce([]){|selected, item|
-                if selected.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected
-                else
-                    selected + [item]
-                end
-            }
-        items = items.take(CommonUtils::screenHeight()-5)
-        items
-    end
-
-    # Listing::itemsForListing3()
-    def self.itemsForListing3()
-        JSON.parse(XCache::getOrDefaultValue("a703683f-764f-47fb-ba9c-bf1f154490e2", "[]"))
-    end
-
-    # Listing::removeItemFromCache(uuid)
-    def self.removeItemFromCache(uuid)
-        items = JSON.parse(XCache::getOrDefaultValue("a703683f-764f-47fb-ba9c-bf1f154490e2", "[]"))
-        items = items.reject{|item| item["uuid"] == uuid }
-        XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e2", JSON.generate(items))
-    end
-
-    # Listing::refreshItemInCache(uuid)
-    def self.refreshItemInCache(uuid)
-        items = JSON.parse(XCache::getOrDefaultValue("a703683f-764f-47fb-ba9c-bf1f154490e2", "[]"))
-        items = items.map{|i|
-            if i["uuid"] == uuid then
-                Items::itemOrNull(uuid)
-            else
-                i
-            end
-        }
-        .compact
-        XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e2", JSON.generate(items))
     end
 
     # -----------------------------------------
@@ -138,29 +95,20 @@ class Listing
 
     # Listing::display_listing(printer)
     def self.display_listing(printer)
-        t1 = Time.new.to_f
-
         NxDateds::processPastItems()
-        items = Listing::itemsForListing3()
-
         store = ItemStore.new()
         printer.call("")
-        items
-            .each{|item|
+        data = Nx10::getNx10FromCache()
+        data
+            .each{|packet|
+                item = packet["item"]
+                line = packet["line"]
                 store.register(item, Listing::canBeDefault(item))
-                line = Listing::toString2(store, item)
                 printer.call(line)
             }
-
-        if items.empty? then
+        if data.empty? then
             puts "moon 🚀 : #{IO.read("#{Config::pathToCatalystDataRepository()}/moon.txt")}"
         end
-
-        renderingTime = Time.new.to_f - t1
-        if renderingTime > 1 then
-            printer.call("(rendered in #{(Time.new.to_f - t1).round(3)} s)".red)
-        end
-
         store
     end
 
@@ -193,10 +141,10 @@ class Listing
         }
 
         Thread.new {
+            Nx10::makeAndPublishNx10()
             loop {
-                sleep 60
-                items = Listing::itemsForListing2()
-                XCache::set("a703683f-764f-47fb-ba9c-bf1f154490e2", JSON.generate(items))
+                sleep 120
+                Nx10::makeAndPublishNx10()
             }
         }
 

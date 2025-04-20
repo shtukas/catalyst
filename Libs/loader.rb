@@ -156,6 +156,7 @@ require_relative "NxDateds.rb"
 require_relative "NxStrats.rb"
 require_relative "NxStackPriorities.rb"
 require_relative "NxLambdas.rb"
+require_relative "Nx10.rb"
 
 require_relative "Operations.rb"
 

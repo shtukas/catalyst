@@ -153,7 +153,7 @@ class PolyActions
                 PolyActions::access(item)
                 if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
                     PolyActions::done(item, true)
-                    Listing::removeItemFromCache(item["uuid"])
+                    Nx10::removeItemFromCache(item["uuid"])
                 end
             end
         }
@@ -166,7 +166,7 @@ class PolyActions
                     PolyActions::stop(item)
                     if LucilleCore::askQuestionAnswerAsBoolean("destroy ? ") then
                         PolyActions::destroy(item, true)
-                        Listing::removeItemFromCache(item["uuid"])
+                        Nx10::removeItemFromCache(item["uuid"])
                     end
                 end
             end

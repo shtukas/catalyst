@@ -22,7 +22,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                Listing::removeItemFromCache(item["uuid"])
+                Nx10::removeItemFromCache(item["uuid"])
                 return
             end
         end
@@ -47,7 +47,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -122,7 +122,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::setDonation(item)
-            Listing::refreshItemInCache(item["uuid"])
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -169,7 +169,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            Listing::refreshItemInCache(item["uuid"])
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -178,7 +178,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            Listing::refreshItemInCache(item["uuid"])
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 
@@ -287,7 +287,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -296,7 +296,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -305,7 +305,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -316,7 +316,7 @@ class CommandsAndInterpreters
             return if unixtime.nil?
             puts "pushing core: '#{core["description"].green}', until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil::setUnixtime(core["uuid"], unixtime)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -326,7 +326,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
@@ -402,7 +402,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
-            Listing::removeItemFromCache(item["uuid"])
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 
