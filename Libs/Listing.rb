@@ -93,8 +93,8 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
-    # Listing::display_listing(printer)
-    def self.display_listing(printer)
+    # Listing::run_display(printer)
+    def self.run_display(printer)
         NxDateds::processPastItems()
         store = ItemStore.new()
         printer.call("")
@@ -141,16 +141,17 @@ class Listing
         }
 
         Thread.new {
-            Nx10::makeAndPublishNx10()
             loop {
                 sleep 120
                 Nx10::makeAndPublishNx10()
             }
         }
 
+        Nx10::makeAndPublishNx10()
+
         loop {
             Listing::preliminaries(initialCodeTrace)
-            store = Listing::display_listing(lambda{|line| puts line })
+            store = Listing::run_display(lambda{|line| puts line })
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return
