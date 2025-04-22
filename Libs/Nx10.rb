@@ -34,7 +34,6 @@ class Nx10
                         "item" => item,
                         "line" => Nx10::toString3(item)
                     }
-                    puts JSON.pretty_generate(packet)
                     packet
                 else
                     nil
