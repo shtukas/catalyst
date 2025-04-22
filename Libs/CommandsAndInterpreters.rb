@@ -96,6 +96,7 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull()
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            Nx10::refreshItemInCache(item["uuid"])
             return
         end
 

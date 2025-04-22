@@ -125,4 +125,15 @@ class Operations
             }
         end
     end
+
+    # Operations::top_notifications()
+    def self.top_notifications()
+        notifications = []
+        if Config::isPrimaryInstance() then
+            JSON.parse(IO.read("#{Config::userHomeDirectory()}/Galaxy/DataHub/Backups-Utils/Orbital-Backup-Data/under-counted-target-directory-names.json")).each{|directory_name|
+                notifications << "under counted back up target directory name: #{directory_name}"
+            }
+        end
+        notifications
+    end
 end
