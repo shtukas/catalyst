@@ -44,10 +44,10 @@ class Operations
 
             if NxTasks::activeItems().map{|item| item['nx1608']["hours"] }.inject(0, :+) < 20 then
                 task = Items::mikuType("NxTask")
-                        .select{|item| item["nx1941"] }
-                        .select{|item| item["nx1941"]["core"]["uuid"] == NxCores::infinityuuid() }
+                        .select{|item| item["nx1948"] }
+                        .select{|item| item["nx1948"]["coreuuid"] == NxCores::infinityuuid() }
                         .select{|item| item["nx1608"].nil? }
-                        .sort_by{|item| item["nx1941"]["position"] }
+                        .sort_by{|item| item["nx1948"]["position"] }
                         .first
                 if task then
                     puts "promiting to active item: #{JSON.pretty_generate(task)}"
@@ -116,10 +116,10 @@ class Operations
         if File.exist?(buffer_in_location) then
             LucilleCore::locationsAtFolder(buffer_in_location).each{|location|
                 puts location.yellow
-                nx1941 = NxCores::makeNewTopNx1941InInfinityOrNull()
-                next if nx1941.nil?
+                nx1948 = NxCores::makeNewTopNx1948InInfinityOrNull()
+                next if nx1948.nil?
                 description = File.basename(location)
-                task = NxTasks::locationToTask(description, location, nx1941)
+                task = NxTasks::locationToTask(description, location, nx1948)
                 puts JSON.pretty_generate(task)
                 LucilleCore::removeFileSystemLocation(location)
             }

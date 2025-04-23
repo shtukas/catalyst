@@ -7,15 +7,14 @@ class NxCores
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
-        {
-            "uuid"        => SecureRandom.uuid,
-            "description" => description,
-            "hours"       => hours
-        }
+        Items::itemInit(uuid, "NxCore")
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "hours", description)
+        Items::itemOrNull(uuid)
     end
 
-    # NxCores::makeNx1941()
-    def self.makeNx1941()
+    # NxCores::makeNx1948()
+    def self.makeNx1948()
         core = nil
         loop {
             core = NxCores::interactivelySelectOrNull()
@@ -26,24 +25,29 @@ class NxCores
         position = NxCores::interactivelySelectGlobalPositionInCore(core)
         {
             "position" => position,
-            "core" => core
+            "coreuuid" => core["uuid"]
         }
     end
 
-    # NxCores::makeNewTopNx1941InInfinityOrNull()
-    def self.makeNewTopNx1941InInfinityOrNull()
+    # NxCores::makeNewTopNx1948InInfinityOrNull()
+    def self.makeNewTopNx1948InInfinityOrNull()
         coreuuid = NxCores::infinityuuid()
-        core = NxCores::selectCoreByUUIDOrNull(coreuuid)
+        core = Items::itemOrNull(coreuuid)
         return nil if core.nil?
         position = NxCores::random_10_20_position_in_core(core)
         {
             "position" => position,
-            "core" => core
+            "coreuuid" => core["uuid"]
         }
     end
 
     # ------------------
     # Data
+
+    # NxCores::toString(item)
+    def self.toString(item)
+        "⏱️  #{item["description"]} #{NxCores::ratioString(item)}"
+    end
 
     # NxCores::ratio(core)
     def self.ratio(core)
@@ -69,15 +73,7 @@ class NxCores
 
     # NxCores::cores()
     def self.cores()
-        Items::mikuType("NxTask")
-            .map{|item| item["nx1941"]["core"] }
-            .reduce([]){|cores, core|
-                if cores.map{|c| c["uuid"] }.include?(core["uuid"]) then
-                    cores
-                else
-                    cores + [core]
-                end
-            }
+        Items::mikuType("NxCore")
     end
 
     # NxCores::totalHoursPerWeek()
@@ -99,22 +95,22 @@ class NxCores
     # NxCores::core2NxTasksInOrder(core)
     def self.core2NxTasksInOrder(core)
         Items::mikuType("NxTask")
-            .select{|item| item["nx1941"]["core"]["uuid"] == core["uuid"] }
-            .sort_by{|item| item["nx1941"]["position"] }
+            .select{|item| item["nx1948"]["coreuuid"] == core["uuid"] }
+            .sort_by{|item| item["nx1948"]["position"] }
     end
 
     # NxCores::firstPositionInCore(core)
     def self.firstPositionInCore(core)
         items = NxCores::core2NxTasksInOrder(core)
         return 1 if items.empty?
-        items.first["nx1941"]["position"]
+        items.first["nx1948"]["position"]
     end
 
     # NxCores::lastPositionInCore(core)
     def self.lastPositionInCore(core)
         items = NxCores::core2NxTasksInOrder(core)
         return 1 if items.empty?
-        items.last["nx1941"]["position"]
+        items.last["nx1948"]["position"]
     end
 
     # NxCores::random_10_20_position_in_core(core)
@@ -123,7 +119,7 @@ class NxCores
         if items.size < 20 then
             return NxCores::lastPositionInCore(core) + 1
         end
-        positions = items.drop(10).take(10).map{|item| item["nx1941"]["position"] }
+        positions = items.drop(10).take(10).map{|item| item["nx1948"]["position"] }
         first = positions.first
         last = positions.last
         first + rand * (last - first)
@@ -140,10 +136,10 @@ class NxCores
             position = "next"
         end
         if position == "first" then
-            return ([0] + elements.map{|item| item["nx1941"]["position"] }).min.floor - 1
+            return ([0] + elements.map{|item| item["nx1948"]["position"] }).min.floor - 1
         end
         if position == "next" then
-            return ([0] + elements.map{|item| item["nx1941"]["position"] }).max.ceil + 1
+            return ([0] + elements.map{|item| item["nx1948"]["position"] }).max.ceil + 1
         end
         position = position.to_f
         position
@@ -184,11 +180,11 @@ class NxCores
 
             if input == "todo" then
                 position = NxCores::interactivelySelectGlobalPositionInCore(core)
-                nx1941 = {
+                nx1948 = {
                     "position" => position,
-                    "core"     => core
+                    "coreuuid" => core["uuid"]
                 }
-                todo = NxTasks::interactivelyIssueNewOrNull(nx1941)
+                todo = NxTasks::interactivelyIssueNewOrNull(nx1948)
                 puts JSON.pretty_generate(todo)
                 next
             end
@@ -205,11 +201,11 @@ class NxCores
                 lines = lines.reverse
                 lines.each{|line|
                     position = NxCores::firstPositionInCore(core) - 1
-                    nx1941 = {
+                    nx1948 = {
                         "position" => position,
-                        "core"     => core
+                        "coreuuid" => core["uuid"]
                     }
-                    todo = NxTasks::descriptionToTask(line, nx1941)
+                    todo = NxTasks::descriptionToTask(line, nx1948)
                     puts JSON.pretty_generate(todo)
                 }
                 next
@@ -220,11 +216,11 @@ class NxCores
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = NxCores::interactivelySelectGlobalPositionInCore(core)
-                nx1941 = {
+                nx1948 = {
                     "position" => position,
-                    "core"     => core
+                    "coreuuid" => core["uuid"]
                 }
-                Items::setAttribute(i["uuid"], "nx1941", nx1941)
+                Items::setAttribute(i["uuid"], "nx1948", nx1948)
                 next
             end
 
@@ -238,29 +234,19 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::core2NxTasksInOrder(core).sort_by{|item| item["nx1941"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::core2NxTasksInOrder(core).sort_by{|item| item["nx1948"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     position = NxCores::firstPositionInCore(core) - 1
-                    nx1941 = {
+                    nx1948 = {
                         "position" => position,
-                        "core"     => core
+                        "coreuuid" => core["uuid"]
                     }
-                    Items::setAttribute(i["uuid"], "nx1941", nx1941)
+                    Items::setAttribute(i["uuid"], "nx1948", nx1948)
                 }
                 next
             end
 
             CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # NxCores::program2()
-    def self.program2()
-        loop {
-            puts "weekly total: #{NxCores::totalHoursPerWeek()} hours"
-            core = NxCores::interactivelySelectOrNull()
-            break if core.nil?
-            NxCores::program1(core)
         }
     end
 end

@@ -239,7 +239,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("cores", input) then
-            NxCores::program2()
+            Operations::program3(lambda { Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) } })
             return
         end
 

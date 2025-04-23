@@ -5,12 +5,12 @@ NxTask:
     - unixtime     : Float
     - datetime     : DateTime Iso 8601 UTC Zulu
     - description  : String
-    - nx1941       : Nx1941 # position and core
+    - nx1948       : Nx1948 # position and coreuuid
     - nx1608       : Nx1608 # special activity
 
-Nx1941:
+Nx1948:
     - position : Float,
-    - core     : NxCore
+    - coreuuid : String
 
 Nx1608:
     - hours : Float # hours per week

@@ -26,7 +26,7 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxTask" then
-            core = item["nx1941"]["core"]
+            core = Items::itemOrNull(item["nx1948"]["coreuuid"]) # we assume that it's not null
             accounts << {
                 "description" => "(core: #{core["description"]})",
                 "number"      => core["uuid"]
@@ -61,6 +61,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
+        end
+        if item["mikuType"] == "NxCore" then
+            return NxCores::toString(item)
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)

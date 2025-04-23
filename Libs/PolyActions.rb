@@ -39,6 +39,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             UxPayload::access(item["uxpayload-b4e4"])
             return
@@ -85,6 +90,10 @@ class PolyActions
 
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
             return
         end
 
@@ -207,6 +216,11 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
+            return
+        end
+
         if item["mikuType"] == "NxDated" then
             processDestroyable.call(item)
             return
@@ -262,6 +276,10 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxCore" then
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
@@ -300,6 +318,11 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::program1(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(core)
             return
         end
 

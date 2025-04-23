@@ -3,26 +3,26 @@ $ActiveItems1735 = nil
 
 class NxTasks
 
-    # NxTasks::interactivelyIssueNewOrNull(nx1941 = nil)
-    def self.interactivelyIssueNewOrNull(nx1941 = nil)
+    # NxTasks::interactivelyIssueNewOrNull(nx1948 = nil)
+    def self.interactivelyIssueNewOrNull(nx1948 = nil)
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         payload = UxPayload::makeNewOrNull()
-        nx1941 = nx1941 || NxCores::makeNx1941()
+        nx1948 = nx1948 || NxCores::makeNx1948()
         nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "nx1941", nx1941)
+        Items::setAttribute(uuid, "nx1948", nx1948)
         Items::setAttribute(uuid, "nx1608", nx1608)
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::locationToTask(description, location, nx1941)
-    def self.locationToTask(description, location, nx1941)
+    # NxTasks::locationToTask(description, location, nx1948)
+    def self.locationToTask(description, location, nx1948)
         uuid = SecureRandom.uuid
         payload = UxPayload::locationToPayload(location)
         Items::itemInit(uuid, "NxTask")
@@ -30,18 +30,18 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "nx1941", nx1941)
+        Items::setAttribute(uuid, "nx1948", nx1948)
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::descriptionToTask(description, nx1941)
-    def self.descriptionToTask(description, nx1941)
+    # NxTasks::descriptionToTask(description, nx1948)
+    def self.descriptionToTask(description, nx1948)
         uuid = SecureRandom.uuid
         Items::itemInit(uuid, "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "nx1941", nx1941)
+        Items::setAttribute(uuid, "nx1948", nx1948)
         Items::itemOrNull(uuid)
     end
 
@@ -57,14 +57,15 @@ class NxTasks
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
         px1 = item["nx1608"] ? " (#{NxTasks::activeItemRatio(item)})".yellow : ''
-        px2 = " (#{item["nx1941"]["position"]} @ #{item["nx1941"]["core"]["description"]})".yellow
+        core = Items::itemOrNull(item["nx1948"]["coreuuid"]) # we assume that it's not null
+        px2 = " (#{item["nx1948"]["position"]} @ #{core["description"]})".yellow
         "#{NxTasks::icon(item)} #{item["description"]}#{px1}#{px2}"
     end
 
     # NxTasks::itemsInPositionOrder()
     def self.itemsInPositionOrder()
         Items::mikuType("NxTask")
-            .sort_by{|item| item["nx1941"]["position"] }
+            .sort_by{|item| item["nx1948"]["position"] }
     end
 
     # NxTasks::itemsForListing()
@@ -76,12 +77,12 @@ class NxTasks
         }
 
         struct_final = Items::mikuType("NxTask")
-            .sort_by{|item| item["nx1941"]["position"] }
+            .sort_by{|item| item["nx1948"]["position"] }
             .reduce(struct_zero){|struct, item|
                 if struct["items"].size >= 10 then
                     # nothing happens
                 else
-                    core = item["nx1941"]["core"]
+                    core = Items::itemOrNull(item["nx1948"]["coreuuid"]) # we assume that it's not null
                     if struct["coreShouldShow"][core["uuid"]].nil? then
                         struct["coreShouldShow"][core["uuid"]] = NxCores::shouldShow(core)
                     end
@@ -145,7 +146,7 @@ class NxTasks
             .sort_by{|item| NxTasks::activeItemRatio(item) }
             .select{|item| NxTasks::activeItemRatio(item) < 1 }
             .select{|item|
-                core = item["nx1941"]["core"]
+                core = Items::itemOrNull(item["nx1948"]["coreuuid"]) # we assume that it's not null
                 NxCores::shouldShow(core)
             }
     end
@@ -155,7 +156,7 @@ class NxTasks
 
     # NxTasks::performItemPositioning(item)
     def self.performItemPositioning(item)
-        nx1941 = NxCores::makeNx1941()
-        Items::setAttribute(item["uuid"], "nx1941", nx1941)
+        nx1948 = NxCores::makeNx1948()
+        Items::setAttribute(item["uuid"], "nx1948", nx1948)
     end
 end
