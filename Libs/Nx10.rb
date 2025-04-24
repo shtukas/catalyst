@@ -12,7 +12,6 @@ class Nx10
                     selected + [item]
                 end
             }
-        items = items.take(CommonUtils::screenHeight()-5)
         items
     end
 

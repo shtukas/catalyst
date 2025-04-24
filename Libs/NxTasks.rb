@@ -1,6 +1,4 @@
 
-$ActiveItems1735 = nil
-
 class NxTasks
 
     # NxTasks::interactivelyIssueNewOrNull(nx1948 = nil)
@@ -128,27 +126,10 @@ class NxTasks
             .sort_by{|item| NxTasks::activeItemRatio(item) }
     end
 
-    # NxTasks::activeItemsCached()
-    def self.activeItemsCached()
-        if $ActiveItems1735 and Time.new.to_i - $ActiveItems1735['unixtime'] < 3600 then
-            return $ActiveItems1735["items"]
-        end
-        $ActiveItems1735  = {
-            "unixtime" => Time.new.to_i,
-            "items" => NxTasks::activeItems()
-        }
-        $ActiveItems1735["items"]
-    end
-
     # NxTasks::activeItemsForListing()
     def self.activeItemsForListing()
-        NxTasks::activeItemsCached()
-            .sort_by{|item| NxTasks::activeItemRatio(item) }
+        NxTasks::activeItemsInRatioOrder()
             .select{|item| NxTasks::activeItemRatio(item) < 1 }
-            .select{|item|
-                core = Items::itemOrNull(item["nx1948"]["coreuuid"]) # we assume that it's not null
-                NxCores::shouldShow(core)
-            }
     end
 
     # ------------------

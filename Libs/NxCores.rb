@@ -1,4 +1,3 @@
-
 class NxCores
 
     # NxCores::interactivelyIssueNewOrNull()
@@ -9,7 +8,7 @@ class NxCores
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
         Items::itemInit(uuid, "NxCore")
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "hours", description)
+        Items::setAttribute(uuid, "hours", hours)
         Items::itemOrNull(uuid)
     end
 
@@ -71,6 +70,16 @@ class NxCores
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
+    # NxCores::wavesuuid()
+    def self.wavesuuid()
+        "ad3a85df-85d7-429b-bce9-a6b5b76b0400"
+    end
+
+    # NxCores::isWaves(core)
+    def self.isWaves(core)
+        core["uuid"] == NxCores::wavesuuid()
+    end
+
     # NxCores::cores()
     def self.cores()
         Items::mikuType("NxCore")
@@ -83,7 +92,8 @@ class NxCores
 
     # NxCores::coresInRatioOrder()
     def self.coresInRatioOrder()
-        NxCores::cores().sort_by{|core| NxCores::ratio(core) }
+        NxCores::cores()
+            .sort_by{|core| NxCores::ratio(core) }
     end
 
     # NxCores::interactivelySelectOrNull()
@@ -92,8 +102,19 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), l)
     end
 
-    # NxCores::core2NxTasksInOrder(core)
-    def self.core2NxTasksInOrder(core)
+    # NxCores::interactivelySelectOrNullForDonation()
+    def self.interactivelySelectOrNullForDonation()
+        l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
+        cores = NxCores::coresInRatioOrder().reject{|core| NxCores::isWaves(core) }
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, l)
+    end
+
+    # NxCores::childrenInOrder(core)
+    def self.childrenInOrder(core)
+        if NxCores::isWaves(core) then
+            return Waves::itemsNonInterruptionInOrder()
+        end
+
         Items::mikuType("NxTask")
             .select{|item| item["nx1948"]["coreuuid"] == core["uuid"] }
             .sort_by{|item| item["nx1948"]["position"] }
@@ -101,21 +122,21 @@ class NxCores
 
     # NxCores::firstPositionInCore(core)
     def self.firstPositionInCore(core)
-        items = NxCores::core2NxTasksInOrder(core)
+        items = NxCores::childrenInOrder(core)
         return 1 if items.empty?
         items.first["nx1948"]["position"]
     end
 
     # NxCores::lastPositionInCore(core)
     def self.lastPositionInCore(core)
-        items = NxCores::core2NxTasksInOrder(core)
+        items = NxCores::childrenInOrder(core)
         return 1 if items.empty?
         items.last["nx1948"]["position"]
     end
 
     # NxCores::random_10_20_position_in_core(core)
     def self.random_10_20_position_in_core(core)
-        items = NxCores::core2NxTasksInOrder(core)
+        items = NxCores::childrenInOrder(core)
         if items.size < 20 then
             return NxCores::lastPositionInCore(core) + 1
         end
@@ -127,7 +148,7 @@ class NxCores
 
     # NxCores::interactivelySelectGlobalPositionInCore(core)
     def self.interactivelySelectGlobalPositionInCore(core)
-        elements = NxCores::core2NxTasksInOrder(core)
+        elements = NxCores::childrenInOrder(core)
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -150,6 +171,14 @@ class NxCores
         NxCores::cores().select{|core| core["uuid"] == coreuuid }.first
     end
 
+    # NxCores::childrenForPrefix(core)
+    def self.childrenForPrefix(core)
+        if NxCores::isWaves(core) then
+            return Waves::itemsNonInterruptionInOrder().take(3)
+        end
+        NxCores::childrenInOrder(core).take(3)
+    end
+
     # ------------------
     # Ops
 
@@ -164,7 +193,7 @@ class NxCores
 
             puts ""
 
-            NxCores::core2NxTasksInOrder(core)
+            NxCores::childrenInOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -234,7 +263,7 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::core2NxTasksInOrder(core).sort_by{|item| item["nx1948"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::childrenInOrder(core).sort_by{|item| item["nx1948"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     position = NxCores::firstPositionInCore(core) - 1
                     nx1948 = {

@@ -105,7 +105,7 @@ class Operations
 
     # Operations::setDonation(item)
     def self.setDonation(item)
-        core = NxCores::interactivelySelectOrNull()
+        core = NxCores::interactivelySelectOrNullForDonation()
         return if core.nil?
         Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])
     end

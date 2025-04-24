@@ -62,9 +62,8 @@ class Listing
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
-            Waves::listingItemsNonInterruption(),
             NxTasks::activeItemsForListing(),
-            NxTasks::itemsForListing()
+            NxCores::coresInRatioOrder()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }

@@ -133,9 +133,11 @@ class Waves
         Items::mikuType("Wave").select{|item| item["interruption"]}
     end
 
-    # Waves::listingItemsNonInterruption()
-    def self.listingItemsNonInterruption()
-        Items::mikuType("Wave").select{|item| !item["interruption"]}
+    # Waves::itemsNonInterruptionInOrder()
+    def self.itemsNonInterruptionInOrder()
+        Items::mikuType("Wave")
+            .select{|item| !item["interruption"]}
+            .sort_by{|item| item["lastDoneUnixtime"]}
     end
 
     # -------------------------------------------------------------------------
