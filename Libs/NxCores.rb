@@ -96,6 +96,13 @@ class NxCores
             .sort_by{|core| NxCores::ratio(core) }
     end
 
+    # NxCores::listingItems()
+    def self.listingItems()
+        NxCores::cores()
+            .sort_by{|core| NxCores::ratio(core) }
+            .select{|core| NxCores::ratio(core) < 1 }
+    end
+
     # NxCores::interactivelySelectOrNull()
     def self.interactivelySelectOrNull()
         l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }

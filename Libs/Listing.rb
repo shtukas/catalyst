@@ -63,7 +63,7 @@ class Listing
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             NxTasks::activeItemsForListing(),
-            NxCores::coresInRatioOrder()
+            NxCores::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }

@@ -13,8 +13,8 @@ $ bundle install
 If we have a problem after upgrading Ruby, for instance sqlite3 is not working, try:
 
 ```
-brew reinstall sqlite
+brew reinstall sqlite # primary instance only.
 gem uninstall sqlite3
-gem install sqlite3 --platform=ruby
+gem install sqlite3
 bundle install
 ```
