@@ -109,7 +109,7 @@ class NxDateds
                     Nx10::removeItemFromCache(item["uuid"])
                 end
                 if option == "do now" then
-                    Operations::setDonation(item)
+                    Operations::interactivelySetDonation(item)
                     item = Items::itemOrNull(item["uuid"])
                     PolyActions::double_dots(item)
                     Nx10::removeItemFromCache(item["uuid"])

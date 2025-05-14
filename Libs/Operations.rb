@@ -103,8 +103,8 @@ class Operations
         LucilleCore::pressEnterToContinue()
     end
 
-    # Operations::setDonation(item)
-    def self.setDonation(item)
+    # Operations::interactivelySetDonation(item)
+    def self.interactivelySetDonation(item)
         core = NxCores::interactivelySelectOrNullForDonation()
         return if core.nil?
         Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])

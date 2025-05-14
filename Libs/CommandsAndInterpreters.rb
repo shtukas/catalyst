@@ -83,7 +83,7 @@ class CommandsAndInterpreters
             description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
             return if description == ''
             item = NxStackPriorities::interactivelyIssueNewOrNull(description)
-            Operations::setDonation(item)
+            Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
             return
@@ -122,7 +122,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Operations::setDonation(item)
+            Operations::interactivelySetDonation(item)
             Nx10::refreshItemInCache(item["uuid"])
             return
         end
@@ -130,6 +130,8 @@ class CommandsAndInterpreters
         if Interpreting::match("today", input) then
             item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
+            Operations::interactivelySetDonation(item)
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
