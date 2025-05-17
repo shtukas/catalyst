@@ -23,6 +23,10 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 Nx10::removeItemFromCache(item["uuid"])
+                if item["mikuType"] == "NxDated" then
+                    date = Time.at(unixtime).to_s[0, 10]
+                    Items::setAttribute(item["uuid"], "date", date)
+                end
                 return
             end
         end
@@ -369,7 +373,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            Operations::program3(lambda { Items::mikuType("NxDated").sort_by{|item| item["datetime"] }})
+            Operations::program3(lambda { Items::mikuType("NxDated").sort_by{|item| item["date"][0, 10] }})
             return
         end
 

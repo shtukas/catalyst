@@ -167,9 +167,11 @@ class PolyActions
             end
         }
 
-        processDestroyable = lambda {|item|
+        processDestroyable = lambda {|item, hasBeenStarted|
             if !NxBalls::itemIsActive(item) then
-                PolyActions::start(item)
+                if !hasBeenStarted then
+                    PolyActions::start(item)
+                end
                 PolyActions::access(item)
                 if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
                     PolyActions::stop(item)
@@ -187,7 +189,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxStackPriority" then
-            processDestroyable.call(item)
+            processDestroyable.call(item, false)
             return
         end
 
@@ -207,12 +209,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxStrat" then
-            processDestroyable.call(item)
+            processDestroyable.call(item, false)
             return
         end
 
         if item["mikuType"] == "NxTask" then
-            processDestroyable.call(item)
+            processDestroyable.call(item, false)
             return
         end
 
@@ -222,7 +224,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDated" then
-            processDestroyable.call(item)
+            hasBeenStarted = false
+            if item["donation-1205"].nil? then
+                PolyActions::access(item)
+                hasBeenStarted = true
+                Operations::interactivelySetDonation(item)
+                item = Items::itemOrNull(item["uuid"])
+            end
+            processDestroyable.call(item, hasBeenStarted)
             return
         end
 
