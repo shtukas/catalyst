@@ -133,10 +133,14 @@ class Waves
         Items::mikuType("Wave").select{|item| item["interruption"]}
     end
 
-    # Waves::itemsNonInterruptionInOrder()
-    def self.itemsNonInterruptionInOrder()
+    # Waves::nonInterruptionItemsInOrderForWaveCore()
+    def self.nonInterruptionItemsInOrderForWaveCore()
         Items::mikuType("Wave")
-            .select{|item| !item["interruption"]}
+            .select { |item| !item["interruption"]}
+            .select { |wave|
+                unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
+                unixtime.nil? or unixtime < Time.new.to_i
+            }
             .sort_by{|item| item["lastDoneUnixtime"]}
     end
 
@@ -188,6 +192,20 @@ class Waves
 
     # Waves::program1()
     def self.program1()
-        Operations::program3(lambda { Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 } })
+        l = lambda { 
+            Items::mikuType("Wave").select{|wave|
+                unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
+                unixtime.nil? or unixtime < Time.new.to_i
+            }
+        }
+        Operations::program3(l)
+    end
+
+    # Waves::program1_plus()
+    def self.program1_plus()
+        l = lambda { 
+            Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 } 
+        }
+        Operations::program3(l)
     end
 end

@@ -119,7 +119,7 @@ class NxCores
     # NxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
         if NxCores::isWaves(core) then
-            return Waves::itemsNonInterruptionInOrder()
+            return Waves::nonInterruptionItemsInOrderForWaveCore()
         end
 
         Items::mikuType("NxTask")
@@ -181,7 +181,7 @@ class NxCores
     # NxCores::childrenForPrefix(core)
     def self.childrenForPrefix(core)
         if NxCores::isWaves(core) then
-            return Waves::itemsNonInterruptionInOrder().take(3)
+            return Waves::nonInterruptionItemsInOrderForWaveCore().take(3)
         end
         NxCores::childrenInOrder(core).take(3)
     end

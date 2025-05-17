@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | active items",
+            "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
             "misc          : search | commands | edit <n> | push core | fsck-all | probe-head",
         ].join("\n")
@@ -473,6 +473,10 @@ class CommandsAndInterpreters
 
         if input == "waves" then
             Waves::program1()
+            return
+        end
+        if input == "waves+" then
+            Waves::program1_plus()
             return
         end
     end
