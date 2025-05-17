@@ -163,6 +163,11 @@ class PolyActions
                 if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
                     PolyActions::done(item, true)
                     Nx10::removeItemFromCache(item["uuid"])
+                else
+                    if LucilleCore::askQuestionAnswerAsBoolean("postpone (or keep running) ? ") then
+                        Operations::interactivelyPush(item)
+                        Nx10::removeItemFromCache(item["uuid"])
+                    end
                 end
             end
         }
