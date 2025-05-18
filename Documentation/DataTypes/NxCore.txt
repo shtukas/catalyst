@@ -1,4 +1,8 @@
 NxCore:
-    - uuid          : String
-    - description   : String
-    - hours         : Float # hours per week
+    - uuid           : String
+    - description    : String
+    - hours          : Float # hours per week
+    - isPureTodoFile : null or true [1]
+
+[1] When true, we cannot land on that one and it can't have children, we are entirely 
+driven by a todo file.

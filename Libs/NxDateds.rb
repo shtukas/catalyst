@@ -86,48 +86,4 @@ class NxDateds
         datetime = datetime || CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         Items::setAttribute(item["uuid"], "date", datetime)
     end
-
-    # NxDateds::processPastItems()
-    def self.processPastItems()
-        NxDateds::listingItems().each{|item|
-            if item["date"] < CommonUtils::today() then
-                puts "Past ondate: #{NxDateds::toString(item)}".yellow
-                options = [
-                    "already done",
-                    "do now",
-                    "today",
-                    "redate",
-                    "transmute (to task, float)"
-                ]
-                option = nil
-                loop {
-                    option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-                    break if option
-                }
-                if option == "already done" then
-                    PolyActions::done(item)
-                    Nx10::removeItemFromCache(item["uuid"])
-                end
-                if option == "do now" then
-                    Operations::interactivelySetDonation(item)
-                    item = Items::itemOrNull(item["uuid"])
-                    PolyActions::double_dots(item)
-                    Nx10::removeItemFromCache(item["uuid"])
-                end
-                if option == "today" then
-                    NxDateds::redate(item, CommonUtils::nowDatetimeIso8601())
-                    Nx10::removeItemFromCache(item["uuid"])
-                end
-                if option == "redate" then
-                    NxDateds::redate(item, nil)
-                    Nx10::removeItemFromCache(item["uuid"])
-                end
-                if option == "transmute (to task, float)" then
-                    Transmutation::transmute2(item)
-                    Nx10::removeItemFromCache(item["uuid"])
-                end
-            end
-        } 
-
-    end
 end

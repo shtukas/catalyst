@@ -192,6 +192,12 @@ class NxCores
     # NxCores::program1(core)
     def self.program1(core)
 
+        if core["isPureTodoFile"] then
+            puts "You cannot land on #{core["description"].green} because isPureTodoFile is true"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         loop {
 
             #system("clear")
@@ -208,7 +214,7 @@ class NxCores
 
             puts ""
 
-            puts "todo (here, with position selection) | hours | pile | position * | move * | sort"
+            puts "todo (here, with position selection) | hours | pile | activate * | position * | move * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -244,6 +250,16 @@ class NxCores
                     todo = NxTasks::descriptionToTask(line, nx1948)
                     puts JSON.pretty_generate(todo)
                 }
+                next
+            end
+
+            if input.start_with?("activate") then
+                listord = input[8, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
+                return if nx1608.nil?
+                Items::setAttribute(i["uuid"], "nx1608", nx1608)
                 next
             end
 

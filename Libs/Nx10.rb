@@ -79,7 +79,6 @@ class Nx10
 
     # Nx10::run_display(store, printer)
     def self.run_display(store, printer)
-        NxDateds::processPastItems()
         printer.call("")
         Operations::top_notifications().each{|notification|
             puts "notification: #{notification}"
