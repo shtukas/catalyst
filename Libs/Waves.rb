@@ -206,9 +206,7 @@ class Waves
     # Waves::program1_plus()
     def self.program1_plus()
         l = lambda { 
-            items = Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 }
-            i1, i2 = items.partition{|item| item["interruption"] }
-            i1 + i2
+            Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 }
         }
         Operations::program3(l)
     end
