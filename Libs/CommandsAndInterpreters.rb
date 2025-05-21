@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | activate * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | activate * | dismiss * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
@@ -23,10 +23,6 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 Nx10::removeItemFromCache(item["uuid"])
-                if item["mikuType"] == "NxDated" then
-                    date = Time.at(unixtime).to_s[0, 10]
-                    Items::setAttribute(item["uuid"], "date", date)
-                end
                 return
             end
         end
@@ -61,6 +57,17 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("dismiss *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+            puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            Nx10::removeItemFromCache(item["uuid"])
             return
         end
 

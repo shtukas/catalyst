@@ -94,10 +94,6 @@ class Operations
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-        if item["mikuType"] == "NxDated" then
-            date = Time.at(unixtime).to_s[0, 10]
-            Items::setAttribute(item["uuid"], "date", date)
-        end
     end
 
     # Operations::expose(item)

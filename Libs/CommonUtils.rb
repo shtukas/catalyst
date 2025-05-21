@@ -262,6 +262,11 @@ class CommonUtils
         CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone())
     end
 
+    # CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+    def self.unixtimeAtTomorrowMorningAtLocalTimezone()
+        CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600 * 6
+    end
+
     # CommonUtils::isDateTime_UTC_ISO8601(datetime)
     def self.isDateTime_UTC_ISO8601(datetime)
         begin
