@@ -18,13 +18,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            accounts << {
-                "description" => "(NxCore Waves)",
-                "number"      => NxCores::wavesuuid()
-            }
-        end
-
         if item["mikuType"] == "NxStrat" then
             bottom = Items::itemOrNull(item["bottomuuid"])
             if bottom then
@@ -99,7 +92,7 @@ class PolyFunctions
             return [st]
         end
         if item["mikuType"] == "NxCore" then
-            return NxCores::childrenForPrefix(core)
+            return NxCores::childrenForPrefix(item)
         end
         []
     end

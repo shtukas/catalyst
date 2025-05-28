@@ -133,8 +133,8 @@ class Waves
         Items::mikuType("Wave").select{|item| item["interruption"]}
     end
 
-    # Waves::nonInterruptionItemsInOrderForWaveCore()
-    def self.nonInterruptionItemsInOrderForWaveCore()
+    # Waves::nonInterruptionItemsForListing()
+    def self.nonInterruptionItemsForListing()
         Items::mikuType("Wave")
             .select { |item| !item["interruption"]}
             .select { |wave|

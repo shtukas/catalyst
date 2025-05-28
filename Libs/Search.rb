@@ -3,7 +3,6 @@ class Search
     # Search::run()
     def self.run()
         loop {
-            system('clear')
             fragment = LucilleCore::askQuestionAnswerAsString("search fragment (empty to abort) : ")
             break if fragment == ""
             selected = Items::items()

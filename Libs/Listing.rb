@@ -62,6 +62,7 @@ class Listing
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
+            Waves::nonInterruptionItemsForListing(),
             NxTasks::activeItemsForListing(),
             NxCores::listingItems()
         ]

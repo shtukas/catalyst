@@ -70,16 +70,6 @@ class NxCores
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
-    # NxCores::wavesuuid()
-    def self.wavesuuid()
-        "ad3a85df-85d7-429b-bce9-a6b5b76b0400"
-    end
-
-    # NxCores::isWaves(core)
-    def self.isWaves(core)
-        core["uuid"] == NxCores::wavesuuid()
-    end
-
     # NxCores::cores()
     def self.cores()
         Items::mikuType("NxCore")
@@ -112,16 +102,12 @@ class NxCores
     # NxCores::interactivelySelectOrNullForDonation()
     def self.interactivelySelectOrNullForDonation()
         l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
-        cores = NxCores::coresInRatioOrder().reject{|core| NxCores::isWaves(core) }
+        cores = NxCores::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, l)
     end
 
     # NxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
-        if NxCores::isWaves(core) then
-            return Waves::nonInterruptionItemsInOrderForWaveCore()
-        end
-
         Items::mikuType("NxTask")
             .select{|item| item["nx1948"]["coreuuid"] == core["uuid"] }
             .sort_by{|item| item["nx1948"]["position"] }
@@ -180,9 +166,6 @@ class NxCores
 
     # NxCores::childrenForPrefix(core)
     def self.childrenForPrefix(core)
-        if NxCores::isWaves(core) then
-            return Waves::nonInterruptionItemsInOrderForWaveCore().take(3)
-        end
         NxCores::childrenInOrder(core).take(3)
     end
 

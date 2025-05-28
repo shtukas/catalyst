@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | activate * | dismiss * | destroy *",
+            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
@@ -288,6 +288,15 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("disactivate *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            Items::setAttribute(item["uuid"], "nx1608", nil)
+            Nx10::removeItemFromCache(item["uuid"])
+            return
+        end
 
         if Interpreting::match("edit *", input) then
             _, listord = Interpreting::tokenizer(input)
