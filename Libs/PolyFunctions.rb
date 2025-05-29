@@ -91,10 +91,7 @@ class PolyFunctions
         if st = NxStrats::parentOrNull(item) then
             return [st]
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::childrenForPrefix(item)
-        end
-        []
+        PolyFunctions::childrenForParent(item)
     end
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
@@ -134,4 +131,85 @@ class PolyFunctions
         end
         raise "(error: 1931-e258c72b)"
     end
+
+    # PolyFunctions::childrenForParent(parent)
+    def self.childrenForParent(parent)
+        items = Items::items().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+        uuids = items.map{|item| item["uuid"] }
+        XCache::set("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}", JSON.generate(uuids))
+        items
+    end
+
+    # PolyFunctions::hasChildren(parent)
+    def self.hasChildren(parent)
+        PolyFunctions::childrenForParent(parent).size > 0
+    end
+
+    # PolyFunctions::childrenForParentUseCache(parent)
+    def self.childrenForParentUseCache(parent)
+        uuids = XCache::getOrNull("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}")
+        if uuids then
+            uuids = JSON.parse(uuids)
+            items = uuids.map{|uuid| Items::getOrNull(uuid) }.compact
+            return items
+        end
+        items = Items::items().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+        uuids = items.map{|item| item["uuid"] }
+        XCache::set("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}", JSON.generate(uuids))
+        items
+    end
+
+    # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
+    def self.interactivelySelectGlobalPositionInParent(parent)
+        elements = PolyFunctions::childrenInOrder(parent)
+        elements.first(20).each{|item|
+            puts "#{PolyFunctions::toString(item)}"
+        }
+        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
+        if position == "" then # default does next
+            position = "next"
+        end
+        if position == "first" then
+            return ([0] + elements.map{|item| item["nx1949"]["position"] }).min.floor - 1
+        end
+        if position == "next" then
+            return ([0] + elements.map{|item| item["nx1949"]["position"] }).max.ceil + 1
+        end
+        position = position.to_f
+        position
+    end
+
+    # PolyFunctions::childrenInOrder(parent)
+    def self.childrenInOrder(parent)
+        Items::items()
+            .select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+            .sort_by{|item| item["nx1949"]["position"] }
+    end
+
+    # PolyFunctions::firstPositionInParent(parent)
+    def self.firstPositionInParent(parent)
+        items = PolyFunctions::childrenInOrder(parent)
+        return 1 if items.empty?
+        items.first["nx1949"]["position"]
+    end
+
+    # PolyFunctions::lastPositionInParent(parent)
+    def self.lastPositionInParent(parent)
+        items = PolyFunctions::childrenInOrder(parent)
+        return 1 if items.empty?
+        items.last["nx1949"]["position"]
+    end
+
+    # PolyFunctions::random_10_20_position_in_parent(parent)
+    def self.random_10_20_position_in_parent(parent)
+        items = PolyFunctions::childrenInOrder(parent)
+        if items.size < 20 then
+            return PolyFunctions::lastPositionInParent(parent) + 1
+        end
+        positions = items.drop(10).take(10).map{|item| item["nx1949"]["position"] }
+        first = positions.first
+        last = positions.last
+        first + rand * (last - first)
+    end
+
 end

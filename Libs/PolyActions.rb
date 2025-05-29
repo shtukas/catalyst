@@ -188,6 +188,17 @@ class PolyActions
             end
         }
 
+        if item["mikuType"] == "NxCore" then
+            NxCores::program1(item)
+            return
+        end
+
+        if PolyFunctions::hasChildren(item) then
+            puts "Item '#{PolyFunctions::toString(item).green}' has items, so we are diving in"
+            Operations::diveItem(item)
+            return
+        end
+
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
             return
@@ -220,11 +231,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             processDestroyable.call(item, false)
-            return
-        end
-
-        if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
             return
         end
 

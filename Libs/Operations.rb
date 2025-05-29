@@ -14,8 +14,6 @@ class Operations
         loop {
             elements = lx.call()
 
-            system("clear")
-
             store = ItemStore.new()
 
             puts ""
@@ -23,7 +21,7 @@ class Operations
             elements
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString3(store, item)
+                    puts Listing::toString2(store, item)
                 }
 
             puts ""
@@ -147,10 +145,103 @@ class Operations
             core = NxCores::interactivelyIssueNewOrNull()
             break if core
         }
-        position = NxCores::interactivelySelectGlobalPositionInCore(core)
+        position = PolyFunctions::interactivelySelectGlobalPositionInParent(core)
         {
             "position" => position,
             "parentuuid" => core["uuid"]
+        }
+    end
+
+    # Operations::diveItem(parent)
+    def self.diveItem(parent)
+
+        loop {
+
+            store = ItemStore.new()
+
+            puts ""
+            store.register(parent, false)
+            puts Listing::toString2(store, parent)
+            puts ""
+
+            PolyFunctions::childrenForParent(parent)
+                .each{|element|
+                    store.register(element, Listing::canBeDefault(element))
+                    puts Listing::toString2(store, element)
+                }
+
+            puts ""
+
+            puts "todo (here, with position selection) | pile | activate * | position * | sort"
+
+            input = LucilleCore::askQuestionAnswerAsString("> ")
+            return if input == "exit"
+            return if input == ""
+
+            if input == "todo" then
+                position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
+                nx1949 = {
+                    "position" => position,
+                    "parentuuid" => parent["uuid"]
+                }
+                todo = NxTasks::interactivelyIssueNewOrNull(nx1949)
+                puts JSON.pretty_generate(todo)
+                next
+            end
+
+            if input == "pile" then
+                text = CommonUtils::editTextSynchronously("")
+                lines = text.strip.lines.map{|line| line.strip }
+                lines = lines.reverse
+                lines.each{|line|
+                    position = PolyFunctions::firstPositionInParent(parent) - 1
+                    nx1949 = {
+                        "position" => position,
+                        "parentuuid" => parent["uuid"]
+                    }
+                    todo = NxTasks::descriptionToTask(line, nx1949)
+                    puts JSON.pretty_generate(todo)
+                }
+                next
+            end
+
+            if input.start_with?("activate") then
+                listord = input[8, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
+                return if nx1608.nil?
+                Items::setAttribute(i["uuid"], "nx1608", nx1608)
+                next
+            end
+
+            if input.start_with?("position") then
+                listord = input[8, input.size].strip.to_i
+                i = store.get(listord.to_i)
+                next if i.nil?
+                position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
+                nx1949 = {
+                    "position" => position,
+                    "parentuuid" => parent["uuid"]
+                }
+                Items::setAttribute(i["uuid"], "nx1949", nx1949)
+                next
+            end
+
+            if input == "sort" then
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::childrenInOrder(core).sort_by{|item| item["nx1949"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected.reverse.each{|i|
+                    position = PolyFunctions::firstPositionInParent(core) - 1
+                    nx1949 = {
+                        "position" => position,
+                        "parentuuid" => core["uuid"]
+                    }
+                    Items::setAttribute(i["uuid"], "nx1949", nx1949)
+                }
+                next
+            end
+
+            CommandsAndInterpreters::interpreter(input, store)
         }
     end
 end

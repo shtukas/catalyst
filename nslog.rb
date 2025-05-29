@@ -8,6 +8,7 @@ Items::processJournal()
 
 # ---------------------------------------------
 
+puts PolyFunctions::hasChildren(NxCores::interactivelySelectOneOrNull())
 exit
 
 Items::mikuType("NxTask").each{|item|
@@ -29,7 +30,7 @@ exit
 
 core = Items::itemOrNull("beb745bf-0a33-4e4d-a6a8-70d4106c2a12")
 puts core
-puts NxCores::childrenInOrder(core)
+puts PolyFunctions::childrenInOrder(core)
 
 exit
 
@@ -125,7 +126,7 @@ exit
 Items::mikuType("NxCore").each{|item|
     puts JSON.pretty_generate(item)
     nx1941 = {
-        "position" => NxCores::lastPositionInCore(item.clone) + 1,
+        "position" => PolyFunctions::lastPositionInParent(item.clone) + 1,
         "core"     => item.clone
     }
     item["mikuType"] = 'NxTask'

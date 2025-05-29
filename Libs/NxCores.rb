@@ -17,7 +17,7 @@ class NxCores
         coreuuid = NxCores::infinityuuid()
         core = Items::itemOrNull(coreuuid)
         return nil if core.nil?
-        position = NxCores::random_10_20_position_in_core(core)
+        position = PolyFunctions::random_10_20_position_in_parent(core)
         {
             "position" => position,
             "parentuuid" => core["uuid"]
@@ -90,59 +90,6 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, l)
     end
 
-    # NxCores::childrenInOrder(core)
-    def self.childrenInOrder(core)
-        Items::mikuType("NxTask")
-            .select{|item| item["nx1949"]["parentuuid"] == core["uuid"] }
-            .sort_by{|item| item["nx1949"]["position"] }
-    end
-
-    # NxCores::firstPositionInCore(core)
-    def self.firstPositionInCore(core)
-        items = NxCores::childrenInOrder(core)
-        return 1 if items.empty?
-        items.first["nx1949"]["position"]
-    end
-
-    # NxCores::lastPositionInCore(core)
-    def self.lastPositionInCore(core)
-        items = NxCores::childrenInOrder(core)
-        return 1 if items.empty?
-        items.last["nx1949"]["position"]
-    end
-
-    # NxCores::random_10_20_position_in_core(core)
-    def self.random_10_20_position_in_core(core)
-        items = NxCores::childrenInOrder(core)
-        if items.size < 20 then
-            return NxCores::lastPositionInCore(core) + 1
-        end
-        positions = items.drop(10).take(10).map{|item| item["nx1949"]["position"] }
-        first = positions.first
-        last = positions.last
-        first + rand * (last - first)
-    end
-
-    # NxCores::interactivelySelectGlobalPositionInCore(core)
-    def self.interactivelySelectGlobalPositionInCore(core)
-        elements = NxCores::childrenInOrder(core)
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
-        if position == "" then # default does next
-            position = "next"
-        end
-        if position == "first" then
-            return ([0] + elements.map{|item| item["nx1949"]["position"] }).min.floor - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["nx1949"]["position"] }).max.ceil + 1
-        end
-        position = position.to_f
-        position
-    end
-
     # NxCores::selectCoreByUUIDOrNull(coreuuid)
     def self.selectCoreByUUIDOrNull(coreuuid)
         NxCores::cores().select{|core| core["uuid"] == coreuuid }.first
@@ -150,7 +97,7 @@ class NxCores
 
     # NxCores::childrenForPrefix(core)
     def self.childrenForPrefix(core)
-        NxCores::childrenInOrder(core).take(3)
+        PolyFunctions::childrenInOrder(core).take(3)
     end
 
     # ------------------
@@ -167,13 +114,11 @@ class NxCores
 
         loop {
 
-            #system("clear")
-
             store = ItemStore.new()
 
             puts ""
 
-            NxCores::childrenInOrder(core)
+            PolyFunctions::childrenInOrder(core)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -188,7 +133,7 @@ class NxCores
             return if input == ""
 
             if input == "todo" then
-                position = NxCores::interactivelySelectGlobalPositionInCore(core)
+                position = PolyFunctions::interactivelySelectGlobalPositionInParent(core)
                 nx1949 = {
                     "position" => position,
                     "parentuuid" => core["uuid"]
@@ -209,7 +154,7 @@ class NxCores
                 lines = text.strip.lines.map{|line| line.strip }
                 lines = lines.reverse
                 lines.each{|line|
-                    position = NxCores::firstPositionInCore(core) - 1
+                    position = PolyFunctions::firstPositionInParent(core) - 1
                     nx1949 = {
                         "position" => position,
                         "parentuuid" => core["uuid"]
@@ -234,7 +179,7 @@ class NxCores
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                position = NxCores::interactivelySelectGlobalPositionInCore(core)
+                position = PolyFunctions::interactivelySelectGlobalPositionInParent(core)
                 nx1949 = {
                     "position" => position,
                     "parentuuid" => core["uuid"]
@@ -253,9 +198,9 @@ class NxCores
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::childrenInOrder(core).sort_by{|item| item["nx1949"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::childrenInOrder(core).sort_by{|item| item["nx1949"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    position = NxCores::firstPositionInCore(core) - 1
+                    position = PolyFunctions::firstPositionInParent(core) - 1
                     nx1949 = {
                         "position" => position,
                         "parentuuid" => core["uuid"]

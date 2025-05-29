@@ -67,7 +67,8 @@ class Nx10
     # Nx10::toString3(item)
     def self.toString3(item)
         return nil if item.nil?
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}"
+        hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end

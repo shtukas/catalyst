@@ -22,25 +22,8 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}"
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
-    end
-
-    # toString for Operations::program3
-    # Listing::toString3(store, item)
-    def self.toString3(store, item)
-        return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "      "
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}"
+        hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
