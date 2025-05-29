@@ -44,10 +44,10 @@ class Operations
 
             if NxTasks::activeItems().map{|item| item['nx1608']["hours"] }.inject(0, :+) < 20 then
                 task = Items::mikuType("NxTask")
-                        .select{|item| item["nx1948"] }
-                        .select{|item| item["nx1948"]["coreuuid"] == NxCores::infinityuuid() }
+                        .select{|item| item["nx1949"] }
+                        .select{|item| item["nx1949"]["parentuuid"] == NxCores::infinityuuid() }
                         .select{|item| item["nx1608"].nil? }
-                        .sort_by{|item| item["nx1948"]["position"] }
+                        .sort_by{|item| item["nx1949"]["position"] }
                         .first
                 if task then
                     puts "promiting to active item: #{JSON.pretty_generate(task)}"
@@ -105,7 +105,7 @@ class Operations
 
     # Operations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        core = NxCores::interactivelySelectOrNullForDonation()
+        core = NxCores::interactivelySelectOneOrNull()
         return if core.nil?
         Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])
     end
@@ -116,10 +116,10 @@ class Operations
         if File.exist?(buffer_in_location) then
             LucilleCore::locationsAtFolder(buffer_in_location).each{|location|
                 puts location.yellow
-                nx1948 = NxCores::makeNewTopNx1948InInfinityOrNull()
-                next if nx1948.nil?
+                nx1949 = NxCores::makeNewNearTopNx1949InInfinityOrNull()
+                next if nx1949.nil?
                 description = File.basename(location)
-                task = NxTasks::locationToTask(description, location, nx1948)
+                task = NxTasks::locationToTask(description, location, nx1949)
                 puts JSON.pretty_generate(task)
                 LucilleCore::removeFileSystemLocation(location)
             }
@@ -135,5 +135,22 @@ class Operations
             }
         end
         notifications
+    end
+
+    # Operations::makeNx1949OrNull(parentOpt)
+    def self.makeNx1949OrNull(parentOpt)
+        return nil if parentOpt.nil?
+        core = nil
+        loop {
+            core = NxCores::interactivelySelectOrNull()
+            break if core
+            core = NxCores::interactivelyIssueNewOrNull()
+            break if core
+        }
+        position = NxCores::interactivelySelectGlobalPositionInCore(core)
+        {
+            "position" => position,
+            "parentuuid" => core["uuid"]
+        }
     end
 end

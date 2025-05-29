@@ -29,8 +29,8 @@ raise "This script needs updating, we are no longer using global-positioning-423
 
 positions = Items::mikuType("NxTask")
             .select{|item| item["parentuuid-0014"].nil? }
-            .sort_by{|item| item["nx1948"]["position"] }
-            .map{|item| item["nx1948"]["position"] }
+            .sort_by{|item| item["nx1949"]["position"] }
+            .map{|item| item["nx1949"]["position"] }
 
 insertions = positions.zip(positions.drop(1))
     .select{|pair| pair.compact.size == 2 }

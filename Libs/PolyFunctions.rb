@@ -26,7 +26,7 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxTask" then
-            core = Items::itemOrNull(item["nx1948"]["coreuuid"]) # we assume that it's not null
+            core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
             accounts << {
                 "description" => "(core: #{core["description"]})",
                 "number"      => core["uuid"]

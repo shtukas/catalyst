@@ -10,6 +10,19 @@ Items::processJournal()
 
 exit
 
+Items::mikuType("NxTask").each{|item|
+    nx1950 = item["nx1950"]
+    puts JSON.pretty_generate(nx1950)
+    nx1949 = {
+        "position" => nx1950["position"],
+        "parentuuid" => nx1950["coreuuid"]
+    }
+    puts JSON.pretty_generate(nx1949)
+    Items::setAttribute(item["uuid"], "nx1949", nx1949)
+}
+
+exit
+
 Items::destroy("ad3a85df-85d7-429b-bce9-a6b5b76b0400")
 
 exit
@@ -40,18 +53,6 @@ Items::mikuType("NxTask").each{|item|
 }
 
 exit
-
-Items::mikuType("NxTask").each{|item|
-    nx1941 = item["nx1941"]
-    puts JSON.pretty_generate(nx1941)
-    nx1948 = {
-        "position" => nx1941["position"],
-        "coreuuid" => nx1941["core"]["uuid"]
-    }
-    puts JSON.pretty_generate(nx1948)
-    Items::setAttribute(item["uuid"], "nx1948", nx1948)
-}
-
 exit
 
 NxCores::cores().each{|core|
@@ -119,22 +120,6 @@ exit
 puts JSON.pretty_generate(NxTasks::activeItems())
 
 exit
-
-if NxTasks::activeItems().map{|item| item['nx1608']["hours"] }.inject(0, :+) < 20 then
-    task = Items::mikuType("NxTask")
-            .select{|item| item["nx1941"] }
-            .select{|item| item["nx1941"]["core"]["uuid"] == NxCores::infinityuuid() }
-            .select{|item| item["nx1608"].nil? }
-            .sort_by{|item| item["nx1948"]["position"] }
-            .first
-    if task then
-        puts "promiting to active item: #{JSON.pretty_generate(task)}"
-        Items::setAttribute(task["uuid"], "nx1608", {
-            "hours" => 7
-        })
-    end
-end
-
 exit
 
 Items::mikuType("NxCore").each{|item|
@@ -151,31 +136,6 @@ Items::mikuType("NxCore").each{|item|
 }
 
 exit
-
-$data_ = {}
-
-def get_core(coreuuid)
-    if $data_[coreuuid] then
-        return $data_[coreuuid]
-    end
-    $data_[coreuuid] = Items::itemOrNull(coreuuid)
-    $data_[coreuuid]
-end
-
-Items::mikuType("NxTask").each{|item|
-    core = get_core(item["nx1940"]["coreuuid"])
-    if core.nil? then
-        raise "error 12:37"
-    end
-    nx1941 = {
-        "position" => item["nx1948"]["position"],
-        "core"     => core
-    }
-    item["nx1941"] = nx1941
-    puts JSON.pretty_generate(item)
-    Items::setAttribute(item["uuid"], "nx1941", nx1941)
-}
-
 exit
 
 t1 = Time.new.to_f
@@ -183,14 +143,5 @@ CommonUtils::screenHeight()-5
 t2 = Time.new.to_f
 puts t2 - t1
 exit
-
-
-Items::mikuType("NxTask").each{|item|
-    puts JSON.pretty_generate(item)
-    next if item["nx1948"]["position"]
-    nx1940 = item["nx1940"]
-    nx1940["position"] = nx1940["task-gl0-pos1"]
-    Items::setAttribute(item["uuid"], "nx1940", nx1940)
-}
 
 puts "operation completed"

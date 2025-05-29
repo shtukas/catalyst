@@ -12,31 +12,15 @@ class NxCores
         Items::itemOrNull(uuid)
     end
 
-    # NxCores::makeNx1948()
-    def self.makeNx1948()
-        core = nil
-        loop {
-            core = NxCores::interactivelySelectOrNull()
-            break if core
-            core = NxCores::interactivelyIssueNewOrNull()
-            break if core
-        }
-        position = NxCores::interactivelySelectGlobalPositionInCore(core)
-        {
-            "position" => position,
-            "coreuuid" => core["uuid"]
-        }
-    end
-
-    # NxCores::makeNewTopNx1948InInfinityOrNull()
-    def self.makeNewTopNx1948InInfinityOrNull()
+    # NxCores::makeNewNearTopNx1949InInfinityOrNull()
+    def self.makeNewNearTopNx1949InInfinityOrNull()
         coreuuid = NxCores::infinityuuid()
         core = Items::itemOrNull(coreuuid)
         return nil if core.nil?
         position = NxCores::random_10_20_position_in_core(core)
         {
             "position" => position,
-            "coreuuid" => core["uuid"]
+            "parentuuid" => core["uuid"]
         }
     end
 
@@ -99,8 +83,8 @@ class NxCores
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), l)
     end
 
-    # NxCores::interactivelySelectOrNullForDonation()
-    def self.interactivelySelectOrNullForDonation()
+    # NxCores::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
         l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
         cores = NxCores::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, l)
@@ -109,22 +93,22 @@ class NxCores
     # NxCores::childrenInOrder(core)
     def self.childrenInOrder(core)
         Items::mikuType("NxTask")
-            .select{|item| item["nx1948"]["coreuuid"] == core["uuid"] }
-            .sort_by{|item| item["nx1948"]["position"] }
+            .select{|item| item["nx1949"]["parentuuid"] == core["uuid"] }
+            .sort_by{|item| item["nx1949"]["position"] }
     end
 
     # NxCores::firstPositionInCore(core)
     def self.firstPositionInCore(core)
         items = NxCores::childrenInOrder(core)
         return 1 if items.empty?
-        items.first["nx1948"]["position"]
+        items.first["nx1949"]["position"]
     end
 
     # NxCores::lastPositionInCore(core)
     def self.lastPositionInCore(core)
         items = NxCores::childrenInOrder(core)
         return 1 if items.empty?
-        items.last["nx1948"]["position"]
+        items.last["nx1949"]["position"]
     end
 
     # NxCores::random_10_20_position_in_core(core)
@@ -133,7 +117,7 @@ class NxCores
         if items.size < 20 then
             return NxCores::lastPositionInCore(core) + 1
         end
-        positions = items.drop(10).take(10).map{|item| item["nx1948"]["position"] }
+        positions = items.drop(10).take(10).map{|item| item["nx1949"]["position"] }
         first = positions.first
         last = positions.last
         first + rand * (last - first)
@@ -150,10 +134,10 @@ class NxCores
             position = "next"
         end
         if position == "first" then
-            return ([0] + elements.map{|item| item["nx1948"]["position"] }).min.floor - 1
+            return ([0] + elements.map{|item| item["nx1949"]["position"] }).min.floor - 1
         end
         if position == "next" then
-            return ([0] + elements.map{|item| item["nx1948"]["position"] }).max.ceil + 1
+            return ([0] + elements.map{|item| item["nx1949"]["position"] }).max.ceil + 1
         end
         position = position.to_f
         position
@@ -205,11 +189,11 @@ class NxCores
 
             if input == "todo" then
                 position = NxCores::interactivelySelectGlobalPositionInCore(core)
-                nx1948 = {
+                nx1949 = {
                     "position" => position,
-                    "coreuuid" => core["uuid"]
+                    "parentuuid" => core["uuid"]
                 }
-                todo = NxTasks::interactivelyIssueNewOrNull(nx1948)
+                todo = NxTasks::interactivelyIssueNewOrNull(nx1949)
                 puts JSON.pretty_generate(todo)
                 next
             end
@@ -226,11 +210,11 @@ class NxCores
                 lines = lines.reverse
                 lines.each{|line|
                     position = NxCores::firstPositionInCore(core) - 1
-                    nx1948 = {
+                    nx1949 = {
                         "position" => position,
-                        "coreuuid" => core["uuid"]
+                        "parentuuid" => core["uuid"]
                     }
-                    todo = NxTasks::descriptionToTask(line, nx1948)
+                    todo = NxTasks::descriptionToTask(line, nx1949)
                     puts JSON.pretty_generate(todo)
                 }
                 next
@@ -251,32 +235,32 @@ class NxCores
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = NxCores::interactivelySelectGlobalPositionInCore(core)
-                nx1948 = {
+                nx1949 = {
                     "position" => position,
-                    "coreuuid" => core["uuid"]
+                    "parentuuid" => core["uuid"]
                 }
-                Items::setAttribute(i["uuid"], "nx1948", nx1948)
+                Items::setAttribute(i["uuid"], "nx1949", nx1949)
                 next
             end
 
-            if input.start_with?("move") then
+            if input.start_with?("move *") then
                 listord = input[4, input.size].strip.to_i
-                i = store.get(listord.to_i)
-                next if i.nil?
-                NxTasks::performItemPositioning(i)
+                item = store.get(listord.to_i)
+                next if item.nil?
+                NxTasks::performItemPositioning(item, NxCores::interactivelySelectOneOrNull())
                 next
             end
 
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::childrenInOrder(core).sort_by{|item| item["nx1948"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxCores::childrenInOrder(core).sort_by{|item| item["nx1949"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     position = NxCores::firstPositionInCore(core) - 1
-                    nx1948 = {
+                    nx1949 = {
                         "position" => position,
-                        "coreuuid" => core["uuid"]
+                        "parentuuid" => core["uuid"]
                     }
-                    Items::setAttribute(i["uuid"], "nx1948", nx1948)
+                    Items::setAttribute(i["uuid"], "nx1949", nx1949)
                 }
                 next
             end
