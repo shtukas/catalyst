@@ -86,6 +86,7 @@ class Nx10
         }
         data = Nx10::getNx10FromCache()
         data
+            .first(20)
             .each{|packet|
                 item = packet["item"]
                 line = packet["line"]
