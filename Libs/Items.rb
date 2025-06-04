@@ -35,8 +35,20 @@ class Items
 
     # Items::mikuType(mikuType)
     def self.mikuType(mikuType)
-        Blades::items_enumerator()
-            .select{|item| item["mikuType"] == mikuType }
+        packet = XCache::getOrNull("e67e9545-4088-4b36-bb18-ee5c88c1185d:#{TheZone::pulse()}:#{mikuType}")
+        if packet then
+            packet = JSON.parse(packet)
+            if (Time.new.to_i - packet["unixtime"]) < 3600 then
+                return packet["itemsuuids"].map{|uuid| Items::itemOrNull(uuid) }.compact
+            end
+        end
+        items = Blades::items_enumerator().select{|item| item["mikuType"] == mikuType }
+        packet = {
+            "unixtime" => Time.new.to_i,
+            "itemsuuids" => items.map{|i| i["uuid"] }
+        }
+        XCache::set("e67e9545-4088-4b36-bb18-ee5c88c1185d:#{TheZone::pulse()}:#{mikuType}", JSON.generate(packet))
+        items
     end
 
     # Items::setAttribute(uuid, attrname, attrvalue)

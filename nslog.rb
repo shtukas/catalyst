@@ -6,6 +6,14 @@ require_relative "Libs/loader.rb"
 
 # ---------------------------------------------
 
+t1 = Time.new.to_f
+Items::mikuType("Wave")
+t2 = Time.new.to_f
+
+puts t2 - t1
+
+exit
+
 Fsck::fsckAll()
 
 exit

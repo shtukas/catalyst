@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n> | push core | fsck-all",
+            "misc          : search | commands | edit <n> | push core | fsck-all | reload",
         ].join("\n")
     end
 
@@ -22,7 +22,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                Nx10::removeItemFromCache(item["uuid"])
+                TheZone::removeItemFromTheZone(item)
                 return
             end
         end
@@ -47,7 +47,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -60,6 +60,11 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("reload", input) then
+            TheZone::recomputeFromZero()
+            return
+        end
+
         if Interpreting::match("dismiss *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -67,7 +72,7 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -107,7 +112,7 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -134,7 +139,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -169,7 +174,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -178,7 +183,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -288,7 +293,7 @@ class CommandsAndInterpreters
             return if item.nil?
             return if item["mikuType"] != "NxTask"
             Items::setAttribute(item["uuid"], "nx1608", nil)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -309,7 +314,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -318,7 +323,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -327,7 +332,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -338,7 +343,7 @@ class CommandsAndInterpreters
             return if unixtime.nil?
             puts "pushing core: '#{core["description"].green}', until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil::setUnixtime(core["uuid"], unixtime)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -348,7 +353,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -424,7 +429,7 @@ class CommandsAndInterpreters
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(item["uuid"], "date", datetime)
-            Nx10::removeItemFromCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -432,7 +437,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::start(item)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -441,7 +446,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::start(item)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::repositionItemInTheZone(item)
             return
         end
 
@@ -449,7 +454,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::stop(item)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -458,7 +463,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::stop(item)
-            Nx10::refreshItemInCache(item["uuid"])
+            TheZone::removeItemFromTheZone(item)
             return
         end
 
@@ -483,10 +488,6 @@ class CommandsAndInterpreters
 
         if input == "waves" then
             Waves::program1()
-            return
-        end
-        if input == "waves+" then
-            Waves::program1_plus()
             return
         end
     end

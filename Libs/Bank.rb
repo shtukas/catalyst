@@ -79,7 +79,6 @@ class Bank1
     # Bank1::recoveredAverageHoursPerDay(uuid)
     def self.recoveredAverageHoursPerDay(uuid)
         value = (0..6).map{|n| Bank1::averageHoursPerDayOverThePastNDays(uuid, n) }.max
-        XCache::set(key, value)
         value
     end
 end

@@ -203,12 +203,4 @@ class Waves
         }
         Operations::program3(l)
     end
-
-    # Waves::program1_plus()
-    def self.program1_plus()
-        l = lambda { 
-            Items::mikuType("Wave").sort_by{|wave| DoNotShowUntil::getUnixtimeOrNull(wave["uuid"]) || 0 }
-        }
-        Operations::program3(l)
-    end
 end
