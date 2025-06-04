@@ -289,6 +289,13 @@ class Index
         filepath
     end
 
+    # Index::commitItem(item)
+    def self.commitItem(item)
+        item.each{|attrname, attrvalue|
+            Index::setAttribute(item["uuid"], attrname, attrvalue)
+        }
+    end
+
     # Index::itemOrNull(uuid)
     def self.itemOrNull(uuid)
         item = nil

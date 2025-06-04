@@ -24,19 +24,36 @@ class Items
 
     # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
+        version = Time.new.to_i
         item = Blades::getItemOrNull(uuid)
         if item.nil? then
             Index::destroy(uuid)
             return
         end
         item[attrname] = attrvalue
+        item["catalyst:version"] = version
         Blades::commitItemToDisk(item)
         Index::setAttribute(uuid, attrname, attrvalue)
+        Index::setAttribute(uuid, "catalyst:version", version)
     end
 
     # Items::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
         Index::destroy(uuid)
+    end
+
+    # Items::maintenance()
+    def self.maintenance()
+        Blades::items_enumerator().each{|blade_item|
+            index_item = Index::itemOrNull(blade_item["uuid"])
+            if index_item.nil? then
+                Index::commitItem(blade_item)
+            else
+                if blade_item["version"] and index_item["version"] and blade_item["version"] > index_item["version"] then
+                    Index::commitItem(blade_item)
+                end
+            end
+        }
     end
 end
