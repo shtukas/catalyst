@@ -2,6 +2,17 @@
 
 class Blades
 
+    # -----------------------------------------------
+    # Core
+
+    # Blades::rename_blade_file(filepath1)
+    def self.rename_blade_file(filepath1)
+        item = Blades::readItemFromBladeFile(filepath1)
+        filepath2 = "#{File.dirname(filepath1)}/#{SecureRandom.hex(6)}.catalyst-blade"
+        FileUtils.mv(filepath1, filepath2)
+        XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{item["uuid"]}", filepath2)
+    end
+
     # Blades::blades_repository()
     def self.blades_repository()
         "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/Blades"
@@ -32,7 +43,7 @@ class Blades
     # Blades::uuidToBladeFilepathOrNull(uuid) -> filepath or nil
     def self.uuidToBladeFilepathOrNull(uuid)
         # Takes a uuid and return the filepath to the blade if it could find it
-        filepath = XCache::getOrNull("#{uuid}:e8e7ca1d-bf32-4eed-afdb-a241e01d0e86")
+        filepath = XCache::getOrNull("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{uuid}")
         if filepath then
             if File.exist?(filepath) then
                 item = Blades::readItemFromBladeFile(filepath)
@@ -43,10 +54,48 @@ class Blades
         end
         filepath = Blades::uuidToBladeFilepathOrNull_UseTheForce(uuid)
         if filepath then
-            XCache::set("#{uuid}:e8e7ca1d-bf32-4eed-afdb-a241e01d0e86", filepath)
+            XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{uuid}", filepath)
         end
         filepath
     end
+
+    # Blades::readItemFromBladeFile(filepath)
+    def self.readItemFromBladeFile(filepath)
+        item = nil
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from blade where _key_=?", ["item"]) do |row|
+            item = JSON.parse(row["_data_"])
+        end
+        db.close
+        if item.nil? then
+            raise "This is an extremelly odd condition. This blade file doesn't have an item, filepath: #{filepath}"
+        end
+        item
+    end
+
+    # Blades::commitItemToItsBladeFile(item)
+    def self.commitItemToItsBladeFile(item)
+        filepath = Blades::uuidToBladeFilepathOrNull(item["uuid"])
+        if filepath.nil? then
+            raise "(error: 192ba5e3) I could not find a blade file for item: #{item}"
+        end
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from blade where _key_=?", ["item"])
+        db.execute("insert into blade (_key_, _data_) values (?, ?)", ["item", JSON.generate(item)])
+        db.commit
+        db.close
+        Blades::rename_blade_file(filepath)
+    end
+
+    # -----------------------------------------------
+    # Interface
 
     # Blades::spawn_new_blade(uuid)
     def self.spawn_new_blade(uuid)
@@ -81,26 +130,9 @@ class Blades
         db.commit
         db.close
 
-        XCache::set("#{uuid}:e8e7ca1d-bf32-4eed-afdb-a241e01d0e86", filepath)
+        XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{uuid}", filepath)
 
         filepath
-    end
-
-    # Blades::readItemFromBladeFile(filepath)
-    def self.readItemFromBladeFile(filepath)
-        item = nil
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from blade where _key_=?", ["item"]) do |row|
-            item = JSON.parse(row["_data_"])
-        end
-        db.close
-        if item.nil? then
-            raise "This is an extremelly odd condition. This blade file doesn't have an item, filepath: #{filepath}"
-        end
-        item
     end
 
     # Blades::getItemOrNull(uuid) -> item or nil
@@ -125,23 +157,6 @@ class Blades
                 items << Blades::readItemFromBladeFile(filepath)
             }
         end
-    end
-
-    # Blades::commitItemToItsBladeFile(item)
-    def self.commitItemToItsBladeFile(item)
-        filepath = Blades::uuidToBladeFilepathOrNull(item["uuid"])
-        if filepath.nil? then
-            raise "(error: 192ba5e3) I could not find a blade file for item: #{item}"
-        end
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from blade where _key_=?", ["item"])
-        db.execute("insert into blade (_key_, _data_) values (?, ?)", ["item", JSON.generate(item)])
-        db.commit
-        db.close
     end
 
     # Blades::setAttribute(uuid, attrname, attrvalue)
@@ -192,6 +207,16 @@ class Blades
             raise "This is an extremelly odd condition. Retrived the datablob, but its nhash doens't check. uuid: #{uuid}, nhash: #{nhash}"
         end
         datablob
+    end
+
+    # Blades::commitItemToDisk(item)
+    def self.commitItemToDisk(item)
+        blade_filepath = Blades::uuidToBladeFilepathOrNull(item["uuid"])
+        if blade_filepath.nil? then
+            # We do not have a file yet. Let's make one
+            blade_filepath = Blades::spawn_new_blade(item["uuid"])
+        end
+        Blades::commitItemToItsBladeFile(item)
     end
 end
 

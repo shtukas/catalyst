@@ -3,31 +3,31 @@ class TheZone
     # TheZone::recomputeFromZero()
     def self.recomputeFromZero()
         items = Listing::itemsForListing1()
-        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
+        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
     end
 
     # TheZone::listingItems()
     def self.listingItems()
-        items = ValueCacheWithExpiry::getOrNull("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", 1200)
+        items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
         return items if items
         items = Listing::itemsForListing1()
-        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
+        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
         items
     end
 
     # TheZone::removeItemFromTheZone(item)
     def self.removeItemFromTheZone(item)
-        items = ValueCacheWithExpiry::getOrNull("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", 1200)
+        items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
         return if items.nil?
         items = items.reject{|i| i["uuid"] == item["uuid"] }
 
         # We set the updated items
-        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
+        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
     end
 
     # TheZone::repositionItemInTheZone(item)
     def self.repositionItemInTheZone(item)
-        items = ValueCacheWithExpiry::getOrNull("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", 1200)
+        items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
         items = items || []
 
         items = items.map{|i|
@@ -43,10 +43,10 @@ class TheZone
         end
 
         # We set the updated items
-        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
+        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
 
         # We destroy the listing string
-        ValueCacheWithExpiry::destroy("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}")
+        ValueCacheWithExpiry::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
     end
 
     # TheZone::toString3(item)
@@ -65,10 +65,10 @@ class TheZone
 
     # TheZone::itemToTemplateString(item)
     def self.itemToTemplateString(item)
-        string = ValueCacheWithExpiry::getOrNull("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}", 3600)
+        string = ValueCacheWithExpiry::getOrNull("item-template-string-bf21-82d828702e8a:#{item["uuid"]}", 3600)
         return string if string
         string = TheZone::toString3(item)
-        ValueCacheWithExpiry::set("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}", string)
+        ValueCacheWithExpiry::set("item-template-string-bf21-82d828702e8a:#{item["uuid"]}", string)
         string
     end
 
