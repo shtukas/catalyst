@@ -37,23 +37,7 @@ class Operations
     # Operations::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
         if Config::isPrimaryInstance() then
-
             puts "> Operations::periodicPrimaryInstanceMaintenance()"
-
-            if NxTasks::activeItems().map{|item| item['nx1608']["hours"] }.inject(0, :+) < 20 then
-                task = Items::mikuType("NxTask")
-                        .select{|item| item["nx1949"] }
-                        .select{|item| item["nx1949"]["parentuuid"] == NxCores::infinityuuid() }
-                        .select{|item| item["nx1608"].nil? }
-                        .sort_by{|item| item["nx1949"]["position"] }
-                        .first
-                if task then
-                    puts "promiting to active item: #{JSON.pretty_generate(task)}"
-                    Items::setAttribute(task["uuid"], "nx1608", {
-                        "hours" => 7
-                    })
-                end
-            end
         end
     end
 
@@ -135,21 +119,25 @@ class Operations
         notifications
     end
 
-    # Operations::makeNx1949OrNull(parentOpt)
-    def self.makeNx1949OrNull(parentOpt)
-        return nil if parentOpt.nil?
-        core = nil
-        loop {
-            core = NxCores::interactivelySelectOrNull()
-            break if core
-            core = NxCores::interactivelyIssueNewOrNull()
-            break if core
-        }
+    # Operations::interactivelySelectParentForDonationOrNull()
+    def self.interactivelySelectParentForDonationOrNull()
+        parents = [
+            NxTasks::activeItems(),
+            NxCores::coresInRatioOrder()
+        ].flatten
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", parents, lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # Operations::makeNx1949OrNull()
+    def self.makeNx1949OrNull()
+        parent = Operations::interactivelySelectParentForDonationOrNull()
+        return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(core)
         {
             "position" => position,
-            "parentuuid" => core["uuid"]
+            "parentuuid" => parent["uuid"]
         }
+        ValueCacheWithExpiry::destroy("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
     end
 
     # Operations::diveItem(parent)
@@ -209,9 +197,9 @@ class Operations
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
-                return if nx1608.nil?
-                Items::setAttribute(i["uuid"], "nx1608", nx1608)
+                nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
+                return if nx1609.nil?
+                Items::setAttribute(i["uuid"], "nx1609", nx1609)
                 next
             end
 

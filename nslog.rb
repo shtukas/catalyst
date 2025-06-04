@@ -6,6 +6,24 @@ require_relative "Libs/loader.rb"
 
 # ---------------------------------------------
 
+puts Operations::interactivelySelectParentForDonationOrNull()
+
+exit
+
+Items::items().each{|item|
+    if item["nx1608"] then
+        data = item["nx1608"]
+        puts data
+        data2 = {
+            "hours" => data["hours"].to_f/7
+        }
+        puts data2
+        Items::setAttribute(item["uuid"], "nx1609", data2)
+    end
+}
+
+exit
+
 data = [1, "1"]
 ValueCacheWithExpiry::set("edbb56f", data)
 puts ValueCacheWithExpiry::getOrNull("edbb56f", 3600)
@@ -49,7 +67,7 @@ Items::mikuType("Wave").each{|item|
 
 exit
 
-Items::items_enumerator().each{|item|
+Items::items().each{|item|
     puts JSON.pretty_generate(item)
 
     #blade_filepath = Blades::spawn_new_blade(item["uuid"])

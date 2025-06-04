@@ -281,9 +281,9 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTask"
-            nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
-            return if nx1608.nil?
-            Items::setAttribute(item["uuid"], "nx1608", nx1608)
+            nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
+            return if nx1609.nil?
+            Items::setAttribute(item["uuid"], "nx1609", nx1609)
             return
         end
 
@@ -292,7 +292,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             return if item["mikuType"] != "NxTask"
-            Items::setAttribute(item["uuid"], "nx1608", nil)
+            Items::setAttribute(item["uuid"], "nx1609", nil)
             TheZone::removeItemFromTheZone(item)
             return
         end

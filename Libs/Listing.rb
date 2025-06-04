@@ -33,8 +33,6 @@ class TheZone
         items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
         return if items.nil?
         items = items.reject{|i| i["uuid"] == item["uuid"] }
-
-        # We set the updated items
         ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
     end
 
@@ -55,10 +53,7 @@ class TheZone
             items = items.take(10) + [item] + items.drop(10)
         end
 
-        # We set the updated items
         ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
-
-        # We destroy the listing string
         ValueCacheWithExpiry::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
     end
 

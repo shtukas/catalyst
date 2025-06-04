@@ -2,9 +2,6 @@
 
 class Items
 
-    # ----------------------------------------
-    # Interface
-
     # Items::init(uuid)
     def self.init(uuid)
         Blades::spawn_new_blade(uuid)
@@ -12,33 +9,34 @@ class Items
 
     # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        Blades::getItemOrNull(uuid)
+        Index::itemOrNull(uuid)
     end
 
-    # Items::items_enumerator()
-    def self.items_enumerator()
-        Blades::items_enumerator()
+    # Items::items()
+    def self.items()
+        Index::items()
     end
 
     # Items::mikuType(mikuType)
     def self.mikuType(mikuType)
-        items = ValueCacheWithExpiry::getOrNull("1daf4e98-9e88-4b2c-bb87-585e7d30acb4:#{mikuType}", 1200)
-        return items if items
-        items = Blades::items_enumerator().select{|item| item["mikuType"] == mikuType }
-        ValueCacheWithExpiry::set("1daf4e98-9e88-4b2c-bb87-585e7d30acb4:#{mikuType}", items)
-        items
+        Index::mikuType(mikuType)
     end
 
     # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        item = Items::itemOrNull(uuid)
-        return if item.nil?
+        item = Blades::getItemOrNull(uuid)
+        if item.nil? then
+            Index::destroy(uuid)
+            return
+        end
         item[attrname] = attrvalue
         Blades::commitItemToDisk(item)
+        Index::setAttribute(uuid, attrname, attrvalue)
     end
 
     # Items::destroy(uuid)
     def self.destroy(uuid)
         Blades::destroy(uuid)
+        Index::destroy(uuid)
     end
 end

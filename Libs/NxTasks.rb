@@ -6,8 +6,8 @@ class NxTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        nx1949 = nx1949 || Operations::makeNx1949OrNull(NxCores::interactivelySelectOneOrNull())
-        nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
+        nx1949 = nx1949 || Operations::makeNx1949OrNull()
+        nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxTask")
@@ -16,7 +16,7 @@ class NxTasks
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "nx1949", nx1949)
-        Items::setAttribute(uuid, "nx1608", nx1608)
+        Items::setAttribute(uuid, "nx1609", nx1609)
         Items::itemOrNull(uuid)
     end
 
@@ -51,13 +51,13 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
-        return "🔺" if item["nx1608"]
+        return "🔺" if item["nx1609"]
         "🔹"
     end
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        px1 = item["nx1608"] ? " (#{NxTasks::activeItemRatio(item)})".yellow : ''
+        px1 = item["nx1609"] ? " (#{NxTasks::activeItemRatio(item)})".yellow : ''
         core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
         px2 = " (#{item["nx1949"]["position"]} @ #{core["description"]})".yellow
         "#{NxTasks::icon(item)} #{item["description"]}#{px1}#{px2}"
@@ -100,9 +100,9 @@ class NxTasks
     # ------------------
     # Active Items
 
-    # NxTasks::interactivelyMakeNx1608OrNull()
-    def self.interactivelyMakeNx1608OrNull()
-        hours = LucilleCore::askQuestionAnswerAsString("(active ?) hours per week (empty for none): ")
+    # NxTasks::interactivelyMakeNx1609OrNull()
+    def self.interactivelyMakeNx1609OrNull()
+        hours = LucilleCore::askQuestionAnswerAsString("(active ?) hours per day (empty for none): ")
         return nil if hours == ""
         hours = hours.to_f
         return nil if hours == 0
@@ -113,14 +113,13 @@ class NxTasks
 
     # NxTasks::activeItemRatio(item)
     def self.activeItemRatio(item)
-        hours = item["nx1608"]["hours"]
-        Bank1::recoveredAverageHoursPerDay(item["uuid"]).to_f/(hours/7)
+        Bank1::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["nx1609"]["hours"]
     end
 
     # NxTasks::activeItems()
     def self.activeItems()
         Items::mikuType("NxTask")
-            .select{|item| item["nx1608"] }
+            .select{|item| item["nx1609"] }
     end
 
     # NxTasks::activeItemsInRatioOrder()
@@ -138,10 +137,9 @@ class NxTasks
     # ------------------
     # Ops
 
-    # NxTasks::performItemPositioning(item, parentOpt)
-    def self.performItemPositioning(item, parentOpt)
-        return if parentOpt.nil?
-        nx1949 = Operations::makeNx1949OrNull(item, parentOpt)
+    # NxTasks::performItemPositioning(item)
+    def self.performItemPositioning(item)
+        nx1949 = Operations::makeNx1949OrNull()
         return if nx1949.nil?
         Items::setAttribute(item["uuid"], "nx1949", nx1949)
     end

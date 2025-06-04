@@ -170,9 +170,9 @@ class NxCores
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
-                return if nx1608.nil?
-                Items::setAttribute(i["uuid"], "nx1608", nx1608)
+                nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
+                return if nx1609.nil?
+                Items::setAttribute(i["uuid"], "nx1609", nx1609)
                 next
             end
 
@@ -193,7 +193,7 @@ class NxCores
                 listord = input[4, input.size].strip.to_i
                 item = store.get(listord.to_i)
                 next if item.nil?
-                NxTasks::performItemPositioning(item, NxCores::interactivelySelectOneOrNull())
+                NxTasks::performItemPositioning(item)
                 next
             end
 

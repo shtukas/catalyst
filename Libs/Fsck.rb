@@ -39,7 +39,7 @@ class Fsck
 
     # Fsck::fsckAll()
     def self.fsckAll()
-        Items::items_enumerator()
+        Items::items()
             .each{|item| Fsck::fsckOrError(item) }
     end
 end

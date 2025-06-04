@@ -134,29 +134,18 @@ class PolyFunctions
 
     # PolyFunctions::childrenForParent(parent)
     def self.childrenForParent(parent)
-        items = Items::items_enumerator().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
-        uuids = items.map{|item| item["uuid"] }
-        XCache::set("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}", JSON.generate(uuids))
+        items = ValueCacheWithExpiry::getOrNull("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}", 86400)
+        if items then
+            return items
+        end
+        items = Items::items().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+        ValueCacheWithExpiry::set("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}", items)
         items
     end
 
     # PolyFunctions::hasChildren(parent)
     def self.hasChildren(parent)
         PolyFunctions::childrenForParent(parent).size > 0
-    end
-
-    # PolyFunctions::childrenForParentUseCache(parent)
-    def self.childrenForParentUseCache(parent)
-        uuids = XCache::getOrNull("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}")
-        if uuids then
-            uuids = JSON.parse(uuids)
-            items = uuids.map{|uuid| Items::getOrNull(uuid) }.compact
-            return items
-        end
-        items = Items::items_enumerator().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
-        uuids = items.map{|item| item["uuid"] }
-        XCache::set("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}", JSON.generate(uuids))
-        items
     end
 
     # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
@@ -181,8 +170,7 @@ class PolyFunctions
 
     # PolyFunctions::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        Items::items_enumerator()
-            .select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+        PolyFunctions::childrenForParent(parent)
             .sort_by{|item| item["nx1949"]["position"] }
     end
 
