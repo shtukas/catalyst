@@ -32,9 +32,7 @@ class Blades
     # Blades::uuidToBladeFilepathOrNull(uuid) -> filepath or nil
     def self.uuidToBladeFilepathOrNull(uuid)
         # Takes a uuid and return the filepath to the blade if it could find it
-
         filepath = XCache::getOrNull("#{uuid}:e8e7ca1d-bf32-4eed-afdb-a241e01d0e86")
-
         if filepath then
             if File.exist?(filepath) then
                 item = Blades::readItemFromBladeFile(filepath)
@@ -43,13 +41,10 @@ class Blades
                 end
             end
         end
-
         filepath = Blades::uuidToBladeFilepathOrNull_UseTheForce(uuid)
-
         if filepath then
             XCache::set("#{uuid}:e8e7ca1d-bf32-4eed-afdb-a241e01d0e86", filepath)
         end
-
         filepath
     end
 

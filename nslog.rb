@@ -6,6 +6,13 @@ require_relative "Libs/loader.rb"
 
 # ---------------------------------------------
 
+data = [1, "1"]
+ValueCacheWithExpiry::set("edbb56f", data)
+puts ValueCacheWithExpiry::getOrNull("edbb56f", 3600)
+
+
+exit
+
 t1 = Time.new.to_f
 Items::mikuType("Wave")
 t2 = Time.new.to_f

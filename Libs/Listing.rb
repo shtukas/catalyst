@@ -1,31 +1,35 @@
 class TheZone
 
-    # TheZone::pulse()
-    def self.pulse()
-        (Time.new.to_i.to_f/3000).to_i.to_s
-    end
-
     # TheZone::recomputeFromZero()
     def self.recomputeFromZero()
         items = Listing::itemsForListing1()
-        XCache::set("ddbb56f5-82e4-4ffa-a6e4-17582cbd9544:#{TheZone::pulse()}", JSON.generate(items))
+        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
     end
 
-    # TheZone::items()
-    def self.items()
-        JSON.parse(XCache::getOrDefaultValue("ddbb56f5-82e4-4ffa-a6e4-17582cbd9544:#{TheZone::pulse()}", "[]"))
+    # TheZone::listingItems()
+    def self.listingItems()
+        items = ValueCacheWithExpiry::getOrNull("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", 1200)
+        return items if items
+        items = Listing::itemsForListing1()
+        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
+        items
     end
 
     # TheZone::removeItemFromTheZone(item)
     def self.removeItemFromTheZone(item)
-        items = TheZone::items()
+        items = ValueCacheWithExpiry::getOrNull("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", 1200)
+        return if items.nil?
         items = items.reject{|i| i["uuid"] == item["uuid"] }
-        XCache::set("ddbb56f5-82e4-4ffa-a6e4-17582cbd9544:#{TheZone::pulse()}", JSON.generate(items))
+
+        # We set the updated items
+        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
     end
 
     # TheZone::repositionItemInTheZone(item)
     def self.repositionItemInTheZone(item)
-        items = TheZone::items()
+        items = ValueCacheWithExpiry::getOrNull("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", 1200)
+        items = items || []
+
         items = items.map{|i|
             if i["uuid"] == item["uuid"] then
                 item
@@ -37,10 +41,12 @@ class TheZone
         if !present then
             items = items.take(10) + [item] + items.drop(10)
         end
-        XCache::set("ddbb56f5-82e4-4ffa-a6e4-17582cbd9544:#{TheZone::pulse()}", JSON.generate(items))
 
-        string = TheZone::toString3(item)
-        XCache::set("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}", string)
+        # We set the updated items
+        ValueCacheWithExpiry::set("edbb56f5-92e4-4ffa-a6e4-27582cbd9545", items)
+
+        # We destroy the listing string
+        ValueCacheWithExpiry::destroy("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}")
     end
 
     # TheZone::toString3(item)
@@ -57,13 +63,18 @@ class TheZone
         line
     end
 
+    # TheZone::itemToTemplateString(item)
+    def self.itemToTemplateString(item)
+        string = ValueCacheWithExpiry::getOrNull("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}", 3600)
+        return string if string
+        string = TheZone::toString3(item)
+        ValueCacheWithExpiry::set("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}", string)
+        string
+    end
+
     # TheZone::itemToString(store, item)
     def self.itemToString(store, item)
-        string = XCache::getOrNull("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}")
-        if string.nil? then
-            string = TheZone::toString3(item)
-            XCache::set("ca006f3f-5cd4-4d14-bf21-82d828702e8a:#{item["uuid"]}", string)
-        end
+        string = TheZone::itemToTemplateString(item)
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         string.gsub("STORE-PREFIX", storePrefix)
     end
@@ -189,7 +200,7 @@ class Listing
             Operations::top_notifications().each{|notification|
                 puts "notification: #{notification}"
             }
-            TheZone::items()
+            TheZone::listingItems()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
                     line = TheZone::itemToString(store, item)
