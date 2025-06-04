@@ -154,7 +154,11 @@ class Blades
     def self.items_enumerator()
         Enumerator.new do |items|
             Blades::blade_filepaths_enumeration().each{|filepath|
-                items << Blades::readItemFromBladeFile(filepath)
+                begin
+                    items << Blades::readItemFromBladeFile(filepath)
+                rescue
+                end
+                
             }
         end
     end

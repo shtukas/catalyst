@@ -9,10 +9,23 @@ class TheZone
     # TheZone::listingItems()
     def self.listingItems()
         items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
-        return items if items
-        items = Listing::itemsForListing1()
-        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
-        items
+        if items.nil? then
+            items = Listing::itemsForListing1()
+            ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
+        end
+        items2 = []
+        counter = 0
+        items.each{|item|
+            if item["mikuType"] == "Wave" then
+                counter = counter + 1
+                if counter < 10 then
+                    items2 << item
+                end
+            else
+                items2 << item
+            end
+        }
+        items2
     end
 
     # TheZone::removeItemFromTheZone(item)
