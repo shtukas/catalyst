@@ -134,7 +134,7 @@ class PolyFunctions
 
     # PolyFunctions::childrenForParent(parent)
     def self.childrenForParent(parent)
-        items = Items::items().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+        items = Items::items_enumerator().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
         uuids = items.map{|item| item["uuid"] }
         XCache::set("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}", JSON.generate(uuids))
         items
@@ -153,7 +153,7 @@ class PolyFunctions
             items = uuids.map{|uuid| Items::getOrNull(uuid) }.compact
             return items
         end
-        items = Items::items().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
+        items = Items::items_enumerator().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
         uuids = items.map{|item| item["uuid"] }
         XCache::set("75f37c99-edc3-44be-bed0-92ac37e79a74:#{parent["uuid"]}:#{CommonUtils::today()}", JSON.generate(uuids))
         items
@@ -181,7 +181,7 @@ class PolyFunctions
 
     # PolyFunctions::childrenInOrder(parent)
     def self.childrenInOrder(parent)
-        Items::items()
+        Items::items_enumerator()
             .select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
             .sort_by{|item| item["nx1949"]["position"] }
     end

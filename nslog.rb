@@ -4,9 +4,45 @@
 # encoding: UTF-8
 require_relative "Libs/loader.rb"
 
-Items::processJournal()
-
 # ---------------------------------------------
+
+Fsck::fsckAll()
+
+exit
+
+Items::items().each{|item|
+    puts JSON.pretty_generate(item)
+
+    #blade_filepath = Blades::spawn_new_blade(item["uuid"])
+    #Blades::commitItemToItsBladeFile(item)
+
+}
+
+exit
+
+puts Items::mikuType("Wave").size
+
+exit
+
+Items::mikuType("Wave").each{|item|
+    puts JSON.pretty_generate(item)
+
+    #blade_filepath = Blades::spawn_new_blade(item["uuid"])
+    #Blades::commitItemToItsBladeFile(item)
+
+}
+
+exit
+
+Items::items_enumerator().each{|item|
+    puts JSON.pretty_generate(item)
+
+    #blade_filepath = Blades::spawn_new_blade(item["uuid"])
+    #Blades::commitItemToItsBladeFile(item)
+
+}
+
+exit
 
 puts PolyFunctions::hasChildren(NxCores::interactivelySelectOneOrNull())
 exit
@@ -56,14 +92,6 @@ Items::mikuType("NxTask").each{|item|
 exit
 exit
 
-NxCores::cores().each{|core|
-    core["mikuType"] = "NxCore"
-    puts JSON.pretty_generate(core)
-    Items::commitItemToDatabase(core)
-}
-
-exit
-
 system("#{Config::userHomeDirectory()}/Galaxy/DataHub/Binaries/pamela 'subject' 'body'")
 
 exit
@@ -111,10 +139,6 @@ Items::mikuType("Wave").each{|item|
 exit
 
 Fsck::fsckAll()
-
-exit
-
-Datablobs::putBlob("datablob")
 
 exit
 

@@ -69,15 +69,16 @@ class Waves
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
-        Items::itemInit(uuid, "Wave")
+        Items::init(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
+        Items::setAttribute(uuid, "mikuType", "Wave")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "nx46", nx46)
         Items::setAttribute(uuid, "lastDoneUnixtime", 0)
         Items::setAttribute(uuid, "interruption", interruption)
-        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull())
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
         Items::itemOrNull(uuid)
     end
 

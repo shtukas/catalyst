@@ -135,7 +135,8 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Items::itemInit(uuid, "NxAnniversary")
+        Items::init(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxAnniversary")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)

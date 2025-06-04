@@ -45,17 +45,17 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            UxPayload::access(item["uxpayload-b4e4"])
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
 
         if item["mikuType"] == "NxDated" then
-            UxPayload::access(item["uxpayload-b4e4"])
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
 
         if item["mikuType"] == "Wave" then
-            UxPayload::access(item["uxpayload-b4e4"])
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
 
@@ -119,6 +119,7 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400 + rand)
+                Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
             end
             return
         end

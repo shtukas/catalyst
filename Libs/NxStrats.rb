@@ -4,7 +4,8 @@ class NxStrats
     # NxStrats::interactivelyIssueNewOrNull(description, bottomuuid)
     def self.interactivelyIssueNewOrNull(description, bottomuuid)
         uuid = SecureRandom.uuid
-        Items::itemInit(uuid, "NxStrat")
+        Items::init(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxStrat")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)

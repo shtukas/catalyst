@@ -19,17 +19,17 @@ class UxPayload
         LucilleCore::selectEntityFromListOfEntitiesOrNull("type", UxPayload::types())
     end
 
-    # UxPayload::locationToPayload(location)
-    def self.locationToPayload(location)
-        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(canWriteToXCache = true), location)
+    # UxPayload::locationToPayload(uuid, location)
+    def self.locationToPayload(uuid, location)
+        nhash = AionCore::commitLocationReturnHash(ElizabethBlade.new(uuid), location)
         {
             "type" => "aion-point",
             "nhash" => nhash
         }
     end
 
-    # UxPayload::makeNewOrNull()
-    def self.makeNewOrNull()
+    # UxPayload::makeNewOrNull(uuid)
+    def self.makeNewOrNull(uuid)
         type = UxPayload::interactivelySelectTypeOrNull()
         return nil if type.nil?
         if type == "text" then
@@ -49,7 +49,7 @@ class UxPayload
         if type == "aion-point" then
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
             return nil if location.nil?
-            return UxPayload::locationToPayload(location)
+            return UxPayload::locationToPayload(uuid, location)
         end
         if type == "Dx8Unit" then
             identifier = LucilleCore::askQuestionAnswerAsString("Dx8Unit identifier (empty to abort): ")
@@ -85,8 +85,8 @@ class UxPayload
         end
     end
 
-    # UxPayload::access(payload)
-    def self.access(payload)
+    # UxPayload::access(uuid, payload)
+    def self.access(uuid, payload)
         return if payload.nil?
         if payload["type"] == "text" then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["in terminal", "in file"])
@@ -123,7 +123,7 @@ class UxPayload
             exportFoldername = "#{exportId}-aion-point"
             exportFolderpath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolderpath)
-            AionCore::exportHashAtFolder(Elizabeth.new(canWriteToXCache = true), nhash, exportFolderpath)
+            AionCore::exportHashAtFolder(ElizabethBlade.new(uuid), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -183,8 +183,8 @@ class UxPayload
         LucilleCore::pressEnterToContinue()
     end
 
-    # UxPayload::fsck(payload)
-    def self.fsck(payload)
+    # UxPayload::fsck(uuid, payload)
+    def self.fsck(uuid, payload)
         return if payload.nil?
         if payload["type"] == "text" then
             if payload["text"].nil? then
@@ -200,51 +200,7 @@ class UxPayload
         end
         if payload["type"] == "aion-point" then
             nhash = payload["nhash"]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(canWriteToXCache = false), nhash)
-            return
-        end
-        if payload["type"] == "Dx8Unit" then
-            if payload["id"].nil? then
-                raise "could not find `id` attribute for payload #{payload}"
-            end
-            return
-        end
-        if payload["type"] == "url" then
-            if payload["url"].nil? then
-                raise "could not find `url` attribute for payload #{payload}"
-            end
-            return
-        end
-        if payload["type"] == "unique-string" then
-            if payload["uniquestring"].nil? then
-                raise "could not find `uniquestring` attribute for payload #{payload}"
-            end
-            return
-        end
-        if payload["type"] == "open cycle" then
-            return
-        end
-        raise "unkown payload type: #{payload["type"]} at #{payload}"
-    end
-
-    # UxPayload::probe(payload)
-    def self.probe(payload)
-        return if payload.nil?
-        if payload["type"] == "text" then
-            if payload["text"].nil? then
-                raise "could not find `text` attribute for payload #{payload}"
-            end
-            return
-        end
-        if payload["type"] == "todo-text-file-by-name" then
-            if payload["name"].nil? then
-                raise "could not find `name` attribute for payload #{payload}"
-            end
-            return
-        end
-        if payload["type"] == "aion-point" then
-            nhash = payload["nhash"]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(canWriteToXCache = true), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(ElizabethBlade.new(uuid), nhash)
             return
         end
         if payload["type"] == "Dx8Unit" then

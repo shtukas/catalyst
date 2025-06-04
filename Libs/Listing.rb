@@ -64,7 +64,6 @@ class Listing
         end
 
         if Config::isPrimaryInstance() then
-            Items::processJournal()
             Bank1::processJournal()
             NxBackups::processNotificationChannel()
         end

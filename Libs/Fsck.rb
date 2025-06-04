@@ -5,7 +5,7 @@ class Fsck
     def self.fsckOrError(item)
         puts "fsck item: #{JSON.pretty_generate(item)}"
 
-        UxPayload::fsck(item["uxpayload-b4e4"])
+        UxPayload::fsck(item["uuid"], item["uxpayload-b4e4"])
 
         if item["mikuType"] == "NxAnniversary" then
             return
@@ -31,12 +31,15 @@ class Fsck
         if item["mikuType"] == "NxMonitor" then
             return
         end
+        if item["mikuType"] == "NxCore" then
+            return
+        end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 
     # Fsck::fsckAll()
     def self.fsckAll()
-        Items::items()
+        Items::items_enumerator()
             .each{|item| Fsck::fsckOrError(item) }
     end
 end

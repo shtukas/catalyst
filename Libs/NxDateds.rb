@@ -7,8 +7,9 @@ class NxDateds
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-        payload = UxPayload::makeNewOrNull()
-        Items::itemInit(uuid, "NxDated")
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -22,8 +23,9 @@ class NxDateds
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull()
-        Items::itemInit(uuid, "NxDated")
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -37,8 +39,9 @@ class NxDateds
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull()
-        Items::itemInit(uuid, "NxDated")
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -52,8 +55,9 @@ class NxDateds
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull()
-        Items::itemInit(uuid, "NxDated")
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)

@@ -8,11 +8,14 @@ class NxBackups
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         period = LucilleCore::askQuestionAnswerAsString("period in days: ").to_f
-        Items::itemInit(uuid, "NxBackup")
+        Items::init(uuid, "NxBackup")
+        Items::setAttribute(uuid, "mikuType", "NxBackup")
+        Items::setAttribute(uuid, "mikuType", "NxAnniversary")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "period", period)
+        Items::setAttribute(uuid, "last-done-unixtime", nil)
         Items::itemOrNull(uuid)
     end
 
@@ -23,7 +26,15 @@ class NxBackups
 
     # NxBackups::toString(item)
     def self.toString(item)
-        "💾 [backup] #{item["description"]} (every #{item["period"]} days)"
+        distance = ""
+        unixtime = item["last-done-unixtime"]
+        if unixtime then
+            distance_in_days = (Time.new.to_i - unixtime).to_f/86400
+            if distance_in_days > item["period"] then
+                distance = " (last done #{distance_in_days} ago)".yellow
+            end
+        end
+        "💾 [backup] #{item["description"]} (every #{item["period"]} days)#{distance}"
     end
 
     # NxBackups::listingItems()
@@ -40,6 +51,7 @@ class NxBackups
             item = NxBackups::getItemByDescriptionOrNull(description)
             next if item.nil?
             DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
+            Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
             FileUtils.rm(filepath)
             Nx10::removeItemFromCache(item["uuid"])
         }

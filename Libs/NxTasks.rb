@@ -6,10 +6,11 @@ class NxTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        payload = UxPayload::makeNewOrNull()
         nx1949 = nx1949 || Operations::makeNx1949OrNull(NxCores::interactivelySelectOneOrNull())
         nx1608 = NxTasks::interactivelyMakeNx1608OrNull()
-        Items::itemInit(uuid, "NxTask")
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -22,8 +23,9 @@ class NxTasks
     # NxTasks::locationToTask(description, location, nx1949)
     def self.locationToTask(description, location, nx1949)
         uuid = SecureRandom.uuid
-        payload = UxPayload::locationToPayload(location)
-        Items::itemInit(uuid, "NxTask")
+        Items::init(uuid)
+        payload = UxPayload::locationToPayload(uuid, location)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
@@ -35,7 +37,8 @@ class NxTasks
     # NxTasks::descriptionToTask(description, nx1949)
     def self.descriptionToTask(description, nx1949)
         uuid = SecureRandom.uuid
-        Items::itemInit(uuid, "NxTask")
+        Items::init(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
