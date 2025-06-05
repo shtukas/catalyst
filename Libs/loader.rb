@@ -143,7 +143,6 @@ require_relative "Galaxy.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
-require_relative "InMemoryCache.rb"
 require_relative "Index.rb"
 
 require_relative "Listing.rb"
