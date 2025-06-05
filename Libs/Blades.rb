@@ -31,6 +31,7 @@ class Blades
 
     # Blades::uuidToBladeFilepathOrNull_UseTheForce(uuid) -> filepath or nil
     def self.uuidToBladeFilepathOrNull_UseTheForce(uuid)
+        puts "Looking for blade uuid: #{uuid}, using the force".yellow
         Blades::blade_filepaths_enumeration().each{|filepath|
             item = Blades::readItemFromBladeFile(filepath)
             if item["uuid"] == uuid then
@@ -100,6 +101,8 @@ class Blades
     # Blades::spawn_new_blade(uuid)
     def self.spawn_new_blade(uuid)
 
+        puts "Spawn blade uuid: #{uuid}".yellow
+
         filename = "#{SecureRandom.hex(6)}.catalyst-blade"
         filepath = "#{Blades::blades_repository()}/#{filename}"
 
@@ -144,8 +147,10 @@ class Blades
 
     # Blades::destroy(uuid) -> item or nil
     def self.destroy(uuid)
+        puts "Destroying blade uuid: #{uuid}".yellow
         filepath = Blades::uuidToBladeFilepathOrNull(uuid)
         if filepath then
+            puts "Found and removing the blade (#{filepath})".yellow
             FileUtils.rm(filepath)
         end
     end

@@ -12,8 +12,10 @@ class Items
     def self.itemOrNull(uuid)
         item = Index::itemOrNull(uuid)
         return item if item
+        puts "Looking for item uuid: #{uuid} in the blades".yellow
         item = Blades::getItemOrNull(uuid)
         if item then
+            puts "Found uuid (#{uuid})".yellow
             Index::commitItemToIndex(item)
         end
         item

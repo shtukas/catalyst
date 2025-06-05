@@ -4,7 +4,7 @@ class Index
 
     # Index::getDataBaseFilepathInitiateIfNeeded()
     def self.getDataBaseFilepathInitiateIfNeeded()
-        filepath = XCache::filepath("fe6740df-ac63-485a-8baf-87fda0fcecf6:#{CommonUtils::today()}")
+        filepath = XCache::filepath("fe6740df-ac63-485a-8baf-87fda1fcecf6:#{CommonUtils::today()}")
         if !File.exist?(filepath)
             puts "Initiating new database file: #{filepath}".yellow
             db = SQLite3::Database.new(filepath)
@@ -15,7 +15,7 @@ class Index
             db.execute("create table attributes (_uuid_ TEXT, _attribute_ TEXT, _value_ TEXT);", [])
             #db.commit
             Blades::items_enumerator().each{|item|
-                puts "registering item: #{item["uuid"]}".yellow
+                puts "bulding index: registering item: #{item["uuid"]}".yellow
                 item.each{|attribute, value|
                     #db.execute("delete from attributes where _uuid_=? and _attribute_=?", [item["uuid"], attribute])
                     db.execute("insert into attributes (_uuid_, _attribute_, _value_) values (?, ?, ?)", [item["uuid"], attribute, JSON.generate(value)])
@@ -84,6 +84,7 @@ class Index
 
     # Index::destroy(uuid)
     def self.destroy(uuid)
+        puts "Index: destroying uuid: #{uuid}".yellow
         db = SQLite3::Database.new(Index::getDataBaseFilepathInitiateIfNeeded())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
