@@ -87,7 +87,7 @@ class Operations
 
     # Operations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        core = NxCores::interactivelySelectOneOrNull()
+        core = Operations::interactivelySelectParentForDonationOrNull()
         return if core.nil?
         Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])
     end

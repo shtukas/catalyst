@@ -1,9 +1,0 @@
-
-NxStackPriority
-    - uuid        : String
-    - mikuType    : "NxStackPriority"
-    - unixtime    :
-    - datetime    :
-    - description : String
-    - position    : Float
-

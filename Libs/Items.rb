@@ -5,11 +5,18 @@ class Items
     # Items::init(uuid)
     def self.init(uuid)
         Blades::spawn_new_blade(uuid)
+        Index::setAttribute(uuid, "uuid", uuid)
     end
 
     # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        Index::itemOrNull(uuid)
+        item = Index::itemOrNull(uuid)
+        return item if item
+        item = Blades::getItemOrNull(uuid)
+        if item then
+            Index::commitItemToIndex(item)
+        end
+        item
     end
 
     # Items::items()
@@ -48,10 +55,10 @@ class Items
         Blades::items_enumerator().each{|blade_item|
             index_item = Index::itemOrNull(blade_item["uuid"])
             if index_item.nil? then
-                Index::commitItem(blade_item)
+                Index::commitItemToIndex(blade_item)
             else
                 if blade_item["version"] and index_item["version"] and blade_item["version"] > index_item["version"] then
-                    Index::commitItem(blade_item)
+                    Index::commitItemToIndex(blade_item)
                 end
             end
         }

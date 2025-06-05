@@ -6,6 +6,18 @@ require_relative "Libs/loader.rb"
 
 # ---------------------------------------------
 
+puts PolyFunctions::topNx0810Position()
+
+exit
+
+puts Items::mikuType("NxStackPriority").size
+
+exit
+
+NxLines::interactivelyIssueNewOrNull()
+
+exit
+
 puts Operations::interactivelySelectParentForDonationOrNull()
 
 exit
@@ -26,7 +38,7 @@ exit
 exit
 
 t1 = Time.new.to_f
-Items::mikuType("Wave")
+Items::mikuType("NxStackPriority")
 t2 = Time.new.to_f
 
 puts t2 - t1

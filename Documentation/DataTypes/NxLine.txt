@@ -1,0 +1,7 @@
+
+NxLine
+    - uuid     : String
+    - mikuType : "NxLine"
+    - unixtime : Integer
+    - datetime : DateTime Iso 8601 UTC Zulu
+    - line     : String

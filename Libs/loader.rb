@@ -144,6 +144,7 @@ require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
 require_relative "InMemoryCache.rb"
+require_relative "Index.rb"
 
 require_relative "Listing.rb"
 
@@ -154,8 +155,8 @@ require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxStrats.rb"
-require_relative "NxStackPriorities.rb"
 require_relative "NxLambdas.rb"
+require_relative "NxLines.rb"
 
 require_relative "Operations.rb"
 
@@ -168,11 +169,14 @@ require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"
+require_relative "TheZone.rb"
 
 require_relative "UxPayload.rb"
 
 require_relative "ValueCache.rb"
 
 require_relative "Waves.rb"
+
+
 
 # ------------------------------------------------------------

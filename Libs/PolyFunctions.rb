@@ -62,6 +62,9 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
+        if item["mikuType"] == "NxLine" then
+            return NxLines::toString(item)
+        end
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)
         end
@@ -73,9 +76,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxStrat" then
             return NxStrats::toString(item)
-        end
-        if item["mikuType"] == "NxStackPriority" then
-            return NxStackPriorities::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
@@ -200,4 +200,13 @@ class PolyFunctions
         first + rand * (last - first)
     end
 
+    # PolyFunctions::topNx0810Position()
+    def self.topNx0810Position()
+        positions = Items::items()
+            .map{|item| item["nx0810"] }
+            .compact
+            .map{|nx| nx["position"] }
+        return 1 if positions.empty?
+        positions.min
+    end
 end

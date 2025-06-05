@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup | priority",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
@@ -95,12 +95,20 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            NxBalls::activeItems().each{|item| NxBalls::pause(item) }
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ''
-            item = NxStackPriorities::interactivelyIssueNewOrNull(description)
-            Operations::interactivelySetDonation(item)
+            NxBalls::activeItems().each{|item| 
+                NxBalls::pause(item)
+                TheZone::repositionItemInTheZone(item)
+            }
+            item = NxLines::interactivelyIssueNewOrNull()
+            return if item.nil?
+            nx0810 = {
+                "date" => CommonUtils::today(),
+                "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
+            }
+            Items::setAttribute(item["uuid"], "nx0810", nx0810)
             item = Items::itemOrNull(item["uuid"])
+            Operations::interactivelySetDonation(item)
+            TheZone::repositionItemInTheZone(item)
             NxBalls::start(item)
             return
         end
