@@ -33,7 +33,7 @@ class Items
 
     # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        version = Time.new.to_i
+        version = Time.new.to_f
         item = Blades::getItemOrNull(uuid)
         if item.nil? then
             Index::destroy(uuid)
@@ -58,10 +58,10 @@ class Items
             index_item = Index::itemOrNull(blade_item["uuid"])
             if index_item.nil? then
                 Index::commitItemToIndex(blade_item)
-            else
-                if blade_item["version"] and index_item["version"] and blade_item["version"] > index_item["version"] then
-                    Index::commitItemToIndex(blade_item)
-                end
+                next
+            end
+            if blade_item["catalyst:version"] > index_item["catalyst:version"] then
+                Index::commitItemToIndex(blade_item)
             end
         }
     end

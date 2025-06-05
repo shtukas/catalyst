@@ -55,11 +55,12 @@ class TheZone
         ValueCache::set("the-zone-items-a6e4-27582cbd9545", items)
     end
 
-    # TheZone::repositionItemInTheZone(item)
-    def self.repositionItemInTheZone(item)
+    # TheZone::repositionItemInTheZone(itemuuid)
+    def self.repositionItemInTheZone(itemuuid)
+        item = Items::itemOrNull(itemuuid)
+        return if item.nil?
         items = ValueCache::getOrNull("the-zone-items-a6e4-27582cbd9545")
         items = items || []
-
         items = items.map{|i|
             if i["uuid"] == item["uuid"] then
                 item
@@ -71,7 +72,6 @@ class TheZone
         if !present then
             items = items.take(10) + [item] + items.drop(10)
         end
-
         ValueCache::set("the-zone-items-a6e4-27582cbd9545", items)
         ValueCache::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
     end

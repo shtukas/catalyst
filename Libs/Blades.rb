@@ -162,7 +162,7 @@ class Blades
                 begin
                     items << Blades::readItemFromBladeFile(filepath)
                 rescue
-                    raise "problems reading this blade: #{filepath}"
+                    puts "problems reading blade: #{filepath} (size: #{File.size(filepath)}) (skipping)".yellow
                 end
                 
             }

@@ -47,7 +47,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -97,7 +97,7 @@ class CommandsAndInterpreters
         if Interpreting::match("priority", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
-                TheZone::repositionItemInTheZone(item)
+                TheZone::repositionItemInTheZone(item["uuid"])
             }
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -109,7 +109,7 @@ class CommandsAndInterpreters
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -120,7 +120,7 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -147,7 +147,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -182,7 +182,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -191,7 +191,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -445,7 +445,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::start(item)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
@@ -454,7 +454,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::start(item)
-            TheZone::repositionItemInTheZone(item)
+            TheZone::repositionItemInTheZone(item["uuid"])
             return
         end
 
