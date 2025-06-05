@@ -15,7 +15,7 @@ class Items
         puts "Looking for item uuid: #{uuid} in the blades".yellow
         item = Blades::getItemOrNull(uuid)
         if item then
-            puts "Found uuid #{uuid}".yellow
+            puts "Looking for item uuid: #{uuid} in the blades (found!)".yellow
             Index::commitItemToIndex(item)
         end
         item
@@ -33,12 +33,12 @@ class Items
 
     # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        version = Time.new.to_f
         item = Blades::getItemOrNull(uuid)
         if item.nil? then
             Index::destroy(uuid)
             return
         end
+        version = Time.new.to_f
         item[attrname] = attrvalue
         item["catalyst:version"] = version
         Blades::commitItemToDisk(item)
@@ -55,8 +55,16 @@ class Items
     # Items::maintenance()
     def self.maintenance()
         Blades::items_enumerator().each{|blade_item|
+            if blade_item["catalyst:version"].nil? then
+                blade_item["catalyst:version"] = Time.new.to_f
+                Blades::commitItemToDisk(blade_item)
+            end
             index_item = Index::itemOrNull(blade_item["uuid"])
             if index_item.nil? then
+                Index::commitItemToIndex(blade_item)
+                next
+            end
+            if blade_item["catalyst:version"] and index_item["catalyst:version"].nil? then
                 Index::commitItemToIndex(blade_item)
                 next
             end

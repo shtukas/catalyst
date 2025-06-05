@@ -30,21 +30,7 @@ class TheZone
         }
 
         items = items.sort_by{|item| item["nx0810"]["position"] }
-
-        # items2 (like items but with limited number of waves)
-        items2 = []
-        counter = 0
-        items.each{|item|
-            if item["mikuType"] == "Wave" then
-                counter = counter + 1
-                if counter < 10 then
-                    items2 << item
-                end
-            else
-                items2 << item
-            end
-        }
-        items2
+        items
     end
 
     # TheZone::removeItemFromTheZone(item)

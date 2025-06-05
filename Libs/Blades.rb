@@ -31,7 +31,6 @@ class Blades
 
     # Blades::uuidToBladeFilepathOrNull_UseTheForce(uuid) -> filepath or nil
     def self.uuidToBladeFilepathOrNull_UseTheForce(uuid)
-        puts "Looking for blade uuid: #{uuid}, using the force".yellow
         Blades::blade_filepaths_enumeration().each{|filepath|
             item = Blades::readItemFromBladeFile(filepath)
             if item["uuid"] == uuid then
@@ -72,7 +71,8 @@ class Blades
         end
         db.close
         if item.nil? then
-            raise "This is an extremelly odd condition. This blade file doesn't have an item, filepath: #{filepath}"
+            puts "[bc1b1b34] This is an extremelly odd condition. This blade file doesn't have an item, filepath: #{filepath}".yellow
+            exit
         end
         item
     end
@@ -160,9 +160,13 @@ class Blades
         Enumerator.new do |items|
             Blades::blade_filepaths_enumeration().each{|filepath|
                 begin
-                    items << Blades::readItemFromBladeFile(filepath)
-                rescue
-                    puts "problems reading blade: #{filepath} (size: #{File.size(filepath)}) (skipping)".yellow
+                    item = Blades::readItemFromBladeFile(filepath)
+                    XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{item["uuid"]}", filepath)
+                    items << item
+                rescue => e
+                    puts "[38cfb0d7] exception: #{e.message}".yellow
+                    puts "[d6e4e34c] problems reading blade: #{filepath} (size: #{File.size(filepath)})".yellow
+                    exit
                 end
                 
             }
