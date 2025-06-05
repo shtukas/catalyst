@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n> | push core | fsck-all | reload",
+            "misc          : search | commands | edit <n> | push core | fsck-all | rebuild",
         ].join("\n")
     end
 
@@ -60,7 +60,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("reload", input) then
+        if Interpreting::match("rebuild", input) then
+            filepath = XCache::filepath("fe6740df-ac63-485a-8baf-87fda1fcecf6:#{CommonUtils::today()}")
+            LucilleCore::removeFileSystemLocation(filepath)
+            Items::maintenance()
             TheZone::recomputeFromZero()
             return
         end

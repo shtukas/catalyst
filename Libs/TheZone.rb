@@ -29,8 +29,10 @@ class TheZone
             item
         }
 
-        items = items.sort_by{|item| item["nx0810"]["position"] }
-        items
+        interruptions, items = items.partition{|item| item["mikuType"] == "Wave" and item["interruption"] }
+        ondates, items = items.partition{|item| item["mikuType"] == "NxDated" }
+
+        interruptions + ondates + items.sort_by{|item| item["nx0810"]["position"] }
     end
 
     # TheZone::removeItemFromTheZone(item)
@@ -62,12 +64,18 @@ class TheZone
         ValueCache::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
     end
 
+    # TheZone::tx(item)
+    def self.tx(item)
+        return "     " if item["mikuType"] == "Wave" and item["interruption"]
+        return "     " if item["mikuType"] == "NxDated"
+        ("%5.3f" % item["nx0810"]["position"]).ljust(5, "0").yellow
+    end
+
     # TheZone::toString3(item)
     def self.toString3(item)
         return nil if item.nil?
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
-        tx = ("%5.3f" % item["nx0810"]["position"]).ljust(5, "0").yellow
-        line = "STORE-PREFIX (#{tx}) #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "STORE-PREFIX (#{TheZone::tx(item)}) #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
