@@ -3,16 +3,35 @@ class TheZone
     # TheZone::recomputeFromZero()
     def self.recomputeFromZero()
         items = Listing::itemsForListing1()
-        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
+        ValueCache::set("the-zone-items-a6e4-27582cbd9545", items)
+        items.each{|item|
+            ValueCache::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
+        }
     end
 
     # TheZone::listingItems()
     def self.listingItems()
-        items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
+        items = ValueCache::getOrNull("the-zone-items-a6e4-27582cbd9545")
         if items.nil? then
             items = Listing::itemsForListing1()
-            ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
+            ValueCache::set("the-zone-items-a6e4-27582cbd9545", items)
         end
+
+        items = items.map{|item|
+            if item["nx0810"].nil? or item["nx0810"]["date"] != CommonUtils::today() then
+                nx0810 = {
+                    "date" => CommonUtils::today(),
+                    "position" => rand * 10
+                }
+                item["nx0810"] = nx0810
+                Items::setAttribute(item["uuid"], "nx0810", nx0810)
+            end
+            item
+        }
+
+        items = items.sort_by{|item| item["nx0810"]["position"] }
+
+        # items2 (like items but with limited number of waves)
         items2 = []
         counter = 0
         items.each{|item|
@@ -30,15 +49,15 @@ class TheZone
 
     # TheZone::removeItemFromTheZone(item)
     def self.removeItemFromTheZone(item)
-        items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
+        items = ValueCache::getOrNull("the-zone-items-a6e4-27582cbd9545")
         return if items.nil?
         items = items.reject{|i| i["uuid"] == item["uuid"] }
-        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
+        ValueCache::set("the-zone-items-a6e4-27582cbd9545", items)
     end
 
     # TheZone::repositionItemInTheZone(item)
     def self.repositionItemInTheZone(item)
-        items = ValueCacheWithExpiry::getOrNull("the-zone-items-a6e4-27582cbd9545", 1200)
+        items = ValueCache::getOrNull("the-zone-items-a6e4-27582cbd9545")
         items = items || []
 
         items = items.map{|i|
@@ -53,15 +72,16 @@ class TheZone
             items = items.take(10) + [item] + items.drop(10)
         end
 
-        ValueCacheWithExpiry::set("the-zone-items-a6e4-27582cbd9545", items)
-        ValueCacheWithExpiry::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
+        ValueCache::set("the-zone-items-a6e4-27582cbd9545", items)
+        ValueCache::destroy("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
     end
 
     # TheZone::toString3(item)
     def self.toString3(item)
         return nil if item.nil?
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        tx = ("%5.3f" % item["nx0810"]["position"]).ljust(5, "0").yellow
+        line = "STORE-PREFIX (#{tx}) #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
         end
@@ -73,10 +93,10 @@ class TheZone
 
     # TheZone::itemToTemplateString(item)
     def self.itemToTemplateString(item)
-        string = ValueCacheWithExpiry::getOrNull("item-template-string-bf21-82d828702e8a:#{item["uuid"]}", 3600)
+        string = ValueCache::getOrNull("item-template-string-bf21-82d828702e8a:#{item["uuid"]}")
         return string if string
         string = TheZone::toString3(item)
-        ValueCacheWithExpiry::set("item-template-string-bf21-82d828702e8a:#{item["uuid"]}", string)
+        ValueCache::set("item-template-string-bf21-82d828702e8a:#{item["uuid"]}", string)
         string
     end
 

@@ -137,7 +137,7 @@ class Operations
             "position" => position,
             "parentuuid" => parent["uuid"]
         }
-        ValueCacheWithExpiry::destroy("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
+        ValueCache::destroy("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
     end
 
     # Operations::diveItem(parent)

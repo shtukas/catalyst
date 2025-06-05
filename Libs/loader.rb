@@ -171,7 +171,7 @@ require_relative "Transmutation.rb"
 
 require_relative "UxPayload.rb"
 
-require_relative "ValueCacheWithExpiry.rb"
+require_relative "ValueCache.rb"
 
 require_relative "Waves.rb"
 

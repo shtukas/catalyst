@@ -23,12 +23,6 @@ Items::items().each{|item|
 }
 
 exit
-
-data = [1, "1"]
-ValueCacheWithExpiry::set("edbb56f", data)
-puts ValueCacheWithExpiry::getOrNull("edbb56f", 3600)
-
-
 exit
 
 t1 = Time.new.to_f
