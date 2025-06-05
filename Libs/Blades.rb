@@ -101,7 +101,7 @@ class Blades
     # Blades::spawn_new_blade(uuid)
     def self.spawn_new_blade(uuid)
 
-        puts "Spawn blade uuid: #{uuid}".yellow
+        puts "Spawning blade uuid: #{uuid}".yellow
 
         filename = "#{SecureRandom.hex(6)}.catalyst-blade"
         filepath = "#{Blades::blades_repository()}/#{filename}"
