@@ -362,6 +362,7 @@ class CommonUtils
     # CommonUtils::locationTraceCode(location)
     def self.locationTraceCode(location)
         raise "(error: 4d172723-3748-4f0b-a309-3944e4f352d9)" if !File.exist?(location)
+        return "" if File.basename(location) == "nslog.rb"
         if File.file?(location) then
             Digest::SHA1.hexdigest("#{File.basename(location)}:#{Digest::SHA1.file(location).hexdigest}")
         else
