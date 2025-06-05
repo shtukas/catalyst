@@ -15,7 +15,7 @@ class Items
         puts "Looking for item uuid: #{uuid} in the blades".yellow
         item = Blades::getItemOrNull(uuid)
         if item then
-            puts "Found uuid (#{uuid})".yellow
+            puts "Found uuid #{uuid}".yellow
             Index::commitItemToIndex(item)
         end
         item
