@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | push core | fsck-all | reset-cache",
+            "misc          : search | commands | edit * | fsck-all | reset-cache",
         ].join("\n")
     end
 
@@ -321,17 +321,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
-            return
-        end
-
-        if Interpreting::match("push core", input) then
-            core = NxCores::interactivelySelectOrNull()
-            return if core.nil?
-            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            return if unixtime.nil?
-            puts "pushing core: '#{core["description"].green}', until '#{Time.at(unixtime).to_s.green}'"
-            DoNotShowUntil::setUnixtime(core["uuid"], unixtime)
-            
             return
         end
 
