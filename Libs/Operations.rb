@@ -129,7 +129,7 @@ class Operations
     def self.makeNx1949OrNull()
         parent = Operations::interactivelySelectParentForDonationOrNull()
         return nil if parent.nil?
-        position = PolyFunctions::interactivelySelectGlobalPositionInParent(core)
+        position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         {
             "position" => position,
             "parentuuid" => parent["uuid"]
