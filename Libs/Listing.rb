@@ -102,22 +102,6 @@ class Listing
             }
         }
 
-        Thread.new {
-            sleep 5
-            loop {
-                TheZone::recomputeFromZero()
-                sleep 600
-            }
-        }
-
-        Thread.new {
-            sleep 300
-            loop {
-                Items::maintenance()
-                sleep 3600
-            }
-        }
-
         loop {
             Listing::preliminaries(initialCodeTrace)
             store = ItemStore.new()
@@ -126,10 +110,10 @@ class Listing
             Operations::top_notifications().each{|notification|
                 puts "notification: #{notification}"
             }
-            TheZone::listingItems()
+            Listing::itemsForListing1()
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    line = TheZone::itemToString(store, item)
+                    line = Listing::toString2(store, item)
                     printer.call(line)
                 }
             input = LucilleCore::askQuestionAnswerAsString("> ")

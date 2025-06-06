@@ -143,7 +143,8 @@ require_relative "Galaxy.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
-require_relative "Index.rb"
+
+require_relative "HardProblem.rb"
 
 require_relative "Listing.rb"
 
@@ -168,7 +169,6 @@ require_relative "SectionsType0141.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"
-require_relative "TheZone.rb"
 
 require_relative "UxPayload.rb"
 
