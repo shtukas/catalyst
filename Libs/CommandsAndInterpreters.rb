@@ -5,13 +5,13 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access (<n>) | done (<n>) | program (<n>) | expose (<n>) | add time <n> | skip (<n>) | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | destroy *",
+            "on items : .. | <datecode> | access <n> | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
-            "NxBalls       : start (<n>) | stop (<n>) | pause (<n>) | pursue (<n>)",
-            "misc          : search | commands | edit <n> | push core | fsck-all | reset-cache",
+            "NxBalls       : start * | stop * | pause * | pursue *",
+            "misc          : search | commands | edit * | push core | fsck-all | reset-cache",
         ].join("\n")
     end
 
@@ -176,20 +176,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("skip", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            
-            return
-        end
-
         if Interpreting::match("skip *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
-            
             return
         end
 
@@ -206,13 +197,6 @@ class CommandsAndInterpreters
             puts "adding time for '#{PolyFunctions::toString(item).green}'"
             timeInHours = LucilleCore::askQuestionAnswerAsString("time in hours: ").to_f
             PolyActions::addTimeToItem(item, timeInHours*3600)
-        end
-
-        if Interpreting::match("access", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::access(item)
-            return
         end
 
         if Interpreting::match("access *", input) then
@@ -316,20 +300,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("done", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::done(item, true)
-            
-            return
-        end
-
         if Interpreting::match("done *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
-            
             return
         end
 
@@ -338,7 +313,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::destroy(item)
-            
             return
         end
 
@@ -363,25 +337,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("expose", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Operations::expose(item)
-            return
-        end
-
         if Interpreting::match("expose *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::expose(item)
-            return
-        end
-
-        if Interpreting::match("program", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::program(item)
             return
         end
 
@@ -398,25 +358,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pause", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxBalls::pause(item)
-            return
-        end
-
         if Interpreting::match("pause *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            return
-        end
-
-        if Interpreting::match("pursue", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::pursue(item)
             return
         end
 
@@ -439,27 +385,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("start", input) then
-            item = store.getDefault()
-            return if item.nil?
-            NxBalls::start(item)
-            
-            return
-        end
-
         if Interpreting::match("start *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::start(item)
-            
-            return
-        end
-
-        if Interpreting::match("stop", input) then
-            item = store.getDefault()
-            return if item.nil?
-            PolyActions::stop(item)
             
             return
         end
