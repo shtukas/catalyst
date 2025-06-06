@@ -1,4 +1,3 @@
-
 class Operations
 
     # Operations::editItem(item)
@@ -141,6 +140,8 @@ class Operations
     def self.diveItem(parent)
 
         loop {
+
+            ValueCache::destroy("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
 
             store = ItemStore.new()
 
