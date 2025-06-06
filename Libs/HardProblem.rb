@@ -11,7 +11,12 @@ class HardProblem
 
     # HardProblem::get_general_prefix()
     def self.get_general_prefix()
-        XCache::getOrNull("049bdc08-8833-4736-aa90-4dc2c59fd67d")
+        prefix = XCache::getOrNull("049bdc08-8833-4736-aa90-4dc2c59fd67d:#{CommonUtils::today()}")
+        if prefix.nil? then
+            prefix = SecureRandom.hex
+            XCache::set("049bdc08-8833-4736-aa90-4dc2c59fd67d:#{CommonUtils::today()}", prefix)
+        end
+        prefix
     end
 
     # HardProblem::new_item(uuid)

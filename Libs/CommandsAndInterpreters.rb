@@ -59,7 +59,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("reset-cache", input) then
-            XCache::set("049bdc08-8833-4736-aa90-4dc2c59fd67d", Time.new.to_f.to_s)
+            XCache::set("049bdc08-8833-4736-aa90-4dc2c59fd67d:#{CommonUtils::today()}", Time.new.to_f.to_s)
             return
         end
 
