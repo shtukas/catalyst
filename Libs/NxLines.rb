@@ -4,13 +4,13 @@ class NxLines
     # NxLines::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
-        line = LucilleCore::askQuestionAnswerAsString("line (empty to abort): ")
-        return nil if line == ""
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return nil if description == ""
         Items::init(uuid)
         Items::setAttribute(uuid, "mikuType", "NxLine")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "line", line)
+        Items::setAttribute(uuid, "description", description)
         Items::itemOrNull(uuid)
     end
 
@@ -19,7 +19,7 @@ class NxLines
 
     # NxLines::toString(item)
     def self.toString(item)
-        "✒️  #{item["line"]}"
+        "✒️  #{item["description"]}"
     end
 
     # NxLines::listingItems()

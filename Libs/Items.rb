@@ -52,7 +52,7 @@ class Items
         end
         item[attrname] = attrvalue
         Blades::commitItemToDisk(item)
-        HardProblem::item_attribute_update(uuid, attrname, attrvalue)
+        HardProblem::item_attribute_has_been_updated(uuid, attrname, attrvalue)
     end
 
     # Items::destroy(uuid)

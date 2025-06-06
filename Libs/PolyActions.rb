@@ -370,14 +370,6 @@ class PolyActions
 
     # PolyActions::editDescription(item)
     def self.editDescription(item)
-        if item["mikuType"] == "NxLine" then
-            puts "edit description:"
-            line = CommonUtils::editTextSynchronously(item["line"]).strip
-            return if line == ""
-            Items::setAttribute(item["uuid"], "line", line)
-            return
-        end
-
         puts "edit description:"
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""

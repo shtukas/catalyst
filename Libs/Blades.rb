@@ -5,17 +5,23 @@ class Blades
     # -----------------------------------------------
     # Core
 
-    # Blades::rename_blade_file(filepath1)
-    def self.rename_blade_file(filepath1)
-        item = Blades::readItemFromBladeFile(filepath1)
-        filepath2 = "#{File.dirname(filepath1)}/#{SecureRandom.hex(6)}.catalyst-blade"
-        FileUtils.mv(filepath1, filepath2)
-        XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{item["uuid"]}", filepath2)
-    end
-
     # Blades::blades_repository()
     def self.blades_repository()
         "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/Blades"
+    end
+
+    # Blades::rename_blade_file(filepath1)
+    def self.rename_blade_file(filepath1)
+        item = Blades::readItemFromBladeFile(filepath1)
+
+        filename2  = "#{SecureRandom.hex(6)}.catalyst-blade"
+        directory2 = "#{Blades::blades_repository()}/#{filename2[0, 2]}/"
+        FileUtils.mkdir(directory2) if !File.exist?(directory2)
+        filepath2  = "#{directory2}/#{filename2}"
+
+        FileUtils.mv(filepath1, filepath2)
+
+        XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{item["uuid"]}", filepath2)
     end
 
     # Blades::blade_filepaths_enumeration()

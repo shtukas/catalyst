@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access <n> | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | * on <datecode> | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | pile | backup",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
@@ -102,10 +102,9 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("priority", input) then
+        if Interpreting::match("pile", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
-                
             }
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?

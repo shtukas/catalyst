@@ -24,8 +24,8 @@ class HardProblem
 
     end
 
-    # HardProblem::item_attribute_update(uuid, attribute, value)
-    def self.item_attribute_update(uuid, attribute, value)
+    # HardProblem::item_attribute_has_been_updated(uuid, attribute, value)
+    def self.item_attribute_has_been_updated(uuid, attribute, value)
         puts "hard problem: item attribute update (#{uuid}, #{attribute}, #{value})".yellow
         item = Blades::getItemOrNull(uuid)
         return if item.nil?
@@ -33,12 +33,7 @@ class HardProblem
         # Updating items in "items:4d32-9154-5fc5efb7e047"
         items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
         if items then
-            items = items.map{|i|
-                if i["uuid"] == uuid then
-                    i[attribute] = value
-                end
-                i
-            }
+            items = items.reject{|i| i["uuid"] == uuid } + [item]
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
 
@@ -46,12 +41,10 @@ class HardProblem
         Items::mikuTypes().each{|mikuType|
             items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
             if items then
-                items = items.map{|i|
-                    if i["uuid"] == uuid then
-                        i[attribute] = value
-                    end
-                    i
-                }
+                items = items.reject{|i| i["uuid"] == uuid }
+                if item["mikuType"] == mikuType then
+                    items = items + [item]
+                end
                 ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
             end
         }
