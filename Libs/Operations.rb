@@ -36,9 +36,7 @@ class Operations
 
     # Operations::periodicPrimaryInstanceMaintenance()
     def self.periodicPrimaryInstanceMaintenance()
-        if Config::isPrimaryInstance() then
-            puts "> Operations::periodicPrimaryInstanceMaintenance()"
-        end
+        puts "> Operations::periodicPrimaryInstanceMaintenance()"
     end
 
     # Operations::selectTodoTextFileLocationOrNull(todotextfile)

@@ -72,6 +72,8 @@ class Listing
         end
 
         Operations::pickUpBufferIn()
+
+        Dispatch::pickup()
     end
 
     # Listing::main()

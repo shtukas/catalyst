@@ -28,11 +28,11 @@ class HardProblem
         # Updating items in "items:4d32-9154-5fc5efb7e047"
         items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
         if items then
-            items = items.map{|item|
-                if item["uuid"] == uuid then
-                    item[attribute] = value
+            items = items.map{|i|
+                if i["uuid"] == uuid then
+                    i[attribute] = value
                 end
-                item
+                i
             }
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
@@ -41,11 +41,11 @@ class HardProblem
         Items::mikuTypes().each{|mikuType|
             items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
             if items then
-                items = items.map{|item|
-                    if item["uuid"] == uuid then
-                        item[attribute] = value
+                items = items.map{|i|
+                    if i["uuid"] == uuid then
+                        i[attribute] = value
                     end
-                    item
+                    i
                 }
                 ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
             end
@@ -57,6 +57,59 @@ class HardProblem
             mikuTypes = (mikuTypes + [value]).uniq
             ValueCache::set("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce", mikuTypes)
         end
+
+        Dispatch::dispatch(["update", uuid])
+    end
+
+    # HardProblem::blade_has_been_updated(uuid)
+    def self.blade_has_been_updated(uuid)
+        item = Blades::getItemOrNull(uuid)
+        return if item.nil?
+
+        # Updating items in "items:4d32-9154-5fc5efb7e047"
+        items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
+        if items then
+            items = items.map{|i|
+                if i["uuid"] == item["uuid"] then
+                    i = item
+                end
+                i
+            }
+            ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
+        end
+
+        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
+        Items::mikuTypes().each{|mikuType|
+            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
+            if items then
+                items = items.map{|i|
+                    if i["uuid"] == item["uuid"] then
+                        i = item
+                    end
+                    i
+                }
+                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
+            end
+        }
+    end
+
+    # HardProblem::blade_has_been_destroyed(uuid)
+    def self.blade_has_been_destroyed(uuid)
+        # Updating items in "items:4d32-9154-5fc5efb7e047"
+        items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
+        if items then
+            items = items.reject{|item| item["uuid"] == uuid }
+            ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
+        end
+
+        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
+        Items::mikuTypes().each{|mikuType|
+            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
+            if items then
+                items = items.reject{|item| item["uuid"] == uuid }
+                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
+            end
+        }
     end
 
     # HardProblem::item_could_not_be_found_on_disk(uuid)
@@ -81,8 +134,8 @@ class HardProblem
         }
     end
 
-    # HardProblem::item_has_been_destroy(uuid)
-    def self.item_has_been_destroy(uuid)
+    # HardProblem::item_has_been_destroyed(uuid)
+    def self.item_has_been_destroyed(uuid)
 
         puts "hard problem: item has been destroyed (#{uuid})".yellow
 
@@ -101,5 +154,7 @@ class HardProblem
                 ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
             end
         }
+
+        Dispatch::dispatch(["destroy", uuid])
     end
 end
