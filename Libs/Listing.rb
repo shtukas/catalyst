@@ -72,8 +72,6 @@ class Listing
         end
 
         Operations::pickUpBufferIn()
-
-        Dispatch::pickup()
     end
 
     # Listing::main()
@@ -101,6 +99,14 @@ class Listing
                         }
                 }).call()
                 sleep 120
+            }
+        }
+
+        Thread.new {
+            sleep 60
+            loop {
+                Dispatch::pickup()
+                sleep 60
             }
         }
 
