@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access <n> | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | destroy *",
+            "on items : .. | <datecode> | access <n> | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | * on <datecode> | destroy *",
             "",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
@@ -38,6 +38,16 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::double_dots(item)
+            return
+        end
+
+        if Interpreting::match("* on *", input) then
+            listord, _, datecode = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
+            NxBalls::stop(item)
+            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
             return
         end
 
@@ -107,7 +117,6 @@ class CommandsAndInterpreters
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
-            
             return
         end
 
@@ -118,7 +127,6 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             return if payload.nil?
             Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-            
             return
         end
 
