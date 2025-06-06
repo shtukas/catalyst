@@ -51,7 +51,6 @@ class Items
             return
         end
         item[attrname] = attrvalue
-        item["catalyst:version"] = (Time.new.to_f * 1000).to_i
         Blades::commitItemToDisk(item)
         HardProblem::item_attribute_update(uuid, attrname, attrvalue)
     end
