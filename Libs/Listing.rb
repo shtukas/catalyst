@@ -38,19 +38,33 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-        [
+
+        items1 = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+
+        items2 = [
             NxBackups::listingItems(),
             NxLines::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .sort_by{|item| Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) }
+
+        items3 = [
             NxTasks::activeItemsForListing(),
             NxCores::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+
+        [items1, items2 , items3].select{|section| !section.empty? }
     end
 
     # -----------------------------------------
@@ -118,12 +132,19 @@ class Listing
             Operations::top_notifications().each{|notification|
                 puts "notification: #{notification}"
             }
-            Listing::itemsForListing1()
-                .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
-                    printer.call(line)
+            sections = Listing::itemsForListing1()
+
+            sections
+                .each{|section|
+                    puts ""
+                    puts "section:"
+                    section.each{|item|
+                        store.register(item, Listing::canBeDefault(item))
+                        line = Listing::toString2(store, item)
+                        printer.call(line)
+                    }
                 }
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return
