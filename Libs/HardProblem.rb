@@ -56,7 +56,11 @@ class HardProblem
             ValueCache::set("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce", mikuTypes)
         end
 
-        Dispatch::dispatch(["update", uuid])
+        Dispatch::dispatch({
+            "unixtime" => Time.new.to_i,
+            "type"     => "update",
+            "uuid"     => uuid
+        })
     end
 
     # HardProblem::blade_has_been_updated(uuid)
@@ -153,6 +157,10 @@ class HardProblem
             end
         }
 
-        Dispatch::dispatch(["destroy", uuid])
+        Dispatch::dispatch({
+            "unixtime" => Time.new.to_i,
+            "type"     => "destroy",
+            "uuid"     => uuid
+        })
     end
 end
