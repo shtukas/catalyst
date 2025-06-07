@@ -307,6 +307,13 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("done", input) then
+            item = store.getDefault()
+            return if item.nil?
+            PolyActions::done(item, true)
+            return
+        end
+
         if Interpreting::match("done *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
