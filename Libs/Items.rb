@@ -18,7 +18,7 @@ class Items
         items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
         return items if items
         puts "rebuilding items cache".yellow
-        items = Blades::items_enumerator().to_a
+        items = Blades::items()
         ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         items
     end
@@ -28,7 +28,7 @@ class Items
         mikuTypes = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce")
         return mikuTypes if mikuTypes
         puts "rebuilding mikuTypes cache".yellow
-        mikuTypes = Blades::items_enumerator().to_a.map{|item| item["mikuType"] }.uniq
+        mikuTypes = Blades::items().map{|item| item["mikuType"] }.uniq
         ValueCache::set("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce", mikuTypes)
         mikuTypes
     end

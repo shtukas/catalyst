@@ -129,11 +129,12 @@ class Operations
         parent = Operations::interactivelySelectParentForDonationOrNull()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-        {
+        nx1949 = {
             "position" => position,
             "parentuuid" => parent["uuid"]
         }
-        ValueCache::destroy("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
+        ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
+        nx1949
     end
 
     # Operations::diveItem(parent)
@@ -141,7 +142,7 @@ class Operations
 
         loop {
 
-            ValueCache::destroy("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
+            ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
 
             store = ItemStore.new()
 

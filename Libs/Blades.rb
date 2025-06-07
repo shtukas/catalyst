@@ -67,20 +67,26 @@ class Blades
 
     # Blades::readItemFromBladeFile(filepath)
     def self.readItemFromBladeFile(filepath)
-        item = nil
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from blade where _key_=?", ["item"]) do |row|
-            item = JSON.parse(row["_data_"])
-        end
-        db.close
-        if item.nil? then
-            puts "[bc1b1b34] This is an extremelly odd condition. This blade file doesn't have an item, filepath: #{filepath}".yellow
+        begin
+            item = nil
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute("select * from blade where _key_=?", ["item"]) do |row|
+                item = JSON.parse(row["_data_"])
+            end
+            db.close
+            if item.nil? then
+                puts "[bc1b1b34] This is an extremelly odd condition. This blade file doesn't have an item, filepath: #{filepath}".yellow
+                exit
+            end
+            item
+        rescue => e
+            puts "error: #{e.message}"
+            puts "problem while Blades::readItemFromBladeFile: #{filepath}"
             exit
         end
-        item
     end
 
     # Blades::commitItemToItsBladeFile(item)
@@ -161,22 +167,22 @@ class Blades
         end
     end
 
-    # Blades::items_enumerator()
-    def self.items_enumerator()
-        Enumerator.new do |items|
-            Blades::blade_filepaths_enumeration().each{|filepath|
-                begin
-                    item = Blades::readItemFromBladeFile(filepath)
-                    XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{item["uuid"]}", filepath)
-                    items << item
-                rescue => e
-                    puts "[38cfb0d7] exception: #{e.message}".yellow
-                    puts "[d6e4e34c] problems reading blade: #{filepath} (size: #{File.size(filepath)})".yellow
-                    exit
-                end
-                
-            }
-        end
+    # Blades::items()
+    def self.items()
+        puts "loading items from blades".yellow
+        items = []
+        Blades::blade_filepaths_enumeration().each{|filepath|
+            begin
+                item = Blades::readItemFromBladeFile(filepath)
+                XCache::set("uuid-to-filepath-4eed-afdb-a241e01d0e86:#{item["uuid"]}", filepath)
+                items << item
+            rescue => e
+                puts "[38cfb0d7] exception: #{e.message}".yellow
+                puts "[d6e4e34c] problems reading blade: #{filepath} (size: #{File.size(filepath)})".yellow
+                exit
+            end
+        }
+        items
     end
 
     # Blades::setAttribute(uuid, attrname, attrvalue)

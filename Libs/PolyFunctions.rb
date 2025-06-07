@@ -134,12 +134,14 @@ class PolyFunctions
 
     # PolyFunctions::childrenForParent(parent)
     def self.childrenForParent(parent)
-        items = ValueCache::getOrNull("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
+        items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
         if items then
             return items
         end
-        items = Items::items().select{|item| item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] }
-        ValueCache::set("children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}", items)
+        items = Items::items().select{|item|
+            item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
+        }
+        ValueCache::set("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}", items)
         items
     end
 

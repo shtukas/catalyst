@@ -141,6 +141,7 @@ class NxCores
                 }
                 todo = NxTasks::interactivelyIssueNewOrNull(nx1949)
                 puts JSON.pretty_generate(todo)
+                ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{core["uuid"]}")
                 next
             end
 
@@ -163,11 +164,14 @@ class NxCores
                     todo = NxTasks::descriptionToTask(line, nx1949)
                     puts JSON.pretty_generate(todo)
                 }
+                ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{core["uuid"]}")
                 next
             end
 
             if input.start_with?("activate") then
-                listord = input[8, input.size].strip.to_i
+                listord = input[8, input.size].strip
+                return if listord == ""
+                listord = listord.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
                 nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
@@ -177,7 +181,9 @@ class NxCores
             end
 
             if input.start_with?("position") then
-                listord = input[8, input.size].strip.to_i
+                listord = input[8, input.size].strip
+                return if listord == ""
+                listord = listord.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(core)
@@ -186,14 +192,18 @@ class NxCores
                     "parentuuid" => core["uuid"]
                 }
                 Items::setAttribute(i["uuid"], "nx1949", nx1949)
+                ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{core["uuid"]}")
                 next
             end
 
             if input.start_with?("move") then
-                listord = input[4, input.size].strip.to_i
+                listord = input[4, input.size].strip
+                return if listord == ""
+                listord = listord.to_i
                 item = store.get(listord.to_i)
                 next if item.nil?
                 NxTasks::performItemPositioning(item)
+                ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{core["uuid"]}")
                 next
             end
 
@@ -208,6 +218,7 @@ class NxCores
                     }
                     Items::setAttribute(i["uuid"], "nx1949", nx1949)
                 }
+                ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{core["uuid"]}")
                 next
             end
 
