@@ -189,7 +189,7 @@ class NxCores
                 next
             end
 
-            if input.start_with?("move *") then
+            if input.start_with?("move") then
                 listord = input[4, input.size].strip.to_i
                 item = store.get(listord.to_i)
                 next if item.nil?
