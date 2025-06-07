@@ -27,38 +27,46 @@ class Dispatch
         }
     end
 
+
+
     # Dispatch::pickup()
     def self.pickup()
         directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/Dispatch/#{Config::thisInstanceId()}"
 
-        notifications = LucilleCore::locationsAtFolder(directory)
-                            .select{|filepath| filepath[-5, 5] == ".json" }
-                            .map{|filepath|
-                                notification = JSON.parse(IO.read(filepath))
-                                # HardProblem changes keys everyday,
-                                # We keep notifications that are less than a day old
-                                # This helps maintaining the queue of rarely used instances, small
-                                if (Time.new.to_i - notification["unixtime"]) < 86400 then
-                                    notification
-                                else
-                                    FileUtils.rm(filepath)
-                                    nil
-                                end
-                            }
-                            .compact
+        processFilepath = lambda{|updateduuids, filepath|
+            notification = JSON.parse(IO.read(filepath))
+            # HardProblem changes keys everyday,
+            # We keep notifications that are less than a day old
+            # This helps maintaining the queue of rarely used instances, small
+            if (Time.new.to_i - notification["unixtime"]) > 86400 then
+                FileUtils.rm(filepath)
+                return updateduuids
+            end
 
-        updateuuids = notifications
-                        .select{|notification| notification["type"] == "update" }
-                        .map{|notification| notification["uuid"] }
-                        .uniq
+            if notification["type"] == "update" then
+                uuid = notification["uuid"]
+                if updateduuids.include?(uuid) then
+                    FileUtils.rm(filepath)
+                    return updateduuids + [uuid]
+                end
+                HardProblem::blade_has_been_updated(uuid)
+                FileUtils.rm(filepath)
+                return updateduuids + [uuid]
+            end
 
-        destroyuuids = notifications
-                        .select{|notification| notification["type"] == "destroy" }
-                        .map{|notification| notification["uuid"] }
-                        .uniq
+            if notification["type"] == "destroy" then
+                HardProblem::blade_has_been_destroyed(notification["uuid"])
+                FileUtils.rm(filepath)
+                return updateduuids
+            end
 
-        updateuuids.each{|uuid| HardProblem::blade_has_been_updated(uuid) }
+            raise "[error: 296d7914]"
+        }
 
-        destroyuuids.each{|uuid| HardProblem::blade_has_been_destroyed(uuid) }
+        LucilleCore::locationsAtFolder(directory)
+            .select{|filepath| filepath[-5, 5] == ".json" }
+            .reduce([]){|updateduuids, filepath|
+                processFilepath.call(updateduuids, filepath)
+            }
     end
 end
