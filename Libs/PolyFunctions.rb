@@ -101,7 +101,7 @@ class PolyFunctions
             return target["description"]
         end
 
-        core = Item::itemOrNull(donation_target_id)
+        core = Items::itemOrNull(donation_target_id)
         if core then
             return core["description"]
         end
