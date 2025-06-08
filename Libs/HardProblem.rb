@@ -96,6 +96,7 @@ class HardProblem
                     end
                     i
                 }
+                items = items + [item]
                 ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
             end
         }
