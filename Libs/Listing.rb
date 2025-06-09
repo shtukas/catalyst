@@ -40,12 +40,19 @@ class Listing
     def self.itemsForListing1()
 
         items1 = [
+            NxBalls::activeItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-            NxBalls::activeItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .reduce([]){|selected_items, item|
+                if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected_items
+                else
+                    selected_items + [item]
+                end
+            }
 
         items2 = [
             NxBackups::listingItems(),
