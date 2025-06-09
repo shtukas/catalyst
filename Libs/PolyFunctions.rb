@@ -96,14 +96,19 @@ class PolyFunctions
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
     def self.get_name_of_donation_target_or_identity(donation_target_id)
+
+        if XCache::getOrNull("#{HardProblem::get_general_prefix()}:b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}") == "lost" then
+            return donation_target_id
+        end
+
         target = Items::itemOrNull(donation_target_id)
         if target then
             return target["description"]
-        end
-
-        core = Items::itemOrNull(donation_target_id)
-        if core then
-            return core["description"]
+        else
+            # We could not find a target here (I first noticed this happening
+            # after getting rid of Guardian Health)
+            # We need to stop wasting time looking for it
+            XCache::set("#{HardProblem::get_general_prefix()}:b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}", "lost")
         end
 
         donation_target_id
