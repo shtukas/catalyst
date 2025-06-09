@@ -77,11 +77,13 @@ class HardProblem
         # Updating items in "items:4d32-9154-5fc5efb7e047"
         items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
         if items then
-            items = items.map{|i|
-                if i["uuid"] == item["uuid"] then
-                    i = item
+            items = [item] + items
+            items = items.reduce([]){|selected_items, item|
+                if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected_items
+                else
+                    selected_items + [item]
                 end
-                i
             }
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
@@ -90,13 +92,16 @@ class HardProblem
         Items::mikuTypes().each{|mikuType|
             items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
             if items then
-                items = items.map{|i|
-                    if i["uuid"] == item["uuid"] then
-                        i = item
-                    end
-                    i
-                }
-                items = items + [item]
+                if item["mikuType"] == mikuType then
+                    items = [item] + items
+                    items = items.reduce([]){|selected_items, item|
+                        if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                            selected_items
+                        else
+                            selected_items + [item]
+                        end
+                    }
+                end
                 ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
             end
         }
