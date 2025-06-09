@@ -42,6 +42,7 @@ class Listing
         items1 = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
+            NxBalls::activeItems(),
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
@@ -135,6 +136,7 @@ class Listing
             sections = Listing::itemsForListing1()
 
             sections
+                .take(1)
                 .each{|section|
                     puts ""
                     puts "section:"
