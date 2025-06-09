@@ -402,6 +402,13 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("stop", input) then
+            item = store.getDefault()
+            return if item.nil?
+            PolyActions::stop(item)
+            return
+        end
+
         if Interpreting::match("stop *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
