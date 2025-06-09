@@ -69,34 +69,6 @@ class NxTasks
             .sort_by{|item| item["nx1949"]["position"] }
     end
 
-    # NxTasks::itemsForListing()
-    def self.itemsForListing()
-
-        struct_zero = {
-            "coreShouldShow" => {},
-            "items" => []
-        }
-
-        struct_final = Items::mikuType("NxTask")
-            .sort_by{|item| item["nx1949"]["position"] }
-            .reduce(struct_zero){|struct, item|
-                if struct["items"].size >= 10 then
-                    # nothing happens
-                else
-                    core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
-                    if struct["coreShouldShow"][core["uuid"]].nil? then
-                        struct["coreShouldShow"][core["uuid"]] = NxCores::shouldShow(core)
-                    end
-                    if NxBalls::itemIsActive(item) or (struct["coreShouldShow"][core["uuid"]] and DoNotShowUntil::isVisible(item["uuid"]) and Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1) then
-                        struct["items"] = struct["items"] + [item]
-                    end
-                end
-                struct
-            }
-
-        struct_final["items"]
-    end
-
     # ------------------
     # Active Items
 
