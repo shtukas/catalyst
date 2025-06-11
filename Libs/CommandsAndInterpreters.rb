@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | * on <datecode> | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup | insert at <position>",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
@@ -102,12 +102,13 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("insert at", input) then
+        if Interpreting::match("insert at *", input) then
+            _, _, position = Interpreting::tokenizer(input)
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
             nx0810 = {
                 "date" => CommonUtils::today(),
-                "position" => LucilleCore::askQuestionAnswerAsString("position: ").to_f
+                "position" => position.to_f
             }
             Items::setAttribute(item["uuid"], "nx0810", nx0810)
             Operations::interactivelySetDonation(item)
