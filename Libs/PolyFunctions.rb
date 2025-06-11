@@ -213,7 +213,7 @@ class PolyFunctions
             .map{|item| item["nx0810"] }
             .compact
             .map{|nx| nx["position"] }
-        return 1 if positions.empty?
+        return 9.117 if positions.empty?
         positions.min
     end
 end

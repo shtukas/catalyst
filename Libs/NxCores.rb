@@ -207,7 +207,6 @@ class NxCores
                 next
             end
 
-
             if input == "sort" then
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::childrenInOrder(core).sort_by{|item| item["nx1949"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|

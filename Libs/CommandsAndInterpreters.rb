@@ -7,11 +7,11 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | * on <datecode> | destroy *",
             "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | pile | backup",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | fsck-all | reset-cache",
+            "misc          : search | commands | edit * | fsck-all | reset-cache | sort",
         ].join("\n")
     end
 
@@ -102,7 +102,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile", input) then
+        if Interpreting::match("insert at", input) then
+            item = NxLines::interactivelyIssueNewOrNull()
+            return if item.nil?
+            nx0810 = {
+                "date" => CommonUtils::today(),
+                "position" => LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            }
+            Items::setAttribute(item["uuid"], "nx0810", nx0810)
+            Operations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("priority", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
             }
@@ -116,6 +128,19 @@ class CommandsAndInterpreters
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
+            return
+        end
+
+        if Interpreting::match("sort", input) then
+            elements = Listing::itemsForListing1().first(20)
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|i|
+                nx0810 = {
+                    "date" => CommonUtils::today(),
+                    "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
+                }
+                Items::setAttribute(i["uuid"], "nx0810", nx0810)
+            }
             return
         end
 

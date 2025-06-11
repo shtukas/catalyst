@@ -23,7 +23,12 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        nx = (lambda {|item|
+            return "" if item["nx0810"].nil?
+            return "" if item["nx0810"]["date"] != CommonUtils::today()
+            "[#{"%5.3f" % item["nx0810"]["position"]}] ".red
+        }).call(item)
+        line = "#{storePrefix} #{nx}#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -38,41 +43,21 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-
-        items1 = [
-            NxBalls::activeItems(),
+        items = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .reduce([]){|selected_items, item|
-                if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected_items
-                else
-                    selected_items + [item]
-                end
-            }
-
-        items2 = [
             NxBackups::listingItems(),
             NxLines::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .sort_by{|item| Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) }
-
-        items3 = [
             NxTasks::activeItemsForListing(),
             NxCores::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-
-        [items1, items2 , items3].select{|section| !section.empty? }
+        i1, i2 = items.partition{|item| item["nx0810"] and item["nx0810"]["date"] == CommonUtils::today() }
+        i1.sort_by{|item| item["nx0810"]["position"] } + i2
     end
 
     # -----------------------------------------
@@ -140,20 +125,19 @@ class Listing
             Operations::top_notifications().each{|notification|
                 puts "notification: #{notification}"
             }
-            sections = Listing::itemsForListing1()
-
-            sections
-                .take(1)
-                .each{|section|
-                    puts ""
-                    puts "section:"
-                    section.each{|item|
-                        store.register(item, Listing::canBeDefault(item))
-                        line = Listing::toString2(store, item)
-                        printer.call(line)
-                    }
+            (Listing::itemsForListing1().take(21) + NxBalls::activeItems())
+                .reduce([]){|selected_items, item|
+                    if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                        selected_items
+                    else
+                        selected_items + [item]
+                    end
                 }
-
+                .each{|item|
+                    store.register(item, Listing::canBeDefault(item))
+                    line = Listing::toString2(store, item)
+                    printer.call(line)
+                }
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return
