@@ -38,23 +38,6 @@ class Operations
         puts "> Operations::periodicPrimaryInstanceMaintenance()"
     end
 
-    # Operations::selectTodoTextFileLocationOrNull(todotextfile)
-    def self.selectTodoTextFileLocationOrNull(todotextfile)
-        location = XCache::getOrNull("fcf91da7-0600-41aa-817a-7af95cd2570b:#{todotextfile}")
-        if location and File.exist?(location) then
-            return location
-        end
-
-        roots = [Config::pathToGalaxy()]
-        Galaxy::locationEnumerator(roots).each{|location|
-            if File.basename(location).include?(todotextfile) then
-                XCache::set("fcf91da7-0600-41aa-817a-7af95cd2570b:#{todotextfile}", location)
-                return location
-            end
-        }
-        nil
-    end
-
     # Operations::interactivelyGetLines()
     def self.interactivelyGetLines()
         text = CommonUtils::editTextSynchronously("").strip

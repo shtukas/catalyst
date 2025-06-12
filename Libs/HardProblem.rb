@@ -56,7 +56,7 @@ class HardProblem
             ValueCache::set("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce", mikuTypes)
         end
 
-        # Updating the list of mikuTypes, if needed
+        # Updating a parent's children inventory
         if attribute == "nx1949" then
             parentuuid = value["parentuuid"]
             ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parentuuid}")

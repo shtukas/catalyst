@@ -342,6 +342,22 @@ class CommonUtils
         CommonUtils::interactivelySelectDesktopLocation()
     end
 
+    # CommonUtils::locateGalaxyFileByNameFragment(namefragment)
+    def self.locateGalaxyFileByNameFragment(namefragment)
+        location = XCache::getOrNull("fcf91da7-0600-41aa-817a-7af95cd2570b:#{namefragment}")
+        if location and File.exist?(location) then
+            return location
+        end
+        roots = [Config::pathToGalaxy()]
+        Galaxy::locationEnumerator(roots).each{|location|
+            if File.basename(location).include?(namefragment) then
+                XCache::set("fcf91da7-0600-41aa-817a-7af95cd2570b:#{namefragment}", location)
+                return location
+            end
+        }
+        nil
+    end
+
     # ----------------------------------------------------
     # File System Routines (traces)
 

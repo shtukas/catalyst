@@ -133,7 +133,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("sort", input) then
-            elements = Listing::itemsForListing1().first(20)
+            elements = Listing::itemsForListing2()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 nx0810 = {

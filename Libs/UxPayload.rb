@@ -105,7 +105,7 @@ class UxPayload
         end
         if payload["type"] == "todo-text-file-by-name" then
             name1 = payload["name"]
-            location = Operations::selectTodoTextFileLocationOrNull(name1)
+            location = CommonUtils::locateGalaxyFileByNameFragment(name1)
             if location.nil? then
                 puts "Could not resolve this todo text file: #{name1}"
                 LucilleCore::pressEnterToContinue()

@@ -140,6 +140,28 @@ class NxBalls
             .compact
     end
 
+    # NxBalls::runningItems()
+    def self.runningItems()
+        NxBalls::all()
+            .select{|nxball| nxball["type"] == "running" }
+            .map{|ball|
+                (lambda {|ball|
+                    itemuuid = ball["itemuuid"]
+                    ix = Items::itemOrNull(itemuuid)
+                    if ix then
+                        return ix
+                    end
+                    filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
+                    if File.exist?(filepath) then
+                        puts "garbage collecting NxBall: #{filepath}".green
+                        FileUtils.rm(filepath)
+                    end
+                    nil
+                }).call(ball)
+            }
+            .compact
+    end
+
     # ---------------------------------
     # Ops
 
