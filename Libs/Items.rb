@@ -57,6 +57,10 @@ class Items
 
     # Items::destroy(uuid)
     def self.destroy(uuid)
+        item = Items::itemOrNull(uuid)
+        if item then
+            HardProblem::item_is_being_destroyed(item)
+        end
         Blades::destroy(uuid)
         HardProblem::item_has_been_destroyed(uuid)
     end

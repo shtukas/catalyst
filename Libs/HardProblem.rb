@@ -124,6 +124,18 @@ class HardProblem
                 ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
             end
         }
+
+
+    end
+
+    # HardProblem::item_is_being_destroyed(item)
+    def self.item_is_being_destroyed(item)
+        HardProblem::blade_has_been_destroyed(item["uuid"])
+
+        if item["nx1949"] then
+            # Updating a parent's children
+            ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{item["nx1949"]["parentuuid"]}")
+        end
     end
 
     # HardProblem::item_could_not_be_found_on_disk(uuid)
