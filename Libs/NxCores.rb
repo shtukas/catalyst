@@ -96,11 +96,6 @@ class NxCores
         NxCores::cores().select{|core| core["uuid"] == coreuuid }.first
     end
 
-    # NxCores::childrenForPrefix(core)
-    def self.childrenForPrefix(core)
-        PolyFunctions::childrenInOrder(core).take(3)
-    end
-
     # ------------------
     # Ops
 

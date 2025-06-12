@@ -155,7 +155,6 @@ require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
 require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
-require_relative "NxStrats.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxLines.rb"
 
@@ -164,7 +163,6 @@ require_relative "Operations.rb"
 require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
-require_relative "Prefix.rb"
 
 require_relative "SectionsType0141.rb"
 

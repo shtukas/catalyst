@@ -25,9 +25,6 @@ class Fsck
         if item["mikuType"] == "NxDated" then
             return
         end
-        if item["mikuType"] == "NxStrat" then
-            return
-        end
         if item["mikuType"] == "NxMonitor" then
             return
         end

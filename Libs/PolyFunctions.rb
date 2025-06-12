@@ -18,13 +18,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxStrat" then
-            bottom = Items::itemOrNull(item["bottomuuid"])
-            if bottom then
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(bottom)
-            end
-        end
-
         if item["mikuType"] == "NxTask" then
             core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
             accounts << {
@@ -74,9 +67,6 @@ class PolyFunctions
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
         end
-        if item["mikuType"] == "NxStrat" then
-            return NxStrats::toString(item)
-        end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
@@ -84,14 +74,6 @@ class PolyFunctions
             return Waves::toString(item)
         end
         raise "(error: 820ce38d-e9db-4182-8e14-69551f58671d) I do not know how to PolyFunctions::toString(item): #{item}"
-    end
-
-    # PolyFunctions::childrenForPrefix(item)
-    def self.childrenForPrefix(item)
-        if st = NxStrats::parentOrNull(item) then
-            return [st]
-        end
-        PolyFunctions::childrenForParent(item)
     end
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)

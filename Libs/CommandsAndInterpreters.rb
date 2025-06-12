@@ -165,14 +165,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pile *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            NxStrats::pile(item)
-            return
-        end
-
         if Interpreting::match("donation *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
