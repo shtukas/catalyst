@@ -50,8 +50,8 @@ class Listing
             NxLines::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
-            Waves::nonInterruptionItemsForListing(),
             NxTasks::activeItemsForListing(),
+            Waves::nonInterruptionItemsForListing(),
             NxCores::listingItems()
         ]
             .flatten
