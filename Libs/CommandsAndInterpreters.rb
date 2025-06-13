@@ -5,9 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | disactivate * | activate * | dismiss * | * on <datecode> | destroy *",
-            "",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup | insert at <position>",
+            "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | dismiss * | * on <datecode> | destroy *",
+            "on items : activate * | disactivate *",
+            "positioning : insert at <position> | move * at <position> | release *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
@@ -22,6 +23,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                Items::setAttribute(item["uuid"], "nx0810", nil)
                 return
             end
         end
@@ -102,12 +104,22 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("move * at *", input) then
+            _, listord, _, position = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            nx0810 = {
+                "position" => position.to_f
+            }
+            Items::setAttribute(item["uuid"], "nx0810", nx0810)
+            return
+        end
+
         if Interpreting::match("insert at *", input) then
             _, _, position = Interpreting::tokenizer(input)
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
             nx0810 = {
-                "date" => CommonUtils::today(),
                 "position" => position.to_f
             }
             Items::setAttribute(item["uuid"], "nx0810", nx0810)
@@ -122,7 +134,6 @@ class CommandsAndInterpreters
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
             nx0810 = {
-                "date" => CommonUtils::today(),
                 "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
             }
             Items::setAttribute(item["uuid"], "nx0810", nx0810)
@@ -132,12 +143,19 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("release *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Items::setAttribute(item["uuid"], "nx0810", nil)
+            return
+        end
+
         if Interpreting::match("sort", input) then
             elements = Listing::itemsForListing2()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 nx0810 = {
-                    "date" => CommonUtils::today(),
                     "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
                 }
                 Items::setAttribute(i["uuid"], "nx0810", nx0810)

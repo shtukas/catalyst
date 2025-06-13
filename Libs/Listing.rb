@@ -25,7 +25,6 @@ class Listing
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         nx = (lambda {|item|
             return "" if item["nx0810"].nil?
-            return "" if item["nx0810"]["date"] != CommonUtils::today()
             "[#{"%5.3f" % item["nx0810"]["position"]}] ".red
         }).call(item)
         line = "#{storePrefix} #{nx}#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
@@ -56,7 +55,7 @@ class Listing
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-        i1, i2 = items.partition{|item| item["nx0810"] and item["nx0810"]["date"] == CommonUtils::today() }
+        i1, i2 = items.partition{|item| item["nx0810"] }
         i1.sort_by{|item| item["nx0810"]["position"] } + i2
     end
 

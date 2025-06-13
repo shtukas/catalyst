@@ -17,6 +17,5 @@ Nx1949:
     - parentuuid : String
 
 Nx0810 {
-    "date"    : "YYYY-MM-DD",
     "position": float
 }

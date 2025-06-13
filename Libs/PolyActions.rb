@@ -61,12 +61,14 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+        Items::setAttribute(item["uuid"], "nx0810", nil)
     end
 
     # PolyActions::done(item, useTheForce = false)
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
+        Items::setAttribute(item["uuid"], "nx0810", nil)
 
         if item["mikuType"] == "NxLambda" then
             return

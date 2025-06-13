@@ -194,7 +194,6 @@ class PolyFunctions
         positions = Items::items()
             .map{|item| item["nx0810"] }
             .compact
-            .select{|nx0810| nx0810["date"] == CommonUtils::today() }
             .map{|nx| nx["position"] }
         return 9.117 if positions.empty?
         positions.min
