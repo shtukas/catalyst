@@ -161,7 +161,6 @@ class Listing
                 puts "notification: #{notification}"
             }
             (NxBalls::runningItems() + Listing::itemsForListing2())
-                .take(10)
                 .reduce([]){|selected_items, item|
                     if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected_items
