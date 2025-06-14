@@ -36,7 +36,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
+            Operations::diveItem(item)
             return
         end
 
@@ -176,7 +176,7 @@ class PolyActions
         }
 
         if item["mikuType"] == "NxCore" then
-            NxCores::program1(item)
+            Operations::diveItem(item)
             return
         end
 
@@ -316,7 +316,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            NxCores::program1(core)
+            Operations::diveItem(core)
             return
         end
 

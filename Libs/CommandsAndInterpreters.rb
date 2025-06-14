@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | pile * | dismiss * | * on <datecode> | destroy *",
             "on items : activate * | disactivate *",
-            "positioning : insert at <position> | move * at <position> | release *",
+            "positioning : insert at <position> | move * to <position> | release *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
@@ -104,7 +104,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move * at *", input) then
+        if Interpreting::match("move * to *", input) then
             _, listord, _, position = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?

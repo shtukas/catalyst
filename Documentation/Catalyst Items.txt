@@ -12,10 +12,9 @@ Cross types conventions (all optional):
     - nx1949                  : Nx1949 # position and parentuuid
     - nx0810                  : Nx0810
 
-Nx1949:
+Nx1949 (position inside a parent)
     - position   : Float,
     - parentuuid : String
 
-Nx0810 {
-    "position": float
-}
+Nx0810 (position on the main listing)
+    - position: float

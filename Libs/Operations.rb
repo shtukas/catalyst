@@ -66,7 +66,7 @@ class Operations
 
     # Operations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        target = Operations::interactivelySelectParentForDonationOrNull()
+        target = Operations::interactivelySelectTargetForDonationOrNull()
         return if target.nil?
         Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
     end
@@ -98,18 +98,19 @@ class Operations
         notifications
     end
 
-    # Operations::interactivelySelectParentForDonationOrNull()
-    def self.interactivelySelectParentForDonationOrNull()
-        parents = [
+    # Operations::interactivelySelectTargetForDonationOrNull()
+    def self.interactivelySelectTargetForDonationOrNull()
+        targets = [
+            NxBalls::activeItems(),
             NxTasks::activeItems(),
             NxCores::coresInRatioOrder()
         ].flatten
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", parents, lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::makeNx1949OrNull()
     def self.makeNx1949OrNull()
-        parent = Operations::interactivelySelectParentForDonationOrNull()
+        parent = Operations::interactivelySelectTargetForDonationOrNull()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         nx1949 = {
@@ -134,7 +135,11 @@ class Operations
             puts Listing::toString2(store, parent)
             puts ""
 
-            PolyFunctions::childrenForParent(parent)
+            items = PolyFunctions::childrenInOrder(parent)
+            i1, i2 = items.partition{|item| item["nx0810"] }
+            items = i1.sort_by{|item| item["nx0810"]["position"] } + i2
+ 
+            items
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -220,7 +225,7 @@ class Operations
         item = Listing::itemsForListing2().first
         return if item.nil?
         if NxBalls::itemIsPaused(item) then
-            if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}' is paused, would you like to pursue ?", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}' is paused, would you like to pursue ? ", true) then
                 PolyActions::pursue(item)
             end
         end
