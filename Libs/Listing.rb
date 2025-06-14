@@ -24,10 +24,10 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         nx = (lambda {|item|
-            return "" if item["nx0810"].nil?
+            return "        " if item["nx0810"].nil?
             "[#{"%5.3f" % item["nx0810"]["position"]}] ".red
         }).call(item)
-        line = "#{storePrefix} #{nx}#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "#{nx}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -106,6 +106,16 @@ class Listing
         Operations::pickUpBufferIn()
     end
 
+    # Listing::displayListingItem(store, printer, item)
+    def self.displayListingItem(store, printer, item)
+        PolyFunctions::childrenForParent(item).take(3).each {|child|
+            Listing::displayListingItem(store, printer, child)
+        }
+        store.register(item, Listing::canBeDefault(item))
+        line = Listing::toString2(store, item)
+        printer.call(line)
+    end
+
     # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
@@ -151,6 +161,7 @@ class Listing
                 puts "notification: #{notification}"
             }
             (NxBalls::runningItems() + Listing::itemsForListing2())
+                .take(10)
                 .reduce([]){|selected_items, item|
                     if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected_items
@@ -159,9 +170,7 @@ class Listing
                     end
                 }
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    line = Listing::toString2(store, item)
-                    printer.call(line)
+                    Listing::displayListingItem(store, printer, item)
                 }
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
