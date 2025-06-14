@@ -222,7 +222,7 @@ class Operations
 
     # Operations::diveItem(parent)
     def self.checkTopListingItemAndProposeToPursueIfRelevant()
-        item = Listing::itemsForListing2().first
+        item = Listing::itemsForListing1().first
         return if item.nil?
         if NxBalls::itemIsPaused(item) then
             if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}' is paused, would you like to pursue ? ", true) then

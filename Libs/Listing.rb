@@ -59,32 +59,6 @@ class Listing
         i1.sort_by{|item| item["nx0810"]["position"] } + i2
     end
 
-    # Listing::itemsForListing2()
-    def self.itemsForListing2()
-        wavecounter = 0
-        Listing::itemsForListing1()
-            .reduce([]){|selected_items, item|
-                if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected_items
-                else
-                    selected_items + [item]
-                end
-            }
-            .map{|item|
-                if item["mikuType"] == "Wave" then
-                    if wavecounter >= 20 then
-                        nil
-                    else
-                        wavecounter = wavecounter + 1
-                        item
-                    end
-                else
-                    item
-                end
-            }
-            .compact
-    end
-
     # -----------------------------------------
     # Ops
 
@@ -160,7 +134,7 @@ class Listing
             Operations::top_notifications().each{|notification|
                 puts "notification: #{notification}"
             }
-            (NxBalls::runningItems() + Listing::itemsForListing2())
+            (NxBalls::runningItems() + Listing::itemsForListing1())
                 .reduce([]){|selected_items, item|
                     if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected_items
