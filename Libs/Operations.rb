@@ -66,9 +66,9 @@ class Operations
 
     # Operations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
-        core = Operations::interactivelySelectParentForDonationOrNull()
-        return if core.nil?
-        Items::setAttribute(item["uuid"], "donation-1205", core["uuid"])
+        target = Operations::interactivelySelectParentForDonationOrNull()
+        return if target.nil?
+        Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
     end
 
     # Operations::pickUpBufferIn()
@@ -213,5 +213,16 @@ class Operations
 
             CommandsAndInterpreters::interpreter(input, store)
         }
+    end
+
+    # Operations::diveItem(parent)
+    def self.checkTopListingItemAndProposeToPursueIfRelevant()
+        item = Listing::itemsForListing2().first
+        return if item.nil?
+        if NxBalls::itemIsPaused(item) then
+            if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}' is paused, would you like to pursue ?", true) then
+                PolyActions::pursue(item)
+            end
+        end
     end
 end

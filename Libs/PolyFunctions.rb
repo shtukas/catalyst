@@ -1,8 +1,10 @@
 
 class PolyFunctions
 
-    # PolyFunctions::itemToBankingAccounts(item) # Array[{description, number}]
-    def self.itemToBankingAccounts(item)
+    # PolyFunctions::itemToBankingAccounts(item, depth = 6) # Array[{description, number}]
+    def self.itemToBankingAccounts(item, depth = 6)
+
+        return [] if depth == 0
 
         accounts = []
 
@@ -11,11 +13,36 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
+        if item["nx1949"] then
+            parent = Items::itemOrNull(item["nx1949"]["parentuuid"])
+            if parent then
+                accounts << {
+                    "description" => "(parent: #{parent["description"]})",
+                    "number"      => item["donation-1205"]
+                }
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent, depth-1)
+            else
+                accounts << {
+                    "description" => "(parent not found: #{item["nx1949"]["parentuuid"]})",
+                    "number"      => item["donation-1205"]
+                }
+            end
+        end
+
         if item["donation-1205"] then
-            accounts << {
-                "description" => "(donation: #{item["donation-1205"]})",
-                "number"      => item["donation-1205"]
-            }
+            target = Items::itemOrNull(item["donation-1205"])
+            if target then
+                accounts << {
+                    "description" => "(donation target: #{target["description"]})",
+                    "number"      => item["donation-1205"]
+                }
+                accounts = accounts + PolyFunctions::itemToBankingAccounts(target, depth - 1)
+            else
+                accounts << {
+                    "description" => "(donation target not found: #{item["donation-1205"]})",
+                    "number"      => item["donation-1205"]
+                }
+            end
         end
 
         if item["mikuType"] == "NxTask" then

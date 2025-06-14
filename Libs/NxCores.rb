@@ -114,7 +114,11 @@ class NxCores
 
             puts ""
 
-            PolyFunctions::childrenInOrder(core)
+            items = PolyFunctions::childrenInOrder(core)
+            i1, i2 = items.partition{|item| item["nx0810"] }
+            items = i1.sort_by{|item| item["nx0810"]["position"] } + i2
+
+            items
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)

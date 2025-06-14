@@ -347,6 +347,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
+            Operations::checkTopListingItemAndProposeToPursueIfRelevant()
             return
         end
 
@@ -355,6 +356,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
+            Operations::checkTopListingItemAndProposeToPursueIfRelevant()
             return
         end
 
