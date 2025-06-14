@@ -82,7 +82,19 @@ class Listing
 
     # Listing::displayListingItem(store, printer, item)
     def self.displayListingItem(store, printer, item)
-        PolyFunctions::childrenForParent(item).take(3).each {|child|
+        PolyFunctions::childrenForParent(item)
+        .reduce([]){|selected, child|
+            if selected.size >= 3 then
+                selected
+            else
+                if NxBalls::itemIsActive(child) or Bank1::getValueAtDate(child["uuid"], CommonUtils::today()) < 1 then
+                    selected + [child]
+                else
+                    selected
+                end
+            end
+        }
+        .each {|child|
             Listing::displayListingItem(store, printer, child)
         }
         store.register(item, Listing::canBeDefault(item))
@@ -145,6 +157,9 @@ class Listing
                 .each{|item|
                     Listing::displayListingItem(store, printer, item)
                 }
+
+            puts `palmer report:performance`.strip.lines.drop(2).first.yellow
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
                 return
