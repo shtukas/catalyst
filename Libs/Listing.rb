@@ -100,6 +100,7 @@ class Listing
         store.register(item, Listing::canBeDefault(item))
         line = Listing::toString2(store, item)
         printer.call(line)
+        line
     end
 
     # Listing::main()
@@ -146,7 +147,11 @@ class Listing
             Operations::top_notifications().each{|notification|
                 puts "notification: #{notification}"
             }
-            (NxBalls::runningItems() + Listing::itemsForListing1())
+
+            printedlines = []
+
+            items = NxBalls::runningItems() + Listing::itemsForListing1()
+            items
                 .reduce([]){|selected_items, item|
                     if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
                         selected_items
@@ -155,9 +160,15 @@ class Listing
                     end
                 }
                 .each{|item|
-                    Listing::displayListingItem(store, printer, item)
+                    line = Listing::displayListingItem(store, printer, item)
+                    printedlines << line
                 }
 
+                if items.size > 20 then
+                    puts ""
+                    printedlines.take(5).each{|line| puts line }
+                    puts ""
+                end
             begin
                 puts `palmer report:performance`.strip.lines.drop(2).first.yellow
             rescue
