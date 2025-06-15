@@ -183,7 +183,7 @@ class Listing
 
             t2 = Time.new.to_f
             renderingTime = t2-t1
-            if renderingTime > 0.2 then
+            if renderingTime > 0.5 then
                 puts "rendering time: #{renderingTime.round(3)} seconds".red
             end
 
