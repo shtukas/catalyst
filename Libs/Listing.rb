@@ -158,7 +158,11 @@ class Listing
                     Listing::displayListingItem(store, printer, item)
                 }
 
-            puts `palmer report:performance`.strip.lines.drop(2).first.yellow
+            begin
+                puts `palmer report:performance`.strip.lines.drop(2).first.yellow
+            rescue
+                puts "could not retrieve palmer performance report".red
+            end
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             if input == "exit" then
