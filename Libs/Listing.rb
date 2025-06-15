@@ -49,8 +49,19 @@ class Listing
             NxLines::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
-            NxTasks::activeItemsForListing(),
-            Waves::nonInterruptionItemsForListing(),
+            (lambda {
+                if WaveHits::getHigestRatio() < 0.35 then
+                    [
+                        Waves::nonInterruptionItemsForListing(),
+                        NxTasks::activeItemsForListing(),
+                    ]
+                else
+                    [
+                        NxTasks::activeItemsForListing(),
+                        Waves::nonInterruptionItemsForListing(),
+                    ]
+                end
+            }).call(),
             NxCores::listingItems()
         ]
             .flatten
@@ -87,7 +98,7 @@ class Listing
             if selected.size >= 3 then
                 selected
             else
-                if NxBalls::itemIsActive(child) or Bank1::getValueAtDate(child["uuid"], CommonUtils::today()) < 1 then
+                if NxBalls::itemIsActive(child) or ((Bank1::getValueAtDate(child["uuid"], CommonUtils::today()) < 1) and DoNotShowUntil::isVisible(child["uuid"])) then
                     selected + [child]
                 else
                     selected
@@ -148,8 +159,8 @@ class Listing
                 puts "notification: #{notification}"
             }
 
+            t1 = Time.new.to_f
             printedlines = []
-
             items = NxBalls::runningItems() + Listing::itemsForListing1()
             items
                 .reduce([]){|selected_items, item|
@@ -169,8 +180,21 @@ class Listing
                     printedlines.take(5).each{|line| puts line }
                     puts ""
                 end
+
+            t2 = Time.new.to_f
+            renderingTime = t2-t1
+            if renderingTime > 0.2 then
+                puts "rendering time: #{renderingTime.round(3)} seconds".red
+            end
+
             begin
-                puts `palmer report:performance`.strip.lines.drop(2).first.yellow
+                line = `palmer report:performance`.strip.lines.drop(2).first
+                if line.include?("Missing") then
+                    puts line.red
+                else
+                    puts line.yellow
+                end
+                
             rescue
                 puts "could not retrieve palmer performance report".red
             end

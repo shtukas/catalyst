@@ -266,6 +266,13 @@ class CommandsAndInterpreters
             PolyActions::addTimeToItem(item, timeInHours*3600)
         end
 
+        if Interpreting::match("access", input) then
+            item = store.getDefault()
+            return if item.nil?
+            PolyActions::access(item)
+            return
+        end
+
         if Interpreting::match("access *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -423,11 +430,24 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("pause *", input) then
-            _, listord = Interpreting::tokenizer(input)
+        if Interpreting::match("pause", input) then
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
+            return
+        end
+
+        if Interpreting::match("pause *", input) then
+            item = store.getDefault()
+            return if item.nil?
+            NxBalls::pause(item)
+            return
+        end
+
+        if Interpreting::match("pursue", input) then
+            item = store.get(listord.to_i)
+            return if item.nil?
+            PolyActions::pursue(item)
             return
         end
 

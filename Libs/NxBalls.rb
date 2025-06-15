@@ -204,7 +204,9 @@ class NxBalls
         }
         NxBalls::destroyNxBall(item)
 
-        timespanInSeconds
+        if item["mikuType"] == "Wave" then
+            WaveHits::waveHit(timespanInSeconds)
+        end
     end
 
     # NxBalls::pause(item)
@@ -221,6 +223,10 @@ class NxBalls
         }
         nxball["type"] = "paused"
         NxBalls::commitBall(item, nxball)
+
+        if item["mikuType"] == "Wave" then
+            WaveHits::waveHit(timespanInSeconds)
+        end
     end
 
     # NxBalls::pursue(item)
