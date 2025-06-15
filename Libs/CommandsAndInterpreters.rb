@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "on items : activate * | disactivate *",
             "positioning : insert at <position> | move * to <position> | release *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup | pile",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
@@ -140,6 +140,29 @@ class CommandsAndInterpreters
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
+            return
+        end
+
+        if Interpreting::match("pile", input) then
+            text = CommonUtils::editTextSynchronously("")
+            donation_package = Operations::interactivelySelectTargetForDonationOrNull()
+            lines = text.strip.lines.map{|line| line.strip }
+            lines = lines.reverse
+            last_item = nil
+            lines.each{|line|
+                item = NxLines::interactivelyIssueNew(line)
+                nx0810 = {
+                    "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
+                }
+                Items::setAttribute(item["uuid"], "nx0810", nx0810)
+                if donation_package then
+                    Items::setAttribute(item["uuid"], "donation-1205", donation_package["uuid"])
+                end
+                last_item = Items::itemOrNull(item["uuid"])
+            }
+            if last_item then
+                NxBalls::start(last_item)
+            end
             return
         end
 
