@@ -132,6 +132,12 @@ class Operations
     # Operations::diveItem(parent)
     def self.diveItem(parent)
 
+        if parent["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then
+            puts "You cannot dive in Infinity"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
         loop {
             store = ItemStore.new()
 
