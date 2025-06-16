@@ -64,6 +64,16 @@ class Operations
         LucilleCore::pressEnterToContinue()
     end
 
+    # Operations::interactivelySelectTargetForDonationOrNull()
+    def self.interactivelySelectTargetForDonationOrNull()
+        targets = [
+            NxBalls::activeItems(),
+            NxTasks::activeItems(),
+            NxCores::coresInRatioOrder()
+        ].flatten
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
+    end
+
     # Operations::interactivelySetDonation(item)
     def self.interactivelySetDonation(item)
         target = Operations::interactivelySelectTargetForDonationOrNull()
@@ -98,19 +108,18 @@ class Operations
         notifications
     end
 
-    # Operations::interactivelySelectTargetForDonationOrNull()
-    def self.interactivelySelectTargetForDonationOrNull()
+    # Operations::interactivelySelectParentOrNull()
+    def self.interactivelySelectParentOrNull()
         targets = [
-            NxBalls::activeItems(),
             NxTasks::activeItems(),
             NxCores::coresInRatioOrder()
         ].flatten
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", targets, lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::makeNx1949OrNull()
     def self.makeNx1949OrNull()
-        parent = Operations::interactivelySelectTargetForDonationOrNull()
+        parent = Operations::interactivelySelectParentOrNull()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         nx1949 = {
