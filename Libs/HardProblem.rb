@@ -110,7 +110,7 @@ class HardProblem
             .select{|filepath| filepath[-5, 5] == ".json" }
             .each{|filepath|
                 items = JSON.parse(IO.read(filepath))
-                items = items.reject{|i| i["uuid"] == item["uuid"] }
+                items = items.reject{|i| i["uuid"] == uuid }
                 FileUtils.rm(filepath)
                 HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
             }
