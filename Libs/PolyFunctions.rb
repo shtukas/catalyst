@@ -106,7 +106,7 @@ class PolyFunctions
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
     def self.get_name_of_donation_target_or_identity(donation_target_id)
 
-        if XCache::getOrNull("#{HardProblem::get_general_prefix()}:b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}") == "lost" then
+        if XCache::getOrNull("b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}:#{CommonUtils::today()}") == "lost" then
             return donation_target_id
         end
 
@@ -117,7 +117,7 @@ class PolyFunctions
             # We could not find a target here (I first noticed this happening
             # after getting rid of Guardian Health)
             # We need to stop wasting time looking for it
-            XCache::set("#{HardProblem::get_general_prefix()}:b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}", "lost")
+            XCache::set("b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}:#{CommonUtils::today()}", "lost")
         end
 
         donation_target_id
@@ -148,15 +148,18 @@ class PolyFunctions
 
     # PolyFunctions::childrenForParent(parent)
     def self.childrenForParent(parent)
-        items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
-        if items then
+        directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/HardProblem/Children/#{parent["uuid"]}"
+        filepath = HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
+        if filepath then
+            return JSON.parse(IO.read(filepath))
+        else
+            items = Items::items()
+                        .select{|item|
+                            item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
+                        }
+            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
             return items
         end
-        items = Items::items().select{|item|
-            item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
-        }
-        ValueCache::set("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}", items)
-        items
     end
 
     # PolyFunctions::hasChildren(parent)

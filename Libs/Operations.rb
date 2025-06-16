@@ -117,7 +117,6 @@ class Operations
             "position" => position,
             "parentuuid" => parent["uuid"]
         }
-        ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
         nx1949
     end
 
@@ -125,9 +124,6 @@ class Operations
     def self.diveItem(parent)
 
         loop {
-
-            ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parent["uuid"]}")
-
             store = ItemStore.new()
 
             puts ""

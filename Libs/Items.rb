@@ -14,22 +14,27 @@ class Items
 
     # Items::items()
     def self.items()
-        items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
-        return items if items
-        puts "rebuilding items cache".yellow
-        items = Blades::items()
-        ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
-        items
+        directory = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/Items"
+        filepath = HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
+        if filepath then
+            return JSON.parse(IO.read(filepath))
+        else
+            items = Blades::items()
+            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
+            return items
+        end
     end
 
     # Items::mikuTypes()
     def self.mikuTypes()
-        mikuTypes = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce")
-        return mikuTypes if mikuTypes
-        puts "rebuilding mikuTypes cache".yellow
+        mikuTypes = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes")
+            .select{|filepath| !File.basename(filepath).start_with?('.') }
+            .map{|directory2| File.basename(directory2) }
+        return mikuTypes
+        # Here we are trusting the fact that the data/HardProblem/MikuTypes
+        # directory has the list of mikuTypes.
+        # If one day we doubt that, we can always run the below and add any missing directories
         mikuTypes = Blades::items().map{|item| item["mikuType"] }.uniq
-        ValueCache::set("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce", mikuTypes)
-        mikuTypes
     end
 
     # Items::mikuType(mikuType)
@@ -65,5 +70,8 @@ class Items
         end
         Blades::destroy(uuid)
         HardProblem::item_has_been_destroyed(uuid)
+
+        directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/HardProblem/Children/#{uuid}"
+        LucilleCore::removeFileSystemLocation(directory)
     end
 end

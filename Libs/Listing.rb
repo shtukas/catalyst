@@ -156,14 +156,6 @@ class Listing
             }
         }
 
-        Thread.new {
-            sleep 60
-            loop {
-                Dispatch::pickup()
-                sleep 60
-            }
-        }
-
         loop {
             Listing::preliminaries(initialCodeTrace)
             store = ItemStore.new()
