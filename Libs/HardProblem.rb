@@ -127,7 +127,7 @@ class HardProblem
                     .select{|filepath| filepath[-5, 5] == ".json" }
                     .each{|filepath|
                         items = JSON.parse(IO.read(filepath))
-                        items = items.reject{|i| i["uuid"] == uuid }
+                        items = items.reject{|i| i["uuid"] == item["uuid"] }
                         if item["mikuType"] == mikuType then
                             items = items + [item]
                         end
