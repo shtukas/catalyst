@@ -5,7 +5,6 @@ class Items
     # Items::init(uuid)
     def self.init(uuid)
         Blades::spawn_new_blade(uuid)
-        HardProblem::new_item(uuid)
     end
 
     # Items::itemOrNull(uuid)
@@ -35,12 +34,15 @@ class Items
 
     # Items::mikuType(mikuType)
     def self.mikuType(mikuType)
-        items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
-        return items if items
-        puts "rebuilding mikuType: #{mikuType} cache".yellow
-        items = Items::items().select{|item| item["mikuType"] == mikuType }
-        ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
-        items
+        directory = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes/#{mikuType}"
+        filepath = HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
+        if filepath then
+            return JSON.parse(IO.read(filepath))
+        else
+            items = Items::items().select{|item| item["mikuType"] == mikuType }
+            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
+            return items
+        end
     end
 
     # Items::setAttribute(uuid, attrname, attrvalue)

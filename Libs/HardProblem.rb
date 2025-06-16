@@ -4,8 +4,6 @@
 
 # Items
 #      : "items:4d32-9154-5fc5efb7e047"
-#      : "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
-#      : "#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce"
 
 class HardProblem
 
@@ -17,11 +15,6 @@ class HardProblem
             XCache::set("049bdc08-8833-4736-aa90-4dc2c59fd67d:#{CommonUtils::today()}", prefix)
         end
         prefix
-    end
-
-    # HardProblem::new_item(uuid)
-    def self.new_item(uuid)
-
     end
 
     # HardProblem::item_attribute_has_been_updated(uuid, attribute, value)
@@ -37,29 +30,21 @@ class HardProblem
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
 
-        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
-        Items::mikuTypes().each{|mikuType|
-            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
-            if items then
-                items = items.reject{|i| i["uuid"] == uuid }
-                if item["mikuType"] == mikuType then
-                    items = items + [item]
-                end
-                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
-            end
-        }
-
-        # Updating the list of mikuTypes, if needed
-        if attribute == "mikuType" then
-            mikuTypes = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce")
-            mikuTypes = (mikuTypes + [value]).uniq
-            ValueCache::set("#{HardProblem::get_general_prefix()}:mikuTypes:30cd6e81-4cee-4439-8489-73a1ab8d1dce", mikuTypes)
-        end
+        HardProblem::updateMikuTypesItemsWithItem(item)
 
         # Updating a parent's children inventory
         if attribute == "nx1949" then
             parentuuid = value["parentuuid"]
             ValueCache::destroy("#{HardProblem::get_general_prefix()}:children-for-parent:e76c2bdb-b869-429f-9889:#{parentuuid}")
+        end
+
+        # Updating a parent's children inventory
+        if attribute == "mikuType" then
+            mikuType = value
+            directory = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes/#{mikuType}"
+            if !File.exist?(directory) then
+                FileUtils.mkpath(directory)
+            end
         end
 
         Dispatch::dispatch({
@@ -88,44 +73,18 @@ class HardProblem
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
 
-        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
-        Items::mikuTypes().each{|mikuType|
-            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
-            if items then
-                if item["mikuType"] == mikuType then
-                    items = [item] + items
-                    items = items.reduce([]){|selected_items, item|
-                        if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                            selected_items
-                        else
-                            selected_items + [item]
-                        end
-                    }
-                end
-                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
-            end
-        }
+        HardProblem::updateMikuTypesItemsWithItem(item)
     end
 
     # HardProblem::blade_has_been_destroyed(uuid)
     def self.blade_has_been_destroyed(uuid)
-        # Updating items in "items:4d32-9154-5fc5efb7e047"
         items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047")
         if items then
             items = items.reject{|item| item["uuid"] == uuid }
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
 
-        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
-        Items::mikuTypes().each{|mikuType|
-            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
-            if items then
-                items = items.reject{|item| item["uuid"] == uuid }
-                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
-            end
-        }
-
-
+        HardProblem::updateMikuTypesItemsItemRemoval(uuid)
     end
 
     # HardProblem::item_is_being_destroyed(item)
@@ -150,14 +109,7 @@ class HardProblem
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
 
-        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
-        Items::mikuTypes().each{|mikuType|
-            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
-            if items then
-                items = items.reject{|item| item["uuid"] == uuid }
-                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
-            end
-        }
+        HardProblem::updateMikuTypesItemsItemRemoval(uuid)
     end
 
     # HardProblem::item_has_been_destroyed(uuid)
@@ -172,19 +124,73 @@ class HardProblem
             ValueCache::set("#{HardProblem::get_general_prefix()}:items:4d32-9154-5fc5efb7e047", items)
         end
 
-        # Updating elements in "#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980"
-        Items::mikuTypes().each{|mikuType|
-            items = ValueCache::getOrNull("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980")
-            if items then
-                items = items.reject{|item| item["uuid"] == uuid }
-                ValueCache::set("#{HardProblem::get_general_prefix()}:mikuType:#{mikuType}:452f-a0df-7a23e3e4e980", items)
-            end
-        }
+        HardProblem::updateMikuTypesItemsItemRemoval(uuid)
 
         Dispatch::dispatch({
             "unixtime" => Time.new.to_i,
             "type"     => "destroy",
             "uuid"     => uuid
         })
+    end
+
+    # HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
+    def self.retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
+        return nil if !File.exist?(directory)
+        filepaths = LucilleCore::locationsAtFolder(directory)
+            .select{|filepath| filepath[-5, 5] == ".json" }
+        if filepaths.size > 1 then
+            filepaths.each{|filepath|
+                FileUtils.rm(filepath)
+            }
+            return nil
+        end
+        filepaths[0]
+    end
+
+    # HardProblem::commitJsonDataToDiskContentAddressed(directory, data)
+    def self.commitJsonDataToDiskContentAddressed(directory, data)
+        if !File.exist?(directory) then
+            FileUtils.mkpath(directory)
+        end
+        content = JSON.pretty_generate(data)
+        filename = "#{Digest::SHA1.hexdigest(content)}.json"
+        filepath = "#{directory}/#{filename}"
+        File.open(filepath, "w"){|f| f.puts(content) }
+    end
+
+    # HardProblem::updateMikuTypesItemsWithItem(item)
+    def self.updateMikuTypesItemsWithItem(item)
+        # Updating data/HardProblem/MikuTypes
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes")
+            .select{|filepath| !File.basename(filepath).start_with?('.') }
+            .each{|mikuTypeDirectory|
+                mikuType = File.basename(mikuTypeDirectory)
+                LucilleCore::locationsAtFolder(mikuTypeDirectory)
+                    .select{|filepath| filepath[-5, 5] == ".json" }
+                    .each{|filepath|
+                        items = JSON.parse(IO.read(filepath))
+                        items = items.reject{|i| i["uuid"] == uuid }
+                        if item["mikuType"] == mikuType then
+                            items = items + [item]
+                        end
+                        HardProblem::commitJsonDataToDiskContentAddressed(mikuTypeDirectory, items)
+                    }
+            }
+    end
+
+    # HardProblem::updateMikuTypesItemsItemRemoval(uuid)
+    def self.updateMikuTypesItemsItemRemoval(uuid)
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes")
+            .select{|filepath| !File.basename(filepath).start_with?('.') }
+            .each{|mikuTypeDirectory|
+                mikuType = File.basename(mikuTypeDirectory)
+                LucilleCore::locationsAtFolder(mikuTypeDirectory)
+                .select{|filepath| filepath[-5, 5] == ".json" }
+                .each{|filepath|
+                    items = JSON.parse(IO.read(filepath))
+                    items = items.reject{|i| i["uuid"] == uuid }
+                    HardProblem::commitJsonDataToDiskContentAddressed(mikuTypeDirectory, items)
+                }
+            }
     end
 end
