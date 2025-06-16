@@ -229,8 +229,10 @@ class Operations
         else
             if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': start ? ", true) then
                 PolyActions::start(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': access ? ", true) then
-                    PolyActions::access(item)
+                if item["uxpayload-b4e4"] then
+                    if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': access ? ", true) then
+                        PolyActions::access(item)
+                    end
                 end
             end
         end
