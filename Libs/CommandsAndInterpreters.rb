@@ -43,6 +43,14 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Transmutation::transmute2(item)
+            return
+        end
+
         if Interpreting::match("* on *", input) then
             listord, _, datecode = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -50,14 +58,6 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            return
-        end
-
-        if Interpreting::match("transmute *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Transmutation::transmute2(item)
             return
         end
 
@@ -378,7 +378,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
-            Operations::checkTopListingItemAndProposeToPursueIfRelevant()
+            Operations::checkTopListingItemAndProposeToPursue()
             return
         end
 
@@ -387,7 +387,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
-            Operations::checkTopListingItemAndProposeToPursueIfRelevant()
+            Operations::checkTopListingItemAndProposeToPursue()
             return
         end
 

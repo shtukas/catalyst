@@ -149,7 +149,7 @@ class PolyActions
                 PolyActions::access(item)
                 if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
                     PolyActions::done(item, true)
-                    
+                    Operations::checkTopListingItemAndProposeToPursue()
                 else
                     if LucilleCore::askQuestionAnswerAsBoolean("postpone (or keep running) ? ") then
                         Operations::interactivelyPush(item)
@@ -169,7 +169,7 @@ class PolyActions
                     PolyActions::stop(item)
                     if LucilleCore::askQuestionAnswerAsBoolean("destroy ? ") then
                         PolyActions::destroy(item, true)
-                        
+                        Operations::checkTopListingItemAndProposeToPursue()
                     end
                 end
             end

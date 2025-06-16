@@ -220,13 +220,22 @@ class Operations
         }
     end
 
-    # Operations::diveItem(parent)
-    def self.checkTopListingItemAndProposeToPursueIfRelevant()
+    # Operations::checkTopListingItemAndProposeToPursue()
+    def self.checkTopListingItemAndProposeToPursue()
         item = Listing::itemsForListing1().first
         return if item.nil?
+        return if NxBalls::itemIsRunning(item)
+
         if NxBalls::itemIsPaused(item) then
             if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}' is paused, would you like to pursue ? ", true) then
                 PolyActions::pursue(item)
+            end
+        else
+            if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': start ? ", true) then
+                PolyActions::start(item)
+                if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': access ? ", true) then
+                    PolyActions::access(item)
+                end
             end
         end
     end

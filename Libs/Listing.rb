@@ -70,6 +70,20 @@ class Listing
         i1.sort_by{|item| item["nx0810"]["position"] } + i2
     end
 
+    # Listing::itemsForListing2()
+    def self.itemsForListing2()
+        items = Listing::itemsForListing1()
+        items =  items.take(10) + NxBalls::runningItems() + items.drop(10)
+        items
+            .reduce([]){|selected_items, item|
+                if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
+                    selected_items
+                else
+                    selected_items + [item]
+                end
+            }
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -161,15 +175,8 @@ class Listing
 
             t1 = Time.new.to_f
             printedlines = []
-            items = NxBalls::runningItems() + Listing::itemsForListing1()
+            items = Listing::itemsForListing2()
             items
-                .reduce([]){|selected_items, item|
-                    if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                        selected_items
-                    else
-                        selected_items + [item]
-                    end
-                }
                 .each{|item|
                     line = Listing::displayListingItem(store, printer, item)
                     printedlines << line
