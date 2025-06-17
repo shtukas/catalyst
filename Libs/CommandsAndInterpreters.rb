@@ -5,14 +5,13 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
-            "on items : activate * | disactivate *",
-            "positioning : insert at <position> | move * to <position> | release *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | priority | backup | pile",
+            "on items : .(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
+            "on items : important * | nonimportant *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | active items | dive *",
+            "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | important items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | fsck-all | reset-cache | sort",
+            "misc          : search | commands | edit * | fsck-all | reset-cache | mini",
         ].join("\n")
     end
 
@@ -23,9 +22,25 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                Items::setAttribute(item["uuid"], "nx0810", nil)
                 return
             end
+        end
+
+        if Interpreting::match(".", input) then
+            item = store.getDefault()
+            return if item.nil?
+            PolyActions::start(item)
+            PolyActions::access(item)
+            return
+        end
+
+        if Interpreting::match(". *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            PolyActions::start(item)
+            PolyActions::access(item)
+            return
         end
 
         if Interpreting::match("..", input) then
@@ -104,85 +119,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("move * to *", input) then
-            _, listord, _, position = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            nx0810 = {
-                "position" => position.to_f
-            }
-            Items::setAttribute(item["uuid"], "nx0810", nx0810)
-            return
-        end
-
-        if Interpreting::match("insert at *", input) then
-            _, _, position = Interpreting::tokenizer(input)
-            item = NxLines::interactivelyIssueNewOrNull()
-            return if item.nil?
-            nx0810 = {
-                "position" => position.to_f
-            }
-            Items::setAttribute(item["uuid"], "nx0810", nx0810)
-            Operations::interactivelySetDonation(item)
-            return
-        end
-
-        if Interpreting::match("priority", input) then
-            NxBalls::activeItems().each{|item| 
-                NxBalls::pause(item)
-            }
-            item = NxLines::interactivelyIssueNewOrNull()
-            return if item.nil?
-            nx0810 = {
-                "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
-            }
-            Items::setAttribute(item["uuid"], "nx0810", nx0810)
-            Operations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
-            NxBalls::start(item)
-            return
-        end
-
-        if Interpreting::match("pile", input) then
-            text = CommonUtils::editTextSynchronously("")
-            donation_package = Operations::interactivelySelectTargetForDonationOrNull()
-            lines = text.strip.lines.map{|line| line.strip }
-            lines = lines.reverse
-            last_item = nil
-            lines.each{|line|
-                item = NxLines::interactivelyIssueNew(line)
-                nx0810 = {
-                    "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
-                }
-                Items::setAttribute(item["uuid"], "nx0810", nx0810)
-                if donation_package then
-                    Items::setAttribute(item["uuid"], "donation-1205", donation_package["uuid"])
-                end
-                last_item = Items::itemOrNull(item["uuid"])
-            }
-            if last_item then
-                NxBalls::start(last_item)
-            end
-            return
-        end
-
-        if Interpreting::match("release *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "nx0810", nil)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            elements = Listing::itemsForListing1()
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|i|
-                nx0810 = {
-                    "position" => PolyFunctions::topNx0810Position() * 0.9 # we work with the assumtion that the positions are always positive.
-                }
-                Items::setAttribute(i["uuid"], "nx0810", nx0810)
-            }
+        if Interpreting::match("line", input) then
+            NxLines::interactivelyIssueNew(line)
             return
         end
 
@@ -229,8 +167,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if input == 'active items' then
-            lx = lambda { NxTasks::activeItemsInRatioOrder() }
+        if input == 'important items' then
+            lx = lambda { NxTasks::importantItems() }
             Operations::program3(lx)
             return
         end
@@ -340,24 +278,19 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("activate *", input) then
+        if Interpreting::match("important *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
-            nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
-            return if nx1609.nil?
-            Items::setAttribute(item["uuid"], "nx1609", nx1609)
+            Items::setAttribute(item["uuid"], "nx2290-important", true)
             return
         end
 
-        if Interpreting::match("disactivate *", input) then
+        if Interpreting::match("nonimportant *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
-            Items::setAttribute(item["uuid"], "nx1609", nil)
-            
+            Items::setAttribute(item["uuid"], "nx2290-important", false)
             return
         end
 
@@ -374,11 +307,16 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("mini", input) then
+            Operations::miniListingOps()
+            return
+        end
+
         if Interpreting::match("done", input) then
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
-            Operations::checkTopListingItemAndProceed()
+            Operations::miniListingOps()
             return
         end
 
@@ -387,7 +325,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::done(item, true)
-            Operations::checkTopListingItemAndProceed()
             return
         end
 

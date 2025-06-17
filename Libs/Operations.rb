@@ -68,7 +68,7 @@ class Operations
     def self.interactivelySelectTargetForDonationOrNull()
         targets = [
             NxBalls::activeItems(),
-            NxTasks::activeItems(),
+            NxTasks::importantItems(),
             NxCores::coresInRatioOrder()
         ].flatten
         LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
@@ -111,7 +111,7 @@ class Operations
     # Operations::interactivelySelectParentOrNull()
     def self.interactivelySelectParentOrNull()
         targets = [
-            NxTasks::activeItems(),
+            NxTasks::importantItems(),
             NxCores::coresInRatioOrder()
         ].flatten
         LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
@@ -146,11 +146,7 @@ class Operations
             puts Listing::toString2(store, parent)
             puts ""
 
-            items = PolyFunctions::childrenInOrder(parent)
-            i1, i2 = items.partition{|item| item["nx0810"] }
-            items = i1.sort_by{|item| item["nx0810"]["position"] } + i2
- 
-            items
+            PolyFunctions::childrenInOrder(parent)
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -158,7 +154,7 @@ class Operations
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | activate * | position * | sort"
+            puts "todo (here, with position selection) | pile | important * | position * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -191,13 +187,11 @@ class Operations
                 next
             end
 
-            if input.start_with?("activate") then
+            if input.start_with?("important") then
                 listord = input[8, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
-                nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
-                return if nx1609.nil?
-                Items::setAttribute(i["uuid"], "nx1609", nx1609)
+                Items::setAttribute(i["uuid"], "nx2290-important", true)
                 next
             end
 
@@ -231,50 +225,89 @@ class Operations
         }
     end
 
-    # Operations::checkTopListingItemAndProceed()
-    def self.checkTopListingItemAndProceed()
-        item = Listing::itemsForListing1().first
-        return if item.nil?
-        return if NxBalls::itemIsRunning(item)
-
-        if NxBalls::itemIsPaused(item) then
-            if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}' is paused, would you like to pursue ? ", true) then
-                PolyActions::pursue(item)
+    # Operations::miniListingCommandExecutor(lifo, item, command)
+    def self.miniListingCommandExecutor(lifo, item, command) # lifo
+        if command.start_with?('+') then
+            unixtime = CommonUtils::codeToUnixtimeOrNull(command.gsub(" ", ""))
+            if unixtime.nil? then
+                return lifo
             end
-        else
-            puts "Item '#{PolyFunctions::toString(item).green}'"
-            puts "next steps: start | done | exit (back to listing) | push"
-            command1 = LucilleCore::askQuestionAnswerAsString("> ")
-            if command1 == "start" then
-                PolyActions::start(item)
-                if item["uxpayload-b4e4"] then
-                    PolyActions::access(item)
-                end
-                puts "next steps: done | exit (back to listing while running)"
-                command2 = LucilleCore::askQuestionAnswerAsString("> ")
-                if command2 == "done" then
-                    PolyActions::done(item, true)
-                    Operations::checkTopListingItemAndProceed()
-                    return
-                end
-                if command1 == "exit" then
-                    return
-                end
-                return
+            NxBalls::stop(item)
+            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            lifo.pop
+        end
+        if command == 'start' then
+            PolyActions::start(item)
+            if lifo.size > 0 then
+                lifo.pop
             end
-            if command1 == "done" then
-                PolyActions::done(item, true)
-                Operations::checkTopListingItemAndProceed()
-                return
-            end
-            if command1 == "exit" then
-                return
-            end
-            if command1 == "push" then
-                Operations::interactivelyPush(item)
-                Operations::checkTopListingItemAndProceed()
-                return
+            lifo << Items::itemOrNull(item["uuid"])
+            lifo = lifo.compact
+        end
+        if command == '.' then
+            PolyActions::start(item)
+            PolyActions::access(item)
+        end
+        if command == '..' then
+            PolyActions::double_dots(item)
+            if lifo.size > 0 then
+                lifo.pop
             end
         end
+        if command == 'done' then
+            PolyActions::done(item, true)
+            if lifo.size > 0 then
+                lifo.pop
+            end
+        end
+        if command == 'exit' then
+            return 'exit'
+        end
+        if command == 'push' then
+            Operations::interactivelyPush(item)
+            if lifo.size > 0 then
+                lifo.pop
+            end
+        end
+        if command == 'continue' then
+            # We keep the lifo as it is, and add an item to it
+            Listing::itemsForListing1().each{|i|
+                if !lifo.map{|x| x["uuid"] }.include?(i["uuid"]) then
+                    lifo << i
+                end
+            }
+        end
+        if command == 'catalyst' then
+            Listing::displayListingOnce()
+        end
+        lifo
+    end
+
+    # Operations::miniListingOps(lifo)
+    def self.miniListingOps(lifo = [])
+        if lifo.empty? then
+            item = Listing::itemsForListing1().first
+            return if item.nil?
+            lifo << item
+            Operations::miniListingOps(lifo)
+            return
+        end
+        lifo.take(lifo.size-1).each{|item|
+            puts "#{Listing::toString3(item)}"
+        }
+        item = lifo.last
+        if item["mikuType"] == "NxCore" then
+            item = PolyFunctions::childrenForParent(item).first
+        end
+        if NxBalls::itemIsRunning(item) then
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString3(item)} > done | exit | +<datecode> |push | continue | catalyst : ")
+        else
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString3(item)} > start | .(.) | done | exit | +<datecode> | push | continue | catalyst : ")
+        end
+        lifo = Operations::miniListingCommandExecutor(lifo, item, command)
+        if lifo == 'exit' then
+            return
+        end
+        Operations::miniListingOps(lifo)
     end
 end

@@ -7,7 +7,6 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         nx1949 = nx1949 || Operations::makeNx1949OrNull()
-        nx1609 = NxTasks::interactivelyMakeNx1609OrNull()
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxTask")
@@ -16,7 +15,6 @@ class NxTasks
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "nx1949", nx1949)
-        Items::setAttribute(uuid, "nx1609", nx1609)
         Items::itemOrNull(uuid)
     end
 
@@ -51,16 +49,15 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
-        return "🔺" if item["nx1609"]
+        return "🔺" if item["nx2290-important"]
         "🔹"
     end
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        px1 = item["nx1609"] ? " (#{NxTasks::activeItemRatio(item)})".yellow : ''
         core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
         px2 = " (#{item["nx1949"]["position"]} @ #{core["description"]})".yellow
-        "#{NxTasks::icon(item)} #{item["description"]}#{px1}#{px2}"
+        "#{NxTasks::icon(item)} #{item["description"]}#{px2}"
     end
 
     # NxTasks::itemsInPositionOrder()
@@ -72,38 +69,15 @@ class NxTasks
     # ------------------
     # Active Items
 
-    # NxTasks::interactivelyMakeNx1609OrNull()
-    def self.interactivelyMakeNx1609OrNull()
-        hours = LucilleCore::askQuestionAnswerAsString("(active ?) hours per day (empty for none): ")
-        return nil if hours == ""
-        hours = hours.to_f
-        return nil if hours == 0
-        {
-            "hours" => hours
-        }
-    end
-
-    # NxTasks::activeItemRatio(item)
-    def self.activeItemRatio(item)
-        Bank1::recoveredAverageHoursPerDay(item["uuid"]).to_f/item["nx1609"]["hours"]
-    end
-
-    # NxTasks::activeItems()
-    def self.activeItems()
+    # NxTasks::importantItems()
+    def self.importantItems()
         Items::mikuType("NxTask")
-            .select{|item| item["nx1609"] }
+            .select{|item| item["nx2290-important"] }
     end
 
-    # NxTasks::activeItemsInRatioOrder()
-    def self.activeItemsInRatioOrder()
-        NxTasks::activeItems()
-            .sort_by{|item| NxTasks::activeItemRatio(item) }
-    end
-
-    # NxTasks::activeItemsForListing()
-    def self.activeItemsForListing()
-        NxTasks::activeItemsInRatioOrder()
-            .select{|item| NxTasks::activeItemRatio(item) < 1 }
+    # NxTasks::importantItemsForListing()
+    def self.importantItemsForListing()
+        NxTasks::importantItems()
     end
 
     # ------------------

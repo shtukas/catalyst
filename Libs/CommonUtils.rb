@@ -157,8 +157,8 @@ class CommonUtils
             DateTime.parse("#{date} 07:00:00 #{localsuffix}").to_time.to_i
         }
 
-        # +++ postpone til midnight
-        # ++ postpone by one hour
+        # ++ postpone til midnight
+        # + postpone by one hour
         # +today
         # +tomorrow
         # +<weekdayname>
@@ -168,8 +168,8 @@ class CommonUtils
         # +1@12:34
 
 
-        return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) if code == "+++"
-        return (Time.new.to_i+3600) if code == "++"
+        return CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(CommonUtils::getLocalTimeZone()) if code == "++"
+        return (Time.new.to_i+3600) if code == "+"
 
         code = code[1,99].strip
 

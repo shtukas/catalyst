@@ -23,11 +23,24 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
-        nx = (lambda {|item|
-            return "        " if item["nx0810"].nil?
-            "[#{"%5.3f" % item["nx0810"]["position"]}] ".red
-        }).call(item)
-        line = "#{nx}#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
+    # Listing::toString3(item)
+    def self.toString3(item)
+        return nil if item.nil?
+        hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
+        line = "#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -49,25 +62,12 @@ class Listing
             NxLines::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
-            (lambda {
-                if WaveHits::getHigestRatio() < 0.35 then
-                    [
-                        Waves::nonInterruptionItemsForListing(),
-                        NxTasks::activeItemsForListing(),
-                    ]
-                else
-                    [
-                        NxTasks::activeItemsForListing(),
-                        Waves::nonInterruptionItemsForListing(),
-                    ]
-                end
-            }).call(),
+            NxTasks::importantItemsForListing(),
+            Waves::nonInterruptionItemsForListing(),
             NxCores::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-        i1, i2 = items.partition{|item| item["nx0810"] }
-        i1.sort_by{|item| item["nx0810"]["position"] } + i2
     end
 
     # Listing::itemsForListing2()
@@ -128,6 +128,57 @@ class Listing
         line
     end
 
+    # Listing::displayListingOnce()
+    def self.displayListingOnce()
+        store = ItemStore.new()
+        printer = lambda{|line| puts line }
+        printer.call("")
+        Operations::top_notifications().each{|notification|
+            puts "notification: #{notification}"
+        }
+
+        t1 = Time.new.to_f
+        printedlines = []
+        items = Listing::itemsForListing2()
+        items
+            .each{|item|
+                line = Listing::displayListingItem(store, printer, item)
+                printedlines << line
+            }
+
+            if items.size > 20 then
+                puts ""
+                printedlines.take(5).each{|line| puts line }
+                puts ""
+            end
+
+        puts "Wave ratio: #{(100*WaveHits::getHigestRatio().to_f/0.35).round(2)}%".yellow
+
+        t2 = Time.new.to_f
+        renderingTime = t2-t1
+        if renderingTime > 0.5 then
+            puts "rendering time: #{renderingTime.round(3)} seconds".red
+        end
+
+        begin
+            line = `palmer report:performance`.strip.lines.drop(2).first
+            if line.include?("Missing") then
+                puts line.red
+            else
+                puts line.yellow
+            end
+            
+        rescue
+            puts "could not retrieve palmer performance report".red
+        end
+
+        input = LucilleCore::askQuestionAnswerAsString("> ")
+        if input == "exit" then
+            return
+        end
+        CommandsAndInterpreters::interpreter(input, store)
+    end
+
     # Listing::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
@@ -158,53 +209,7 @@ class Listing
 
         loop {
             Listing::preliminaries(initialCodeTrace)
-            store = ItemStore.new()
-            printer = lambda{|line| puts line }
-            printer.call("")
-            Operations::top_notifications().each{|notification|
-                puts "notification: #{notification}"
-            }
-
-            t1 = Time.new.to_f
-            printedlines = []
-            items = Listing::itemsForListing2()
-            items
-                .each{|item|
-                    line = Listing::displayListingItem(store, printer, item)
-                    printedlines << line
-                }
-
-                if items.size > 20 then
-                    puts ""
-                    printedlines.take(5).each{|line| puts line }
-                    puts ""
-                end
-
-            puts "highest ratio: #{WaveHits::getHigestRatio()}".yellow
-
-            t2 = Time.new.to_f
-            renderingTime = t2-t1
-            if renderingTime > 0.5 then
-                puts "rendering time: #{renderingTime.round(3)} seconds".red
-            end
-
-            begin
-                line = `palmer report:performance`.strip.lines.drop(2).first
-                if line.include?("Missing") then
-                    puts line.red
-                else
-                    puts line.yellow
-                end
-                
-            rescue
-                puts "could not retrieve palmer performance report".red
-            end
-
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            if input == "exit" then
-                return
-            end
-            CommandsAndInterpreters::interpreter(input, store)
+            Listing::displayListingOnce()
         }
     end
 end

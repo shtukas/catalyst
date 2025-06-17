@@ -61,14 +61,12 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "nx0810", nil)
     end
 
     # PolyActions::done(item, useTheForce = false)
     def self.done(item, useTheForce = false)
 
         NxBalls::stop(item)
-        Items::setAttribute(item["uuid"], "nx0810", nil)
 
         if item["mikuType"] == "NxLambda" then
             return
@@ -147,13 +145,15 @@ class PolyActions
             if !NxBalls::itemIsActive(item) then
                 PolyActions::start(item)
                 PolyActions::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
+                if LucilleCore::askQuestionAnswerAsBoolean("done ? ", true) then
                     PolyActions::done(item, true)
-                    Operations::checkTopListingItemAndProceed()
                 else
-                    if LucilleCore::askQuestionAnswerAsBoolean("postpone (or keep running) ? ") then
-                        Operations::interactivelyPush(item)
-                        
+                    if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
+                        return
+                    else
+                        if LucilleCore::askQuestionAnswerAsBoolean("postpone ? ") then
+                            Operations::interactivelyPush(item)
+                        end
                     end
                 end
             end
@@ -165,11 +165,14 @@ class PolyActions
                     PolyActions::start(item)
                 end
                 PolyActions::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("stop ? ") then
+                if LucilleCore::askQuestionAnswerAsBoolean("done/destroy ? ") then
                     PolyActions::stop(item)
-                    if LucilleCore::askQuestionAnswerAsBoolean("destroy ? ") then
-                        PolyActions::destroy(item, true)
-                        Operations::checkTopListingItemAndProceed()
+                    PolyActions::destroy(item, true)
+                else
+                    if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
+                        return
+                    else
+                        PolyActions::stop(item)
                     end
                 end
             end

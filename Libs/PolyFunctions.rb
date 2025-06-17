@@ -218,14 +218,4 @@ class PolyFunctions
         last = positions.last
         first + rand * (last - first)
     end
-
-    # PolyFunctions::topNx0810Position()
-    def self.topNx0810Position()
-        positions = Items::items()
-            .map{|item| item["nx0810"] }
-            .compact
-            .map{|nx| nx["position"] }
-        return 9.117 if positions.empty?
-        positions.min
-    end
 end
