@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | important items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | fsck-all | reset-cache | mini",
+            "misc          : search | commands | edit * | fsck-all",
         ].join("\n")
     end
 
@@ -82,11 +82,6 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("reset-cache", input) then
-            XCache::set("049bdc08-8833-4736-aa90-4dc2c59fd67d:#{CommonUtils::today()}", Time.new.to_f.to_s)
             return
         end
 
@@ -307,16 +302,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("mini", input) then
-            Operations::miniListingOps()
-            return
-        end
-
         if Interpreting::match("done", input) then
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
-            Operations::miniListingOps()
             return
         end
 
