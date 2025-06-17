@@ -152,8 +152,6 @@ class Listing
                 puts ""
             end
 
-        puts "Wave ratio: #{(100*WaveHits::getHigestRatio().to_f/0.35).round(2)}%".yellow
-
         t2 = Time.new.to_f
         renderingTime = t2-t1
         if renderingTime > 0.5 then

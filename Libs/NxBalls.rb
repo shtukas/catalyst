@@ -203,10 +203,6 @@ class NxBalls
             NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
-
-        if item["mikuType"] == "Wave" then
-            WaveHits::waveHit(timespanInSeconds)
-        end
     end
 
     # NxBalls::pause(item)
@@ -223,10 +219,6 @@ class NxBalls
         }
         nxball["type"] = "paused"
         NxBalls::commitBall(item, nxball)
-
-        if item["mikuType"] == "Wave" then
-            WaveHits::waveHit(timespanInSeconds)
-        end
     end
 
     # NxBalls::pursue(item)
