@@ -231,8 +231,8 @@ class Operations
         }
     end
 
-    # Operations::checkTopListingItemAndProposeToPursue()
-    def self.checkTopListingItemAndProposeToPursue()
+    # Operations::checkTopListingItemAndProceed()
+    def self.checkTopListingItemAndProceed()
         item = Listing::itemsForListing1().first
         return if item.nil?
         return if NxBalls::itemIsRunning(item)
@@ -242,13 +242,38 @@ class Operations
                 PolyActions::pursue(item)
             end
         else
-            if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': start ? ", true) then
+            puts "Item '#{PolyFunctions::toString(item).green}'"
+            puts "next steps: start | done | exit (back to listing) | push"
+            command1 = LucilleCore::askQuestionAnswerAsString("> ")
+            if command1 == "start" then
                 PolyActions::start(item)
                 if item["uxpayload-b4e4"] then
-                    if LucilleCore::askQuestionAnswerAsBoolean("Item '#{PolyFunctions::toString(item).green}': access ? ", true) then
-                        PolyActions::access(item)
-                    end
+                    PolyActions::access(item)
                 end
+                puts "next steps: done | exit (back to listing while running)"
+                command2 = LucilleCore::askQuestionAnswerAsString("> ")
+                if command2 == "done" then
+                    PolyActions::done(item, true)
+                    Operations::checkTopListingItemAndProceed()
+                    return
+                end
+                if command1 == "exit" then
+                    return
+                end
+                return
+            end
+            if command1 == "done" then
+                PolyActions::done(item, true)
+                Operations::checkTopListingItemAndProceed()
+                return
+            end
+            if command1 == "exit" then
+                return
+            end
+            if command1 == "push" then
+                Operations::interactivelyPush(item)
+                Operations::checkTopListingItemAndProceed()
+                return
             end
         end
     end

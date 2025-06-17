@@ -7,7 +7,7 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        puts "start: '#{PolyFunctions::toString(item).green}' ? "
+        puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
 
@@ -149,7 +149,7 @@ class PolyActions
                 PolyActions::access(item)
                 if LucilleCore::askQuestionAnswerAsBoolean("done ? ") then
                     PolyActions::done(item, true)
-                    Operations::checkTopListingItemAndProposeToPursue()
+                    Operations::checkTopListingItemAndProceed()
                 else
                     if LucilleCore::askQuestionAnswerAsBoolean("postpone (or keep running) ? ") then
                         Operations::interactivelyPush(item)
@@ -169,7 +169,7 @@ class PolyActions
                     PolyActions::stop(item)
                     if LucilleCore::askQuestionAnswerAsBoolean("destroy ? ") then
                         PolyActions::destroy(item, true)
-                        Operations::checkTopListingItemAndProposeToPursue()
+                        Operations::checkTopListingItemAndProceed()
                     end
                 end
             end

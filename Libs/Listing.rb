@@ -180,6 +180,8 @@ class Listing
                     puts ""
                 end
 
+            puts "highest ratio: #{WaveHits::getHigestRatio()}".yellow
+
             t2 = Time.new.to_f
             renderingTime = t2-t1
             if renderingTime > 0.5 then
