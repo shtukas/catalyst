@@ -46,7 +46,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::double_dots(item)
+            PolyActions::start_access_done(item)
             return
         end
 
@@ -54,7 +54,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::double_dots(item)
+            PolyActions::start_access_done(item)
             return
         end
 
@@ -306,6 +306,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, true)
+            Operations::mini()
             return
         end
 

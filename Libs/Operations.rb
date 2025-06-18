@@ -132,7 +132,7 @@ class Operations
     # Operations::diveItem(parent)
     def self.diveItem(parent)
 
-        if parent["uuid"] == "427bbceb-923e-4feb-8232-05883553bb28" then
+        if parent["uuid"] == NxCores::infinityuuid() then
             puts "You cannot dive in Infinity"
             LucilleCore::pressEnterToContinue()
             return
@@ -222,6 +222,27 @@ class Operations
             end
 
             CommandsAndInterpreters::interpreter(input, store)
+        }
+    end
+
+    # Operations::mini()
+    def self.mini()
+        return if NxBalls::runningItems().size > 0
+        items = Listing::itemsForListing1()
+        loop {
+            break if items.empty?
+            break if NxBalls::runningItems().size > 0
+            item = items.first
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} : .. | catalyst : ")
+            if command == ".." then
+                PolyActions::start_access_done(item)
+                items.shift
+                next
+            end
+            if command == "catalyst" then
+                Listing::displayListingOnce()
+                next
+            end
         }
     end
 end

@@ -23,24 +23,8 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : "      "
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
-    end
-
-    # Listing::toString3(item)
-    def self.toString3(item)
-        return nil if item.nil?
-        hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
-        line = "#{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        impt = item["nx2290-important"] ? " [important]".red : ""
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -107,7 +91,7 @@ class Listing
 
     # Listing::displayListingItem(store, printer, item)
     def self.displayListingItem(store, printer, item)
-        PolyFunctions::childrenForParent(item)
+        PolyFunctions::childrenInOrder(item)
         .reduce([]){|selected, child|
             if selected.size >= 3 then
                 selected
@@ -138,19 +122,11 @@ class Listing
         }
 
         t1 = Time.new.to_f
-        printedlines = []
-        items = Listing::itemsForListing2()
-        items
+        Listing::itemsForListing2()
+            .take(20)
             .each{|item|
                 line = Listing::displayListingItem(store, printer, item)
-                printedlines << line
             }
-
-            if items.size > 20 then
-                puts ""
-                printedlines.take(5).each{|line| puts line }
-                puts ""
-            end
 
         t2 = Time.new.to_f
         renderingTime = t2-t1

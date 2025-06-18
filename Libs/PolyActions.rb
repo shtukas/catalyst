@@ -14,6 +14,17 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
+        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(parent) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
+            if option == "access payload" then
+                # we continue here
+            end
+            if option == "dive" then
+                Operations::diveItem(item)
+                return
+            end
+        end
+
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
             return
@@ -138,8 +149,8 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::double_dots(item)
-    def self.double_dots(item)
+    # PolyActions::start_access_done(item)
+    def self.start_access_done(item)
 
         processWaveLike = lambda{|item|
             if !NxBalls::itemIsActive(item) then
