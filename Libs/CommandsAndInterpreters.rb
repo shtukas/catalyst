@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
+            "on items : ..(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "on items : important * | nonimportant *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line",
             "              : transmute *",
@@ -26,7 +26,7 @@ class CommandsAndInterpreters
             end
         end
 
-        if Interpreting::match(".", input) then
+        if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
             PolyActions::start(item)
@@ -34,7 +34,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(". *", input) then
+        if Interpreting::match(".. *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
@@ -43,14 +43,14 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("..", input) then
+        if Interpreting::match("...", input) then
             item = store.getDefault()
             return if item.nil?
             PolyActions::start_access_done(item)
             return
         end
 
-        if Interpreting::match(".. *", input) then
+        if Interpreting::match("... *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
