@@ -14,7 +14,7 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(parent) then
+        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(item) then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
             if option == "access payload" then
                 # we continue here
