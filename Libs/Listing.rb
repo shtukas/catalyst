@@ -21,7 +21,7 @@ class Listing
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
-        storePrefix = store ? "(#{store.prefixString()})" : "      "
+        storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         impt = item["nx2290-important"] ? " [important]".red : ""
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}"
