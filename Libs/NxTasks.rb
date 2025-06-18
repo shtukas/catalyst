@@ -78,6 +78,7 @@ class NxTasks
     # NxTasks::importantItemsForListing()
     def self.importantItemsForListing()
         NxTasks::importantItems()
+            .select{|item| Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600*1.5 }
     end
 
     # ------------------
