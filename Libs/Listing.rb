@@ -91,6 +91,7 @@ class Listing
 
     # Listing::displayListingItem(store, printer, item)
     def self.displayListingItem(store, printer, item)
+        lines = []
         PolyFunctions::childrenInOrder(item)
         .reduce([]){|selected, child|
             if selected.size >= 3 then
@@ -104,12 +105,13 @@ class Listing
             end
         }
         .each {|child|
-            Listing::displayListingItem(store, printer, child)
+            lines = lines + Listing::displayListingItem(store, printer, child)
         }
         store.register(item, Listing::canBeDefault(item))
         line = Listing::toString2(store, item)
         printer.call(line)
-        line
+        lines << line
+        lines
     end
 
     # Listing::displayListingOnce()
@@ -121,11 +123,15 @@ class Listing
             puts "notification: #{notification}"
         }
 
+        sheight = CommonUtils::screenHeight()
+        swidth = CommonUtils::screenWidth()
+
         t1 = Time.new.to_f
         Listing::itemsForListing2()
-            .take(20)
             .each{|item|
-                line = Listing::displayListingItem(store, printer, item)
+                lines = Listing::displayListingItem(store, printer, item)
+                sheight = sheight - lines.map{|line| (line.size/swidth + 1) }.sum
+                break if sheight <= 2
             }
 
         t2 = Time.new.to_f
