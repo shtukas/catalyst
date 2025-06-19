@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : ..(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "on items : important * | nonimportant *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | important items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
@@ -106,6 +106,18 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["_recorduuid_"]}; uuid: #{record["_id_"]}, date: #{record["_date_"]}, value: #{"%9.2f" % record["_value_"]}"
                 }
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("priority", input) then
+            NxBalls::activeItems().each{|item| 
+                NxBalls::pause(item)
+            }
+            item = NxLines::interactivelyIssueNewOrNull()
+            return if item.nil?
+            Operations::interactivelySetDonation(item)
+            item = Items::itemOrNull(item["uuid"])
+            NxBalls::start(item)
             return
         end
 
