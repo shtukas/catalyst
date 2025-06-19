@@ -151,7 +151,7 @@ class Listing
             .each{|item|
                 lines = Listing::displayListingItem(store, printer, item)
                 sheight = sheight - lines.map{|line| (line.size/swidth + 1) }.sum
-                break if sheight <= 3
+                break if sheight <= 4
             }
 
         t2 = Time.new.to_f
