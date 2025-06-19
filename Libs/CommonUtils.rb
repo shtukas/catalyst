@@ -7,14 +7,14 @@ class CommonUtils
     # ----------------------------------------------------
     # Array Utilities
 
-    # CommonUtils::removeDuplicateOnAttribute(array, attrname)
-    def self.removeDuplicateOnAttribute(array, attrname)
+    # CommonUtils::removeDuplicateObjectsOnAttribute(items, attrname)
+    def self.removeDuplicateObjectsOnAttribute(items, attrname)
         items
-            .reduce([]){|selected_items, item|
-                if selected_items.map{|i| i[attrname] }.include?(item[attrname]) then
-                    selected_items
+            .reduce([]){|selected, item|
+                if selected.map{|i| i[attrname] }.include?(item[attrname]) then
+                    selected
                 else
-                    selected_items + [item]
+                    selected + [item]
                 end
             }
     end

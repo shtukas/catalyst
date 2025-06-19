@@ -233,7 +233,7 @@ class Operations
         loop {
             break if (items.empty? and stack.empty?)
             stack = stack + NxBalls::runningItems()
-            stack = CommonUtils::removeDuplicateOnAttribute(stack, "uuid")
+            stack = CommonUtils::removeDuplicateObjectsOnAttribute(stack, "uuid")
             stack.each{|item|
                 puts Listing::toString2(nil, item)
             }

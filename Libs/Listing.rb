@@ -39,7 +39,6 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-        
         blocks = [
             {
                 "items" => [
@@ -77,20 +76,16 @@ class Listing
             .map{|block| block["items"] }
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+        items
     end
 
     # Listing::itemsForListing2()
     def self.itemsForListing2()
         items = Listing::itemsForListing1()
-        items =  items.take(10) + NxBalls::runningItems() + items.drop(10)
+        items = items.take(10) + NxBalls::runningItems() + items.drop(10)
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items
-            .reduce([]){|selected_items, item|
-                if selected_items.map{|i| i["uuid"] }.include?(item["uuid"]) then
-                    selected_items
-                else
-                    selected_items + [item]
-                end
-            }
     end
 
     # -----------------------------------------
@@ -156,7 +151,7 @@ class Listing
             .each{|item|
                 lines = Listing::displayListingItem(store, printer, item)
                 sheight = sheight - lines.map{|line| (line.size/swidth + 1) }.sum
-                break if sheight <= 2
+                break if sheight <= 3
             }
 
         t2 = Time.new.to_f
