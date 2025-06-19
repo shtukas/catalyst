@@ -88,6 +88,32 @@ class Listing
         items
     end
 
+    # Listing::itemsForListing3(context, head, tail)
+    def self.itemsForListing3(context, head, tail)
+        # Context is the set of uuids for which we have already checked the children
+        # without it, we would loop on any item that have children and get a "stack level too deep"
+
+        return head if tail.empty?
+
+        if context.include?(tail[0]["uuid"]) then
+            return Listing::itemsForListing3(context, head + tail.take(1), tail.drop(1))
+        end
+
+        children = PolyFunctions::childrenForParent(tail[0]).first(3)
+        if children.empty? then
+            Listing::itemsForListing3(context + [tail[0]["uuid"]], head + tail.take(1), tail.drop(1))
+        else
+            Listing::itemsForListing3(context + [tail[0]["uuid"]], head , children + tail)
+        end
+    end
+
+    # Listing::itemsForListing4()
+    def self.itemsForListing4()
+        items = Listing::itemsForListing3([] , [], Listing::itemsForListing2())
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+        items
+    end
+
     # -----------------------------------------
     # Ops
 
@@ -147,10 +173,12 @@ class Listing
         swidth = CommonUtils::screenWidth()
 
         t1 = Time.new.to_f
-        Listing::itemsForListing2()
+        Listing::itemsForListing4()
             .each{|item|
-                lines = Listing::displayListingItem(store, printer, item)
-                sheight = sheight - lines.map{|line| (line.size/swidth + 1) }.sum
+                store.register(item, Listing::canBeDefault(item))
+                line = Listing::toString2(store, item)
+                printer.call(line)
+                sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 4
             }
 
