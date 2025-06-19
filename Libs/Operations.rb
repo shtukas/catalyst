@@ -228,21 +228,34 @@ class Operations
     # Operations::mini()
     def self.mini()
         return if NxBalls::runningItems().size > 0
+        stack = []
         items = Listing::itemsForListing1()
         loop {
-            break if items.empty?
-            break if NxBalls::runningItems().size > 0
+            break if (items.empty? and stack.empty?)
+            stack = stack + NxBalls::runningItems()
+            stack = CommonUtils::removeDuplicateOnAttribute(stack, "uuid")
+            stack.each{|item|
+                puts Listing::toString2(nil, item)
+            }
             item = items.first
-            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} : .. | catalyst : ")
-            if command == ".." then
-                PolyActions::start_access_done(item)
-                items.shift
-                next
-            end
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} : ")
             if command == "catalyst" then
                 Listing::displayListingOnce()
                 next
             end
+            if command == "add" then
+                stack << item
+                items.shift
+                next
+            end
+            if command == "drop" then
+                items << stack.shift
+                next
+            end
+            store = ItemStore.new()
+            store.register(item, true)
+            CommandsAndInterpreters::interpreter(command, store)
+            items = Listing::itemsForListing1()
         }
     end
 end

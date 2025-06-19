@@ -39,17 +39,42 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-        items = [
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxBackups::listingItems(),
-            NxLines::listingItems(),
-            NxDateds::listingItems(),
-            NxFloats::listingItems(),
-            NxTasks::importantItemsForListing(),
-            Waves::nonInterruptionItemsForListing(),
-            NxCores::listingItems()
+        
+        blocks = [
+            {
+                "items" => [
+                    Anniversaries::listingItems(),
+                    Waves::listingItemsInterruption(),
+                    NxBackups::listingItems(),
+                    NxLines::listingItems(),
+                    NxDateds::listingItems(),
+                    NxFloats::listingItems(),
+                ],
+                "metric" => -1 # we want that one first
+            },
+            {
+                "items" => [
+                    NxTasks::importantItemsForListing(),
+                ],
+                "metric" => Bank1::recoveredAverageHoursPerDay("block:important-items:40c3f5929ca6")
+            },
+            {
+                "items" => [
+                    Waves::nonInterruptionItemsForListing(),
+                ],
+                "metric" => Bank1::recoveredAverageHoursPerDay("block:waves:80fcd1ca16d3")
+            },
+            {
+                "items" => [
+                    NxCores::listingItems(),
+                ],
+                "metric" => 24 # which is the maximum value
+            },
         ]
+
+        items = blocks
+            .sort_by{|block| block["metric"] }
+            .map{|block| block["items"] }
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end

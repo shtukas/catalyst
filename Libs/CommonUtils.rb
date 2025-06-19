@@ -7,10 +7,16 @@ class CommonUtils
     # ----------------------------------------------------
     # Array Utilities
 
-    # CommonUtils::putFirst(array, lbd)
-    def self.putFirst(array, lbd)
-        a1, a2 = array.partition{|e| lbd.call(e) }
-        a1 + a2
+    # CommonUtils::removeDuplicateOnAttribute(array, attrname)
+    def self.removeDuplicateOnAttribute(array, attrname)
+        items
+            .reduce([]){|selected_items, item|
+                if selected_items.map{|i| i[attrname] }.include?(item[attrname]) then
+                    selected_items
+                else
+                    selected_items + [item]
+                end
+            }
     end
 
     # ----------------------------------------------------
