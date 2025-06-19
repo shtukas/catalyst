@@ -244,7 +244,7 @@ class Operations
             store = ItemStore.new()
             store.register(item, true)
             CommandsAndInterpreters::interpreter(command, store)
-            items = Listing::itemsForListing1()
+            items = Listing::itemsForListing4()
         }
     end
 end

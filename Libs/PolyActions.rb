@@ -149,8 +149,17 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::start_access_done(item)
-    def self.start_access_done(item)
+    # PolyActions::maybe_start_and_access(item)
+    def self.maybe_start_and_access(item)
+        if item["mikuType"] != "NxCore" then
+            PolyActions::start(item)
+        end
+        PolyActions::access(item)
+        raise "(error: 5cc64383-db95-47e7-8e2c-f2c19ef5117a) I do not know how to maybe_start_and_access #{item["mikuType"]}"
+    end
+
+    # PolyActions::maybe_start_and_access_done(item)
+    def self.maybe_start_and_access_done(item)
 
         processWaveLike = lambda{|item|
             if !NxBalls::itemIsActive(item) then
@@ -247,7 +256,7 @@ class PolyActions
             return
         end
 
-        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to double dots #{item["mikuType"]}"
+        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to maybe_start_and_access_done #{item["mikuType"]}"
     end
 
     # PolyActions::destroy(item, force)
