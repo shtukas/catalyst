@@ -155,7 +155,6 @@ class PolyActions
             PolyActions::start(item)
         end
         PolyActions::access(item)
-        raise "(error: 5cc64383-db95-47e7-8e2c-f2c19ef5117a) I do not know how to maybe_start_and_access #{item["mikuType"]}"
     end
 
     # PolyActions::maybe_start_and_access_done(item)

@@ -232,19 +232,12 @@ class Operations
         loop {
             break if items.empty?
             item = items.first
-            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} : ")
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} ('catalyst' or [enter]): ")
             if command == "catalyst" then
                 Listing::displayListingOnce()
                 next
             end
-            if command == "next" then
-                items.shift
-                next
-            end
-            store = ItemStore.new()
-            store.register(item, true)
-            CommandsAndInterpreters::interpreter(command, store)
-            items = Listing::itemsForListing4()
+            PolyActions::maybe_start_and_access_done(item)
         }
     end
 end
