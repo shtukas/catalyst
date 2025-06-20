@@ -39,41 +39,17 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-        blocks = [
-            {
-                "items" => [
-                    Anniversaries::listingItems(),
-                    Waves::listingItemsInterruption(),
-                    NxBackups::listingItems(),
-                    NxLines::listingItems(),
-                    NxDateds::listingItems(),
-                    NxFloats::listingItems(),
-                ],
-                "metric" => -1 # we want that one first
-            },
-            {
-                "items" => [
-                    NxTasks::importantItemsForListing(),
-                ],
-                "metric" => Bank1::recoveredAverageHoursPerDay("block:important-items:40c3f5929ca6")
-            },
-            {
-                "items" => [
-                    Waves::nonInterruptionItemsForListing(),
-                ],
-                "metric" => Bank1::recoveredAverageHoursPerDay("block:waves:80fcd1ca16d3")
-            },
-            {
-                "items" => [
-                    NxCores::listingItems(),
-                ],
-                "metric" => 24 # which is the maximum value
-            },
+        items = [
+            Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxBackups::listingItems(),
+            NxLines::listingItems(),
+            NxDateds::listingItems(),
+            NxFloats::listingItems(),
+            NxTasks::importantItemsForListing(),
+            Waves::nonInterruptionItemsForListing(),
+            NxCores::listingItems()
         ]
-
-        items = blocks
-            .sort_by{|block| block["metric"] }
-            .map{|block| block["items"] }
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
@@ -99,7 +75,16 @@ class Listing
             return Listing::itemsForListing3(context, head + tail.take(1), tail.drop(1))
         end
 
-        children = PolyFunctions::childrenForParent(tail[0]).first(3)
+        children = PolyFunctions::childrenForParent(tail[0])
+            .first(3)
+            .sort_by{|item|
+                value = Bank1::recoveredAverageHoursPerDay(item["uuid"])
+                if value > 0 then
+                    value
+                else
+                    0.4
+                end
+            }
         if children.empty? then
             Listing::itemsForListing3(context + [tail[0]["uuid"]], head + tail.take(1), tail.drop(1))
         else

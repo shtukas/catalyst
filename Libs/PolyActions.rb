@@ -184,14 +184,23 @@ class PolyActions
                     PolyActions::start(item)
                 end
                 PolyActions::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("done/destroy ? ") then
-                    PolyActions::stop(item)
-                    PolyActions::destroy(item, true)
-                else
+
+                if item["nx2290-important"] then
                     if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
                         return
                     else
                         PolyActions::stop(item)
+                    end
+                else
+                    if LucilleCore::askQuestionAnswerAsBoolean("done/destroy ? ") then
+                        PolyActions::stop(item)
+                        PolyActions::destroy(item, true)
+                    else
+                        if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
+                            return
+                        else
+                            PolyActions::stop(item)
+                        end
                     end
                 end
             end
