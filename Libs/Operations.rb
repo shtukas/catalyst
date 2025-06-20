@@ -232,7 +232,7 @@ class Operations
         loop {
             break if items.empty?
             item = items.shift
-            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} (.. | ... | done | next | catalyst | exit): ")
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} (.. | ... (default) | done | next | catalyst | exit): ")
             if command == "done" then
                 PolyActions::done(item, true)
                 next
@@ -245,6 +245,7 @@ class Operations
                 next
             end
             if command == "exit" then
+                return
                 next
             end
             PolyActions::maybe_start_and_access_done(item)
