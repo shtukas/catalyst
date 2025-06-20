@@ -228,6 +228,7 @@ class Operations
     # Operations::mini()
     def self.mini()
         return if NxBalls::runningItems().size > 0
+        last_items_refresh_time = Time.new.to_i
         items = Listing::itemsForListing4()
         loop {
             break if items.empty?
@@ -249,6 +250,10 @@ class Operations
                 next
             end
             PolyActions::maybe_start_and_access_done(item)
+            if (Time.new.to_i - last_items_refresh_time) > 3600 then
+                items = Listing::itemsForListing4()
+                last_items_refresh_time = Time.new.to_i
+            end
         }
     end
 end
