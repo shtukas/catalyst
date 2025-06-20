@@ -231,8 +231,15 @@ class Operations
         items = Listing::itemsForListing4()
         loop {
             break if items.empty?
-            item = items.first
-            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} ('catalyst' or [enter]): ")
+            item = items.shift
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} (.. | ... | done | next | catalyst): ")
+            if command == "done" then
+                PolyActions::done(item, true)
+                next
+            end
+            if command == "next" then
+                next
+            end
             if command == "catalyst" then
                 Listing::displayListingOnce()
                 next

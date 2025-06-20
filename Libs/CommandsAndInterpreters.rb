@@ -315,7 +315,7 @@ class CommandsAndInterpreters
         if Interpreting::match("done", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::done(item, true)
+            PolyActions::done(item, false)
             Operations::mini()
             return
         end
