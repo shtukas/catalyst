@@ -77,6 +77,7 @@ class NxTasks
 
     # NxTasks::importantItemsForListing()
     def self.importantItemsForListing()
+        return [] if Time.new.hour >= 17
         NxTasks::importantItems()
             .select{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
