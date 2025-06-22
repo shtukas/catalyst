@@ -29,7 +29,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::maybe_start_and_access(item)
+            PolyActions::doubleDots(item)
             return
         end
 
@@ -37,14 +37,14 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::maybe_start_and_access(item)
+            PolyActions::doubleDots(item)
             return
         end
 
         if Interpreting::match("...", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::maybe_start_and_access_done(item)
+            PolyActions::tripleDots(item)
             return
         end
 
@@ -52,7 +52,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::maybe_start_and_access_done(item)
+            PolyActions::tripleDots(item)
             return
         end
 

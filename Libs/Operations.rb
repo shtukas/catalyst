@@ -255,7 +255,7 @@ class Operations
                 return
                 next
             end
-            PolyActions::maybe_start_and_access_done(item)
+            PolyActions::tripleDots(item)
             if (Time.new.to_i - last_items_refresh_time) > 3600 then
                 items = Listing::itemsForListing4()
                 last_items_refresh_time = Time.new.to_i

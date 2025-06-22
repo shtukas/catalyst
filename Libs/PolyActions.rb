@@ -153,71 +153,29 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::maybe_start_and_access(item)
-    def self.maybe_start_and_access(item)
-        if item["mikuType"] != "NxCore" then
-            PolyActions::start(item)
+    # PolyActions::doubleDots(item)
+    def self.doubleDots(item)
+        return if NxBalls::itemIsActive(item)
+
+        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(item) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
+            if option == "access payload" then
+                # we continue here
+            end
+            if option == "dive" then
+                Operations::diveItem(item)
+                return
+            end
         end
-        PolyActions::access(item)
-    end
 
-    # PolyActions::maybe_start_and_access_done(item)
-    def self.maybe_start_and_access_done(item)
-
-        processWaveLike = lambda{|item|
-            if !NxBalls::itemIsActive(item) then
-                PolyActions::start(item)
-                PolyActions::access(item)
-                if LucilleCore::askQuestionAnswerAsBoolean("done ? ", true) then
-                    PolyActions::done(item, true)
-                else
-                    if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
-                        return
-                    else
-                        if LucilleCore::askQuestionAnswerAsBoolean("postpone ? ") then
-                            Operations::interactivelyPush(item)
-                        end
-                    end
-                end
-            end
-        }
-
-        processDestroyable = lambda {|item, hasBeenStarted|
-            if !NxBalls::itemIsActive(item) then
-                if !hasBeenStarted then
-                    PolyActions::start(item)
-                end
-                PolyActions::access(item)
-
-                if item["nx2290-important"] then
-                    if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
-                        return
-                    else
-                        PolyActions::stop(item)
-                    end
-                else
-                    if LucilleCore::askQuestionAnswerAsBoolean("done/destroy ? ") then
-                        PolyActions::stop(item)
-                        PolyActions::destroy(item, true)
-                    else
-                        if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
-                            return
-                        else
-                            PolyActions::stop(item)
-                        end
-                    end
-                end
-            end
-        }
-
-        if item["mikuType"] == "NxCore" then
-            Operations::diveItem(item)
+        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !PolyFunctions::hasChildren(item) then
+            PolyActions::start(item)
+            PolyActions::access(item)
             return
         end
 
-        if PolyFunctions::hasChildren(item) then
-            puts "Item '#{PolyFunctions::toString(item).green}' has items, so we are diving in"
-            Operations::diveItem(item)
+        if item["mikuType"] == "NxCore" then
+            PolyActions::access(item)
             return
         end
 
@@ -226,49 +184,82 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxLine" then
-            processDestroyable.call(item, false)
-            return
-        end
+        # Default
 
-        if item["mikuType"] == "NxAnniversary" then
-            processWaveLike.call(item)
-            return
-        end
+        PolyActions::start(item)
+        PolyActions::access(item)
+    end
 
-        if item["mikuType"] == "NxBackup" then
-            processWaveLike.call(item)
-            return
-        end
+    # PolyActions::tripleDots(item)
+    def self.tripleDots(item)
 
-        if item["mikuType"] == "NxFloat" then
-            processWaveLike.call(item)
-            return
-        end
+        return if NxBalls::itemIsActive(item)
 
-        if item["mikuType"] == "NxTask" then
-            processDestroyable.call(item, false)
-            return
-        end
-
-        if item["mikuType"] == "NxDated" then
-            hasBeenStarted = false
-            if item["donation-1205"].nil? then
-                PolyActions::access(item)
-                hasBeenStarted = true
-                Operations::interactivelySetDonation(item)
-                item = Items::itemOrNull(item["uuid"])
+        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(item) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
+            if option == "access payload" then
+                # we continue here
             end
-            processDestroyable.call(item, hasBeenStarted)
+            if option == "dive" then
+                Operations::diveItem(item)
+                return
+            end
+        end
+
+        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !PolyFunctions::hasChildren(item) then
+            PolyActions::start(item)
+            PolyActions::access(item)
+            if LucilleCore::askQuestionAnswerAsBoolean("done/destroy ? ") then
+                PolyActions::stop(item)
+                PolyActions::destroy(item, true)
+            else
+                if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
+                    return
+                else
+                    PolyActions::stop(item)
+                end
+            end
             return
         end
 
-        if item["mikuType"] == "Wave" then
-            processWaveLike.call(item)
+        if item["mikuType"] == "NxCore" then
+            PolyActions::access(item)
             return
         end
 
-        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to maybe_start_and_access_done #{item["mikuType"]}"
+        if item["mikuType"] == "NxLambda" then
+            NxLambdas::run(item)
+            return
+        end
+
+        # Default
+
+        PolyActions::start(item)
+        PolyActions::access(item)
+
+        if LucilleCore::askQuestionAnswerAsBoolean("done/destroy ? ") then
+            PolyActions::stop(item)
+            isDestroyable = lambda {|item|
+                return false if item["nx2290-important"]
+                return true if item["mikuType"] == "NxLine"
+                return true if item["mikuType"] == "NxTask"
+                return true if item["mikuType"] == "NxDated"
+                false
+            }
+            if isDestroyable.call(item) then
+                PolyActions::destroy(item, true)
+            end
+        else
+            if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
+                return
+            else
+                if LucilleCore::askQuestionAnswerAsBoolean("postpone ? ", false) then
+                    Operations::interactivelyPush(item)
+                else
+                    PolyActions::stop(item)
+                end
+            end
+        end
     end
 
     # PolyActions::destroy(item, force)
