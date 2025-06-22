@@ -248,6 +248,8 @@ class PolyActions
             }
             if isDestroyable.call(item) then
                 PolyActions::destroy(item, true)
+            else
+                PolyActions::done(item, true)
             end
         else
             if LucilleCore::askQuestionAnswerAsBoolean("continue ? ", true) then
