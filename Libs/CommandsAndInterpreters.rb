@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | important items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | fsck-all",
+            "misc          : search | commands | edit * | fsck-all | probe-head",
         ].join("\n")
     end
 
@@ -103,6 +103,11 @@ class CommandsAndInterpreters
                     puts "recorduuid: #{record["_recorduuid_"]}; uuid: #{record["_id_"]}, date: #{record["_date_"]}, value: #{"%9.2f" % record["_value_"]}"
                 }
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("probe-head", input) then
+            Operations::probeHead()
             return
         end
 

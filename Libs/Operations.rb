@@ -262,4 +262,26 @@ class Operations
             end
         }
     end
+
+    # Operations::probeHead()
+    def self.probeHead()
+        NxCores::cores()
+            .each{|core|
+                #puts "probing core #{core["description"]}"
+                PolyFunctions::childrenInOrder(core)
+                    .first(200)
+                    .each{|item|
+                        #puts "probing item #{item["description"]}"
+                        next if item["uxpayload-b4e4"].nil?
+                        if item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
+                            unitId = item["uxpayload-b4e4"]["id"]
+                            location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
+                            puts "unit location: #{location}"
+                            payload2 = UxPayload::locationToPayload(item["uuid"], location)
+                            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+                            LucilleCore::removeFileSystemLocation(location)
+                        end
+                    }
+            }
+    end
 end

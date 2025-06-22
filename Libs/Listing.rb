@@ -75,7 +75,7 @@ class Listing
             return Listing::itemsForListing3(context, head + tail.take(1), tail.drop(1))
         end
 
-        children = PolyFunctions::childrenForParent(tail[0])
+        children = PolyFunctions::childrenInOrder(tail[0])
             .first(3)
             .sort_by{|item|
                 value = Bank1::recoveredAverageHoursPerDay(item["uuid"])
