@@ -47,6 +47,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
+            if item["uxpayload-b4e4"] and !PolyFunctions::hasChildren(item) then
+                UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+                return
+            end
             Operations::diveItem(item)
             return
         end
