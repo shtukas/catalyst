@@ -232,4 +232,16 @@ class PolyFunctions
         last = positions.last
         first + rand * (last - first)
     end
+
+    # PolyFunctions::makeNewNearTopNx1949InInfinityOrNull()
+    def self.makeNewNearTopNx1949InInfinityOrNull()
+        coreuuid = NxCores::infinityuuid()
+        core = Items::itemOrNull(coreuuid)
+        return nil if core.nil?
+        position = PolyFunctions::random_10_20_position_in_parent(core)
+        {
+            "position" => position,
+            "parentuuid" => core["uuid"]
+        }
+    end
 end

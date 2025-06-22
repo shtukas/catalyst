@@ -150,7 +150,7 @@ class Listing
         store = ItemStore.new()
         printer = lambda{|line| puts line }
         printer.call("")
-        Operations::top_notifications().each{|notification|
+        Operations::topNotifications().each{|notification|
             puts "notification: #{notification}"
         }
 

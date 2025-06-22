@@ -87,7 +87,7 @@ class Operations
         if File.exist?(buffer_in_location) then
             LucilleCore::locationsAtFolder(buffer_in_location).each{|location|
                 puts location.yellow
-                nx1949 = NxCores::makeNewNearTopNx1949InInfinityOrNull()
+                nx1949 = PolyFunctions::makeNewNearTopNx1949InInfinityOrNull()
                 next if nx1949.nil?
                 description = File.basename(location)
                 task = NxTasks::locationToTask(description, location, nx1949)
@@ -97,8 +97,8 @@ class Operations
         end
     end
 
-    # Operations::top_notifications()
-    def self.top_notifications()
+    # Operations::topNotifications()
+    def self.topNotifications()
         notifications = []
         if Config::isPrimaryInstance() then
             JSON.parse(IO.read("#{Config::userHomeDirectory()}/Galaxy/DataHub/Backups-Utils/Orbital-Backup-Data/under-counted-target-directory-names.json")).each{|directory_name|
