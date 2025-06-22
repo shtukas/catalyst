@@ -90,7 +90,6 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            
             return
         end
 

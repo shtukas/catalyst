@@ -172,18 +172,17 @@ class Operations
             end
 
             if input == "pile" then
-                text = CommonUtils::editTextSynchronously("")
-                lines = text.strip.lines.map{|line| line.strip }
-                lines = lines.reverse
-                lines.each{|line|
-                    position = PolyFunctions::firstPositionInParent(parent) - 1
-                    nx1949 = {
-                        "position" => position,
-                        "parentuuid" => parent["uuid"]
+                Operations::interactivelyGetLines()
+                    .reverse
+                    .each{|line|
+                        position = PolyFunctions::firstPositionInParent(parent) - 1
+                        nx1949 = {
+                            "position" => position,
+                            "parentuuid" => parent["uuid"]
+                        }
+                        todo = NxTasks::descriptionToTask(line, nx1949)
+                        puts JSON.pretty_generate(todo)
                     }
-                    todo = NxTasks::descriptionToTask(line, nx1949)
-                    puts JSON.pretty_generate(todo)
-                }
                 next
             end
 
