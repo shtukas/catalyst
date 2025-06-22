@@ -5,11 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : ..(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
-            "on items : important * | nonimportant *",
+            "on items : ..(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy * | important * | nonimportant *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | waves+ | desktop | backups | floats | cores | important items | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | important items | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | edit * | fsck-all",
         ].join("\n")
@@ -21,6 +20,7 @@ class CommandsAndInterpreters
         if input.start_with?("+") and (unixtime = CommonUtils::codeToUnixtimeOrNull(input.gsub(" ", ""))) then
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
+                "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
                 return
             end
