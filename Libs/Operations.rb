@@ -233,9 +233,16 @@ class Operations
         loop {
             break if items.empty?
             item = items.shift
-            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} (.. | ... (default) | done | next | catalyst | exit): ")
+            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} (.. | ... (default) | done | +datecode | next | catalyst | exit): ")
             if command == "done" then
                 PolyActions::done(item, true)
+                next
+            end
+            if command.start_with?('+') then
+                unixtime = CommonUtils::codeToUnixtimeOrNull(command.gsub(" ", ""))
+                if unixtime then
+                    DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                end
                 next
             end
             if command == "next" then
