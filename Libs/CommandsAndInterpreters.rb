@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : ..(.) | <datecode> | access <n> | start | start <n> | done | done <n> | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy * | important * | nonimportant *",
+            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy * | important * | nonimportant * | instances (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | important items | dive *",
@@ -313,6 +313,21 @@ class CommandsAndInterpreters
 
         if Interpreting::match("desktop", input) then
             system("open '#{Desktop::filepath()}'")
+            return
+        end
+
+        if Interpreting::match("instances", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Instances::setInstancesForItem(item)
+            return
+        end
+
+        if Interpreting::match("instances *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Instances::setInstancesForItem(item)
             return
         end
 

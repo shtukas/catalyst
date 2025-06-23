@@ -24,7 +24,7 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         impt = item["nx2290-important"] ? " [important]".red : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{Instances::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -52,6 +52,7 @@ class Listing
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .select{|item| Instances::canShowHere(item) }
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items
     end
@@ -109,11 +110,11 @@ class Listing
             exit
         end
 
-        if Config::isPrimaryInstance() then
+        if Instances::isPrimaryInstance() then
             NxBackups::processNotificationChannel()
         end
 
-        if Config::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
+        if Instances::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
             Operations::periodicPrimaryInstanceMaintenance()
         end
 

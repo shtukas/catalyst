@@ -27,7 +27,7 @@ class NxBalls
         nxball = {
             "unixtime"       => Time.new.to_f,
             "itemuuid"       => item["uuid"],
-            "instance"       => Config::thisInstanceId(),
+            "instance"       => Instances::thisInstanceId(),
             "type"           => "running",
             "startunixtime"  => Time.new.to_i,
             "accounts"       => accounts,
@@ -194,7 +194,7 @@ class NxBalls
             return 0
         end
         nxball = NxBalls::getNxBallOrNull(item)
-        if nxball["instance"] != Config::thisInstanceId() then
+        if nxball["instance"] != Instances::thisInstanceId() then
             puts "This ball wasn't created here, was created at #{nxball["instance"]}."
             return 0 if !LucilleCore::askQuestionAnswerAsBoolean("Confirm stop operation: ")
         end
@@ -209,7 +209,7 @@ class NxBalls
     def self.pause(item)
         return if !NxBalls::itemIsRunning(item)
         nxball = NxBalls::getNxBallOrNull(item)
-        if nxball["instance"] != Config::thisInstanceId() then
+        if nxball["instance"] != Instances::thisInstanceId() then
             puts "This ball wasn't created here, was created at #{nxball["instance"]}."
             return if !LucilleCore::askQuestionAnswerAsBoolean("Confirm pause operation: ")
         end

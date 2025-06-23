@@ -8,7 +8,7 @@ class Bank1
     # Bank1::getValueAtDate(uuid, date)
     def self.getValueAtDate(uuid, date)
         value = 0
-        Config::instanceIds().each{|instanceId|
+        Instances::instanceIds().each{|instanceId|
             db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/#{instanceId}.sqlite3")
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -27,7 +27,7 @@ class Bank1
     # Bank1::getValue(uuid)
     def self.getValue(uuid)
         value = 0
-        Config::instanceIds().each{|instanceId|
+        Instances::instanceIds().each{|instanceId|
             db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/#{instanceId}.sqlite3")
             db.busy_timeout = 117
             db.busy_handler { |count| true }
@@ -42,7 +42,7 @@ class Bank1
 
     # Bank1::put(uuid, date, value)
     def self.put(uuid, date, value)
-        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/#{Config::thisInstanceId()}.sqlite3")
+        db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/#{Instances::thisInstanceId()}.sqlite3")
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -53,7 +53,7 @@ class Bank1
     # Bank1::getRecords(uuid)
     def self.getRecords(uuid)
         records = []
-        Config::instanceIds().each{|instanceId|
+        Instances::instanceIds().each{|instanceId|
             db = SQLite3::Database.new("#{Config::pathToCatalystDataRepository()}/Bank/#{instanceId}.sqlite3")
             db.busy_timeout = 117
             db.busy_handler { |count| true }
