@@ -53,20 +53,6 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "NxTask" and item["nx2290-important"] then
-            accounts << {
-                "description" => "block:important-items:40c3f5929ca6",
-                "number"      => "block:important-items:40c3f5929ca6"
-            }
-        end
-
-        if item["mikuType"] == "Wave" then
-            accounts << {
-                "description" => "block:waves:80fcd1ca16d3",
-                "number"      => "block:waves:80fcd1ca16d3"
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy * | important * | nonimportant * | instances (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | important items | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | importants | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | edit * | fsck-all | probe-head",
         ].join("\n")
@@ -176,7 +176,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if input == 'important items' then
+        if input == 'importants' then
             lx = lambda { NxTasks::importantItems() }
             Operations::program3(lx)
             return
