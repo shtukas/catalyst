@@ -386,14 +386,15 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("pause", input) then
-            item = store.get(listord.to_i)
+            item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
             return
         end
 
         if Interpreting::match("pause *", input) then
-            item = store.getDefault()
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
             return
