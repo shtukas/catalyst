@@ -230,6 +230,7 @@ class Operations
         last_items_refresh_time = Time.new.to_i
         items = Listing::itemsForListing4()
         loop {
+            return if NxBalls::runningItems().size > 0
             break if items.empty?
             item = items.shift
             next if (item["mikuType"] == "NxCore" and PolyFunctions::hasChildren(item))
