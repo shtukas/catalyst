@@ -57,10 +57,61 @@ class Listing
         items
     end
 
+    # Listing::getListingPositionOrNull(itemuuid)
+    def self.getListingPositionOrNull(itemuuid)
+        position = XCache::getOrNull("9951cd72-9cfd-4066-85d8-d512b829dc34:#{itemuuid}:#{CommonUtils::today()}")
+        return nil if position.nil?
+        position.to_f
+    end
+
+    # Listing::itemsForListing1_v2()
+    def self.itemsForListing1_v2()
+        items1 = [
+            Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxBackups::listingItems(),
+            NxLines::listingItems()
+        ]
+            .flatten
+
+        items2 = [
+            NxDateds::listingItems(),
+            NxFloats::listingItems(),
+            Waves::nonInterruptionItemsForListing(),
+            NxTasks::importantItemsForListing()
+        ]
+            .flatten
+
+        x1, x2 = items2.partition{|item| Listing::getListingPositionOrNull(item["uuid"]) }
+        if x1.size > 0 then
+            x1 = x1.sort_by{|item| Listing::getListingPositionOrNull(item["uuid"]) }
+        else
+            x2.each{|item|
+                position = rand
+                puts "Placing '#{PolyFunctions::toString(item)}' at position #{position}".yellow
+                XCache::set("9951cd72-9cfd-4066-85d8-d512b829dc34:#{item['uuid']}:#{CommonUtils::today()}", position)
+            }
+            x2 = x2.sort_by{|item| Listing::getListingPositionOrNull(item["uuid"]) }
+        end
+        items2 = x1 + x2
+
+        items3 = [
+            NxCores::listingItems()
+        ]
+            .flatten
+
+        items = (items1 + items2 + items3)
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+            .select{|item| Instances::canShowHere(item) }
+
+        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+        items
+    end
+
     # Listing::itemsForListing2()
     def self.itemsForListing2()
-        items = Listing::itemsForListing1()
-        items = items.take(10) + NxBalls::runningItems() + items.drop(10)
+        items = Listing::itemsForListing1_v2()
+        items = NxBalls::runningItems() + items
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items
     end

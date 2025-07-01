@@ -120,6 +120,10 @@ class CommandsAndInterpreters
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
+
+            position = -(Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtLocalTimezone())
+            puts "Placing '#{PolyFunctions::toString(item)}' at position #{position}".yellow
+            XCache::set("9951cd72-9cfd-4066-85d8-d512b829dc34:#{item['uuid']}:#{CommonUtils::today()}", position)
             return
         end
 

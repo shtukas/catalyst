@@ -256,6 +256,15 @@ class Operations
                 return
                 next
             end
+            if command != "" then
+                store = ItemStore.new()
+                store.register(item, true)
+                CommandsAndInterpreters::interpreter(command, store)
+                item = Items::itemOrNull(item["uuid"])
+                next if item.nil?
+                items = [item] + items
+                next
+            end
             PolyActions::tripleDots(item)
             if (Time.new.to_i - last_items_refresh_time) > 3600 then
                 items = Listing::itemsForListing4()

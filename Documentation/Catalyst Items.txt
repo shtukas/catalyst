@@ -17,4 +17,4 @@ Nx1949 (position inside a parent)
     - position   : Float,
     - parentuuid : String
 
-#array of instance ids where this item can show up
+#1: array of instance ids where this item can show up
