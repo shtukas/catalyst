@@ -224,56 +224,6 @@ class Operations
         }
     end
 
-    # Operations::mini()
-    def self.mini()
-        return if NxBalls::runningItems().size > 0
-        last_items_refresh_time = Time.new.to_i
-        items = Listing::itemsForListing4()
-        loop {
-            return if NxBalls::runningItems().size > 0
-            break if items.empty?
-            item = items.shift
-            next if (item["mikuType"] == "NxCore" and PolyFunctions::hasChildren(item))
-            command = LucilleCore::askQuestionAnswerAsString("#{Listing::toString2(nil, item)} (.. | ... (default) | done | +datecode | next | catalyst | exit): ")
-            if command == "done" then
-                PolyActions::done(item, true)
-                next
-            end
-            if command.start_with?('+') then
-                unixtime = CommonUtils::codeToUnixtimeOrNull(command.gsub(" ", ""))
-                if unixtime then
-                    DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                end
-                next
-            end
-            if command == "next" then
-                next
-            end
-            if command == "catalyst" then
-                Listing::displayListingOnce()
-                next
-            end
-            if command == "exit" then
-                return
-                next
-            end
-            if command != "" then
-                store = ItemStore.new()
-                store.register(item, true)
-                CommandsAndInterpreters::interpreter(command, store)
-                item = Items::itemOrNull(item["uuid"])
-                next if item.nil?
-                items = [item] + items
-                next
-            end
-            PolyActions::tripleDots(item)
-            if (Time.new.to_i - last_items_refresh_time) > 3600 then
-                items = Listing::itemsForListing4()
-                last_items_refresh_time = Time.new.to_i
-            end
-        }
-    end
-
     # Operations::probeHead()
     def self.probeHead()
         NxCores::cores()

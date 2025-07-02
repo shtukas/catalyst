@@ -339,7 +339,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::done(item, false)
-            Operations::mini()
             return
         end
 
