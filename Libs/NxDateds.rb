@@ -66,6 +66,20 @@ class NxDateds
         Items::itemOrNull(uuid)
     end
 
+    # NxDateds::locationToItem(description, location)
+    def self.locationToItem(description, location)
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        payload = UxPayload::locationToPayload(uuid, location)
+        Items::setAttribute(uuid, "mikuType", "NxDated")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "date", CommonUtils::today())
+        Items::itemOrNull(uuid)
+    end
+
     # ------------------
     # Data
 

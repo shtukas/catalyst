@@ -81,17 +81,28 @@ class Operations
         Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
     end
 
-    # Operations::pickUpBufferIn()
-    def self.pickUpBufferIn()
-        buffer_in_location = "#{Config::userHomeDirectory()}/Desktop/Buffer-In"
-        if File.exist?(buffer_in_location) then
-            LucilleCore::locationsAtFolder(buffer_in_location).each{|location|
+    # Operations::dispatchPickUp()
+    def self.dispatchPickUp()
+        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Buffer-In"
+        if File.exist?(directory) then
+            LucilleCore::locationsAtFolder(directory).each{|location|
                 puts location.yellow
                 nx1949 = PolyFunctions::makeNewNearTopNx1949InInfinityOrNull()
                 next if nx1949.nil?
                 description = File.basename(location)
-                task = NxTasks::locationToTask(description, location, nx1949)
-                puts JSON.pretty_generate(task)
+                item = NxTasks::locationToTask(description, location, nx1949)
+                puts JSON.pretty_generate(item)
+                LucilleCore::removeFileSystemLocation(location)
+            }
+        end
+
+        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Today"
+        if File.exist?(directory) then
+            LucilleCore::locationsAtFolder(directory).each{|location|
+                puts location.yellow
+                description = File.basename(location)
+                item = NxDateds::locationToItem(description, location)
+                puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
             }
         end

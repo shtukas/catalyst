@@ -12,9 +12,18 @@ Cross types conventions (all optional):
     - nx1949            : Nx1949 # position and parentuuid
     - nx2290-important  : boolean
     - instances-58      : array[string] #1
+    - nx2133            : Nx2133
+    - nx2133-duration   : Nx2133's duration in minutes
+
+#1: array of instance ids where this item can show up
 
 Nx1949 (position inside a parent)
     - position   : Float,
     - parentuuid : String
 
-#1: array of instance ids where this item can show up
+Nx2133 {
+    date     : date
+    position : float
+    duration : float # in minutes
+    deadline : datetime # optional
+}

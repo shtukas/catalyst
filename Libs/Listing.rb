@@ -24,7 +24,7 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         impt = item["nx2290-important"] ? " [important]".red : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{Instances::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{Instances::suffix(item)}#{Nx2133::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -82,18 +82,9 @@ class Listing
         ]
             .flatten
 
-        x1, x2 = items2.partition{|item| Listing::getListingPositionOrNull(item["uuid"]) }
-        if x1.size > 0 then
-            x1 = x1.sort_by{|item| Listing::getListingPositionOrNull(item["uuid"]) }
-        else
-            x2.each{|item|
-                position = rand
-                puts "Placing '#{PolyFunctions::toString(item)}' at position #{position}".yellow
-                XCache::set("9951cd72-9cfd-4066-85d8-d512b829dc34:#{item['uuid']}:#{CommonUtils::today()}", position)
-            }
-            x2 = x2.sort_by{|item| Listing::getListingPositionOrNull(item["uuid"]) }
-        end
-        items2 = x1 + x2
+        items2 = items2.sort_by{|item|
+            Nx2133::getNx(item)["position"]
+        }
 
         items3 = [
             NxCores::listingItems()
@@ -111,42 +102,7 @@ class Listing
     # Listing::itemsForListing2()
     def self.itemsForListing2()
         items = Listing::itemsForListing1_v2()
-        items = NxBalls::runningItems() + items
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
-        items
-    end
-
-    # Listing::itemsForListing3(context, head, tail)
-    def self.itemsForListing3(context, head, tail)
-        # Context is the set of uuids for which we have already checked the children
-        # without it, we would loop on any item that have children and get a "stack level too deep"
-
-        return head if tail.empty?
-
-        if context.include?(tail[0]["uuid"]) then
-            return Listing::itemsForListing3(context, head + tail.take(1), tail.drop(1))
-        end
-
-        children = PolyFunctions::childrenInOrder(tail[0])
-            .first(3)
-            .sort_by{|item|
-                value = Bank1::recoveredAverageHoursPerDay(item["uuid"])
-                if value > 0 then
-                    value
-                else
-                    0.4
-                end
-            }
-        if children.empty? then
-            Listing::itemsForListing3(context + [tail[0]["uuid"]], head + tail.take(1), tail.drop(1))
-        else
-            Listing::itemsForListing3(context + [tail[0]["uuid"]], head , children + tail)
-        end
-    end
-
-    # Listing::itemsForListing4()
-    def self.itemsForListing4()
-        items = Listing::itemsForListing3([] , [], Listing::itemsForListing2())
+        items = items.take(10) + NxBalls::runningItems() + items.drop(10)
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items
     end
@@ -169,7 +125,7 @@ class Listing
             Operations::periodicPrimaryInstanceMaintenance()
         end
 
-        Operations::pickUpBufferIn()
+        Operations::dispatchPickUp()
     end
 
     # Listing::displayListingItem(store, printer, item)
@@ -210,7 +166,7 @@ class Listing
         swidth = CommonUtils::screenWidth()
 
         t1 = Time.new.to_f
-        Listing::itemsForListing4()
+        Listing::itemsForListing2()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 line = Listing::toString2(store, item)
