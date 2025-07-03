@@ -21,7 +21,7 @@ class Nx2133
         end
         if item["mikuType"] == "NxTask" and item["nx2290-important"] then
             t1 = Time.new.to_i
-            t2 = CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 18*3600
+            t2 = CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 21*3600
             tx = t1 + rand * (t2-t1)
             deadline = Timeat(tx).utc.iso8601
             return deadline
