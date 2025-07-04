@@ -62,12 +62,12 @@ class Listing
         items1 = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-            NxBackups::listingItems(),
             NxLines::listingItems()
         ]
             .flatten
 
         items2 = [
+            NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),

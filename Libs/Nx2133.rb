@@ -72,7 +72,8 @@ class Nx2133
     def self.suffix(item)
         if item["nx2133"] then
             nx = item["nx2133"]
-            " (#{item["nx2133"]["position"]}, #{item["nx2133"]["duration"]}, #{item["nx2133"]["deadline"]})".yellow
+            lateStatus = item["nx2133"]["deadline"] ? (  item["nx2133"]["deadline"] < Time.new.utc.iso8601 ? " [late]".red : "" ) : ""
+            " (#{item["nx2133"]["position"]}, #{item["nx2133"]["duration"]}, #{item["nx2133"]["deadline"]})".yellow + lateStatus
         else
             ""
         end
@@ -81,8 +82,8 @@ class Nx2133
     # ----------------------------------------------
     # Updates
 
-    # Nx2133::permute(items, i1, i2)
-    def self.permute(items, i1, i2)
+    # Nx2133::permutePositions(items, i1, i2)
+    def self.permutePositions(items, i1, i2)
         # The two items remain in place but exchange their nx2133's positions
         item1 = items[i1]
         item2 = items[i2]
@@ -101,22 +102,44 @@ class Nx2133
         items
     end
 
-    # Nx2133::ensureItemsWithDeadlinesInOrder(items)
-    def self.ensureItemsWithDeadlinesInOrder(items)
+    # Nx2133::ensureDeadlineOrdering(items)
+    def self.ensureDeadlineOrdering(items)
         return [] if items.empty?
         (0..items.size-1).each{|i|
             (i..items.size-1).each{|j|
                 if items[i]["nx2133"]["deadline"] and items[j]["nx2133"]["deadline"] and items[i]["nx2133"]["deadline"] > items[j]["nx2133"]["deadline"] then
-                    items = Nx2133::permute(items, i, j)
+                    items = Nx2133::permutePositions(items, i, j)
                 end
             }
         }
         items
     end
 
+    # Nx2133::ensureDeadlineProjections1(items, indx, time)
+    def self.ensureDeadlineProjections1(items, indx, time)
+        # Time represents the time at which we start the item at position indx
+        if items[indx]["nx2133"]["deadline"] and items[indx]["nx2133"]["deadline"] < Time.at(time).utc.iso8601 and items[indx-1]["nx2133"]["deadline"].nil? then
+            items = Nx2133::permutePositions(items, indx-1, indx)
+        end
+        items
+    end
+
+    # Nx2133::ensureDeadlineProjections2(items)
+    def self.ensureDeadlineProjections2(items)
+        return items if items.size < 2
+        time = Time.new.to_i + items[0]["nx2133"]["duration"] * 60
+        (1..items.size-1).each{|indx|
+            items = Nx2133::ensureDeadlineProjections1(items, indx, time)
+            time = time + items[indx-1]["nx2133"]["duration"] * 60
+        }
+        items
+    end
+
     # Nx2133::updates(items)
     def self.updates(items)
-        Nx2133::ensureItemsWithDeadlinesInOrder(items)
+        items = Nx2133::ensureDeadlineOrdering(items)
+        items = Nx2133::ensureDeadlineProjections2(items)
+        items
     end
 
 end
