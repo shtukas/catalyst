@@ -83,7 +83,7 @@ class Listing
                     .sort_by{|item|
                         item["nx2133"]["position"]
                     }
-        items2 = Nx2133::updates(items2)
+        items2 = Nx2133::updatesAndSorting(items2)
 
         items3 = [
             NxCores::listingItems()

@@ -155,8 +155,6 @@ class Nx2133
         position2 = nx2["position"]
         nx1["position"] = position2
         nx2["position"] = position1
-        Items::setAttribute(item1["uuid"], "nx2133", nx1)
-        Items::setAttribute(item2["uuid"], "nx2133", nx2)
         item1["nx2133"] = nx1
         item2["nx2133"] = nx2
         items[i1] = item1
@@ -170,8 +168,9 @@ class Nx2133
         (0..items.size-1).each{|i|
             (i..items.size-1).each{|j|
                 if items[i]["nx2133"]["deadline"] and items[j]["nx2133"]["deadline"] and items[i]["nx2133"]["deadline"] > items[j]["nx2133"]["deadline"] then
-                    puts "ensure deadline ordering: permute: '#{PolyFunctions::toString(items[i]).green}'' and '#{PolyFunctions::toString(items[j]).green}'".yellow
+                    #puts "ensure deadline ordering: permute: '#{PolyFunctions::toString(items[i]).green}'' and '#{PolyFunctions::toString(items[j]).green}'".yellow
                     items = Nx2133::permutePositions(items, i, j)
+                    mutationHasOccured = true
                 end
             }
         }
@@ -182,7 +181,7 @@ class Nx2133
     def self.ensureDeadlineProjections1(items, indx, time)
         # Time represents the time at which we start the item at position indx
         if items[indx]["nx2133"]["deadline"] and items[indx]["nx2133"]["deadline"] < Time.at(time).utc.iso8601 and items[indx-1]["nx2133"]["deadline"].nil? then
-            puts "ensure deadline projections: permute: '#{PolyFunctions::toString(items[indx-1]).green}' and '#{PolyFunctions::toString(items[indx]).green}'".yellow
+            #puts "ensure deadline projections: permute: '#{PolyFunctions::toString(items[indx-1]).green}' and '#{PolyFunctions::toString(items[indx]).green}'".yellow
             items = Nx2133::permutePositions(items, indx-1, indx)
         end
         items
@@ -203,7 +202,7 @@ class Nx2133
     def self.optimiseNonDeadlinesPlacement1(items, indx, time)
         # Time represents the time at which we start the item at position indx
         if items[indx]["nx2133"]["deadline"] and items[indx+1]["nx2133"]["deadline"].nil? and items[indx]["nx2133"]["deadline"] > Time.at(time + items[indx]["nx2133"]["duration"]*60 + items[indx+1]["nx2133"]["duration"]*60).utc.iso8601 then
-            puts "optimise non deadline placement: permute: '#{PolyFunctions::toString(items[indx]).green}' and '#{PolyFunctions::toString(items[indx+1]).green}'".yellow
+            #puts "optimise non deadline placement: permute: '#{PolyFunctions::toString(items[indx]).green}' and '#{PolyFunctions::toString(items[indx+1]).green}'".yellow
             items = Nx2133::permutePositions(items, indx, indx+1)
         end
         items
@@ -213,18 +212,36 @@ class Nx2133
     def self.optimiseNonDeadlinesPlacement2(items)
         return items if items.size < 2
         time = Time.new.to_i + items[0]["nx2133"]["duration"] * 60
-        (1..items.size-1).each{|indx|
+        (0..items.size-2).each{|indx|
             items = Nx2133::optimiseNonDeadlinesPlacement1(items, indx, time)
             time = time + items[indx-1]["nx2133"]["duration"] * 60
         }
         items
     end
 
-    # Nx2133::updates(items)
-    def self.updates(items)
-        items = Nx2133::ensureDeadlineOrdering(items)
-        items = Nx2133::ensureDeadlineProjections2(items)
-        items = Nx2133::optimiseNonDeadlinesPlacement2(items)
+    # Nx2133::updatesAndSorting(items)
+    def self.updatesAndSorting(items)
+        items = items.map{|item|
+            item["nx2133"] = Nx2133::getNx(item)
+            item
+        }
+        loop {
+            trace1 = Digest::SHA1.hexdigest(items.to_s)
+            items = Nx2133::ensureDeadlineOrdering(items)
+            items = Nx2133::ensureDeadlineProjections2(items)
+            items = Nx2133::optimiseNonDeadlinesPlacement2(items)
+            items = items.sort_by{|item|
+                item["nx2133"]["position"]
+            }
+            trace2 = Digest::SHA1.hexdigest(items.to_s)
+            break if trace1 == trace2
+        }
+        items.each{|item|
+            i2 = Items::itemOrNull(item["uuid"])
+            if item["nx2133"].to_s != i2["nx2133"].to_s then
+                Items::setAttribute(item["uuid"], "nx2133", item["nx2133"])
+            end
+        }
         items
     end
 
