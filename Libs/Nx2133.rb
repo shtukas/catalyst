@@ -20,9 +20,7 @@ class Nx2133
     # Nx2133::decideDeadlineOrNull(item)
     def self.decideDeadlineOrNull(item)
         if item["nx2133"] then
-            if item["nx2133"]["date"] == CommonUtils::today() then
-                return item["nx2133"]["deadline"]
-            end
+            return item["nx2133"]["deadline"]
         end
         if item["mikuType"] == "NxTask" and item["nx2290-important"] then
             t1 = Time.new.to_i
@@ -46,7 +44,6 @@ class Nx2133
         duration = Nx2133::decideDurationInMinutes(item)
         deadline = Nx2133::decideDeadlineOrNull(item)
         {
-            "date"     => CommonUtils::today(),
             "position" => rand,
             "duration" => duration,
             "deadline" => deadline # optional
@@ -90,7 +87,6 @@ class Nx2133
     # Nx2133::makeTopNx2133(durationInMinutes, deadline)
     def self.makeTopNx2133(durationInMinutes, deadline)
         {
-            "date"     => CommonUtils::today(),
             "position" => Nx2133::determineFirstPosition() * 0.9, # We work with the assumption that the positions are positive
             "duration" => durationInMinutes,
             "deadline" => deadline
@@ -101,7 +97,6 @@ class Nx2133
     def self.makeNextNx2133(durationInMinutes, deadline)
         lastPosition = Nx2133::determineLastPosition()
         {
-            "date"     => CommonUtils::today(),
             "position" => lastPosition + rand * (1 - lastPosition), # We work with the assumption that the positions are in (0, 1)
             "duration" => durationInMinutes,
             "deadline" => deadline
@@ -114,9 +109,7 @@ class Nx2133
     # Nx2133::getNxOrNull(item)
     def self.getNxOrNull(item)
         if item["nx2133"] then
-            if item["nx2133"]["date"] == CommonUtils::today() then
-                return item["nx2133"]
-            end
+            return item["nx2133"]
         end
         nil
     end
