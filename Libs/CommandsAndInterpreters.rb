@@ -118,12 +118,11 @@ class CommandsAndInterpreters
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
             Operations::interactivelySetDonation(item)
+            durationInMinutes = LucilleCore::askQuestionAnswerAsString("duration in minutes: ").to_f
+            nx2133 = Nx2133::makeTopNx2133(durationInMinutes, nil)
+            Items::setAttribute(item["uuid"], "nx2133", nx2133)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
-
-            position = -(Time.new.to_f - CommonUtils::unixtimeAtLastMidnightAtLocalTimezone())
-            puts "Placing '#{PolyFunctions::toString(item)}' at position #{position}".yellow
-            XCache::set("9951cd72-9cfd-4066-85d8-d512b829dc34:#{item['uuid']}:#{CommonUtils::today()}", position)
             return
         end
 

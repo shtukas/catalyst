@@ -53,16 +53,51 @@ class Nx2133
         }
     end
 
+    # Nx2133::determineTopPosition()
+    def self.determineTopPosition()
+        items = Items::items()
+        return 0.9 if items.empty?
+        position = items
+            .map{|item|
+                nx2133 = Nx2133::getNxOrNull(item)
+                if nx2133 then
+                    nx2133["position"]
+                else
+                    nil
+                end
+            }
+            .compact
+            .min
+        position * 0.9
+    end
+
+    # Nx2133::makeTopNx2133(durationInMinutes, deadline)
+    def self.makeTopNx2133(durationInMinutes, deadline)
+        {
+            "date"     => CommonUtils::today(),
+            "position" => Nx2133::determineTopPosition(),
+            "duration" => durationInMinutes,
+            "deadline" => deadline
+        }
+    end
+
     # ----------------------------------------------
     # Data
 
-    # Nx2133::getNx(item)
-    def self.getNx(item)
+    # Nx2133::getNxOrNull(item)
+    def self.getNxOrNull(item)
         if item["nx2133"] then
             if item["nx2133"]["date"] == CommonUtils::today() then
                 return item["nx2133"]
             end
         end
+        nil
+    end
+
+    # Nx2133::getNx(item)
+    def self.getNx(item)
+        nx2133 = Nx2133::getNxOrNull(item)
+        return nx2133 if nx2133
         nx2133 = Nx2133::decideNx(item)
         Items::setAttribute(item["uuid"], "nx2133", nx2133)
         nx2133
