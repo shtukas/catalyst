@@ -104,6 +104,10 @@ class Operations
                 item = NxDateds::locationToItem(description, location)
                 puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
+                puts PolyFunctions::toString(item)
+                durationInMinutes = LucilleCore::askQuestionAnswerAsString("duration in minutes: ").to_f
+                nx2133 = Nx2133::makeNextNx2133(durationInMinutes, nil)
+                Items::setAttribute(item["uuid"], "nx2133", nx2133)
             }
         end
     end

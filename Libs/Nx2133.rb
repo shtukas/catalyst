@@ -53,11 +53,11 @@ class Nx2133
         }
     end
 
-    # Nx2133::determineTopPosition()
-    def self.determineTopPosition()
+    # Nx2133::determineFirstPosition()
+    def self.determineFirstPosition()
         items = Items::items()
         return 0.9 if items.empty?
-        position = items
+        items
             .map{|item|
                 nx2133 = Nx2133::getNxOrNull(item)
                 if nx2133 then
@@ -68,14 +68,41 @@ class Nx2133
             }
             .compact
             .min
-        position * 0.9
+    end
+
+    # Nx2133::determineLastPosition()
+    def self.determineLastPosition()
+        items = Items::items()
+        return 0.9 if items.empty?
+        items
+            .map{|item|
+                nx2133 = Nx2133::getNxOrNull(item)
+                if nx2133 then
+                    nx2133["position"]
+                else
+                    nil
+                end
+            }
+            .compact
+            .max
     end
 
     # Nx2133::makeTopNx2133(durationInMinutes, deadline)
     def self.makeTopNx2133(durationInMinutes, deadline)
         {
             "date"     => CommonUtils::today(),
-            "position" => Nx2133::determineTopPosition(),
+            "position" => Nx2133::determineFirstPosition() * 0.9, # We work with the assumption that the positions are positive
+            "duration" => durationInMinutes,
+            "deadline" => deadline
+        }
+    end
+
+    # Nx2133::makeNextNx2133(durationInMinutes, deadline)
+    def self.makeNextNx2133(durationInMinutes, deadline)
+        lastPosition = Nx2133::determineLastPosition()
+        {
+            "date"     => CommonUtils::today(),
+            "position" => lastPosition + rand * (1 - lastPosition), # We work with the assumption that the positions are in (0, 1)
             "duration" => durationInMinutes,
             "deadline" => deadline
         }
