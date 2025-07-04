@@ -13,7 +13,7 @@ Cross types conventions (all optional):
     - nx2290-important  : boolean
     - instances-58      : array[string] #1
     - nx2133            : Nx2133
-    - nx2133-duration   : Nx2133's duration in minutes
+    - nx0607-duration   : Nx2133's duration in minutes
 
 #1: array of instance ids where this item can show up
 

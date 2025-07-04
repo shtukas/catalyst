@@ -37,8 +37,8 @@ class Listing
         line
     end
 
-    # Listing::itemsForListing1()
-    def self.itemsForListing1()
+    # Listing::itemsForListing1_v1()
+    def self.itemsForListing1_v1()
         items = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
@@ -55,13 +55,6 @@ class Listing
             .select{|item| Instances::canShowHere(item) }
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items
-    end
-
-    # Listing::getListingPositionOrNull(itemuuid)
-    def self.getListingPositionOrNull(itemuuid)
-        position = XCache::getOrNull("9951cd72-9cfd-4066-85d8-d512b829dc34:#{itemuuid}:#{CommonUtils::today()}")
-        return nil if position.nil?
-        position.to_f
     end
 
     # Listing::itemsForListing1_v2()
@@ -82,9 +75,15 @@ class Listing
         ]
             .flatten
 
-        items2 = items2.sort_by{|item|
-            Nx2133::getNx(item)["position"]
-        }
+        items2 = items2
+                    .map{|item|
+                        item["nx2133"] = Nx2133::getNx(item)
+                        item
+                    }
+                    .sort_by{|item|
+                        item["nx2133"]["position"]
+                    }
+        items2 = Nx2133::updates(items2)
 
         items3 = [
             NxCores::listingItems()
