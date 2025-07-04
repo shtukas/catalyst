@@ -39,17 +39,6 @@ class Nx2133
         nil
     end
 
-    # Nx2133::decideNx(item)
-    def self.decideNx(item)
-        duration = Nx2133::decideDurationInMinutes(item)
-        deadline = Nx2133::decideDeadlineOrNull(item)
-        {
-            "position" => rand,
-            "duration" => duration,
-            "deadline" => deadline # optional
-        }
-    end
-
     # Nx2133::determineFirstPosition()
     def self.determineFirstPosition()
         items = Items::items()
@@ -82,6 +71,18 @@ class Nx2133
             }
             .compact
             .max
+    end
+
+    # Nx2133::makeNx(item)
+    def self.makeNx(item)
+        duration = Nx2133::decideDurationInMinutes(item)
+        deadline = Nx2133::decideDeadlineOrNull(item)
+        lastPosition = Nx2133::determineLastPosition()
+        {
+            "position" => lastPosition + rand * (1 - lastPosition),
+            "duration" => duration,
+            "deadline" => deadline # optional
+        }
     end
 
     # Nx2133::makeTopNx2133(durationInMinutes, deadline)
@@ -118,7 +119,7 @@ class Nx2133
     def self.getNx(item)
         nx2133 = Nx2133::getNxOrNull(item)
         return nx2133 if nx2133
-        nx2133 = Nx2133::decideNx(item)
+        nx2133 = Nx2133::makeNx(item)
         Items::setAttribute(item["uuid"], "nx2133", nx2133)
         nx2133
     end
