@@ -23,15 +23,15 @@ class Nx2133
             return item["nx2133"]["deadline"]
         end
         if item["mikuType"] == "NxTask" and item["nx2290-important"] then
-            t1 = Time.new.to_i
-            t2 = CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 21*3600
+            t1 = [ Time.new.to_i, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 9 * 3600 ].max
+            t2 = CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 14 * 3600
             tx = t1 + rand * (t2-t1)
             deadline = Time.at(tx).utc.iso8601
             return deadline
         end
         if item["mikuType"] == "NxDated" then
-            t1 = Time.new.to_i
-            t2 = CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 18*3600
+            t1 = [ Time.new.to_i, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 11 * 3600 ].max
+            t2 = CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 16 * 3600
             tx = t1 + rand * (t2-t1)
             deadline = Time.at(tx).utc.iso8601
             return deadline
@@ -253,6 +253,11 @@ class Nx2133
                 .compact
                 .min
         end
+    end
+
+    # Nx2133::removeNx2133(item)
+    def self.removeNx2133(item)
+        Items::setAttribute(item["uuid"], "nx2133", nil)
     end
 
 end

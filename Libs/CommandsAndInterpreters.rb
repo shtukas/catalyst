@@ -22,6 +22,7 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                Nx2133::removeNx2133(item)
                 return
             end
         end
@@ -364,6 +365,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
+            Nx2133::removeNx2133(item)
             return
         end
 
