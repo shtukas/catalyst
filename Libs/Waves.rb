@@ -153,6 +153,7 @@ class Waves
         puts "done-ing: '#{Waves::toString(item).green}'"
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
+        NxBalls::stop(item)
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime + rand)
     end
 

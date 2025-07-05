@@ -88,6 +88,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxFloat" then
+            NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
             return
         end
@@ -110,6 +111,7 @@ class PolyActions
 
         if item["mikuType"] == "NxBackup" then
             if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
+                NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400 + rand)
                 Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
             end

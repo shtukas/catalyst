@@ -50,6 +50,7 @@ class NxBackups
             description = message["payload"]["description"]
             item = NxBackups::getItemByDescriptionOrNull(description)
             next if item.nil?
+            NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
             Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
             FileUtils.rm(filepath)

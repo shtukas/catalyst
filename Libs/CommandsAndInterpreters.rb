@@ -89,6 +89,7 @@ class CommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+            NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
             return
         end
