@@ -241,12 +241,13 @@ class Nx2133
 
     # Nx2133::maintenance()
     def self.maintenance()
-        if Nx2133::determineFirstPosition() > 0.35 then
+        fp = Nx2133::determineFirstPosition()
+        if fp > 0.35 then
             Items::items()
                 .each{|item|
                     nx2133 = Nx2133::getNxOrNull(item)
                     if nx2133 then
-                        nx2133["position"] = nx2133["position"] - 0.25
+                        nx2133["position"] = nx2133["position"] - (fp - 0.1)
                         Items::setAttribute(item["uuid"], "nx2133", item["nx2133"])
                     end
                 }
