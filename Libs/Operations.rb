@@ -33,9 +33,11 @@ class Operations
         }
     end
 
-    # Operations::periodicPrimaryInstanceMaintenance()
-    def self.periodicPrimaryInstanceMaintenance()
-        puts "> Operations::periodicPrimaryInstanceMaintenance()"
+    # Operations::periodicPrimaryInstanceDailyMaintenance()
+    def self.periodicPrimaryInstanceDailyMaintenance()
+        puts "> Operations::periodicPrimaryInstanceDailyMaintenance()"
+        puts "> Nx2133::maintenance()"
+        Nx2133::maintenance()
     end
 
     # Operations::interactivelyGetLines()
