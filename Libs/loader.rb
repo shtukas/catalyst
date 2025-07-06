@@ -161,7 +161,6 @@ require_relative "Nx2133.rb"
 
 require_relative "Operations.rb"
 
-require_relative "ProgrammableBooleans.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 
@@ -176,6 +175,7 @@ require_relative "ValueCache.rb"
 
 require_relative "Waves.rb"
 
+require_relative "YCache.rb"
 
 
 # ------------------------------------------------------------

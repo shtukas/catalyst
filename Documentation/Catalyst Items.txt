@@ -22,6 +22,7 @@ Nx1949 (position inside a parent)
     - parentuuid : String
 
 Nx2133 {
+    date     : date # valid only on that date.
     position : float
     duration : float # in minutes
     deadline : datetime # optional

@@ -42,19 +42,28 @@ class NxBackups
         Items::mikuType("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
+    # NxBackups::notificationChannelHasMessages()
+    def self.notificationChannelHasMessages()
+        flag = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Nx20-MessageService/abf95a7b-36a5-41af-bb98-d8638c68fca6")
+                .select{|filepath| filepath[-5, 5] == ".json" }
+                .empty?
+        !flag
+    end
+
     # NxBackups::processNotificationChannel()
     def self.processNotificationChannel()
-        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Nx20-MessageService/abf95a7b-36a5-41af-bb98-d8638c68fca6").each{|filepath|
-            message = JSON.parse(IO.read(filepath))
-            puts JSON.pretty_generate(message)
-            description = message["payload"]["description"]
-            item = NxBackups::getItemByDescriptionOrNull(description)
-            next if item.nil?
-            NxBalls::stop(item)
-            DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
-            Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
-            FileUtils.rm(filepath)
-            
-        }
+        LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Nx20-MessageService/abf95a7b-36a5-41af-bb98-d8638c68fca6")
+            .select{|filepath| filepath[-5, 5] == ".json" }
+            .each{|filepath|
+                message = JSON.parse(IO.read(filepath))
+                puts JSON.pretty_generate(message)
+                description = message["payload"]["description"]
+                item = NxBackups::getItemByDescriptionOrNull(description)
+                next if item.nil?
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
+                Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
+                FileUtils.rm(filepath)
+            }
     end
 end

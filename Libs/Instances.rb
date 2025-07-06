@@ -17,11 +17,6 @@ class Instances
         JSON.parse(IO.read("#{Config::pathToCatalystDataRepository()}/instanceIds.json"))
     end
 
-    # Instances::isPrimaryInstance()
-    def self.isPrimaryInstance()
-        Instances::thisInstanceId() == "Lucille24-pascal"
-    end
-
     # Instances::interactivelySelectOneOrMoreInstanceIds()
     def self.interactivelySelectOneOrMoreInstanceIds()
         selected, _ = LucilleCore::selectZeroOrMore("instances", [], Instances::instanceIds())

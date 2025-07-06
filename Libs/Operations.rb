@@ -33,9 +33,9 @@ class Operations
         }
     end
 
-    # Operations::periodicPrimaryInstanceDailyMaintenance()
-    def self.periodicPrimaryInstanceDailyMaintenance()
-        puts "> Operations::periodicPrimaryInstanceDailyMaintenance()"
+    # Operations::globalMaintenance()
+    def self.globalMaintenance()
+        puts "> Operations::globalMaintenance()"
         puts "> Nx2133::maintenance()"
         Nx2133::maintenance()
     end
@@ -117,11 +117,9 @@ class Operations
     # Operations::topNotifications()
     def self.topNotifications()
         notifications = []
-        if Instances::isPrimaryInstance() then
-            JSON.parse(IO.read("#{Config::userHomeDirectory()}/Galaxy/DataHub/Backups-Utils/Orbital-Backup-Data/under-counted-target-directory-names.json")).each{|directory_name|
-                notifications << "under counted back up target directory name: #{directory_name}"
-            }
-        end
+        JSON.parse(IO.read("#{Config::userHomeDirectory()}/Galaxy/DataHub/Backups-Utils/Orbital-Backup-Data/under-counted-target-directory-names.json")).each{|directory_name|
+            notifications << "under counted back up target directory name: #{directory_name}"
+        }
         notifications
     end
 

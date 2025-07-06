@@ -116,14 +116,6 @@ class Listing
             exit
         end
 
-        if Instances::isPrimaryInstance() then
-            NxBackups::processNotificationChannel()
-        end
-
-        if Instances::isPrimaryInstance() and ProgrammableBooleans::trueNoMoreOftenThanEveryNSeconds("fd3b5554-84f4-40c2-9c89-1c3cb2a67717", 86400) then
-            Operations::periodicPrimaryInstanceDailyMaintenance()
-        end
-
         Operations::dispatchPickUp()
     end
 
@@ -158,17 +150,6 @@ class Listing
         printer = lambda{|line| puts line }
         printer.call("")
 
-        begin
-            line = `palmer report:performance`.strip.lines.drop(2).first
-            if line.include?("Missing") then
-                puts line.red
-            else
-                puts line.green
-            end
-        rescue
-            puts "could not retrieve palmer performance report".red
-        end
-
         Operations::topNotifications().each{|notification|
             puts "notification: #{notification}"
         }
@@ -190,6 +171,36 @@ class Listing
         renderingTime = t2-t1
         if renderingTime > 0.5 then
             puts "rendering time: #{renderingTime.round(3)} seconds".red
+        end
+
+        begin
+            line = `palmer report:performance`.strip.lines.drop(2).first
+            if line.include?("Missing") then
+                puts line.red
+            else
+                puts line.green
+            end
+        rescue
+            puts "could not retrieve palmer performance report".red
+        end
+
+        if YCache::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d4", 40000) then
+            item = NxLambdas::interactivelyIssueNewOrNull("run global maintenance", lambda {
+                Operations::globalMaintenance()
+            })
+            store.register(item, true)
+            line = Listing::toString2(store, item)
+            printer.call(line)
+            YCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d4", Time.new.to_i)
+        end
+
+        if NxBackups::notificationChannelHasMessages() then
+            item = NxLambdas::interactivelyIssueNewOrNull("run notification channel", lambda {
+                NxBackups::processNotificationChannel()
+            })
+            store.register(item, true)
+            line = Listing::toString2(store, item)
+            printer.call(line)
         end
 
         input = LucilleCore::askQuestionAnswerAsString("> ")
