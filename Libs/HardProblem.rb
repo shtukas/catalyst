@@ -9,6 +9,7 @@ class HardProblem
 
         HardProblem::updateItemsWithItem(item)
         HardProblem::updateMikuTypesItemsWithItem(item)
+        HardProblem::updateAParentChildrenWithItemIfRelevant(item)
 
         # Updating a parent's children inventory
         if attribute == "nx1949" then
@@ -152,6 +153,21 @@ class HardProblem
                     HardProblem::commitJsonDataToDiskContentAddressed(directory2, items)
                 }
             }
+    end
+
+    # HardProblem::updateAParentChildrenWithItemIfRelevant(item)
+    def self.updateAParentChildrenWithItemIfRelevant(item)
+        return if item["nx1949"].nil?
+        parentuuid = item["nx1949"]["parentuuid"]
+        directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/HardProblem/Children/#{parentuuid}"
+        return if !File.exist?(directory)
+        filepaths = LucilleCore::locationsAtFolder(directory).select{|filepath| filepath[-5, 5] == ".json" }
+        filepaths.each{|filepath|
+            items = JSON.parse(IO.read(filepath))
+            items = items.reject{|i| i["uuid"] == item["uuid"] } + [item]
+            FileUtils.rm(filepath)
+            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
+        }
     end
 
     # HardProblem::flushAParentChildren(parentuuid)

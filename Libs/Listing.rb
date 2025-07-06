@@ -57,6 +57,8 @@ class Listing
         ]
             .flatten
         items2 = items2.map{|item| Nx2133::ensureNx2133(item) }
+        items2 = items2.sort_by{|item| item["nx2133"]["position"] }
+
         items2 = Nx2133::ordering(items2)
 
         items = (items1 + items2)
@@ -126,6 +128,16 @@ class Listing
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
 
+        if YCache::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
+            item = NxLambdas::interactivelyIssueNewOrNull("run global maintenance", lambda {
+                Operations::globalMaintenance()
+                YCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
+            })
+            store.register(item, true)
+            line = Listing::toString2(store, item)
+            printer.call(line)
+        end
+
         t1 = Time.new.to_f
         Listing::itemsForListing2()
             .each{|item|
@@ -151,16 +163,6 @@ class Listing
             end
         rescue
             puts "could not retrieve palmer performance report".red
-        end
-
-        if YCache::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d4", 40000) then
-            item = NxLambdas::interactivelyIssueNewOrNull("run global maintenance", lambda {
-                Operations::globalMaintenance()
-            })
-            store.register(item, true)
-            line = Listing::toString2(store, item)
-            printer.call(line)
-            YCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d4", Time.new.to_i)
         end
 
         if NxBackups::notificationChannelHasMessages() then

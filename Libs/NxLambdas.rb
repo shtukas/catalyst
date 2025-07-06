@@ -17,7 +17,7 @@ class NxLambdas
 
     # NxLambdas::toString(item)
     def self.toString(item)
-        "ƛ  #{item["description"]}"
+        "✨ #{item["description"]}"
     end
 
     # NxLambdas::run(item)

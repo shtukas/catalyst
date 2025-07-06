@@ -135,7 +135,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("line", input) then
-            NxLines::interactivelyIssueNew(line)
+            NxLines::interactivelyIssueNew(nil, line)
             return
         end
 

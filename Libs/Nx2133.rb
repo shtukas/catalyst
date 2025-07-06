@@ -4,14 +4,6 @@ class Nx2133
     # ----------------------------------------------
     # Decisions
 
-    # Nx2133::getNxOrNull(item)
-    def self.getNxOrNull(item)
-        if item["nx2133"] then
-            return item["nx2133"]
-        end
-        nil
-    end
-
     # Nx2133::decideDurationInMinutes(item)
     def self.decideDurationInMinutes(item)
         if item["nx0607-duration"] then
@@ -30,7 +22,7 @@ class Nx2133
 
     # Nx2133::decideDeadlineOrNull(item)
     def self.decideDeadlineOrNull(item)
-        nx2133 = Nx2133::getNxOrNull(item)
+        nx2133 = item["nx2133"]
         if nx2133 then
             return nx2133["deadline"]
         end
@@ -74,7 +66,7 @@ class Nx2133
         items = Items::items()
         deadlines = items
             .map{|item|
-                nx2133 = Nx2133::getNxOrNull(item)
+                nx2133 = item["nx2133"]
                 if nx2133 and nx2133["deadline"] then
                     nx2133["deadline"]
                 else
@@ -91,7 +83,7 @@ class Nx2133
         items = Items::items()
         positions = items
             .map{|item|
-                nx2133 = Nx2133::getNxOrNull(item)
+                nx2133 = item["nx2133"]
                 if nx2133 then
                     nx2133["position"]
                 else
@@ -108,7 +100,7 @@ class Nx2133
         items = Items::items()
         positions = items
             .map{|item|
-                nx2133 = Nx2133::getNxOrNull(item)
+                nx2133 = item["nx2133"]
                 if nx2133 then
                     nx2133["position"]
                 else
@@ -129,22 +121,12 @@ class Nx2133
         duration = Nx2133::decideDurationInMinutes(item)
         deadline = Nx2133::decideDeadlineOrNull(item)
         countdownToDelisting = Nx2133::decideCountdownToDelistingInSecondsOrNull(item)
-
         {
-            "position" => lastPosition + rand * (1 - lastPosition),
+            "position" => lastPosition + rand.to_f/100,
             "duration" => duration,
             "deadline" => deadline, # optional
             "countdownToDelisting" => countdownToDelisting
         }
-    end
-
-    # Nx2133::architechNx(item)
-    def self.architechNx(item)
-        nx2133 = Nx2133::getNxOrNull(item)
-        return nx2133 if nx2133
-        nx2133 = Nx2133::buildNewNx(item)
-        Items::setAttribute(item["uuid"], "nx2133", nx2133)
-        nx2133
     end
 
     # Nx2133::makeTopNx2133(durationInMinutes, deadline)
@@ -160,7 +142,7 @@ class Nx2133
     def self.makeNextNx2133(durationInMinutes, deadline)
         lastPosition = Nx2133::determineLastPosition()
         {
-            "position" => lastPosition + rand * (1 - lastPosition), # We work with the assumption that the positions are in (0, 1)
+            "position" => lastPosition + rand.to_f/100,
             "duration" => durationInMinutes,
             "deadline" => deadline
         }
@@ -171,7 +153,7 @@ class Nx2133
 
     # Nx2133::suffix(item)
     def self.suffix(item)
-        nx2133 = Nx2133::getNxOrNull(item)
+        nx2133 = item["nx2133"]
         if nx2133 then
             lateStatus = nx2133["deadline"] ? (  nx2133["deadline"] < Time.new.utc.iso8601 ? " [late]".red : "" ) : ""
             " (#{nx2133["position"]}, #{nx2133["duration"]}, #{nx2133["deadline"]})".yellow + lateStatus
@@ -240,7 +222,7 @@ class Nx2133
             if rocks[i]["nx2133"]["position"] < rocks[i+1]["nx2133"]["position"] then
                 # noting to happen
             else
-                rocks[i+1]["nx2133"]["position"] = 0.5 * (rocks[i]["nx2133"]["position"] + 1 + i.to_f/100)
+                rocks[i+1]["nx2133"]["position"] = rocks[i]["nx2133"]["position"] + rand.to_f/100
             end
         }
         waters = waters.sort_by{|item| item["nx2133"]["position"] }
@@ -249,10 +231,9 @@ class Nx2133
             if items[i]["nx2133"]["position"] < items[i+1]["nx2133"]["position"] then
                 # noting to happen
             else
-                items[i+1]["nx2133"]["position"] = 0.5 * (items[i]["nx2133"]["position"] + 1)
+                items[i+1]["nx2133"]["position"] = items[i]["nx2133"]["position"] + rand.to_f/100
             end
         }
-        items = waters.sort_by{|item| item["nx2133"]["position"] }
         items.each{|item|
             i2 = Items::itemOrNull(item["uuid"])
             if item["nx2133"].to_s != i2["nx2133"].to_s then
@@ -264,7 +245,10 @@ class Nx2133
 
     # Nx2133::ensureNx2133(item)
     def self.ensureNx2133(item)
-        item["nx2133"] = Nx2133::architechNx(item)
+        return item if item["nx2133"]
+        nx2133 = Nx2133::buildNewNx(item)
+        Items::setAttribute(item["uuid"], "nx2133", nx2133)
+        item["nx2133"] = nx2133
         item
     end
 
@@ -291,7 +275,7 @@ class Nx2133
         if fp > 0.35 then
             Items::items()
                 .each{|item|
-                    nx2133 = Nx2133::getNxOrNull(item)
+                    nx2133 = item["nx2133"]
                     if nx2133 then
                         nx2133["position"] = nx2133["position"] - (fp - 0.1)
                         Items::setAttribute(item["uuid"], "nx2133", nx2133)

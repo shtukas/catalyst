@@ -14,9 +14,9 @@ class NxLines
         Items::itemOrNull(uuid)
     end
 
-    # NxLines::interactivelyIssueNew(description)
-    def self.interactivelyIssueNew(description)
-        uuid = SecureRandom.uuid
+    # NxLines::interactivelyIssueNew(uuid, description)
+    def self.interactivelyIssueNew(uuid, description)
+        uuid = uuid || SecureRandom.uuid
         Items::init(uuid)
         Items::setAttribute(uuid, "mikuType", "NxLine")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
