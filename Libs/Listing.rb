@@ -59,7 +59,10 @@ class Listing
         items2 = items2.map{|item| Nx2133::ensureNx2133(item) }
         items2 = items2.sort_by{|item| item["nx2133"]["position"] }
 
-        items2 = Nx2133::ordering(items2)
+        if YCache::trueNoMoreOftenThanNSeconds("313dea6a-ff0a-403a-9f6a-0ebf08dd3a3d", 3600) then
+            items2 = Nx2133::ordering(items2)
+            YCache::set("313dea6a-ff0a-403a-9f6a-0ebf08dd3a3d", Time.new.to_i)
+        end
 
         items = (items1 + items2)
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
