@@ -156,7 +156,7 @@ class Nx2133
         nx2133 = item["nx2133"]
         if nx2133 then
             lateStatus = nx2133["deadline"] ? (  nx2133["deadline"] < Time.new.utc.iso8601 ? " [late]".red : "" ) : ""
-            " (#{nx2133["position"]}, #{nx2133["duration"]}, #{nx2133["deadline"]})".yellow + lateStatus
+            " (#{nx2133["position"].round(3)}, #{nx2133["duration"]}, #{nx2133["deadline"]})".yellow + lateStatus
         else
             ""
         end

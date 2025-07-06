@@ -31,7 +31,7 @@ class NxBackups
         if unixtime then
             distance_in_days = (Time.new.to_i - unixtime).to_f/86400
             if distance_in_days > item["period"] then
-                distance = " (last done #{distance_in_days} ago)".yellow
+                distance = " (last done #{distance_in_days.round(2)} ago)".yellow
             end
         end
         "💾 [backup] #{item["description"]} (every #{item["period"]} days)#{distance}"
