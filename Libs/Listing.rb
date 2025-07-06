@@ -75,7 +75,7 @@ class Listing
     # Listing::itemsForListing2()
     def self.itemsForListing2()
         items = Listing::itemsForListing1()
-        items = items.take(10) + NxBalls::runningItems() + items.drop(10)
+        items = items + NxBalls::runningItems()
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items
     end
