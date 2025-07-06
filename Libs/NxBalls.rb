@@ -203,6 +203,7 @@ class NxBalls
             NxBalls::commitToBank(account["description"], account["number"], timespanInSeconds)
         }
         NxBalls::destroyNxBall(item)
+        timespanInSeconds
     end
 
     # NxBalls::pause(item)
@@ -219,6 +220,7 @@ class NxBalls
         }
         nxball["type"] = "paused"
         NxBalls::commitBall(item, nxball)
+        timespanInSeconds
     end
 
     # NxBalls::pursue(item)

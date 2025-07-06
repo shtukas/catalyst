@@ -63,6 +63,10 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
+        unixtime = DoNotShowUntil::getUnixtimeOrNull(item["uuid"])
+        if unixtime then
+            puts "do not show until: #{Time.at(unixtime).to_s} "
+        end
         LucilleCore::pressEnterToContinue()
     end
 

@@ -122,6 +122,7 @@ class CommandsAndInterpreters
             Operations::interactivelySetDonation(item)
             durationInMinutes = LucilleCore::askQuestionAnswerAsString("duration in minutes: ").to_f
             nx2133 = Nx2133::makeTopNx2133(durationInMinutes, nil)
+            nx2133["deadline"] = Nx2133::determineNewFirstDeadline()
             Items::setAttribute(item["uuid"], "nx2133", nx2133)
             item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)

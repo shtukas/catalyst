@@ -81,7 +81,8 @@ class PolyActions
     # PolyActions::done(item, useTheForce = false)
     def self.done(item, useTheForce = false)
 
-        NxBalls::stop(item)
+        timespanInSeconds = NxBalls::stop(item)
+        Nx2133::decreaseCountdownIfRelevant(item, timespanInSeconds)
 
         if item["mikuType"] == "NxLambda" then
             return
@@ -138,6 +139,12 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
+            if item["nx2290-important"] then
+                return
+            end
+            if Bank1::getValue(item["uuid"]) > Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) then
+                return
+            end
             if LucilleCore::askQuestionAnswerAsBoolean("confirm destroying: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::destroy(item["uuid"])
             end

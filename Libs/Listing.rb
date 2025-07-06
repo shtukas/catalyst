@@ -37,60 +37,29 @@ class Listing
         line
     end
 
-    # Listing::itemsForListing1_v1()
-    def self.itemsForListing1_v1()
-        items = [
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxBackups::listingItems(),
-            NxLines::listingItems(),
-            NxDateds::listingItems(),
-            NxFloats::listingItems(),
-            Waves::nonInterruptionItemsForListing(),
-            NxTasks::importantItemsForListing(),
-            NxCores::listingItems()
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .select{|item| Instances::canShowHere(item) }
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
-        items
-    end
-
-    # Listing::itemsForListing1_v2()
-    def self.itemsForListing1_v2()
+    # Listing::itemsForListing1()
+    def self.itemsForListing1()
         items1 = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-            NxLines::listingItems()
         ]
             .flatten
 
         items2 = [
+            NxLines::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
-            NxTasks::importantItemsForListing()
-        ]
-            .flatten
-
-        items2 = items2
-                    .map{|item|
-                        item["nx2133"] = Nx2133::getNx(item)
-                        item
-                    }
-                    .sort_by{|item|
-                        item["nx2133"]["position"]
-                    }
-        items2 = Nx2133::updatesAndSorting(items2)
-
-        items3 = [
+            NxTasks::importantItemsForListing(),
+            NxTasks::listingItems(),
             NxCores::listingItems()
         ]
             .flatten
+        items2 = items2.map{|item| Nx2133::ensureNx2133(item) }
+        items2 = Nx2133::ordering(items2)
 
-        items = (items1 + items2 + items3)
+        items = (items1 + items2)
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
             .select{|item| Instances::canShowHere(item) }
 
@@ -100,7 +69,7 @@ class Listing
 
     # Listing::itemsForListing2()
     def self.itemsForListing2()
-        items = Listing::itemsForListing1_v2()
+        items = Listing::itemsForListing1()
         items = items.take(10) + NxBalls::runningItems() + items.drop(10)
         items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
         items

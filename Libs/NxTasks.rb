@@ -83,6 +83,26 @@ class NxTasks
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
 
+    # NxTasks::listingItems()
+    def self.listingItems()
+        NxCores::cores()
+            .select{|core| PolyFunctions::childrenForParent(core).size > 0 }
+            .sort_by{|core| NxCores::ratio(core) }
+            .select{|core| NxCores::ratio(core) < 1 }
+            .map{|core| PolyFunctions::childrenInOrder(core).reduce([]){|selected, item|
+                if selected.size >= 3 then
+                    selected
+                else
+                    if NxBalls::itemIsActive(item) or Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600 then
+                        selected + [item]
+                    else
+                        selected
+                    end
+                end
+            }}
+            .flatten
+    end
+
     # ------------------
     # Ops
 

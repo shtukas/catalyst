@@ -6,7 +6,7 @@ class Nx2133
 
     # Nx2133::getNxOrNull(item)
     def self.getNxOrNull(item)
-        if item["nx2133"] and item["nx2133"]["date"] == CommonUtils::today() then
+        if item["nx2133"] then
             return item["nx2133"]
         end
         nil
@@ -17,7 +17,10 @@ class Nx2133
         if item["nx0607-duration"] then
             return item["nx0607-duration"]
         end
-        if item["mikuType"] == "NxTask" and item["nx2290-important"] then
+        if item["mikuType"] == "NxTask" then
+            return 60
+        end
+        if item["mikuType"] == "NxCore" then
             return 60
         end
         duration = LucilleCore::askQuestionAnswerAsString("Duration for '#{PolyFunctions::toString(item).green}' (in mins): ").to_f
@@ -28,24 +31,59 @@ class Nx2133
     # Nx2133::decideDeadlineOrNull(item)
     def self.decideDeadlineOrNull(item)
         nx2133 = Nx2133::getNxOrNull(item)
-        if nx2133 and nx2133["date"] == CommonUtils::today() then
+        if nx2133 then
             return nx2133["deadline"]
         end
         if item["mikuType"] == "NxTask" and item["nx2290-important"] then
             t1 = [ Time.new.to_i, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 9 * 3600 ].max
-            t2 = [ Time.new.to_i + 4 * 3600, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 14 * 3600 ].max
+            t2 = [ Time.new.to_i + 6 * 3600, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 12 * 3600 ].max
+            tx = t1 + rand * (t2-t1)
+            deadline = Time.at(tx).utc.iso8601
+            return deadline
+        end
+        if item["mikuType"] == "NxCore" then
+            t1 = [ Time.new.to_i, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 12 * 3600 ].max
+            t2 = [ Time.new.to_i + 6 * 3600, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 15 * 3600 ].max
             tx = t1 + rand * (t2-t1)
             deadline = Time.at(tx).utc.iso8601
             return deadline
         end
         if item["mikuType"] == "NxDated" then
             t1 = [ Time.new.to_i, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 11 * 3600 ].max
-            t2 = [ Time.new.to_i + 4 * 3600, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 16 * 3600 ].max
+            t2 = [ Time.new.to_i + 6 * 3600, CommonUtils::unixtimeAtLastMidnightAtLocalTimezone() + 16 * 3600 ].max
             tx = t1 + rand * (t2-t1)
             deadline = Time.at(tx).utc.iso8601
             return deadline
         end
         nil
+    end
+
+    # Nx2133::decideCountdownToDelistingInSecondsOrNull(item)
+    def self.decideCountdownToDelistingInSecondsOrNull(item)
+        if item["mikuType"] == "NxTask" and item["nx2290-important"] then
+            return 3600
+        end
+        if item["mikuType"] == "NxCore" then
+            return 3600
+        end
+        nil
+    end
+
+    # Nx2133::determineNewFirstDeadline()
+    def self.determineNewFirstDeadline()
+        items = Items::items()
+        deadlines = items
+            .map{|item|
+                nx2133 = Nx2133::getNxOrNull(item)
+                if nx2133 and nx2133["deadline"] then
+                    nx2133["deadline"]
+                else
+                    nil
+                end
+            }
+            .compact
+        return Time.new.utc.iso8601 if deadlines.empty?
+        Time.at(DateTime.parse(deadlines.min).to_time - 1).utc.iso8601
     end
 
     # Nx2133::determineFirstPosition()
@@ -82,23 +120,36 @@ class Nx2133
         positions.max
     end
 
-    # Nx2133::makeNx(item)
-    def self.makeNx(item)
+    # ----------------------------------------------
+    # Makers
+
+    # Nx2133::buildNewNx(item)
+    def self.buildNewNx(item)
+        lastPosition = Nx2133::determineLastPosition()
         duration = Nx2133::decideDurationInMinutes(item)
         deadline = Nx2133::decideDeadlineOrNull(item)
-        lastPosition = Nx2133::determineLastPosition()
+        countdownToDelisting = Nx2133::decideCountdownToDelistingInSecondsOrNull(item)
+
         {
-            "date"     => CommonUtils::today(),
             "position" => lastPosition + rand * (1 - lastPosition),
             "duration" => duration,
-            "deadline" => deadline # optional
+            "deadline" => deadline, # optional
+            "countdownToDelisting" => countdownToDelisting
         }
+    end
+
+    # Nx2133::architechNx(item)
+    def self.architechNx(item)
+        nx2133 = Nx2133::getNxOrNull(item)
+        return nx2133 if nx2133
+        nx2133 = Nx2133::buildNewNx(item)
+        Items::setAttribute(item["uuid"], "nx2133", nx2133)
+        nx2133
     end
 
     # Nx2133::makeTopNx2133(durationInMinutes, deadline)
     def self.makeTopNx2133(durationInMinutes, deadline)
         {
-            "date"     => CommonUtils::today(),
             "position" => Nx2133::determineFirstPosition() * 0.9, # We work with the assumption that the positions are positive
             "duration" => durationInMinutes,
             "deadline" => deadline
@@ -109,7 +160,6 @@ class Nx2133
     def self.makeNextNx2133(durationInMinutes, deadline)
         lastPosition = Nx2133::determineLastPosition()
         {
-            "date"     => CommonUtils::today(),
             "position" => lastPosition + rand * (1 - lastPosition), # We work with the assumption that the positions are in (0, 1)
             "duration" => durationInMinutes,
             "deadline" => deadline
@@ -119,19 +169,10 @@ class Nx2133
     # ----------------------------------------------
     # Data
 
-    # Nx2133::getNx(item)
-    def self.getNx(item)
-        nx2133 = Nx2133::getNxOrNull(item)
-        return nx2133 if nx2133
-        nx2133 = Nx2133::makeNx(item)
-        Items::setAttribute(item["uuid"], "nx2133", nx2133)
-        nx2133
-    end
-
     # Nx2133::suffix(item)
     def self.suffix(item)
         nx2133 = Nx2133::getNxOrNull(item)
-        if nx2133 and nx2133["date"] == CommonUtils::today() then
+        if nx2133 then
             lateStatus = nx2133["deadline"] ? (  nx2133["deadline"] < Time.new.utc.iso8601 ? " [late]".red : "" ) : ""
             " (#{nx2133["position"]}, #{nx2133["duration"]}, #{nx2133["deadline"]})".yellow + lateStatus
         else
@@ -140,9 +181,9 @@ class Nx2133
     end
 
     # ----------------------------------------------
-    # Updates
+    # Transforms
 
-    # Nx2133::permutePositions(items, i1, i2)
+    # Nx2133::permutePositions(items, i1, i2) # items -> items
     def self.permutePositions(items, i1, i2)
         # The two items remain in place but exchange their nx2133's positions
         item1 = items[i1]
@@ -160,80 +201,58 @@ class Nx2133
         items
     end
 
-    # Nx2133::ensureDeadlineOrdering(items)
-    def self.ensureDeadlineOrdering(items)
-        return [] if items.empty?
-        (0..items.size-1).each{|i|
-            (i..items.size-1).each{|j|
-                if items[i]["nx2133"]["deadline"] and items[j]["nx2133"]["deadline"] and items[i]["nx2133"]["deadline"] > items[j]["nx2133"]["deadline"] then
-                    #puts "ensure deadline ordering: permute: '#{PolyFunctions::toString(items[i]).green}'' and '#{PolyFunctions::toString(items[j]).green}'".yellow
-                    items = Nx2133::permutePositions(items, i, j)
-                    mutationHasOccured = true
-                end
-            }
-        }
-        items
+    # Nx2133::timesCheckout(deadline1, durationsInMinutes, durationInMinutes, deadline2)
+    def self.timesCheckout(deadline1, durationsInMinutes, durationInMinutes, deadline2)
+        DateTime.parse(deadline1).to_time.to_i + durationsInMinutes.map{|d| d*60 }.sum + durationInMinutes * 60 <= DateTime.parse(deadline2).to_time.to_i
     end
 
-    # Nx2133::ensureDeadlineProjections1(items, indx, time)
-    def self.ensureDeadlineProjections1(items, indx, time)
-        # Time represents the time at which we start the item at position indx
-        if items[indx]["nx2133"]["deadline"] and items[indx]["nx2133"]["deadline"] < Time.at(time).utc.iso8601 and items[indx-1]["nx2133"]["deadline"].nil? then
-            #puts "ensure deadline projections: permute: '#{PolyFunctions::toString(items[indx-1]).green}' and '#{PolyFunctions::toString(items[indx]).green}'".yellow
-            items = Nx2133::permutePositions(items, indx-1, indx)
+    # Nx2133::luci(headEndingWithARock, fillings, rocks, waters)
+    def self.luci(headEndingWithARock, fillings, rocks, waters)
+        if rocks.empty? and waters.empty? then
+            return headEndingWithARock + fillings
         end
-        items
-    end
-
-    # Nx2133::ensureDeadlineProjections2(items)
-    def self.ensureDeadlineProjections2(items)
-        return items if items.size < 2
-        time = Time.new.to_i + items[0]["nx2133"]["duration"] * 60
-        (1..items.size-1).each{|indx|
-            items = Nx2133::ensureDeadlineProjections1(items, indx, time)
-            time = time + items[indx-1]["nx2133"]["duration"] * 60
-        }
-        items
-    end
-
-    # Nx2133::optimiseNonDeadlinesPlacement1(items, indx, time)
-    def self.optimiseNonDeadlinesPlacement1(items, indx, time)
-        # Time represents the time at which we start the item at position indx
-        if items[indx]["nx2133"]["deadline"] and items[indx+1]["nx2133"]["deadline"].nil? and items[indx]["nx2133"]["deadline"] > Time.at(time + items[indx]["nx2133"]["duration"]*60 + items[indx+1]["nx2133"]["duration"]*60).utc.iso8601 then
-            #puts "optimise non deadline placement: permute: '#{PolyFunctions::toString(items[indx]).green}' and '#{PolyFunctions::toString(items[indx+1]).green}'".yellow
-            items = Nx2133::permutePositions(items, indx, indx+1)
+        if rocks.empty? and waters.size > 0 then
+            return headEndingWithARock + fillings + waters
         end
-        items
+        if rocks.size > 0 and waters.empty? then
+            return headEndingWithARock + fillings + rocks
+        end
+        if headEndingWithARock.empty? then
+            # Here we are making the arbitrary decision to always start with a water and a rock
+            return Nx2133::luci(waters.take(1) + rocks.take(1), fillings, rocks.drop(1), waters.drop(1))
+        end
+        # By now we have non empty heading, rocks and waters
+        check = Nx2133::timesCheckout(headEndingWithARock.last["nx2133"]["deadline"], fillings.map{|i| i["nx2133"]["duration"] }, waters.first["nx2133"]["duration"], rocks.first["nx2133"]["deadline"])
+        if check then
+            Nx2133::luci(headEndingWithARock, fillings + waters.take(1), rocks, waters.drop(1))
+        else
+            Nx2133::luci(headEndingWithARock + fillings + rocks.take(1), [], rocks.drop(1), waters)
+        end
     end
 
-    # Nx2133::optimiseNonDeadlinesPlacement2(items)
-    def self.optimiseNonDeadlinesPlacement2(items)
-        return items if items.size < 2
-        time = Time.new.to_i + items[0]["nx2133"]["duration"] * 60
-        (0..items.size-2).each{|indx|
-            items = Nx2133::optimiseNonDeadlinesPlacement1(items, indx, time)
-            time = time + items[indx-1]["nx2133"]["duration"] * 60
+    # Nx2133::ordering(items) # items -> items
+    def self.ordering(items)
+        items = items.sort_by{|item| item["nx2133"]["position"] }
+        trace1 = Digest::SHA1.hexdigest(items.to_s)
+        rocks, waters = items.partition{|item| item["nx2133"]["deadline"] }
+        rocks = rocks.sort_by{|item| item["nx2133"]["deadline"] }
+        (0..rocks.size-2).each{|i|
+            if rocks[i]["nx2133"]["position"] < rocks[i+1]["nx2133"]["position"] then
+                # noting to happen
+            else
+                rocks[i+1]["nx2133"]["position"] = 0.5 * (rocks[i]["nx2133"]["position"] + 1 + i.to_f/100)
+            end
         }
-        items
-    end
-
-    # Nx2133::updatesAndSorting(items)
-    def self.updatesAndSorting(items)
-        items = items.map{|item|
-            item["nx2133"] = Nx2133::getNx(item)
-            item
+        waters = waters.sort_by{|item| item["nx2133"]["position"] }
+        items = Nx2133::luci([], [], rocks, waters)
+        (0..items.size-2).each{|i|
+            if items[i]["nx2133"]["position"] < items[i+1]["nx2133"]["position"] then
+                # noting to happen
+            else
+                items[i+1]["nx2133"]["position"] = 0.5 * (items[i]["nx2133"]["position"] + 1)
+            end
         }
-        loop {
-            trace1 = Digest::SHA1.hexdigest(items.to_s)
-            items = Nx2133::ensureDeadlineOrdering(items)
-            items = Nx2133::ensureDeadlineProjections2(items)
-            items = Nx2133::optimiseNonDeadlinesPlacement2(items)
-            items = items.sort_by{|item|
-                item["nx2133"]["position"]
-            }
-            trace2 = Digest::SHA1.hexdigest(items.to_s)
-            break if trace1 == trace2
-        }
+        items = waters.sort_by{|item| item["nx2133"]["position"] }
         items.each{|item|
             i2 = Items::itemOrNull(item["uuid"])
             if item["nx2133"].to_s != i2["nx2133"].to_s then
@@ -241,6 +260,29 @@ class Nx2133
             end
         }
         items
+    end
+
+    # Nx2133::ensureNx2133(item)
+    def self.ensureNx2133(item)
+        item["nx2133"] = Nx2133::architechNx(item)
+        item
+    end
+
+    # Nx2133::decreaseCountdownIfRelevant(item, timespanInSeconds)
+    def self.decreaseCountdownIfRelevant(item, timespanInSeconds)
+        if item["nx2133"] and item["nx2133"]["countdownToDelisting"] then
+            item["nx2133"]["countdownToDelisting"] = item["nx2133"]["countdownToDelisting"] -  timespanInSeconds
+            if item["nx2133"]["countdownToDelisting"] < 0 then
+                Nx2133::removeNx2133(item)
+            else
+                Items::setAttribute(item["uuid"], "nx2133",item["nx2133"])
+            end
+        end
+    end
+
+    # Nx2133::removeNx2133(item)
+    def self.removeNx2133(item)
+        Items::setAttribute(item["uuid"], "nx2133", nil)
     end
 
     # Nx2133::maintenance()
@@ -256,11 +298,6 @@ class Nx2133
                     end
                 }
         end
-    end
-
-    # Nx2133::removeNx2133(item)
-    def self.removeNx2133(item)
-        Items::setAttribute(item["uuid"], "nx2133", nil)
     end
 
     # Nx2133::reset()
