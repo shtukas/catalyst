@@ -270,7 +270,7 @@ class PolyActions
             PolyActions::start(item)
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-            PolyActions::done(item)
+            PolyActions::done(item, true)
             return
         end
 
