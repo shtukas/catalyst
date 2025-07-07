@@ -9,6 +9,12 @@ class YCache
     # YCache::set(key, value)
     def self.set(key, value)
         hash1 = Digest::SHA1.hexdigest(key)
+        LucilleCore::locationsAtFolder(YCache::repository())
+            .select{|filepath| File.basename(filepath).start_with?(hash1) }
+            .each{|filepath|
+                FileUtils.rm(filepath)
+            }
+        hash1 = Digest::SHA1.hexdigest(key)
         hash2 = Digest::SHA1.hexdigest(JSON.generate(value))
         filepath = "#{YCache::repository()}/#{hash1}-#{hash2}.json"
         File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(value)) }

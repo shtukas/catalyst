@@ -97,7 +97,7 @@ class Operations
                 next if nx1949.nil?
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location, nx1949)
-                puts JSON.pretty_generate(item)
+                #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
             }
         end
@@ -108,12 +108,22 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxDateds::locationToItem(description, location)
-                puts JSON.pretty_generate(item)
+                #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
-                puts PolyFunctions::toString(item)
-                durationInMinutes = LucilleCore::askQuestionAnswerAsString("duration in minutes: ").to_f
-                nx2133 = Nx2133::makeNextNx2133(durationInMinutes, nil)
-                Items::setAttribute(item["uuid"], "nx2133", nx2133)
+                #puts PolyFunctions::toString(item)
+            }
+        end
+
+        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Tomorrow"
+        if File.exist?(directory) then
+            LucilleCore::locationsAtFolder(directory).each{|location|
+                puts location.yellow
+                description = File.basename(location)
+                item = NxDateds::locationToItem(description, location)
+                Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
+                #puts JSON.pretty_generate(item)
+                LucilleCore::removeFileSystemLocation(location)
+                #puts PolyFunctions::toString(item)
             }
         end
     end
