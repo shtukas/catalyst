@@ -50,17 +50,6 @@ class Nx2133
         nil
     end
 
-    # Nx2133::decideCountdownToDelistingInSecondsOrNull(item)
-    def self.decideCountdownToDelistingInSecondsOrNull(item)
-        if item["mikuType"] == "NxTask" and item["nx2290-important"] then
-            return 3600
-        end
-        if item["mikuType"] == "NxCore" then
-            return 3600
-        end
-        nil
-    end
-
     # Nx2133::determineNewFirstDeadline()
     def self.determineNewFirstDeadline()
         items = Items::items()
@@ -120,12 +109,10 @@ class Nx2133
         lastPosition = Nx2133::determineLastPosition()
         duration = Nx2133::decideDurationInMinutes(item)
         deadline = Nx2133::decideDeadlineOrNull(item)
-        countdownToDelisting = Nx2133::decideCountdownToDelistingInSecondsOrNull(item)
         {
             "position" => lastPosition + rand.to_f/100,
             "duration" => duration,
             "deadline" => deadline, # optional
-            "countdownToDelisting" => countdownToDelisting
         }
     end
 
@@ -252,18 +239,6 @@ class Nx2133
         item
     end
 
-    # Nx2133::decreaseCountdownIfRelevant(item, timespanInSeconds)
-    def self.decreaseCountdownIfRelevant(item, timespanInSeconds)
-        if item["nx2133"] and item["nx2133"]["countdownToDelisting"] then
-            item["nx2133"]["countdownToDelisting"] = item["nx2133"]["countdownToDelisting"] -  timespanInSeconds
-            if item["nx2133"]["countdownToDelisting"] < 0 then
-                Nx2133::removeNx2133(item)
-            else
-                Items::setAttribute(item["uuid"], "nx2133",item["nx2133"])
-            end
-        end
-    end
-
     # Nx2133::removeNx2133(item)
     def self.removeNx2133(item)
         Items::setAttribute(item["uuid"], "nx2133", nil)
@@ -274,7 +249,7 @@ class Nx2133
         if item["mikuType"] == "NxCore" then
             # If we are done for the day then we remove the Nx2133
             if NxCores::ratio(item) >= 1 then
-                Items::setAttribute(item["uuid"], "nx2133",item["nx2133"])
+                Items::setAttribute(item["uuid"], "nx2133", nil)
             end
         end
     end

@@ -3,5 +3,3 @@ Nx2133:
     "position"             : Float
     "duration"             : Float # in minutes
     "deadline"             : Date  # optional
-    "countdownToDelisting" : Float # in seconds, optional
-                             When present, is decounted by time and delisted at zero

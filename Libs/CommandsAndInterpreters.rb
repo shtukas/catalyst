@@ -450,7 +450,6 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::stop(item)
-            Nx2133::itemHasStopped(item)
             return
         end
 
@@ -459,7 +458,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::stop(item)
-            Nx2133::itemHasStopped(item)
             return
         end
 

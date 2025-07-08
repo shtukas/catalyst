@@ -76,13 +76,13 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+        Nx2133::itemHasStopped(item)
     end
 
     # PolyActions::done(item, useTheForce = false)
     def self.done(item, useTheForce = false)
 
-        timespanInSeconds = NxBalls::stop(item)
-        Nx2133::decreaseCountdownIfRelevant(item, timespanInSeconds)
+        NxBalls::stop(item)
 
         if item["mikuType"] == "NxLambda" then
             return
