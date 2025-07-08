@@ -269,6 +269,19 @@ class Nx2133
         Items::setAttribute(item["uuid"], "nx2133", nil)
     end
 
+    # Nx2133::itemHasStopped(item)
+    def self.itemHasStopped(item)
+        if item["mikuType"] == "NxCore" then
+            # If we are done for the day then we remove the Nx2133
+            if NxCores::ratio(item) >= 1 then
+                Items::setAttribute(item["uuid"], "nx2133",item["nx2133"])
+            end
+        end
+    end
+
+    # ----------------------------------------------
+    # Global
+
     # Nx2133::maintenance()
     def self.maintenance()
         fp = Nx2133::determineFirstPosition()

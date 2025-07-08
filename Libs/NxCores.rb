@@ -48,11 +48,6 @@ class NxCores
         Items::mikuType("NxCore")
     end
 
-    # NxCores::totalHoursPerWeek()
-    def self.totalHoursPerWeek()
-        NxCores::cores().map{|item| item["hours"] }.inject(0, :+)
-    end
-
     # NxCores::coresInRatioOrder()
     def self.coresInRatioOrder()
         NxCores::cores()
@@ -67,21 +62,10 @@ class NxCores
             .select{|core| NxCores::ratio(core) < 1 }
     end
 
-    # NxCores::interactivelySelectOrNull()
-    def self.interactivelySelectOrNull()
-        l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", NxCores::coresInRatioOrder(), l)
-    end
-
     # NxCores::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
         l = lambda{|core| "#{NxCores::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
         cores = NxCores::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, l)
-    end
-
-    # NxCores::selectCoreByUUIDOrNull(coreuuid)
-    def self.selectCoreByUUIDOrNull(coreuuid)
-        NxCores::cores().select{|core| core["uuid"] == coreuuid }.first
     end
 end
