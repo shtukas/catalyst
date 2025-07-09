@@ -237,15 +237,11 @@ class CommonUtils
 
     # CommonUtils::getLocalTimeZone()
     def self.getLocalTimeZone()
-        `date`.strip[-3 , 3]
+        `date -Iseconds`.strip[-5 , 5]
     end
 
     # CommonUtils::unixtimeAtLastMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtLastMidnightAtGivenTimeZone(timezone)
-        supportedTimeZones = ["BST", "GMT"]
-        if !supportedTimeZones.include?(timezone) then
-            raise "error: 9be45037-11ef-4dce-8a3c-81708f757d3d ; we are only supporting '#{supportedTimeZones}' and you provided #{timezone}"
-        end
         DateTime.parse("#{(DateTime.now.to_date).to_s} 00:00:00 #{timezone}").to_time.to_i
     end
 
@@ -256,10 +252,6 @@ class CommonUtils
 
     # CommonUtils::unixtimeAtComingMidnightAtGivenTimeZone(timezone)
     def self.unixtimeAtComingMidnightAtGivenTimeZone(timezone)
-        supportedTimeZones = ["BST", "GMT"]
-        if !supportedTimeZones.include?(timezone) then
-            raise "error: 8223a3d9-5ab4-4e13-b6fe-90b895e7f28d ; we are only supporting '#{supportedTimeZones}' and you provided #{timezone}"
-        end
         DateTime.parse("#{(DateTime.now.to_date+1).to_s} 00:00:00 #{timezone}").to_time.to_i
     end
 
