@@ -4,9 +4,9 @@ class NxDateds
     # NxDateds::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
+        datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxDated")
