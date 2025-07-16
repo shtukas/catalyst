@@ -8,13 +8,14 @@ class NxDateds
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "date", datetime[0, 10])
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::itemOrNull(uuid)
     end
 
@@ -24,13 +25,13 @@ class NxDateds
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "date", CommonUtils::today())
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::itemOrNull(uuid)
     end
 
@@ -40,13 +41,13 @@ class NxDateds
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "date", (Time.new + 86400).to_s[0, 10])
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::itemOrNull(uuid)
     end
 
@@ -56,13 +57,13 @@ class NxDateds
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         Items::init(uuid)
-        payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "date", date)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::itemOrNull(uuid)
     end
 
@@ -70,13 +71,13 @@ class NxDateds
     def self.locationToItem(description, location)
         uuid = SecureRandom.uuid
         Items::init(uuid)
-        payload = UxPayload::locationToPayload(uuid, location)
         Items::setAttribute(uuid, "mikuType", "NxDated")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "date", CommonUtils::today())
+        payload = UxPayload::locationToPayload(uuid, location)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::itemOrNull(uuid)
     end
 
