@@ -173,15 +173,15 @@ class PolyFunctions
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
-        position = LucilleCore::askQuestionAnswerAsString("position (first, next (default), <position>): ")
+        position = LucilleCore::askQuestionAnswerAsString("position (near (default), first, <position>): ")
         if position == "" then # default does next
             position = "next"
         end
+        if position == "near" then
+            return PolyFunctions::random_10_20_position_in_parent(parent)
+        end
         if position == "first" then
             return ([0] + elements.map{|item| item["nx1949"]["position"] }).min.floor - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| item["nx1949"]["position"] }).max.ceil + 1
         end
         position = position.to_f
         position
