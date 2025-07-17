@@ -157,6 +157,14 @@ class ListingDatabase
     # ------------------------------------------------------
     # Operations
 
+    # ListingDatabase::decidePosition(item)
+    def self.decidePosition(item)
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return -rand
+        end
+        rand
+    end
+
     # ListingDatabase::listingMaintenance()
     def self.listingMaintenance()
         data = ListingDatabase::getListingData()
@@ -164,7 +172,8 @@ class ListingDatabase
         Listing::itemsForListing2()
             .select{|item| !databaseuuids.include?(item["uuid"]) }
             .each{|item|
-                ListingDatabase::insertEntry(item["uuid"], rand)
+                position = ListingDatabase::decidePosition(item)
+                ListingDatabase::insertEntry(item["uuid"], position)
             }
     end
 end
