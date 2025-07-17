@@ -145,13 +145,15 @@ class ListingDatabase
 
     # ListingDatabase::itemsForListing()
     def self.itemsForListing()
-        ListingDatabase::getListingData().map{|entry|
-            item = Items::itemOrNull(entry["itemuuid"])
-            item["x-listing-position"] = entry["position"]
-            item
-        }
-        .select{|item| Instances::canShowHere(item) }
-        .sort_by{|item| item["x-listing-position"] }
+        items = ListingDatabase::getListingData()
+                .map{|entry|
+                    item = Items::itemOrNull(entry["itemuuid"])
+                    item["x-listing-position"] = entry["position"]
+                    item
+                }
+                .select{|item| Instances::canShowHere(item) }
+                .sort_by{|item| item["x-listing-position"] }
+        CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
     end
 
     # ------------------------------------------------------
