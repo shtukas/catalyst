@@ -160,6 +160,10 @@ class Listing
             printer.call(line)
         end
 
+        Thread.new {
+            ListingDatabase::listingMaintenance()
+        }
+
         input = LucilleCore::askQuestionAnswerAsString("> ")
         if input == "exit" then
             return
