@@ -372,6 +372,15 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("sort", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], store.items(), lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|item|
+                position = ListingDatabase::firstPositionInDatabase() * 0.9
+                ListingDatabase::setPosition(item["uuid"], position)
+            }
+            return
+        end
+
         if Interpreting::match("program *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)

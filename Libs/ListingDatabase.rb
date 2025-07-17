@@ -3,10 +3,8 @@
 
 class ListingDatabase
 
-
-
     # ------------------------------------------------------
-    # Basic IO and data functions
+    # Basic IO and setters
 
     # ListingDatabase::directory()
     def self.directory()
@@ -135,6 +133,20 @@ class ListingDatabase
         ListingDatabase::ensureContentAddressing(filepath)
     end
 
+    # ListingDatabase::setPosition(itemuuid, position)
+    def self.setPosition(itemuuid, position)
+        filepath = ListingDatabase::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position = ? where itemuuid = ?", [position, itemuuid])
+        db.commit
+        db.close
+        ListingDatabase::ensureContentAddressing(filepath)
+    end
+
     # ------------------------------------------------------
     # Data
 
@@ -143,14 +155,34 @@ class ListingDatabase
         ListingDatabase::extractDataFromFile(ListingDatabase::getReducedDatabaseFilepath())
     end
 
+    # ListingDatabase::firstPositionInDatabase()
+    def self.firstPositionInDatabase()
+        data = ListingDatabase::getListingData()
+        return 1 if data.empty?
+        data.map{|e| e["position"] }.min
+    end
+
+    # ListingDatabase::lastPositionInDatabase()
+    def self.lastPositionInDatabase()
+        data = ListingDatabase::getListingData()
+        return 1 if data.empty?
+        data.map{|e| e["position"] }.max
+    end
+
     # ListingDatabase::itemsForListing()
     def self.itemsForListing()
         items = ListingDatabase::getListingData()
                 .map{|entry|
                     item = Items::itemOrNull(entry["itemuuid"])
-                    item["x-listing-position"] = entry["position"]
-                    item
+                    if item then
+                        item["x-listing-position"] = entry["position"]
+                        item
+                    else
+                        ListingDatabase::removeEntry(entry["itemuuid"])
+                        nil
+                    end
                 }
+                .compact
                 .select{|item| Instances::canShowHere(item) }
                 .sort_by{|item| item["x-listing-position"] }
         CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
@@ -162,9 +194,12 @@ class ListingDatabase
     # ListingDatabase::decidePosition(item)
     def self.decidePosition(item)
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return -rand
+            return ListingDatabase::firstPositionInDatabase() * 0.9
         end
-        rand
+        first = ListingDatabase::firstPositionInDatabase()
+        last  = ListingDatabase::lastPositionInDatabase()
+        mid = 0.5*(first + last)
+        mid + 0.2 * (last - mid) + rand * (last - mid)
     end
 
     # ListingDatabase::listingMaintenance()

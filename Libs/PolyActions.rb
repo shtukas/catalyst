@@ -121,6 +121,7 @@ class PolyActions
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
+            ListingDatabase::removeEntry(item["uuid"])
             return
         end
 
@@ -139,12 +140,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["nx2290-important"] then
-                return
-            end
-            if Bank1::getValue(item["uuid"]) > Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) then
-                return
-            end
             if LucilleCore::askQuestionAnswerAsBoolean("confirm destroying: '#{PolyFunctions::toString(item).green} ? '") then
                 Items::destroy(item["uuid"])
             end
