@@ -76,7 +76,6 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-        Nx2133::itemHasStopped(item)
     end
 
     # PolyActions::done(item, useTheForce = false)

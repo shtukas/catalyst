@@ -1,5 +1,0 @@
-
-Nx2133:
-    "position"             : Float
-    "duration"             : Float # in minutes
-    "deadline"             : Date  # optional

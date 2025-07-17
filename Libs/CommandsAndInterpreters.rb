@@ -22,7 +22,6 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                Nx2133::removeNx2133(item)
                 return
             end
         end
@@ -120,11 +119,6 @@ class CommandsAndInterpreters
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            durationInMinutes = LucilleCore::askQuestionAnswerAsString("duration in minutes: ").to_f
-            nx2133 = Nx2133::makeTopNx2133(durationInMinutes, nil)
-            nx2133["deadline"] = Nx2133::determineNewFirstDeadline()
-            Items::setAttribute(item["uuid"], "nx2133", nx2133)
-            item = Items::itemOrNull(item["uuid"])
             NxBalls::start(item)
             return
         end
@@ -366,7 +360,6 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
-            Nx2133::removeNx2133(item)
             return
         end
 

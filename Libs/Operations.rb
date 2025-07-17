@@ -36,8 +36,6 @@ class Operations
     # Operations::globalMaintenance()
     def self.globalMaintenance()
         puts "> Operations::globalMaintenance()"
-        puts "> Nx2133::maintenance()"
-        Nx2133::maintenance()
     end
 
     # Operations::interactivelyGetLines()

@@ -24,7 +24,7 @@ class Listing
         storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         impt = item["nx2290-important"] ? " [important]".red : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{Instances::suffix(item)}#{Nx2133::suffix(item)}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{Instances::suffix(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -39,13 +39,9 @@ class Listing
 
     # Listing::itemsForListing1()
     def self.itemsForListing1()
-        items1 = [
+        items = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-        ]
-            .flatten
-
-        items2 = [
             NxLines::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
@@ -56,20 +52,7 @@ class Listing
             NxCores::listingItems()
         ]
             .flatten
-        items2 = items2.map{|item| Nx2133::ensureNx2133(item) }
-        items2 = items2.sort_by{|item| item["nx2133"]["position"] }
-
-        if YCache::trueNoMoreOftenThanNSeconds("313dea6a-ff0a-403a-9f6a-0ebf08dd3a3d", 3600) then
-            items2 = Nx2133::ordering(items2)
-            YCache::set("313dea6a-ff0a-403a-9f6a-0ebf08dd3a3d", Time.new.to_i)
-        end
-
-        items = (items1 + items2)
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-            .select{|item| Instances::canShowHere(item) }
-
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
-        items
     end
 
     # Listing::itemsForListing2()
@@ -131,10 +114,10 @@ class Listing
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
 
-        if YCache::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
+        if XCacheExensions::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
             item = NxLambdas::interactivelyIssueNewOrNull("run global maintenance", lambda {
                 Operations::globalMaintenance()
-                YCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
+                XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
             })
             store.register(item, true)
             line = Listing::toString2(store, item)
@@ -142,7 +125,7 @@ class Listing
         end
 
         t1 = Time.new.to_f
-        Listing::itemsForListing2()
+        ListingDatabase::itemsForListing()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 line = Listing::toString2(store, item)
