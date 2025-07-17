@@ -168,7 +168,7 @@ class ListingDatabase
     # ListingDatabase::listingMaintenance()
     def self.listingMaintenance()
         data = ListingDatabase::getListingData()
-        databaseuuids = data.map{|entry| entry["uuid"] }
+        databaseuuids = data.map{|entry| entry["itemuuid"] }
         Listing::itemsForListing2()
             .select{|item| !databaseuuids.include?(item["uuid"]) }
             .each{|item|
