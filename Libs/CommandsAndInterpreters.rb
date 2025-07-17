@@ -22,6 +22,7 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                ListingDatabase::removeEntry(item["uuid"])
                 return
             end
         end
