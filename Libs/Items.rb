@@ -19,14 +19,7 @@ class Items
 
     # Items::mikuTypes()
     def self.mikuTypes()
-        mikuTypes = LucilleCore::locationsAtFolder("#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes")
-            .select{|filepath| !File.basename(filepath).start_with?('.') }
-            .map{|directory2| File.basename(directory2) }
-        return mikuTypes
-        # Here we are trusting the fact that the data/HardProblem/MikuTypes
-        # directory has the list of mikuTypes.
-        # If one day we doubt that, we can always run the below and add any missing directories
-        mikuTypes = Blades::items().map{|item| item["mikuType"] }.uniq
+        Blades::items().map{|item| item["mikuType"] }.uniq
     end
 
     # Items::mikuType(mikuType)

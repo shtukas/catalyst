@@ -182,8 +182,15 @@ class Index1
         items
     end
 
+    # Index1::mikutypes()
+    def self.mikutypes()
+        Index1::extractDataFromFile(Index1::getReducedDatabaseFilepath())
+            .map{|entry| entry["mikuType"] }
+            .uniq
+    end
+
     # ------------------------------------------------------
-    # Operations
+    # Hard Problem
 
     # Index1::item_attribute_has_been_updated(uuid, attribute, value)
     def self.item_attribute_has_been_updated(uuid, attribute, value)
@@ -219,6 +226,9 @@ class Index1
                 Index1::removeEntry(entry["mikuType"], entry["itemuuid"])
             }
     end
+
+    # ------------------------------------------------------
+    # Maintenance
 
     # Index1::maintenance()
     def self.maintenance()
