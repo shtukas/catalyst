@@ -14,15 +14,7 @@ class Items
 
     # Items::items()
     def self.items()
-        directory = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/Items"
-        filepath = HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
-        if filepath then
-            return JSON.parse(IO.read(filepath))
-        else
-            items = Blades::items()
-            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
-            return items
-        end
+        Blades::items()
     end
 
     # Items::mikuTypes()
@@ -39,37 +31,29 @@ class Items
 
     # Items::mikuType(mikuType)
     def self.mikuType(mikuType)
-        directory = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/HardProblem/MikuTypes/#{mikuType}"
-        filepath = HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
-        if filepath then
-            return JSON.parse(IO.read(filepath))
-        else
-            items = Items::items().select{|item| item["mikuType"] == mikuType }
-            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
-            return items
-        end
+        Items::items().select{|item| item["mikuType"] == mikuType }
     end
 
     # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
         item = Blades::getItemOrNull(uuid)
         if item.nil? then
-            HardProblem::item_could_not_be_found_on_disk(uuid)
+            Index1::item_could_not_be_found_on_disk(uuid)
             return
         end
         item[attrname] = attrvalue
         Blades::commitItemToDisk(item)
-        HardProblem::item_attribute_has_been_updated(uuid, attrname, attrvalue)
+        Index1::item_attribute_has_been_updated(uuid, attrname, attrvalue)
     end
 
     # Items::destroy(uuid)
     def self.destroy(uuid)
         item = Items::itemOrNull(uuid)
         if item then
-            HardProblem::item_is_being_destroyed(item)
+            Index1::item_is_being_destroyed(item)
         end
         Blades::destroy(uuid)
-        HardProblem::item_has_been_destroyed(uuid)
+        Index1::item_has_been_destroyed(uuid)
 
         directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/HardProblem/Children/#{uuid}"
         LucilleCore::removeFileSystemLocation(directory)

@@ -148,18 +148,9 @@ class PolyFunctions
 
     # PolyFunctions::childrenForParent(parent)
     def self.childrenForParent(parent)
-        directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/HardProblem/Children/#{parent["uuid"]}"
-        filepath = HardProblem::retrieveUniqueJsonFileInDirectoryOrNullDestroyMultiple(directory)
-        if filepath then
-            return JSON.parse(IO.read(filepath))
-        else
-            items = Items::items()
-                        .select{|item|
-                            item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
-                        }
-            HardProblem::commitJsonDataToDiskContentAddressed(directory, items)
-            return items
-        end
+        Items::items().select{|item|
+            item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
+        }
     end
 
     # PolyFunctions::hasChildren(parent)

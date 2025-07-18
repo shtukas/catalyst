@@ -36,6 +36,8 @@ class Operations
     # Operations::globalMaintenance()
     def self.globalMaintenance()
         puts "> Operations::globalMaintenance()"
+        puts "> Index1::maintenance()"
+        Index1::maintenance()
     end
 
     # Operations::interactivelyGetLines()
