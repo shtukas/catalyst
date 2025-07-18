@@ -7,6 +7,9 @@ class Items
         Blades::spawn_new_blade(uuid)
     end
 
+    # -------------------------------------
+    # Getters (should remain indices free)
+
     # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
         Blades::getItemOrNull(uuid)
@@ -26,6 +29,9 @@ class Items
     def self.mikuType(mikuType)
         Items::items().select{|item| item["mikuType"] == mikuType }
     end
+
+    # -------------------------------------
+    # Setters (should update indices when relevant)
 
     # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)

@@ -21,7 +21,7 @@ class NxBackups
 
     # NxBackups::getItemByDescriptionOrNull(description)
     def self.getItemByDescriptionOrNull(description)
-        Items::mikuType("NxBackup").select{|item| item["description"] == description }.first
+        Index1::mikuTypeItems("NxBackup").select{|item| item["description"] == description }.first
     end
 
     # NxBackups::toString(item)
@@ -39,7 +39,7 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        Items::mikuType("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+        Index1::mikuTypeItems("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # NxBackups::notificationChannelHasMessages()

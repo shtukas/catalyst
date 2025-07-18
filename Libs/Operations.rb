@@ -146,6 +146,25 @@ class Operations
         LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
+    # Operations::registerChildInParent(parentuuid, childuuid, position)
+    def self.registerChildInParent(parentuuid, childuuid, position)
+        parent = Items::itemOrNull(parentuuid)
+        if parent.nil? then
+            raise "(error: b2719e76) parentuuid: #{parentuuid}, childuuid: #{childuuid}, position: #{position}"
+        end
+        nx50s = parent["children-uuids-50"]
+        if nx50s.nil? then
+            nx50s = []
+        end
+        nx50 = {
+            "childuuid" => child["uuid"],
+            "position"  => position
+        }
+        nx50s << nx50
+        nx50s = CommonUtils::removeDuplicateObjectsOnAttribute(nx50s, "childuuid")
+        Items::setAttribute(parent["uuid"], "children-uuids-50", nx50s)
+    end
+
     # Operations::makeNx1949OrNull()
     def self.makeNx1949OrNull()
         parent = Operations::interactivelySelectParentOrNull()

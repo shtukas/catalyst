@@ -35,6 +35,6 @@ class NxLines
 
     # NxLines::listingItems()
     def self.listingItems()
-        Items::mikuType("NxLine")
+        Index1::mikuTypeItems("NxLine")
     end
 end

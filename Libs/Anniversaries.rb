@@ -154,7 +154,7 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        Items::mikuType("NxAnniversary").select{|item| item["next_celebration"] <= CommonUtils::today() }
+        Index1::mikuTypeItems("NxAnniversary").select{|item| item["next_celebration"] <= CommonUtils::today() }
     end
 
     # ----------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Items::mikuType("NxAnniversary").sort_by{|item| item["next_celebration"] }
+            anniversaries = Index1::mikuTypeItems("NxAnniversary").sort_by{|item| item["next_celebration"] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?
             Anniversaries::program1(anniversary)

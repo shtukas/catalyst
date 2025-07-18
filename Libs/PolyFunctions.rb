@@ -148,14 +148,35 @@ class PolyFunctions
 
     # PolyFunctions::childrenForParent(parent)
     def self.childrenForParent(parent)
-        Items::items().select{|item|
-            item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
-        }
+
+        # --------------------------
+        # Old
+
+        #Items::items().select{|item|
+        #    item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
+        #}
+
+        # --------------------------
+        # New (based on children-nx50s)
+
+        return [] if parent["children-nx50s"].nil?
+        parent["children-nx50s"]
+            .map{|nx50| nx50["childuuid"] }
+            .map{|uuid| Items::itemOrNull(uuid) }
     end
 
     # PolyFunctions::hasChildren(parent)
     def self.hasChildren(parent)
-        PolyFunctions::childrenForParent(parent).size > 0
+        # --------------------------
+        # Old
+
+        #PolyFunctions::childrenForParent(parent).size > 0
+
+        # --------------------------
+        # New (based on children-nx50s)
+
+        return false if parent["children-nx50s"].nil?
+        parent["children-nx50s"].size > 0
     end
 
     # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)

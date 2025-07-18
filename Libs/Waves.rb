@@ -131,12 +131,12 @@ class Waves
 
     # Waves::listingItemsInterruption()
     def self.listingItemsInterruption()
-        Items::mikuType("Wave").select{|item| item["interruption"]}
+        Index1::mikuTypeItems("Wave").select{|item| item["interruption"]}
     end
 
     # Waves::nonInterruptionItemsForListing()
     def self.nonInterruptionItemsForListing()
-        Items::mikuType("Wave")
+        Index1::mikuTypeItems("Wave")
             .select { |item| !item["interruption"]}
             .select { |wave|
                 unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
@@ -196,7 +196,7 @@ class Waves
     # Waves::program1()
     def self.program1()
         l = lambda { 
-            items = Items::mikuType("Wave").select{|wave|
+            items = Index1::mikuTypeItems("Wave").select{|wave|
                 unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
                 unixtime.nil? or unixtime < Time.new.to_i
             }

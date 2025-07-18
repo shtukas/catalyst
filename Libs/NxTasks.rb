@@ -15,6 +15,11 @@ class NxTasks
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "nx1949", nx1949)
+
+        if nx1949 then
+            Operations::registerChildInParent(nx1949["parentuuid"], uuid, nx1949["position"])
+        end
+
         Items::itemOrNull(uuid)
     end
 
@@ -62,7 +67,7 @@ class NxTasks
 
     # NxTasks::itemsInPositionOrder()
     def self.itemsInPositionOrder()
-        Items::mikuType("NxTask")
+        Index1::mikuTypeItems("NxTask")
             .sort_by{|item| item["nx1949"]["position"] }
     end
 
@@ -71,7 +76,7 @@ class NxTasks
 
     # NxTasks::importantItems()
     def self.importantItems()
-        Items::mikuType("NxTask")
+        Index1::mikuTypeItems("NxTask")
             .select{|item| item["nx2290-important"] }
     end
 
@@ -109,10 +114,11 @@ class NxTasks
     # ------------------
     # Ops
 
-    # NxTasks::performItemPositioning(item)
+    # NxTasks::performItemPositioning(item) -> nx1949
     def self.performItemPositioning(item)
         nx1949 = Operations::makeNx1949OrNull()
         return if nx1949.nil?
         Items::setAttribute(item["uuid"], "nx1949", nx1949)
+        nx1949
     end
 end

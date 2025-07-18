@@ -24,6 +24,6 @@ class NxFloats
 
     # NxFloats::listingItems()
     def self.listingItems()
-        Items::mikuType("NxFloat")
+        Index1::mikuTypeItems("NxFloat")
     end
 end

@@ -45,7 +45,7 @@ class NxCores
 
     # NxCores::cores()
     def self.cores()
-        Items::mikuType("NxCore")
+        Index1::mikuTypeItems("NxCore")
     end
 
     # NxCores::coresInRatioOrder()
