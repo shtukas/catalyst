@@ -47,8 +47,5 @@ class Items
         end
         Blades::destroy(uuid)
         Index1::item_has_been_destroyed(uuid)
-
-        directory = "#{Config::userHomeDirectory()}/Galaxy/DataHub/Catalyst/data/HardProblem/Children/#{uuid}"
-        LucilleCore::removeFileSystemLocation(directory)
     end
 end
