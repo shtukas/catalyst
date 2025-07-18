@@ -22,22 +22,4 @@ class Instances
         selected, _ = LucilleCore::selectZeroOrMore("instances", [], Instances::instanceIds())
         selected
     end
-
-    # Instances::setInstancesForItem(item)
-    def self.setInstancesForItem(item)
-        instances = Instances::interactivelySelectOneOrMoreInstanceIds()
-        Items::setAttribute(item["uuid"], "instances-58", instances)
-    end
-
-    # Instances::suffix(item)
-    def self.suffix(item)
-        return "" if item["instances-58"].nil?
-        " [instances: #{item["instances-58"].join(", ")}]".yellow
-    end
-
-    # Instances::canShowHere(item)
-    def self.canShowHere(item)
-        return true if item["instances-58"].nil?
-        item["instances-58"].include?(Instances::thisInstanceId())
-    end
 end

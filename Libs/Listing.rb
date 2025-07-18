@@ -25,7 +25,7 @@ class Listing
         hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
         impt = item["nx2290-important"] ? " [important]".red : ""
         position = " (#{item["x-listing-position"]})".yellow
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{Instances::suffix(item)}#{position}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{position}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow

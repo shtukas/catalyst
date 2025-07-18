@@ -183,7 +183,6 @@ class ListingDatabase
                     end
                 }
                 .compact
-                .select{|item| Instances::canShowHere(item) }
                 .sort_by{|item| item["x-listing-position"] }
         CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
     end
