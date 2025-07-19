@@ -22,7 +22,7 @@ class NxTasks
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Operations::registerChildInParent(parentuuid, uuid, position)
+        Index2::insertEntry(parentuuid, uuid, position)
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxTask")
@@ -98,6 +98,6 @@ class NxTasks
     # NxTasks::performItemPositioning(itemuuid)
     def self.performItemPositioning(itemuuid)
         parentuuid, position = Operations::decideParentAndPosition()
-        Operations::registerChildInParent(parentuuid, itemuuid, position)
+        Index2::insertEntry(parentuuid, itemuuid, position)
     end
 end

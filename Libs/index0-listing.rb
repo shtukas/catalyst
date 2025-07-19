@@ -172,7 +172,16 @@ class Index0
     def self.updateEntry(itemuuid)
         item = Items::itemOrNull(itemuuid)
         line = Index0::decideLine(item)
-        Index0::updateItemsAndLine(item["uuid"], item, line)
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set item=?, line=? where itemuuid=?", [JSON.generate(item), line, itemuuid])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
     end
 
     # ------------------------------------------------------

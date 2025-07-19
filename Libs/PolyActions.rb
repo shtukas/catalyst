@@ -143,8 +143,10 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            puts "done is not supported for NxTasks, use stop or destroy"
-            LucilleCore::pressEnterToContinue()
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
+            end
             return
         end
 

@@ -145,25 +145,6 @@ class Operations
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # Operations::registerChildInParent(parentuuid, childuuid, position)
-    def self.registerChildInParent(parentuuid, childuuid, position)
-        parent = Items::itemOrNull(parentuuid)
-        if parent.nil? then
-            raise "(error: b2719e76) parentuuid: #{parentuuid}, childuuid: #{childuuid}, position: #{position}"
-        end
-        nx50s = parent["children-uuids-50"]
-        if nx50s.nil? then
-            nx50s = []
-        end
-        nx50 = {
-            "childuuid" => child["uuid"],
-            "position"  => position
-        }
-        nx50s << nx50
-        nx50s = CommonUtils::removeDuplicateObjectsOnAttribute(nx50s, "childuuid")
-        Items::setAttribute(parent["uuid"], "children-uuids-50", nx50s)
-    end
-
     # Operations::decideParentAndPosition()
     def self.decideParentAndPosition()
         parent = Operations::interactivelySelectParent()
@@ -207,6 +188,10 @@ class Operations
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
                 todo = NxTasks::interactivelyIssueNewOrNull2(parent["uuid"], position)
                 puts JSON.pretty_generate(todo)
+                if LucilleCore::askQuestionAnswerAsBoolean("Is important ? ") then
+                    Items::setAttribute(todo["uuid"], "nx2290-important", true)
+                end
+                Index0::updateEntry(todo["uuid"])
                 next
             end
 
@@ -226,6 +211,7 @@ class Operations
                 i = store.get(listord.to_i)
                 next if i.nil?
                 Items::setAttribute(i["uuid"], "nx2290-important", true)
+                Index0::updateEntry(i["uuid"])
                 next
             end
 
