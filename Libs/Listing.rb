@@ -56,14 +56,6 @@ class Listing
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
-    # Listing::itemsForListing2()
-    def self.itemsForListing2()
-        items = Listing::itemsForListing1()
-        items = NxBalls::runningItems() + items
-        items = CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
-        items
-    end
-
     # -----------------------------------------
     # Ops
 
@@ -128,7 +120,7 @@ class Listing
         end
 
         t1 = Time.new.to_f
-        Index0::itemsForListing()
+        CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::runningItems() + Index0::itemsForListing(), "uuid")
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 line = Listing::toString2(store, item)

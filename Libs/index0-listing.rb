@@ -224,7 +224,7 @@ class Index0
 
     # Index0::listingMaintenance()
     def self.listingMaintenance()
-        Listing::itemsForListing2().each{|item|
+        Listing::itemsForListing1().each{|item|
             next if Index0::hasItem(item["uuid"])
             position = Index0::decidePosition(item)
             Index0::insertEntry(item["uuid"], position)
