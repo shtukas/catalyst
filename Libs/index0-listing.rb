@@ -1,10 +1,10 @@
 
-# create table listing (itemuuid TEXT, position REAL, item TEXT, line TEXT);
+# create table listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL);
 
 class Index0
 
     # ------------------------------------------------------
-    # Basic IO and setters
+    # Basic IO management
 
     # Index0::directory()
     def self.directory()
@@ -35,7 +35,7 @@ class Index0
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("create table listing (itemuuid TEXT, position REAL, item TEXT, line TEXT)", [])
+        db.execute("create table listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -107,6 +107,9 @@ class Index0
         Index0::ensureContentAddressing(newfilepath)
     end
 
+    # --------------------------------------------------
+    # setters and updates
+
     # Index0::insertEntry(itemuuid, position, item, line)
     def self.insertEntry(itemuuid, position, item, line)
         filepath = Index0::getReducedDatabaseFilepath()
@@ -164,20 +167,6 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::compressPositions()
-    def self.compressPositions()
-        filepath = Index0::getReducedDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("update listing set position = position/2", [])
-        db.commit
-        db.close
-        Index0::ensureContentAddressing(filepath)
-    end
-
     # ------------------------------------------------------
     # Data
 
@@ -217,8 +206,23 @@ class Index0
         answer
     end
 
+    # Index0::getPositionOrNull(itemuuid)
+    def self.getPositionOrNull(itemuuid)
+        position = nil
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
+            position = row["position"]
+        end
+        db.close
+        position
+    end
+
     # ------------------------------------------------------
-    # Operations
+    # Decisions
 
     # Index0::decidePosition(item)
     def self.decidePosition(item)
@@ -256,15 +260,34 @@ class Index0
         line
     end
 
+    # ------------------------------------------------------
+    # Operations
+
+    # Index0::compressPositions()
+    def self.compressPositions()
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position = position/2", [])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
     # Index0::listingMaintenance()
     def self.listingMaintenance()
-        if Index0::lastPositionInDatabase() >= 100 then
+        if Index0::firstPositionInDatabase() >= 1 or Index0::lastPositionInDatabase() >= 100 then
             Index0::compressPositions()
         end
         Listing::itemsForListing1().each{|item|
             if Index0::hasItem(item["uuid"]) then
+                position = Index0::getPositionOrNull(item["uuid"])
+                # position is not going to be null because it comes from the database
                 line = Index0::decideLine(item, position)
-                Index0::updateItemsAndLine(itemuuid, item, line)
+                Index0::updateItemsAndLine(item["uuid"], item, line)
             else
                 position = Index0::decidePosition(item)
                 line = Index0::decideLine(item, position)

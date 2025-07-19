@@ -361,7 +361,7 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], store.items(), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 position = Index0::firstPositionInDatabase() * 0.9
-                Index0::setPosition(item["uuid"], position)
+                Index0::updatePosition(item["uuid"], position)
             }
             return
         end

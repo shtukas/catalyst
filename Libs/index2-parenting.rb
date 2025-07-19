@@ -1,10 +1,10 @@
 
-# create table index2 (parentuuid TEXT, childuuid TEXT, position REAL);
+# create table index2 (parentuuid TEXT NOT NULL, childuuid TEXT NOT NULL, position REAL NOT NULL);
 
 class Index2
 
     # ------------------------------------------------------
-    # Basic IO and setters
+    # Basic IO management
 
     # Index2::directory()
     def self.directory()
@@ -35,7 +35,7 @@ class Index2
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("create table index1 (parentuuid TEXT, childuuid TEXT, position REAL)", [])
+        db.execute("create table index1 (parentuuid TEXT NOT NULL, childuuid TEXT NOT NULL, position REAL NOT NULL)", [])
         db.commit
         db.close
         Index2::ensureContentAddressing(filepath)

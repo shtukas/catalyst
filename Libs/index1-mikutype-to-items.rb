@@ -1,10 +1,10 @@
 
-# create table index1 (mikuType TEXT, itemuuid TEXT);
+# create table index1 (mikuType TEXT NOT NULL, itemuuid TEXT NOT NULL);
 
 class Index1
 
     # ------------------------------------------------------
-    # Basic IO and setters
+    # Basic IO management
 
     # Index1::directory()
     def self.directory()
@@ -35,7 +35,7 @@ class Index1
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("create table index1 (mikuType TEXT, itemuuid TEXT)", [])
+        db.execute("create table index1 (mikuType TEXT NOT NULL, itemuuid TEXT NOT NULL)", [])
         db.commit
         db.close
         Index1::ensureContentAddressing(filepath)
