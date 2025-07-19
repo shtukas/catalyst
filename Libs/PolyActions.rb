@@ -286,18 +286,20 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if item["mikuType"] == "NxLambda" then
+        if Index2::hasChildren(item["uuid"]) then
+            puts "You cannot destroy an item that has children"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
-        if force then
-            Items::destroy(item["uuid"])
+        if item["mikuType"] == "NxLambda" then
             return
         end
 
         if item["mikuType"] == "NxFloat" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
@@ -305,17 +307,23 @@ class PolyActions
         if item["mikuType"] == "Wave" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxCore" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
+            end
             return
         end
 
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
@@ -323,6 +331,7 @@ class PolyActions
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
@@ -330,6 +339,7 @@ class PolyActions
         if item["mikuType"] == "NxDated" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
@@ -337,6 +347,7 @@ class PolyActions
         if item["mikuType"] == "NxAnniversary" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
@@ -344,6 +355,7 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
