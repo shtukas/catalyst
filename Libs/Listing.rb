@@ -128,7 +128,7 @@ class Listing
                 break if sheight <= 4
             }
 
-        Index0::getListingDataEntriesInOrder(runningItems.map{|i| i["uuid"]})
+        Index0::itemsForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 store.register(entry["item"], Listing::canBeDefault(entry["item"]))
                 line = entry["line"].gsub("STORE-PREFIX", "(#{store.prefixString()})")

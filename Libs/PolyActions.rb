@@ -90,6 +90,7 @@ class PolyActions
         if item["mikuType"] == "NxFloat" then
             NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
+            Index0::removeEntry(item["uuid"])
             return
         end
 

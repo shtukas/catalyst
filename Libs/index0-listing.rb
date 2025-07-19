@@ -262,21 +262,27 @@ class Index0
     # Index0::cliquesInListingOrder()
     def self.cliquesInListingOrder()
 
-        cliques = []
-
-        cliques << "prelude"
-
-        if Bank1::recoveredAverageHoursPerDay("today") < 3 then
-            cliques << "today"
-            return cliques
-        end
-
         bratio = lambda{|clique|
             if clique == "today" then
                 return Bank1::recoveredAverageHoursPerDay(clique) - 3
             end
             Bank1::recoveredAverageHoursPerDay(clique)
         }
+
+        cliques = []
+
+        cliques << "prelude"
+
+        if Bank1::recoveredAverageHoursPerDay("today") < 3 then
+            cliques << "today"
+            cliques2 = [
+                "waves",
+                "todos"
+            ].sort_by{|clique|
+                bratio.call(clique)
+            }
+            return cliques + cliques2
+        end
 
         cliques2 = [
             "today",
@@ -292,11 +298,12 @@ class Index0
     # ------------------------------------------------------
     # Data
 
-    # Index0::getListingDataEntriesInOrder(excludeuuids)
-    def self.getListingDataEntriesInOrder(excludeuuids)
+    # Index0::itemsForListing(excludeuuids)
+    def self.itemsForListing(excludeuuids)
         entries = Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
             .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
         Index0::cliquesInListingOrder().each{|clique|
+            puts clique
             clique_entries = entries.select{|entry| entry["clique"] == clique }
             if clique_entries.size > 0 then
                 return clique_entries
@@ -307,14 +314,14 @@ class Index0
 
     # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
-        data = Index0::getListingDataEntriesInOrder([])
+        data = Index0::itemsForListing([])
         return 1 if data.empty?
         data.map{|e| e["position"] }.min
     end
 
     # Index0::lastPositionInDatabase()
     def self.lastPositionInDatabase()
-        data = Index0::getListingDataEntriesInOrder([])
+        data = Index0::itemsForListing([])
         return 1 if data.empty?
         themax = data.map{|e| e["position"] }.max
         return (themax + 1) if data.size == 1 # this is to prevent first and last to have the same value
