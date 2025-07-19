@@ -240,10 +240,6 @@ class Index0
             return "today"
         end
 
-        if item["mikuType"] == "NxCore" then
-            return "today"
-        end
-
         # - waves
 
         if item["mikuType"] == "Wave" then
@@ -253,6 +249,10 @@ class Index0
         # - todos
 
         if item["mikuType"] == "NxTask" then
+            return "todos"
+        end
+
+        if item["mikuType"] == "NxCore" then
             return "todos"
         end
 
