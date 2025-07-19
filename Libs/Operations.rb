@@ -127,15 +127,6 @@ class Operations
         end
     end
 
-    # Operations::topNotifications()
-    def self.topNotifications()
-        notifications = []
-        JSON.parse(IO.read("#{Config::userHomeDirectory()}/Galaxy/DataHub/Backups-Utils/Orbital-Backup-Data/under-counted-target-directory-names.json")).each{|directory_name|
-            notifications << "under counted back up target directory name: #{directory_name}"
-        }
-        notifications
-    end
-
     # Operations::interactivelySelectParent()
     def self.interactivelySelectParent()
         targets = [

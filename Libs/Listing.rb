@@ -98,10 +98,6 @@ class Listing
         printer = lambda{|line| puts line }
         printer.call("")
 
-        Operations::topNotifications().each{|notification|
-            puts "notification: #{notification}"
-        }
-
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
 
