@@ -136,8 +136,8 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::setPosition(itemuuid, position)
-    def self.setPosition(itemuuid, position)
+    # Index0::updatePosition(itemuuid, position)
+    def self.updatePosition(itemuuid, position)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -145,6 +145,20 @@ class Index0
         db.results_as_hash = true
         db.transaction
         db.execute("update listing set position = ? where itemuuid = ?", [position, itemuuid])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
+    # Index0::updateItemsAndLine(itemuuid, item, line)
+    def self.updateItemsAndLine(itemuuid, item, line)
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set item=?, line=? where itemuuid=?", [JSON.generate(item), line, itemuuid])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -248,10 +262,14 @@ class Index0
             Index0::compressPositions()
         end
         Listing::itemsForListing1().each{|item|
-            next if Index0::hasItem(item["uuid"])
-            position = Index0::decidePosition(item)
-            line = Index0::decideLine(item, position)
-            Index0::insertEntry(item["uuid"], position, item, line)
+            if Index0::hasItem(item["uuid"]) then
+                line = Index0::decideLine(item, position)
+                Index0::updateItemsAndLine(itemuuid, item, line)
+            else
+                position = Index0::decidePosition(item)
+                line = Index0::decideLine(item, position)
+                Index0::insertEntry(item["uuid"], position, item, line)
+            end
         }
     end
 end
