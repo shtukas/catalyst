@@ -195,6 +195,12 @@ class Index0
         if item["mikuType"] == "Wave" and item["interruption"] then
             return Index0::firstPositionInDatabase() * 0.9
         end
+        if item["mikuType"] == "NxTask" and item["nx2290-important"] then
+            first = Index0::firstPositionInDatabase()
+            last  = Index0::lastPositionInDatabase()
+            width = last-first
+            return first + rand*0.25*width
+        end
         first = Index0::firstPositionInDatabase()
         last  = Index0::lastPositionInDatabase()
         mid = 0.5*(first + last)
