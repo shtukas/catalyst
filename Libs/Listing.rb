@@ -118,6 +118,7 @@ class Listing
         end
 
         t1 = Time.new.to_f
+        runningItems = NxBalls::runningItems()
         NxBalls::runningItems()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
@@ -127,7 +128,7 @@ class Listing
                 break if sheight <= 4
             }
 
-        Index0::getListingDataEntriesInOrder()
+        Index0::getListingDataEntriesInOrder(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 store.register(entry["item"], Listing::canBeDefault(entry["item"]))
                 line = entry["line"].gsub("STORE-PREFIX", "(#{store.prefixString()})")

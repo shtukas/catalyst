@@ -170,9 +170,10 @@ class Index0
     # ------------------------------------------------------
     # Data
 
-    # Index0::getListingDataEntriesInOrder()
-    def self.getListingDataEntriesInOrder()
+    # Index0::getListingDataEntriesInOrder(excludeuuids)
+    def self.getListingDataEntriesInOrder(excludeuuids)
         Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
+            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
     end
 
     # Index0::firstPositionInDatabase()
