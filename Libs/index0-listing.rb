@@ -167,6 +167,15 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
+    # Index0::updateEntry(itemuuid)
+    def self.updateEntry(itemuuid)
+        item = Items::itemOrNull(itemuuid)
+        position = Index0::getPositionOrNull(item["uuid"])
+        return if position.nil?
+        line = Index0::decideLine(item, position)
+        Index0::updateItemsAndLine(item["uuid"], item, line)
+    end
+
     # ------------------------------------------------------
     # Data
 
@@ -178,14 +187,14 @@ class Index0
 
     # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
-        data = Index0::getListingDataEntriesInOrder()
+        data = Index0::getListingDataEntriesInOrder([])
         return 1 if data.empty?
         data.map{|e| e["position"] }.min
     end
 
     # Index0::lastPositionInDatabase()
     def self.lastPositionInDatabase()
-        data = Index0::getListingDataEntriesInOrder()
+        data = Index0::getListingDataEntriesInOrder([])
         return 1 if data.empty?
         themax = data.map{|e| e["position"] }.max
         return (themax + 1) if data.size == 1 # this is to prevent first and last to have the same value

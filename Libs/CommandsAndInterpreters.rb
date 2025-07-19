@@ -383,6 +383,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -391,6 +392,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -398,6 +400,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -406,6 +409,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
