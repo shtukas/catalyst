@@ -303,7 +303,6 @@ class Index0
         entries = Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
             .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
         Index0::cliquesInListingOrder().each{|clique|
-            puts clique
             clique_entries = entries.select{|entry| entry["clique"] == clique }
             if clique_entries.size > 0 then
                 return clique_entries
