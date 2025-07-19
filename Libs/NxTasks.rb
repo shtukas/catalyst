@@ -88,7 +88,7 @@ class NxTasks
     # NxTasks::importantItemsForListing()
     def self.importantItemsForListing()
         NxTasks::importantItems()
-            .select{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
+            .select{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 2 }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
     end
 

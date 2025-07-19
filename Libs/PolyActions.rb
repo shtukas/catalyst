@@ -115,14 +115,14 @@ class PolyActions
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400 + rand)
                 Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
-                ListingDatabase::removeEntry(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxAnniversary" then
             Anniversaries::mark_next_celebration_date(item)
-            ListingDatabase::removeEntry(item["uuid"])
+            Index0::removeEntry(item["uuid"])
             return
         end
 

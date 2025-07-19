@@ -22,7 +22,7 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                ListingDatabase::removeEntry(item["uuid"])
+                Index0::removeEntry(item["uuid"])
                 return
             end
         end
@@ -360,8 +360,8 @@ class CommandsAndInterpreters
         if Interpreting::match("sort", input) then
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], store.items(), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
-                position = ListingDatabase::firstPositionInDatabase() * 0.9
-                ListingDatabase::setPosition(item["uuid"], position)
+                position = Index0::firstPositionInDatabase() * 0.9
+                Index0::setPosition(item["uuid"], position)
             }
             return
         end

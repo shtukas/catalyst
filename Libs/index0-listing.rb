@@ -1,35 +1,35 @@
 
 # create table listing (itemuuid TEXT, position REAL);
 
-class ListingDatabase
+class Index0
 
     # ------------------------------------------------------
     # Basic IO and setters
 
-    # ListingDatabase::directory()
+    # Index0::directory()
     def self.directory()
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/ListingDatabase"
     end
 
-    # ListingDatabase::filepaths()
+    # Index0::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder(ListingDatabase::directory())
+        LucilleCore::locationsAtFolder(Index0::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
     end
 
-    # ListingDatabase::ensureContentAddressing(filepath)
+    # Index0::ensureContentAddressing(filepath)
     def self.ensureContentAddressing(filepath)
         filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
-        filepath2 = "#{ListingDatabase::directory()}/#{filename2}"
+        filepath2 = "#{Index0::directory()}/#{filename2}"
         return filepath if filepath == filepath2
         FileUtils.mv(filepath, filepath2)
         filepath2
     end
 
-    # ListingDatabase::initiateDatabaseFile() -> filepath
+    # Index0::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
         filename = "#{SecureRandom.hex}.sqlite3"
-        filepath = "#{ListingDatabase::directory()}/#{filename}"
+        filepath = "#{Index0::directory()}/#{filename}"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -38,10 +38,10 @@ class ListingDatabase
         db.execute("create table listing (itemuuid TEXT, position REAL)", [])
         db.commit
         db.close
-        ListingDatabase::ensureContentAddressing(filepath)
+        Index0::ensureContentAddressing(filepath)
     end
 
-    # ListingDatabase::extractDataFromFile(filepath)
+    # Index0::extractDataFromFile(filepath)
     def self.extractDataFromFile(filepath)
         data = []
         db = SQLite3::Database.new(filepath)
@@ -58,12 +58,12 @@ class ListingDatabase
         data
     end
 
-    # ListingDatabase::getReducedDatabaseFilepath()
+    # Index0::getReducedDatabaseFilepath()
     def self.getReducedDatabaseFilepath()
-        filepaths = ListingDatabase::filepaths()
+        filepaths = Index0::filepaths()
 
         if filepaths.size == 0 then
-            return ListingDatabase::initiateDatabaseFile()
+            return Index0::initiateDatabaseFile()
         end
 
         if filepaths.size == 1 then
@@ -72,7 +72,7 @@ class ListingDatabase
 
         data = filepaths
             .map{|filepath|
-                ListingDatabase::extractDataFromFile(filepath)
+                Index0::extractDataFromFile(filepath)
             }
             .flatten
             .sort_by{|entry| entry["position"] }
@@ -85,7 +85,7 @@ class ListingDatabase
             }
 
         # In this case filepath.size > 1
-        newfilepath = ListingDatabase::initiateDatabaseFile()
+        newfilepath = Index0::initiateDatabaseFile()
 
         db = SQLite3::Database.new(newfilepath)
         db.busy_timeout = 117
@@ -102,12 +102,12 @@ class ListingDatabase
             FileUtils::rm(filepath)
         }
 
-        ListingDatabase::ensureContentAddressing(newfilepath)
+        Index0::ensureContentAddressing(newfilepath)
     end
 
-    # ListingDatabase::insertEntry(itemuuid, position)
+    # Index0::insertEntry(itemuuid, position)
     def self.insertEntry(itemuuid, position)
-        filepath = ListingDatabase::getReducedDatabaseFilepath()
+        filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -116,12 +116,12 @@ class ListingDatabase
         db.execute("insert into listing (itemuuid, position) values (?, ?)", [itemuuid, position])
         db.commit
         db.close
-        ListingDatabase::ensureContentAddressing(filepath)
+        Index0::ensureContentAddressing(filepath)
     end
 
-    # ListingDatabase::removeEntry(itemuuid)
+    # Index0::removeEntry(itemuuid)
     def self.removeEntry(itemuuid)
-        filepath = ListingDatabase::getReducedDatabaseFilepath()
+        filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -130,12 +130,12 @@ class ListingDatabase
         db.execute("delete from listing where itemuuid=?", [itemuuid])
         db.commit
         db.close
-        ListingDatabase::ensureContentAddressing(filepath)
+        Index0::ensureContentAddressing(filepath)
     end
 
-    # ListingDatabase::setPosition(itemuuid, position)
+    # Index0::setPosition(itemuuid, position)
     def self.setPosition(itemuuid, position)
-        filepath = ListingDatabase::getReducedDatabaseFilepath()
+        filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -144,41 +144,41 @@ class ListingDatabase
         db.execute("update listing set position = ? where itemuuid = ?", [position, itemuuid])
         db.commit
         db.close
-        ListingDatabase::ensureContentAddressing(filepath)
+        Index0::ensureContentAddressing(filepath)
     end
 
     # ------------------------------------------------------
     # Data
 
-    # ListingDatabase::getListingData()
+    # Index0::getListingData()
     def self.getListingData()
-        ListingDatabase::extractDataFromFile(ListingDatabase::getReducedDatabaseFilepath())
+        Index0::extractDataFromFile(Index0::getReducedDatabaseFilepath())
     end
 
-    # ListingDatabase::firstPositionInDatabase()
+    # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
-        data = ListingDatabase::getListingData()
+        data = Index0::getListingData()
         return 1 if data.empty?
         data.map{|e| e["position"] }.min
     end
 
-    # ListingDatabase::lastPositionInDatabase()
+    # Index0::lastPositionInDatabase()
     def self.lastPositionInDatabase()
-        data = ListingDatabase::getListingData()
+        data = Index0::getListingData()
         return 1 if data.empty?
         data.map{|e| e["position"] }.max
     end
 
-    # ListingDatabase::itemsForListing()
+    # Index0::itemsForListing()
     def self.itemsForListing()
-        items = ListingDatabase::getListingData()
+        items = Index0::getListingData()
                 .map{|entry|
                     item = Items::itemOrNull(entry["itemuuid"])
                     if item then
                         item["x-listing-position"] = entry["position"]
                         item
                     else
-                        ListingDatabase::removeEntry(entry["itemuuid"])
+                        Index0::removeEntry(entry["itemuuid"])
                         nil
                     end
                 }
@@ -190,26 +190,26 @@ class ListingDatabase
     # ------------------------------------------------------
     # Operations
 
-    # ListingDatabase::decidePosition(item)
+    # Index0::decidePosition(item)
     def self.decidePosition(item)
         if item["mikuType"] == "Wave" and item["interruption"] then
-            return ListingDatabase::firstPositionInDatabase() * 0.9
+            return Index0::firstPositionInDatabase() * 0.9
         end
-        first = ListingDatabase::firstPositionInDatabase()
-        last  = ListingDatabase::lastPositionInDatabase()
+        first = Index0::firstPositionInDatabase()
+        last  = Index0::lastPositionInDatabase()
         mid = 0.5*(first + last)
         mid + 0.2*(last - mid) + rand*(last - mid)
     end
 
-    # ListingDatabase::listingMaintenance()
+    # Index0::listingMaintenance()
     def self.listingMaintenance()
-        data = ListingDatabase::getListingData()
+        data = Index0::getListingData()
         databaseuuids = data.map{|entry| entry["itemuuid"] }
         Listing::itemsForListing2()
             .select{|item| !databaseuuids.include?(item["uuid"]) }
             .each{|item|
-                position = ListingDatabase::decidePosition(item)
-                ListingDatabase::insertEntry(item["uuid"], position)
+                position = Index0::decidePosition(item)
+                Index0::insertEntry(item["uuid"], position)
             }
     end
 end

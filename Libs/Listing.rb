@@ -123,12 +123,12 @@ class Listing
 
         if XCacheExensions::trueNoMoreOftenThanNSeconds("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", 3600) then
             puts "Running listing maintenance (every hour)"
-            ListingDatabase::listingMaintenance()
+            Index0::listingMaintenance()
             XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
         t1 = Time.new.to_f
-        ListingDatabase::itemsForListing()
+        Index0::itemsForListing()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 line = Listing::toString2(store, item)

@@ -56,7 +56,7 @@ class NxBackups
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400)
                 Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
-                ListingDatabase::removeEntry(item["uuid"])
+                Index0::removeEntry(item["uuid"])
                 FileUtils.rm(filepath)
             }
     end

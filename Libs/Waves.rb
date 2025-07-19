@@ -155,7 +155,7 @@ class Waves
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
         NxBalls::stop(item)
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime + rand)
-        ListingDatabase::removeEntry(item["uuid"])
+        Index0::removeEntry(item["uuid"])
     end
 
     # Waves::program2(item)
