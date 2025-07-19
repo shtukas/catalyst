@@ -129,6 +129,7 @@ class PolyActions
         if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
