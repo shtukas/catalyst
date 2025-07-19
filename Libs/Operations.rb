@@ -35,8 +35,8 @@ class Operations
 
     # Operations::globalMaintenance()
     def self.globalMaintenance()
-        puts "> Operations::globalMaintenance()"
-        puts "> Index1::maintenance()"
+        puts "Operations::globalMaintenance()"
+        puts "Index1::maintenance()"
         Index1::maintenance()
     end
 
@@ -93,10 +93,9 @@ class Operations
         if File.exist?(directory) then
             LucilleCore::locationsAtFolder(directory).each{|location|
                 puts location.yellow
-                nx1949 = PolyFunctions::makeNewNearTopNx1949InInfinityOrNull()
-                next if nx1949.nil?
+                parentuuid, position = PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
                 description = File.basename(location)
-                item = NxTasks::locationToTask(description, location, nx1949)
+                item = NxTasks::locationToTask(description, location, parentuuid, position)
                 #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
             }
@@ -137,13 +136,13 @@ class Operations
         notifications
     end
 
-    # Operations::interactivelySelectParentOrNull()
-    def self.interactivelySelectParentOrNull()
+    # Operations::interactivelySelectParent()
+    def self.interactivelySelectParent()
         targets = [
             NxTasks::importantItems(),
             NxCores::coresInRatioOrder()
         ].flatten
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::registerChildInParent(parentuuid, childuuid, position)
@@ -165,16 +164,12 @@ class Operations
         Items::setAttribute(parent["uuid"], "children-uuids-50", nx50s)
     end
 
-    # Operations::makeNx1949OrNull()
-    def self.makeNx1949OrNull()
-        parent = Operations::interactivelySelectParentOrNull()
+    # Operations::decideParentAndPosition()
+    def self.decideParentAndPosition()
+        parent = Operations::interactivelySelectParent()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-        nx1949 = {
-            "position" => position,
-            "parentuuid" => parent["uuid"]
-        }
-        nx1949
+        [parent["uuid"], position]
     end
 
     # Operations::diveItem(parent)
@@ -194,7 +189,7 @@ class Operations
             puts Listing::toString2(store, parent)
             puts ""
 
-            PolyFunctions::childrenInOrder(parent)
+            Index2::parentuuidToChildrenInOrder(parent["uuid"])
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
                     puts Listing::toString2(store, element)
@@ -210,11 +205,7 @@ class Operations
 
             if input == "todo" then
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-                nx1949 = {
-                    "position" => position,
-                    "parentuuid" => parent["uuid"]
-                }
-                todo = NxTasks::interactivelyIssueNewOrNull(nx1949)
+                todo = NxTasks::interactivelyIssueNewOrNull2(parent["uuid"], position)
                 puts JSON.pretty_generate(todo)
                 next
             end
@@ -224,11 +215,7 @@ class Operations
                     .reverse
                     .each{|line|
                         position = PolyFunctions::firstPositionInParent(parent) - 1
-                        nx1949 = {
-                            "position" => position,
-                            "parentuuid" => parent["uuid"]
-                        }
-                        todo = NxTasks::descriptionToTask(line, nx1949)
+                        todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
                         puts JSON.pretty_generate(todo)
                     }
                 next
@@ -247,23 +234,16 @@ class Operations
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-                nx1949 = {
-                    "position" => position,
-                    "parentuuid" => parent["uuid"]
-                }
-                Items::setAttribute(i["uuid"], "nx1949", nx1949)
+                Index2::insertEntry(parent["uuid"], i["uuid"], position)
                 next
             end
 
             if input == "sort" then
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], PolyFunctions::childrenInOrder(core).sort_by{|item| item["nx1949"]["position"] }, lambda{|i| PolyFunctions::toString(i) })
+                itemsInOrder = Index2::parentuuidToChildrenInOrder(core["uuid"]).sort_by{|item| Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"]) }
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     position = PolyFunctions::firstPositionInParent(core) - 1
-                    nx1949 = {
-                        "position" => position,
-                        "parentuuid" => core["uuid"]
-                    }
-                    Items::setAttribute(i["uuid"], "nx1949", nx1949)
+                    Index2::insertEntry(parent["uuid"], i["uuid"], position)
                 }
                 next
             end
@@ -277,7 +257,7 @@ class Operations
         NxCores::cores()
             .each{|core|
                 #puts "probing core #{core["description"]}"
-                PolyFunctions::childrenInOrder(core)
+                Index2::parentuuidToChildrenInOrder(core["uuid"])
                     .first(200)
                     .each{|item|
                         #puts "probing item #{item["description"]}"

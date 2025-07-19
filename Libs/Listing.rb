@@ -22,7 +22,7 @@ class Listing
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        hasChildren = PolyFunctions::hasChildren(item) ? " [children]".red : ""
+        hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
         impt = item["nx2290-important"] ? " [important]".red : ""
         position = " (#{item["x-listing-position"]})".yellow
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{position}"
@@ -80,7 +80,7 @@ class Listing
     # Listing::displayListingItem(store, printer, item)
     def self.displayListingItem(store, printer, item)
         lines = []
-        PolyFunctions::childrenInOrder(item)
+        Index2::parentuuidToChildrenInOrder(item["uuid"])
         .reduce([]){|selected, child|
             if selected.size >= 3 then
                 selected
@@ -116,13 +116,15 @@ class Listing
         swidth = CommonUtils::screenWidth()
 
         if XCacheExensions::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
-            item = NxLambdas::interactivelyIssueNewOrNull("run global maintenance", lambda {
-                Operations::globalMaintenance()
-                XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
-            })
-            store.register(item, true)
-            line = Listing::toString2(store, item)
-            printer.call(line)
+            puts "Running global maintenance (every half a day)"
+            Operations::globalMaintenance()
+            XCache::set("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", Time.new.to_i)
+        end
+
+        if XCacheExensions::trueNoMoreOftenThanNSeconds("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", 3600) then
+            puts "Running listing maintenance (every hour)"
+            ListingDatabase::listingMaintenance()
+            XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
         t1 = Time.new.to_f
@@ -151,19 +153,6 @@ class Listing
         rescue
             puts "could not retrieve palmer performance report".red
         end
-
-        if NxBackups::notificationChannelHasMessages() then
-            item = NxLambdas::interactivelyIssueNewOrNull("run notification channel", lambda {
-                NxBackups::processNotificationChannel()
-            })
-            store.register(item, true)
-            line = Listing::toString2(store, item)
-            printer.call(line)
-        end
-
-        Thread.new {
-            ListingDatabase::listingMaintenance()
-        }
 
         input = LucilleCore::askQuestionAnswerAsString("> ")
         if input == "exit" then

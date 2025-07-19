@@ -1,12 +1,12 @@
 
 class NxTasks
 
-    # NxTasks::interactivelyIssueNewOrNull(nx1949 = nil)
-    def self.interactivelyIssueNewOrNull(nx1949 = nil)
+    # NxTasks::interactivelyIssueNewOrNull()
+    def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        nx1949 = nx1949 || Operations::makeNx1949OrNull()
+        NxTasks::performItemPositioning(uuid)
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxTask")
@@ -14,18 +14,29 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "nx1949", nx1949)
-
-        if nx1949 then
-            Operations::registerChildInParent(nx1949["parentuuid"], uuid, nx1949["position"])
-        end
-
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::locationToTask(description, location, nx1949)
-    def self.locationToTask(description, location, nx1949)
+    # NxTasks::interactivelyIssueNewOrNull2(parentuuid, position)
+    def self.interactivelyIssueNewOrNull2(parentuuid, position)
         uuid = SecureRandom.uuid
+        description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+        return if description == ""
+        Operations::registerChildInParent(parentuuid, uuid, position)
+        Items::init(uuid)
+        payload = UxPayload::makeNewOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::itemOrNull(uuid)
+    end
+
+    # NxTasks::locationToTask(description, location, parentuuid, position)
+    def self.locationToTask(description, location, parentuuid, position)
+        uuid = SecureRandom.uuid
+        Index2::insertEntry(parentuuid, uuid, position)
         Items::init(uuid)
         payload = UxPayload::locationToPayload(uuid, location)
         Items::setAttribute(uuid, "mikuType", "NxTask")
@@ -33,19 +44,18 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "nx1949", nx1949)
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::descriptionToTask(description, nx1949)
-    def self.descriptionToTask(description, nx1949)
+    # NxTasks::descriptionToTask(description, parentuuid, position)
+    def self.descriptionToTask(description, parentuuid, position)
         uuid = SecureRandom.uuid
+        Index2::insertEntry(parentuuid, uuid, position)
         Items::init(uuid)
         Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "nx1949", nx1949)
         Items::itemOrNull(uuid)
     end
 
@@ -60,15 +70,10 @@ class NxTasks
 
     # NxTasks::toString(item, context)
     def self.toString(item, context = nil)
-        core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
-        px2 = " (#{item["nx1949"]["position"]} @ #{core["description"]})".yellow
+        parent = Index2::childuuidToParentOrDefaultInfinityCore(item["uuid"])
+        position = Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"])
+        px2 = " (#{position} @ #{parent["description"]})".yellow
         "#{NxTasks::icon(item)} #{item["description"]}#{px2}"
-    end
-
-    # NxTasks::itemsInPositionOrder()
-    def self.itemsInPositionOrder()
-        Index1::mikuTypeItems("NxTask")
-            .sort_by{|item| item["nx1949"]["position"] }
     end
 
     # ------------------
@@ -82,7 +87,6 @@ class NxTasks
 
     # NxTasks::importantItemsForListing()
     def self.importantItemsForListing()
-        return [] if Time.new.hour >= 17
         NxTasks::importantItems()
             .select{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1 }
             .sort_by{|item| Bank1::recoveredAverageHoursPerDay(item["uuid"]) }
@@ -91,11 +95,11 @@ class NxTasks
     # NxTasks::listingItems()
     def self.listingItems()
         NxCores::cores()
-            .select{|core| PolyFunctions::childrenForParent(core).size > 0 }
+            .select{|core| Index2::parentuuidToChildrenInOrder(core["uuid"]).size > 0 }
             .sort_by{|core| NxCores::ratio(core) }
             .select{|core| NxCores::ratio(core) < 1 }
             .map{|core| 
-                PolyFunctions::childrenInOrder(core)
+                Index2::parentuuidToChildrenInOrder(core["uuid"])
                 .select{|item| !item["nx2290-important"] }
                 .reduce([]){|selected, item|
                     if selected.size >= 3 then
@@ -114,11 +118,9 @@ class NxTasks
     # ------------------
     # Ops
 
-    # NxTasks::performItemPositioning(item) -> nx1949
-    def self.performItemPositioning(item)
-        nx1949 = Operations::makeNx1949OrNull()
-        return if nx1949.nil?
-        Items::setAttribute(item["uuid"], "nx1949", nx1949)
-        nx1949
+    # NxTasks::performItemPositioning(itemuuid)
+    def self.performItemPositioning(itemuuid)
+        parentuuid, position = Operations::decideParentAndPosition()
+        Operations::registerChildInParent(parentuuid, itemuuid, position)
     end
 end

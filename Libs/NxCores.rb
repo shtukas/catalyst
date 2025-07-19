@@ -57,7 +57,7 @@ class NxCores
     # NxCores::listingItems()
     def self.listingItems()
         NxCores::cores()
-            .select{|core| PolyFunctions::childrenForParent(core).empty? }
+            .select{|core| Index2::parentuuidToChildrenInOrder(core["uuid"]).empty? }
             .sort_by{|core| NxCores::ratio(core) }
             .select{|core| NxCores::ratio(core) < 1 }
     end

@@ -13,20 +13,13 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        if item["nx1949"] then
-            parent = Items::itemOrNull(item["nx1949"]["parentuuid"])
-            if parent then
-                accounts << {
-                    "description" => "(parent: #{parent["description"]})",
-                    "number"      => item["donation-1205"]
-                }
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(parent, depth-1)
-            else
-                accounts << {
-                    "description" => "(parent not found: #{item["nx1949"]["parentuuid"]})",
-                    "number"      => item["donation-1205"]
-                }
-            end
+        parent = Index2::childuuidToParentOrNull(item["uuid"])
+        if parent then
+            accounts << {
+                "description" => "(parent: #{parent["description"]})",
+                "number"      => parent["uuid"]
+            }
+            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent, depth-1)
         end
 
         if item["donation-1205"] then
@@ -46,10 +39,13 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxTask" then
-            core = Items::itemOrNull(item["nx1949"]["parentuuid"]) # we assume that it's not null
+            # This could be seen as redundant because we have already called
+            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
+            # an opportunity to get Infinity (the Index will do that automatically)
+            parent = Index2::childuuidToParentOrDefaultInfinityCore(item["uuid"])
             accounts << {
-                "description" => "(core: #{core["description"]})",
-                "number"      => core["uuid"]
+                "description" => "(parent: #{parent["description"]})",
+                "number"      => parent["uuid"]
             }
         end
 
@@ -146,42 +142,9 @@ class PolyFunctions
         raise "(error: 1931-e258c72b)"
     end
 
-    # PolyFunctions::childrenForParent(parent)
-    def self.childrenForParent(parent)
-
-        # --------------------------
-        # Old
-
-        #Items::items().select{|item|
-        #    item["nx1949"] and item["nx1949"]["parentuuid"] == parent["uuid"] 
-        #}
-
-        # --------------------------
-        # New (based on children-nx50s)
-
-        return [] if parent["children-nx50s"].nil?
-        parent["children-nx50s"]
-            .map{|nx50| nx50["childuuid"] }
-            .map{|uuid| Items::itemOrNull(uuid) }
-    end
-
-    # PolyFunctions::hasChildren(parent)
-    def self.hasChildren(parent)
-        # --------------------------
-        # Old
-
-        #PolyFunctions::childrenForParent(parent).size > 0
-
-        # --------------------------
-        # New (based on children-nx50s)
-
-        return false if parent["children-nx50s"].nil?
-        parent["children-nx50s"].size > 0
-    end
-
     # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
     def self.interactivelySelectGlobalPositionInParent(parent)
-        elements = PolyFunctions::childrenInOrder(parent)
+        elements = Index2::parentuuidToChildrenInOrder(parent["uuid"])
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -193,53 +156,43 @@ class PolyFunctions
             return PolyFunctions::random_10_20_position_in_parent(parent)
         end
         if position == "first" then
-            return ([0] + elements.map{|item| item["nx1949"]["position"] }).min.floor - 1
+            return ([0] + elements.map{|item| Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"]) }).min.floor - 1
         end
         position = position.to_f
         position
     end
 
-    # PolyFunctions::childrenInOrder(parent)
-    def self.childrenInOrder(parent)
-        PolyFunctions::childrenForParent(parent)
-            .sort_by{|item| item["nx1949"]["position"] }
-    end
-
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
-        items = PolyFunctions::childrenInOrder(parent)
-        return 1 if items.empty?
-        items.first["nx1949"]["position"]
+        positions = Index2::parentuuidToChildrenPositions(parentuuid)
+        return 1 if positions.empty?
+        positions.min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
-        items = PolyFunctions::childrenInOrder(parent)
-        return 1 if items.empty?
-        items.last["nx1949"]["position"]
+        positions = Index2::parentuuidToChildrenPositions(parentuuid)
+        return 1 if positions.empty?
+        positions.max
     end
 
     # PolyFunctions::random_10_20_position_in_parent(parent)
     def self.random_10_20_position_in_parent(parent)
-        items = PolyFunctions::childrenInOrder(parent)
+        items = Index2::parentuuidToChildrenInOrder(parent["uuid"])
         if items.size < 20 then
             return PolyFunctions::lastPositionInParent(parent) + 1
         end
-        positions = items.drop(10).take(10).map{|item| item["nx1949"]["position"] }
+        positions = items.drop(10).take(10).map{|item| Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"]) }
         first = positions.first
         last = positions.last
         first + rand * (last - first)
     end
 
-    # PolyFunctions::makeNewNearTopNx1949InInfinityOrNull()
-    def self.makeNewNearTopNx1949InInfinityOrNull()
+    # PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
+    def self.makeInfinityuuidAndPositionNearTheTop()
         coreuuid = NxCores::infinityuuid()
         core = Items::itemOrNull(coreuuid)
-        return nil if core.nil?
         position = PolyFunctions::random_10_20_position_in_parent(core)
-        {
-            "position" => position,
-            "parentuuid" => core["uuid"]
-        }
+        [coreuuid, position]
     end
 end

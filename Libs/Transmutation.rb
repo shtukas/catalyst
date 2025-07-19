@@ -7,8 +7,7 @@ class Transmutation
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
         
         if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
-            nx1949 = NxTasks::performItemPositioning(item)
-            Operations::registerChildInParent(nx1949["parentuuid"], uuid, nx1949["position"])
+            NxTasks::performItemPositioning(item["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             return
         end

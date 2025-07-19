@@ -14,7 +14,7 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(item) then
+        if item["uxpayload-b4e4"] and Index2::hasChildren(item["uuid"]) then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
             if option == "access payload" then
                 # we continue here
@@ -47,7 +47,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxCore" then
-            if item["uxpayload-b4e4"] and !PolyFunctions::hasChildren(item) then
+            if item["uxpayload-b4e4"] and !Index2::hasChildren(item["uuid"]) then
                 UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
                 return
             end
@@ -161,7 +161,7 @@ class PolyActions
     def self.doubleDots(item)
         return if NxBalls::itemIsActive(item)
 
-        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(item) then
+        if item["uxpayload-b4e4"] and Index2::hasChildren(item["uuid"]) then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
             if option == "access payload" then
                 # we continue here
@@ -172,7 +172,7 @@ class PolyActions
             end
         end
 
-        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !PolyFunctions::hasChildren(item) then
+        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !Index2::hasChildren(item["uuid"]) then
             PolyActions::start(item)
             PolyActions::access(item)
             return
@@ -207,7 +207,7 @@ class PolyActions
             return
         end
 
-        if item["uxpayload-b4e4"] and PolyFunctions::hasChildren(item) then
+        if item["uxpayload-b4e4"] and Index2::hasChildren(item["uuid"]) then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
             if option == "access payload" then
                 # we continue here
@@ -218,7 +218,7 @@ class PolyActions
             end
         end
 
-        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !PolyFunctions::hasChildren(item) then
+        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !Index2::hasChildren(item["uuid"]) then
             PolyActions::start(item)
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")

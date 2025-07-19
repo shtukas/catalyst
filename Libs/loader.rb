@@ -140,11 +140,14 @@ require_relative "Fsck.rb"
 
 require_relative "Galaxy.rb"
 
+require_relative "HardProblem.rb"
+
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Items.rb"
 require_relative "Instances.rb"
-require_relative "index1-mikutype-to-itemuuids.rb"
+require_relative "index1-mikutype-to-items.rb"
+require_relative "index2-parenting.rb"
 
 require_relative "Listing.rb"
 require_relative "ListingDatabase.rb"

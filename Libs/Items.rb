@@ -37,21 +37,21 @@ class Items
     def self.setAttribute(uuid, attrname, attrvalue)
         item = Blades::getItemOrNull(uuid)
         if item.nil? then
-            Index1::item_could_not_be_found_on_disk(uuid)
+            HardProblem::item_could_not_be_found_on_disk(uuid)
             return
         end
         item[attrname] = attrvalue
         Blades::commitItemToDisk(item)
-        Index1::item_attribute_has_been_updated(uuid, attrname, attrvalue)
+        HardProblem::item_attribute_has_been_updated(uuid, attrname, attrvalue)
     end
 
     # Items::destroy(uuid)
     def self.destroy(uuid)
         item = Items::itemOrNull(uuid)
         if item then
-            Index1::item_is_being_destroyed(item)
+            HardProblem::item_is_being_destroyed(item)
         end
         Blades::destroy(uuid)
-        Index1::item_has_been_destroyed(uuid)
+        HardProblem::item_has_been_destroyed(uuid)
     end
 end

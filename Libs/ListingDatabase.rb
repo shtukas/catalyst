@@ -198,7 +198,7 @@ class ListingDatabase
         first = ListingDatabase::firstPositionInDatabase()
         last  = ListingDatabase::lastPositionInDatabase()
         mid = 0.5*(first + last)
-        mid + 0.2 * (last - mid) + rand * (last - mid)
+        mid + 0.2*(last - mid) + rand*(last - mid)
     end
 
     # ListingDatabase::listingMaintenance()
