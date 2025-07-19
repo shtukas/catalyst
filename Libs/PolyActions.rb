@@ -205,6 +205,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to stop: ")
             PolyActions::stop(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -224,6 +225,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")
             PolyActions::done(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -242,6 +244,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
             PolyActions::destroy(item, true)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -250,6 +253,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")
             PolyActions::destroy(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -258,6 +262,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
             PolyActions::destroy(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -266,6 +271,7 @@ class PolyActions
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")
             PolyActions::done(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
