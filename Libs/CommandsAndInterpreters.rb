@@ -277,6 +277,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -285,6 +286,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -293,6 +295,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "nx2290-important", true)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -301,6 +304,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "nx2290-important", false)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -309,6 +313,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -346,6 +351,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -354,15 +360,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::expose(item)
-            return
-        end
-
-        if Interpreting::match("sort", input) then
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], store.items(), lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|item|
-                position = Index0::firstPositionInDatabase() * 0.9
-                Index0::updateUnixtime(item["uuid"], position)
-            }
             return
         end
 
