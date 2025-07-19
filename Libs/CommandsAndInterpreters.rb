@@ -320,7 +320,7 @@ class CommandsAndInterpreters
         if Interpreting::match("done", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::done(item, false)
+            PolyActions::done(item)
             return
         end
 
@@ -328,7 +328,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::done(item, true)
+            PolyActions::done(item)
             return
         end
 
@@ -361,7 +361,7 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], store.items(), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|item|
                 position = Index0::firstPositionInDatabase() * 0.9
-                Index0::updatePosition(item["uuid"], position)
+                Index0::updateUnixtime(item["uuid"], position)
             }
             return
         end

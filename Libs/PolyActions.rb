@@ -78,8 +78,8 @@ class PolyActions
         NxBalls::stop(item)
     end
 
-    # PolyActions::done(item, useTheForce = false)
-    def self.done(item, useTheForce = false)
+    # PolyActions::done(item)
+    def self.done(item)
 
         NxBalls::stop(item)
 
@@ -111,7 +111,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxBackup" then
-            if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
+            if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 NxBalls::stop(item)
                 DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400 + rand)
                 Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
@@ -137,21 +137,20 @@ class PolyActions
         if item["mikuType"] == "NxDated" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::destroy(item["uuid"])
+                Index0::removeEntry(item["uuid"])
             end
             return
         end
 
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("confirm destroying: '#{PolyFunctions::toString(item).green} ? '") then
-                Items::destroy(item["uuid"])
-            end
+            puts "done is not supported for NxTasks, use stop or destroy"
+            LucilleCore::pressEnterToContinue()
             return
         end
 
         if item["mikuType"] == "Wave" then
-            if useTheForce or LucilleCore::askQuestionAnswerAsBoolean("done-ing: '#{PolyFunctions::toString(item).green} ? '", true) then
-                Waves::perform_done(item)
-            end
+            Waves::perform_done(item)
+            Index0::removeEntry(item["uuid"])
             return
         end
 
@@ -266,7 +265,7 @@ class PolyActions
             PolyActions::start(item)
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-            PolyActions::done(item, true)
+            PolyActions::done(item)
             return
         end
 

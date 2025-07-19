@@ -1,5 +1,5 @@
 
-# create table listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL);
+# create table listing (itemuuid TEXT NOT NULL, unixtime REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL, clique TEXT NOT NULL);
 
 class Index0
 
@@ -35,7 +35,7 @@ class Index0
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("create table listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
+        db.execute("create table listing (itemuuid TEXT NOT NULL, unixtime REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL, clique TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -48,12 +48,13 @@ class Index0
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select * from listing order by position", []) do |row|
+        db.execute("select * from listing order by unixtime", []) do |row|
             data << {
                 "itemuuid" => row["itemuuid"],
-                "position" => row["position"],
+                "unixtime" => row["unixtime"],
                 "item"     => JSON.parse(row["item"]),
                 "line"     => row["line"],
+                "clique"   => row["clique"],
             }
         end
         db.close
@@ -77,7 +78,7 @@ class Index0
                 Index0::extractDataFromFileEntriesInOrder(filepath)
             }
             .flatten
-            .sort_by{|entry| entry["position"] }
+            .sort_by{|entry| entry["unixtime"] }
             .reduce([]){|entries, entry|
                 if entries.map{|e| e["itemuuid"] }.include?(entry["itemuuid"]) then
                     entries
@@ -95,7 +96,7 @@ class Index0
         db.results_as_hash = true
         db.transaction
         data.each{|entry|
-            db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [entry["itemuuid"], entry["position"], entry["item"], entry["line"]])
+            db.execute("insert into listing (itemuuid, unixtime, item, line) values (?, ?, ?, ?)", [entry["itemuuid"], entry["unixtime"], entry["item"], entry["line"]])
         }
         db.commit
         db.close
@@ -110,8 +111,8 @@ class Index0
     # --------------------------------------------------
     # setters and updates
 
-    # Index0::insertEntry(itemuuid, position, item, line)
-    def self.insertEntry(itemuuid, position, item, line)
+    # Index0::insertEntry(itemuuid, unixtime, item, line, clique)
+    def self.insertEntry(itemuuid, unixtime, item, line, clique)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -119,7 +120,7 @@ class Index0
         db.results_as_hash = true
         db.transaction
         db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [itemuuid, position, JSON.generate(item), line])
+        db.execute("insert into listing (itemuuid, unixtime, item, line, clique) values (?, ?, ?, ?, ?)", [itemuuid, unixtime, JSON.generate(item), line, clique])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -139,29 +140,29 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::updatePosition(itemuuid, position)
-    def self.updatePosition(itemuuid, position)
+    # Index0::updateUnixtime(itemuuid, unixtime)
+    def self.updateUnixtime(itemuuid, unixtime)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("update listing set position = ? where itemuuid = ?", [position, itemuuid])
+        db.execute("update listing set unixtime = ? where itemuuid = ?", [unixtime, itemuuid])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::updateItemsAndLine(itemuuid, item, line)
-    def self.updateItemsAndLine(itemuuid, item, line)
+    # Index0::updateRecord(itemuuid, item, line, clique)
+    def self.updateRecord(itemuuid, item, line, clique)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("update listing set item=?, line=? where itemuuid=?", [JSON.generate(item), line, itemuuid])
+        db.execute("update listing set item=?, line=?, clique=? where itemuuid=?", [JSON.generate(item), line, clique, itemuuid])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -170,10 +171,113 @@ class Index0
     # Index0::updateEntry(itemuuid)
     def self.updateEntry(itemuuid)
         item = Items::itemOrNull(itemuuid)
-        position = Index0::getPositionOrNull(item["uuid"])
-        return if position.nil?
-        line = Index0::decideLine(item, position)
+        line = Index0::decideLine(item)
         Index0::updateItemsAndLine(item["uuid"], item, line)
+    end
+
+    # ------------------------------------------------------
+    # Decisions
+
+    # Index0::decideLine(item)
+    def self.decideLine(item)
+        return nil if item.nil?
+        hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
+        impt = item["nx2290-important"] ? " [important]".red : ""
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}"
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
+    # Index0::decideClique(item)
+    def self.decideClique(item)
+
+        # - prelude
+
+        if item["mikuType"] == "NxAnniversary" then
+            return "prelude"
+        end
+
+        if item["mikuType"] == "Wave" and item["interruption"] then
+            return "prelude"
+        end
+
+        if item["mikuType"] == "NxLine" then
+            return "prelude"
+        end
+
+        # - today
+
+        if item["mikuType"] == "NxBackup" then
+            return "today"
+        end
+
+        if item["mikuType"] == "NxDated" then
+            return "today"
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            return "today"
+        end
+
+        if item["mikuType"] == "NxTask" and item["important"] then
+            return "today"
+        end
+
+        if item["mikuType"] == "NxCore" then
+            return "today"
+        end
+
+        # - waves
+
+        if item["mikuType"] == "Wave" then
+            return "waves"
+        end
+
+        # - todos
+
+        if item["mikuType"] == "NxTask" then
+            return "todos"
+        end
+
+        raise "(error) I do not know how to Index0::decideClique item: #{item}"
+    end
+
+    # Index0::cliquesInListingOrder()
+    def self.cliquesInListingOrder()
+
+        cliques = []
+
+        cliques << "prelude"
+
+        if Bank1::recoveredAverageHoursPerDay("today") < 3 then
+            cliques << "today"
+            return cliques
+        end
+
+        bratio = lambda{|clique|
+            if clique == "today" then
+                return Bank1::recoveredAverageHoursPerDay(clique) - 3
+            end
+            Bank1::recoveredAverageHoursPerDay(clique)
+        }
+
+        cliques2 = [
+            "today",
+            "waves",
+            "todos"
+        ].sort_by{|clique|
+            bratio.call(clique)
+        }
+
+        cliques + cliques2
     end
 
     # ------------------------------------------------------
@@ -181,8 +285,15 @@ class Index0
 
     # Index0::getListingDataEntriesInOrder(excludeuuids)
     def self.getListingDataEntriesInOrder(excludeuuids)
-        Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
+        entries = Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
             .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
+        Index0::cliquesInListingOrder().each{|clique|
+            clique_entries = entries.select{|entry| entry["clique"] == clique }
+            if clique_entries.size > 0 then
+                return clique_entries
+            end
+        }
+        []
     end
 
     # Index0::firstPositionInDatabase()
@@ -216,92 +327,35 @@ class Index0
         answer
     end
 
-    # Index0::getPositionOrNull(itemuuid)
-    def self.getPositionOrNull(itemuuid)
-        position = nil
+    # Index0::getUnixtimeOrNull(itemuuid)
+    def self.getUnixtimeOrNull(itemuuid)
+        unixtime = nil
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
-            position = row["position"]
+            unixtime = row["unixtime"]
         end
         db.close
-        position
-    end
-
-    # ------------------------------------------------------
-    # Decisions
-
-    # Index0::decidePosition(item)
-    def self.decidePosition(item)
-        if item["mikuType"] == "Wave" and item["interruption"] then
-            return Index0::firstPositionInDatabase() * 0.9
-        end
-        if item["mikuType"] == "NxTask" and item["nx2290-important"] then
-            first = Index0::firstPositionInDatabase()
-            last  = Index0::lastPositionInDatabase()
-            width = last-first
-            return first + rand*0.25*width
-        end
-        first = Index0::firstPositionInDatabase()
-        last  = Index0::lastPositionInDatabase()
-        mid = 0.5*(first + last)
-        mid + 0.2*(last - mid) + rand*(last - mid)
-    end
-
-    # Index0::decideLine(item, position)
-    def self.decideLine(item, position)
-        return nil if item.nil?
-        hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
-        impt = item["nx2290-important"] ? " [important]".red : ""
-        position_ = " (#{position})".yellow
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{position_}"
-
-        if TmpSkip1::isSkipped(item) then
-            line = line.yellow
-        end
-
-        if NxBalls::itemIsActive(item) then
-            line = line.green
-        end
-
-        line
+        unixtime
     end
 
     # ------------------------------------------------------
     # Operations
 
-    # Index0::compressPositions()
-    def self.compressPositions()
-        filepath = Index0::getReducedDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("update listing set position = position/2", [])
-        db.commit
-        db.close
-        Index0::ensureContentAddressing(filepath)
-    end
-
     # Index0::listingMaintenance()
     def self.listingMaintenance()
-        if Index0::firstPositionInDatabase() >= 1 or Index0::lastPositionInDatabase() >= 100 then
-            Index0::compressPositions()
-        end
         Listing::itemsForListing1().each{|item|
             if Index0::hasItem(item["uuid"]) then
-                position = Index0::getPositionOrNull(item["uuid"])
-                # position is not going to be null because it comes from the database
-                line = Index0::decideLine(item, position)
-                Index0::updateItemsAndLine(item["uuid"], item, line)
+                clique = Index0::decideClique(item)
+                line = Index0::decideLine(item)
+                Index0::updateRecord(item["uuid"], item, line, clique)
             else
-                position = Index0::decidePosition(item)
-                line = Index0::decideLine(item, position)
-                Index0::insertEntry(item["uuid"], position, item, line)
+                clique = Index0::decideClique(item)
+                line = Index0::decideLine(item)
+                Index0::insertEntry(item["uuid"], Time.new.to_f, item, line, clique)
             end
         }
     end

@@ -49,6 +49,11 @@ class PolyFunctions
             }
         end
 
+        accounts << {
+            "description" => "clique",
+            "number"      => Index0::decideClique(item)
+        }
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
