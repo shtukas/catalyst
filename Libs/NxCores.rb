@@ -57,9 +57,15 @@ class NxCores
     # NxCores::listingItems()
     def self.listingItems()
         NxCores::cores()
-            .select{|core| Index2::parentuuidToChildrenInOrder(core["uuid"]).empty? }
-            .sort_by{|core| NxCores::ratio(core) }
-            .select{|core| NxCores::ratio(core) < 1 }
+            .map{|core|
+                items = Index2::parentuuidToChildrenInOrderHead(core["uuid"], 3, lambda{|item| !item["nx2290-important"] and (Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600) })
+                if items.size > 0 then
+                    items
+                else
+                    [core]
+                end
+            }
+            .flatten
     end
 
     # NxCores::interactivelySelectOneOrNull()

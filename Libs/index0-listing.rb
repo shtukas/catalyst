@@ -1,5 +1,5 @@
 
-# create table listing (itemuuid TEXT, position REAL);
+# create table listing (itemuuid TEXT, position REAL, item TEXT, line TEXT);
 
 class Index0
 
@@ -8,7 +8,7 @@ class Index0
 
     # Index0::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/ListingDatabase"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index0-listing"
     end
 
     # Index0::filepaths()
@@ -35,23 +35,25 @@ class Index0
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("create table listing (itemuuid TEXT, position REAL)", [])
+        db.execute("create table listing (itemuuid TEXT, position REAL, item TEXT, line TEXT)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::extractDataFromFile(filepath)
-    def self.extractDataFromFile(filepath)
+    # Index0::extractDataFromFileEntriesInOrder(filepath)
+    def self.extractDataFromFileEntriesInOrder(filepath)
         data = []
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select * from listing", []) do |row|
+        db.execute("select * from listing order by position", []) do |row|
             data << {
                 "itemuuid" => row["itemuuid"],
-                "position" => row["position"]
+                "position" => row["position"],
+                "item"     => JSON.parse(row["item"]),
+                "line"     => row["line"],
             }
         end
         db.close
@@ -72,7 +74,7 @@ class Index0
 
         data = filepaths
             .map{|filepath|
-                Index0::extractDataFromFile(filepath)
+                Index0::extractDataFromFileEntriesInOrder(filepath)
             }
             .flatten
             .sort_by{|entry| entry["position"] }
@@ -93,7 +95,7 @@ class Index0
         db.results_as_hash = true
         db.transaction
         data.each{|entry|
-            db.execute("insert into listing (itemuuid, position) values (?, ?)", [entry["itemuuid"], entry["position"]])
+            db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [entry["itemuuid"], entry["position"], entry["item"], entry["line"]])
         }
         db.commit
         db.close
@@ -105,15 +107,16 @@ class Index0
         Index0::ensureContentAddressing(newfilepath)
     end
 
-    # Index0::insertEntry(itemuuid, position)
-    def self.insertEntry(itemuuid, position)
+    # Index0::insertEntry(itemuuid, position, item, line)
+    def self.insertEntry(itemuuid, position, item, line)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("insert into listing (itemuuid, position) values (?, ?)", [itemuuid, position])
+        db.execute("delete from listing where itemuuid=?", [itemuuid])
+        db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [itemuuid, position, JSON.generate(item), line])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -147,44 +150,42 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
+    # Index0::compressPositions()
+    def self.compressPositions()
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position = position/2", [])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
     # ------------------------------------------------------
     # Data
 
-    # Index0::getListingData()
-    def self.getListingData()
-        Index0::extractDataFromFile(Index0::getReducedDatabaseFilepath())
+    # Index0::getListingDataEntriesInOrder()
+    def self.getListingDataEntriesInOrder()
+        Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
     end
 
     # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
-        data = Index0::getListingData()
+        data = Index0::getListingDataEntriesInOrder()
         return 1 if data.empty?
         data.map{|e| e["position"] }.min
     end
 
     # Index0::lastPositionInDatabase()
     def self.lastPositionInDatabase()
-        data = Index0::getListingData()
+        data = Index0::getListingDataEntriesInOrder()
         return 1 if data.empty?
-        data.map{|e| e["position"] }.max
-    end
-
-    # Index0::itemsForListing()
-    def self.itemsForListing()
-        items = Index0::getListingData()
-                .map{|entry|
-                    item = Items::itemOrNull(entry["itemuuid"])
-                    if item then
-                        item["x-listing-position"] = entry["position"]
-                        item
-                    else
-                        Index0::removeEntry(entry["itemuuid"])
-                        nil
-                    end
-                }
-                .compact
-                .sort_by{|item| item["x-listing-position"] }
-        CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
+        themax = data.map{|e| e["position"] }.max
+        return (themax + 1) if data.size == 1 # this is to prevent first and last to have the same value
+        themax
     end
 
     # Index0::hasItem(itemuuid)
@@ -195,7 +196,7 @@ class Index0
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select * from index1 where itemuuid=?", [itemuuid]) do |row|
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
             answer = true
         end
         db.close
@@ -222,12 +223,35 @@ class Index0
         mid + 0.2*(last - mid) + rand*(last - mid)
     end
 
+    # Index0::decideLine(item, position)
+    def self.decideLine(item, position)
+        return nil if item.nil?
+        hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
+        impt = item["nx2290-important"] ? " [important]".red : ""
+        position_ = " (#{position})".yellow
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}#{position_}"
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.green
+        end
+
+        line
+    end
+
     # Index0::listingMaintenance()
     def self.listingMaintenance()
+        if Index0::lastPositionInDatabase() >= 100 then
+            Index0::compressPositions()
+        end
         Listing::itemsForListing1().each{|item|
             next if Index0::hasItem(item["uuid"])
             position = Index0::decidePosition(item)
-            Index0::insertEntry(item["uuid"], position)
+            line = Index0::decideLine(item, position)
+            Index0::insertEntry(item["uuid"], position, item, line)
         }
     end
 end

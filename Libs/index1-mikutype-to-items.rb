@@ -152,6 +152,20 @@ class Index1
         Index1::ensureContentAddressing(filepath)
     end
 
+    # Index1::removeItem(itemuuid)
+    def self.removeItem(itemuuid)
+        filepath = Index1::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from index1 where itemuuid=?", [itemuuid])
+        db.commit
+        db.close
+        Index1::ensureContentAddressing(filepath)
+    end
+
     # ------------------------------------------------------
     # Data
 

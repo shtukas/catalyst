@@ -170,7 +170,7 @@ class Index2
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select * from index1 where parentuuid=?", [parentuuid]) do |row|
+        db.execute("select * from index1 where parentuuid=? limit 1", [parentuuid]) do |row|
             answer = true
         end
         db.close
@@ -182,6 +182,27 @@ class Index2
         Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
             .map{|uuid| Items::itemOrNull(uuid) }
             .compact
+    end
+
+    # Index2::parentuuidToChildrenInOrderHead(parentuuid, size, selection)
+    def self.parentuuidToChildrenInOrderHead(parentuuid, size, selection)
+        Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
+            .reduce([]){|items, uuid|
+                if items.size >= size then
+                    items
+                else
+                    item = Items::itemOrNull(uuid)
+                    if item then
+                        if selection.call(item) then
+                            items + [item]
+                        else
+                            items
+                        end
+                    else
+                        items
+                    end
+                end
+            }
     end
 
     # Index2::childuuidToParentuuidOrNull(childuuid)

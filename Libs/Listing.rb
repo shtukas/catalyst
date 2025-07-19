@@ -17,7 +17,6 @@ class Listing
         item["interruption"]
     end
 
-    # Regular main listing 
     # Listing::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
@@ -49,7 +48,6 @@ class Listing
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
             NxTasks::importantItemsForListing(),
-            NxTasks::listingItems(),
             NxCores::listingItems()
         ]
             .flatten
@@ -120,10 +118,19 @@ class Listing
         end
 
         t1 = Time.new.to_f
-        CommonUtils::removeDuplicateObjectsOnAttribute(NxBalls::runningItems() + Index0::itemsForListing(), "uuid")
+        NxBalls::runningItems()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
                 line = Listing::toString2(store, item)
+                printer.call(line)
+                sheight = sheight - (line.size/swidth + 1)
+                break if sheight <= 4
+            }
+
+        Index0::getListingDataEntriesInOrder()
+            .each{|entry|
+                store.register(entry["item"], Listing::canBeDefault(entry["item"]))
+                line = entry["line"].gsub("STORE-PREFIX", "(#{store.prefixString()})")
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 4

@@ -30,11 +30,7 @@ class HardProblem
 
     # HardProblem::item_is_being_destroyed(item)
     def self.item_is_being_destroyed(item)
-        Index1::extractDataFromFile(Index1::getReducedDatabaseFilepath())
-            .select{|entry| entry["itemuuid"] == item["uuid"] }
-            .each{|entry|
-                Index1::removeEntry(entry["mikuType"], entry["itemuuid"])
-            }
+        Index1::removeItem(item["uuid"])
         Index2::removeIdentifierFromDatabase(item["uuid"])
     end
 end
