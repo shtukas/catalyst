@@ -187,6 +187,21 @@ class Index0
         CommonUtils::removeDuplicateObjectsOnAttribute(items, "uuid")
     end
 
+    # Index0::hasItem(itemuuid)
+    def self.hasItem(itemuuid)
+        answer = false
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from index1 where itemuuid=?", [itemuuid]) do |row|
+            answer = true
+        end
+        db.close
+        answer
+    end
+
     # ------------------------------------------------------
     # Operations
 
@@ -209,13 +224,10 @@ class Index0
 
     # Index0::listingMaintenance()
     def self.listingMaintenance()
-        data = Index0::getListingData()
-        databaseuuids = data.map{|entry| entry["itemuuid"] }
-        Listing::itemsForListing2()
-            .select{|item| !databaseuuids.include?(item["uuid"]) }
-            .each{|item|
-                position = Index0::decidePosition(item)
-                Index0::insertEntry(item["uuid"], position)
-            }
+        Listing::itemsForListing2().each{|item|
+            next if Index0::hasItem(item["uuid"])
+            position = Index0::decidePosition(item)
+            Index0::insertEntry(item["uuid"], position)
+        }
     end
 end
