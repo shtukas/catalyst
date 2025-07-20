@@ -113,6 +113,15 @@ class Listing
             XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
+        begin
+            line = `palmer report:performance`.strip.lines.drop(2).first
+            if line.include?("Missing") then
+                puts line.red
+            end
+        rescue
+            puts "could not retrieve palmer performance report".red
+        end
+
         t1 = Time.new.to_f
         runningItems = NxBalls::runningItems()
         NxBalls::runningItems()
@@ -137,17 +146,6 @@ class Listing
         renderingTime = t2-t1
         if renderingTime > 0.5 then
             puts "rendering time: #{renderingTime.round(3)} seconds".red
-        end
-
-        begin
-            line = `palmer report:performance`.strip.lines.drop(2).first
-            if line.include?("Missing") then
-                puts line.red
-            else
-                puts line.green
-            end
-        rescue
-            puts "could not retrieve palmer performance report".red
         end
 
         input = LucilleCore::askQuestionAnswerAsString("> ")

@@ -470,7 +470,14 @@ class CommandsAndInterpreters
         end
 
         if input == "waves" then
-            Waves::program1()
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("mode", ["full", "listing"])
+            return if option.nil?
+            if option == "full" then
+                Waves::program1()
+            end
+            if option == "listing" then
+                Waves::program2()
+            end
             return
         end
     end

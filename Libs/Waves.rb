@@ -157,8 +157,8 @@ class Waves
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime + rand)
     end
 
-    # Waves::program2(item)
-    def self.program2(item)
+    # Waves::program0(item)
+    def self.program0(item)
         loop {
             item = Items::itemOrNull(item["uuid"])
             return if item.nil?
@@ -194,6 +194,16 @@ class Waves
 
     # Waves::program1()
     def self.program1()
+        l = lambda { 
+            items = Index1::mikuTypeItems("Wave")
+            i1, i2 = items.partition{|item| item["interruption"] }
+            i1 + i2
+        }
+        Operations::program3(l)
+    end
+
+    # Waves::program2()
+    def self.program2()
         l = lambda { 
             items = Index1::mikuTypeItems("Wave").select{|wave|
                 unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])

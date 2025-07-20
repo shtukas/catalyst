@@ -198,7 +198,7 @@ class Operations
             end
 
             if input.start_with?("important") then
-                listord = input[8, input.size].strip.to_i
+                listord = input[9, input.size].strip.to_i
                 i = store.get(listord.to_i)
                 next if i.nil?
                 Items::setAttribute(i["uuid"], "nx2290-important", true)

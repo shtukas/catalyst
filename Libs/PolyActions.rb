@@ -379,7 +379,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            Waves::program2(item)
+            Waves::program0(item)
             return
         end
 
