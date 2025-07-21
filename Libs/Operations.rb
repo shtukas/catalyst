@@ -184,7 +184,7 @@ class Operations
                 if LucilleCore::askQuestionAnswerAsBoolean("Is important ? ") then
                     Items::setAttribute(todo["uuid"], "nx2290-important", true)
                 end
-                Index0::updateEntry(todo["uuid"])
+                Index0::decideAndUpdateItemAndLine(todo["uuid"])
                 next
             end
 
@@ -204,7 +204,7 @@ class Operations
                 i = store.get(listord.to_i)
                 next if i.nil?
                 Items::setAttribute(i["uuid"], "nx2290-important", true)
-                Index0::updateEntry(i["uuid"])
+                Index0::decideAndUpdateItemAndLine(i["uuid"])
                 next
             end
 

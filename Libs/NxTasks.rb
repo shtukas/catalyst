@@ -79,16 +79,20 @@ class NxTasks
     # ------------------
     # Active Items
 
-    # NxTasks::importantItems()
-    def self.importantItems()
-        Index1::mikuTypeItems("NxTask")
-            .select{|item| item["nx2290-important"] }
-    end
-
-    # NxTasks::importantItemsForListing()
-    def self.importantItemsForListing()
-        # They have to be manually pushed to the future if we no longer want them.
-        NxTasks::importantItems()
+    # NxTasks::listingItems()
+    def self.listingItems()
+        NxCores::cores()
+            .select{|core| NxCores::ratio(core) < 1 }
+            .select{|core| Index2::hasChildren(core["uuid"]) }
+            .map{|core|
+                items = Index2::parentuuidToChildrenInOrderHead(core["uuid"], 3, lambda{|item| Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < 3600 })
+                if items.size > 0 then
+                    items
+                else
+                    [core]
+                end
+            }
+            .flatten
     end
 
     # ------------------
@@ -105,10 +109,10 @@ class NxTasks
         count1 = Index1::mikuTypeItems("NxTask")
                     .select{|item| Index2::childuuidToParentuuidOrNull(item["uuid"]) == NxCores::infinityuuid()}
                     .size
-        puts "count1: #{count1}"
+        #puts "count1: #{count1}"
         iced = Index1::mikuTypeItems("NxIce")
         count2 = iced.size
-        puts "count2: #{count2}"
+        #puts "count2: #{count2}"
         if count1 < 150 and count2 > 0 then
             iced.take(100).each{|item|
                 puts "moving from NxIce to NxTask: #{item["description"]}"

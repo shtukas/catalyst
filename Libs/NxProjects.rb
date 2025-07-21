@@ -1,21 +1,4 @@
 
-=begin
-NxProject:
-    - uuid             : String
-    - mikuType         : "NxProject"
-    - unixtime         : Float
-    - datetime         : DateTime Iso 8601 UTC Zulu
-    - description      : String
-    - project-position : Float
-    - commitment-today : NxCommitmentToday
-
-NxCommitmentToday # commitment today 
-{
-    "date"               : Date,
-    "time-left-in-hours" : Float
-}
-=end
-
 class NxProjects
 
     # NxProjects::interactivelyDecideProjectPosition()
@@ -48,12 +31,12 @@ class NxProjects
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "project-position", NxProjects::getNextPosition())
         Items::setAttribute(uuid, "commitment-date", nil)
-        Items::setAttribute(uuid, "commitment-hours", nil)
+        Items::setAttribute(uuid, "commitment-hours", 0)
         Items::itemOrNull(uuid)
     end
 
     # ------------------
-    # Standard Items
+    # Data
 
     # NxProjects::icon(item)
     def self.icon(item)
@@ -63,6 +46,19 @@ class NxProjects
     # NxProjects::toString(item)
     def self.toString(item)
         "#{NxProjects::icon(item)} #{item["description"]} (#{item["project-position"]})"
+    end
+
+    # NxProjects:::isStillUpToday(item)
+    def self.isStillUpToday(item)
+        b1 = (item["commitment-date"] == CommonUtils::today())
+        b2 = (item["commitment-hours"]*3600 >= Bank1::getValueAtDate(item["uuid"], CommonUtils::today()))
+        b1 and b2
+    end
+
+    # NxProjects:::listingItems()
+    def self.listingItems()
+        Index1::mikuTypeItems("NxProject")
+            .select{|item| NxProjects::isStillUpToday(item) }
     end
 
     # ------------------

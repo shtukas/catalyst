@@ -47,7 +47,8 @@ class Listing
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
-            NxTasks::importantItemsForListing(),
+            NxProjects::listingItems(),
+            NxTasks::listingItems(),
             NxCores::listingItems()
         ]
             .flatten
@@ -133,7 +134,7 @@ class Listing
                 break if sheight <= 4
             }
 
-        Index0::itemsForListing(runningItems.map{|i| i["uuid"]})
+        Index0::entriesForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 store.register(entry["item"], Listing::canBeDefault(entry["item"]))
                 line = entry["line"].gsub("STORE-PREFIX", "(#{store.prefixString()})")

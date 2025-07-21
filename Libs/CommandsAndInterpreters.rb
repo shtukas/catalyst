@@ -159,7 +159,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -282,7 +282,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -291,7 +291,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -300,7 +300,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "nx2290-important", true)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -309,7 +309,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Items::setAttribute(item["uuid"], "nx2290-important", false)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -318,7 +318,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -385,7 +385,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -394,7 +394,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -402,7 +402,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
@@ -411,7 +411,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            Index0::updateEntry(item["uuid"])
+            Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end
 
