@@ -38,6 +38,8 @@ class Operations
         puts "Operations::globalMaintenance()"
         puts "Index1::maintenance()"
         Index1::maintenance()
+        puts "NxTasks::maintenance()"
+        NxTasks::maintenance()
     end
 
     # Operations::interactivelyGetLines()

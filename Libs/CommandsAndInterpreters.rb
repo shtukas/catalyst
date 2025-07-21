@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy * | important * | nonimportant *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority | project",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | importants | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | importants | projects | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | edit * | fsck-all | probe-head",
         ].join("\n")
@@ -159,7 +159,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            
+            Index0::updateEntry(item["uuid"])
             return
         end
 
@@ -246,6 +246,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("projects", input) then
+            Operations::program3(lambda { Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] } })
             return
         end
 

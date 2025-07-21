@@ -129,10 +129,10 @@ class Blades
 
         item = {
           "uuid" => uuid,
-          "mikuType" => "NxFloat",
+          "mikuType" => "NxLine",
           "unixtime" => 1749022592,
           "datetime" => "2025-06-04T07:36:32Z",
-          "description" => "be awesome"
+          "description" => "be awesome 🤘"
         }
 
         db = SQLite3::Database.new(filepath)

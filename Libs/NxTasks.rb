@@ -68,8 +68,8 @@ class NxTasks
         "🔹"
     end
 
-    # NxTasks::toString(item, context)
-    def self.toString(item, context = nil)
+    # NxTasks::toString(item)
+    def self.toString(item)
         parent = Index2::childuuidToParentOrDefaultInfinityCore(item["uuid"])
         position = Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"])
         px2 = " (#{position} @ #{parent["description"]})".yellow
@@ -87,6 +87,7 @@ class NxTasks
 
     # NxTasks::importantItemsForListing()
     def self.importantItemsForListing()
+        # They have to be manually pushed to the future if we no longer want them.
         NxTasks::importantItems()
     end
 
@@ -97,5 +98,22 @@ class NxTasks
     def self.performItemPositioning(itemuuid)
         parentuuid, position = Operations::decideParentAndPosition()
         Index2::insertEntry(parentuuid, itemuuid, position)
+    end
+
+    # NxTasks::maintenance()
+    def self.maintenance()
+        count1 = Index1::mikuTypeItems("NxTask")
+                    .select{|item| Index2::childuuidToParentuuidOrNull(item["uuid"]) == NxCores::infinityuuid()}
+                    .size
+        puts "count1: #{count1}"
+        iced = Index1::mikuTypeItems("NxIce")
+        count2 = iced.size
+        puts "count2: #{count2}"
+        if count1 < 150 and count2 > 0 then
+            iced.take(100).each{|item|
+                puts "moving from NxIce to NxTask: #{item["description"]}"
+                Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+            }
+        end
     end
 end
