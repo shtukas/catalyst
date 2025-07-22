@@ -35,6 +35,7 @@ class Index0
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
+        # Because we are doing content addressing we need the newly created database to be distinct that one that could already be there.
         db.execute("CREATE TABLE random (value REAL)", [])
         db.execute("insert into random (value) values (?)", [rand])
         db.execute("CREATE TABLE listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
@@ -323,9 +324,10 @@ class Index0
 
     # Index0::itemHasStoppedOrWasDoneOrWasDestroyed(item)
     def self.itemHasStoppedOrWasDoneOrWasDestroyed(item)
-        item = Items::itemOrNull(item["uuid"])
+        itemuuid = item["uuid"]
+        item = Items::itemOrNull(itemuuid)
         if item.nil? then
-            Index0::removeEntry(item["uuid"])
+            Index0::removeEntry(itemuuid)
             return
         end
 

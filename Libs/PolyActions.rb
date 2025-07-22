@@ -82,7 +82,7 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxTask, should we transmute it to a NxProject") then
+            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxTask, should we transmute it to a NxProject: ") then
                 Items::setAttribute(item["uuid"], "project-position", NxProjects::getNextPosition())
                 Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
                 Items::setAttribute(item["uuid"], "commitment-hours", 0)
