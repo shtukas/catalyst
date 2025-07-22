@@ -79,6 +79,7 @@ class NxProjects
     def self.interativelyDecideTodayProjectsCommitments()
         puts "Select projects you want to do today"
         projects = Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] }
+        projects.each{|item| Index0::removeEntry(item["uuid"]) }
         selected, unselected = LucilleCore::selectZeroOrMore("", [], projects, lambda { |item| PolyFunctions::toString(item) })
         selected.each{|item|
             hours = LucilleCore::askQuestionAnswerAsString("commitment for '#{PolyFunctions::toString(item).green}' in hours: ").to_f
@@ -90,7 +91,6 @@ class NxProjects
         unselected.each{|item|
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
             Items::setAttribute(item["uuid"], "commitment-hours", 0)
-            Index0::removeEntry(item["uuid"])
         }
     end
 end

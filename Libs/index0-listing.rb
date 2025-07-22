@@ -35,7 +35,7 @@ class Index0
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("create table listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL, clique TEXT NOT NULL)", [])
+        db.execute("CREATE TABLE listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -55,7 +55,7 @@ class Index0
                 "itemuuid" => row["itemuuid"],
                 "position" => row["position"],
                 "item"     => item,
-                "line"     => "#{row["line"]}#{position_.yellow}" 
+                "line"     => "#{row["line"]}#{position_.yellow}"
             }
         end
         db.close
@@ -112,30 +112,31 @@ class Index0
     # ------------------------------------------------------
     # Getters
 
-    # Index0::entries()
-    def self.entries()
+    # Index0::entriesInOrder()
+    def self.entriesInOrder()
         Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
+            .sort_by{|item| item["position"] }
     end
 
     # Index0::entriesForListing(excludeuuids)
     def self.entriesForListing(excludeuuids)
-        Index0::entries()
+        Index0::entriesInOrder()
             .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
     end
 
     # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
-        entries = Index0::entries()
+        entries = Index0::entriesInOrder()
         return 1 if entries.empty?
         entries.map{|e| e["position"] }.min
     end
 
     # Index0::lastPositionInDatabase()
     def self.lastPositionInDatabase()
-        entries = Index0::entries()
+        entries = Index0::entriesInOrder()
         return 1 if entries.empty?
         themax = entries.map{|e| e["position"] }.max
-        return (themax + 1) if data.size == 1 # this is to prevent first and last to have the same value
+        return (themax + 1) if entries.size == 1 # this is to prevent first and last to have the same value
         themax
     end
 
@@ -192,11 +193,11 @@ class Index0
 
     # Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
     def self.determinePositionAfterTheLastElementOfSimilarMikuType(item)
-        entries = Index0::entries()
+        entries = Index0::entriesInOrder()
 
         loop {
             break if entries.empty?
-            break if !entries.map{|entry| entry["mikuType"] }.include?(item["mikuType"]) 
+            break if !entries.map{|entry| entry["item"]["mikuType"] }.include?(item["mikuType"]) 
             entries = entries.drop(1)
         }
 
@@ -245,7 +246,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxProject" then
-            if NxTasks::isStillUpToday(item) then
+            if NxProjects::isStillUpToday(item) then
                 return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
             end
             return nil
@@ -369,7 +370,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxProject" then
-            if NxTasks::isStillUpToday(item) then
+            if NxProjects::isStillUpToday(item) then
                 Index0::reposition(item["uuid"])
             else
                 Index0::removeEntry(item["uuid"])
