@@ -84,10 +84,13 @@ class NxProjects
             hours = LucilleCore::askQuestionAnswerAsString("commitment for '#{PolyFunctions::toString(item).green}' in hours: ").to_f
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
             Items::setAttribute(item["uuid"], "commitment-hours", hours)
+            item = Items::itemOrNull(item["uuid"])
+            Index0::ensureThatItemIsListedIfListable(item)
         }
         unselected.each{|item|
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
             Items::setAttribute(item["uuid"], "commitment-hours", 0)
+            Index0::removeEntry(item["uuid"])
         }
     end
 end
