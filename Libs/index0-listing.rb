@@ -177,8 +177,7 @@ class Index0
     def self.decideLine(item)
         return nil if item.nil?
         hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
-        impt = item["nx2290-important"] ? " [important]".red : ""
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{impt}#{hasChildren}"
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow

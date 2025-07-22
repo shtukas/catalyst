@@ -218,15 +218,6 @@ class PolyActions
 
         return if NxBalls::itemIsActive(item)
 
-        if item["nx2290-important"] then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to stop: ")
-            PolyActions::stop(item)
-            Index0::itemHasStoppedOrWasDoneOrWasDestroyed(item)
-            return
-        end
-
         if item["uxpayload-b4e4"] and Index2::hasChildren(item["uuid"]) then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
             if option == "access payload" then

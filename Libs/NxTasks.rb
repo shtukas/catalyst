@@ -64,7 +64,6 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
-        return "🔺" if item["nx2290-important"]
         "🔹"
     end
 

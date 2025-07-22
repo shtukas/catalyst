@@ -54,14 +54,20 @@ class NxProjects
         "#{NxProjects::icon(item)} #{item["description"]} (#{item["project-position"]})"
     end
 
-    # NxProjects:::isStillUpToday(item)
+    # NxProjects::isStillUpToday(item)
     def self.isStillUpToday(item)
         b1 = (item["commitment-date"] == CommonUtils::today())
         b2 = (Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < item["commitment-hours"]*3600)
         b1 and b2
     end
 
-    # NxProjects:::listingItems()
+    # NxProjects::projectsInOrder()
+    def self.projectsInOrder()
+        Index1::mikuTypeItems("NxProject")
+            .sort_by{|item| item["project-position"] }
+    end
+
+    # NxProjects::listingItems()
     def self.listingItems()
         Index1::mikuTypeItems("NxProject")
             .select{|item| NxProjects::isStillUpToday(item) }

@@ -8,9 +8,6 @@ class Transmutation
         
         if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
             NxTasks::performItemPositioning(item["uuid"])
-            if LucilleCore::askQuestionAnswerAsBoolean("Is important ? ") then
-                Items::setAttribute(item["uuid"], "nx2290-important", true)
-            end
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             Index0::decideAndUpdateItemAndLine(item["uuid"])
             return

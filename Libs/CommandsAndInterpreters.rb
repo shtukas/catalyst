@@ -5,10 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy * | important * | nonimportant *",
+            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority | project",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | importants | projects | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | edit * | fsck-all | probe-head",
         ].join("\n")
@@ -177,12 +177,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if input == 'importants' then
-            lx = lambda { NxTasks::importantItems() }
-            Operations::program3(lx)
-            return
-        end
-
         if Interpreting::match("ondate", input) then
             item = NxDateds::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -291,24 +285,6 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
-            return
-        end
-
-        if Interpreting::match("important *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "nx2290-important", true)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
-            return
-        end
-
-        if Interpreting::match("nonimportant *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "nx2290-important", false)
             Index0::decideAndUpdateItemAndLine(item["uuid"])
             return
         end

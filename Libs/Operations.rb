@@ -75,8 +75,7 @@ class Operations
     # Operations::interactivelySelectTargetForDonationOrNull()
     def self.interactivelySelectTargetForDonationOrNull()
         targets = [
-            NxBalls::activeItems(),
-            NxTasks::importantItems(),
+            NxProjects::projectsInOrder(),
             NxCores::coresInRatioOrder()
         ].flatten
         LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
@@ -132,7 +131,7 @@ class Operations
     # Operations::interactivelySelectParent()
     def self.interactivelySelectParent()
         targets = [
-            NxTasks::importantItems(),
+            NxProjects::projectsInOrder(),
             NxCores::coresInRatioOrder()
         ].flatten
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
@@ -171,7 +170,7 @@ class Operations
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | important * | position * | sort"
+            puts "todo (here, with position selection) | pile | position * | sort"
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -181,9 +180,6 @@ class Operations
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
                 todo = NxTasks::interactivelyIssueNewOrNull2(parent["uuid"], position)
                 puts JSON.pretty_generate(todo)
-                if LucilleCore::askQuestionAnswerAsBoolean("Is important ? ") then
-                    Items::setAttribute(todo["uuid"], "nx2290-important", true)
-                end
                 Index0::decideAndUpdateItemAndLine(todo["uuid"])
                 next
             end
@@ -196,15 +192,6 @@ class Operations
                         todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
                         puts JSON.pretty_generate(todo)
                     }
-                next
-            end
-
-            if input.start_with?("important") then
-                listord = input[9, input.size].strip.to_i
-                i = store.get(listord.to_i)
-                next if i.nil?
-                Items::setAttribute(i["uuid"], "nx2290-important", true)
-                Index0::decideAndUpdateItemAndLine(i["uuid"])
                 next
             end
 
