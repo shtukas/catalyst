@@ -344,7 +344,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxCore" then
-            if NxCores::ratio(core) >= 1 then
+            if NxCores::ratio(item) >= 1 then
                 Index0::removeEntry(item["uuid"])
             end
             return
