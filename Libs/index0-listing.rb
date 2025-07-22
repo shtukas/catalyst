@@ -35,6 +35,8 @@ class Index0
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
+        db.execute("CREATE TABLE random (value REAL)", [])
+        db.execute("insert into random (value) values (?)", [rand])
         db.execute("CREATE TABLE listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
         db.commit
         db.close
@@ -90,14 +92,13 @@ class Index0
 
         # In this case filepath.size > 1
         newfilepath = Index0::initiateDatabaseFile()
-
         db = SQLite3::Database.new(newfilepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
         data.each{|entry|
-            db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [entry["itemuuid"], entry["position"], entry["item"], entry["line"]])
+            db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [entry["itemuuid"], entry["position"], JSON.generate(entry["item"]), entry["line"]])
         }
         db.commit
         db.close
@@ -205,7 +206,7 @@ class Index0
         end
 
         if entries.size == 1 then
-            return entries["position"] + 1
+            return entries[0]["position"] + 1
         end
 
         if entries.size == 2 then
