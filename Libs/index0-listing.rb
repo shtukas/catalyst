@@ -346,6 +346,8 @@ class Index0
         if item["mikuType"] == "NxCore" then
             if NxCores::ratio(item) >= 1 then
                 Index0::removeEntry(item["uuid"])
+            else
+                Index0::decideAndUpdateItemAndLine(item["uuid"])
             end
             return
         end
@@ -358,6 +360,8 @@ class Index0
         if item["mikuType"] == "NxProject" then
             if !NxProjects::isStillUpToday(item) then
                 Index0::removeEntry(item["uuid"])
+            else
+                Index0::decideAndUpdateItemAndLine(item["uuid"])
             end
             return
         end
