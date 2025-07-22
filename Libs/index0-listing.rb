@@ -321,17 +321,6 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::reposition(itemuuid)
-    def self.reposition(itemuuid)
-        Index0::removeEntry(itemuuid)
-        item = Items::itemOrNull(itemuuid)
-        return if item.nil?
-        position = Index0::decidePositionOrNull(item)
-        return if position.nil?
-        line = Index0::decideLine(item)
-        Index0::insertUpdateEntry(itemuuid, position, item, line)
-    end
-
     # Index0::itemHasStoppedOrWasDoneOrWasDestroyed(item)
     def self.itemHasStoppedOrWasDoneOrWasDestroyed(item)
         item = Items::itemOrNull(item["uuid"])
@@ -356,9 +345,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxCore" then
-            if NxCores::ratio(core) < 1 then
-                Index0::reposition(item["uuid"])
-            else
+            if NxCores::ratio(core) >= 1 then
                 Index0::removeEntry(item["uuid"])
             end
             return
@@ -370,9 +357,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxProject" then
-            if NxProjects::isStillUpToday(item) then
-                Index0::reposition(item["uuid"])
-            else
+            if !NxProjects::isStillUpToday(item) then
                 Index0::removeEntry(item["uuid"])
             end
             return

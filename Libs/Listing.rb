@@ -102,6 +102,8 @@ class Listing
         sheight = CommonUtils::screenHeight()
         swidth = CommonUtils::screenWidth()
 
+        # Automatic Scheduled Maintenance
+
         if XCacheExensions::trueNoMoreOftenThanNSeconds("e1450d85-3f2b-4c3c-9c57-5e034361e8d5", 40000) then
             puts "Running global maintenance (every half a day)"
             Operations::globalMaintenance()
@@ -114,6 +116,8 @@ class Listing
             XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
+        # Palmer reporting
+
         begin
             line = `palmer report:performance`.strip.lines.drop(2).first
             if line.include?("Missing") then
@@ -125,14 +129,20 @@ class Listing
 
         t1 = Time.new.to_f
 
-        item = NxLambdas::interactivelyIssueNewOrNull(
-            "configure projects today",
-            lambda {
-                NxProjects::interativelyDecideTodayProjectsCommitments()
-            }
-        )
-        store.register(item, true)
-        printer.call(Listing::toString2(store, item))
+        # Projects morning set up
+
+        if !NxProjects::allSetForToday() then
+            item = NxLambdas::interactivelyIssueNewOrNull(
+                "configure projects today",
+                lambda {
+                    NxProjects::interativelyDecideTodayProjectsCommitments()
+                }
+            )
+            store.register(item, true)
+            printer.call(Listing::toString2(store, item))
+        end
+
+        # Main listing
 
         runningItems = NxBalls::runningItems()
         NxBalls::runningItems()
