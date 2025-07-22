@@ -22,6 +22,12 @@ class NxProjects
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
+        commitment = LucilleCore::askQuestionAnswerAsString("hours today (default to zero): ")
+        if commitment != "" then
+            commitment = commitment.to_f
+        else
+            commitment = 0
+        end
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxProject")
@@ -30,8 +36,8 @@ class NxProjects
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
         Items::setAttribute(uuid, "project-position", NxProjects::getNextPosition())
-        Items::setAttribute(uuid, "commitment-date", nil)
-        Items::setAttribute(uuid, "commitment-hours", 0)
+        Items::setAttribute(uuid, "commitment-date", CommonUtils::today())
+        Items::setAttribute(uuid, "commitment-hours", commitment)
         Items::itemOrNull(uuid)
     end
 
@@ -51,7 +57,7 @@ class NxProjects
     # NxProjects:::isStillUpToday(item)
     def self.isStillUpToday(item)
         b1 = (item["commitment-date"] == CommonUtils::today())
-        b2 = (item["commitment-hours"]*3600 >= Bank1::getValueAtDate(item["uuid"], CommonUtils::today()))
+        b2 = (Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < item["commitment-hours"]*3600)
         b1 and b2
     end
 
@@ -61,7 +67,27 @@ class NxProjects
             .select{|item| NxProjects::isStillUpToday(item) }
     end
 
+    # NxProjects::allSetForToday()
+    def self.allSetForToday()
+        Index1::mikuTypeItems("NxProject").all?{|item| item["commitment-date"] == CommonUtils::today() }
+    end
+
     # ------------------
     # Ops
 
+    # NxProjects::interativelyDecideTodayProjectsCommitments()
+    def self.interativelyDecideTodayProjectsCommitments()
+        puts "Select projects you want to do today"
+        projects = Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] }
+        selected, unselected = LucilleCore::selectZeroOrMore("", [], projects, lambda { |item| PolyFunctions::toString(item) })
+        selected.each{|item|
+            hours = LucilleCore::askQuestionAnswerAsString("commitment for '#{PolyFunctions::toString(item).green}' in hours: ").to_f
+            Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
+            Items::setAttribute(item["uuid"], "commitment-hours", hours)
+        }
+        unselected.each{|item|
+            Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
+            Items::setAttribute(item["uuid"], "commitment-hours", 0)
+        }
+    end
 end

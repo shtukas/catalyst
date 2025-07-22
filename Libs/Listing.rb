@@ -124,6 +124,16 @@ class Listing
         end
 
         t1 = Time.new.to_f
+
+        item = NxLambdas::interactivelyIssueNewOrNull(
+            "configure projects today",
+            lambda {
+                NxProjects::interativelyDecideTodayProjectsCommitments()
+            }
+        )
+        store.register(item, true)
+        printer.call(Listing::toString2(store, item))
+
         runningItems = NxBalls::runningItems()
         NxBalls::runningItems()
             .each{|item|
