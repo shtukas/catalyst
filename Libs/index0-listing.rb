@@ -393,7 +393,10 @@ class Index0
             Index0::removeEntry(itemuuid)
             return
         end
-        return if !Index0::isListable(item)
+        if !Index0::isListable(item) then
+            Index0::removeEntry(itemuuid)
+            return
+        end
         position = Index0::getExistingPositionOrDecideNew(item)
         if position.nil? then
             Index0::removeEntry(itemuuid)
