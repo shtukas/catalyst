@@ -126,6 +126,19 @@ class Operations
                 #puts PolyFunctions::toString(item)
             }
         end
+
+        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Line-Stream"
+        if File.exist?(directory) then
+            LucilleCore::locationsAtFolder(directory).each{|location|
+                puts location.yellow
+                description = File.basename(location)
+                item = NxLines::locationToLine(description, location)
+                Index0::evaluate(item["uuid"])
+                #puts JSON.pretty_generate(item)
+                LucilleCore::removeFileSystemLocation(location)
+                #puts PolyFunctions::toString(item)
+            }
+        end
     end
 
     # Operations::interactivelySelectParent()

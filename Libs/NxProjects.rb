@@ -92,7 +92,7 @@ class NxProjects
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
             Items::setAttribute(item["uuid"], "commitment-hours", hours)
             item = Items::itemOrNull(item["uuid"])
-            Index0::evaluate(item)
+            Index0::evaluate(item["uuid"])
         }
         unselected.each{|item|
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())

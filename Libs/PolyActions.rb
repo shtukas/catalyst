@@ -30,22 +30,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxAnniversary" then
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            return
-        end
-
-        if item["mikuType"] == "NxFloat" then
-            return
-        end
-
-        if item["mikuType"] == "NxLine" then
-            return
-        end
-
         if item["mikuType"] == "NxCore" then
             if item["uxpayload-b4e4"] and !Index2::hasChildren(item["uuid"]) then
                 UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
@@ -55,27 +39,10 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTask" then
+        if item["uxpayload-b4e4"] then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
             return
         end
-
-        if item["mikuType"] == "NxProject" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
-        if item["mikuType"] == "NxDated" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
-        raise "(error: abb645e9-2575-458e-b505-f9c029f4ca69) I do not know how to access mikuType: #{item["mikuType"]}"
     end
 
     # PolyActions::stop(item)
@@ -90,7 +57,7 @@ class PolyActions
                 item = Items::itemOrNull(item["uuid"])
             end
         end
-        Index0::evaluate(item)
+        Index0::evaluate(item["uuid"])
     end
 
     # PolyActions::done(item)
@@ -118,7 +85,7 @@ class PolyActions
 
         if item["mikuType"] == "NxCore" then
             NxBalls::stop(item)
-            Index0::evaluate(item)
+            Index0::evaluate(item["uuid"])
             return
         end
 
