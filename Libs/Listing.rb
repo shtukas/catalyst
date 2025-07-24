@@ -22,8 +22,7 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
-        position = " (#{item["x-listing-position"]})".yellow
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}#{position}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -65,31 +64,6 @@ class Listing
         end
 
         Operations::dispatchPickUp()
-    end
-
-    # Listing::displayListingItem(store, printer, item)
-    def self.displayListingItem(store, printer, item)
-        lines = []
-        Index2::parentuuidToChildrenInOrder(item["uuid"])
-        .reduce([]){|selected, child|
-            if selected.size >= 3 then
-                selected
-            else
-                if NxBalls::itemIsActive(child) or ((Bank1::getValueAtDate(child["uuid"], CommonUtils::today()) < 1) and DoNotShowUntil::isVisible(child["uuid"])) then
-                    selected + [child]
-                else
-                    selected
-                end
-            end
-        }
-        .each {|child|
-            lines = lines + Listing::displayListingItem(store, printer, child)
-        }
-        store.register(item, Listing::canBeDefault(item))
-        line = Listing::toString2(store, item)
-        printer.call(line)
-        lines << line
-        lines
     end
 
     # Listing::displayListingOnce()
@@ -153,10 +127,13 @@ class Listing
                 break if sheight <= 4
             }
 
-        Index0::entriesForListing(runningItems.map{|i| i["uuid"]})
+        Index0::itemsForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
-                store.register(entry["item"], Listing::canBeDefault(entry["item"]))
-                line = entry["line"].gsub("STORE-PREFIX", "(#{store.prefixString()})")
+                item = entry["item"]
+                line = entry["line"]
+                store.register(item, Listing::canBeDefault(item))
+                line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
+                line = line + " (#{entry["position"]})".yellow
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 4

@@ -6,11 +6,11 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line | priority | project",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | head | priority | priorities | project",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | fsck-all | probe-head",
+            "misc          : search | commands | edit * | fsck-all | probe-head | sort",
         ].join("\n")
     end
 
@@ -75,6 +75,16 @@ class CommandsAndInterpreters
             return
         end
 
+       if Interpreting::match("sort", input) then
+            itemsInOrder = store.items()
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|i|
+                position = 0.9 * Index0::firstPositionInDatabase()
+                Index0::updatePosition(i["uuid"], position)
+            }
+            return
+        end
+
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -113,6 +123,15 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("head", input) then
+            item = NxLines::interactivelyIssueNewOrNull()
+            return if item.nil?
+            Operations::interactivelySetDonation(item)
+            item = Items::itemOrNull(item["uuid"])
+            Index0::insertUpdateEntry(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
+            return
+        end
+
         if Interpreting::match("priority", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
@@ -120,7 +139,30 @@ class CommandsAndInterpreters
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
             Operations::interactivelySetDonation(item)
+            item = Items::itemOrNull(item["uuid"])
+            Index0::insertUpdateEntry(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
             NxBalls::start(item)
+            return
+        end
+
+        if Interpreting::match("priorities", input) then
+            NxBalls::activeItems().each{|item| 
+                NxBalls::pause(item)
+            }
+            last_item = nil
+            Operations::interactivelyGetLines()
+                .reverse
+                .each{|line|
+                    puts "processing: #{line}".green
+                    item = NxLines::interactivelyIssueNew(nil, line)
+                    Operations::interactivelySetDonation(item)
+                    item = Items::itemOrNull(item["uuid"])
+                    Index0::insertUpdateEntry(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
+                    last_item = item
+                }
+            if last_item then
+                NxBalls::start(last_item)
+            end
             return
         end
 
@@ -129,8 +171,18 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("line", input) then
-            NxLines::interactivelyIssueNew(nil, line)
+        if Interpreting::match("line after *", input) then
+            _, _, n = Interpreting::tokenizer(input)
+            n = n.to_i
+            items = store.items()
+            items = items.drop(n)
+            position = 0.5*(Index0::getPositionOrNull(items[0]["uuid"]) + Index0::getPositionOrNull(items[1]["uuid"]))
+            puts "deciding position: #{position}"
+            line = LucilleCore::askQuestionAnswerAsString("description: ")
+            item = NxLines::interactivelyIssueNew(nil, line)
+            Operations::interactivelySetDonation(item)
+            item = Items::itemOrNull(item["uuid"])
+            Index0::insertUpdateEntry(item["uuid"], position, item, Index0::decideLine(item))
             return
         end
 
@@ -159,7 +211,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -276,7 +328,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -285,7 +337,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -294,7 +346,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -361,7 +413,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -370,7 +422,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -378,7 +430,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 
@@ -387,7 +439,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            Index0::decideAndUpdateItemAndLine(item["uuid"])
+            Index0::evaluate(item["uuid"])
             return
         end
 

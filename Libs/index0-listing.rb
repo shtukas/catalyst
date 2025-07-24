@@ -58,7 +58,7 @@ class Index0
                 "itemuuid" => row["itemuuid"],
                 "position" => row["position"],
                 "item"     => item,
-                "line"     => "#{row["line"]}#{position_.yellow}"
+                "line"     => row["line"]
             }
         end
         db.close
@@ -120,26 +120,11 @@ class Index0
             .sort_by{|item| item["position"] }
     end
 
-    # Index0::entriesForListing(excludeuuids)
-    def self.entriesForListing(excludeuuids)
-        Index0::entriesInOrder()
-            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
-    end
-
     # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
         entries = Index0::entriesInOrder()
         return 1 if entries.empty?
         entries.map{|e| e["position"] }.min
-    end
-
-    # Index0::lastPositionInDatabase()
-    def self.lastPositionInDatabase()
-        entries = Index0::entriesInOrder()
-        return 1 if entries.empty?
-        themax = entries.map{|e| e["position"] }.max
-        return (themax + 1) if entries.size == 1 # this is to prevent first and last to have the same value
-        themax
     end
 
     # Index0::hasItem(itemuuid)
@@ -172,6 +157,13 @@ class Index0
         position
     end
 
+    # Index0::itemsForListing(excludeuuids)
+    def self.itemsForListing(excludeuuids)
+        Index0::entriesInOrder()
+            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
+            .sort_by{|entry| entry["position"] }
+    end
+
     # ------------------------------------------------------
     # Decisions
 
@@ -192,33 +184,77 @@ class Index0
         line
     end
 
-    # Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
-    def self.determinePositionAfterTheLastElementOfSimilarMikuType(item)
+    # Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, default)
+    def self.determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, default)
         entries = Index0::entriesInOrder()
+
+        if !entries.map{|entry| entry["item"]["mikuType"] }.include?(item["mikuType"]) then
+            return default
+        end
 
         loop {
             break if entries.empty?
-            break if !entries.map{|entry| entry["item"]["mikuType"] }.include?(item["mikuType"]) 
+            if !entries.drop(1).map{|entry| entry["item"]["mikuType"] }.include?(item["mikuType"]) then
+                break
+            end
             entries = entries.drop(1)
         }
 
         if entries.size == 0 then
-            return Index0::lastPositionInDatabase() + 1
+            raise "(error: 6473735d) I don't think this case should even happen 🤔"
         end
 
         if entries.size == 1 then
-            return entries[0]["position"] + 1
+            return entries[0]["position"] + 0.001
         end
 
-        if entries.size == 2 then
-            return entries[1]["position"] + 1
-        end
-
-        # Entries has size at least 3
-        entries = entries.drop(1)
-
-        # Now entries has size at least 2
         0.5*( entries[0]["position"] + entries[1]["position"] )
+    end
+
+    # Index0::isListable(item)
+    def self.isListable(item)
+        if item["mikuType"] == "NxLambda" then
+            return true
+        end
+
+        if item["mikuType"] == "NxFloat" then
+            return DoNotShowUntil::isVisible(item["uuid"])
+        end
+
+        if item["mikuType"] == "Wave" then
+            return DoNotShowUntil::isVisible(item["uuid"])
+        end
+
+        if item["mikuType"] == "NxCore" then
+            return NxCores::ratio(item) < 1
+        end
+
+        if item["mikuType"] == "NxTask" then
+            return true
+        end
+
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::isStillUpToday(item)
+        end
+
+        if item["mikuType"] == "NxLine" then
+            return DoNotShowUntil::isVisible(item["uuid"])
+        end
+
+        if item["mikuType"] == "NxDated" then
+            return item["date"][0, 10] <= CommonUtils::today()
+        end
+
+        if item["mikuType"] == "NxAnniversary" then
+            return item["next_celebration"] <= CommonUtils::today()
+        end
+
+        if item["mikuType"] == "NxBackup" then
+            return DoNotShowUntil::isVisible(item["uuid"])
+        end
+
+        puts "I do not know how to Index0::isListable(#{JSON.pretty_generate(item)})"
+        raise "(error: 3ae9fe86)"
     end
 
     # Index0::decidePositionOrNull(item)
@@ -226,55 +262,85 @@ class Index0
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
+        # Natural Positions
+        # 0.05  NxAnniversary
+        # 0.10  NxLambda
+        # 0.15  Wave sticky
+        # 0.20  Wave interruption
+        # 0.25  NxLine
+        # 0.30  NxFloat
+        # 0.32  NxBackup
+        # 0.35  NxDated
+        # 0.40  NxProject
+        # 0.60  Wave
+        # 0.60  NxCore
+        # 0.70  NxTask
+
         if item["mikuType"] == "NxLambda" then
-            return Index0::firstPositionInDatabase() * 0.9
+            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.10)
         end
 
         if item["mikuType"] == "NxFloat" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.30)
         end
 
         if item["mikuType"] == "Wave" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            if item["interruption"]  then
+                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.20)
+            end
+            if item["nx46"]["type"] == "sticky" then
+                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.15)
+            end
+            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.60)
         end
 
         if item["mikuType"] == "NxCore" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            if NxCores::ratio(item) < 1 then
+                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.60)
+            end
+            return nil
         end
 
         if item["mikuType"] == "NxTask" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.70)
         end
 
         if item["mikuType"] == "NxProject" then
             if NxProjects::isStillUpToday(item) then
-                return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.40)
             end
             return nil
         end
 
         if item["mikuType"] == "NxLine" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.25)
         end
 
         if item["mikuType"] == "NxDated" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.35)
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            return Index0::firstPositionInDatabase() * 0.9
+            return 0.50
         end
 
         if item["mikuType"] == "NxBackup" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuType(item)
+            return 0.32
         end
 
         puts "I do not know how to Index0::decidePositionOrNull(#{JSON.pretty_generate(item)})"
         raise "(error: 3ae9fe86)"
     end
 
+    # Index0::getExistingPositionOrDecideNew(item)
+    def self.getExistingPositionOrDecideNew(item)
+        existing = Index0::getPositionOrNull(item["uuid"])
+        return existing if existing
+        Index0::decidePositionOrNull(item)
+    end
+
     # --------------------------------------------------
-    # Operations (1)
+    # Setters and updaters
 
     # Index0::insertUpdateEntry(itemuuid, position, item, line)
     def self.insertUpdateEntry(itemuuid, position, item, line)
@@ -291,18 +357,16 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::decideAndUpdateItemAndLine(itemuuid)
-    def self.decideAndUpdateItemAndLine(itemuuid)
-        item = Items::itemOrNull(itemuuid)
-        return if item.nil?
-        line = Index0::decideLine(item)
+    # Index0::updatePosition(itemuuid, position)
+    def self.updatePosition(itemuuid, position)
+        return if !Index0::hasItem(itemuuid)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("update listing set item=?, line=? where itemuuid=?", [JSON.generate(item), line, itemuuid])
+        db.execute("update listing set position=? where itemuuid=?", [position, itemuuid])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -322,103 +386,35 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::itemHasStoppedOrWasDoneOrWasDestroyed(item)
-    def self.itemHasStoppedOrWasDoneOrWasDestroyed(item)
-        itemuuid = item["uuid"]
+    # Index0::evaluate(itemuuid)
+    def self.evaluate(itemuuid)
         item = Items::itemOrNull(itemuuid)
         if item.nil? then
             Index0::removeEntry(itemuuid)
             return
         end
-
-        if item["mikuType"] == "NxLambda" then
-            Index0::removeEntry(item["uuid"])
+        return if !Index0::isListable(item)
+        position = Index0::getExistingPositionOrDecideNew(item)
+        if position.nil? then
+            Index0::removeEntry(itemuuid)
             return
         end
-
-        if item["mikuType"] == "NxFloat" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "Wave" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxCore" then
-            if NxCores::ratio(item) >= 1 then
-                Index0::removeEntry(item["uuid"])
-            else
-                Index0::decideAndUpdateItemAndLine(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxTask" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            if !NxProjects::isStillUpToday(item) then
-                Index0::removeEntry(item["uuid"])
-            else
-                Index0::decideAndUpdateItemAndLine(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxLine" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxDated" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxAnniversary" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxBackup" then
-            Index0::removeEntry(item["uuid"])
-            return
-        end
-
-        puts "I do not know how to Index0::itemHasStoppedOrWasDoneOrWasDestroyed(#{JSON.pretty_generate(item)})"
-        raise "(error: 09ba2bb3)"
+        line = Index0::decideLine(item)
+        Index0::insertUpdateEntry(itemuuid, position, item, line)
     end
 
     # ------------------------------------------------------
-    # Operations (2)
+    # Operations
 
     # Index0::listingMaintenance()
     def self.listingMaintenance()
-        if Index0::firstPositionInDatabase() > 9 then
-            filepath = Index0::getReducedDatabaseFilepath()
-            db = SQLite3::Database.new(filepath)
-            db.busy_timeout = 117
-            db.busy_handler { |count| true }
-            db.results_as_hash = true
-            db.execute("update listing set position = position/2", [])
-            db.close
-        end
         Listing::itemsForListing1().each{|item|
-            Index0::ensureThatItemIsListedIfListable(item)
+            position = Index0::getExistingPositionOrDecideNew(item)
+            if position.nil? then
+                raise "We should not have a position null from Index0::listingMaintenance(): #{item}"
+            end
+            line = Index0::decideLine(item)
+            Index0::insertUpdateEntry(item["uuid"], position, item, line)
         }
-    end
-
-    # Index0::ensureThatItemIsListedIfListable(item)
-    def self.ensureThatItemIsListedIfListable(item)
-        return if Index0::hasItem(item["uuid"])
-        puts "insert in listing: #{PolyFunctions::toString(item)}".yellow
-        position = Index0::decidePositionOrNull(item)
-        return if position.nil?
-        line = Index0::decideLine(item)
-        Index0::insertUpdateEntry(item["uuid"], position, item, line)
     end
 end

@@ -138,10 +138,7 @@ class Waves
     def self.nonInterruptionItemsForListing()
         Index1::mikuTypeItems("Wave")
             .select { |item| !item["interruption"]}
-            .select { |wave|
-                unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
-                unixtime.nil? or unixtime < Time.new.to_i
-            }
+            .select { |wave| DoNotShowUntil::isVisible(wave["uuid"]) }
             .sort_by{|item| item["lastDoneUnixtime"]}
     end
 

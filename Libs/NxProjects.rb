@@ -56,9 +56,9 @@ class NxProjects
 
     # NxProjects::isStillUpToday(item)
     def self.isStillUpToday(item)
-        b1 = (item["commitment-date"] == CommonUtils::today())
-        b2 = (Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < item["commitment-hours"]*3600)
-        b1 and b2
+        return false if item["commitment-date"] != CommonUtils::today()
+        return false if item["commitment-hours"] == 0
+        Bank1::getValueAtDate(item["uuid"], CommonUtils::today()) < item["commitment-hours"]*3600
     end
 
     # NxProjects::projectsInOrder()
@@ -92,7 +92,7 @@ class NxProjects
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
             Items::setAttribute(item["uuid"], "commitment-hours", hours)
             item = Items::itemOrNull(item["uuid"])
-            Index0::ensureThatItemIsListedIfListable(item)
+            Index0::evaluate(item)
         }
         unselected.each{|item|
             Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())

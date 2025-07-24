@@ -180,7 +180,7 @@ class Operations
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
                 todo = NxTasks::interactivelyIssueNewOrNull2(parent["uuid"], position)
                 puts JSON.pretty_generate(todo)
-                Index0::decideAndUpdateItemAndLine(todo["uuid"])
+                Index0::evaluate(todo["uuid"])
                 next
             end
 
