@@ -6,7 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | head | priority | priorities | project",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities | project",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
@@ -120,15 +120,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("probe-head", input) then
             Operations::probeHead()
-            return
-        end
-
-        if Interpreting::match("head", input) then
-            item = NxLines::interactivelyIssueNewOrNull()
-            return if item.nil?
-            Operations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
-            Index0::insertUpdateEntry(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
             return
         end
 
