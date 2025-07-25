@@ -488,6 +488,7 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueTomorrowOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            Operations::interactivelySetDonation(item)
             return
         end
 
