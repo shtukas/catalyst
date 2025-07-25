@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities | project",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines |dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | edit * | fsck-all | probe-head | sort",
         ].join("\n")
@@ -283,6 +283,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("lines", input) then
+            Operations::program3(lambda { Index1::mikuTypeItems("NxLine").sort_by{|item| item["unixtime"] } })
             return
         end
 

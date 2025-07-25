@@ -419,5 +419,18 @@ class Index0
             line = Index0::decideLine(item)
             Index0::insertUpdateEntry(item["uuid"], position, item, line)
         }
+
+        # We are now going to try an create a condition: one waves between any non two wave items
+        entries_wave = Index0::entriesInOrder().select{|entry| entry["item"]["mikuType"] == "Wave" }
+        entries_all = Index0::entriesInOrder()
+        loop {
+            break if (entries_all.size < 2 or entries_wave.size == 0)
+            if (entries_all[0]["mikuType"] != "Wave" and entries_all[1]["mikuType"] != "Wave") then
+                entry_wave = entries_wave.shift
+                position = 0.5*(entries_all[0]["position"] + entries_all[1]["position"])
+                Index0::updatePosition(entry_wave["itemuuid"], position)
+            end
+            entries_all.shift
+        }
     end
 end
