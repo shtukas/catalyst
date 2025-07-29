@@ -154,6 +154,11 @@ class PolyActions
 
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
+        if item["mikuType"] == "NxCore" then
+            PolyActions::access(item)
+            return
+        end
+
         return if NxBalls::itemIsActive(item)
 
         if item["uxpayload-b4e4"] and Index2::hasChildren(item["uuid"]) then
@@ -165,17 +170,6 @@ class PolyActions
                 Operations::diveItem(item)
                 return
             end
-        end
-
-        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !Index2::hasChildren(item["uuid"]) then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            return
-        end
-
-        if item["mikuType"] == "NxCore" then
-            PolyActions::access(item)
-            return
         end
 
         if item["mikuType"] == "NxLambda" then
