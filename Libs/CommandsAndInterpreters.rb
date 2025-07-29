@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
+            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities | project",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines |dive *",
@@ -228,11 +228,12 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("skip *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
+        if Interpreting::match("skip * hours", input) then
+            _, d, _ = Interpreting::tokenizer(input)
+            item = store.getDefault()
             return if item.nil?
-            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*2)
+            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
+            Index0::evaluate(item["uuid"])
             return
         end
 

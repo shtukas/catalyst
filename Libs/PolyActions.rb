@@ -54,7 +54,6 @@ class PolyActions
                 Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
                 Items::setAttribute(item["uuid"], "commitment-hours", 0)
                 Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-                item = Items::itemOrNull(item["uuid"])
             end
         end
         Index0::evaluate(item["uuid"])

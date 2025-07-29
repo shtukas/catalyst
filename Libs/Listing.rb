@@ -91,15 +91,6 @@ class Listing
 
         # Palmer reporting
 
-        begin
-            line = `palmer report:performance`.strip.lines.drop(2).first
-            if line.include?("Missing") then
-                puts line.red
-            end
-        rescue
-            puts "could not retrieve palmer performance report".red
-        end
-
         t1 = Time.new.to_f
 
         # Projects morning set up
@@ -143,6 +134,18 @@ class Listing
         renderingTime = t2-t1
         if renderingTime > 0.5 then
             puts "rendering time: #{renderingTime.round(3)} seconds".red
+        end
+
+        performance = `palmer report:performance`.strip
+        percentage = performance.match(/\(([\d.]+)\s*%\s+of/)[1].to_f
+        if percentage < 100 then
+            puts performance.red
+        else
+            if percentage < 120 then
+                puts performance.yellow
+            else
+                puts performance.green
+            end
         end
 
         input = LucilleCore::askQuestionAnswerAsString("> ")
