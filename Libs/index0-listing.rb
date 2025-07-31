@@ -234,7 +234,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxProject" then
-            return NxProjects::isStillUpToday(item)
+            return true
         end
 
         if item["mikuType"] == "NxLine" then
@@ -306,10 +306,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxProject" then
-            if NxProjects::isStillUpToday(item) then
-                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.40)
-            end
-            return nil
+            return 0.4
         end
 
         if item["mikuType"] == "NxLine" then

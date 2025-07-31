@@ -121,8 +121,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
-            puts "Cannot done a NxProject. Use stop or destroy"
-            LucilleCore::pressEnterToContinue()
+            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             return
         end
 

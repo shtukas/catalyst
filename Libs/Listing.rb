@@ -93,19 +93,6 @@ class Listing
 
         t1 = Time.new.to_f
 
-        # Projects morning set up
-
-        if !NxProjects::allSetForToday() then
-            item = NxLambdas::interactivelyIssueNewOrNull(
-                "set today project priorities",
-                lambda {
-                    NxProjects::interativelyDecideTodayProjectsCommitments()
-                }
-            )
-            store.register(item, true)
-            printer.call(Listing::toString2(store, item))
-        end
-
         # Main listing
 
         runningItems = NxBalls::runningItems()
