@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities | project",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines |dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines | todays | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | edit * | fsck-all | probe-head | sort",
         ].join("\n")
@@ -403,6 +403,15 @@ class CommandsAndInterpreters
 
         if Interpreting::match("ondates", input) then
             Operations::program3(lambda { Index1::mikuTypeItems("NxDated").sort_by{|item| item["date"][0, 10] }})
+            return
+        end
+
+        if Interpreting::match("todays", input) then
+            Operations::program3(lambda { 
+                Index1::mikuTypeItems("NxDated")
+                    .select{|item| item["date"][0, 10] <= CommonUtils::today() }
+                    .sort_by{|item| item["unixtime"] }
+            })
             return
         end
 

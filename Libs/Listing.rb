@@ -97,7 +97,7 @@ class Listing
 
         if !NxProjects::allSetForToday() then
             item = NxLambdas::interactivelyIssueNewOrNull(
-                "configure projects today",
+                "set today project priorities",
                 lambda {
                     NxProjects::interativelyDecideTodayProjectsCommitments()
                 }
