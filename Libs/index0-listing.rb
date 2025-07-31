@@ -208,7 +208,7 @@ class Index0
             return entries[0]["position"] + 0.001
         end
 
-        0.5*( entries[0]["position"] + entries[1]["position"] )
+        0.5*(entries[0]["position"] + entries[1]["position"])
     end
 
     # Index0::isListable(item)
@@ -286,10 +286,10 @@ class Index0
 
         if item["mikuType"] == "Wave" then
             if item["interruption"]  then
-                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.20)
+                return 0.20
             end
             if item["nx46"]["type"] == "sticky" then
-                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.15)
+                return 0.15
             end
             return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.60)
         end
