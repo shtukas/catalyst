@@ -252,4 +252,29 @@ class Operations
                     }
             }
     end
+
+    # Operations::interactivelyDecideDayPriorityItems()
+    def self.interactivelyDecideDayPriorityItems()
+        puts "Select dated items you actually gonna to do today"
+        dateds = Index1::mikuTypeItems("NxDated").select{|item| item["date"][0, 10] <= CommonUtils::today() }
+        dateds.each{|item| Index0::removeEntry(item["uuid"]) }
+        selected_dateds, _ = LucilleCore::selectZeroOrMore("", [], dateds, lambda { |item| PolyFunctions::toString(item) })
+
+        puts "Select projects you want to work on today"
+        projects = Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] }
+        projects.each{|item| Index0::removeEntry(item["uuid"]) }
+        selected_projects, _ = LucilleCore::selectZeroOrMore("", [], projects, lambda { |item| PolyFunctions::toString(item) })
+
+        puts "Indicate ordering"
+        selected, unselected = LucilleCore::selectZeroOrMore("", [], selected_dateds + selected_projects, lambda { |item| PolyFunctions::toString(item) })
+
+        unselected.each{|item|
+            position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
+            Index0::insertUpdateItemAtPosition(item, position)
+        }
+        selected.reverse.each{|item|
+            position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
+            Index0::insertUpdateItemAtPosition(item, position)
+        }
+    end
 end

@@ -49,11 +49,43 @@ class PolyActions
     def self.stop(item)
         NxBalls::stop(item)
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("You are stopping a NxTask, should we transmute it to a NxProject: ") then
+            puts "You are stopping a NxTask"
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss for the day", "transmute to project", "actually stop it (default)"])
+            if option.nil? or option == "actually stop it (default)" then
+                return
+            end
+            if option == "transmute to project" then
                 Items::setAttribute(item["uuid"], "project-position", NxProjects::getNextPosition())
                 Items::setAttribute(item["uuid"], "commitment-date", CommonUtils::today())
                 Items::setAttribute(item["uuid"], "commitment-hours", 0)
                 Items::setAttribute(item["uuid"], "mikuType", "NxProject")
+                item = Items::itemOrNull(item["uuid"])
+                puts JSON.pretty_generate(item)
+                Index0::removeEntry(item["uuid"])
+                return
+            end
+            if option == "dismiss for the day" then
+                unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+                puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                Index0::removeEntry(item["uuid"])
+                return
+            end
+        end
+        if item["mikuType"] == "NxCore" then
+            puts "You are stopping a NxCore"
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss for the day", "actually stop it (default)"])
+            if option.nil? or option == "actually stop it (default)" then
+                return
+            end
+            if option == "dismiss for the day" then
+                unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+                puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                Index0::removeEntry(item["uuid"])
+                return
             end
         end
         Index0::evaluate(item["uuid"])

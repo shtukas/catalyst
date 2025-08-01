@@ -184,31 +184,14 @@ class Index0
         line
     end
 
-    # Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, default)
-    def self.determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, default)
+    # Index0::determinePositionInInterval(item, x0, x1)
+    def self.determinePositionInInterval(item, x0, x1)
         entries = Index0::entriesInOrder()
-
-        if !entries.map{|entry| entry["item"]["mikuType"] }.include?(item["mikuType"]) then
-            return default
+        entries_similar_positions = entries.select{|e| e["item"]["mikuType"] == item["mikuType"] }.map{|e| e["position"] }
+        if entries_similar_positions.empty? then
+            return x0
         end
-
-        loop {
-            break if entries.empty?
-            if !entries.drop(1).map{|entry| entry["item"]["mikuType"] }.include?(item["mikuType"]) then
-                break
-            end
-            entries = entries.drop(1)
-        }
-
-        if entries.size == 0 then
-            raise "(error: 6473735d) I don't think this case should even happen 🤔"
-        end
-
-        if entries.size == 1 then
-            return entries[0]["position"] + 0.001
-        end
-
-        0.5*(entries[0]["position"] + entries[1]["position"])
+        0.5*( entries_similar_positions.max + x1 )
     end
 
     # Index0::isListable(item)
@@ -230,7 +213,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxTask" then
-            return true
+            return DoNotShowUntil::isVisible(item["uuid"])
         end
 
         if item["mikuType"] == "NxProject" then
@@ -242,7 +225,7 @@ class Index0
         end
 
         if item["mikuType"] == "NxDated" then
-            return item["date"][0, 10] <= CommonUtils::today()
+            return ((item["date"][0, 10] <= CommonUtils::today()) and DoNotShowUntil::isVisible(item["uuid"]))
         end
 
         if item["mikuType"] == "NxAnniversary" then
@@ -257,75 +240,75 @@ class Index0
         raise "(error: 3ae9fe86)"
     end
 
-    # Index0::decidePositionOrNull(item)
-    def self.decidePositionOrNull(item)
+    # Index0::decidePosition(item)
+    def self.decidePosition(item)
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
+        # Manually positioned (example for sorting)
+        # 0.00 -> 0.20
+
         # Natural Positions
-        # 0.05  NxAnniversary
-        # 0.10  NxLambda
-        # 0.15  Wave sticky
-        # 0.20  Wave interruption
-        # 0.25  NxLine
-        # 0.30  NxFloat
-        # 0.32  NxBackup
-        # 0.35  NxDated
-        # 0.40  NxProject
-        # 0.60  Wave
-        # 0.60  NxCore
-        # 0.70  NxTask
+        # 0.26 NxAnniversary
+        # 0.28 NxLambda
+        # 0.30 Wave sticky
+        # 0.32 Wave interruption
+        # 0.35 NxLine
+        # 0.39 NxFloat
+        # 0.40 NxBackup
+        # 0.45 NxDated
+        # 0.50 NxProject
+        # 0.60 Wave
+        # 0.70 NxCore & NxTask
+        # 0.80 Bottom
 
         if item["mikuType"] == "NxLambda" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.10)
+            return Index0::determinePositionInInterval(item, 0.28, 0.30)
         end
 
         if item["mikuType"] == "NxFloat" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.30)
+            return Index0::determinePositionInInterval(item, 0.39, 0.40)
         end
 
         if item["mikuType"] == "Wave" then
             if item["interruption"]  then
-                return 0.20
+                return Index0::determinePositionInInterval(item, 0.32, 0.35)
             end
             if item["nx46"]["type"] == "sticky" then
-                return 0.15
+                return Index0::determinePositionInInterval(item, 0.30, 0.32)
             end
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.60)
+            return Index0::determinePositionInInterval(item, 0.60, 0.70)
         end
 
         if item["mikuType"] == "NxCore" then
-            if NxCores::ratio(item) < 1 then
-                return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.60)
-            end
-            return nil
+            return Index0::determinePositionInInterval(item, 0.70, 0.80)
         end
 
         if item["mikuType"] == "NxTask" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.70)
+            return Index0::determinePositionInInterval(item, 0.70, 0.80)
         end
 
         if item["mikuType"] == "NxProject" then
-            return 0.4
+            return Index0::determinePositionInInterval(item, 0.50, 0.60)
         end
 
         if item["mikuType"] == "NxLine" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.25)
+            return Index0::determinePositionInInterval(item, 0.35, 0.39)
         end
 
         if item["mikuType"] == "NxDated" then
-            return Index0::determinePositionAfterTheLastElementOfSimilarMikuTypeOrDefault(item, 0.35)
+            return Index0::determinePositionInInterval(item, 0.35, 0.50)
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            return 0.50
+            return Index0::determinePositionInInterval(item, 0.26, 0.28)
         end
 
         if item["mikuType"] == "NxBackup" then
-            return 0.32
+            return Index0::determinePositionInInterval(item, 0.40, 0.45)
         end
 
-        puts "I do not know how to Index0::decidePositionOrNull(#{JSON.pretty_generate(item)})"
+        puts "I do not know how to Index0::decidePosition(#{JSON.pretty_generate(item)})"
         raise "(error: 3ae9fe86)"
     end
 
@@ -333,7 +316,7 @@ class Index0
     def self.getExistingPositionOrDecideNew(item)
         existing = Index0::getPositionOrNull(item["uuid"])
         return existing if existing
-        Index0::decidePositionOrNull(item)
+        Index0::decidePosition(item)
     end
 
     # --------------------------------------------------
@@ -352,6 +335,12 @@ class Index0
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
+    end
+
+    # Index0::insertUpdateItemAtPosition(item, position)
+    def self.insertUpdateItemAtPosition(item, position)
+        line = Index0::decideLine(item)
+        Index0::insertUpdateEntry(item["uuid"], position, item, line)
     end
 
     # Index0::updatePosition(itemuuid, position)
@@ -395,10 +384,6 @@ class Index0
             return
         end
         position = Index0::getExistingPositionOrDecideNew(item)
-        if position.nil? then
-            Index0::removeEntry(itemuuid)
-            return
-        end
         line = Index0::decideLine(item)
         Index0::insertUpdateEntry(itemuuid, position, item, line)
     end

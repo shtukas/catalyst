@@ -76,25 +76,6 @@ class NxTasks
     end
 
     # ------------------
-    # Active Items
-
-    # NxTasks::listingItems()
-    def self.listingItems()
-        NxCores::cores()
-            .select{|core| NxCores::ratio(core) < 1 }
-            .select{|core| Index2::hasChildren(core["uuid"]) }
-            .map{|core|
-                items = Index2::parentuuidToChildrenInOrderHead(core["uuid"], 3, lambda{|item| item["mikuType"] == "NxTask" })
-                if items.size > 0 then
-                    items
-                else
-                    [core]
-                end
-            }
-            .flatten
-    end
-
-    # ------------------
     # Ops
 
     # NxTasks::performItemPositioning(itemuuid)

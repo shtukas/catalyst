@@ -46,7 +46,6 @@ class Listing
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
             NxProjects::listingItems(),
-            NxTasks::listingItems(),
             NxCores::listingItems()
         ]
             .flatten
@@ -91,6 +90,32 @@ class Listing
 
         # Palmer reporting
 
+        performance = `palmer report:performance`.strip
+        i = performance.index('(')
+        percentage = performance[i, 10].to_f
+        if percentage < 100 then
+            puts performance.red
+        else
+            if percentage < 120 then
+                puts performance.yellow
+            end
+        end
+
+        # Projects morning set up
+
+        date = IO.read("#{Config::pathToCatalystDataRepository()}/last-configure-projects-today-date.txt").strip
+        if date != CommonUtils::today() then
+            item = NxLambdas::interactivelyIssueNewOrNull(
+                "configure projects today",
+                lambda {
+                    Operations::interactivelyDecideDayPriorityItems()
+                    File.open("#{Config::pathToCatalystDataRepository()}/last-configure-projects-today-date.txt", "w"){|f| f.puts(CommonUtils::today()) }
+                }
+            )
+            store.register(item, true)
+            printer.call(Listing::toString2(store, item))
+        end
+
         t1 = Time.new.to_f
 
         # Main listing
@@ -121,18 +146,6 @@ class Listing
         renderingTime = t2-t1
         if renderingTime > 0.5 then
             puts "rendering time: #{renderingTime.round(3)} seconds".red
-        end
-
-        performance = `palmer report:performance`.strip
-        percentage = performance.match(/\(([\d.]+)\s*%\s+of/)[1].to_f
-        if percentage < 100 then
-            puts performance.red
-        else
-            if percentage < 120 then
-                puts performance.yellow
-            else
-                puts performance.green
-            end
         end
 
         input = LucilleCore::askQuestionAnswerAsString("> ")

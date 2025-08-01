@@ -58,7 +58,14 @@ class NxCores
     def self.listingItems()
         NxCores::cores()
             .select{|core| NxCores::ratio(core) < 1 }
-            .select{|core| !Index2::hasChildren(core["uuid"]) }
+            .select{|core| 
+                if Index2::hasChildren(core["uuid"]) then
+                    Index2::parentuuidToChildrenInOrderHead(core["uuid"], 3, lambda{|item| item["mikuType"] == "NxTask" and Bank1::recoveredAverageHoursPerDay(item["uuid"]) < 1 })
+                else
+                    core
+                end
+            }
+            .flatten
     end
 
     # NxCores::interactivelySelectOneOrNull()
