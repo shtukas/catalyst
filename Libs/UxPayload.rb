@@ -5,11 +5,12 @@ class UxPayload
     def self.types()
         [
             "text",
-            "open cycle",
-            "todo-text-file-by-name",
+            "url",
+            "breakdown",
             "aion-point",
             "Dx8Unit",
-            "url",
+            "todo-text-file-by-name",
+            "open cycle",
             "unique-string"
         ]
     end
@@ -83,6 +84,10 @@ class UxPayload
                 "name" => name1
             }
         end
+        if type == "breakdown" then
+            return UxPayload::interactivelyMakeBreakdown()
+        end
+        raise "(error: 9dc106ff-44c6)"
     end
 
     # UxPayload::access(uuid, payload)
@@ -174,13 +179,78 @@ class UxPayload
             end
             return
         end
+        if payload["type"] == "breakdown" then
+            return if payload["lines"].empty?
+            puts "focus: #{payload["lines"].first.green}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
     end
 
     # UxPayload::edit(itemuuid, payload)
     def self.edit(itemuuid, payload)
-        return if payload.nil?
-        puts "Edit of a UxPayload has not been implemented yet"
-        LucilleCore::pressEnterToContinue()
+        if payload["type"] == "text" then
+            return {
+                "type" => "text",
+                "text" => CommonUtils::editTextSynchronously(payload["text"])
+            }
+        end
+        if payload["type"] == "todo-text-file-by-name" then
+            name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
+            return nil if name1 == ""
+            return {
+                "type" => "todo-text-file-by-name",
+                "name" => name1
+            }
+        end
+        if payload["type"] == "aion-point" then
+            location = CommonUtils::interactivelySelectDesktopLocationOrNull()
+            if location.nil? then
+                puts "There was no location chosen, the payload is going to be erased"
+                if LucilleCore::askQuestionAnswerAsBoolean("confirm: ", yes) then
+                    return nil
+                else
+                    return payload
+                end
+            end
+            return UxPayload::locationToPayload(uuid, location)
+        end
+        if payload["type"] == "Dx8Unit" then
+            puts "You can't edit a Dx8Unit"
+            LucilleCore::pressEnterToContinue()
+            return nil
+        end
+        if payload["type"] == "url" then
+            url = LucilleCore::askQuestionAnswerAsString("url (empty to abort): ")
+            return nil if url == ""
+            return {
+                "type" => "url",
+                "url" => url
+            }
+        end
+        if payload["type"] == "unique-string" then
+            uniquestring = LucilleCore::askQuestionAnswerAsString("unique-string (empty to abort): ")
+            return nil if uniquestring == ""
+            return {
+                "type" => "unique-string",
+                "uniquestring" => uniquestring
+            }
+        end
+        if payload["type"] == "open cycle" then
+            name1 = LucilleCore::askQuestionAnswerAsString("open cycle directory name (empty to abort): ")
+            return nil if name1 == ""
+            return {
+                "type" => "open cycle",
+                "name" => name1
+            }
+        end
+        if payload["type"] == "breakdown" then
+            return {
+                "type"  => "breakdown",
+                "lines" => Operations::interactivelyRecompiledLines(payload["lines"])
+            }
+        end
+        raise "(error: 9dc106ff-44c6)"
     end
 
     # UxPayload::fsck(uuid, payload)
@@ -224,6 +294,9 @@ class UxPayload
         if payload["type"] == "open cycle" then
             return
         end
+        if payload["type"] == "breakdown" then
+            return
+        end
         raise "unkown payload type: #{payload["type"]} at #{payload}"
     end
 
@@ -232,5 +305,13 @@ class UxPayload
         payload = item["uxpayload-b4e4"]
         return "" if payload.nil?
         " (#{payload["type"]})".green
+    end
+
+    # UxPayload::interactivelyMakeBreakdown()
+    def self.interactivelyMakeBreakdown()
+        {
+            "type"  => "breakdown",
+            "lines" => Operations::interactivelyGetLines()
+        }
     end
 end

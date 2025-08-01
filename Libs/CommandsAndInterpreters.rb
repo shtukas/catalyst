@@ -5,12 +5,12 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | destroy *",
+            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities | project",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines | todays | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | edit * | fsck-all | probe-head | sort",
+            "misc          : search | commands | fsck-all | probe-head | sort",
         ].join("\n")
     end
 
@@ -129,8 +129,12 @@ class CommandsAndInterpreters
             }
             item = NxLines::interactivelyIssueNewOrNull()
             return if item.nil?
-            Operations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
+            payload = UxPayload::makeNewOrNull(item["uuid"])
+            if payload then
+                item["uxpayload-b4e4"] = payload
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            end
+            item = Operations::interactivelySetDonation(item)
             Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, Index0::decideListingLine(item))
             NxBalls::start(item)
             return
@@ -338,6 +342,14 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("edit", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Operations::editItem(item)
+            Index0::evaluate(item["uuid"])
+            return
+        end
+
         if Interpreting::match("edit *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -382,6 +394,13 @@ class CommandsAndInterpreters
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
             Index0::removeEntry(item["uuid"])
+            return
+        end
+
+        if Interpreting::match("expose", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Operations::expose(item)
             return
         end
 

@@ -2,10 +2,11 @@ class Operations
 
     # Operations::editItem(item)
     def self.editItem(item)
-        item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
-        item.to_a.each{|key, value|
-            Items::setAttribute(item["uuid"], key, value)
-        }
+        # This function edit the payload, if there is now
+        return if item["uxpayload-b4e4"].nil?
+        payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
+        return if payload.nil?
+        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
     end
 
     # Operations::program3(lx)
@@ -20,7 +21,9 @@ class Operations
             elements
                 .each{|item|
                     store.register(item, Listing::canBeDefault(item))
-                    puts Listing::toString2(store, item)
+                    Listing::toString2(store, item).each {|line|
+                        puts line
+                    }
                 }
 
             puts ""
@@ -45,6 +48,16 @@ class Operations
     # Operations::interactivelyGetLines()
     def self.interactivelyGetLines()
         text = CommonUtils::editTextSynchronously("").strip
+        return [] if text == ""
+        text
+            .lines
+            .map{|line| line.strip }
+            .select{|line| line != "" }
+    end
+
+    # Operations::interactivelyRecompiledLines(lines)
+    def self.interactivelyRecompiledLines(lines)
+        text = CommonUtils::editTextSynchronously(lines.join("\n")).strip
         return [] if text == ""
         text
             .lines
@@ -81,11 +94,12 @@ class Operations
         LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # Operations::interactivelySetDonation(item)
+    # Operations::interactivelySetDonation(item) -> Item
     def self.interactivelySetDonation(item)
         target = Operations::interactivelySelectTargetForDonationOrNull()
         return if target.nil?
         Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+        Items::itemOrNull(item["uuid"])
     end
 
     # Operations::dispatchPickUp()
@@ -172,13 +186,17 @@ class Operations
 
             puts ""
             store.register(parent, false)
-            puts Listing::toString2(store, parent)
+            Listing::toString2(store, parent).each{|line|
+                puts line
+            }
             puts ""
 
             Index2::parentuuidToChildrenInOrder(parent["uuid"])
                 .each{|element|
                     store.register(element, Listing::canBeDefault(element))
-                    puts Listing::toString2(store, element)
+                    Listing::toString2(store, element).each{|line|
+                        puts line
+                    }
                 }
 
             puts ""

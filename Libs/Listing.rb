@@ -22,17 +22,24 @@ class Listing
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        lines = []
+        lines << "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+
+        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" then
+            item["uxpayload-b4e4"]["lines"].each{|l|
+                lines << "         #{l}"
+            }
+        end
 
         if TmpSkip1::isSkipped(item) then
-            line = line.yellow
+            lines = lines.map{|line| line.yellow }
         end
 
         if NxBalls::itemIsActive(item) then
-            line = line.green
+            lines = lines.map{|line| line.green }
         end
 
-        line
+        lines
     end
 
     # Listing::itemsForListing1()
@@ -113,7 +120,9 @@ class Listing
                 }
             )
             store.register(item, true)
-            printer.call(Listing::toString2(store, item))
+            Listing::toString2(store, item).each{|line|
+                printer.call(line)
+            }
         end
 
         t1 = Time.new.to_f
@@ -124,9 +133,13 @@ class Listing
         NxBalls::runningItems()
             .each{|item|
                 store.register(item, Listing::canBeDefault(item))
-                line = Listing::toString2(store, item)
-                printer.call(line)
-                sheight = sheight - (line.size/swidth + 1)
+                lines = Listing::toString2(store, item)
+                lines.each{|line|
+                    printer.call(line)
+                }
+                lines.each{|line|
+                    sheight = sheight - (line.size/swidth + 1)
+                }
                 break if sheight <= 4
             }
 

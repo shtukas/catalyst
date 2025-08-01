@@ -31,6 +31,15 @@ class Fsck
         if item["mikuType"] == "NxCore" then
             return
         end
+        if item["mikuType"] == "NxIce" then
+            return
+        end
+        if item["mikuType"] == "NxProject" then
+            return
+        end
+        if item["mikuType"] == "NxLine" then
+            return
+        end
         raise "I do not know how to fsck mikutype: #{item["mikuType"]}"
     end
 

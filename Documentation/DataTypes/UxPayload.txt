@@ -32,3 +32,13 @@ UxPayloads are stored in attribute `uxpayload-b4e4`.
     "type"         : "unique-string"
     "uniquestring" : String # URL
 }
+
+{
+    "type" : "open cycle"
+    "name" : String
+}
+
+{
+    "type"  : "breakdown"
+    "lines" : Array[String]
+}

@@ -109,6 +109,18 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
+        if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" and item["uxpayload-b4e4"]["lines"].size > 0 then
+            line = item["uxpayload-b4e4"]["lines"].first
+            puts "done: #{line}"
+            item["uxpayload-b4e4"]["lines"] = item["uxpayload-b4e4"]["lines"].drop(1)
+            if item["uxpayload-b4e4"]["lines"].size > 0 then
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", item["uxpayload-b4e4"])
+            else
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", nil)
+            end
+            return
+        end
+
         PolyActions::stop(item)
 
         if item["mikuType"] == "NxLambda" then
