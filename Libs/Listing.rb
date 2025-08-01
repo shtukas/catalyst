@@ -133,7 +133,7 @@ class Listing
         Index0::itemsForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 item = entry["item"]
-                line = entry["line"]
+                line = entry["listing_line"]
                 store.register(item, Listing::canBeDefault(item))
                 line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
                 line = line + " (#{entry["position"]})".yellow

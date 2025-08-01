@@ -6,14 +6,14 @@ CREATE TABLE listing (
     utime REAL NOT NULL,
     position REAL NOT NULL,
     item TEXT NOT NULL,
-    line TEXT NOT NULL
+    listing_line TEXT NOT NULL
 );
 
-itemuuid:
-utime   : unixtime with decimals of the last update of that record
-position:
-item    :
-line    :
+itemuuid     :
+utime        : unixtime with decimals of the last update of that record
+position     :
+item         :
+listing_line :
 
 =end
 
@@ -34,7 +34,7 @@ class Index0
         # Because we are doing content addressing we need the newly created database to be distinct that one that could already be there.
         db.execute("CREATE TABLE random (value REAL)", [])
         db.execute("insert into random (value) values (?)", [rand])
-        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
+        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, listing_line TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -54,7 +54,7 @@ class Index0
                 "utime"    => row["utime"],
                 "position" => row["position"],
                 "item"     => item,
-                "line"     => row["line"]
+                "listing_line" => row["listing_line"]
             }
         end
         db.close
@@ -75,22 +75,22 @@ class Index0
                 "utime"    => row["utime"],
                 "position" => row["position"],
                 "item"     => item,
-                "line"     => row["line"]
+                "listing_line" => row["listing_line"]
             }
         end
         db.close
         data
     end
 
-    # Index0::insertUpdateEntryComponents2(filepath, itemuuid, utime, position, item, line)
-    def self.insertUpdateEntryComponents2(filepath, itemuuid, utime, position, item, line)
+    # Index0::insertUpdateEntryComponents2(filepath, itemuuid, utime, position, item, listing_line)
+    def self.insertUpdateEntryComponents2(filepath, itemuuid, utime, position, item, listing_line)
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
         db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.execute("insert into listing (itemuuid, utime, position, item, line) values (?, ?, ?, ?, ?)", [itemuuid, utime, position, JSON.generate(item), line])
+        db.execute("insert into listing (itemuuid, utime, position, item, listing_line) values (?, ?, ?, ?, ?)", [itemuuid, utime, position, JSON.generate(item), listing_line])
         db.commit
         db.close
     end
@@ -115,7 +115,7 @@ class Index0
                 shouldInject = true
             end
             if shouldInject then
-                Index0::insertUpdateEntryComponents2(filepath1, entry2["itemuuid"], entry2["utime"], entry2["position"], entry2["item"], entry2["line"])
+                Index0::insertUpdateEntryComponents2(filepath1, entry2["itemuuid"], entry2["utime"], entry2["position"], entry2["item"], entry2["listing_line"])
             end
         }
         # Then when we are done, we delete filepath2
@@ -178,8 +178,8 @@ class Index0
         position
     end
 
-    # Index0::insertUpdateEntryComponents1(itemuuid, position, item, line)
-    def self.insertUpdateEntryComponents1(itemuuid, position, item, line)
+    # Index0::insertUpdateEntryComponents1(itemuuid, position, item, listing_line)
+    def self.insertUpdateEntryComponents1(itemuuid, position, item, listing_line)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -187,7 +187,7 @@ class Index0
         db.results_as_hash = true
         db.transaction
         db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.execute("insert into listing (itemuuid, utime, position, item, line) values (?, ?, ?, ?, ?)", [itemuuid, Time.new.to_f, position, JSON.generate(item), line])
+        db.execute("insert into listing (itemuuid, utime, position, item, listing_line) values (?, ?, ?, ?, ?)", [itemuuid, Time.new.to_f, position, JSON.generate(item), listing_line])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -272,21 +272,21 @@ class Index0
     # ------------------------------------------------------
     # Decisions
 
-    # Index0::decideLine(item)
-    def self.decideLine(item)
+    # Index0::decideListingLine(item)
+    def self.decideListingLine(item)
         return nil if item.nil?
         hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        listing_line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
-            line = line.yellow
+            listing_line = listing_line.yellow
         end
 
         if NxBalls::itemIsActive(item) then
-            line = line.green
+            listing_line = listing_line.green
         end
 
-        line
+        listing_line
     end
 
     # Index0::determinePositionInInterval(item, x0, x1)
@@ -429,8 +429,8 @@ class Index0
 
     # Index0::insertUpdateItemAtPosition(item, position)
     def self.insertUpdateItemAtPosition(item, position)
-        line = Index0::decideLine(item)
-        Index0::insertUpdateEntryComponents1(item["uuid"], position, item, line)
+        listing_line = Index0::decideListingLine(item)
+        Index0::insertUpdateEntryComponents1(item["uuid"], position, item, listing_line)
     end
 
     # Index0::evaluate(itemuuid)
@@ -445,8 +445,8 @@ class Index0
             return
         end
         position = Index0::getExistingPositionOrDecideNew(item)
-        line = Index0::decideLine(item)
-        Index0::insertUpdateEntryComponents1(itemuuid, position, item, line)
+        listing_line = Index0::decideListingLine(item)
+        Index0::insertUpdateEntryComponents1(itemuuid, position, item, listing_line)
     end
 
     # ------------------------------------------------------
@@ -459,8 +459,8 @@ class Index0
             if position.nil? then
                 raise "We should not have a position null from Index0::listingMaintenance(): #{item}"
             end
-            line = Index0::decideLine(item)
-            Index0::insertUpdateEntryComponents1(item["uuid"], position, item, line)
+            listing_line = Index0::decideListingLine(item)
+            Index0::insertUpdateEntryComponents1(item["uuid"], position, item, listing_line)
         }
 
         # We are now going to try an create a condition: one waves between any non two wave items
