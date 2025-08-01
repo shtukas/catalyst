@@ -131,7 +131,7 @@ class CommandsAndInterpreters
             return if item.nil?
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
-            Index0::insertUpdateEntry(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
+            Index0::insertUpdateEntryComponents1(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
             NxBalls::start(item)
             return
         end
@@ -148,7 +148,7 @@ class CommandsAndInterpreters
                     item = NxLines::interactivelyIssueNew(nil, line)
                     Operations::interactivelySetDonation(item)
                     item = Items::itemOrNull(item["uuid"])
-                    Index0::insertUpdateEntry(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
+                    Index0::insertUpdateEntryComponents1(item["uuid"], Index0::firstPositionInDatabase()*0.9, item, Index0::decideLine(item))
                     last_item = item
                 }
             if last_item then
@@ -173,7 +173,7 @@ class CommandsAndInterpreters
             item = NxLines::interactivelyIssueNew(nil, line)
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
-            Index0::insertUpdateEntry(item["uuid"], position, item, Index0::decideLine(item))
+            Index0::insertUpdateEntryComponents1(item["uuid"], position, item, Index0::decideLine(item))
             return
         end
 

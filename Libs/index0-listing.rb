@@ -2,7 +2,7 @@
 =begin
 
 CREATE TABLE listing (
-    itemuuid TEXT NOT NULL,
+    itemuuid TEXT PRIMARY KEY NOT NULL,
     utime REAL NOT NULL,
     position REAL NOT NULL,
     item TEXT NOT NULL,
@@ -34,7 +34,7 @@ class Index0
         # Because we are doing content addressing we need the newly created database to be distinct that one that could already be there.
         db.execute("CREATE TABLE random (value REAL)", [])
         db.execute("insert into random (value) values (?)", [rand])
-        db.execute("CREATE TABLE listing (itemuuid TEXT NOT NULL, utime REAL NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
+        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -49,7 +49,6 @@ class Index0
         db.results_as_hash = true
         db.execute("select * from listing order by position", []) do |row|
             item = JSON.parse(row["item"])
-            position_ = " (#{row["position"]})"
             data << {
                 "itemuuid" => row["itemuuid"],
                 "utime"    => row["utime"],
@@ -62,50 +61,91 @@ class Index0
         data
     end
 
+    # Index0::extractEntryOrNullFromFilepath(filepath, itemuuid)
+    def self.extractEntryOrNullFromFilepath(filepath, itemuuid)
+        data = nil
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
+            item = JSON.parse(row["item"])
+            data = {
+                "itemuuid" => row["itemuuid"],
+                "utime"    => row["utime"],
+                "position" => row["position"],
+                "item"     => item,
+                "line"     => row["line"]
+            }
+        end
+        db.close
+        data
+    end
+
+    # Index0::insertUpdateEntryComponents2(filepath, itemuuid, utime, position, item, line)
+    def self.insertUpdateEntryComponents2(filepath, itemuuid, utime, position, item, line)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [itemuuid])
+        db.execute("insert into listing (itemuuid, utime, position, item, line) values (?, ?, ?, ?, ?)", [itemuuid, utime, position, JSON.generate(item), line])
+        db.commit
+        db.close
+    end
+
+    # Index0::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
+    def self.mergeTwoDatabaseFiles(filepath1, filepath2)
+        # The logic here is to read the items from filepath2 and 
+        # possibly add them to filepath1, if either:
+        #   - there was no equivalent in filepath1
+        #   - it's a newer record than the one in filepath1
+        Index0::extractDataFromFileEntriesInOrder(filepath2).each{|entry2|
+            shouldInject = false
+            entry1 = Index0::extractEntryOrNullFromFilepath(filepath1, entry2["item"]["uuid"])
+            if entry1 then
+                # We have entry1 and entry2
+                # We perform the update if entry2 is newer than entry1
+                if entry2["utime"] > entry1["utime"] then
+                    shouldInject = true
+                end
+            else
+                # entry1 is null, we inject entry2 into filepath1
+                shouldInject = true
+            end
+            if shouldInject then
+                Index0::insertUpdateEntryComponents2(filepath1, entry2["itemuuid"], entry2["utime"], entry2["position"], entry2["item"], entry2["line"])
+            end
+        }
+        # Then when we are done, we delete filepath2
+        FileUtils::rm(filepath2)
+        Index0::ensureContentAddressing(filepath1)
+    end
+
     # Index0::getReducedDatabaseFilepath()
     def self.getReducedDatabaseFilepath()
         filepaths = Index0::filepaths()
 
+        # This case should not really happen (anymore), so if the condition 
+        # is true, let's error noisily.
         if filepaths.size == 0 then
-            return Index0::initiateDatabaseFile()
+            # return Index0::initiateDatabaseFile()
+            raise "(error: 36181da9)"
         end
 
         if filepaths.size == 1 then
             return filepaths[0]
         end
 
-        data = filepaths
-            .map{|filepath|
-                Index0::extractDataFromFileEntriesInOrder(filepath)
-            }
-            .flatten
-            .sort_by{|entry| entry["position"] }
-            .reduce([]){|entries, entry|
-                if entries.map{|e| e["itemuuid"] }.include?(entry["itemuuid"]) then
-                    entries
-                else
-                    entries + [entry]
-                end
-            }
-
-        # In this case filepath.size > 1
-        newfilepath = Index0::initiateDatabaseFile()
-        db = SQLite3::Database.new(newfilepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        data.each{|entry|
-            db.execute("insert into listing (itemuuid, utime, position, item, line) values (?, ?, ?, ?, ?)", [entry["itemuuid"], entry["utime"], entry["position"], JSON.generate(entry["item"]), entry["line"]])
-        }
-        db.commit
-        db.close
-
+        filepath1 = filepaths.shift
         filepaths.each{|filepath|
-            FileUtils::rm(filepath)
+            # The logic here is to read the items from filepath2 and 
+            # possibly add them to filepath1.
+            # We get an updated filepath1 because of content addressing.
+            filepath1 = Index0::mergeTwoDatabaseFiles(filepath1, filepath)
         }
-
-        Index0::ensureContentAddressing(newfilepath)
+        filepath1
     end
 
     # Index0::hasItem(itemuuid)
@@ -138,8 +178,8 @@ class Index0
         position
     end
 
-    # Index0::insertUpdateEntry(itemuuid, position, item, line)
-    def self.insertUpdateEntry(itemuuid, position, item, line)
+    # Index0::insertUpdateEntryComponents1(itemuuid, position, item, line)
+    def self.insertUpdateEntryComponents1(itemuuid, position, item, line)
         filepath = Index0::getReducedDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -194,6 +234,7 @@ class Index0
     def self.filepaths()
         LucilleCore::locationsAtFolder(Index0::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
+            .sort
     end
 
     # Index0::ensureContentAddressing(filepath)
@@ -389,7 +430,7 @@ class Index0
     # Index0::insertUpdateItemAtPosition(item, position)
     def self.insertUpdateItemAtPosition(item, position)
         line = Index0::decideLine(item)
-        Index0::insertUpdateEntry(item["uuid"], position, item, line)
+        Index0::insertUpdateEntryComponents1(item["uuid"], position, item, line)
     end
 
     # Index0::evaluate(itemuuid)
@@ -405,7 +446,7 @@ class Index0
         end
         position = Index0::getExistingPositionOrDecideNew(item)
         line = Index0::decideLine(item)
-        Index0::insertUpdateEntry(itemuuid, position, item, line)
+        Index0::insertUpdateEntryComponents1(itemuuid, position, item, line)
     end
 
     # ------------------------------------------------------
@@ -419,7 +460,7 @@ class Index0
                 raise "We should not have a position null from Index0::listingMaintenance(): #{item}"
             end
             line = Index0::decideLine(item)
-            Index0::insertUpdateEntry(item["uuid"], position, item, line)
+            Index0::insertUpdateEntryComponents1(item["uuid"], position, item, line)
         }
 
         # We are now going to try an create a condition: one waves between any non two wave items
