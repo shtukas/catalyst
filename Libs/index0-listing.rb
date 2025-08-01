@@ -1,30 +1,26 @@
 
-# CREATE TABLE listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL);
+=begin
+
+CREATE TABLE listing (
+    itemuuid TEXT NOT NULL,
+    utime REAL NOT NULL,
+    position REAL NOT NULL,
+    item TEXT NOT NULL,
+    line TEXT NOT NULL
+);
+
+itemuuid:
+utime   : unixtime with decimals of the last update of that record
+position:
+item    :
+line    :
+
+=end
 
 class Index0
 
     # ------------------------------------------------------
-    # Basic IO management
-
-    # Index0::directory()
-    def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index0-listing"
-    end
-
-    # Index0::filepaths()
-    def self.filepaths()
-        LucilleCore::locationsAtFolder(Index0::directory())
-            .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
-    end
-
-    # Index0::ensureContentAddressing(filepath)
-    def self.ensureContentAddressing(filepath)
-        filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
-        filepath2 = "#{Index0::directory()}/#{filename2}"
-        return filepath if filepath == filepath2
-        FileUtils.mv(filepath, filepath2)
-        filepath2
-    end
+    # Only Database Manipulations
 
     # Index0::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
@@ -38,7 +34,7 @@ class Index0
         # Because we are doing content addressing we need the newly created database to be distinct that one that could already be there.
         db.execute("CREATE TABLE random (value REAL)", [])
         db.execute("insert into random (value) values (?)", [rand])
-        db.execute("CREATE TABLE listing (itemuuid TEXT NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
+        db.execute("CREATE TABLE listing (itemuuid TEXT NOT NULL, utime REAL NOT NULL, position REAL NOT NULL, item TEXT NOT NULL, line TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -56,6 +52,7 @@ class Index0
             position_ = " (#{row["position"]})"
             data << {
                 "itemuuid" => row["itemuuid"],
+                "utime"    => row["utime"],
                 "position" => row["position"],
                 "item"     => item,
                 "line"     => row["line"]
@@ -99,7 +96,7 @@ class Index0
         db.results_as_hash = true
         db.transaction
         data.each{|entry|
-            db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [entry["itemuuid"], entry["position"], JSON.generate(entry["item"]), entry["line"]])
+            db.execute("insert into listing (itemuuid, utime, position, item, line) values (?, ?, ?, ?, ?)", [entry["itemuuid"], entry["utime"], entry["position"], JSON.generate(entry["item"]), entry["line"]])
         }
         db.commit
         db.close
@@ -109,22 +106,6 @@ class Index0
         }
 
         Index0::ensureContentAddressing(newfilepath)
-    end
-
-    # ------------------------------------------------------
-    # Getters
-
-    # Index0::entriesInOrder()
-    def self.entriesInOrder()
-        Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
-            .sort_by{|item| item["position"] }
-    end
-
-    # Index0::firstPositionInDatabase()
-    def self.firstPositionInDatabase()
-        entries = Index0::entriesInOrder()
-        return 1 if entries.empty?
-        entries.map{|e| e["position"] }.min
     end
 
     # Index0::hasItem(itemuuid)
@@ -155,6 +136,89 @@ class Index0
         end
         db.close
         position
+    end
+
+    # Index0::insertUpdateEntry(itemuuid, position, item, line)
+    def self.insertUpdateEntry(itemuuid, position, item, line)
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [itemuuid])
+        db.execute("insert into listing (itemuuid, utime, position, item, line) values (?, ?, ?, ?, ?)", [itemuuid, Time.new.to_f, position, JSON.generate(item), line])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
+    # Index0::updatePosition(itemuuid, position)
+    def self.updatePosition(itemuuid, position)
+        return if !Index0::hasItem(itemuuid)
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position=?, utime=? where itemuuid=?", [position, Time.new.to_f, itemuuid])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
+    # Index0::removeEntry(itemuuid)
+    def self.removeEntry(itemuuid)
+        filepath = Index0::getReducedDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [itemuuid])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
+    # ------------------------------------------------------
+    # Basic IO management
+
+    # Index0::directory()
+    def self.directory()
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index0-listing"
+    end
+
+    # Index0::filepaths()
+    def self.filepaths()
+        LucilleCore::locationsAtFolder(Index0::directory())
+            .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
+    end
+
+    # Index0::ensureContentAddressing(filepath)
+    def self.ensureContentAddressing(filepath)
+        filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
+        filepath2 = "#{Index0::directory()}/#{filename2}"
+        return filepath if filepath == filepath2
+        FileUtils.mv(filepath, filepath2)
+        filepath2
+    end
+
+    # ------------------------------------------------------
+    # Getters
+
+    # Index0::entriesInOrder()
+    def self.entriesInOrder()
+        Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
+            .sort_by{|item| item["position"] }
+    end
+
+    # Index0::firstPositionInDatabase()
+    def self.firstPositionInDatabase()
+        entries = Index0::entriesInOrder()
+        return 1 if entries.empty?
+        entries.map{|e| e["position"] }.min
     end
 
     # Index0::itemsForListing(excludeuuids)
@@ -322,54 +386,10 @@ class Index0
     # --------------------------------------------------
     # Setters and updaters
 
-    # Index0::insertUpdateEntry(itemuuid, position, item, line)
-    def self.insertUpdateEntry(itemuuid, position, item, line)
-        filepath = Index0::getReducedDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.execute("insert into listing (itemuuid, position, item, line) values (?, ?, ?, ?)", [itemuuid, position, JSON.generate(item), line])
-        db.commit
-        db.close
-        Index0::ensureContentAddressing(filepath)
-    end
-
     # Index0::insertUpdateItemAtPosition(item, position)
     def self.insertUpdateItemAtPosition(item, position)
         line = Index0::decideLine(item)
         Index0::insertUpdateEntry(item["uuid"], position, item, line)
-    end
-
-    # Index0::updatePosition(itemuuid, position)
-    def self.updatePosition(itemuuid, position)
-        return if !Index0::hasItem(itemuuid)
-        filepath = Index0::getReducedDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("update listing set position=? where itemuuid=?", [position, itemuuid])
-        db.commit
-        db.close
-        Index0::ensureContentAddressing(filepath)
-    end
-
-    # Index0::removeEntry(itemuuid)
-    def self.removeEntry(itemuuid)
-        filepath = Index0::getReducedDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.commit
-        db.close
-        Index0::ensureContentAddressing(filepath)
     end
 
     # Index0::evaluate(itemuuid)
