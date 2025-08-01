@@ -48,6 +48,21 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+        if item["mikuType"] == "NxProject" then
+            puts "You are stopping a NxProject"
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss for the day", "transmute to project", "actually stop it (default)"])
+            if option.nil? or option == "actually stop it (default)" then
+                return
+            end
+            if option == "dismiss for the day" then
+                unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+                puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                Index0::removeEntry(item["uuid"])
+                return
+            end
+        end
         if item["mikuType"] == "NxTask" then
             puts "You are stopping a NxTask"
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss for the day", "transmute to project", "actually stop it (default)"])
@@ -94,7 +109,7 @@ class PolyActions
     # PolyActions::done(item)
     def self.done(item)
 
-        NxBalls::stop(item)
+        PolyActions::stop(item)
 
         if item["mikuType"] == "NxLambda" then
             Index0::removeEntry(item["uuid"])
