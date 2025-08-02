@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+# CREATE TABLE Bank (_recorduuid_ string primary key, _id_ string, _date_ string, _value_ float);
+
 class Bank1
 
     # ----------------------------------
@@ -19,6 +21,11 @@ class Bank1
             db.close
         }
         value
+    end
+
+    # Bank1::maintenance()
+    def self.maintenance()
+
     end
 
     # ----------------------------------

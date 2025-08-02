@@ -22,15 +22,15 @@ class NxProjects
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
-        Items::init(uuid)
+        Index3::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxProject")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "project-position", NxProjects::getNextPosition())
-        Items::itemOrNull(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxProject")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Index3::setAttribute(uuid, "project-position", NxProjects::getNextPosition())
+        Index3::itemOrNull(uuid)
     end
 
     # ------------------

@@ -178,7 +178,7 @@ class Listing
                     NxBalls::all()
                         .select{|nxball| nxball["type"] == "running" }
                         .each{|nxball|
-                            item = Items::itemOrNull(nxball["itemuuid"])
+                            item = Index3::itemOrNull(nxball["itemuuid"])
                             next if item.nil?
                             if item["mikuType"] == "Wave" then
                                 if NxBalls::ballRunningTime(nxball) > 1800 then
@@ -193,6 +193,19 @@ class Listing
                         }
                 }).call()
                 sleep 120
+            }
+        }
+
+        Thread.new {
+            loop {
+                sleep 300
+                LucilleCore::locationsAtFolder("#{Config::pathToCatalystDataRepository()}/items-destroyed")
+                    .select{|filepath| filepath[-4, 4] == ".txt" }
+                    .each{|filepath|
+                        uuid = IO.read(filepath).strip
+                        Datablocks::removeUUID(uuid)
+                        FileUtils.rm(filepath)
+                    }
             }
         }
 

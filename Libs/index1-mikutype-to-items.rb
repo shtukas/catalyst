@@ -182,7 +182,7 @@ class Index1
         items = []
         Index1::mikuTypeItemuuids(mikuType)
         .each{|itemuuid|
-            item = Items::itemOrNull(itemuuid)
+            item = Index3::itemOrNull(itemuuid)
             if item.nil? then
                 Index1::removeEntry(mikuType, itemuuid)
                 next
@@ -208,7 +208,7 @@ class Index1
 
     # Index1::maintenance()
     def self.maintenance()
-        Items::items().each{|item|
+        Index3::items().each{|item|
             next if Index1::hasEntry(item["mikuType"], item["uuid"])
             Index1::insertEntry(item["mikuType"], item["uuid"])
         }

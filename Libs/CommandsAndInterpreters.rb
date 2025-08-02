@@ -132,7 +132,7 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             if payload then
                 item["uxpayload-b4e4"] = payload
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+                Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             end
             item = Operations::interactivelySetDonation(item)
             Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, Index0::decideListingLine(item))
@@ -151,7 +151,7 @@ class CommandsAndInterpreters
                     puts "processing: #{line}".green
                     item = NxLines::interactivelyIssueNew(nil, line)
                     Operations::interactivelySetDonation(item)
-                    item = Items::itemOrNull(item["uuid"])
+                    item = Index3::itemOrNull(item["uuid"])
                     Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, Index0::decideListingLine(item))
                     last_item = item
                 }
@@ -176,7 +176,7 @@ class CommandsAndInterpreters
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             item = NxLines::interactivelyIssueNew(nil, line)
             Operations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
+            item = Index3::itemOrNull(item["uuid"])
             Index0::insertUpdateEntryComponents1(item, position, Index0::decideListingLine(item))
             return
         end
@@ -187,7 +187,7 @@ class CommandsAndInterpreters
             return if item.nil?
             payload = UxPayload::makeNewOrNull(item["uuid"])
             return if payload.nil?
-            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             return
         end
 
@@ -214,7 +214,7 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
+            item = Index3::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
@@ -236,7 +236,7 @@ class CommandsAndInterpreters
             _, d, _ = Interpreting::tokenizer(input)
             item = store.getDefault()
             return if item.nil?
-            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
+            Index3::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
             Index0::evaluate(item["uuid"])
             return
         end
@@ -474,7 +474,7 @@ class CommandsAndInterpreters
             return if item.nil?
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Items::setAttribute(item["uuid"], "date", datetime)
+            Index3::setAttribute(item["uuid"], "date", datetime)
             return
         end
 

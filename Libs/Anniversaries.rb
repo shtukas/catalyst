@@ -135,15 +135,15 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Items::init(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxAnniversary")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "startdate", startdate)
-        Items::setAttribute(uuid, "repeatType", repeatType)
+        Index3::init(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxAnniversary")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::setAttribute(uuid, "startdate", startdate)
+        Index3::setAttribute(uuid, "repeatType", repeatType)
 
-        Items::itemOrNull(uuid)
+        Index3::itemOrNull(uuid)
     end
 
     # Anniversaries::toString(anniversary)
@@ -163,7 +163,7 @@ class Anniversaries
     # Anniversaries::mark_next_celebration_date(item)
     def self.mark_next_celebration_date(item)
         date = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
-        Items::setAttribute(item["uuid"], "next_celebration", date)
+        Index3::setAttribute(item["uuid"], "next_celebration", date)
     end
 
     # Anniversaries::program1(item)
@@ -176,16 +176,16 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                Items::setAttribute(item["uuid"], "description", description)
+                Index3::setAttribute(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                Items::setAttribute(item["uuid"], "startdate", startdate)
+                Index3::setAttribute(item["uuid"], "startdate", startdate)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    Items::destroy(item["uuid"])
+                    Index3::deleteItem(item["uuid"])
                     return
                 end
             end

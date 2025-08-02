@@ -23,7 +23,7 @@ class PolyFunctions
         end
 
         if item["donation-1205"] then
-            target = Items::itemOrNull(item["donation-1205"])
+            target = Index3::itemOrNull(item["donation-1205"])
             if target then
                 accounts << {
                     "description" => "(donation target: #{target["description"]})",
@@ -109,7 +109,7 @@ class PolyFunctions
             return donation_target_id
         end
 
-        target = Items::itemOrNull(donation_target_id)
+        target = Index3::itemOrNull(donation_target_id)
         if target then
             return target["description"]
         else
@@ -194,7 +194,7 @@ class PolyFunctions
     # PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
     def self.makeInfinityuuidAndPositionNearTheTop()
         coreuuid = NxCores::infinityuuid()
-        core = Items::itemOrNull(coreuuid)
+        core = Index3::itemOrNull(coreuuid)
         position = PolyFunctions::random_10_20_position_in_parent(core)
         [coreuuid, position]
     end

@@ -6,12 +6,12 @@ class NxFloats
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        Items::init(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxFloat")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::itemOrNull(uuid)
+        Index3::init(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxFloat")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::itemOrNull(uuid)
     end
 
     # ------------------

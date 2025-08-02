@@ -45,7 +45,7 @@ class Fsck
 
     # Fsck::fsckAll()
     def self.fsckAll()
-        Items::items()
+        Index3::items()
             .each{|item| Fsck::fsckOrError(item) }
     end
 end

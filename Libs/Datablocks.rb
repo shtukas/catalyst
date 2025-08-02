@@ -87,6 +87,17 @@ class Datablocks
         datablob
     end
 
+    # Datablocks::removeUUIDAtFile(filepath, uuid)
+    def self.removeUUIDAtFile(filepath, uuid)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("delete from datablock where uuid=?", [uuid])
+        db.close
+        Datablocks::ensureContentAddressing(filepath)
+    end
+
     # -----------------------------------------------------
     # Interface
 
@@ -131,5 +142,12 @@ class Datablocks
             end
         }
         nil
+    end
+
+    # Datablocks::removeUUID(uuid)
+    def self.removeUUID(uuid)
+        Datablocks::filepaths().each{|filepath|
+            Datablocks::removeUUIDAtFile(filepath, uuid)
+        }
     end
 end

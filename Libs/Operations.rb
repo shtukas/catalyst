@@ -6,7 +6,7 @@ class Operations
         return if item["uxpayload-b4e4"].nil?
         payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
         return if payload.nil?
-        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+        Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
     end
 
     # Operations::program3(lx)
@@ -43,6 +43,8 @@ class Operations
         Index1::maintenance()
         puts "NxTasks::maintenance()"
         NxTasks::maintenance()
+        puts "Bank1::maintenance()"
+        Bank1::maintenance()
     end
 
     # Operations::interactivelyGetLines()
@@ -98,8 +100,8 @@ class Operations
     def self.interactivelySetDonation(item)
         target = Operations::interactivelySelectTargetForDonationOrNull()
         return if target.nil?
-        Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
-        Items::itemOrNull(item["uuid"])
+        Index3::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+        Index3::itemOrNull(item["uuid"])
     end
 
     # Operations::dispatchPickUp()
@@ -134,7 +136,7 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxDateds::locationToItem(description, location)
-                Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
+                Index3::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
                 #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
                 #puts PolyFunctions::toString(item)
@@ -264,7 +266,7 @@ class Operations
                             location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
                             puts "unit location: #{location}"
                             payload2 = UxPayload::locationToPayload(item["uuid"], location)
-                            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+                            Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
                             LucilleCore::removeFileSystemLocation(location)
                         end
                     }

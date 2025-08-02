@@ -22,7 +22,7 @@ class UxPayload
 
     # UxPayload::locationToPayload(uuid, location)
     def self.locationToPayload(uuid, location)
-        nhash = AionCore::commitLocationReturnHash(ElizabethBlade.new(uuid), location)
+        nhash = AionCore::commitLocationReturnHash(Elizabeth.new(uuid), location)
         {
             "type" => "aion-point",
             "nhash" => nhash
@@ -128,7 +128,7 @@ class UxPayload
             exportFoldername = "#{exportId}-aion-point"
             exportFolderpath = "#{ENV['HOME']}/x-space/xcache-v1-days/#{Time.new.to_s[0, 10]}/#{exportFoldername}"
             FileUtils.mkpath(exportFolderpath)
-            AionCore::exportHashAtFolder(ElizabethBlade.new(uuid), nhash, exportFolderpath)
+            AionCore::exportHashAtFolder(Elizabeth.new(uuid), nhash, exportFolderpath)
             system("open '#{exportFolderpath}'")
             LucilleCore::pressEnterToContinue()
             return
@@ -270,7 +270,7 @@ class UxPayload
         end
         if payload["type"] == "aion-point" then
             nhash = payload["nhash"]
-            AionFsck::structureCheckAionHashRaiseErrorIfAny(ElizabethBlade.new(uuid), nhash)
+            AionFsck::structureCheckAionHashRaiseErrorIfAny(Elizabeth.new(uuid), nhash)
             return
         end
         if payload["type"] == "Dx8Unit" then

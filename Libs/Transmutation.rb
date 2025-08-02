@@ -8,24 +8,24 @@ class Transmutation
         
         if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
             NxTasks::performItemPositioning(item["uuid"])
-            Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+            Index3::setAttribute(item["uuid"], "mikuType", "NxTask")
             Index0::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxDated" and targetMikuType == "NxFloat" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
+            Index3::setAttribute(item["uuid"], "mikuType", "NxFloat")
             Index0::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Items::setAttribute(uuid, "date", datetime)
-            Items::setAttribute(item["uuid"], "mikuType", "NxDated")
+            Index3::setAttribute(uuid, "date", datetime)
+            Index3::setAttribute(item["uuid"], "mikuType", "NxDated")
             Index0::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxFloat" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
+            Index3::setAttribute(item["uuid"], "mikuType", "NxFloat")
             Index0::evaluate(item["uuid"])
             return
         end

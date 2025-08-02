@@ -180,7 +180,7 @@ class Index2
     # Index2::parentuuidToChildrenInOrder(parentuuid)
     def self.parentuuidToChildrenInOrder(parentuuid)
         Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
-            .map{|uuid| Items::itemOrNull(uuid) }
+            .map{|uuid| Index3::itemOrNull(uuid) }
             .compact
     end
 
@@ -191,7 +191,7 @@ class Index2
                 if items.size >= size then
                     items
                 else
-                    item = Items::itemOrNull(uuid)
+                    item = Index3::itemOrNull(uuid)
                     if item then
                         if selection.call(item) then
                             items + [item]
@@ -226,7 +226,7 @@ class Index2
         if parentuuid.nil? then
             return nil
         end
-        Items::itemOrNull(parentuuid)
+        Index3::itemOrNull(parentuuid)
     end
 
     # Index2::childuuidToParentOrDefaultInfinityCore(childuuid)
@@ -234,9 +234,9 @@ class Index2
         parentuuid = Index2::childuuidToParentuuidOrNull(childuuid)
         if parentuuid.nil? then
             Index2::insertEntry(NxCores::infinityuuid(), childuuid, 0)
-            return Items::itemOrNull(NxCores::infinityuuid())
+            return Index3::itemOrNull(NxCores::infinityuuid())
         end
-        Items::itemOrNull(parentuuid)
+        Index3::itemOrNull(parentuuid)
     end
 
     # Index2::childPositionAtParentOrZero(childuuid, parentuuid)

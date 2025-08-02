@@ -125,7 +125,7 @@ class NxBalls
             .map{|ball|
                 (lambda {|ball|
                     itemuuid = ball["itemuuid"]
-                    ix = Items::itemOrNull(itemuuid)
+                    ix = Index3::itemOrNull(itemuuid)
                     if ix then
                         return ix
                     end
@@ -147,7 +147,7 @@ class NxBalls
             .map{|ball|
                 (lambda {|ball|
                     itemuuid = ball["itemuuid"]
-                    ix = Items::itemOrNull(itemuuid)
+                    ix = Index3::itemOrNull(itemuuid)
                     if ix then
                         return ix
                     end

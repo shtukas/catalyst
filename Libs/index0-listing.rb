@@ -443,7 +443,7 @@ class Index0
 
     # Index0::evaluate(itemuuid)
     def self.evaluate(itemuuid)
-        item = Items::itemOrNull(itemuuid)
+        item = Index3::itemOrNull(itemuuid)
         if item.nil? then
             Index0::removeEntry(itemuuid)
             return

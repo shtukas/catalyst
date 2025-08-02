@@ -218,10 +218,28 @@ class Index3
     # ------------------------------------------------------
     # Interface
 
-    # Index3::itemOrNull(item)
+    # Index3::init(uuid)
+    def self.init(uuid)
+        if Index3::itemOrNull(uuid) then
+            raise "(error: 0e16c053) this uuid is already in use, you cannot init it"
+        end
+        item = {
+          "uuid" => uuid,
+          "mikuType" => "NxLine",
+          "unixtime" => Time.new.to_i,
+          "datetime" => Time.new.utc.iso8601,
+          "description" => "Default description for initialised item. If you are reading this, something didn't happen"
+        }
+        Index3::commitItem(item)
+    end
+
+    # Index3::itemOrNull(uuid)
     def self.itemOrNull(uuid)
         entry = Index3::entryOrNull(uuid)
-        return nil if entry.nil?
+        if entry.nil? then
+            HardProblem::item_could_not_be_found_on_disk(uuid)
+            return nil
+        end
         entry["item"]
     end
 
@@ -231,22 +249,37 @@ class Index3
         Index3::insertUpdateItemAtFile(filepath, item)
     end
 
-    # Items::setAttribute(uuid, attrname, attrvalue)
+    # Index3::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        item = Index3::itemOrNull(item)
+        item = Index3::itemOrNull(uuid)
         return if item.nil?
         item[attrname] = attrvalue
         Index3::commitItem(item)
+        HardProblem::item_attribute_has_been_updated(uuid, attrname, attrvalue)
+    end
+
+    # Index3::items()
+    def self.items()
+        items = []
+        db = SQLite3::Database.new(Index3::getDatabaseFilepath())
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from items", []) do |row|
+            items << JSON.parse(row["item"])
+        end
+        db.close
+        items
     end
 
     # Index3::mikuTypes()
     def self.mikuTypes()
         mikuTypes = []
-        db = SQLite3::Database.new(filepath)
+        db = SQLite3::Database.new(Index3::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select distinct(mikuType) as mikuType from index3", []) do |row|
+        db.execute("select distinct(mikuType) as mikuType from items", []) do |row|
             mikuTypes << row["mikuType"]
         end
         db.close
@@ -256,11 +289,11 @@ class Index3
     # Index3::mikyType(mikuType) -> Array[Item]
     def self.mikyType(mikuType)
         items = []
-        db = SQLite3::Database.new(filepath)
+        db = SQLite3::Database.new(Index3::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select * from index3 where mikuType=?", [mikuType]) do |row|
+        db.execute("select * from items where mikuType=?", [mikuType]) do |row|
             items << JSON.parse(row["item"])
         end
         db.close
@@ -269,6 +302,11 @@ class Index3
 
     # Index3::deleteItem(uuid)
     def self.deleteItem(uuid)
+        item = Index3::itemOrNull(uuid)
+        if item then
+            HardProblem::item_is_being_destroyed(item)
+        end
         Index3::deleteEntry(uuid)
+        HardProblem::item_has_been_destroyed(uuid)
     end
 end

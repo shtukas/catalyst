@@ -7,14 +7,14 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         NxTasks::performItemPositioning(uuid)
-        Items::init(uuid)
+        Index3::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::itemOrNull(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxTask")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Index3::itemOrNull(uuid)
     end
 
     # NxTasks::interactivelyIssueNewOrNull2(parentuuid, position)
@@ -23,40 +23,40 @@ class NxTasks
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return if description == ""
         Index2::insertEntry(parentuuid, uuid, position)
-        Items::init(uuid)
+        Index3::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::itemOrNull(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxTask")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Index3::itemOrNull(uuid)
     end
 
     # NxTasks::locationToTask(description, location, parentuuid, position)
     def self.locationToTask(description, location, parentuuid, position)
         uuid = SecureRandom.uuid
         Index2::insertEntry(parentuuid, uuid, position)
-        Items::init(uuid)
+        Index3::init(uuid)
         payload = UxPayload::locationToPayload(uuid, location)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::itemOrNull(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxTask")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Index3::itemOrNull(uuid)
     end
 
     # NxTasks::descriptionToTask(description, parentuuid, position)
     def self.descriptionToTask(description, parentuuid, position)
         uuid = SecureRandom.uuid
         Index2::insertEntry(parentuuid, uuid, position)
-        Items::init(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
-        Items::itemOrNull(uuid)
+        Index3::init(uuid)
+        Index3::setAttribute(uuid, "mikuType", "NxTask")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Index3::setAttribute(uuid, "description", description)
+        Index3::itemOrNull(uuid)
     end
 
     # ------------------
@@ -96,7 +96,7 @@ class NxTasks
         if count1 < 150 and count2 > 0 then
             iced.take(100).each{|item|
                 puts "moving from NxIce to NxTask: #{item["description"]}"
-                Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+                Index3::setAttribute(item["uuid"], "mikuType", "NxTask")
             }
         end
     end

@@ -6,6 +6,7 @@ class HardProblem
             mikuType = value
             Index1::insertEntry(mikuType, uuid)
         end
+        Index0::evaluate(uuid)
     end
 
     # HardProblem::item_has_been_destroyed(uuid)
@@ -32,5 +33,13 @@ class HardProblem
     def self.item_is_being_destroyed(item)
         Index1::removeItem(item["uuid"])
         Index2::removeIdentifierFromDatabase(item["uuid"])
+        
+        # Version 1
+        # This synchronous processing was taking too long, so we are doing version 2
+        # Datablocks::removeUUID(item["uuid"])
+
+        # Version 2
+        filepath = "#{Config::pathToCatalystDataRepository()}/items-destroyed/#{(Time.new.to_f * 1000).to_i}.txt"
+        File.open(filepath, "w") {|f| f.puts(item["uuid"]) }
     end
 end

@@ -44,8 +44,8 @@ coordinates = filepaths.zip(insertions)
 
 coordinates.each{|filepath, position|
     item = NxTasks::locationToTask(File.basename(filepath), filepath)
-    Items::setAttribute(item["uuid"], "global-positioning-4233", position)
-    item = Items::itemOrNull(item["uuid"])
+    Index3::setAttribute(item["uuid"], "global-positioning-4233", position)
+    item = Index3::itemOrNull(item["uuid"])
     puts JSON.pretty_generate(item)
 }
 
