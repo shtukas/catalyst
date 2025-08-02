@@ -10,7 +10,7 @@ class HardProblem
 
     # HardProblem::item_has_been_destroyed(uuid)
     def self.item_has_been_destroyed(uuid)
-        Index1::extractDataFromFile(Index1::getReducedDatabaseFilepath())
+        Index1::extractDataFromFile(Index1::getDatabaseFilepath())
             .select{|entry| entry["itemuuid"] == uuid }
             .each{|entry|
                 Index1::removeEntry(entry["mikuType"], entry["itemuuid"])
@@ -20,7 +20,7 @@ class HardProblem
 
     # HardProblem::item_could_not_be_found_on_disk(uuid)
     def self.item_could_not_be_found_on_disk(uuid)
-        Index1::extractDataFromFile(Index1::getReducedDatabaseFilepath())
+        Index1::extractDataFromFile(Index1::getDatabaseFilepath())
             .select{|entry| entry["itemuuid"] == uuid }
             .each{|entry|
                 Index1::removeEntry(entry["mikuType"], entry["itemuuid"])

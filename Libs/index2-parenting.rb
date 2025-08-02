@@ -59,13 +59,13 @@ class Index2
         data
     end
 
-    # Index2::getReducedDatabaseFilepath()
-    def self.getReducedDatabaseFilepath()
+    # Index2::getDatabaseFilepath()
+    def self.getDatabaseFilepath()
         filepaths = Index2::filepaths()
 
         if filepaths.size == 0 then
             Index2::initiateDatabaseFile()
-            return Index2::getReducedDatabaseFilepath()
+            return Index2::getDatabaseFilepath()
         end
 
         if filepaths.size == 1 then
@@ -101,7 +101,7 @@ class Index2
 
     # Index2::insertEntry(parentuuid, childuuid, position)
     def self.insertEntry(parentuuid, childuuid, position)
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -116,7 +116,7 @@ class Index2
 
     # Index2::removeIdentifierFromDatabase(uuid)
     def self.removeIdentifierFromDatabase(uuid)
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -135,7 +135,7 @@ class Index2
     # Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
     def self.parentuuidToChildrenuuidsInOrder(parentuuid)
         uuids = []
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -150,7 +150,7 @@ class Index2
     # Index2::parentuuidToChildrenPositions(parentuuid)
     def self.parentuuidToChildrenPositions(parentuuid)
         positions = []
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -165,7 +165,7 @@ class Index2
     # Index2::hasChildren(parentuuid)
     def self.hasChildren(parentuuid)
         answer = false
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -208,7 +208,7 @@ class Index2
     # Index2::childuuidToParentuuidOrNull(childuuid)
     def self.childuuidToParentuuidOrNull(childuuid)
         parentuuid = nil
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -242,7 +242,7 @@ class Index2
     # Index2::childPositionAtParentOrZero(childuuid, parentuuid)
     def self.childPositionAtParentOrZero(childuuid, parentuuid)
         position = 0
-        filepath = Index2::getReducedDatabaseFilepath()
+        filepath = Index2::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }

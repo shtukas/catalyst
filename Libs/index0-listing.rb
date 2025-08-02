@@ -47,19 +47,18 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::extractDataFromFileEntriesInOrder(filepath)
-    def self.extractDataFromFileEntriesInOrder(filepath)
+    # Index0::extractDataFromFile(filepath)
+    def self.extractDataFromFile(filepath)
         data = []
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("select * from listing order by position", []) do |row|
-            item = JSON.parse(row["item"])
             data << {
                 "itemuuid" => row["itemuuid"],
                 "utime"    => row["utime"],
-                "item"     => item,
+                "item"     => JSON.parse(row["item"]),
                 "mikuType" => row["mikuType"],
                 "position" => row["position"],
                 "listing_line" => row["listing_line"]
@@ -110,7 +109,7 @@ class Index0
         # possibly add them to filepath1, if either:
         #   - there was no equivalent in filepath1
         #   - it's a newer record than the one in filepath1
-        Index0::extractDataFromFileEntriesInOrder(filepath2).each{|entry2|
+        Index0::extractDataFromFile(filepath2).each{|entry2|
             shouldInject = false
             entry1 = Index0::extractEntryOrNullFromFilepath(filepath1, entry2["item"]["uuid"])
             if entry1 then
@@ -132,8 +131,8 @@ class Index0
         Index0::ensureContentAddressing(filepath1)
     end
 
-    # Index0::getReducedDatabaseFilepath()
-    def self.getReducedDatabaseFilepath()
+    # Index0::getDatabaseFilepath()
+    def self.getDatabaseFilepath()
         filepaths = Index0::filepaths()
 
         # This case should not really happen (anymore), so if the condition 
@@ -160,7 +159,7 @@ class Index0
     # Index0::hasItem(itemuuid)
     def self.hasItem(itemuuid)
         answer = false
-        filepath = Index0::getReducedDatabaseFilepath()
+        filepath = Index0::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -175,7 +174,7 @@ class Index0
     # Index0::getPositionOrNull(itemuuid)
     def self.getPositionOrNull(itemuuid)
         position = nil
-        filepath = Index0::getReducedDatabaseFilepath()
+        filepath = Index0::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -189,7 +188,7 @@ class Index0
 
     # Index0::insertUpdateEntryComponents1(item, position, listing_line)
     def self.insertUpdateEntryComponents1(item, position, listing_line)
-        filepath = Index0::getReducedDatabaseFilepath()
+        filepath = Index0::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -205,7 +204,7 @@ class Index0
     # Index0::updatePosition(itemuuid, position)
     def self.updatePosition(itemuuid, position)
         return if !Index0::hasItem(itemuuid)
-        filepath = Index0::getReducedDatabaseFilepath()
+        filepath = Index0::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -219,7 +218,7 @@ class Index0
 
     # Index0::removeEntry(itemuuid)
     def self.removeEntry(itemuuid)
-        filepath = Index0::getReducedDatabaseFilepath()
+        filepath = Index0::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -260,7 +259,7 @@ class Index0
 
     # Index0::entriesInOrder()
     def self.entriesInOrder()
-        Index0::extractDataFromFileEntriesInOrder(Index0::getReducedDatabaseFilepath())
+        Index0::extractDataFromFile(Index0::getDatabaseFilepath())
             .sort_by{|item| item["position"] }
     end
 

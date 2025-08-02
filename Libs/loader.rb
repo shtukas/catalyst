@@ -135,6 +135,7 @@ require_relative "Dx8Units.rb"
 require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "DoNotShowUntil.rb"
+require_relative "Datablocks.rb"
 
 require_relative "Fsck.rb"
 
@@ -149,6 +150,7 @@ require_relative "Instances.rb"
 require_relative "index0-listing.rb"
 require_relative "index1-mikutype-to-items.rb"
 require_relative "index2-parenting.rb"
+require_relative "index3-items.rb"
 
 require_relative "Listing.rb"
 

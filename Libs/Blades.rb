@@ -197,25 +197,17 @@ class Blades
 
     # Blades::putBlob(uuid, datablob)
     def self.putBlob(uuid, datablob)
-        filepath = uuidToBladeFilepathOrNull(uuid)
-        if filepath.nil? then
-            raise "(error: 1e1a1a4b) could not find the filepath for uuid: #{uuid}"
-        end
-        nhash = "SHA256-#{Digest::SHA256.hexdigest(datablob)}"
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from blade where _key_=?", [nhash])
-        db.execute("insert into blade (_key_, _data_) values (?, ?)", [nhash, datablob])
-        db.commit
-        db.close
-        nhash
+        Datablocks::putDatablob(uuid, datablob)
     end
 
     # Blades::getBlob(uuid, nhash)
     def self.getBlob(uuid, nhash)
+
+        datablob = Datablocks::getDatablobOrNull(uuid, nhash)
+        if datablob then
+            return datablob
+        end
+
         filepath = uuidToBladeFilepathOrNull(uuid)
         if filepath.nil? then
             raise "(error: ed215999) could not find the filepath for uuid: #{uuid}"
@@ -232,6 +224,12 @@ class Blades
         if datablob and "SHA256-#{Digest::SHA256.hexdigest(datablob)}" != nhash then
             raise "This is an extremelly odd condition. Retrived the datablob, but its nhash doens't check. uuid: #{uuid}, nhash: #{nhash}"
         end
+
+        if datablob then
+            puts "moving the blob from blade to datablocks: #{nhash}".yellow
+            Blades::putBlob(uuid, datablob)
+        end
+
         datablob
     end
 

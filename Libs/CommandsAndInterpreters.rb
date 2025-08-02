@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines | todays | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
-            "misc          : search | commands | fsck-all | probe-head | sort",
+            "misc          : search | commands | fsck | probe-head | sort",
         ].join("\n")
     end
 
@@ -219,7 +219,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("fsck-all", input) then
+        if Interpreting::match("fsck", input) then
             Fsck::fsckAll()
             return
         end

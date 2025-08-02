@@ -58,14 +58,14 @@ class Index1
         data
     end
 
-    # Index1::getReducedDatabaseFilepath()
-    def self.getReducedDatabaseFilepath()
+    # Index1::getDatabaseFilepath()
+    def self.getDatabaseFilepath()
         filepaths = Index1::filepaths()
 
         if filepaths.size == 0 then
             Index1::initiateDatabaseFile()
             Index1::maintenance()
-            return Index1::getReducedDatabaseFilepath()
+            return Index1::getDatabaseFilepath()
         end
 
         if filepaths.size == 1 then
@@ -111,7 +111,7 @@ class Index1
     # Index1::hasEntry(mikuType, itemuuid)
     def self.hasEntry(mikuType, itemuuid)
         answer = false
-        filepath = Index1::getReducedDatabaseFilepath()
+        filepath = Index1::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -125,7 +125,7 @@ class Index1
 
     # Index1::insertEntry(mikuType, itemuuid)
     def self.insertEntry(mikuType, itemuuid)
-        filepath = Index1::getReducedDatabaseFilepath()
+        filepath = Index1::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -140,7 +140,7 @@ class Index1
 
     # Index1::removeEntry(mikuType, itemuuid)
     def self.removeEntry(mikuType, itemuuid)
-        filepath = Index1::getReducedDatabaseFilepath()
+        filepath = Index1::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -154,7 +154,7 @@ class Index1
 
     # Index1::removeItem(itemuuid)
     def self.removeItem(itemuuid)
-        filepath = Index1::getReducedDatabaseFilepath()
+        filepath = Index1::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -171,7 +171,7 @@ class Index1
 
     # Index1::mikuTypeItemuuids(mikuType)
     def self.mikuTypeItemuuids(mikuType)
-        Index1::extractDataFromFile(Index1::getReducedDatabaseFilepath())
+        Index1::extractDataFromFile(Index1::getDatabaseFilepath())
             .select{|entry| entry["mikuType"] == mikuType }
             .map{|entry| entry["itemuuid"] }
             .uniq
@@ -198,7 +198,7 @@ class Index1
 
     # Index1::mikutypes()
     def self.mikutypes()
-        Index1::extractDataFromFile(Index1::getReducedDatabaseFilepath())
+        Index1::extractDataFromFile(Index1::getDatabaseFilepath())
             .map{|entry| entry["mikuType"] }
             .uniq
     end
