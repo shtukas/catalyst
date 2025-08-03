@@ -194,17 +194,26 @@ class Index3
 
     # Index3::deleteEntry(uuid)
     def self.deleteEntry(uuid)
-        filepath = Index3::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        #db.transaction
-        db.execute("delete from items where uuid=?", [uuid])
-        #db.commit
-        db.execute("vacuum", [])
-        db.close
-        Index3::ensureContentAddressing(filepath)
+        
+        # Version 1
+        # We are not doign version 1 anymore, because 
+        # A deletion in the local file at the same time as 
+        # any change in another instance, would create two seperate file
+        # that when merged brings back the deleted item (the merger sees an item 
+        # in one file and not the other and thinks that it's a new item).
+
+        #filepath = Index3::getDatabaseFilepath()
+        #db = SQLite3::Database.new(filepath)
+        #db.busy_timeout = 117
+        #db.busy_handler { |count| true }
+        #db.results_as_hash = true
+        #db.execute("delete from items where uuid=?", [uuid])
+        #db.execute("vacuum", [])
+        #db.close
+        #Index3::ensureContentAddressing(filepath)
+
+        # Version 2
+        Index3::setAttribute(uuid, "mikuType", "NxDeleted")
     end
 
     # ------------------------------------------------------

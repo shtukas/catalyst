@@ -1,0 +1,4 @@
+NxDeleted:
+    - uuid     : String
+    - mikyType : "NxDeleted"
+
