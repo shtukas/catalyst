@@ -43,8 +43,8 @@ class Operations
         Index1::maintenance()
         puts "NxTasks::maintenance()"
         NxTasks::maintenance()
-        puts "Bank1::maintenance()"
-        Bank1::maintenance()
+        puts "Index4::maintenance()"
+        Index4::maintenance()
     end
 
     # Operations::interactivelyGetLines()

@@ -1,13 +1,13 @@
 
 =begin
-create table index3 (
+create table items (
     uuid text non null primary key,
     utime real non null,
     item text non null,
     mikyType text non null,
     description text non null
 );
-CREATE INDEX index1 ON index3(uuid, mikyType);
+CREATE INDEX index1 ON items(uuid, mikyType);
 =end
 
 class Index3
@@ -201,6 +201,7 @@ class Index3
         db.results_as_hash = true
         db.transaction
         db.execute("delete from items where uuid=?", [uuid])
+        db.execute("vacuum", [])
         db.commit
         db.close
         Index3::ensureContentAddressing(filepath)

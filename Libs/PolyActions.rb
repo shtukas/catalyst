@@ -442,7 +442,7 @@ class PolyActions
     def self.addTimeToItem(item, timeInSeconds)
         PolyFunctions::itemToBankingAccounts(item).each{|account|
             puts "Adding #{timeInSeconds} seconds to account: #{account["description"]}"
-            Bank1::put(account["number"], CommonUtils::today(), timeInSeconds)
+            Index4::insertValue(account["number"], CommonUtils::today(), timeInSeconds)
         }
     end
 

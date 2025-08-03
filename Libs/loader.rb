@@ -151,6 +151,7 @@ require_relative "index0-listing.rb"
 require_relative "index1-mikutype-to-items.rb"
 require_relative "index2-parenting.rb"
 require_relative "index3-items.rb"
+require_relative "index4-banking.rb"
 
 require_relative "Listing.rb"
 
