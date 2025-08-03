@@ -99,7 +99,7 @@ class Operations
     # Operations::interactivelySetDonation(item) -> Item
     def self.interactivelySetDonation(item)
         target = Operations::interactivelySelectTargetForDonationOrNull()
-        return if target.nil?
+        return item if target.nil?
         Index3::setAttribute(item["uuid"], "donation-1205", target["uuid"])
         Index3::itemOrNull(item["uuid"])
     end
