@@ -214,6 +214,7 @@ class Index3
 
         # Version 2
         Index3::setAttribute(uuid, "mikuType", "NxDeleted")
+        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
     end
 
     # ------------------------------------------------------
