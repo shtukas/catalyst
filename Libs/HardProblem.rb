@@ -17,6 +17,7 @@ class HardProblem
                 Index1::removeEntry(entry["mikuType"], entry["itemuuid"])
             }
         Index2::removeIdentifierFromDatabase(uuid)
+        Index0::removeEntry(uuid)
     end
 
     # HardProblem::item_could_not_be_found_on_disk(uuid)

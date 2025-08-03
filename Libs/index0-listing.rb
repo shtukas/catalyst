@@ -349,6 +349,10 @@ class Index0
             return DoNotShowUntil::isVisible(item["uuid"])
         end
 
+        if item["mikuType"] == "NxDeleted" then
+            return false
+        end
+
         puts "I do not know how to Index0::isListable(#{JSON.pretty_generate(item)})"
         raise "(error: 3ae9fe86)"
     end
