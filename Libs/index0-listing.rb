@@ -245,12 +245,12 @@ class Index0
             .sort
     end
 
-    # Index0::ensureContentAddressing(filepath)
-    def self.ensureContentAddressing(filepath)
-        filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
+    # Index0::ensureContentAddressing(filepath1)
+    def self.ensureContentAddressing(filepath1)
+        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.sqlite3"
         filepath2 = "#{Index0::directory()}/#{filename2}"
-        return filepath if filepath == filepath2
-        FileUtils.mv(filepath, filepath2)
+        return filepath1 if filepath1 == filepath2
+        FileUtils.mv(filepath1, filepath2)
         filepath2
     end
 

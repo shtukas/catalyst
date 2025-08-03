@@ -4,10 +4,10 @@ create table items (
     uuid text non null primary key,
     utime real non null,
     item text non null,
-    mikyType text non null,
+    mikuType text non null,
     description text non null
 );
-CREATE INDEX index1 ON items(uuid, mikyType);
+CREATE INDEX index1 ON items(uuid, mikuType);
 =end
 
 class Index3
@@ -48,10 +48,10 @@ class Index3
             uuid text non null primary key,
             utime real non null,
             item text non null,
-            mikyType text non null,
+            mikuType text non null,
             description text non null
         )", [])
-        db.execute("CREATE INDEX items_index ON items(uuid, mikyType);", [])
+        db.execute("CREATE INDEX items_index ON items(uuid, mikuType);", [])
         db.commit
         db.close
         Index3::ensureContentAddressing(filepath)
@@ -61,7 +61,7 @@ class Index3
     def self.insertUpdateItemAtFile(filepath, item)
         uuid = item["uuid"]
         utime = Time.new.to_f
-        mikyType = item["mikuType"]
+        mikuType = item["mikuType"]
         description = decideDescription(item)
 
         db = SQLite3::Database.new(filepath)
@@ -70,7 +70,7 @@ class Index3
         db.results_as_hash = true
         db.transaction
         db.execute("delete from items where uuid=?", [uuid])
-        db.execute("insert into items (uuid, utime, item, mikyType, description) values (?, ?, ?, ?, ?)", [uuid, utime, JSON.generate(item), mikyType, description])
+        db.execute("insert into items (uuid, utime, item, mikuType, description) values (?, ?, ?, ?, ?)", [uuid, utime, JSON.generate(item), mikuType, description])
         db.commit
         db.close
         Index3::ensureContentAddressing(filepath)
@@ -178,7 +178,7 @@ class Index3
             # The logic here is to read the items from filepath2 and 
             # possibly add them to filepath1.
             # We get an updated filepath1 because of content addressing.
-            filepath1 = Index0::mergeTwoDatabaseFiles(filepath1, filepath)
+            filepath1 = Index3::mergeTwoDatabaseFiles(filepath1, filepath)
         }
         filepath1
     end
@@ -287,8 +287,8 @@ class Index3
         mikuTypes
     end
 
-    # Index3::mikyType(mikuType) -> Array[Item]
-    def self.mikyType(mikuType)
+    # Index3::mikuType(mikuType) -> Array[Item]
+    def self.mikuType(mikuType)
         items = []
         db = SQLite3::Database.new(Index3::getDatabaseFilepath())
         db.busy_timeout = 117
