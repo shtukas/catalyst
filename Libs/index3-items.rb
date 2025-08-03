@@ -199,10 +199,10 @@ class Index3
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.transaction
+        #db.transaction
         db.execute("delete from items where uuid=?", [uuid])
+        #db.commit
         db.execute("vacuum", [])
-        db.commit
         db.close
         Index3::ensureContentAddressing(filepath)
     end
