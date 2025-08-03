@@ -275,15 +275,21 @@ class Operations
 
     # Operations::interactivelyDecideDayPriorityItems()
     def self.interactivelyDecideDayPriorityItems()
-        puts "Select dated items you actually gonna to do today"
+
         dateds = Index1::mikuTypeItems("NxDated").select{|item| item["date"][0, 10] <= CommonUtils::today() }
-        dateds.each{|item| Index0::removeEntry(item["uuid"]) }
+        dateds.each{|item|
+            position = Index0::determinePositionInInterval(item, 0.80, 0.90)
+            Index0::insertUpdateItemAtPosition(item, position)
+        }
         selected_dateds, _ = LucilleCore::selectZeroOrMore("", [], dateds, lambda { |item| PolyFunctions::toString(item) })
 
         puts "Select projects you want to work on today"
         projects = Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] }
-        projects.each{|item| Index0::removeEntry(item["uuid"]) }
-        selected_projects, _ = LucilleCore::selectZeroOrMore("", [], projects, lambda { |item| PolyFunctions::toString(item) })
+        projects.each{|item|
+            position = Index0::determinePositionInInterval(item, 0.80, 0.90)
+            Index0::insertUpdateItemAtPosition(item, position)
+        }
+        selected_projects, = LucilleCore::selectZeroOrMore("", [], projects, lambda { |item| PolyFunctions::toString(item) })
 
         puts "Indicate ordering"
         selected, unselected = LucilleCore::selectZeroOrMore("", [], selected_dateds + selected_projects, lambda { |item| PolyFunctions::toString(item) })

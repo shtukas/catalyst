@@ -362,18 +362,18 @@ class Index0
         # 0.00 -> 0.20
 
         # Natural Positions
-        # 0.26 NxAnniversary
-        # 0.28 NxLambda
-        # 0.30 Wave sticky
-        # 0.32 Wave interruption
-        # 0.35 NxLine
-        # 0.39 NxFloat
-        # 0.40 NxBackup
-        # 0.45 NxDated
-        # 0.50 NxProject
-        # 0.60 Wave
-        # 0.70 NxCore & NxTask
-        # 0.80 Bottom
+        # 0.26 -> 0.28 NxAnniversary
+        # 0.28 -> 0.30 NxLambda
+        # 0.30 -> 0.32 Wave sticky
+        # 0.32 -> 0.35 Wave interruption
+        # 0.35 -> 0.39 NxLine
+        # 0.39 -> 0.40 NxFloat
+        # 0.40 -> 0.45 NxBackup
+        # 0.45 -> 0.50 NxDated
+        # 0.50 -> 0.60 NxProject
+        # 0.60 -> 0.70 Wave
+        # 0.70 -> 0.80 NxCore & NxTask
+        # 0.80 -> 0.90 Not required but wonderful if done
 
         if item["mikuType"] == "NxLambda" then
             return Index0::determinePositionInInterval(item, 0.28, 0.30)
