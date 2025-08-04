@@ -91,7 +91,7 @@ class Listing
 
         if XCacheExensions::trueNoMoreOftenThanNSeconds("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", 3600) then
             puts "Running listing maintenance (every hour)"
-            Index0::listingMaintenance()
+            Index0::maintenance()
             XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 

@@ -79,7 +79,7 @@ class CommandsAndInterpreters
             itemsInOrder = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
-                position = 0.9 * Index0::firstPositionInDatabase()
+                position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
                 Index0::updatePosition(i["uuid"], position)
             }
             return
@@ -135,7 +135,7 @@ class CommandsAndInterpreters
                 Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             end
             item = Operations::interactivelySetDonation(item)
-            Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, Index0::decideListingLine(item))
+            Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, nil, Index0::decideListingLine(item))
             NxBalls::start(item)
             return
         end
@@ -152,7 +152,7 @@ class CommandsAndInterpreters
                     item = NxLines::interactivelyIssueNew(nil, line)
                     Operations::interactivelySetDonation(item)
                     item = Index3::itemOrNull(item["uuid"])
-                    Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, Index0::decideListingLine(item))
+                    Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, nil, Index0::decideListingLine(item))
                     last_item = item
                 }
             if last_item then
@@ -177,7 +177,7 @@ class CommandsAndInterpreters
             item = NxLines::interactivelyIssueNew(nil, line)
             Operations::interactivelySetDonation(item)
             item = Index3::itemOrNull(item["uuid"])
-            Index0::insertUpdateEntryComponents1(item, position, Index0::decideListingLine(item))
+            Index0::insertUpdateEntryComponents1(item, position, nil, Index0::decideListingLine(item))
             return
         end
 

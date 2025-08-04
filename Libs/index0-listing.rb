@@ -12,6 +12,7 @@ CREATE TABLE listing (
     item TEXT NOT NULL,
     mikuType TEXT NOT NULL,
     position REAL NOT NULL,
+    position_override REAL,
     listing_line TEXT NOT NULL
 );
 
@@ -27,7 +28,28 @@ listing_line :
 class Index0
 
     # ------------------------------------------------------
-    # Only Database Manipulations
+    # Basic IO management
+
+    # Index0::directory()
+    def self.directory()
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index0-listing"
+    end
+
+    # Index0::filepaths()
+    def self.filepaths()
+        LucilleCore::locationsAtFolder(Index0::directory())
+            .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
+            .sort
+    end
+
+    # Index0::ensureContentAddressing(filepath1)
+    def self.ensureContentAddressing(filepath1)
+        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.sqlite3"
+        filepath2 = "#{Index0::directory()}/#{filename2}"
+        return filepath1 if filepath1 == filepath2
+        FileUtils.mv(filepath1, filepath2)
+        filepath2
+    end
 
     # Index0::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
@@ -41,66 +63,10 @@ class Index0
         # Because we are doing content addressing we need the newly created database to be distinct that one that could already be there.
         db.execute("CREATE TABLE random (value REAL)", [])
         db.execute("insert into random (value) values (?)", [rand])
-        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, item TEXT NOT NULL, mikuType TEXT NOT NULL, position REAL NOT NULL, listing_line TEXT NOT NULL)", [])
+        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, item TEXT NOT NULL, mikuType TEXT NOT NULL, position REAL NOT NULL, position_override REAL, listing_line TEXT NOT NULL)", [])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
-    end
-
-    # Index0::extractDataFromFile(filepath)
-    def self.extractDataFromFile(filepath)
-        data = []
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from listing order by position", []) do |row|
-            data << {
-                "itemuuid" => row["itemuuid"],
-                "utime"    => row["utime"],
-                "item"     => JSON.parse(row["item"]),
-                "mikuType" => row["mikuType"],
-                "position" => row["position"],
-                "listing_line" => row["listing_line"]
-            }
-        end
-        db.close
-        data
-    end
-
-    # Index0::extractEntryOrNullFromFilepath(filepath, itemuuid)
-    def self.extractEntryOrNullFromFilepath(filepath, itemuuid)
-        data = nil
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
-            item = JSON.parse(row["item"])
-            data = {
-                "itemuuid" => row["itemuuid"],
-                "utime"    => row["utime"],
-                "item"     => item,
-                "mikuType" => row["mikuType"],
-                "position" => row["position"],
-                "listing_line" => row["listing_line"]
-            }
-        end
-        db.close
-        data
-    end
-
-    # Index0::insertUpdateEntryComponents2(filepath, utime, item, position, listing_line)
-    def self.insertUpdateEntryComponents2(filepath, utime, item, position, listing_line)
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [item["uuid"]])
-        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, listing_line) values (?, ?, ?, ?, ?, ?)", [item["uuid"], utime, JSON.generate(item), item["mikuType"], position, listing_line])
-        db.commit
-        db.close
     end
 
     # Index0::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
@@ -123,7 +89,7 @@ class Index0
                 shouldInject = true
             end
             if shouldInject then
-                Index0::insertUpdateEntryComponents2(filepath1, entry2["utime"], entry2["item"], entry2["position"], entry2["listing_line"])
+                Index0::insertUpdateEntryComponents2(filepath1, entry2["utime"], entry2["item"], entry2["position"], entry2["position_override"], entry2["listing_line"])
             end
         }
         # Then when we are done, we delete filepath2
@@ -156,6 +122,54 @@ class Index0
         filepath1
     end
 
+    # ------------------------------------------------------
+    # Getters
+
+    # Index0::extractDataFromFile(filepath)
+    def self.extractDataFromFile(filepath)
+        data = []
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing order by position", []) do |row|
+            data << {
+                "itemuuid" => row["itemuuid"],
+                "utime"    => row["utime"],
+                "item"     => JSON.parse(row["item"]),
+                "mikuType" => row["mikuType"],
+                "position" => row["position"],
+                "position_override" => row["position_override"],
+                "listing_line" => row["listing_line"]
+            }
+        end
+        db.close
+        data
+    end
+
+    # Index0::extractEntryOrNullFromFilepath(filepath, itemuuid)
+    def self.extractEntryOrNullFromFilepath(filepath, itemuuid)
+        data = nil
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
+            item = JSON.parse(row["item"])
+            data = {
+                "itemuuid" => row["itemuuid"],
+                "utime"    => row["utime"],
+                "item"     => item,
+                "mikuType" => row["mikuType"],
+                "position" => row["position"],
+                "position_override" => row["position_override"],
+                "listing_line" => row["listing_line"]
+            }
+        end
+        db.close
+        data
+    end
+
     # Index0::hasItem(itemuuid)
     def self.hasItem(itemuuid)
         answer = false
@@ -186,8 +200,39 @@ class Index0
         position
     end
 
-    # Index0::insertUpdateEntryComponents1(item, position, listing_line)
-    def self.insertUpdateEntryComponents1(item, position, listing_line)
+    # Index0::getPositionOverrideOrNull(itemuuid)
+    def self.getPositionOverrideOrNull(itemuuid)
+        position_override = nil
+        filepath = Index0::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
+            position_override = row["position_override"]
+        end
+        db.close
+        position_override
+    end
+
+    # ------------------------------------------------------
+    # Database Updates
+
+    # Index0::insertUpdateEntryComponents2(filepath, utime, item, position, position_override, listing_line)
+    def self.insertUpdateEntryComponents2(filepath, utime, item, position, position_override, listing_line)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [item["uuid"]])
+        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_override, listing_line) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], utime, JSON.generate(item), item["mikuType"], position, position_override, listing_line])
+        db.commit
+        db.close
+    end
+
+    # Index0::insertUpdateEntryComponents1(item, position, position_override, listing_line)
+    def self.insertUpdateEntryComponents1(item, position, position_override, listing_line)
         filepath = Index0::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -195,7 +240,7 @@ class Index0
         db.results_as_hash = true
         db.transaction
         db.execute("delete from listing where itemuuid=?", [item["uuid"]])
-        db.execute("insert into listing (itemuuid, utime, position, item, listing_line) values (?, ?, ?, ?, ?)", [item["uuid"], Time.new.to_f, position, JSON.generate(item), listing_line])
+        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_override, listing_line) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], Time.new.to_f, JSON.generate(item), item["mikuType"], position, position_override, listing_line])
         db.commit
         db.close
         Index0::ensureContentAddressing(filepath)
@@ -216,6 +261,36 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
+    # Index0::setPositionOverride(itemuuid, position_override)
+    def self.setPositionOverride(itemuuid, position_override)
+        return if !Index0::hasItem(itemuuid)
+        filepath = Index0::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position_override=?, utime=? where itemuuid=?", [position_override, Time.new.to_f, itemuuid])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
+    # Index0::updatePositionOverride(itemuuid, position_override)
+    def self.updatePositionOverride(itemuuid, position_override)
+        return if !Index0::hasItem(itemuuid)
+        filepath = Index0::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position_override=?, utime=? where itemuuid=?", [position_override, Time.new.to_f, itemuuid])
+        db.commit
+        db.close
+        Index0::ensureContentAddressing(filepath)
+    end
+
     # Index0::removeEntry(itemuuid)
     def self.removeEntry(itemuuid)
         filepath = Index0::getDatabaseFilepath()
@@ -230,51 +305,11 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # ------------------------------------------------------
-    # Basic IO management
-
-    # Index0::directory()
-    def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index0-listing"
-    end
-
-    # Index0::filepaths()
-    def self.filepaths()
-        LucilleCore::locationsAtFolder(Index0::directory())
-            .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
-            .sort
-    end
-
-    # Index0::ensureContentAddressing(filepath1)
-    def self.ensureContentAddressing(filepath1)
-        filename2 = "#{Digest::SHA1.file(filepath1).hexdigest}.sqlite3"
-        filepath2 = "#{Index0::directory()}/#{filename2}"
-        return filepath1 if filepath1 == filepath2
-        FileUtils.mv(filepath1, filepath2)
-        filepath2
-    end
-
-    # ------------------------------------------------------
-    # Getters
-
-    # Index0::entriesInOrder()
-    def self.entriesInOrder()
-        Index0::extractDataFromFile(Index0::getDatabaseFilepath())
-            .sort_by{|item| item["position"] }
-    end
-
-    # Index0::firstPositionInDatabase()
-    def self.firstPositionInDatabase()
-        entries = Index0::entriesInOrder()
-        return 1 if entries.empty?
-        entries.map{|e| e["position"] }.min
-    end
-
-    # Index0::itemsForListing(excludeuuids)
-    def self.itemsForListing(excludeuuids)
-        Index0::entriesInOrder()
-            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
-            .sort_by{|entry| entry["position"] }
+    # Index0::insertUpdateItemAtPosition(item, position)
+    def self.insertUpdateItemAtPosition(item, position)
+        listing_line = Index0::decideListingLine(item)
+        position_override = Index0::getPositionOverrideOrNull(itemuuid)
+        Index0::insertUpdateEntryComponents1(item, position, position_override, listing_line)
     end
 
     # ------------------------------------------------------
@@ -301,6 +336,7 @@ class Index0
     def self.determinePositionInInterval(item, x0, x1)
         entries = Index0::entriesInOrder()
         entries_similar_positions = entries
+            .select{|e| e["item"]["uuid"] != item["uuid"] }
             .select{|e| e["item"]["mikuType"] == item["mikuType"] }
             .select{|e| e["position"] >= x0 and e["position"] < x1 }
             .map{|e| e["position"] }
@@ -368,18 +404,25 @@ class Index0
         # Manually positioned (example for sorting)
         # 0.00 -> 0.20
 
+        # NxLines do not have a natural position, they have the position that
+        # had when created or when they were repositioned due to sorting.
+        # They are essentially only created for priority items, with the
+        # exception of Desktop/Dispatch/Line-Stream, which are put at 0.21.
+
         # Natural Positions
         # 0.26 -> 0.28 NxAnniversary
         # 0.28 -> 0.30 NxLambda
         # 0.30 -> 0.32 Wave sticky
         # 0.32 -> 0.35 Wave interruption
-        # 0.35 -> 0.39 NxLine
         # 0.39 -> 0.40 NxFloat
         # 0.40 -> 0.45 NxBackup
         # 0.45 -> 0.50 NxDated
-        # 0.50 -> 0.60 NxProject
-        # 0.60 -> 0.70 Wave
-        # 0.70 -> 0.80 NxCore & NxTask
+
+        # 0.50 -> 0.80 Dynamic positioning of
+        #              NxProject
+        #              Wave
+        #              NxCore & NxTask
+
         # 0.80 -> 0.90 Not required but wonderful if done
 
         if item["mikuType"] == "NxLambda" then
@@ -397,23 +440,10 @@ class Index0
             if item["nx46"]["type"] == "sticky" then
                 return Index0::determinePositionInInterval(item, 0.30, 0.32)
             end
-            return Index0::determinePositionInInterval(item, 0.60, 0.70)
-        end
-
-        if item["mikuType"] == "NxCore" then
-            return Index0::determinePositionInInterval(item, 0.70, 0.80)
-        end
-
-        if item["mikuType"] == "NxTask" then
-            return Index0::determinePositionInInterval(item, 0.70, 0.80)
-        end
-
-        if item["mikuType"] == "NxProject" then
-            return Index0::determinePositionInInterval(item, 0.50, 0.60)
         end
 
         if item["mikuType"] == "NxLine" then
-            return Index0::determinePositionInInterval(item, 0.35, 0.39)
+            return (Index0::getPositionOverrideOrNull(item["uuid"]) || Index0::getPositionOrNull(item["uuid"])) || 0.21
         end
 
         if item["mikuType"] == "NxDated" then
@@ -428,6 +458,26 @@ class Index0
             return Index0::determinePositionInInterval(item, 0.40, 0.45)
         end
 
+        if item["mikuType"] == "Wave" then
+            return 0.60 # Default positioning in 0.50 -> 0.80
+                        # Will be dynamically computed by Index0::itemsForListing
+        end
+
+        if item["mikuType"] == "NxCore" then
+            return 0.60 # Default positioning in 0.50 -> 0.80
+                        # Will be dynamically computed by Index0::itemsForListing
+        end
+
+        if item["mikuType"] == "NxTask" then
+            return 0.60 # Default positioning in 0.50 -> 0.80
+                        # Will be dynamically computed by Index0::itemsForListing
+        end
+
+        if item["mikuType"] == "NxProject" then
+            return 0.60 # Default positioning in 0.50 -> 0.80
+                        # Will be dynamically computed by Index0::itemsForListing
+        end
+
         puts "I do not know how to Index0::decidePosition(#{JSON.pretty_generate(item)})"
         raise "(error: 3ae9fe86)"
     end
@@ -439,14 +489,37 @@ class Index0
         Index0::decidePosition(item)
     end
 
-    # --------------------------------------------------
-    # Setters and updaters
+    # ------------------------------------------------------
+    # Data
 
-    # Index0::insertUpdateItemAtPosition(item, position)
-    def self.insertUpdateItemAtPosition(item, position)
-        listing_line = Index0::decideListingLine(item)
-        Index0::insertUpdateEntryComponents1(item, position, listing_line)
+    # Index0::entriesInOrder()
+    def self.entriesInOrder()
+        Index0::extractDataFromFile(Index0::getDatabaseFilepath())
+            .sort_by{|entry| entry["position_override"] || entry["position"] }
     end
+
+    # Index0::firstPositionInDatabase()
+    def self.firstPositionInDatabase()
+        entries = Index0::entriesInOrder()
+        return 1 if entries.empty?
+        entries.map{|entry| entry["position_override"] || entry["position"] }.min
+    end
+
+    # Index0::itemsForListing(excludeuuids)
+    def self.itemsForListing(excludeuuids)
+
+        # 0.50 -> 0.80 Dynamic positioning of
+        #              NxProject
+        #              Wave
+        #              NxCore & NxTask
+
+        Index0::entriesInOrder()
+            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
+            .sort_by{|entry| entry["position_override"] || entry["position"] }
+    end
+
+    # ------------------------------------------------------
+    # Operations
 
     # Index0::evaluate(itemuuid)
     def self.evaluate(itemuuid)
@@ -460,35 +533,16 @@ class Index0
             return
         end
         position = Index0::getExistingPositionOrDecideNew(item)
+        position_override = Index0::getPositionOverrideOrNull(item["uuid"])
         listing_line = Index0::decideListingLine(item)
-        Index0::insertUpdateEntryComponents1(item, position, listing_line)
+        Index0::insertUpdateEntryComponents1(item, position, position_override, listing_line)
     end
 
-    # ------------------------------------------------------
-    # Operations
-
-    # Index0::listingMaintenance()
-    def self.listingMaintenance()
-        Listing::itemsForListing1().each{|item|
-            position = Index0::getExistingPositionOrDecideNew(item)
-            if position.nil? then
-                raise "We should not have a position null from Index0::listingMaintenance(): #{item}"
-            end
-            listing_line = Index0::decideListingLine(item)
-            Index0::insertUpdateEntryComponents1(item, position, listing_line)
-        }
-
-        # We are now going to try an create a condition: one waves between any non two wave items
-        entries_wave = Index0::entriesInOrder().select{|entry| entry["item"]["mikuType"] == "Wave" }
-        entries_all = Index0::entriesInOrder()
-        loop {
-            break if (entries_all.size < 2 or entries_wave.size == 0)
-            if (entries_all[0]["mikuType"] != "Wave" and entries_all[1]["mikuType"] != "Wave") then
-                entry_wave = entries_wave.shift
-                position = 0.5*(entries_all[0]["position"] + entries_all[1]["position"])
-                Index0::updatePosition(entry_wave["itemuuid"], position)
-            end
-            entries_all.shift
-        }
+    # Index0::maintenance()
+    def self.maintenance()
+        archive_filepath = "#{Index0::directory()}/archives/#{CommonUtils::today()}.sqlite3"
+        if !File.exist?(archive_filepath) then
+            FileUtils.cp(Index1::getDatabaseFilepath(), archive_filepath)
+        end
     end
 end

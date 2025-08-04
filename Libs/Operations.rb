@@ -152,10 +152,10 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxLines::locationToLine(description, location)
-                Index0::evaluate(item["uuid"])
-                #puts JSON.pretty_generate(item)
+                Index0::insertUpdateItemAtPosition(item, 0.21)
+                puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
-                #puts PolyFunctions::toString(item)
+
             }
         end
     end
