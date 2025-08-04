@@ -76,8 +76,8 @@ class CommandsAndInterpreters
         end
 
        if Interpreting::match("sort", input) then
-            itemsInOrder = store.items()
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
+            items = store.items()
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
                 Index0::setPositionOverride(i["uuid"], position)
