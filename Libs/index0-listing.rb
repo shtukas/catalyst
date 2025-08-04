@@ -170,6 +170,11 @@ class Index0
         data
     end
 
+    # Index0::getEntryOrNull(itemuuid)
+    def self.getEntryOrNull(itemuuid)
+        Index0::extractEntryOrNullFromFilepath(Index0::getDatabaseFilepath(), itemuuid)
+    end
+
     # Index0::hasItem(itemuuid)
     def self.hasItem(itemuuid)
         answer = false
@@ -276,21 +281,6 @@ class Index0
         Index0::ensureContentAddressing(filepath)
     end
 
-    # Index0::updatePositionOverride(itemuuid, position_override)
-    def self.updatePositionOverride(itemuuid, position_override)
-        return if !Index0::hasItem(itemuuid)
-        filepath = Index0::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("update listing set position_override=?, utime=? where itemuuid=?", [position_override, Time.new.to_f, itemuuid])
-        db.commit
-        db.close
-        Index0::ensureContentAddressing(filepath)
-    end
-
     # Index0::removeEntry(itemuuid)
     def self.removeEntry(itemuuid)
         filepath = Index0::getDatabaseFilepath()
@@ -334,7 +324,7 @@ class Index0
 
     # Index0::determinePositionInInterval(item, x0, x1)
     def self.determinePositionInInterval(item, x0, x1)
-        entries = Index0::entriesInOrder()
+        entries = Index0::entries()
         entries_similar_positions = entries
             .select{|e| e["item"]["uuid"] != item["uuid"] }
             .select{|e| e["item"]["mikuType"] == item["mikuType"] }
@@ -460,22 +450,22 @@ class Index0
 
         if item["mikuType"] == "Wave" then
             return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by Index0::itemsForListing
+                        # Will be dynamically computed by Index0::entriesForListing
         end
 
         if item["mikuType"] == "NxCore" then
             return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by Index0::itemsForListing
+                        # Will be dynamically computed by Index0::entriesForListing
         end
 
         if item["mikuType"] == "NxTask" then
             return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by Index0::itemsForListing
+                        # Will be dynamically computed by Index0::entriesForListing
         end
 
         if item["mikuType"] == "NxProject" then
             return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by Index0::itemsForListing
+                        # Will be dynamically computed by Index0::entriesForListing
         end
 
         puts "I do not know how to Index0::decidePosition(#{JSON.pretty_generate(item)})"
@@ -492,30 +482,89 @@ class Index0
     # ------------------------------------------------------
     # Data
 
-    # Index0::entriesInOrder()
-    def self.entriesInOrder()
+    # Index0::entries()
+    def self.entries()
         Index0::extractDataFromFile(Index0::getDatabaseFilepath())
             .sort_by{|entry| entry["position_override"] || entry["position"] }
     end
 
     # Index0::firstPositionInDatabase()
     def self.firstPositionInDatabase()
-        entries = Index0::entriesInOrder()
+        entries = Index0::entries()
         return 1 if entries.empty?
         entries.map{|entry| entry["position_override"] || entry["position"] }.min
     end
 
-    # Index0::itemsForListing(excludeuuids)
-    def self.itemsForListing(excludeuuids)
+    # Index0::entriesForListing(excludeuuids)
+    def self.entriesForListing(excludeuuids)
+
+        entries = Index0::entries()
+            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
+
+        isDynamicallyPositioned = lambda {|entry|
+            return false if entry["position_override"]
+            return true if ["NxProject", "Wave", "NxCore", "NxTask"].include?(entry["mikuType"])
+            false
+        }
+
+        dynamically_positioned, statically_positioned = entries.partition{|entry| isDynamicallyPositioned.call(entry) }
+
+        # This is the source of this mapping, implemented in PolyFunctions::itemToBankingAccounts
+        # NxProject       common: 5144398b-a722-4fe3-aee8-ea4bcd5a59ca
+        # Wave            common: e0d8f86a-1783-4eb7-8f63-11562d8972a2
+        # NxCore & NxTask common: 69297ca5-d92e-4a73-82cc-1d009e63f4fe
 
         # 0.50 -> 0.80 Dynamic positioning of
         #              NxProject
         #              Wave
         #              NxCore & NxTask
 
-        Index0::entriesInOrder()
-            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
-            .sort_by{|entry| entry["position_override"] || entry["position"] }
+        prepareNxProjects = lambda{|entries|
+            entries.sort_by{|entry| Bank1::recoveredAverageHoursPerDay(entry["itemuuid"]) }
+        }
+
+        prepareWaves = lambda{|entries|
+            entries.sort_by{|entry| entry["item"]["lastDoneUnixtime"] }
+        }
+
+        prepareNxCoreNxTasks = lambda{|entries|
+            entries.sort_by{|entry| 
+                v = Bank1::recoveredAverageHoursPerDay(entry["itemuuid"])
+                if v < 0.2 then
+                    v = 0.2 + v.to_f/100
+                end
+                v
+            }
+        }
+
+        dynamically_positioned = [
+            {
+                "entries" => prepareNxProjects.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxProject" }),
+                "rt" => Bank1::recoveredAverageHoursPerDay("5144398b-a722-4fe3-aee8-ea4bcd5a59ca")
+            },
+            {
+                "entries" => prepareWaves.call(dynamically_positioned.select{|entry| entry["mikuType"] == "Wave" }),
+                "rt" => Bank1::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
+            },
+            {
+                "entries" => prepareNxCoreNxTasks.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxCore" or entry["mikuType"] == "NxTask" }),
+                "rt" => Bank1::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
+            }
+        ].sort_by{|packet| packet["rt"] }
+         .map{|packet| packet["entries"] }
+         .flatten
+         .map{|entry|
+            entry["position"] = nil
+            entry
+         }
+
+        # The following works because every statically_positioned comes before any 
+        # dynamically positioned, regarless of their respective orderings
+        [
+            statically_positioned
+                .sort_by{|entry| entry["position_override"] || entry["position"] },
+            dynamically_positioned
+        ].flatten
     end
 
     # ------------------------------------------------------

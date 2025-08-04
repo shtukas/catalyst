@@ -80,7 +80,7 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
-                Index0::updatePosition(i["uuid"], position)
+                Index0::setPositionOverride(i["uuid"], position)
             }
             return
         end

@@ -87,6 +87,8 @@ class Operations
         if unixtime then
             puts "do not show until: #{Time.at(unixtime).to_s} "
         end
+        entry = Index0::getEntryOrNull(item["uuid"])
+        puts JSON.pretty_generate(entry)
         LucilleCore::pressEnterToContinue()
     end
 

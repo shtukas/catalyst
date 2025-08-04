@@ -143,13 +143,15 @@ class Listing
                 break if sheight <= 4
             }
 
-        Index0::itemsForListing(runningItems.map{|i| i["uuid"]})
+        Index0::entriesForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 item = entry["item"]
                 line = entry["listing_line"]
                 store.register(item, Listing::canBeDefault(item))
                 line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
-                line = line + " (#{entry["position"]})".yellow
+                if entry["position"] then
+                    line = line + " (#{entry["position"]})".yellow
+                end
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
                 break if sheight <= 4

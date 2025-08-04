@@ -49,6 +49,51 @@ class PolyFunctions
             }
         end
 
+        # This mapping is defined in Index0::entriesForListing
+        # NxProject       common: 5144398b-a722-4fe3-aee8-ea4bcd5a59ca
+        # Wave            common: e0d8f86a-1783-4eb7-8f63-11562d8972a2
+        # NxCore & NxTask common: 69297ca5-d92e-4a73-82cc-1d009e63f4fe
+
+        if item["mikuType"] == "NxProject" then
+            # This could be seen as redundant because we have already called
+            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
+            # an opportunity to get Infinity (the Index will do that automatically)
+            accounts << {
+                "description" => "5144398b-a722-4fe3-aee8-ea4bcd5a59ca",
+                "number"      => "5144398b-a722-4fe3-aee8-ea4bcd5a59ca"
+            }
+        end
+
+        if item["mikuType"] == "Wave" then
+            # This could be seen as redundant because we have already called
+            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
+            # an opportunity to get Infinity (the Index will do that automatically)
+            accounts << {
+                "description" => "e0d8f86a-1783-4eb7-8f63-11562d8972a2",
+                "number"      => "e0d8f86a-1783-4eb7-8f63-11562d8972a2"
+            }
+        end
+
+        if item["mikuType"] == "NxCore" then
+            # This could be seen as redundant because we have already called
+            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
+            # an opportunity to get Infinity (the Index will do that automatically)
+            accounts << {
+                "description" => "69297ca5-d92e-4a73-82cc-1d009e63f4fe",
+                "number"      => "69297ca5-d92e-4a73-82cc-1d009e63f4fe"
+            }
+        end
+
+        if item["mikuType"] == "NxTask" then
+            # This could be seen as redundant because we have already called
+            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
+            # an opportunity to get Infinity (the Index will do that automatically)
+            accounts << {
+                "description" => "69297ca5-d92e-4a73-82cc-1d009e63f4fe",
+                "number"      => "69297ca5-d92e-4a73-82cc-1d009e63f4fe"
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
