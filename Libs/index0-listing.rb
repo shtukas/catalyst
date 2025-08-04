@@ -300,7 +300,10 @@ class Index0
     # Index0::determinePositionInInterval(item, x0, x1)
     def self.determinePositionInInterval(item, x0, x1)
         entries = Index0::entriesInOrder()
-        entries_similar_positions = entries.select{|e| e["item"]["mikuType"] == item["mikuType"] }.map{|e| e["position"] }
+        entries_similar_positions = entries
+            .select{|e| e["item"]["mikuType"] == item["mikuType"] }
+            .select{|e| e["position"] >= x0 and e["position"] < x1 }
+            .map{|e| e["position"] }
         if entries_similar_positions.empty? then
             return x0
         end
