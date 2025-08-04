@@ -253,4 +253,15 @@ class Index2
         db.close
         position
     end
+
+    # ------------------------------------------------------
+    # Interface
+
+    # Index2::maintenance()
+    def self.maintenance()
+        archive_filepath = "#{Index2::directory()}/archives/#{CommonUtils::today()}.sqlite3"
+        if !File.exist?(archive_filepath) then
+            FileUtils.cp(Index2::getDatabaseFilepath(), archive_filepath)
+        end
+    end
 end

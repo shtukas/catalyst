@@ -180,6 +180,7 @@ class Index3
             # We get an updated filepath1 because of content addressing.
             filepath1 = Index3::mergeTwoDatabaseFiles(filepath1, filepath)
         }
+
         filepath1
     end
 
@@ -319,5 +320,16 @@ class Index3
         end
         Index3::deleteEntry(uuid)
         HardProblem::item_has_been_destroyed(uuid)
+    end
+
+    # ------------------------------------------------------
+    # Interface
+
+    # Index3::maintenance()
+    def self.maintenance()
+        archive_filepath = "#{Index3::directory()}/archives/#{CommonUtils::today()}.sqlite3"
+        if !File.exist?(archive_filepath) then
+            FileUtils.cp(Index3::getDatabaseFilepath(), archive_filepath)
+        end
     end
 end

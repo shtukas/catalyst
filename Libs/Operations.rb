@@ -38,13 +38,16 @@ class Operations
 
     # Operations::globalMaintenance()
     def self.globalMaintenance()
-        puts "Operations::globalMaintenance()"
         puts "Index1::maintenance()"
         Index1::maintenance()
         puts "NxTasks::maintenance()"
         NxTasks::maintenance()
         puts "Index4::maintenance()"
         Index4::maintenance()
+        puts "Index3::maintenance()"
+        Index3::maintenance()
+        puts "Index2::maintenance()"
+        Index2::maintenance()
     end
 
     # Operations::interactivelyGetLines()
