@@ -204,7 +204,9 @@ class Listing
                     .each{|filepath|
                         uuid = IO.read(filepath).strip
                         Datablocks::removeUUID(uuid)
-                        FileUtils.rm(filepath)
+                        if File.exist?(filepath) then
+                            FileUtils.rm(filepath)
+                        end
                     }
             }
         }
