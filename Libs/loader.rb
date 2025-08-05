@@ -124,7 +124,8 @@ require_relative "Config.rb"
 require_relative "Anniversaries.rb"
 require_relative "Atlas.rb"
 
-require_relative "Bank.rb"
+require_relative "BankData.rb"
+require_relative "BankVault.rb"
 
 require_relative "CommonUtils.rb"
 require_relative "Search.rb"
@@ -147,13 +148,10 @@ require_relative "HardProblem.rb"
 require_relative "Interpreting.rb"
 require_relative "ItemStore.rb"
 require_relative "Instances.rb"
-require_relative "index0-listing.rb"
-require_relative "index1-mikutype-to-items.rb"
-require_relative "index2-parenting.rb"
-require_relative "index3-items.rb"
-require_relative "index4-banking.rb"
+require_relative "Items.rb"
 
-require_relative "Listing.rb"
+require_relative "ListingDatabase.rb"
+require_relative "ListingOps.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
@@ -163,10 +161,10 @@ require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxLines.rb"
-require_relative "NxProjects.rb"
 
 require_relative "Operations.rb"
 
+require_relative "Parenting.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 

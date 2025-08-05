@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities | project",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | projects | lines | todays | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
             "NxBalls       : start * | stop * | pause * | pursue *",
             "misc          : search | commands | fsck | probe-head | sort",
         ].join("\n")
@@ -22,7 +22,7 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                Index0::removeEntry(item["uuid"])
+                ListingDatabase::removeEntry(item["uuid"])
                 return
             end
         end
@@ -57,9 +57,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match(">> *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
+        if Interpreting::match(">>", input) then
+            item = store.getDefault()
             return if item.nil?
             Transmutation::transmute2(item)
             return
@@ -79,8 +78,8 @@ class CommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
-                position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
-                Index0::setPositionOverride(i["uuid"], position)
+                position = 0.9 * [ListingDatabase::firstPositionInDatabase(), 0.20].min
+                ListingDatabase::setPositionOverride(i["uuid"], position)
             }
             return
         end
@@ -109,10 +108,10 @@ class CommandsAndInterpreters
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Index4::getRecords(item["uuid"])
+            BankVault::getRecords(item["uuid"])
                 .sort_by{|record| record["date"] }
                 .each{|record|
-                    puts "recorduuid: #{record["recorduuid"]}; uuid: #{record["id"]}, date: #{record["date"]}, value: #{"%9.2f" % record["_value_"]}"
+                    puts "recorduuid: #{record["recorduuid"]}; uuid: #{record["id"]}, date: #{record["date"]}, value: #{"%9.2f" % record["value"]}"
                 }
             LucilleCore::pressEnterToContinue()
             return
@@ -132,10 +131,10 @@ class CommandsAndInterpreters
             payload = UxPayload::makeNewOrNull(item["uuid"])
             if payload then
                 item["uxpayload-b4e4"] = payload
-                Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             end
             item = Operations::interactivelySetDonation(item)
-            Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, nil, Index0::decideListingLine(item))
+            ListingDatabase::insertUpdateEntryComponents1(item, ListingDatabase::firstPositionInDatabase()*0.9, nil, ListingDatabase::decideListingLines(item))
             NxBalls::start(item)
             return
         end
@@ -151,8 +150,8 @@ class CommandsAndInterpreters
                     puts "processing: #{line}".green
                     item = NxLines::interactivelyIssueNew(nil, line)
                     Operations::interactivelySetDonation(item)
-                    item = Index3::itemOrNull(item["uuid"])
-                    Index0::insertUpdateEntryComponents1(item, Index0::firstPositionInDatabase()*0.9, nil, Index0::decideListingLine(item))
+                    item = Items::itemOrNull(item["uuid"])
+                    ListingDatabase::insertUpdateEntryComponents1(item, ListingDatabase::firstPositionInDatabase()*0.9, nil, ListingDatabase::decideListingLines(item))
                     last_item = item
                 }
             if last_item then
@@ -162,7 +161,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("backups", input) then
-            Operations::program3(lambda { Index1::mikuTypeItems("NxBackup").sort_by{|item| item["description"] } })
+            Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
             return
         end
 
@@ -171,13 +170,20 @@ class CommandsAndInterpreters
             n = n.to_i
             items = store.items()
             items = items.drop(n)
-            position = 0.5*(Index0::getPositionOrNull(items[0]["uuid"]) + Index0::getPositionOrNull(items[1]["uuid"]))
+            position = 0.5*(ListingDatabase::getPositionOrNull(items[0]["uuid"]) + ListingDatabase::getPositionOrNull(items[1]["uuid"]))
             puts "deciding position: #{position}"
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             item = NxLines::interactivelyIssueNew(nil, line)
             Operations::interactivelySetDonation(item)
-            item = Index3::itemOrNull(item["uuid"])
-            Index0::insertUpdateEntryComponents1(item, position, nil, Index0::decideListingLine(item))
+            item = Items::itemOrNull(item["uuid"])
+            ListingDatabase::insertUpdateEntryComponents1(item, position, nil, ListingDatabase::decideListingLines(item))
+            return
+        end
+
+        if Interpreting::match("payload", input) then
+            item = store.getDefault()
+            return if item.nil?
+            UxPayload::payloadProgram(item)
             return
         end
 
@@ -185,9 +191,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            payload = UxPayload::makeNewOrNull(item["uuid"])
-            return if payload.nil?
-            Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            UxPayload::payloadProgram(item)
             return
         end
 
@@ -206,7 +210,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -214,7 +218,7 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            item = Index3::itemOrNull(item["uuid"])
+            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
@@ -236,8 +240,8 @@ class CommandsAndInterpreters
             _, d, _ = Interpreting::tokenizer(input)
             item = store.getDefault()
             return if item.nil?
-            Index3::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
-            Index0::evaluate(item["uuid"])
+            Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -282,7 +286,10 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            NxTasks::interactivelyIssueNewOrNull()
+            todo = NxTasks::interactivelyIssueNewOrNull()
+            parentuuid, position = Operations::decideParentAndPosition()
+            Parenting::insertEntry(parentuuid, todo["uuid"], position)
+            ListingDatabase::evaluate(todo["uuid"])
             return
         end
 
@@ -292,22 +299,17 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("lines", input) then
-            Operations::program3(lambda { Index1::mikuTypeItems("NxLine").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            Operations::program3(lambda { Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] } })
+            Operations::program3(lambda { Items::mikuType("NxLine").sort_by{|item| item["unixtime"] } })
             return
         end
 
         if Interpreting::match("floats", input) then
-            Operations::program3(lambda { Index1::mikuTypeItems("NxFloat").sort_by{|item| item["unixtime"] } })
+            Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
             return
         end
 
         if Interpreting::match("cores", input) then
-            Operations::program3(lambda { Index1::mikuTypeItems("NxCore").sort_by{|item| NxCores::ratio(item) } })
+            Operations::program3(lambda { Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) } })
             return
         end
 
@@ -329,7 +331,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -338,7 +340,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -346,7 +348,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Operations::editItem(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -355,7 +357,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -393,7 +395,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
-            Index0::removeEntry(item["uuid"])
+            ListingDatabase::removeEntry(item["uuid"])
             return
         end
 
@@ -421,13 +423,13 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            Operations::program3(lambda { Index1::mikuTypeItems("NxDated").sort_by{|item| item["date"][0, 10] }})
+            Operations::program3(lambda { Items::mikuType("NxDated").sort_by{|item| item["date"][0, 10] }})
             return
         end
 
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
-                Index1::mikuTypeItems("NxDated")
+                Items::mikuType("NxDated")
                     .select{|item| item["date"][0, 10] <= CommonUtils::today() }
                     .sort_by{|item| item["unixtime"] }
             })
@@ -438,7 +440,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -447,7 +449,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -455,7 +457,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -464,7 +466,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            Index0::evaluate(item["uuid"])
+            ListingDatabase::evaluate(item["uuid"])
             return
         end
 
@@ -474,7 +476,7 @@ class CommandsAndInterpreters
             return if item.nil?
             NxBalls::stop(item)
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Index3::setAttribute(item["uuid"], "date", datetime)
+            Items::setAttribute(item["uuid"], "date", datetime)
             return
         end
 

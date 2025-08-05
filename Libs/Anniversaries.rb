@@ -135,15 +135,15 @@ class Anniversaries
 
         uuid = SecureRandom.uuid
 
-        Index3::init(uuid)
-        Index3::setAttribute(uuid, "mikuType", "NxAnniversary")
-        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Index3::setAttribute(uuid, "description", description)
-        Index3::setAttribute(uuid, "startdate", startdate)
-        Index3::setAttribute(uuid, "repeatType", repeatType)
+        Items::init(uuid)
+        Items::setAttribute(uuid, "mikuType", "NxAnniversary")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "startdate", startdate)
+        Items::setAttribute(uuid, "repeatType", repeatType)
 
-        Index3::itemOrNull(uuid)
+        Items::itemOrNull(uuid)
     end
 
     # Anniversaries::toString(anniversary)
@@ -154,7 +154,7 @@ class Anniversaries
 
     # Anniversaries::listingItems()
     def self.listingItems()
-        Index1::mikuTypeItems("NxAnniversary").select{|item| item["next_celebration"] <= CommonUtils::today() }
+        Items::mikuType("NxAnniversary").select{|item| item["next_celebration"] <= CommonUtils::today() }
     end
 
     # ----------------------------------------------------------------------------------
@@ -163,7 +163,7 @@ class Anniversaries
     # Anniversaries::mark_next_celebration_date(item)
     def self.mark_next_celebration_date(item)
         date = Anniversaries::computeNextCelebrationDate(item["startdate"], item["repeatType"])
-        Index3::setAttribute(item["uuid"], "next_celebration", date)
+        Items::setAttribute(item["uuid"], "next_celebration", date)
     end
 
     # Anniversaries::program1(item)
@@ -176,16 +176,16 @@ class Anniversaries
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"]).strip
                 return if description == ""
-                Index3::setAttribute(item["uuid"], "description", description)
+                Items::setAttribute(item["uuid"], "description", description)
             end
             if action == "update start date" then
                 startdate = CommonUtils::editTextSynchronously(item["startdate"])
                 return if startdate == ""
-                Index3::setAttribute(item["uuid"], "startdate", startdate)
+                Items::setAttribute(item["uuid"], "startdate", startdate)
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    Index3::deleteItem(item["uuid"])
+                    Items::deleteItem(item["uuid"])
                     return
                 end
             end
@@ -195,7 +195,7 @@ class Anniversaries
     # Anniversaries::program2()
     def self.program2()
         loop {
-            anniversaries = Index1::mikuTypeItems("NxAnniversary").sort_by{|item| item["next_celebration"] }
+            anniversaries = Items::mikuType("NxAnniversary").sort_by{|item| item["next_celebration"] }
             anniversary = LucilleCore::selectEntityFromListOfEntitiesOrNull("anniversary", anniversaries, lambda{|item| Anniversaries::toString(item) })
             return if anniversary.nil?
             Anniversaries::program1(anniversary)

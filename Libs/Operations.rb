@@ -6,7 +6,7 @@ class Operations
         return if item["uxpayload-b4e4"].nil?
         payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
         return if payload.nil?
-        Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
     end
 
     # Operations::program3(lx)
@@ -20,8 +20,8 @@ class Operations
 
             elements
                 .each{|item|
-                    store.register(item, Listing::canBeDefault(item))
-                    Listing::toString2(store, item).each {|line|
+                    store.register(item, ListingOps::canBeDefault(item))
+                    ListingOps::toString2(store, item).each {|line|
                         puts line
                     }
                 }
@@ -38,16 +38,16 @@ class Operations
 
     # Operations::globalMaintenance()
     def self.globalMaintenance()
-        puts "Index1::maintenance()"
-        Index1::maintenance()
         puts "NxTasks::maintenance()"
         NxTasks::maintenance()
-        puts "Index4::maintenance()"
-        Index4::maintenance()
-        puts "Index3::maintenance()"
-        Index3::maintenance()
-        puts "Index2::maintenance()"
-        Index2::maintenance()
+        puts "ListingDatabase::maintenance()"
+        ListingDatabase::maintenance()
+        puts "BankVault::maintenance()"
+        BankVault::maintenance()
+        puts "Items::maintenance()"
+        Items::maintenance()
+        puts "Parenting::maintenance()"
+        Parenting::maintenance()
     end
 
     # Operations::interactivelyGetLines()
@@ -60,8 +60,8 @@ class Operations
             .select{|line| line != "" }
     end
 
-    # Operations::interactivelyRecompiledLines(lines)
-    def self.interactivelyRecompiledLines(lines)
+    # Operations::interactivelyRecompileLines(lines)
+    def self.interactivelyRecompileLines(lines)
         text = CommonUtils::editTextSynchronously(lines.join("\n")).strip
         return [] if text == ""
         text
@@ -87,17 +87,14 @@ class Operations
         if unixtime then
             puts "do not show until: #{Time.at(unixtime).to_s} "
         end
-        entry = Index0::getEntryOrNull(item["uuid"])
+        entry = ListingDatabase::getEntryOrNull(item["uuid"])
         puts JSON.pretty_generate(entry)
         LucilleCore::pressEnterToContinue()
     end
 
     # Operations::interactivelySelectTargetForDonationOrNull()
     def self.interactivelySelectTargetForDonationOrNull()
-        targets = [
-            NxProjects::projectsInOrder(),
-            NxCores::coresInRatioOrder()
-        ].flatten
+        targets = NxCores::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
@@ -105,8 +102,8 @@ class Operations
     def self.interactivelySetDonation(item)
         target = Operations::interactivelySelectTargetForDonationOrNull()
         return item if target.nil?
-        Index3::setAttribute(item["uuid"], "donation-1205", target["uuid"])
-        Index3::itemOrNull(item["uuid"])
+        Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
+        Items::itemOrNull(item["uuid"])
     end
 
     # Operations::dispatchPickUp()
@@ -118,7 +115,8 @@ class Operations
                 parentuuid, position = PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location, parentuuid, position)
-                #puts JSON.pretty_generate(item)
+                Parenting::insertEntry(parentuuid, item["uuid"], position)
+                ListingDatabase::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
         end
@@ -141,7 +139,7 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxDateds::locationToItem(description, location)
-                Index3::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
+                Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
                 #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
                 #puts PolyFunctions::toString(item)
@@ -154,7 +152,7 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxLines::locationToLine(description, location)
-                Index0::insertUpdateItemAtPosition(item, 0.21)
+                ListingDatabase::insertUpdateItemAtPosition(item, 0.21)
                 puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
 
@@ -164,10 +162,7 @@ class Operations
 
     # Operations::interactivelySelectParent()
     def self.interactivelySelectParent()
-        targets = [
-            NxProjects::projectsInOrder(),
-            NxCores::coresInRatioOrder()
-        ].flatten
+        targets = NxCores::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
@@ -181,27 +176,20 @@ class Operations
 
     # Operations::diveItem(parent)
     def self.diveItem(parent)
-
-        if parent["uuid"] == NxCores::infinityuuid() then
-            puts "You cannot dive in Infinity"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         loop {
             store = ItemStore.new()
 
             puts ""
             store.register(parent, false)
-            Listing::toString2(store, parent).each{|line|
+            ListingOps::toString2(store, parent).each{|line|
                 puts line
             }
             puts ""
 
-            Index2::parentuuidToChildrenInOrder(parent["uuid"])
+            Parenting::parentuuidToChildrenInOrder(parent["uuid"])
                 .each{|element|
-                    store.register(element, Listing::canBeDefault(element))
-                    Listing::toString2(store, element).each{|line|
+                    store.register(element, ListingOps::canBeDefault(element))
+                    ListingOps::toString2(store, element).each{|line|
                         puts line
                     }
                 }
@@ -216,9 +204,10 @@ class Operations
 
             if input == "todo" then
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-                todo = NxTasks::interactivelyIssueNewOrNull2(parent["uuid"], position)
+                todo = NxTasks::interactivelyIssueNewOrNull()
                 puts JSON.pretty_generate(todo)
-                Index0::evaluate(todo["uuid"])
+                Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
+                ListingDatabase::evaluate(todo["uuid"])
                 next
             end
 
@@ -229,6 +218,8 @@ class Operations
                         position = PolyFunctions::firstPositionInParent(parent) - 1
                         todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
                         puts JSON.pretty_generate(todo)
+                        Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
+                        ListingDatabase::evaluate(todo["uuid"])
                     }
                 next
             end
@@ -238,16 +229,16 @@ class Operations
                 i = store.get(listord.to_i)
                 next if i.nil?
                 position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-                Index2::insertEntry(parent["uuid"], i["uuid"], position)
+                Parenting::insertEntry(parent["uuid"], i["uuid"], position)
                 next
             end
 
             if input == "sort" then
-                itemsInOrder = Index2::parentuuidToChildrenInOrder(core["uuid"]).sort_by{|item| Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"]) }
+                itemsInOrder = Parenting::parentuuidToChildrenInOrder(parent["uuid"]).sort_by{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
-                    position = PolyFunctions::firstPositionInParent(core) - 1
-                    Index2::insertEntry(parent["uuid"], i["uuid"], position)
+                    position = PolyFunctions::firstPositionInParent(parent) - 1
+                    Parenting::insertEntry(parent["uuid"], i["uuid"], position)
                 }
                 next
             end
@@ -261,7 +252,7 @@ class Operations
         NxCores::cores()
             .each{|core|
                 #puts "probing core #{core["description"]}"
-                Index2::parentuuidToChildrenInOrder(core["uuid"])
+                Parenting::parentuuidToChildrenInOrder(core["uuid"])
                     .first(200)
                     .each{|item|
                         #puts "probing item #{item["description"]}"
@@ -271,41 +262,10 @@ class Operations
                             location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
                             puts "unit location: #{location}"
                             payload2 = UxPayload::locationToPayload(item["uuid"], location)
-                            Index3::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+                            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
                             LucilleCore::removeFileSystemLocation(location)
                         end
                     }
             }
-    end
-
-    # Operations::interactivelyDecideDayPriorityItems()
-    def self.interactivelyDecideDayPriorityItems()
-
-        dateds = Index1::mikuTypeItems("NxDated").select{|item| item["date"][0, 10] <= CommonUtils::today() }
-        dateds.each{|item|
-            position = Index0::determinePositionInInterval(item, 0.80, 0.90)
-            Index0::insertUpdateItemAtPosition(item, position)
-        }
-        selected_dateds, _ = LucilleCore::selectZeroOrMore("", [], dateds, lambda { |item| PolyFunctions::toString(item) })
-
-        puts "Select projects you want to work on today"
-        projects = Index1::mikuTypeItems("NxProject").sort_by{|item| item["project-position"] }
-        projects.each{|item|
-            position = Index0::determinePositionInInterval(item, 0.80, 0.90)
-            Index0::insertUpdateItemAtPosition(item, position)
-        }
-        selected_projects, = LucilleCore::selectZeroOrMore("", [], projects, lambda { |item| PolyFunctions::toString(item) })
-
-        puts "Indicate ordering"
-        selected, unselected = LucilleCore::selectZeroOrMore("", [], selected_dateds + selected_projects, lambda { |item| PolyFunctions::toString(item) })
-
-        unselected.each{|item|
-            position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
-            Index0::insertUpdateItemAtPosition(item, position)
-        }
-        selected.reverse.each{|item|
-            position = 0.9 * [Index0::firstPositionInDatabase(), 0.20].min
-            Index0::insertUpdateItemAtPosition(item, position)
-        }
     end
 end

@@ -10,35 +10,35 @@ create table items (
 CREATE INDEX index1 ON items(uuid, mikuType);
 =end
 
-class Index3
+class Items
 
     # ------------------------------------------------------
     # Basic IO management
 
-    # Index3::directory()
+    # Items::directory()
     def self.directory()
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index3-items"
     end
 
-    # Index3::filepaths()
+    # Items::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder(Index3::directory())
+        LucilleCore::locationsAtFolder(Items::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
     end
 
-    # Index3::ensureContentAddressing(filepath)
+    # Items::ensureContentAddressing(filepath)
     def self.ensureContentAddressing(filepath)
         filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
-        filepath2 = "#{Index3::directory()}/#{filename2}"
+        filepath2 = "#{Items::directory()}/#{filename2}"
         return filepath if filepath == filepath2
         FileUtils.mv(filepath, filepath2)
         filepath2
     end
 
-    # Index3::initiateDatabaseFile() -> filepath
+    # Items::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
         filename = "#{SecureRandom.hex}.sqlite3"
-        filepath = "#{Index3::directory()}/#{filename}"
+        filepath = "#{Items::directory()}/#{filename}"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -54,10 +54,10 @@ class Index3
         db.execute("CREATE INDEX items_index ON items(uuid, mikuType);", [])
         db.commit
         db.close
-        Index3::ensureContentAddressing(filepath)
+        Items::ensureContentAddressing(filepath)
     end
 
-    # Index3::insertUpdateItemAtFile(filepath, item)
+    # Items::insertUpdateItemAtFile(filepath, item)
     def self.insertUpdateItemAtFile(filepath, item)
         uuid = item["uuid"]
         utime = Time.new.to_f
@@ -73,10 +73,10 @@ class Index3
         db.execute("insert into items (uuid, utime, item, mikuType, description) values (?, ?, ?, ?, ?)", [uuid, utime, JSON.generate(item), mikuType, description])
         db.commit
         db.close
-        Index3::ensureContentAddressing(filepath)
+        Items::ensureContentAddressing(filepath)
     end
 
-    # Index3::extractEntryOrNullFromFilepath(filepath, uuid)
+    # Items::extractEntryOrNullFromFilepath(filepath, uuid)
     def self.extractEntryOrNullFromFilepath(filepath, uuid)
         entry = nil
         db = SQLite3::Database.new(filepath)
@@ -97,7 +97,7 @@ class Index3
         entry
     end
 
-    # Index3::insertUpdateEntryComponents2(filepath, utime, item, mikuType, description)
+    # Items::insertUpdateEntryComponents2(filepath, utime, item, mikuType, description)
     def self.insertUpdateEntryComponents2(filepath, utime, item, mikuType, description)
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -110,15 +110,15 @@ class Index3
         db.close
     end
 
-    # Index3::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
+    # Items::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
     def self.mergeTwoDatabaseFiles(filepath1, filepath2)
         # The logic here is to read the items from filepath2 and 
         # possibly add them to filepath1, if either:
         #   - there was no equivalent in filepath1
         #   - it's a newer record than the one in filepath1
-        Index3::extractEntriesFromFile(filepath2).each{|entry2|
+        Items::extractEntriesFromFile(filepath2).each{|entry2|
             shouldInject = false
-            entry1 = Index3::extractEntryOrNullFromFilepath(filepath1, entry2["item"]["uuid"])
+            entry1 = Items::extractEntryOrNullFromFilepath(filepath1, entry2["item"]["uuid"])
             if entry1 then
                 # We have entry1 and entry2
                 # We perform the update if entry2 is newer than entry1
@@ -130,15 +130,15 @@ class Index3
                 shouldInject = true
             end
             if shouldInject then
-                Index3::insertUpdateEntryComponents2(filepath1, entry2["utime"], entry2["item"], entry2["mikuType"], entry2["description"])
+                Items::insertUpdateEntryComponents2(filepath1, entry2["utime"], entry2["item"], entry2["mikuType"], entry2["description"])
             end
         }
         # Then when we are done, we delete filepath2
         FileUtils::rm(filepath2)
-        Index3::ensureContentAddressing(filepath1)
+        Items::ensureContentAddressing(filepath1)
     end
 
-    # Index3::extractEntriesFromFile(filepath)
+    # Items::extractEntriesFromFile(filepath)
     def self.extractEntriesFromFile(filepath)
         entries = []
         db = SQLite3::Database.new(filepath)
@@ -158,14 +158,14 @@ class Index3
         entries
     end
 
-    # Index3::getDatabaseFilepath()
+    # Items::getDatabaseFilepath()
     def self.getDatabaseFilepath()
-        filepaths = Index3::filepaths()
+        filepaths = Items::filepaths()
 
         # This case should not really happen (anymore), so if the condition 
         # is true, let's error noisily.
         if filepaths.size == 0 then
-            # return Index3::initiateDatabaseFile()
+            # return Items::initiateDatabaseFile()
             raise "(error: 739bcc7d)"
         end
 
@@ -178,22 +178,22 @@ class Index3
             # The logic here is to read the items from filepath2 and 
             # possibly add them to filepath1.
             # We get an updated filepath1 because of content addressing.
-            filepath1 = Index3::mergeTwoDatabaseFiles(filepath1, filepath)
+            filepath1 = Items::mergeTwoDatabaseFiles(filepath1, filepath)
         }
 
         filepath1
     end
 
-    # Index3::entryOrNull(uuid)
+    # Items::entryOrNull(uuid)
     def self.entryOrNull(uuid)
-        Index3::filepaths().each{|filepath|
-            entry = Index3::extractEntryOrNullFromFilepath(filepath, uuid)
+        Items::filepaths().each{|filepath|
+            entry = Items::extractEntryOrNullFromFilepath(filepath, uuid)
             return entry if entry
         }
         nil
     end
 
-    # Index3::deleteEntry(uuid)
+    # Items::deleteEntry(uuid)
     def self.deleteEntry(uuid)
         
         # Version 1
@@ -203,7 +203,7 @@ class Index3
         # that when merged brings back the deleted item (the merger sees an item 
         # in one file and not the other and thinks that it's a new item).
 
-        #filepath = Index3::getDatabaseFilepath()
+        #filepath = Items::getDatabaseFilepath()
         #db = SQLite3::Database.new(filepath)
         #db.busy_timeout = 117
         #db.busy_handler { |count| true }
@@ -211,17 +211,17 @@ class Index3
         #db.execute("delete from items where uuid=?", [uuid])
         #db.execute("vacuum", [])
         #db.close
-        #Index3::ensureContentAddressing(filepath)
+        #Items::ensureContentAddressing(filepath)
 
         # Version 2
-        Index3::setAttribute(uuid, "mikuType", "NxDeleted")
-        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "mikuType", "NxDeleted")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
     end
 
     # ------------------------------------------------------
     # Support
 
-    # Index3::decideDescription(item)
+    # Items::decideDescription(item)
     def self.decideDescription(item)
         return item["description"] if item["description"]
         raise "(error: d9a4a31c) I do not know how to determine the description for item: #{item}"
@@ -230,9 +230,9 @@ class Index3
     # ------------------------------------------------------
     # Interface
 
-    # Index3::init(uuid)
+    # Items::init(uuid)
     def self.init(uuid)
-        if Index3::itemOrNull(uuid) then
+        if Items::itemOrNull(uuid) then
             raise "(error: 0e16c053) this uuid is already in use, you cannot init it"
         end
         item = {
@@ -242,12 +242,12 @@ class Index3
           "datetime" => Time.new.utc.iso8601,
           "description" => "Default description for initialised item. If you are reading this, something didn't happen"
         }
-        Index3::commitItem(item)
+        Items::commitItem(item)
     end
 
-    # Index3::itemOrNull(uuid)
+    # Items::itemOrNull(uuid)
     def self.itemOrNull(uuid)
-        entry = Index3::entryOrNull(uuid)
+        entry = Items::entryOrNull(uuid)
         if entry.nil? then
             HardProblem::item_could_not_be_found_on_disk(uuid)
             return nil
@@ -255,25 +255,25 @@ class Index3
         entry["item"]
     end
 
-    # Index3::commitItem(item)
+    # Items::commitItem(item)
     def self.commitItem(item)
-        filepath = Index3::getDatabaseFilepath()
-        Index3::insertUpdateItemAtFile(filepath, item)
+        filepath = Items::getDatabaseFilepath()
+        Items::insertUpdateItemAtFile(filepath, item)
     end
 
-    # Index3::setAttribute(uuid, attrname, attrvalue)
+    # Items::setAttribute(uuid, attrname, attrvalue)
     def self.setAttribute(uuid, attrname, attrvalue)
-        item = Index3::itemOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         return if item.nil?
         item[attrname] = attrvalue
-        Index3::commitItem(item)
+        Items::commitItem(item)
         HardProblem::item_attribute_has_been_updated(uuid, attrname, attrvalue)
     end
 
-    # Index3::items()
+    # Items::items()
     def self.items()
         items = []
-        db = SQLite3::Database.new(Index3::getDatabaseFilepath())
+        db = SQLite3::Database.new(Items::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -284,10 +284,10 @@ class Index3
         items
     end
 
-    # Index3::mikuTypes()
+    # Items::mikuTypes()
     def self.mikuTypes()
         mikuTypes = []
-        db = SQLite3::Database.new(Index3::getDatabaseFilepath())
+        db = SQLite3::Database.new(Items::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -298,10 +298,10 @@ class Index3
         mikuTypes
     end
 
-    # Index3::mikuType(mikuType) -> Array[Item]
+    # Items::mikuType(mikuType) -> Array[Item]
     def self.mikuType(mikuType)
         items = []
-        db = SQLite3::Database.new(Index3::getDatabaseFilepath())
+        db = SQLite3::Database.new(Items::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -312,24 +312,24 @@ class Index3
         items
     end
 
-    # Index3::deleteItem(uuid)
+    # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
-        item = Index3::itemOrNull(uuid)
+        item = Items::itemOrNull(uuid)
         if item then
             HardProblem::item_is_being_destroyed(item)
         end
-        Index3::deleteEntry(uuid)
+        Items::deleteEntry(uuid)
         HardProblem::item_has_been_destroyed(uuid)
     end
 
     # ------------------------------------------------------
     # Interface
 
-    # Index3::maintenance()
+    # Items::maintenance()
     def self.maintenance()
-        archive_filepath = "#{Index3::directory()}/archives/#{CommonUtils::today()}.sqlite3"
+        archive_filepath = "#{Items::directory()}/archives/#{CommonUtils::today()}.sqlite3"
         if !File.exist?(archive_filepath) then
-            FileUtils.cp(Index3::getDatabaseFilepath(), archive_filepath)
+            FileUtils.cp(Items::getDatabaseFilepath(), archive_filepath)
         end
     end
 end

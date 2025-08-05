@@ -125,7 +125,7 @@ class NxBalls
             .map{|ball|
                 (lambda {|ball|
                     itemuuid = ball["itemuuid"]
-                    ix = Index3::itemOrNull(itemuuid)
+                    ix = Items::itemOrNull(itemuuid)
                     if ix then
                         return ix
                     end
@@ -147,7 +147,7 @@ class NxBalls
             .map{|ball|
                 (lambda {|ball|
                     itemuuid = ball["itemuuid"]
-                    ix = Index3::itemOrNull(itemuuid)
+                    ix = Items::itemOrNull(itemuuid)
                     if ix then
                         return ix
                     end
@@ -168,7 +168,7 @@ class NxBalls
     # NxBalls::commitToBank(description, accountNumber, timespanInSeconds)
     def self.commitToBank(description, accountNumber, timespanInSeconds)
         puts "adding #{timespanInSeconds} seconds to account: (#{description}, #{accountNumber})"
-        Index4::insertValue(accountNumber, CommonUtils::today(), timespanInSeconds)
+        BankVault::insertValue(accountNumber, CommonUtils::today(), timespanInSeconds)
     end
 
     # NxBalls::start(item)

@@ -1,9 +1,9 @@
-class Listing
+class ListingOps
 
     # -----------------------------------------
     # Data
 
-    # Listing::canBeDefault(item)
+    # ListingOps::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
@@ -12,18 +12,28 @@ class Listing
         true
     end
 
-    # Listing::isInterruption(item)
+    # ListingOps::isInterruption(item)
     def self.isInterruption(item)
         item["interruption"]
     end
 
-    # Listing::toString2(store, item)
+    # ListingOps::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
-        hasChildren = Index2::hasChildren(item["uuid"]) ? " [children]".red : ""
+        hasChildren = Parenting::hasChildren(item["uuid"]) ? " [children]".red : ""
         lines = []
-        lines << "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+
+        if TmpSkip1::isSkipped(item) then
+            line = line.yellow
+        end
+
+        if NxBalls::itemIsActive(item) then
+            line = line.yellow
+        end
+
+        lines << line
 
         if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" then
             item["uxpayload-b4e4"]["lines"].each{|l|
@@ -31,18 +41,10 @@ class Listing
             }
         end
 
-        if TmpSkip1::isSkipped(item) then
-            lines = lines.map{|line| line.yellow }
-        end
-
-        if NxBalls::itemIsActive(item) then
-            lines = lines.map{|line| line.green }
-        end
-
         lines
     end
 
-    # Listing::itemsForListing1()
+    # ListingOps::itemsForListing1()
     def self.itemsForListing1()
         items = [
             Anniversaries::listingItems(),
@@ -52,7 +54,6 @@ class Listing
             NxDateds::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
-            NxProjects::listingItems(),
             NxCores::listingItems()
         ]
             .flatten
@@ -62,7 +63,7 @@ class Listing
     # -----------------------------------------
     # Ops
 
-    # Listing::preliminaries(initialCodeTrace)
+    # ListingOps::preliminaries(initialCodeTrace)
     def self.preliminaries(initialCodeTrace)
         if CommonUtils::catalystTraceCode() != initialCodeTrace then
             puts "Code change detected"
@@ -72,7 +73,7 @@ class Listing
         Operations::dispatchPickUp()
     end
 
-    # Listing::displayListingOnce()
+    # ListingOps::displayListingOnce()
     def self.displayListingOnce()
         store = ItemStore.new()
         printer = lambda{|line| puts line }
@@ -91,7 +92,7 @@ class Listing
 
         if XCacheExensions::trueNoMoreOftenThanNSeconds("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", 3600) then
             puts "Running listing maintenance (every hour)"
-            Index0::maintenance()
+            ListingDatabase::maintenance()
             XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
@@ -108,23 +109,6 @@ class Listing
             end
         end
 
-        # Projects morning set up
-
-        date = IO.read("#{Config::pathToCatalystDataRepository()}/last-configure-projects-today-date.txt").strip
-        if date != CommonUtils::today() then
-            item = NxLambdas::interactivelyIssueNewOrNull(
-                "configure projects today",
-                lambda {
-                    Operations::interactivelyDecideDayPriorityItems()
-                    File.open("#{Config::pathToCatalystDataRepository()}/last-configure-projects-today-date.txt", "w"){|f| f.puts(CommonUtils::today()) }
-                }
-            )
-            store.register(item, true)
-            Listing::toString2(store, item).each{|line|
-                printer.call(line)
-            }
-        end
-
         t1 = Time.new.to_f
 
         # Main listing
@@ -132,8 +116,8 @@ class Listing
         runningItems = NxBalls::runningItems()
         NxBalls::runningItems()
             .each{|item|
-                store.register(item, Listing::canBeDefault(item))
-                lines = Listing::toString2(store, item)
+                store.register(item, ListingOps::canBeDefault(item))
+                lines = ListingOps::toString2(store, item)
                 lines.each{|line|
                     printer.call(line)
                 }
@@ -143,18 +127,25 @@ class Listing
                 break if sheight <= 4
             }
 
-        Index0::entriesForListing(runningItems.map{|i| i["uuid"]})
+        ListingDatabase::entriesForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 item = entry["item"]
-                line = entry["listing_line"]
-                store.register(item, Listing::canBeDefault(item))
+                store.register(item, ListingOps::canBeDefault(item))
+                lines = entry["listing_lines"]
+                line = lines.shift
                 line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
                 if entry["position"] then
                     line = line + " (#{entry["position"]})".yellow
                 end
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
+                lines.each{|line|
+                    sheight = sheight - (line.size/swidth + 1)
+                }
                 break if sheight <= 4
+                lines.each{|line|
+                    printer.call(line)
+                }
             }
 
         t2 = Time.new.to_f
@@ -170,7 +161,7 @@ class Listing
         CommandsAndInterpreters::interpreter(input, store)
     end
 
-    # Listing::main()
+    # ListingOps::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
@@ -180,7 +171,7 @@ class Listing
                     NxBalls::all()
                         .select{|nxball| nxball["type"] == "running" }
                         .each{|nxball|
-                            item = Index3::itemOrNull(nxball["itemuuid"])
+                            item = Items::itemOrNull(nxball["itemuuid"])
                             next if item.nil?
                             if item["mikuType"] == "Wave" then
                                 if NxBalls::ballRunningTime(nxball) > 1800 then
@@ -214,8 +205,8 @@ class Listing
         }
 
         loop {
-            Listing::preliminaries(initialCodeTrace)
-            Listing::displayListingOnce()
+            ListingOps::preliminaries(initialCodeTrace)
+            ListingOps::displayListingOnce()
         }
     end
 end

@@ -69,17 +69,17 @@ class Waves
         return nil if description == ""
         nx46 = Waves::makeNx46InteractivelyOrNull()
         return nil if nx46.nil?
-        Index3::init(uuid)
+        Items::init(uuid)
         interruption = LucilleCore::askQuestionAnswerAsBoolean("interruption ? ")
-        Index3::setAttribute(uuid, "mikuType", "Wave")
-        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Index3::setAttribute(uuid, "description", description)
-        Index3::setAttribute(uuid, "nx46", nx46)
-        Index3::setAttribute(uuid, "lastDoneUnixtime", 0)
-        Index3::setAttribute(uuid, "interruption", interruption)
-        Index3::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
-        Index3::itemOrNull(uuid)
+        Items::setAttribute(uuid, "mikuType", "Wave")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "nx46", nx46)
+        Items::setAttribute(uuid, "lastDoneUnixtime", 0)
+        Items::setAttribute(uuid, "interruption", interruption)
+        Items::setAttribute(uuid, "uxpayload-b4e4", UxPayload::makeNewOrNull(uuid))
+        Items::itemOrNull(uuid)
     end
 
     # -------------------------------------------------------------------------
@@ -131,12 +131,12 @@ class Waves
 
     # Waves::listingItemsInterruption()
     def self.listingItemsInterruption()
-        Index1::mikuTypeItems("Wave").select{|item| item["interruption"]}
+        Items::mikuType("Wave").select{|item| item["interruption"]}
     end
 
     # Waves::nonInterruptionItemsForListing()
     def self.nonInterruptionItemsForListing()
-        Index1::mikuTypeItems("Wave")
+        Items::mikuType("Wave")
             .select { |item| !item["interruption"]}
             .select { |wave| DoNotShowUntil::isVisible(wave["uuid"]) }
             .sort_by{|item| item["lastDoneUnixtime"]}
@@ -148,7 +148,7 @@ class Waves
     # Waves::perform_done(item)
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
-        Index3::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+        Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
         NxBalls::stop(item)
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime + rand)
@@ -157,7 +157,7 @@ class Waves
     # Waves::program0(item)
     def self.program0(item)
         loop {
-            item = Index3::itemOrNull(item["uuid"])
+            item = Items::itemOrNull(item["uuid"])
             return if item.nil?
             puts Waves::toString(item)
             actions = ["update description", "update wave pattern", "perform done", "set priority", "destroy"]
@@ -166,23 +166,23 @@ class Waves
             if action == "update description" then
                 description = CommonUtils::editTextSynchronously(item["description"])
                 next if description == ""
-                Index3::setAttribute(item["uuid"], "description", description)
+                Items::setAttribute(item["uuid"], "description", description)
             end
             if action == "update wave pattern" then
                 nx46 = Waves::makeNx46InteractivelyOrNull()
                 next if nx46.nil?
-                Index3::setAttribute(item["uuid"], "nx46", nx46)
+                Items::setAttribute(item["uuid"], "nx46", nx46)
             end
             if action == "perform done" then
                 Waves::perform_done(item)
                 return
             end
             if action == "set priority" then
-                Index3::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
+                Items::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
             end
             if action == "destroy" then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{Waves::toString(item).green}' ? ", true) then
-                    Index3::deleteItem(item["uuid"])
+                    Items::deleteItem(item["uuid"])
                     return
                 end
             end
@@ -192,7 +192,7 @@ class Waves
     # Waves::program1()
     def self.program1()
         l = lambda { 
-            items = Index1::mikuTypeItems("Wave")
+            items = Items::mikuType("Wave")
             i1, i2 = items.partition{|item| item["interruption"] }
             i1 + i2
         }
@@ -202,7 +202,7 @@ class Waves
     # Waves::program2()
     def self.program2()
         l = lambda { 
-            items = Index1::mikuTypeItems("Wave").select{|wave|
+            items = Items::mikuType("Wave").select{|wave|
                 unixtime = DoNotShowUntil::getUnixtimeOrNull(wave["uuid"])
                 unixtime.nil? or unixtime < Time.new.to_i
             }

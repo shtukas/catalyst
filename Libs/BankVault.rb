@@ -9,35 +9,35 @@ create table index4 (
 );
 =end
 
-class Index4
+class BankVault
 
     # ------------------------------------------------------
     # Basic IO management
 
-    # Index4::directory()
+    # BankVault::directory()
     def self.directory()
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index4-banking"
     end
 
-    # Index4::filepaths()
+    # BankVault::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder(Index4::directory())
+        LucilleCore::locationsAtFolder(BankVault::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
     end
 
-    # Index4::ensureContentAddressing(filepath)
+    # BankVault::ensureContentAddressing(filepath)
     def self.ensureContentAddressing(filepath)
         filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
-        filepath2 = "#{Index4::directory()}/#{filename2}"
+        filepath2 = "#{BankVault::directory()}/#{filename2}"
         return filepath if filepath == filepath2
         FileUtils.mv(filepath, filepath2)
         filepath2
     end
 
-    # Index4::initiateDatabaseFile() -> filepath
+    # BankVault::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
         filename = "#{SecureRandom.hex}.sqlite3"
-        filepath = "#{Index4::directory()}/#{filename}"
+        filepath = "#{BankVault::directory()}/#{filename}"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -52,10 +52,10 @@ class Index4
         )", [])
         db.commit
         db.close
-        Index4::ensureContentAddressing(filepath)
+        BankVault::ensureContentAddressing(filepath)
     end
 
-    # Index4::extractEntryOrNullFromFilepath(filepath, recorduuid)
+    # BankVault::extractEntryOrNullFromFilepath(filepath, recorduuid)
     def self.extractEntryOrNullFromFilepath(filepath, recorduuid)
         entry = nil
         db = SQLite3::Database.new(filepath)
@@ -75,7 +75,7 @@ class Index4
         entry
     end
 
-    # Index4::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
+    # BankVault::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
     def self.insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -88,7 +88,7 @@ class Index4
         db.close
     end
 
-    # Index4::extractEntriesFromFile(filepath)
+    # BankVault::extractEntriesFromFile(filepath)
     def self.extractEntriesFromFile(filepath)
         entries = []
         db = SQLite3::Database.new(filepath)
@@ -108,33 +108,33 @@ class Index4
         entries
     end
 
-    # Index4::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
+    # BankVault::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
     def self.mergeTwoDatabaseFiles(filepath1, filepath2)
         # The logic here is to read the items from filepath2 and 
         # possibly add them to filepath1, if either:
         #   - there was no equivalent in filepath1
         #   - it's a newer record than the one in filepath1
-        Index4::extractEntriesFromFile(filepath2).each{|entry2|
+        BankVault::extractEntriesFromFile(filepath2).each{|entry2|
             shouldInject = false
-            entry1 = Index4::extractEntryOrNullFromFilepath(filepath1, entry2["recorduuid"])
+            entry1 = BankVault::extractEntryOrNullFromFilepath(filepath1, entry2["recorduuid"])
             if entry1.nil? then
                 # filepath1 doesn't have that record from filepath2
-                Index4::insertUpdateEntryAtFilepath(filepath1, entry2["recorduuid"], entry2["id"], entry2["unixtime"], entry2["date"], entry2["value"])
+                BankVault::insertUpdateEntryAtFilepath(filepath1, entry2["recorduuid"], entry2["id"], entry2["unixtime"], entry2["date"], entry2["value"])
             end
         }
         # Then when we are done, we delete filepath2
         FileUtils::rm(filepath2)
-        Index4::ensureContentAddressing(filepath1)
+        BankVault::ensureContentAddressing(filepath1)
     end
 
-    # Index4::getDatabaseFilepath()
+    # BankVault::getDatabaseFilepath()
     def self.getDatabaseFilepath()
-        filepaths = Index4::filepaths()
+        filepaths = BankVault::filepaths()
 
         # This case should not really happen (anymore), so if the condition 
         # is true, let's error noisily.
         if filepaths.size == 0 then
-            # return Index4::initiateDatabaseFile()
+            # return BankVault::initiateDatabaseFile()
             raise "(error: c83229f3)"
         end
 
@@ -147,24 +147,25 @@ class Index4
             # The logic here is to read the items from filepath2 and 
             # possibly add them to filepath1.
             # We get an updated filepath1 because of content addressing.
-            filepath1 = Index0::mergeTwoDatabaseFiles(filepath1, filepath)
+            filepath1 = ListingDatabase::mergeTwoDatabaseFiles(filepath1, filepath)
         }
         filepath1
     end
 
-    # Index4::insertUpdateEntry(recorduuid, id, unixtime, date, value)
+    # BankVault::insertUpdateEntry(recorduuid, id, unixtime, date, value)
     def self.insertUpdateEntry(recorduuid, id, unixtime, date, value)
-        filepath = Index4::getDatabaseFilepath()
-        Index4::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
+        puts "BankVault::insertUpdateEntry: #{[id, unixtime, date, value].join(', ')}".yellow
+        filepath = BankVault::getDatabaseFilepath()
+        BankVault::insertUpdateEntryAtFilepath(filepath, recorduuid, id, unixtime, date, value)
     end
 
     # ------------------------------------------------------
     # Interface
 
-    # Index4::getValue(id)
+    # BankVault::getValue(id)
     def self.getValue(id)
         value = 0
-        db = SQLite3::Database.new(Index4::getDatabaseFilepath())
+        db = SQLite3::Database.new(BankVault::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -175,10 +176,10 @@ class Index4
         value
     end
 
-    # Index4::getValueAtDate(id, date)
+    # BankVault::getValueAtDate(id, date)
     def self.getValueAtDate(id, date)
         value = 0
-        db = SQLite3::Database.new(Index4::getDatabaseFilepath())
+        db = SQLite3::Database.new(BankVault::getDatabaseFilepath())
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
@@ -189,22 +190,30 @@ class Index4
         value
     end
 
-    # Index4::insertValue(id, date, value)
+    # BankVault::insertValue(id, date, value)
     def self.insertValue(id, date, value)
         recorduuid = SecureRandom.uuid
         unixtime = Time.new.to_i
-        Index4::insertUpdateEntry(recorduuid, id, unixtime, date, value)
+        BankVault::insertUpdateEntry(recorduuid, id, unixtime, date, value)
+        BankData::decacheValue(id)
     end
 
-    # Index4::getRecords()
-    def self.getRecords()
-        Index4::extractEntriesFromFile(Index4::getDatabaseFilepath())
+    # BankVault::getRecordsAll()
+    def self.getRecordsAll()
+        BankVault::extractEntriesFromFile(BankVault::getDatabaseFilepath())
     end
 
-    # Index4::maintenance()
+    # BankVault::getRecords(uuid)
+    def self.getRecords(uuid)
+        BankVault::getRecordsAll().select{|record|
+            record["id"] == uuid
+        }
+    end
+
+    # BankVault::maintenance()
     def self.maintenance()
         horizon = Time.new.to_i - 86400*90
-        filepath = Index4::getDatabaseFilepath()
+        filepath = BankVault::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -212,6 +221,6 @@ class Index4
         db.execute("delete from index4 where unixtime<?", [horizon])
         db.execute("vacuum", [])
         db.close
-        Index4::ensureContentAddressing(filepath)
+        BankVault::ensureContentAddressing(filepath)
     end
 end

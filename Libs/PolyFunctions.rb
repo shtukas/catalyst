@@ -13,7 +13,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        parent = Index2::childuuidToParentOrNull(item["uuid"])
+        parent = Parenting::childuuidToParentOrNull(item["uuid"])
         if parent then
             accounts << {
                 "description" => "(parent: #{parent["description"]})",
@@ -23,7 +23,7 @@ class PolyFunctions
         end
 
         if item["donation-1205"] then
-            target = Index3::itemOrNull(item["donation-1205"])
+            target = Items::itemOrNull(item["donation-1205"])
             if target then
                 accounts << {
                     "description" => "(donation target: #{target["description"]})",
@@ -38,36 +38,19 @@ class PolyFunctions
             end
         end
 
-        if item["mikuType"] == "NxTask" then
-            # This could be seen as redundant because we have already called
-            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
-            # an opportunity to get Infinity (the Index will do that automatically)
-            parent = Index2::childuuidToParentOrDefaultInfinityCore(item["uuid"])
-            accounts << {
-                "description" => "(parent: #{parent["description"]})",
-                "number"      => parent["uuid"]
-            }
-        end
+        # This mapping is defined in ListingDatabase::entriesForListing
+        # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
+        # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2
+        # NxCore & NxTask 69297ca5-d92e-4a73-82cc-1d009e63f4fe
 
-        # This mapping is defined in Index0::entriesForListing
-        # NxProject       common: 5144398b-a722-4fe3-aee8-ea4bcd5a59ca
-        # Wave            common: e0d8f86a-1783-4eb7-8f63-11562d8972a2
-        # NxCore & NxTask common: 69297ca5-d92e-4a73-82cc-1d009e63f4fe
-
-        if item["mikuType"] == "NxProject" then
-            # This could be seen as redundant because we have already called
-            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
-            # an opportunity to get Infinity (the Index will do that automatically)
+        if item["mikuType"] == "NxDated" then
             accounts << {
-                "description" => "5144398b-a722-4fe3-aee8-ea4bcd5a59ca",
-                "number"      => "5144398b-a722-4fe3-aee8-ea4bcd5a59ca"
+                "description" => "6a114b28-d6f2-4e92-9364-fadb3edc1122",
+                "number"      => "6a114b28-d6f2-4e92-9364-fadb3edc1122"
             }
         end
 
         if item["mikuType"] == "Wave" then
-            # This could be seen as redundant because we have already called
-            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
-            # an opportunity to get Infinity (the Index will do that automatically)
             accounts << {
                 "description" => "e0d8f86a-1783-4eb7-8f63-11562d8972a2",
                 "number"      => "e0d8f86a-1783-4eb7-8f63-11562d8972a2"
@@ -75,9 +58,6 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxCore" then
-            # This could be seen as redundant because we have already called
-            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
-            # an opportunity to get Infinity (the Index will do that automatically)
             accounts << {
                 "description" => "69297ca5-d92e-4a73-82cc-1d009e63f4fe",
                 "number"      => "69297ca5-d92e-4a73-82cc-1d009e63f4fe"
@@ -85,9 +65,6 @@ class PolyFunctions
         end
 
         if item["mikuType"] == "NxTask" then
-            # This could be seen as redundant because we have already called
-            # `Index2::childuuidToParentOrNull` but here we give to NxTasks that are Orphans
-            # an opportunity to get Infinity (the Index will do that automatically)
             accounts << {
                 "description" => "69297ca5-d92e-4a73-82cc-1d009e63f4fe",
                 "number"      => "69297ca5-d92e-4a73-82cc-1d009e63f4fe"
@@ -138,9 +115,6 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "NxProject" then
-            return NxProjects::toString(item)
-        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
@@ -149,21 +123,10 @@ class PolyFunctions
 
     # PolyFunctions::get_name_of_donation_target_or_identity(donation_target_id)
     def self.get_name_of_donation_target_or_identity(donation_target_id)
-
-        if XCache::getOrNull("b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}:#{CommonUtils::today()}") == "lost" then
-            return donation_target_id
-        end
-
-        target = Index3::itemOrNull(donation_target_id)
+        target = Items::itemOrNull(donation_target_id)
         if target then
             return target["description"]
-        else
-            # We could not find a target here (I first noticed this happening
-            # after getting rid of Guardian Health)
-            # We need to stop wasting time looking for it
-            XCache::set("b1ab3f25-eabd-403f-af5f-81f9b25d5fa8:#{donation_target_id}:#{CommonUtils::today()}", "lost")
         end
-
         donation_target_id
     end
 
@@ -192,7 +155,7 @@ class PolyFunctions
 
     # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
     def self.interactivelySelectGlobalPositionInParent(parent)
-        elements = Index2::parentuuidToChildrenInOrder(parent["uuid"])
+        elements = Parenting::parentuuidToChildrenInOrder(parent["uuid"])
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -204,7 +167,7 @@ class PolyFunctions
             return PolyFunctions::random_10_20_position_in_parent(parent)
         end
         if position == "first" then
-            return ([0] + elements.map{|item| Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"]) }).min.floor - 1
+            return ([0] + elements.map{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }).min.floor - 1
         end
         position = position.to_f
         position
@@ -212,25 +175,25 @@ class PolyFunctions
 
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
-        positions = Index2::parentuuidToChildrenPositions(parentuuid)
+        positions = Parenting::parentuuidToChildrenPositions(parentuuid)
         return 1 if positions.empty?
         positions.min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
-        positions = Index2::parentuuidToChildrenPositions(parentuuid)
+        positions = Parenting::parentuuidToChildrenPositions(parentuuid)
         return 1 if positions.empty?
         positions.max
     end
 
     # PolyFunctions::random_10_20_position_in_parent(parent)
     def self.random_10_20_position_in_parent(parent)
-        items = Index2::parentuuidToChildrenInOrder(parent["uuid"])
+        items = Parenting::parentuuidToChildrenInOrder(parent["uuid"])
         if items.size < 20 then
             return PolyFunctions::lastPositionInParent(parent) + 1
         end
-        positions = items.drop(10).take(10).map{|item| Index2::childPositionAtParentOrZero(item["uuid"], parent["uuid"]) }
+        positions = items.drop(10).take(10).map{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
         first = positions.first
         last = positions.last
         first + rand * (last - first)
@@ -239,7 +202,7 @@ class PolyFunctions
     # PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
     def self.makeInfinityuuidAndPositionNearTheTop()
         coreuuid = NxCores::infinityuuid()
-        core = Index3::itemOrNull(coreuuid)
+        core = Items::itemOrNull(coreuuid)
         position = PolyFunctions::random_10_20_position_in_parent(core)
         [coreuuid, position]
     end

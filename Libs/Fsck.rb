@@ -34,9 +34,6 @@ class Fsck
         if item["mikuType"] == "NxIce" then
             return
         end
-        if item["mikuType"] == "NxProject" then
-            return
-        end
         if item["mikuType"] == "NxLine" then
             return
         end
@@ -45,7 +42,7 @@ class Fsck
 
     # Fsck::fsckAll()
     def self.fsckAll()
-        Index3::items()
+        Items::items()
             .each{|item| Fsck::fsckOrError(item) }
     end
 end

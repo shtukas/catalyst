@@ -1,35 +1,35 @@
 
 # create table index2 (parentuuid TEXT NOT NULL, childuuid TEXT NOT NULL, position REAL NOT NULL);
 
-class Index2
+class Parenting
 
     # ------------------------------------------------------
     # Basic IO management
 
-    # Index2::directory()
+    # Parenting::directory()
     def self.directory()
         "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index2-parenting"
     end
 
-    # Index2::filepaths()
+    # Parenting::filepaths()
     def self.filepaths()
-        LucilleCore::locationsAtFolder(Index2::directory())
+        LucilleCore::locationsAtFolder(Parenting::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
     end
 
-    # Index2::ensureContentAddressing(filepath)
+    # Parenting::ensureContentAddressing(filepath)
     def self.ensureContentAddressing(filepath)
         filename2 = "#{Digest::SHA1.file(filepath).hexdigest}.sqlite3"
-        filepath2 = "#{Index2::directory()}/#{filename2}"
+        filepath2 = "#{Parenting::directory()}/#{filename2}"
         return filepath if filepath == filepath2
         FileUtils.mv(filepath, filepath2)
         filepath2
     end
 
-    # Index2::initiateDatabaseFile() -> filepath
+    # Parenting::initiateDatabaseFile() -> filepath
     def self.initiateDatabaseFile()
         filename = "#{SecureRandom.hex}.sqlite3"
-        filepath = "#{Index2::directory()}/#{filename}"
+        filepath = "#{Parenting::directory()}/#{filename}"
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -38,10 +38,10 @@ class Index2
         db.execute("create table index1 (parentuuid TEXT NOT NULL, childuuid TEXT NOT NULL, position REAL NOT NULL)", [])
         db.commit
         db.close
-        Index2::ensureContentAddressing(filepath)
+        Parenting::ensureContentAddressing(filepath)
     end
 
-    # Index2::extractDataFromFile(filepath)
+    # Parenting::extractDataFromFile(filepath)
     def self.extractDataFromFile(filepath)
         data = []
         db = SQLite3::Database.new(filepath)
@@ -59,13 +59,16 @@ class Index2
         data
     end
 
-    # Index2::getDatabaseFilepath()
+    # Parenting::getDatabaseFilepath()
     def self.getDatabaseFilepath()
-        filepaths = Index2::filepaths()
+        filepaths = Parenting::filepaths()
 
+        # This case should not really happen (anymore), so if the condition 
+        # is true, let's error noisily.
         if filepaths.size == 0 then
-            Index2::initiateDatabaseFile()
-            return Index2::getDatabaseFilepath()
+            #Parenting::initiateDatabaseFile()
+            #return Parenting::getDatabaseFilepath()
+            raise "(error: 7728dc35)"
         end
 
         if filepaths.size == 1 then
@@ -74,12 +77,12 @@ class Index2
 
         data = filepaths
             .map{|filepath|
-                Index2::extractDataFromFile(filepath)
+                Parenting::extractDataFromFile(filepath)
             }
             .flatten
 
         # In this case filepath.size > 1
-        newfilepath = Index2::initiateDatabaseFile()
+        newfilepath = Parenting::initiateDatabaseFile()
 
         db = SQLite3::Database.new(newfilepath)
         db.busy_timeout = 117
@@ -96,27 +99,32 @@ class Index2
             FileUtils::rm(filepath)
         }
 
-        Index2::ensureContentAddressing(newfilepath)
+        Parenting::ensureContentAddressing(newfilepath)
     end
 
-    # Index2::insertEntry(parentuuid, childuuid, position)
+    # Parenting::insertEntry(parentuuid, childuuid, position)
     def self.insertEntry(parentuuid, childuuid, position)
-        filepath = Index2::getDatabaseFilepath()
+        puts "Parenting::insertEntry: #{[parentuuid, childuuid, position].join(', ')}"
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("delete from index1 where parentuuid=? and childuuid=?", [parentuuid, childuuid])
+        db.execute("delete from index1 where childuuid=?", [childuuid])
         db.execute("insert into index1 (parentuuid, childuuid, position) values (?, ?, ?)", [parentuuid, childuuid, position])
         db.commit
         db.close
-        Index2::ensureContentAddressing(filepath)
+        Parenting::ensureContentAddressing(filepath)
+
+        if !Parenting::parentuuidToChildrenuuidsInOrder(parentuuid).include?(childuuid) then
+            raise "(error: 338c4cdb) How did this happen? 🤔"
+        end
     end
 
-    # Index2::removeIdentifierFromDatabase(uuid)
+    # Parenting::removeIdentifierFromDatabase(uuid)
     def self.removeIdentifierFromDatabase(uuid)
-        filepath = Index2::getDatabaseFilepath()
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -126,16 +134,16 @@ class Index2
         db.execute("delete from index1 where childuuid=?", [uuid])
         db.commit
         db.close
-        Index2::ensureContentAddressing(filepath)
+        Parenting::ensureContentAddressing(filepath)
     end
 
     # ------------------------------------------------------
     # Data
 
-    # Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
+    # Parenting::parentuuidToChildrenuuidsInOrder(parentuuid)
     def self.parentuuidToChildrenuuidsInOrder(parentuuid)
         uuids = []
-        filepath = Index2::getDatabaseFilepath()
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -147,10 +155,10 @@ class Index2
         uuids
     end
 
-    # Index2::parentuuidToChildrenPositions(parentuuid)
+    # Parenting::parentuuidToChildrenPositions(parentuuid)
     def self.parentuuidToChildrenPositions(parentuuid)
         positions = []
-        filepath = Index2::getDatabaseFilepath()
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -162,10 +170,10 @@ class Index2
         positions
     end
 
-    # Index2::hasChildren(parentuuid)
+    # Parenting::hasChildren(parentuuid)
     def self.hasChildren(parentuuid)
         answer = false
-        filepath = Index2::getDatabaseFilepath()
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -177,21 +185,24 @@ class Index2
         answer
     end
 
-    # Index2::parentuuidToChildrenInOrder(parentuuid)
+    # Parenting::parentuuidToChildrenInOrder(parentuuid)
     def self.parentuuidToChildrenInOrder(parentuuid)
-        Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
-            .map{|uuid| Index3::itemOrNull(uuid) }
+        if parentuuid == NxCores::infinityuuid() then
+            return Parenting::parentuuidToChildrenInOrderHead(parentuuid, 100, lambda {|item| true })
+        end
+        Parenting::parentuuidToChildrenuuidsInOrder(parentuuid)
+            .map{|uuid| Items::itemOrNull(uuid) }
             .compact
     end
 
-    # Index2::parentuuidToChildrenInOrderHead(parentuuid, size, selection)
+    # Parenting::parentuuidToChildrenInOrderHead(parentuuid, size, selection)
     def self.parentuuidToChildrenInOrderHead(parentuuid, size, selection)
-        Index2::parentuuidToChildrenuuidsInOrder(parentuuid)
+        Parenting::parentuuidToChildrenuuidsInOrder(parentuuid)
             .reduce([]){|items, uuid|
                 if items.size >= size then
                     items
                 else
-                    item = Index3::itemOrNull(uuid)
+                    item = Items::itemOrNull(uuid)
                     if item then
                         if selection.call(item) then
                             items + [item]
@@ -205,10 +216,10 @@ class Index2
             }
     end
 
-    # Index2::childuuidToParentuuidOrNull(childuuid)
-    def self.childuuidToParentuuidOrNull(childuuid)
+    # Parenting::childuuidToParentUuidOrNull(childuuid)
+    def self.childuuidToParentUuidOrNull(childuuid)
         parentuuid = nil
-        filepath = Index2::getDatabaseFilepath()
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -220,29 +231,17 @@ class Index2
         parentuuid
     end
 
-    # Index2::childuuidToParentOrNull(childuuid)
+    # Parenting::childuuidToParentOrNull(childuuid)
     def self.childuuidToParentOrNull(childuuid)
-        parentuuid = Index2::childuuidToParentuuidOrNull(childuuid)
-        if parentuuid.nil? then
-            return nil
-        end
-        Index3::itemOrNull(parentuuid)
+        parentuuid = Parenting::childuuidToParentUuidOrNull(childuuid)
+        return nil if parentuuid.nil?
+        Items::itemOrNull(parentuuid)
     end
 
-    # Index2::childuuidToParentOrDefaultInfinityCore(childuuid)
-    def self.childuuidToParentOrDefaultInfinityCore(childuuid)
-        parentuuid = Index2::childuuidToParentuuidOrNull(childuuid)
-        if parentuuid.nil? then
-            Index2::insertEntry(NxCores::infinityuuid(), childuuid, 0)
-            return Index3::itemOrNull(NxCores::infinityuuid())
-        end
-        Index3::itemOrNull(parentuuid)
-    end
-
-    # Index2::childPositionAtParentOrZero(childuuid, parentuuid)
-    def self.childPositionAtParentOrZero(childuuid, parentuuid)
+    # Parenting::childPositionAtParentOrZero(parentuuid, childuuid)
+    def self.childPositionAtParentOrZero(parentuuid, childuuid)
         position = 0
-        filepath = Index2::getDatabaseFilepath()
+        filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
@@ -257,11 +256,11 @@ class Index2
     # ------------------------------------------------------
     # Interface
 
-    # Index2::maintenance()
+    # Parenting::maintenance()
     def self.maintenance()
-        archive_filepath = "#{Index2::directory()}/archives/#{CommonUtils::today()}.sqlite3"
+        archive_filepath = "#{Parenting::directory()}/archives/#{CommonUtils::today()}.sqlite3"
         if !File.exist?(archive_filepath) then
-            FileUtils.cp(Index2::getDatabaseFilepath(), archive_filepath)
+            FileUtils.cp(Parenting::getDatabaseFilepath(), archive_filepath)
         end
     end
 end

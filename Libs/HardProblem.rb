@@ -2,38 +2,23 @@ class HardProblem
 
     # HardProblem::item_attribute_has_been_updated(uuid, attribute, value)
     def self.item_attribute_has_been_updated(uuid, attribute, value)
-        if attribute == "mikuType" then
-            mikuType = value
-            Index1::insertEntry(mikuType, uuid)
-        end
-        Index0::evaluate(uuid)
+        ListingDatabase::evaluate(uuid)
     end
 
     # HardProblem::item_has_been_destroyed(uuid)
     def self.item_has_been_destroyed(uuid)
-        Index1::extractDataFromFile(Index1::getDatabaseFilepath())
-            .select{|entry| entry["itemuuid"] == uuid }
-            .each{|entry|
-                Index1::removeEntry(entry["mikuType"], entry["itemuuid"])
-            }
-        Index2::removeIdentifierFromDatabase(uuid)
-        Index0::removeEntry(uuid)
+        Parenting::removeIdentifierFromDatabase(uuid)
+        ListingDatabase::removeEntry(uuid)
     end
 
     # HardProblem::item_could_not_be_found_on_disk(uuid)
     def self.item_could_not_be_found_on_disk(uuid)
-        Index1::extractDataFromFile(Index1::getDatabaseFilepath())
-            .select{|entry| entry["itemuuid"] == uuid }
-            .each{|entry|
-                Index1::removeEntry(entry["mikuType"], entry["itemuuid"])
-            }
-        Index2::removeIdentifierFromDatabase(uuid)
+        Parenting::removeIdentifierFromDatabase(uuid)
     end
 
     # HardProblem::item_is_being_destroyed(item)
     def self.item_is_being_destroyed(item)
-        Index1::removeItem(item["uuid"])
-        Index2::removeIdentifierFromDatabase(item["uuid"])
+        Parenting::removeIdentifierFromDatabase(item["uuid"])
         
         # Version 1
         # This synchronous processing was taking too long, so we are doing version 2

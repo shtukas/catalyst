@@ -8,20 +8,20 @@ class NxBackups
         description = LucilleCore::askQuestionAnswerAsString("description: ")
         return nil if description == ""
         period = LucilleCore::askQuestionAnswerAsString("period in days: ").to_f
-        Index3::init(uuid, "NxBackup")
-        Index3::setAttribute(uuid, "mikuType", "NxBackup")
-        Index3::setAttribute(uuid, "mikuType", "NxAnniversary")
-        Index3::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Index3::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Index3::setAttribute(uuid, "description", description)
-        Index3::setAttribute(uuid, "period", period)
-        Index3::setAttribute(uuid, "last-done-unixtime", nil)
-        Index3::itemOrNull(uuid)
+        Items::init(uuid, "NxBackup")
+        Items::setAttribute(uuid, "mikuType", "NxBackup")
+        Items::setAttribute(uuid, "mikuType", "NxAnniversary")
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "period", period)
+        Items::setAttribute(uuid, "last-done-unixtime", nil)
+        Items::itemOrNull(uuid)
     end
 
     # NxBackups::getItemByDescriptionOrNull(description)
     def self.getItemByDescriptionOrNull(description)
-        Index1::mikuTypeItems("NxBackup").select{|item| item["description"] == description }.first
+        Items::mikuType("NxBackup").select{|item| item["description"] == description }.first
     end
 
     # NxBackups::toString(item)
@@ -39,6 +39,6 @@ class NxBackups
 
     # NxBackups::listingItems()
     def self.listingItems()
-        Index1::mikuTypeItems("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+        Items::mikuType("NxBackup").select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 end

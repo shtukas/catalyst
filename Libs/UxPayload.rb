@@ -247,7 +247,7 @@ class UxPayload
         if payload["type"] == "breakdown" then
             return {
                 "type"  => "breakdown",
-                "lines" => Operations::interactivelyRecompiledLines(payload["lines"])
+                "lines" => Operations::interactivelyRecompileLines(payload["lines"])
             }
         end
         raise "(error: 9dc106ff-44c6)"
@@ -313,5 +313,24 @@ class UxPayload
             "type"  => "breakdown",
             "lines" => Operations::interactivelyGetLines()
         }
+    end
+
+    # UxPayload::payloadProgram(item)
+    def self.payloadProgram(item)
+        payload = nil
+        if item["uxpayload-b4e4"] then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["update existing", "make new (default)"])
+            if option.nil? or option == "make new (default)" then
+                payload = UxPayload::makeNewOrNull(item["uuid"])
+            end
+            if option.nil? or option == "update existing" then
+                payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
+            end
+        else
+            payload = UxPayload::makeNewOrNull(item["uuid"])
+        end
+        return if payload.nil?
+        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+        ListingDatabase::evaluate(item["uuid"])
     end
 end
