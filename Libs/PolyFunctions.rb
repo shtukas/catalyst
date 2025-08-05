@@ -175,14 +175,14 @@ class PolyFunctions
 
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
-        positions = Parenting::parentuuidToChildrenPositions(parentuuid)
+        positions = Parenting::parentuuidToChildrenPositions(parent["uuid"])
         return 1 if positions.empty?
         positions.min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
-        positions = Parenting::parentuuidToChildrenPositions(parentuuid)
+        positions = Parenting::parentuuidToChildrenPositions(parent["uuid"])
         return 1 if positions.empty?
         positions.max
     end

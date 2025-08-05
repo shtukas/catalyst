@@ -5,11 +5,11 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : ..(.) | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program * | expose * | add time * | skip * hours (default item) | bank accounts * | payload * | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
-            "NxBalls       : start * | stop * | pause * | pursue *",
+            "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort",
         ].join("\n")
     end
