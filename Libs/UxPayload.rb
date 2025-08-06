@@ -331,6 +331,6 @@ class UxPayload
         end
         return if payload.nil?
         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-        ListingDatabase::evaluate(item["uuid"])
+        ListingDatabase::listOrRelist(item["uuid"])
     end
 end

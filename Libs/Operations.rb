@@ -1,12 +1,39 @@
 class Operations
 
-    # Operations::editItem(item)
-    def self.editItem(item)
+    # Operations::editItemJson(item)
+    def self.editItemJson(item)
         # This function edit the payload, if there is now
-        return if item["uxpayload-b4e4"].nil?
+        item = JSON.parse(CommonUtils::editTextSynchronously(JSON.pretty_generate(item)))
+        item.each{|k, v|
+            Items::setAttribute(item["uuid"], k, v)
+        }
+    end
+
+    # Operations::editItemPayload(item)
+    def self.editItemPayload(item)
+        if item["uxpayload-b4e4"].nil? then
+            puts "I could not find a payload on '#{PolyFunctions::toString(item)}'"
+            LucilleCore::pressEnterToContinue()
+        end
         payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
         return if payload.nil?
         Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+    end
+
+    # Operations::editItem(item)
+    def self.editItem(item)
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["edit description", "edit payload", "edit json"])
+        return if option.nil?
+        if option == "edit description" then
+            PolyActions::editDescription(item)
+        end
+        if option == "edit payload" then
+            Operations::editItemPayload(item)
+        end
+        if option == "edit json" then
+            Operations::editItemJson(item)
+        end
+        ListingDatabase::listOrRelist(item["uuid"])
     end
 
     # Operations::program3(lx)
@@ -116,7 +143,7 @@ class Operations
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location, parentuuid, position)
                 Parenting::insertEntry(parentuuid, item["uuid"], position)
-                ListingDatabase::evaluate(item["uuid"])
+                ListingDatabase::listOrRelist(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
         end
@@ -207,7 +234,7 @@ class Operations
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 puts JSON.pretty_generate(todo)
                 Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                ListingDatabase::evaluate(todo["uuid"])
+                ListingDatabase::listOrRelist(todo["uuid"])
                 next
             end
 
@@ -219,7 +246,7 @@ class Operations
                         todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
                         puts JSON.pretty_generate(todo)
                         Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                        ListingDatabase::evaluate(todo["uuid"])
+                        ListingDatabase::listOrRelist(todo["uuid"])
                     }
                 next
             end

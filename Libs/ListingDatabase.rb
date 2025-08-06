@@ -570,8 +570,8 @@ class ListingDatabase
     # ------------------------------------------------------
     # Operations
 
-    # ListingDatabase::evaluate(itemuuid)
-    def self.evaluate(itemuuid)
+    # ListingDatabase::listOrRelist(itemuuid)
+    def self.listOrRelist(itemuuid)
         item = Items::itemOrNull(itemuuid)
         if item.nil? then
             ListingDatabase::removeEntry(itemuuid)

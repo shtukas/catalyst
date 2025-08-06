@@ -9,40 +9,40 @@ class Transmutation
         if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
             NxTasks::performItemPositioning(item["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         if item["mikuType"] == "NxDated" and targetMikuType == "NxFloat" then
             Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         if item["mikuType"] == "NxLine" and targetMikuType == "NxDated" then
             Items::setAttribute(item["uuid"], "mikuType", "NxDated")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         if item["mikuType"] == "NxLine" and targetMikuType == "NxFloat" then
             Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         if item["mikuType"] == "NxLine" and targetMikuType == "NxTask" then
             NxTasks::performItemPositioning(item["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(uuid, "date", datetime)
             Items::setAttribute(item["uuid"], "mikuType", "NxDated")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxFloat" then
             Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
-            ListingDatabase::evaluate(item["uuid"])
+            ListingDatabase::listOrRelist(item["uuid"])
             return
         end
         puts "I do not know how to transmute mikuType #{item["mikuType"]} to #{targetMikuType}. Aborting."

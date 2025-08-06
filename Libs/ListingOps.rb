@@ -119,7 +119,7 @@ class ListingOps
                 store.register(item, ListingOps::canBeDefault(item))
                 lines = ListingOps::toString2(store, item)
                 lines.each{|line|
-                    printer.call(line)
+                    printer.call(line.green)
                 }
                 lines.each{|line|
                     sheight = sheight - (line.size/swidth + 1)
