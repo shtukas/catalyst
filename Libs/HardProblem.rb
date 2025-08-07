@@ -2,7 +2,7 @@ class HardProblem
 
     # HardProblem::item_attribute_has_been_updated(uuid, attribute, value)
     def self.item_attribute_has_been_updated(uuid, attribute, value)
-        ListingService::listOrRelist(uuid)
+        ListingService::evaluate(uuid)
     end
 
     # HardProblem::item_has_been_destroyed(uuid)

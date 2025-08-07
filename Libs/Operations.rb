@@ -33,7 +33,7 @@ class Operations
         if option == "edit json" then
             Operations::editItemJson(item)
         end
-        ListingService::listOrRelist(item["uuid"])
+        ListingService::evaluate(item["uuid"])
     end
 
     # Operations::program3(lx)
@@ -143,7 +143,7 @@ class Operations
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location, parentuuid, position)
                 Parenting::insertEntry(parentuuid, item["uuid"], position)
-                ListingService::listOrRelist(item["uuid"])
+                ListingService::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
         end
@@ -213,7 +213,7 @@ class Operations
             }
             puts ""
 
-            Parenting::parentuuidToChildrenInOrder(parent["uuid"])
+            Parenting::childrenInOrder(parent["uuid"])
                 .each{|element|
                     store.register(element, FrontPage::canBeDefault(element))
                     FrontPage::toString2(store, element).each{|line|
@@ -234,7 +234,7 @@ class Operations
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 puts JSON.pretty_generate(todo)
                 Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                ListingService::listOrRelist(todo["uuid"])
+                ListingService::evaluate(todo["uuid"])
                 next
             end
 
@@ -246,7 +246,7 @@ class Operations
                         todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
                         puts JSON.pretty_generate(todo)
                         Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                        ListingService::listOrRelist(todo["uuid"])
+                        ListingService::evaluate(todo["uuid"])
                     }
                 next
             end
@@ -261,7 +261,7 @@ class Operations
             end
 
             if input == "sort" then
-                itemsInOrder = Parenting::parentuuidToChildrenInOrder(parent["uuid"]).sort_by{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
+                itemsInOrder = Parenting::childrenInOrder(parent["uuid"]).sort_by{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
                 selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
                 selected.reverse.each{|i|
                     position = PolyFunctions::firstPositionInParent(parent) - 1
@@ -279,7 +279,7 @@ class Operations
         NxCores::cores()
             .each{|core|
                 #puts "probing core #{core["description"]}"
-                Parenting::parentuuidToChildrenInOrder(core["uuid"])
+                Parenting::childrenInOrder(core["uuid"])
                     .first(200)
                     .each{|item|
                         #puts "probing item #{item["description"]}"

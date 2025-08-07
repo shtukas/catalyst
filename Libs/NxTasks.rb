@@ -51,7 +51,7 @@ class NxTasks
         if item["critical-0825"] then
             return "🔺"
         end
-        if Parenting::childuuidToParentOrNull(item["uuid"]).nil? then
+        if Parenting::parentOrNull(item["uuid"]).nil? then
             return "🦉"
         end
         "🔹"
@@ -59,7 +59,7 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        parent = Parenting::childuuidToParentOrNull(item["uuid"])
+        parent = Parenting::parentOrNull(item["uuid"])
         if parent then
             position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
             px2 = " (#{position} @ #{parent["description"]})".yellow
@@ -78,7 +78,7 @@ class NxTasks
     # NxTasks::orphan()
     def self.orphan()
         Items::mikuType("NxTask")
-            .select{|item| Parenting::childuuidToParentOrNull(item["uuid"]).nil? }
+            .select{|item| Parenting::parentOrNull(item["uuid"]).nil? }
     end
 
     # ------------------
@@ -88,13 +88,13 @@ class NxTasks
     def self.performItemPositioning(itemuuid)
         parentuuid, position = Operations::decideParentAndPosition()
         Parenting::insertEntry(parentuuid, itemuuid, position)
-        ListingService::listOrRelist(parentuuid)
+        ListingService::evaluate(parentuuid)
     end
 
     # NxTasks::maintenance()
     def self.maintenance()
         count1 = Items::mikuType("NxTask")
-                    .select{|item| Parenting::childuuidToParentUuidOrNull(item["uuid"]) == NxCores::infinityuuid() }
+                    .select{|item| Parenting::parentUuidOrNull(item["uuid"]) == NxCores::infinityuuid() }
                     .size
         #puts "count1: #{count1}"
         iced = Items::mikuType("NxIce")

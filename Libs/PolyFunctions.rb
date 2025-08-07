@@ -13,7 +13,7 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        parent = Parenting::childuuidToParentOrNull(item["uuid"])
+        parent = Parenting::parentOrNull(item["uuid"])
         if parent then
             accounts << {
                 "description" => "(parent: #{parent["description"]})",
@@ -155,7 +155,7 @@ class PolyFunctions
 
     # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
     def self.interactivelySelectGlobalPositionInParent(parent)
-        elements = Parenting::parentuuidToChildrenInOrder(parent["uuid"])
+        elements = Parenting::childrenInOrder(parent["uuid"])
         elements.first(20).each{|item|
             puts "#{PolyFunctions::toString(item)}"
         }
@@ -175,21 +175,21 @@ class PolyFunctions
 
     # PolyFunctions::firstPositionInParent(parent)
     def self.firstPositionInParent(parent)
-        positions = Parenting::parentuuidToChildrenPositions(parent["uuid"])
+        positions = Parenting::childrenPositions(parent["uuid"])
         return 1 if positions.empty?
         positions.min
     end
 
     # PolyFunctions::lastPositionInParent(parent)
     def self.lastPositionInParent(parent)
-        positions = Parenting::parentuuidToChildrenPositions(parent["uuid"])
+        positions = Parenting::childrenPositions(parent["uuid"])
         return 1 if positions.empty?
         positions.max
     end
 
     # PolyFunctions::random_10_20_position_in_parent(parent)
     def self.random_10_20_position_in_parent(parent)
-        items = Parenting::parentuuidToChildrenInOrder(parent["uuid"])
+        items = Parenting::childrenInOrder(parent["uuid"])
         if items.size < 20 then
             return PolyFunctions::lastPositionInParent(parent) + 1
         end

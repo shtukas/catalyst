@@ -241,7 +241,7 @@ class CommandsAndInterpreters
             n = n.to_i
             items = store.items()
             items = items.drop(n)
-            position = 0.5*(ListingService::getPositionOrNull(items[0]["uuid"]) + ListingService::getPositionOrNull(items[1]["uuid"]))
+            position = 0.5*(ListingService::getPosition(items[0]["uuid"]) + ListingService::getPosition(items[1]["uuid"]))
             puts "deciding position: #{position}"
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             item = NxLines::interactivelyIssueNew(nil, line)
@@ -281,7 +281,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -312,7 +312,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -360,7 +360,7 @@ class CommandsAndInterpreters
             todo = NxTasks::interactivelyIssueNewOrNull()
             parentuuid, position = Operations::decideParentAndPosition()
             Parenting::insertEntry(parentuuid, todo["uuid"], position)
-            ListingService::listOrRelist(todo["uuid"])
+            ListingService::evaluate(todo["uuid"])
             return
         end
 
@@ -402,7 +402,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -411,7 +411,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -419,7 +419,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Operations::editItem(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -428,7 +428,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -518,7 +518,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -527,7 +527,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -535,7 +535,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -544,7 +544,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 

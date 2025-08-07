@@ -123,7 +123,38 @@ class ListingService
     end
 
     # ------------------------------------------------------
-    # Getters
+    # Database Ops
+
+    # ListingService::insertUpdateEntryComponents2(filepath, utime, item, position, position_type, listing_lines)
+    def self.insertUpdateEntryComponents2(filepath, utime, item, position, position_type, listing_lines)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [item["uuid"]])
+        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_type, listing_lines) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], utime, JSON.generate(item), item["mikuType"], position, position_type, JSON.generate(listing_lines)])
+        db.commit
+        db.close
+    end
+
+    # ListingService::insertUpdateEntryComponents1(item, position, position_type, listing_lines)
+    def self.insertUpdateEntryComponents1(item, position, position_type, listing_lines)
+        filepath = ListingService::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [item["uuid"]])
+        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_type, listing_lines) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], Time.new.to_f, JSON.generate(item), item["mikuType"], position, position_type, JSON.generate(listing_lines)])
+        db.commit
+        db.close
+        ListingService::ensureContentAddressing(filepath)
+    end
+
+    # ------------------------------------------------------
+    # Data (Internals)
 
     # ListingService::extractDataFromFile(filepath)
     def self.extractDataFromFile(filepath)
@@ -170,6 +201,9 @@ class ListingService
         data
     end
 
+    # ------------------------------------------------------
+    # Data
+
     # ListingService::getEntryOrNull(itemuuid)
     def self.getEntryOrNull(itemuuid)
         ListingService::extractEntryOrNullFromFilepath(ListingService::getDatabaseFilepath(), itemuuid)
@@ -190,6 +224,24 @@ class ListingService
         answer
     end
 
+    # ListingService::getPosition(itemuuid)
+    def self.getPosition(itemuuid)
+        position = nil
+        filepath = ListingService::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
+            position = row["position"]
+        end
+        db.close
+        if position.nil? then
+            raise "(error: d330c4f1)"
+        end
+        position
+    end
+
     # ListingService::getPositionOrNull(itemuuid)
     def self.getPositionOrNull(itemuuid)
         position = nil
@@ -203,6 +255,24 @@ class ListingService
         end
         db.close
         position
+    end
+
+    # ListingService::getPositionType(itemuuid)
+    def self.getPositionType(itemuuid)
+        position_type = nil
+        filepath = ListingService::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
+            position_type = row["position_type"]
+        end
+        db.close
+        if position_type.nil? then
+            raise "(error: 41114599)"
+        end
+        position_type
     end
 
     # ListingService::getPositionTypeOrNull(itemuuid)
@@ -219,75 +289,6 @@ class ListingService
         db.close
         position_type
     end
-
-    # ------------------------------------------------------
-    # Database Updates
-
-    # ListingService::insertUpdateEntryComponents2(filepath, utime, item, position, position_type, listing_lines)
-    def self.insertUpdateEntryComponents2(filepath, utime, item, position, position_type, listing_lines)
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [item["uuid"]])
-        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_type, listing_lines) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], utime, JSON.generate(item), item["mikuType"], position, position_type, JSON.generate(listing_lines)])
-        db.commit
-        db.close
-    end
-
-    # ListingService::insertUpdateEntryComponents1(item, position, position_type, listing_lines)
-    def self.insertUpdateEntryComponents1(item, position, position_type, listing_lines)
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [item["uuid"]])
-        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_type, listing_lines) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], Time.new.to_f, JSON.generate(item), item["mikuType"], position, position_type, JSON.generate(listing_lines)])
-        db.commit
-        db.close
-        ListingService::ensureContentAddressing(filepath)
-    end
-
-    # ListingService::setPosition(itemuuid, position, position_type)
-    def self.setPosition(itemuuid, position, position_type)
-        return if !ListingService::hasItem(itemuuid)
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("update listing set position=?, position_type=?, utime=? where itemuuid=?", [position, position_type, Time.new.to_f, itemuuid])
-        db.commit
-        db.close
-        ListingService::ensureContentAddressing(filepath)
-    end
-
-    # ListingService::removeEntry(itemuuid)
-    def self.removeEntry(itemuuid)
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.commit
-        db.close
-        ListingService::ensureContentAddressing(filepath)
-    end
-
-    # ListingService::insertUpdateItemAtPosition(item, position, position_type)
-    def self.insertUpdateItemAtPosition(item, position, position_type)
-        listing_lines = ListingService::decideListingLines(item)
-        ListingService::insertUpdateEntryComponents1(item, position, position_type, listing_lines)
-    end
-
-    # ------------------------------------------------------
-    # Decisions
 
     # ListingService::decideListingLines(item)
     def self.decideListingLines(item)
@@ -336,11 +337,11 @@ class ListingService
         end
 
         if item["mikuType"] == "NxFloat" then
-            return DoNotShowUntil::isVisible(item["uuid"])
+            return true
         end
 
         if item["mikuType"] == "Wave" then
-            return DoNotShowUntil::isVisible(item["uuid"])
+            return true
         end
 
         if item["mikuType"] == "NxCore" then
@@ -348,15 +349,18 @@ class ListingService
         end
 
         if item["mikuType"] == "NxTask" then
-            return DoNotShowUntil::isVisible(item["uuid"])
+            return false if !DoNotShowUntil::isVisible(item["uuid"])
+            parent = Parenting::parentOrNull(item["uuid"])
+            return true if parent.nil?
+            return NxCores::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
         end
 
         if item["mikuType"] == "NxLine" then
-            return DoNotShowUntil::isVisible(item["uuid"])
+            return true
         end
 
         if item["mikuType"] == "NxDated" then
-            return ((item["date"][0, 10] <= CommonUtils::today()) and DoNotShowUntil::isVisible(item["uuid"]))
+            return item["date"][0, 10] <= CommonUtils::today()
         end
 
         if item["mikuType"] == "NxAnniversary" then
@@ -364,7 +368,7 @@ class ListingService
         end
 
         if item["mikuType"] == "NxBackup" then
-            return DoNotShowUntil::isVisible(item["uuid"])
+            return true
         end
 
         if item["mikuType"] == "NxDeleted" then
@@ -414,7 +418,7 @@ class ListingService
         end
 
         if item["mikuType"] == "Wave" then
-            if item["interruption"]  then
+            if item["interruption"] then
                 return ListingService::determinePositionInInterval(item, 0.32, 0.35)
             end
             if item["nx46"]["type"] == "sticky" then
@@ -465,9 +469,6 @@ class ListingService
         ListingService::decidePosition(item)
     end
 
-    # ------------------------------------------------------
-    # Data
-
     # ListingService::entries()
     def self.entries()
         ListingService::extractDataFromFile(ListingService::getDatabaseFilepath())
@@ -491,7 +492,7 @@ class ListingService
         isDynamicallyPositioned = lambda {|entry|
             return false if entry["position_type"] == "override"
             return true if ["NxDated", "NxCore", "NxTask"].include?(entry["mikuType"])
-            return true if (entry["mikuType"] == "Wave" and !entry["item"]["important"])
+            return true if (entry["mikuType"] == "Wave" and !entry["item"]["interruption"])
             false
         }
 
@@ -520,7 +521,7 @@ class ListingService
         prepareNxCoreNxTasks = lambda{|entries|
             lookUpRatio = lambda {|item|
                 if item["mikuType"] == "NxTask" then
-                    parent = Parenting::childuuidToParentOrNull(item["uuid"])
+                    parent = Parenting::parentOrNull(item["uuid"])
                     if parent["mikuType"] == "NxCore" then
                         return NxCores::ratio(parent)
                     end
@@ -580,10 +581,60 @@ class ListingService
     end
 
     # ------------------------------------------------------
+    # Setters
+
+    # ListingService::setPosition(itemuuid, position, position_type)
+    def self.setPosition(itemuuid, position, position_type)
+        return if !ListingService::hasItem(itemuuid)
+        filepath = ListingService::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("update listing set position=?, position_type=?, utime=? where itemuuid=?", [position, position_type, Time.new.to_f, itemuuid])
+        db.commit
+        db.close
+        ListingService::ensureContentAddressing(filepath)
+    end
+
+    # ListingService::insertUpdateItemAtPosition(item, position, position_type)
+    def self.insertUpdateItemAtPosition(item, position, position_type)
+        listing_lines = ListingService::decideListingLines(item)
+        ListingService::insertUpdateEntryComponents1(item, position, position_type, listing_lines)
+    end
+
+    # ------------------------------------------------------
     # Operations
 
-    # ListingService::listOrRelist(itemuuid)
-    def self.listOrRelist(itemuuid)
+    # ListingService::removeEntry(itemuuid)
+    def self.removeEntry(itemuuid)
+        filepath = ListingService::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [itemuuid])
+        db.commit
+        db.close
+        ListingService::ensureContentAddressing(filepath)
+    end
+
+    # ListingService::ensure(item)
+    def self.ensure(item)
+        if ListingService::hasItem(item["uuid"]) then
+            position = ListingService::getPosition(item["uuid"])
+            position_type = ListingService::getPositionType(item["uuid"])
+        else
+            position = ListingService::decidePosition(item)
+            position_type = "standard"
+        end
+        ListingService::insertUpdateItemAtPosition(item, position, position_type)
+    end
+
+    # ListingService::evaluate(itemuuid)
+    def self.evaluate(itemuuid)
         item = Items::itemOrNull(itemuuid)
         if item.nil? then
             ListingService::removeEntry(itemuuid)
@@ -593,18 +644,21 @@ class ListingService
             ListingService::removeEntry(itemuuid)
             return
         end
-        if ListingService::hasItem(item["uuid"]) then
-            position = ListingService::getPositionOrNull(item["uuid"])
-            position_type = ListingService::getPositionTypeOrNull(item["uuid"])
-        else
-            position = ListingService::decidePosition(item)
-            position_type = "standard"
-        end
-        ListingService::insertUpdateItemAtPosition(item, position, position_type)
+        ListingService::ensure(item)
     end
 
     # ListingService::maintenance()
     def self.maintenance()
+        ListingService::entries().each{|entry|
+            if !ListingService::isListable(entry["item"]) then
+                ListingService::removeEntry(entry["itemuuid"])
+            end
+        }
+        FrontPage::itemsForListing1().each{|item|
+            if ListingService::isListable(item) then
+                ListingService::evaluate(item["uuid"])
+            end
+        }
         NxTasks::orphan().each{|item|
             ListingService::insertUpdateItemAtPosition(item, 0.48, "override")
         }

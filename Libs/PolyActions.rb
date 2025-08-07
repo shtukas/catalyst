@@ -63,7 +63,7 @@ class PolyActions
                 return
             end
         end
-        ListingService::listOrRelist(item["uuid"])
+        ListingService::evaluate(item["uuid"])
     end
 
     # PolyActions::done(item)
@@ -103,7 +103,7 @@ class PolyActions
 
         if item["mikuType"] == "NxCore" then
             NxBalls::stop(item)
-            ListingService::listOrRelist(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
 

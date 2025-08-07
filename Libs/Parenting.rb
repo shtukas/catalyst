@@ -117,7 +117,7 @@ class Parenting
         db.close
         Parenting::ensureContentAddressing(filepath)
 
-        if !Parenting::parentuuidToChildrenuuidsInOrder(parentuuid).include?(childuuid) then
+        if !Parenting::childrenuuidsInOrder(parentuuid).include?(childuuid) then
             raise "(error: 338c4cdb) How did this happen? 🤔"
         end
     end
@@ -138,10 +138,10 @@ class Parenting
     end
 
     # ------------------------------------------------------
-    # Data
+    # Data Basic
 
-    # Parenting::parentuuidToChildrenuuidsInOrder(parentuuid)
-    def self.parentuuidToChildrenuuidsInOrder(parentuuid)
+    # Parenting::childrenuuidsInOrder(parentuuid)
+    def self.childrenuuidsInOrder(parentuuid)
         uuids = []
         filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
@@ -155,8 +155,26 @@ class Parenting
         uuids
     end
 
-    # Parenting::parentuuidToChildrenPositions(parentuuid)
-    def self.parentuuidToChildrenPositions(parentuuid)
+    # Parenting::parentUuidOrNull(childuuid)
+    def self.parentUuidOrNull(childuuid)
+        parentuuid = nil
+        filepath = Parenting::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.execute("select * from index1 where childuuid=?", [childuuid]) do |row|
+            parentuuid = row["parentuuid"]
+        end
+        db.close
+        parentuuid
+    end
+
+    # ------------------------------------------------------
+    # Data
+
+    # Parenting::childrenPositions(parentuuid)
+    def self.childrenPositions(parentuuid)
         positions = []
         filepath = Parenting::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
@@ -185,19 +203,19 @@ class Parenting
         answer
     end
 
-    # Parenting::parentuuidToChildrenInOrder(parentuuid)
-    def self.parentuuidToChildrenInOrder(parentuuid)
+    # Parenting::childrenInOrder(parentuuid)
+    def self.childrenInOrder(parentuuid)
         if parentuuid == NxCores::infinityuuid() then
-            return Parenting::parentuuidToChildrenInOrderHead(parentuuid, 100, lambda {|item| true })
+            return Parenting::childrenInOrderHead(parentuuid, 100, lambda {|item| true })
         end
-        Parenting::parentuuidToChildrenuuidsInOrder(parentuuid)
+        Parenting::childrenuuidsInOrder(parentuuid)
             .map{|uuid| Items::itemOrNull(uuid) }
             .compact
     end
 
-    # Parenting::parentuuidToChildrenInOrderHead(parentuuid, size, selection)
-    def self.parentuuidToChildrenInOrderHead(parentuuid, size, selection)
-        Parenting::parentuuidToChildrenuuidsInOrder(parentuuid)
+    # Parenting::childrenInOrderHead(parentuuid, size, selection)
+    def self.childrenInOrderHead(parentuuid, size, selection)
+        Parenting::childrenuuidsInOrder(parentuuid)
             .reduce([]){|items, uuid|
                 if items.size >= size then
                     items
@@ -216,24 +234,9 @@ class Parenting
             }
     end
 
-    # Parenting::childuuidToParentUuidOrNull(childuuid)
-    def self.childuuidToParentUuidOrNull(childuuid)
-        parentuuid = nil
-        filepath = Parenting::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from index1 where childuuid=?", [childuuid]) do |row|
-            parentuuid = row["parentuuid"]
-        end
-        db.close
-        parentuuid
-    end
-
-    # Parenting::childuuidToParentOrNull(childuuid)
-    def self.childuuidToParentOrNull(childuuid)
-        parentuuid = Parenting::childuuidToParentUuidOrNull(childuuid)
+    # Parenting::parentOrNull(childuuid)
+    def self.parentOrNull(childuuid)
+        parentuuid = Parenting::parentUuidOrNull(childuuid)
         return nil if parentuuid.nil?
         Items::itemOrNull(parentuuid)
     end
@@ -254,7 +257,7 @@ class Parenting
     end
 
     # ------------------------------------------------------
-    # Interface
+    # Ops
 
     # Parenting::maintenance()
     def self.maintenance()

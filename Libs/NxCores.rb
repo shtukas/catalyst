@@ -59,7 +59,7 @@ class NxCores
         NxCores::cores()
             .select{|core| NxCores::ratio(core) < 1 }
             .map{|core| 
-                Parenting::parentuuidToChildrenInOrderHead(core["uuid"], 3, lambda{|item| item["mikuType"] == "NxTask" and BankData::recoveredAverageHoursPerDay(item["uuid"]) < 1 }) + [core]
+                Parenting::childrenInOrderHead(core["uuid"], 3, lambda{|item| item["mikuType"] == "NxTask" and BankData::recoveredAverageHoursPerDay(item["uuid"]) < 1 }) + [core]
             }
             .flatten
     end
