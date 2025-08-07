@@ -69,12 +69,6 @@ class NxTasks
         "#{NxTasks::icon(item)} #{item["description"]}#{px2}"
     end
 
-    # NxTasks::criticals()
-    def self.criticals()
-        Items::mikuType("NxTask")
-            .select{|item| item["critical-0825"] }
-    end
-
     # NxTasks::orphan()
     def self.orphan()
         Items::mikuType("NxTask")

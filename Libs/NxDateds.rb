@@ -83,9 +83,17 @@ class NxDateds
     # ------------------
     # Data
 
+    # NxDateds::icon(item)
+    def self.icon(item)
+        if item["critical-0825"] then
+            return "🔺"
+        end
+        "🗓️ "
+    end
+
     # NxDateds::toString(item)
     def self.toString(item)
-        "🗓️  [#{item["date"][0, 10]}] #{item["description"]}"
+        "#{NxDateds::icon(item)} [#{item["date"][0, 10]}] #{item["description"]}"
     end
 
     # NxDateds::listingItems()

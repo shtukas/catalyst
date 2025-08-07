@@ -121,7 +121,6 @@ class CommandsAndInterpreters
         if Interpreting::match("critical", input) then
             item = store.getDefault()
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
             Items::setAttribute(item["uuid"], "critical-0825", true)
             return
         end
@@ -130,7 +129,6 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
             Items::setAttribute(item["uuid"], "critical-0825", true)
             return
         end

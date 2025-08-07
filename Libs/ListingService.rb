@@ -204,6 +204,12 @@ class ListingService
     # ------------------------------------------------------
     # Data
 
+    # ListingService::criticals()
+    def self.criticals()
+        Items::items()
+            .select{|item| item["critical-0825"] }
+    end
+
     # ListingService::getEntryOrNull(itemuuid)
     def self.getEntryOrNull(itemuuid)
         ListingService::extractEntryOrNullFromFilepath(ListingService::getDatabaseFilepath(), itemuuid)
@@ -397,6 +403,7 @@ class ListingService
         # 0.28 -> 0.30 NxLambda
         # 0.30 -> 0.32 Wave sticky
         # 0.32 -> 0.35 Wave interruption
+        # 0.37 -> 0.37 criticals
         # 0.39 -> 0.40 NxFloat
         # 0.40 -> 0.45 NxBackup
 
@@ -485,19 +492,6 @@ class ListingService
     # ListingService::entriesForListing(excludeuuids)
     def self.entriesForListing(excludeuuids)
 
-        entries = ListingService::entries()
-            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
-            .select{|entry| DoNotShowUntil::isVisible(entry["itemuuid"]) }
-
-        isDynamicallyPositioned = lambda {|entry|
-            return false if entry["position_type"] == "override"
-            return true if ["NxDated", "NxCore", "NxTask"].include?(entry["mikuType"])
-            return true if (entry["mikuType"] == "Wave" and !entry["item"]["interruption"])
-            false
-        }
-
-        dynamically_positioned, statically_positioned = entries.partition{|entry| isDynamicallyPositioned.call(entry) }
-
         # This is the source of this mapping, implemented in PolyFunctions::itemToBankingAccounts
         # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
         # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2 (non interruption)
@@ -508,7 +502,12 @@ class ListingService
         #              Wave (non interruption)
         #              NxCore & NxTask
 
-        d2 = []
+        isDynamicallyPositioned = lambda {|entry|
+            return false if entry["position_type"] == "override"
+            return true if ["NxDated", "NxCore", "NxTask"].include?(entry["mikuType"])
+            return true if (entry["mikuType"] == "Wave" and !entry["item"]["interruption"])
+            false
+        }
 
         prepareNxDateds = lambda{|entries|
             entries.sort_by{|entry| entry["item"]["date"] }
@@ -534,48 +533,51 @@ class ListingService
             entries.sort_by{|entry| lookUpRatio.call(entry["item"]) }
         }
 
-        criticals = NxTasks::criticals().select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+        entries = ListingService::entries()
+            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
+            .select{|entry| DoNotShowUntil::isVisible(entry["itemuuid"]) }
 
-        if criticals.size > 0 then
-            d2 = (criticals + NxDateds::listingItems()).map{|item|
-                {
-                    "itemuuid" => item["uuid"],
-                    "utime"    => 0,
-                    "item"     => item,
-                    "mikuType" => item["mikuType"],
-                    "position" => 0,
-                    "position_type" => nil,
-                    "listing_lines" => ListingService::decideListingLines(item)
-                }
+        criticals = ListingService::criticals()
+                        .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+                        .map{|item|
+                            {
+                                "itemuuid" => item["uuid"],
+                                "utime"    => 0,
+                                "item"     => item,
+                                "mikuType" => item["mikuType"],
+                                "position" => 0.36,
+                                "position_type" => "override",
+                                "listing_lines" => ListingService::decideListingLines(item)
+                            }
+                        }
+
+        dynamically_positioned, statically_positioned = entries.partition{|entry| isDynamicallyPositioned.call(entry) }
+
+        d2 = [
+            {
+                "entries" => prepareNxDateds.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxDated" }),
+                "rt" => BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
+            },
+            {
+                "entries" => prepareWaves.call(dynamically_positioned.select{|entry| entry["mikuType"] == "Wave" }),
+                "rt" => BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
+            },
+            {
+                "entries" => prepareNxCoreNxTasks.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxCore" or entry["mikuType"] == "NxTask" }),
+                "rt" => BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
             }
-        else
-            d2 = [
-                {
-                    "entries" => prepareNxDateds.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxDated" }),
-                    "rt" => BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
-                },
-                {
-                    "entries" => prepareWaves.call(dynamically_positioned.select{|entry| entry["mikuType"] == "Wave" }),
-                    "rt" => BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
-                },
-                {
-                    "entries" => prepareNxCoreNxTasks.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxCore" or entry["mikuType"] == "NxTask" }),
-                    "rt" => BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
-                }
-            ].sort_by{|packet| packet["rt"] }
-             .map{|packet| packet["entries"] }
-             .flatten
-             .map{|entry|
-                entry["position"] = nil
-                entry
-             }
-        end
+        ].sort_by{|packet| packet["rt"] }
+         .map{|packet| packet["entries"] }
+         .flatten
+         .map{|entry|
+            entry["position"] = nil
+            entry
+         }
 
         # The following works because every statically_positioned comes before any 
         # dynamically positioned, regarless of their respective orderings
         [
-            statically_positioned
-                .sort_by{|entry| entry["position"] },
+            (criticals + statically_positioned).sort_by{|entry| entry["position"] },
             d2
         ].flatten
     end

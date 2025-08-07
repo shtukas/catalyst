@@ -17,9 +17,17 @@ class NxFloats
     # ------------------
     # Data
 
+    # NxFloats::icon(item)
+    def self.icon(item)
+        if item["critical-0825"] then
+            return "🔺"
+        end
+        "🐠"
+    end
+
     # NxFloats::toString(item)
     def self.toString(item)
-        "🐠 #{item["description"]}"
+        "#{NxFloats::icon(item)} #{item["description"]}"
     end
 
     # NxFloats::listingItems()
