@@ -32,7 +32,7 @@ class ListingDatabase
 
     # ListingDatabase::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index0-listing"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index0-listing"
     end
 
     # ListingDatabase::filepaths()

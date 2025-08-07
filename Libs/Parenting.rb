@@ -8,7 +8,7 @@ class Parenting
 
     # Parenting::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index2-parenting"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index2-parenting"
     end
 
     # Parenting::filepaths()

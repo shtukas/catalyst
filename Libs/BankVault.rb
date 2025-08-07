@@ -16,7 +16,7 @@ class BankVault
 
     # BankVault::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index4-banking"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index4-banking"
     end
 
     # BankVault::filepaths()
@@ -195,7 +195,7 @@ class BankVault
         recorduuid = SecureRandom.uuid
         unixtime = Time.new.to_i
         BankVault::insertUpdateEntry(recorduuid, id, unixtime, date, value)
-        BankData::decacheValue(id)
+        BankDataRTCache::decacheValue(id)
     end
 
     # BankVault::getRecordsAll()

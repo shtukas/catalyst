@@ -17,7 +17,7 @@ class Items
 
     # Items::directory()
     def self.directory()
-        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/indices/index3-items"
+        "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/databases/index3-items"
     end
 
     # Items::filepaths()
