@@ -5,8 +5,8 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit-json * | destroy *",
-            "NxTasks       : critical *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
+            "NxTasks       : critical (*) |  move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
@@ -96,6 +96,33 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if Interpreting::match("move", input) then
+            item = store.getDefault()
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            parentuuid, position = Operations::decideParentAndPosition()
+            Parenting::insertEntry(parentuuid, item["uuid"], position)
+            return
+        end
+
+        if Interpreting::match("move *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            parentuuid, position = Operations::decideParentAndPosition()
+            Parenting::insertEntry(parentuuid, item["uuid"], position)
+            return
+        end
+
+        if Interpreting::match("critical", input) then
+            item = store.getDefault()
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            Items::setAttribute(item["uuid"], "critical-0825", true)
             return
         end
 
