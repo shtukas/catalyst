@@ -396,6 +396,8 @@ class ListingService
         # 0.39 -> 0.40 NxFloat
         # 0.40 -> 0.45 NxBackup
 
+        # 0.48         NxTask Orphan
+
         # 0.50 -> 0.80 Dynamic positioning of
         #              NxDated
         #              Wave
@@ -603,6 +605,9 @@ class ListingService
 
     # ListingService::maintenance()
     def self.maintenance()
+        NxTasks::orphan().each{|item|
+            ListingService::insertUpdateItemAtPosition(item, 0.48, "override")
+        }
         archive_filepath = "#{ListingService::directory()}/archives/#{CommonUtils::today()}.sqlite3"
         if !File.exist?(archive_filepath) then
             FileUtils.cp(ListingService::getDatabaseFilepath(), archive_filepath)

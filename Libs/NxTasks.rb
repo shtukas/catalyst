@@ -51,6 +51,9 @@ class NxTasks
         if item["critical-0825"] then
             return "🔺"
         end
+        if Parenting::childuuidToParentOrNull(item["uuid"]).nil? then
+            return "🦉"
+        end
         "🔹"
     end
 
@@ -68,7 +71,14 @@ class NxTasks
 
     # NxTasks::criticals()
     def self.criticals()
-        Items::mikuType("NxTask").select{|item| item["critical-0825"] }
+        Items::mikuType("NxTask")
+            .select{|item| item["critical-0825"] }
+    end
+
+    # NxTasks::orphan()
+    def self.orphan()
+        Items::mikuType("NxTask")
+            .select{|item| Parenting::childuuidToParentOrNull(item["uuid"]).nil? }
     end
 
     # ------------------

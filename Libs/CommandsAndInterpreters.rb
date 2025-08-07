@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort",
+            "misc          : search | commands | fsck | probe-head | sort | maintenance",
         ].join("\n")
     end
 
@@ -72,6 +72,11 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            return
+        end
+
+       if Interpreting::match("maintenance", input) then
+            Operations::globalMaintenance()
             return
         end
 
