@@ -78,7 +78,7 @@ class NxTasks
     def self.performItemPositioning(itemuuid)
         parentuuid, position = Operations::decideParentAndPosition()
         Parenting::insertEntry(parentuuid, itemuuid, position)
-        ListingDatabase::listOrRelist(parentuuid)
+        ListingService::listOrRelist(parentuuid)
     end
 
     # NxTasks::maintenance()

@@ -23,7 +23,7 @@ class CommandsAndInterpreters
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
                 DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-                ListingDatabase::removeEntry(item["uuid"])
+                ListingService::removeEntry(item["uuid"])
                 return
             end
         end
@@ -79,8 +79,8 @@ class CommandsAndInterpreters
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
-                position = 0.9 * [ListingDatabase::firstPositionInDatabase(), 0.20].min
-                ListingDatabase::setPositionOverride(i["uuid"], position)
+                position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
+                ListingService::setPosition(i["uuid"], position, "override")
             }
             return
         end
@@ -147,7 +147,7 @@ class CommandsAndInterpreters
                 Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             end
             item = Operations::interactivelySetDonation(item)
-            ListingDatabase::insertUpdateEntryComponents1(item, ListingDatabase::firstPositionInDatabase()*0.9, nil, ListingDatabase::decideListingLines(item))
+            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
             NxBalls::start(item)
             return
         end
@@ -173,7 +173,7 @@ class CommandsAndInterpreters
                 Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
             end
             item = Operations::interactivelySetDonation(item)
-            ListingDatabase::insertUpdateEntryComponents1(item, ListingDatabase::firstPositionInDatabase()*0.9, nil, ListingDatabase::decideListingLines(item))
+            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
             NxBalls::start(item)
             return
         end
@@ -190,7 +190,7 @@ class CommandsAndInterpreters
                     item = NxLines::interactivelyIssueNew(nil, line)
                     Operations::interactivelySetDonation(item)
                     item = Items::itemOrNull(item["uuid"])
-                    ListingDatabase::insertUpdateEntryComponents1(item, ListingDatabase::firstPositionInDatabase()*0.9, nil, ListingDatabase::decideListingLines(item))
+                    ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
                     last_item = item
                 }
             if last_item then
@@ -209,13 +209,13 @@ class CommandsAndInterpreters
             n = n.to_i
             items = store.items()
             items = items.drop(n)
-            position = 0.5*(ListingDatabase::getPositionOrNull(items[0]["uuid"]) + ListingDatabase::getPositionOrNull(items[1]["uuid"]))
+            position = 0.5*(ListingService::getPositionOrNull(items[0]["uuid"]) + ListingService::getPositionOrNull(items[1]["uuid"]))
             puts "deciding position: #{position}"
             line = LucilleCore::askQuestionAnswerAsString("description: ")
             item = NxLines::interactivelyIssueNew(nil, line)
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
-            ListingDatabase::insertUpdateEntryComponents1(item, position, nil, ListingDatabase::decideListingLines(item))
+            ListingService::insertUpdateEntryComponents1(item, position, "override", ListingService::decideListingLines(item))
             return
         end
 
@@ -249,7 +249,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::interactivelySetDonation(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -280,7 +280,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Items::setAttribute(item["uuid"], "skip-0843", Time.new.to_i+3600*d.to_f)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -328,7 +328,7 @@ class CommandsAndInterpreters
             todo = NxTasks::interactivelyIssueNewOrNull()
             parentuuid, position = Operations::decideParentAndPosition()
             Parenting::insertEntry(parentuuid, todo["uuid"], position)
-            ListingDatabase::listOrRelist(todo["uuid"])
+            ListingService::listOrRelist(todo["uuid"])
             return
         end
 
@@ -370,7 +370,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             PolyActions::editDescription(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -379,7 +379,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::editDescription(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -387,7 +387,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             Operations::editItem(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -396,7 +396,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             Operations::editItem(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -434,7 +434,7 @@ class CommandsAndInterpreters
             return if item.nil?
             PolyActions::stop(item)
             Operations::interactivelyPush(item)
-            ListingDatabase::removeEntry(item["uuid"])
+            ListingService::removeEntry(item["uuid"])
             return
         end
 
@@ -486,7 +486,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             NxBalls::pause(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -495,7 +495,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             NxBalls::pause(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -503,7 +503,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 
@@ -512,7 +512,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             PolyActions::pursue(item)
-            ListingDatabase::listOrRelist(item["uuid"])
+            ListingService::listOrRelist(item["uuid"])
             return
         end
 

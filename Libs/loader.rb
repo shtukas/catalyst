@@ -150,8 +150,8 @@ require_relative "ItemStore.rb"
 require_relative "Instances.rb"
 require_relative "Items.rb"
 
-require_relative "ListingDatabase.rb"
-require_relative "ListingOps.rb"
+require_relative "ListingService.rb"
+require_relative "FrontPage.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"

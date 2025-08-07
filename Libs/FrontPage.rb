@@ -1,9 +1,9 @@
-class ListingOps
+class FrontPage
 
     # -----------------------------------------
     # Data
 
-    # ListingOps::canBeDefault(item)
+    # FrontPage::canBeDefault(item)
     def self.canBeDefault(item)
         return false if TmpSkip1::isSkipped(item)
         return true if NxBalls::itemIsRunning(item)
@@ -12,12 +12,12 @@ class ListingOps
         true
     end
 
-    # ListingOps::isInterruption(item)
+    # FrontPage::isInterruption(item)
     def self.isInterruption(item)
         item["interruption"]
     end
 
-    # ListingOps::toString2(store, item)
+    # FrontPage::toString2(store, item)
     def self.toString2(store, item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
@@ -44,7 +44,7 @@ class ListingOps
         lines
     end
 
-    # ListingOps::itemsForListing1()
+    # FrontPage::itemsForListing1()
     def self.itemsForListing1()
         items = [
             Anniversaries::listingItems(),
@@ -63,7 +63,7 @@ class ListingOps
     # -----------------------------------------
     # Ops
 
-    # ListingOps::preliminaries(initialCodeTrace)
+    # FrontPage::preliminaries(initialCodeTrace)
     def self.preliminaries(initialCodeTrace)
         if CommonUtils::catalystTraceCode() != initialCodeTrace then
             puts "Code change detected"
@@ -73,7 +73,7 @@ class ListingOps
         Operations::dispatchPickUp()
     end
 
-    # ListingOps::displayListingOnce()
+    # FrontPage::displayListingOnce()
     def self.displayListingOnce()
         store = ItemStore.new()
         printer = lambda{|line| puts line }
@@ -92,7 +92,7 @@ class ListingOps
 
         if XCacheExensions::trueNoMoreOftenThanNSeconds("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", 3600) then
             puts "Running listing maintenance (every hour)"
-            ListingDatabase::maintenance()
+            ListingService::maintenance()
             XCache::set("80f6dfde-ccca-4ee4-b0e4-9d93794fac5e", Time.new.to_i)
         end
 
@@ -116,8 +116,8 @@ class ListingOps
         runningItems = NxBalls::runningItems()
         NxBalls::runningItems()
             .each{|item|
-                store.register(item, ListingOps::canBeDefault(item))
-                lines = ListingOps::toString2(store, item)
+                store.register(item, FrontPage::canBeDefault(item))
+                lines = FrontPage::toString2(store, item)
                 lines.each{|line|
                     printer.call(line.green)
                 }
@@ -127,10 +127,10 @@ class ListingOps
                 break if sheight <= 4
             }
 
-        ListingDatabase::entriesForListing(runningItems.map{|i| i["uuid"]})
+        ListingService::entriesForListing(runningItems.map{|i| i["uuid"]})
             .each{|entry|
                 item = entry["item"]
-                store.register(item, ListingOps::canBeDefault(item))
+                store.register(item, FrontPage::canBeDefault(item))
                 lines = entry["listing_lines"]
                 line = lines.shift
                 line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
@@ -161,7 +161,7 @@ class ListingOps
         CommandsAndInterpreters::interpreter(input, store)
     end
 
-    # ListingOps::main()
+    # FrontPage::main()
     def self.main()
         initialCodeTrace = CommonUtils::catalystTraceCode()
 
@@ -205,8 +205,8 @@ class ListingOps
         }
 
         loop {
-            ListingOps::preliminaries(initialCodeTrace)
-            ListingOps::displayListingOnce()
+            FrontPage::preliminaries(initialCodeTrace)
+            FrontPage::displayListingOnce()
         }
     end
 end

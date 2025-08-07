@@ -2,13 +2,13 @@ class HardProblem
 
     # HardProblem::item_attribute_has_been_updated(uuid, attribute, value)
     def self.item_attribute_has_been_updated(uuid, attribute, value)
-        ListingDatabase::listOrRelist(uuid)
+        ListingService::listOrRelist(uuid)
     end
 
     # HardProblem::item_has_been_destroyed(uuid)
     def self.item_has_been_destroyed(uuid)
         Parenting::removeIdentifierFromDatabase(uuid)
-        ListingDatabase::removeEntry(uuid)
+        ListingService::removeEntry(uuid)
     end
 
     # HardProblem::item_could_not_be_found_on_disk(uuid)

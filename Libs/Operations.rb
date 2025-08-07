@@ -33,7 +33,7 @@ class Operations
         if option == "edit json" then
             Operations::editItemJson(item)
         end
-        ListingDatabase::listOrRelist(item["uuid"])
+        ListingService::listOrRelist(item["uuid"])
     end
 
     # Operations::program3(lx)
@@ -47,8 +47,8 @@ class Operations
 
             elements
                 .each{|item|
-                    store.register(item, ListingOps::canBeDefault(item))
-                    ListingOps::toString2(store, item).each {|line|
+                    store.register(item, FrontPage::canBeDefault(item))
+                    FrontPage::toString2(store, item).each {|line|
                         puts line
                     }
                 }
@@ -67,8 +67,8 @@ class Operations
     def self.globalMaintenance()
         puts "NxTasks::maintenance()"
         NxTasks::maintenance()
-        puts "ListingDatabase::maintenance()"
-        ListingDatabase::maintenance()
+        puts "ListingService::maintenance()"
+        ListingService::maintenance()
         puts "BankVault::maintenance()"
         BankVault::maintenance()
         puts "Items::maintenance()"
@@ -114,7 +114,7 @@ class Operations
         if unixtime then
             puts "do not show until: #{Time.at(unixtime).to_s} "
         end
-        entry = ListingDatabase::getEntryOrNull(item["uuid"])
+        entry = ListingService::getEntryOrNull(item["uuid"])
         puts JSON.pretty_generate(entry)
         LucilleCore::pressEnterToContinue()
     end
@@ -143,7 +143,7 @@ class Operations
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location, parentuuid, position)
                 Parenting::insertEntry(parentuuid, item["uuid"], position)
-                ListingDatabase::listOrRelist(item["uuid"])
+                ListingService::listOrRelist(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
         end
@@ -179,7 +179,7 @@ class Operations
                 puts location.yellow
                 description = File.basename(location)
                 item = NxLines::locationToLine(description, location)
-                ListingDatabase::insertUpdateItemAtPosition(item, 0.21)
+                ListingService::insertUpdateItemAtPosition(item, 0.21, "override")
                 puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
 
@@ -208,15 +208,15 @@ class Operations
 
             puts ""
             store.register(parent, false)
-            ListingOps::toString2(store, parent).each{|line|
+            FrontPage::toString2(store, parent).each{|line|
                 puts line
             }
             puts ""
 
             Parenting::parentuuidToChildrenInOrder(parent["uuid"])
                 .each{|element|
-                    store.register(element, ListingOps::canBeDefault(element))
-                    ListingOps::toString2(store, element).each{|line|
+                    store.register(element, FrontPage::canBeDefault(element))
+                    FrontPage::toString2(store, element).each{|line|
                         puts line
                     }
                 }
@@ -234,7 +234,7 @@ class Operations
                 todo = NxTasks::interactivelyIssueNewOrNull()
                 puts JSON.pretty_generate(todo)
                 Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                ListingDatabase::listOrRelist(todo["uuid"])
+                ListingService::listOrRelist(todo["uuid"])
                 next
             end
 
@@ -246,7 +246,7 @@ class Operations
                         todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
                         puts JSON.pretty_generate(todo)
                         Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                        ListingDatabase::listOrRelist(todo["uuid"])
+                        ListingService::listOrRelist(todo["uuid"])
                     }
                 next
             end

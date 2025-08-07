@@ -38,7 +38,7 @@ class PolyFunctions
             end
         end
 
-        # This mapping is defined in ListingDatabase::entriesForListing
+        # This mapping is defined in ListingService::entriesForListing
         # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
         # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2
         # NxCore & NxTask 69297ca5-d92e-4a73-82cc-1d009e63f4fe
