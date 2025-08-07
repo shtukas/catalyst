@@ -6,6 +6,7 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit-json * | destroy *",
+            "NxTasks       : critical *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
@@ -93,10 +94,22 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("critical *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            return if item["mikuType"] != "NxTask"
+            Items::setAttribute(item["uuid"], "critical-0825", true)
+            return
+        end
+
         if Interpreting::match("dismiss *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
+            if item["mikuType"] == "NxTask" and item["critical-0825"] then
+                return if !LucilleCore::askQuestionAnswerAsBoolean("You are about to dismiss a critical task, please confirm: ")
+            end
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             NxBalls::stop(item)

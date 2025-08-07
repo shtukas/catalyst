@@ -48,6 +48,9 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
+        if item["critical-0825"] then
+            return "🔺"
+        end
         "🔹"
     end
 
@@ -61,6 +64,11 @@ class NxTasks
             px2 = " (orphan)".yellow
         end
         "#{NxTasks::icon(item)} #{item["description"]}#{px2}"
+    end
+
+    # NxTasks::criticals()
+    def self.criticals()
+        Items::mikuType("NxTask").select{|item| item["critical-0825"] }
     end
 
     # ------------------

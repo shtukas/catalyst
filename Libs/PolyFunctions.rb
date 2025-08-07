@@ -50,7 +50,7 @@ class PolyFunctions
             }
         end
 
-        if item["mikuType"] == "Wave" then
+        if item["mikuType"] == "Wave" and !item["interruption"] then
             accounts << {
                 "description" => "e0d8f86a-1783-4eb7-8f63-11562d8972a2",
                 "number"      => "e0d8f86a-1783-4eb7-8f63-11562d8972a2"
