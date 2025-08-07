@@ -127,7 +127,9 @@ class FrontPage
                 break if sheight <= 4
             }
 
-        ListingService::entriesForListing(runningItems.map{|i| i["uuid"]})
+        entries = ListingService::entriesForListing(runningItems.map{|i| i["uuid"]})
+        entries = CommonUtils::removeDuplicateObjectsOnAttribute(entries, "itemuuid")
+        entries
             .each{|entry|
                 item = entry["item"]
                 store.register(item, FrontPage::canBeDefault(item))
