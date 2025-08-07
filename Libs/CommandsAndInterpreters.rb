@@ -152,6 +152,32 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("numbers", input) then
+            puts "NxDated         : #{BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")}"
+            puts "Wave            : #{BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")}"
+            puts "NxCore & NxTask : #{BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")}"
+            LucilleCore::pressEnterToContinue()
+            return
+        end
+
+        if input.start_with?("priority ") then
+            line = input[8, input.size].strip
+            return if line == ''
+            NxBalls::activeItems().each{|item| 
+                NxBalls::pause(item)
+            }
+            item = NxLines::interactivelyIssueNew(nil, line)
+            payload = UxPayload::makeNewOrNull(item["uuid"])
+            if payload then
+                item["uxpayload-b4e4"] = payload
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            end
+            item = Operations::interactivelySetDonation(item)
+            ListingDatabase::insertUpdateEntryComponents1(item, ListingDatabase::firstPositionInDatabase()*0.9, nil, ListingDatabase::decideListingLines(item))
+            NxBalls::start(item)
+            return
+        end
+
         if Interpreting::match("priorities", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)

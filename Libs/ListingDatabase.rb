@@ -532,13 +532,19 @@ class ListingDatabase
         }
 
         prepareNxCoreNxTasks = lambda{|entries|
-            entries.sort_by{|entry| 
-                v = BankData::recoveredAverageHoursPerDay(entry["itemuuid"])
-                if v < 0.2 then
-                    v = 0.2 + v.to_f/100
+            lookUpRatio = lambda {|item|
+                if item["mikuType"] == "NxTask" then
+                    parent = Parenting::childuuidToParentOrNull(item["uuid"])
+                    if parent["mikuType"] == "NxCore" then
+                        return NxCores::ratio(parent)
+                    end
+                    return 0
                 end
-                v
+                if item["mikuType"] == "NxCore" then
+                    return NxCores::ratio(item)
+                end
             }
+            entries.sort_by{|entry| lookUpRatio.call(entry["item"]) }
         }
 
         criticals = NxTasks::criticals().select{|item| DoNotShowUntil::isVisible(item["uuid"]) }

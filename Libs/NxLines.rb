@@ -14,7 +14,7 @@ class NxLines
         Items::itemOrNull(uuid)
     end
 
-    # NxLines::interactivelyIssueNew(uuid, description)
+    # NxLines::interactivelyIssueNew(uuid or nil, description)
     def self.interactivelyIssueNew(uuid, description)
         uuid = uuid || SecureRandom.uuid
         Items::init(uuid)
