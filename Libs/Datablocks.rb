@@ -24,13 +24,14 @@ class Datablocks
         }
         if filepaths.empty? then
             # We need to initiate a database
-            millitime = (Time.new.to_f * 1000).to_i # milliseconds
-            filepath = "#{Datablocks::directory()}/#{millitime}-#{SecureRandom.hex}.sqlite3"
+            filepath = "#{Datablocks::directory()}/#{SecureRandom.hex}.sqlite3"
             db = SQLite3::Database.new(filepath)
             db.busy_timeout = 117
             db.busy_handler { |count| true }
             db.results_as_hash = true
             db.transaction
+            db.execute("CREATE TABLE random (value REAL)", [])
+            db.execute("insert into random (value) values (?)", [rand])
             db.execute("create table datablock (uuid TEXT, nhash TEXT, datablob BLOB);", [])
             db.execute("CREATE INDEX index1 ON datablock(uuid, nhash);", [])
             db.commit
@@ -66,8 +67,7 @@ class Datablocks
     # Datablocks::ensureContentAddressing(filepath1)
     def self.ensureContentAddressing(filepath1)
         hash1 = Digest::SHA1.file(filepath1).hexdigest
-        prefix = File.basename(filepath1).split('-')[0]
-        filepath2 = "#{Datablocks::directory()}/#{prefix}-#{hash1}.sqlite3"
+        filepath2 = "#{Datablocks::directory()}/#{hash1}.sqlite3"
         return filepath1 if filepath1 == filepath2
         FileUtils.mv(filepath1, filepath2)
         filepath2
