@@ -37,7 +37,7 @@ class FrontPage
 
         if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" then
             item["uxpayload-b4e4"]["lines"].each{|l|
-                lines << "         #{l}"
+                lines << "         ✏︎ #{l}"
             }
         end
 

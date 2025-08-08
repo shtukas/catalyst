@@ -43,7 +43,7 @@ class NxLines
 
     # NxLines::toString(item)
     def self.toString(item)
-        "✒️  #{item["description"]}"
+        "⛺️ #{item["description"]}"
     end
 
     # NxLines::listingItems()
