@@ -103,6 +103,9 @@ class PolyFunctions
         if item["mikuType"] == "NxLine" then
             return NxLines::toString(item)
         end
+        if item["mikuType"] == "NxDeleted" then
+            return "NxDeleted: uuid: #{item["uuid"]}"
+        end
         if item["mikuType"] == "NxCore" then
             return NxCores::toString(item)
         end
@@ -111,6 +114,9 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxDated" then
             return NxDateds::toString(item)
+        end
+        if item["mikuType"] == "NxIce" then
+            return NxTasks::toString(item)
         end
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)

@@ -161,6 +161,13 @@ class PolyActions
             return
         end
 
+
+        if item["mikuType"] == "NxDeleted" then
+            Items::deleteItem(item["uuid"])
+            ListingService::removeEntry(item["uuid"])
+            return
+        end
+
         puts "I do not know how to PolyActions::done(#{JSON.pretty_generate(item)})"
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end

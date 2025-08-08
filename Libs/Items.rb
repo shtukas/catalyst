@@ -76,6 +76,19 @@ class Items
         Items::ensureContentAddressing(filepath)
     end
 
+    # Items::removeEntryAtFile(filepath, uuid)
+    def self.removeEntryAtFile(filepath, uuid)
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from items where uuid=?", [uuid])
+        db.commit
+        db.close
+        Items::ensureContentAddressing(filepath)
+    end
+
     # Items::extractEntryOrNullFromFilepath(filepath, uuid)
     def self.extractEntryOrNullFromFilepath(filepath, uuid)
         entry = nil
@@ -110,7 +123,7 @@ class Items
         db.close
     end
 
-    # Items::mergeTwoDatabaseFiles(filepath1, filepath2) # -> filepath of the 
+    # Items::mergeTwoDatabaseFiles(filepath1, filepath2)
     def self.mergeTwoDatabaseFiles(filepath1, filepath2)
         # The logic here is to read the items from filepath2 and 
         # possibly add them to filepath1, if either:
@@ -193,31 +206,6 @@ class Items
         nil
     end
 
-    # Items::deleteEntry(uuid)
-    def self.deleteEntry(uuid)
-        
-        # Version 1
-        # We are not doign version 1 anymore, because 
-        # A deletion in the local file at the same time as 
-        # any change in another instance, would create two seperate file
-        # that when merged brings back the deleted item (the merger sees an item 
-        # in one file and not the other and thinks that it's a new item).
-
-        #filepath = Items::getDatabaseFilepath()
-        #db = SQLite3::Database.new(filepath)
-        #db.busy_timeout = 117
-        #db.busy_handler { |count| true }
-        #db.results_as_hash = true
-        #db.execute("delete from items where uuid=?", [uuid])
-        #db.execute("vacuum", [])
-        #db.close
-        #Items::ensureContentAddressing(filepath)
-
-        # Version 2
-        Items::setAttribute(uuid, "mikuType", "NxDeleted")
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-    end
-
     # ------------------------------------------------------
     # Support
 
@@ -249,7 +237,7 @@ class Items
     def self.itemOrNull(uuid)
         entry = Items::entryOrNull(uuid)
         if entry.nil? then
-            HardProblem::item_could_not_be_found_on_disk(uuid)
+            Parenting::removeIdentifierFromDatabase(uuid)
             return nil
         end
         entry["item"]
@@ -267,7 +255,7 @@ class Items
         return if item.nil?
         item[attrname] = attrvalue
         Items::commitItem(item)
-        HardProblem::item_attribute_has_been_updated(uuid, attrname, attrvalue)
+        ListingService::evaluate(uuid)
     end
 
     # Items::items()
@@ -314,12 +302,18 @@ class Items
 
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
-        item = Items::itemOrNull(uuid)
-        if item then
-            HardProblem::item_is_being_destroyed(item)
-        end
-        Items::deleteEntry(uuid)
-        HardProblem::item_has_been_destroyed(uuid)
+        Items::removeEntryAtFile(Items::getDatabaseFilepath(), uuid)
+
+        ListingService::removeEntry(uuid)
+        Parenting::removeIdentifierFromDatabase(uuid)
+
+        # Version 1
+        # This synchronous processing was taking too long, so we are doing version 2
+        # Datablocks::removeUUID(item["uuid"])
+
+        # Version 2
+        filepath = "#{Config::pathToCatalystDataRepository()}/items-destroyed/#{(Time.new.to_f * 1000).to_i}.txt"
+        File.open(filepath, "w") {|f| f.puts(uuid) }
     end
 
     # ------------------------------------------------------
