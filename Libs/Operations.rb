@@ -141,7 +141,7 @@ class Operations
                 puts location.yellow
                 parentuuid, position = PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
                 description = File.basename(location)
-                item = NxTasks::locationToTask(description, location, parentuuid, position)
+                item = NxTasks::locationToTask(description, location)
                 Parenting::insertEntry(parentuuid, item["uuid"], position)
                 ListingService::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
