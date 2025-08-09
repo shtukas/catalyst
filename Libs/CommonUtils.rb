@@ -131,12 +131,18 @@ class CommonUtils
         Time.at(unixtime).to_s[0, 10]
     end
 
+    # CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCodeOrNull()
+    def self.interactivelyMakeDateTimeIso8601UsingDateCodeOrNull()
+        unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
+        return nil if unixtime.nil?
+        Time.at(unixtime).utc.iso8601
+    end
+
     # CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
     def self.interactivelyMakeDateTimeIso8601UsingDateCode()
         loop {
-            unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
-            next if unixtime.nil?
-            return Time.at(unixtime).utc.iso8601
+            code = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCodeOrNull()
+            return code if code
         }
     end
 

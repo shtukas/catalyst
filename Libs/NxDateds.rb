@@ -4,9 +4,10 @@ class NxDateds
     # NxDateds::interactivelyIssueNewOrNull()
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
-        datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
+        datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCodeOrNull()
+        return nil if datetime.nil?
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
@@ -22,7 +23,7 @@ class NxDateds
     def self.interactivelyIssueTodayOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
@@ -38,7 +39,7 @@ class NxDateds
     def self.interactivelyIssueTomorrowOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
@@ -54,7 +55,7 @@ class NxDateds
     def self.interactivelyIssueAtGivenDateOrNull(date)
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)

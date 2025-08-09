@@ -8,7 +8,7 @@ class NxTasks
     def self.interactivelyIssueNewOrNull()
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-        return if description == ""
+        return nil if description == ""
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
         Items::setAttribute(uuid, "mikuType", "NxTask")
