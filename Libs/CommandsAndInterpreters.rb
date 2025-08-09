@@ -183,9 +183,24 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("numbers", input) then
-            puts "NxDated         : #{BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")}"
-            puts "Wave            : #{BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")}"
-            puts "NxCore & NxTask : #{BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")}"
+            [
+                {
+                    "prefix" => "NxDated         :",
+                    "rt" => BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
+                },
+                {
+                    "prefix" => "Wave            :",
+                    "rt" => BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
+                },
+                {
+                    "prefix" => "NxCore & NxTask :",
+                    "rt" => BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
+                }
+            ]
+                .sort_by{|packet| packet["rt"] }
+                .each{|packet|
+                    puts "#{packet["prefix"]} #{packet["rt"]}"
+                }
             LucilleCore::pressEnterToContinue()
             return
         end

@@ -148,10 +148,21 @@ class Waves
     # Waves::perform_done(item)
     def self.perform_done(item)
         puts "done-ing: '#{Waves::toString(item).green}'"
-        Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
-        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
+
         NxBalls::stop(item)
+
+        Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
+
+        unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime + rand)
+
+        timespanInMinutes = LucilleCore::askQuestionAnswerAsString("padding timespan ? (in minutes, default 0): ")
+        if timespanInMinutes != "" then
+            timespan = timespanInMinutes.to_f * 60
+        else
+            timespan = 0
+        end
+        BankVault::insertValue(item["uuid"], CommonUtils::today(), timespan)
     end
 
     # Waves::program0(item)
