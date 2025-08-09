@@ -144,10 +144,12 @@ class Datablocks
         nil
     end
 
-    # Datablocks::removeUUID(uuid)
+    # Datablocks::removeUUID(uuid) # boolean, indicates whether we have processed all the files
     def self.removeUUID(uuid)
         Datablocks::filepaths().each{|filepath|
+            return false if !File.exist?(filepath)
             Datablocks::removeUUIDAtFile(filepath, uuid)
         }
+        true
     end
 end

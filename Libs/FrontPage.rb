@@ -198,8 +198,8 @@ class FrontPage
                     .select{|filepath| filepath[-4, 4] == ".txt" }
                     .each{|filepath|
                         uuid = IO.read(filepath).strip
-                        Datablocks::removeUUID(uuid)
-                        if File.exist?(filepath) then
+                        status = Datablocks::removeUUID(uuid)
+                        if status and File.exist?(filepath) then
                             FileUtils.rm(filepath)
                         end
                     }
