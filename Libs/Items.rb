@@ -302,9 +302,8 @@ class Items
 
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
-        Items::removeEntryAtFile(Items::getDatabaseFilepath(), uuid)
+        Items::setAttribute(uuid, "mikuType", 'NxDeleted')
 
-        ListingService::removeEntry(uuid)
         Parenting::removeIdentifierFromDatabase(uuid)
 
         # Version 1

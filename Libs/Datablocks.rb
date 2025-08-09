@@ -75,15 +75,20 @@ class Datablocks
 
     # Datablocks::getDatablobOrNullAtFile(filepath, uuid, nhash)
     def self.getDatablobOrNullAtFile(filepath, uuid, nhash)
-        datablob = nil
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from datablock where uuid=? and nhash=?", [uuid, nhash]) do |row|
-            datablob = row["datablob"]
+        begin
+            datablob = nil
+            db = SQLite3::Database.new(filepath)
+            db.busy_timeout = 117
+            db.busy_handler { |count| true }
+            db.results_as_hash = true
+            db.execute("select * from datablock where uuid=? and nhash=?", [uuid, nhash]) do |row|
+                datablob = row["datablob"]
+            end
+            db.close
+        rescue
+            puts "[Datablocks::getDatablobOrNullAtFile] problem with this file: #{filepath}"
+            exit
         end
-        db.close
         datablob
     end
 
