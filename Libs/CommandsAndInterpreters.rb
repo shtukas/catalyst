@@ -103,8 +103,9 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             return if item["mikuType"] != "NxTask"
-            parentuuid, position = Operations::decideParentAndPosition()
-            Parenting::insertEntry(parentuuid, item["uuid"], position)
+            packet = Operations::decideParentAndPositionOrNull()
+            return if packet.nil?
+            Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
             return
         end
 

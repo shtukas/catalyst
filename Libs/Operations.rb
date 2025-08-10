@@ -193,12 +193,28 @@ class Operations
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
+    # Operations::interactivelySelectParentOrNull()
+    def self.interactivelySelectParentOrNull()
+        targets = NxCores::coresInRatioOrder()
+        LucilleCore::selectEntityFromListOfEntities("parent", targets, lambda{|item| PolyFunctions::toString(item) })
+    end
+
     # Operations::decideParentAndPosition()
     def self.decideParentAndPosition()
         parent = Operations::interactivelySelectParent()
-        return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         [parent["uuid"], position]
+    end
+
+    # Operations::decideParentAndPositionOrNull()
+    def self.decideParentAndPositionOrNull()
+        parent = Operations::interactivelySelectParent()
+        return nil if parent.nil?
+        position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
+        {
+            "parent" => parent,
+            "position" => position
+        }
     end
 
     # Operations::diveItem(parent)
