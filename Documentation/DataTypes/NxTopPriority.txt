@@ -1,0 +1,7 @@
+
+NxTopPriority
+    - uuid        : String
+    - mikuType    : "NxTopPriority"
+    - unixtime    : Integer
+    - datetime    : DateTime Iso 8601 UTC Zulu
+    - description : String

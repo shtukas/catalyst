@@ -17,6 +17,12 @@ class Transmutation
             ListingService::evaluate(item["uuid"])
             return
         end
+        if item["mikuType"] == "NxDated" and targetMikuType == "NxStack" then
+            position = LucilleCore::askQuestionAnswerAsString("position: ").to_f
+            Items::setAttribute(item["uuid"], "mikuType", "NxStack")
+            ListingService::evaluate(item["uuid"])
+            return
+        end
         if item["mikuType"] == "NxLine" and targetMikuType == "NxDated" then
             Items::setAttribute(item["uuid"], "mikuType", "NxDated")
             ListingService::evaluate(item["uuid"])
@@ -53,7 +59,7 @@ class Transmutation
     def self.transmute2(item)
         targetMikuType = nil
         if item["mikuType"] == "NxDated" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxFloat"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxStack", "NxFloat", "NxTask"])
         end
         if item["mikuType"] == "NxTask" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat"])

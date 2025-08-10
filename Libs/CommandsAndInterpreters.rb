@@ -6,12 +6,12 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "NxTasks       : critical (*) |  move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | priority | priorities",
+            "NxTasks       : move (*)",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | top priority | top priorities | stack @ *",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | maintenance",
+            "misc          : search | commands | fsck | probe-head | sort | sort stack | maintenance",
         ].join("\n")
     end
 
@@ -90,6 +90,16 @@ class CommandsAndInterpreters
             return
         end
 
+       if Interpreting::match("sort stack", input) then
+            selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxStacks::itemsInOrder(), lambda{|i| PolyFunctions::toString(i) })
+            selected.reverse.each{|i|
+                position = NxStacks::firstPosition() - 1
+                Items::setAttribute(i["uuid"], "position-1654", position)
+                ListingService::evaluate(i["uuid"])
+            }
+            return
+        end
+
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -119,28 +129,10 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("critical", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "critical-0825", true)
-            return
-        end
-
-        if Interpreting::match("critical *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Items::setAttribute(item["uuid"], "critical-0825", true)
-            return
-        end
-
         if Interpreting::match("dismiss *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            if item["mikuType"] == "NxTask" and item["critical-0825"] then
-                return if !LucilleCore::askQuestionAnswerAsBoolean("You are about to dismiss a critical task, please confirm: ")
-            end
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             NxBalls::stop(item)
@@ -166,12 +158,35 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("priority", input) then
+        if Interpreting::match("stack @ *", input) then
+            _, _, position = Interpreting::tokenizer(input)
+            position = position.to_f
+            item = NxStacks::interactivelyIssueNewOrNull(position)
+            return if item.nil?
+            item = Operations::interactivelySetDonation(item)
+            ListingService::insertUpdateEntryComponents1(item, NxStacks::listingPosition(item), "override", ListingService::decideListingLines(item))
+            return
+        end
+
+        if Interpreting::match("top priority", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
             }
-            item = NxLines::interactivelyIssueNewOrNull()
+            item = NxTopPriorities::interactivelyIssueNewOrNull()
             return if item.nil?
+            item = Operations::interactivelySetDonation(item)
+            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
+            NxBalls::start(item)
+            return
+        end
+
+        if input.start_with?("top priority ") then
+            line = input[8, input.size].strip
+            return if line == ''
+            NxBalls::activeItems().each{|item| 
+                NxBalls::pause(item)
+            }
+            item = NxLines::issueNewNoPayload(nil, line)
             payload = UxPayload::makeNewOrNull(item["uuid"])
             if payload then
                 item["uxpayload-b4e4"] = payload
@@ -206,25 +221,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if input.start_with?("priority ") then
-            line = input[8, input.size].strip
-            return if line == ''
-            NxBalls::activeItems().each{|item| 
-                NxBalls::pause(item)
-            }
-            item = NxLines::interactivelyIssueNew(nil, line)
-            payload = UxPayload::makeNewOrNull(item["uuid"])
-            if payload then
-                item["uxpayload-b4e4"] = payload
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-            end
-            item = Operations::interactivelySetDonation(item)
-            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
-            NxBalls::start(item)
-            return
-        end
-
-        if Interpreting::match("priorities", input) then
+        if Interpreting::match("top priorities", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
             }
@@ -233,9 +230,8 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxLines::interactivelyIssueNew(nil, line)
-                    Operations::interactivelySetDonation(item)
-                    item = Items::itemOrNull(item["uuid"])
+                    item = NxTopPriorities::issueNewNoPayload(line)
+                    item = Operations::interactivelySetDonation(item)
                     ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
                     last_item = item
                 }
@@ -258,7 +254,7 @@ class CommandsAndInterpreters
             position = 0.5*(ListingService::getPosition(items[0]["uuid"]) + ListingService::getPosition(items[1]["uuid"]))
             puts "deciding position: #{position}"
             line = LucilleCore::askQuestionAnswerAsString("description: ")
-            item = NxLines::interactivelyIssueNew(nil, line)
+            item = NxLines::issueNewNoPayload(nil, line)
             Operations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             ListingService::insertUpdateEntryComponents1(item, position, "override", ListingService::decideListingLines(item))

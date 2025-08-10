@@ -159,6 +159,8 @@ require_relative "NxCores.rb"
 require_relative "NxDateds.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxLines.rb"
+require_relative "NxTopPriorities.rb"
+require_relative "NxStacks.rb"
 
 require_relative "Operations.rb"
 

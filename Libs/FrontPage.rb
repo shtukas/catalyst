@@ -44,22 +44,6 @@ class FrontPage
         lines
     end
 
-    # FrontPage::itemsForListing1()
-    def self.itemsForListing1()
-        items = [
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxLines::listingItems(),
-            NxBackups::listingItems(),
-            NxDateds::listingItems(),
-            NxFloats::listingItems(),
-            Waves::nonInterruptionItemsForListing(),
-            NxCores::listingItems()
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-    end
-
     # -----------------------------------------
     # Ops
 

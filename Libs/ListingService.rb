@@ -204,10 +204,22 @@ class ListingService
     # ------------------------------------------------------
     # Data
 
-    # ListingService::criticals()
-    def self.criticals()
-        Items::items()
-            .select{|item| item["critical-0825"] }
+    # ListingService::itemsForListing1()
+    def self.itemsForListing1()
+        items = [
+            NxTopPriorities::listingItems(),
+            Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxStacks::listingItems(),
+            NxLines::listingItems(),
+            NxBackups::listingItems(),
+            NxDateds::listingItems(),
+            NxFloats::listingItems(),
+            Waves::nonInterruptionItemsForListing(),
+            NxCores::listingItems()
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
     end
 
     # ListingService::getEntryOrNull(itemuuid)
@@ -377,6 +389,10 @@ class ListingService
             return true
         end
 
+        if item["mikuType"] == "NxStack" then
+            return true
+        end
+
         if item["mikuType"] == "NxDeleted" then
             return false
         end
@@ -399,13 +415,13 @@ class ListingService
         # exception of Desktop/Dispatch/Line-Stream, which are put at 0.21.
 
         # Natural Positions
-        # 0.26 -> 0.28 NxAnniversary
-        # 0.28 -> 0.30 NxLambda
-        # 0.30 -> 0.32 Wave sticky
-        # 0.32 -> 0.35 Wave interruption
-        # 0.37 -> 0.37 criticals
-        # 0.39 -> 0.40 NxFloat
-        # 0.40 -> 0.45 NxBackup
+        # 0.260 -> 0.280 NxAnniversary
+        # 0.280 -> 0.300 NxLambda
+        # 0.300 -> 0.320 Wave sticky
+        # 0.320 -> 0.350 Wave interruption
+        # 0.360 -> 0.369 NxStack
+        # 0.390 -> 0.400 NxFloat
+        # 0.400 -> 0.450 NxBackup
 
         # 0.48         NxTask Orphan
 
@@ -465,8 +481,12 @@ class ListingService
                         # Will be dynamically computed by ListingService::entriesForListing
         end
 
+        if item["mikuType"] == "NxStack" then
+            return NxStacks::listingPosition(item)
+        end
+
         puts "I do not know how to ListingService::decidePosition(#{JSON.pretty_generate(item)})"
-        raise "(error: 3ae9fe86)"
+        raise "(error: df253fc4)"
     end
 
     # ListingService::getExistingPositionOrDecideNew(item)
@@ -537,20 +557,6 @@ class ListingService
             .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
             .select{|entry| DoNotShowUntil::isVisible(entry["itemuuid"]) }
 
-        criticals = ListingService::criticals()
-                        .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-                        .map{|item|
-                            {
-                                "itemuuid" => item["uuid"],
-                                "utime"    => 0,
-                                "item"     => item,
-                                "mikuType" => item["mikuType"],
-                                "position" => 0.36,
-                                "position_type" => "override",
-                                "listing_lines" => ListingService::decideListingLines(item)
-                            }
-                        }
-
         dynamically_positioned, statically_positioned = entries.partition{|entry| isDynamicallyPositioned.call(entry) }
 
         d2 = [
@@ -577,7 +583,7 @@ class ListingService
         # The following works because every statically_positioned comes before any 
         # dynamically positioned, regarless of their respective orderings
         [
-            (criticals + statically_positioned).sort_by{|entry| entry["position"] },
+            statically_positioned.sort_by{|entry| entry["position"] },
             d2
         ].flatten
     end
@@ -656,7 +662,7 @@ class ListingService
                 ListingService::removeEntry(entry["itemuuid"])
             end
         }
-        FrontPage::itemsForListing1().each{|item|
+        ListingService::itemsForListing1().each{|item|
             if ListingService::isListable(item) then
                 ListingService::evaluate(item["uuid"])
             end

@@ -86,9 +86,6 @@ class NxDateds
 
     # NxDateds::icon(item)
     def self.icon(item)
-        if item["critical-0825"] then
-            return "🔺"
-        end
         "🗓️ "
     end
 

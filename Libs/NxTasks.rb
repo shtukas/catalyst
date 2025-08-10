@@ -11,11 +11,11 @@ class NxTasks
         return nil if description == ""
         Items::init(uuid)
         payload = UxPayload::makeNewOrNull(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::itemOrNull(uuid)
     end
 
@@ -24,11 +24,11 @@ class NxTasks
         uuid = SecureRandom.uuid
         Items::init(uuid)
         payload = UxPayload::locationToPayload(uuid, location)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::itemOrNull(uuid)
     end
 
@@ -36,10 +36,10 @@ class NxTasks
     def self.descriptionToTask(description)
         uuid = SecureRandom.uuid
         Items::init(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::itemOrNull(uuid)
     end
 
@@ -48,9 +48,6 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
-        if item["critical-0825"] then
-            return "🔺"
-        end
         if Parenting::parentOrNull(item["uuid"]).nil? then
             return "🦉"
         end

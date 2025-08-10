@@ -9,13 +9,13 @@ class NxBackups
         return nil if description == ""
         period = LucilleCore::askQuestionAnswerAsString("period in days: ").to_f
         Items::init(uuid, "NxBackup")
-        Items::setAttribute(uuid, "mikuType", "NxBackup")
         Items::setAttribute(uuid, "mikuType", "NxAnniversary")
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "period", period)
         Items::setAttribute(uuid, "last-done-unixtime", nil)
+        Items::setAttribute(uuid, "mikuType", "NxBackup")
         Items::itemOrNull(uuid)
     end
 

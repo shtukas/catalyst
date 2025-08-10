@@ -7,9 +7,9 @@ class NxCores
         return nil if description == ""
         hours = LucilleCore::askQuestionAnswerAsString("hours per week: ").to_f
         Items::init(uuid)
-        Items::setAttribute(uuid, "mikuType", "NxCore")
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "hours", hours)
+        Items::setAttribute(uuid, "mikuType", "NxCore")
         Items::itemOrNull(uuid)
     end
 
