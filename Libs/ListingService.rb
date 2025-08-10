@@ -211,7 +211,6 @@ class ListingService
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxStacks::listingItems(),
-            NxLines::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
@@ -373,10 +372,6 @@ class ListingService
             return NxCores::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
         end
 
-        if item["mikuType"] == "NxLine" then
-            return true
-        end
-
         if item["mikuType"] == "NxDated" then
             return item["date"][0, 10] <= CommonUtils::today()
         end
@@ -408,11 +403,6 @@ class ListingService
 
         # Manually positioned (example for sorting)
         # 0.00 -> 0.20
-
-        # NxLines do not have a natural position, they have the position that
-        # had when created or when they were repositioned due to sorting.
-        # They are essentially only created for priority items, with the
-        # exception of Desktop/Dispatch/Line-Stream, which are put at 0.21.
 
         # Natural Positions
         # 0.260 -> 0.280 NxAnniversary
@@ -447,10 +437,6 @@ class ListingService
             if item["nx46"]["type"] == "sticky" then
                 return ListingService::determinePositionInInterval(item, 0.30, 0.32)
             end
-        end
-
-        if item["mikuType"] == "NxLine" then
-            return ListingService::getPositionOrNull(item["uuid"]) || 0.21
         end
 
         if item["mikuType"] == "NxAnniversary" then

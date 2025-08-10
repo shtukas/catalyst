@@ -225,10 +225,7 @@ class Items
         end
         item = {
           "uuid" => uuid,
-          "mikuType" => "NxLine",
-          "unixtime" => Time.new.to_i,
-          "datetime" => Time.new.utc.iso8601,
-          "description" => "Default description for initialised item. If you are reading this, something didn't happen"
+          "mikuType" => "NxDeleted",
         }
         Items::commitItem(item)
     end

@@ -7,9 +7,9 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | line after <item number> | top priority | top priorities | stack @ *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | top priority | top priorities | stack @ *",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | lines | todays | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | sort stack | maintenance",
         ].join("\n")
@@ -75,12 +75,17 @@ class CommandsAndInterpreters
             return
         end
 
-       if Interpreting::match("maintenance", input) then
+        if Interpreting::match("new", input) then
+            ["top priority", "stack", "float", "ondate", "task"]
+            return
+        end
+
+        if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
             return
         end
 
-       if Interpreting::match("sort", input) then
+        if Interpreting::match("sort", input) then
             items = store.items()
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
@@ -90,7 +95,7 @@ class CommandsAndInterpreters
             return
         end
 
-       if Interpreting::match("sort stack", input) then
+        if Interpreting::match("sort stack", input) then
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxStacks::itemsInOrder(), lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = NxStacks::firstPosition() - 1
@@ -180,24 +185,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if input.start_with?("top priority ") then
-            line = input[8, input.size].strip
-            return if line == ''
-            NxBalls::activeItems().each{|item| 
-                NxBalls::pause(item)
-            }
-            item = NxLines::issueNewNoPayload(nil, line)
-            payload = UxPayload::makeNewOrNull(item["uuid"])
-            if payload then
-                item["uxpayload-b4e4"] = payload
-                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-            end
-            item = Operations::interactivelySetDonation(item)
-            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
-            NxBalls::start(item)
-            return
-        end
-
         if Interpreting::match("numbers", input) then
             [
                 {
@@ -243,21 +230,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
-            return
-        end
-
-        if Interpreting::match("line after *", input) then
-            _, _, n = Interpreting::tokenizer(input)
-            n = n.to_i
-            items = store.items()
-            items = items.drop(n)
-            position = 0.5*(ListingService::getPosition(items[0]["uuid"]) + ListingService::getPosition(items[1]["uuid"]))
-            puts "deciding position: #{position}"
-            line = LucilleCore::askQuestionAnswerAsString("description: ")
-            item = NxLines::issueNewNoPayload(nil, line)
-            Operations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
-            ListingService::insertUpdateEntryComponents1(item, position, "override", ListingService::decideListingLines(item))
             return
         end
 
@@ -376,11 +348,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
-            return
-        end
-
-        if Interpreting::match("lines", input) then
-            Operations::program3(lambda { Items::mikuType("NxLine").sort_by{|item| item["unixtime"] } })
             return
         end
 

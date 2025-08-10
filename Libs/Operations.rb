@@ -172,19 +172,6 @@ class Operations
                 #puts PolyFunctions::toString(item)
             }
         end
-
-        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Line-Stream"
-        if File.exist?(directory) then
-            LucilleCore::locationsAtFolder(directory).each{|location|
-                puts location.yellow
-                description = File.basename(location)
-                item = NxLines::locationToLine(description, location)
-                ListingService::insertUpdateItemAtPosition(item, 0.21, "override")
-                puts JSON.pretty_generate(item)
-                LucilleCore::removeFileSystemLocation(location)
-
-            }
-        end
     end
 
     # Operations::interactivelySelectParent()

@@ -23,22 +23,6 @@ class Transmutation
             ListingService::evaluate(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxLine" and targetMikuType == "NxDated" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxDated")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-        if item["mikuType"] == "NxLine" and targetMikuType == "NxFloat" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-        if item["mikuType"] == "NxLine" and targetMikuType == "NxTask" then
-            NxTasks::performItemPositioning(item["uuid"])
-            Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(uuid, "date", datetime)
@@ -63,9 +47,6 @@ class Transmutation
         end
         if item["mikuType"] == "NxTask" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat"])
-        end
-        if item["mikuType"] == "NxLine" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxDated", "NxFloat", "NxTask"])
         end
         return if targetMikuType.nil?
         Transmutation::transmute1(item, targetMikuType)
