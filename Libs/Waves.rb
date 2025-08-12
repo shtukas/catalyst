@@ -171,7 +171,7 @@ class Waves
             item = Items::itemOrNull(item["uuid"])
             return if item.nil?
             puts Waves::toString(item)
-            actions = ["update description", "update wave pattern", "perform done", "set priority", "destroy"]
+            actions = ["update description", "update wave pattern", "perform done", "set todo-text-file-by-name-fragment", "destroy"]
             action = LucilleCore::selectEntityFromListOfEntitiesOrNull("action: ", actions)
             break if action.nil?
             if action == "update description" then
@@ -188,7 +188,7 @@ class Waves
                 Waves::perform_done(item)
                 return
             end
-            if action == "set priority" then
+            if action == "set todo-text-file-by-name-fragment" then
                 Items::setAttribute(item["uuid"], "interruption", LucilleCore::askQuestionAnswerAsBoolean("interruption ? "))
             end
             if action == "destroy" then

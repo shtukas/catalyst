@@ -393,6 +393,10 @@ class ListingService
             return false
         end
 
+        if item["mikuType"] == "NxTopPriority" then
+            return true
+        end
+
         puts "I do not know how to ListingService::isListable(#{JSON.pretty_generate(item)})"
         raise "(error: 3ae9fe86)"
     end
@@ -402,7 +406,7 @@ class ListingService
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
-        # Manually positioned (example for sorting)
+        # Manually positioned
         # 0.00 -> 0.20
 
         # Natural Positions
@@ -470,6 +474,10 @@ class ListingService
 
         if item["mikuType"] == "NxStack" then
             return NxStacks::listingPosition(item)
+        end
+
+        if item["mikuType"] == "NxTopPriority" then
+            return 0.20
         end
 
         puts "I do not know how to ListingService::decidePosition(#{JSON.pretty_generate(item)})"

@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | top priority | top priorities | stack @ *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | top todo-text-file-by-name-fragment | priorities | stack @ *",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -72,11 +72,6 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
             DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
-            return
-        end
-
-        if Interpreting::match("new", input) then
-            ["top priority", "stack", "float", "ondate", "task"]
             return
         end
 
@@ -173,7 +168,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("top priority", input) then
+        if Interpreting::match("top todo-text-file-by-name-fragment", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
             }
@@ -208,7 +203,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("top priorities", input) then
+        if Interpreting::match("priorities", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
             }

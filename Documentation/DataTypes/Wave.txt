@@ -9,7 +9,7 @@ Wave :
     "nx46"             : Nx46 # Wave pattern
     "lastDoneUnixtime" : Integer
 
-    "interruption"     : null or boolean, indicates if the item is interruption (priority)
+    "interruption"     : null or boolean, indicates if the item is interruption (todo-text-file-by-name-fragment)
 
 Nx46 
 {
