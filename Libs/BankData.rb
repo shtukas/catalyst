@@ -14,6 +14,7 @@ class BankDataRTCache
     def self.filepaths()
         LucilleCore::locationsAtFolder(BankDataRTCache::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
+            .select{|filepath| !File.basename(filepath).include?("sync-conflict") }
     end
 
     # BankDataRTCache::ensureContentAddressing(filepath)

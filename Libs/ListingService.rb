@@ -39,6 +39,7 @@ class ListingService
     def self.filepaths()
         LucilleCore::locationsAtFolder(ListingService::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
+            .select{|filepath| !File.basename(filepath).include?("sync-conflict") }
             .sort
     end
 

@@ -9,7 +9,7 @@ UxPayloads are stored in attribute `uxpayload-b4e4`.
 }
 
 {
-    "type" : "todo-text-file-by-name"
+    "type" : "todo-text-file-by-name-fragment"
     "name" : String # name or name fragment of a text file
 }
 

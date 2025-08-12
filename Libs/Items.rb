@@ -24,6 +24,7 @@ class Items
     def self.filepaths()
         LucilleCore::locationsAtFolder(Items::directory())
             .select{|filepath| File.basename(filepath)[-8, 8] == ".sqlite3" }
+            .select{|filepath| !File.basename(filepath).include?("sync-conflict") }
     end
 
     # Items::ensureContentAddressing(filepath)
@@ -211,6 +212,7 @@ class Items
 
     # Items::decideDescription(item)
     def self.decideDescription(item)
+        return "NxDeleted" if item['mikuType'] == "NxDeleted"
         return item["description"] if item["description"]
         raise "(error: d9a4a31c) I do not know how to determine the description for item: #{item}"
     end

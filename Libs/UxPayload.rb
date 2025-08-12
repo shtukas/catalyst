@@ -9,7 +9,7 @@ class UxPayload
             "breakdown",
             "aion-point",
             "Dx8Unit",
-            "todo-text-file-by-name",
+            "todo-text-file-by-name-fragment",
             "open cycle",
             "unique-string"
         ]
@@ -39,11 +39,11 @@ class UxPayload
                 "text" => CommonUtils::editTextSynchronously("")
             }
         end
-        if type == "todo-text-file-by-name" then
+        if type == "todo-text-file-by-name-fragment" then
             name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
             return nil if name1 == ""
             return {
-                "type" => "todo-text-file-by-name",
+                "type" => "todo-text-file-by-name-fragment",
                 "name" => name1
             }
         end
@@ -108,7 +108,7 @@ class UxPayload
             end
             return
         end
-        if payload["type"] == "todo-text-file-by-name" then
+        if payload["type"] == "todo-text-file-by-name-fragment" then
             name1 = payload["name"]
             location = CommonUtils::locateGalaxyFileByNameFragment(name1)
             if location.nil? then
@@ -195,11 +195,11 @@ class UxPayload
                 "text" => CommonUtils::editTextSynchronously(payload["text"])
             }
         end
-        if payload["type"] == "todo-text-file-by-name" then
+        if payload["type"] == "todo-text-file-by-name-fragment" then
             name1 = LucilleCore::askQuestionAnswerAsString("name fragment (empty to abort): ")
             return nil if name1 == ""
             return {
-                "type" => "todo-text-file-by-name",
+                "type" => "todo-text-file-by-name-fragment",
                 "name" => name1
             }
         end
@@ -262,7 +262,7 @@ class UxPayload
             end
             return
         end
-        if payload["type"] == "todo-text-file-by-name" then
+        if payload["type"] == "todo-text-file-by-name-fragment" then
             if payload["name"].nil? then
                 raise "could not find `name` attribute for payload #{payload}"
             end
