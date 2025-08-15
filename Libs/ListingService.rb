@@ -542,7 +542,7 @@ class ListingService
                 if item["mikuType"] == "NxTask" then
                     parent = Parenting::parentOrNull(item["uuid"])
                     if parent["mikuType"] == "NxCore" then
-                        return NxCores::ratio(parent) - ListingService::f(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/100_000
+                        return NxCores::ratio(parent) - ListingService::f(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/1_000_000
                     end
                     return 0
                 end
@@ -615,18 +615,13 @@ class ListingService
     # ------------------------------------------------------
     # Operations
 
-    # ListingService::removeEntry(itemuuid)
-    def self.removeEntry(itemuuid)
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.transaction
-        db.execute("delete from listing where itemuuid=?", [itemuuid])
-        db.commit
-        db.close
-        ListingService::ensureContentAddressing(filepath)
+    # ListingService::updateIfPresent(item)
+    def self.updateIfPresent(item)
+        if ListingService::hasItem(item["uuid"]) then
+            position = ListingService::getPosition(item["uuid"])
+            position_type = ListingService::getPositionType(item["uuid"])
+            ListingService::insertUpdateItemAtPosition(item, position, position_type)
+        end
     end
 
     # ListingService::ensure(item)
@@ -653,6 +648,20 @@ class ListingService
             return
         end
         ListingService::ensure(item)
+    end
+
+    # ListingService::removeEntry(itemuuid)
+    def self.removeEntry(itemuuid)
+        filepath = ListingService::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from listing where itemuuid=?", [itemuuid])
+        db.commit
+        db.close
+        ListingService::ensureContentAddressing(filepath)
     end
 
     # ListingService::maintenance()

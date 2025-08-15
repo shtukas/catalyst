@@ -264,17 +264,54 @@ class Operations
             end
 
             if input == "sort" then
-                itemsInOrder = Parenting::childrenInOrder(parent["uuid"]).sort_by{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], itemsInOrder, lambda{|i| PolyFunctions::toString(i) })
-                selected.reverse.each{|i|
-                    position = PolyFunctions::firstPositionInParent(parent) - 1
-                    Parenting::insertEntry(parent["uuid"], i["uuid"], position)
-                }
+                Operations::sortChildrenOfThisParent(parent)
                 next
             end
 
             CommandsAndInterpreters::interpreter(input, store)
         }
+    end
+
+    # Operations::sortChildrenOfThisParent(parent)
+    def self.sortChildrenOfThisParent(parent)
+        childrenInOrder = Parenting::childrenInOrder(parent["uuid"]).sort_by{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
+        return if childrenInOrder.empty?
+        selected, _ = LucilleCore::selectZeroOrMore("elements", [], childrenInOrder, lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|i|
+            position = PolyFunctions::firstPositionInParent(parent) - 1
+            Parenting::insertEntry(parent["uuid"], i["uuid"], position)
+            ListingService::ensure(i)
+        }
+    end
+
+    # Operations::sortStack()
+    def self.sortStack()
+        elements = NxStacks::itemsInOrder()
+        return if elements.empty?
+        selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|i|
+            position = NxStacks::firstPosition() - 1
+            Items::setAttribute(i["uuid"], "position-1654", position)
+            ListingService::evaluate(i["uuid"])
+        }
+    end
+
+    # Operations::generalSort(item)
+    def self.generalSort(item)
+        if item["mikuType"] == "NxStack" then
+            Operations::sortStack()
+            return
+        end
+        if item["mikuType"] == "NxCore" then
+            Operations::sortChildrenOfThisParent(item)
+            return
+        end
+        if item["mikuType"] == "NxTask" then
+            Operations::sortChildrenOfThisParent(item)
+            return
+        end
+        puts "[486e8bd8] I do not know how to sort mikuType: #{item["mikuType"]}"
+        LucilleCore::pressEnterToContinue()
     end
 
     # Operations::probeHead()
@@ -297,5 +334,66 @@ class Operations
                         end
                     }
             }
+    end
+
+    # Operations::replace(item)
+    def self.replace(item)
+        if item["mikuType"] == "NxTask" then
+
+            parent = Parenting::parentOrNull(item["uuid"])
+            if parent.nil? then
+                puts "Item '#{PolyFunctions::toString(item).green}' doesn't have a parent. Let's select one"
+                packet = Operations::decideParentAndPositionOrNull()
+                parent = packet["parent"]
+                position = packet["position"]
+            else
+                position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
+            end
+
+            # By now we have a parent and a position
+
+            position1 = (lambda{|parent, position|
+                positions = Parenting::childrenPositions(parent["uuid"])
+                                .select{|pos| pos < position }
+                return position - 1 if positions.empty?
+                positions.max
+
+            }).call(parent, position)
+
+            position2 = (lambda{|parent, position|
+                positions = Parenting::childrenPositions(parent["uuid"])
+                                .select{|pos| pos > position }
+                return position + 1 if positions.empty?
+                positions.min
+
+            }).call(parent, position)
+
+            puts "position1: #{position1}"
+            puts "position : #{position}"
+            puts "position2: #{position2}"
+
+            lines = Operations::interactivelyGetLines()
+            return if lines.empty?
+
+            size = lines.size
+
+            lines.each_with_index{|line, i|
+                ix = NxTasks::descriptionToTask(line)
+                pox = position1 + (position2-position1)*(i+1).to_f/(size+1)
+                puts "pox: #{pox}"
+                Parenting::insertEntry(parent["uuid"], ix["uuid"], pox)
+                ListingService::ensure(ix)
+            }
+
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+                ListingService::removeEntry(item["uuid"])
+            end
+
+            return
+        end
+
+        puts "I do not know how to replace a #{item["mikuType"]}"
+        LucilleCore::pressEnterToContinue()
     end
 end

@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | sort stack | maintenance",
+            "misc          : search | commands | fsck | probe-head | sort | maintenance",
         ].join("\n")
     end
 
@@ -98,13 +98,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sort stack", input) then
-            selected, _ = LucilleCore::selectZeroOrMore("elements", [], NxStacks::itemsInOrder(), lambda{|i| PolyFunctions::toString(i) })
-            selected.reverse.each{|i|
-                position = NxStacks::firstPosition() - 1
-                Items::setAttribute(i["uuid"], "position-1654", position)
-                ListingService::evaluate(i["uuid"])
-            }
+        if Interpreting::match("sort *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            Operations::generalSort(item)
             return
         end
 
@@ -137,69 +135,18 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("replace", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Operations::replace(item)
+            return
+        end
+
         if Interpreting::match("replace *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-
-            if item["mikuType"] == "NxTask" then
-
-                parent = Parenting::parentOrNull(item["uuid"])
-                if parent.nil? then
-                    puts "Item '#{PolyFunctions::toString(item).green}' doesn't have a parent. Let's select one"
-                    packet = Operations::decideParentAndPositionOrNull()
-                    parent = packet["parent"]
-                    position = packet["position"]
-                else
-                    position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
-                end
-
-                # By now we have a parent and a position
-
-                position1 = (lambda{|parent, position|
-                    positions = Parenting::childrenPositions(parent["uuid"])
-                                    .select{|pos| pos < position }
-                    return position - 1 if positions.empty?
-                    positions.max
-
-                }).call(parent, position)
-
-                position2 = (lambda{|parent, position|
-                    positions = Parenting::childrenPositions(parent["uuid"])
-                                    .select{|pos| pos > position }
-                    return position + 1 if positions.empty?
-                    positions.min
-
-                }).call(parent, position)
-
-                puts "position1: #{position1}"
-                puts "position : #{position}"
-                puts "position2: #{position2}"
-
-                lines = Operations::interactivelyGetLines()
-                return if lines.empty?
-
-                size = lines.size
-
-                lines.each_with_index{|line, i|
-                    ix = NxTasks::descriptionToTask(line)
-                    pox = position1 + (position2-position1)*(i+1).to_f/(size+1)
-                    puts "pox: #{pox}"
-                    Parenting::insertEntry(parent["uuid"], ix["uuid"], pox)
-                    ListingService::ensure(ix)
-                }
-
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    Items::deleteItem(item["uuid"])
-                    ListingService::removeEntry(item["uuid"])
-                end
-
-                return
-            end
-
-            puts "I do not know how to replace a #{item["mikuType"]}"
-            LucilleCore::pressEnterToContinue()
-
+            Operations::replace(item)
             return
         end
 
