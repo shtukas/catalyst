@@ -5,9 +5,9 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | destroy *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | top todo-text-file-by-name-fragment | priorities | stack @ *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | top todo-text-file-by-name-fragment | priority | priorities | stack @ *",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -60,6 +60,14 @@ class CommandsAndInterpreters
 
         if Interpreting::match(">>", input) then
             item = store.getDefault()
+            return if item.nil?
+            Transmutation::transmute2(item)
+            return
+        end
+
+        if Interpreting::match(">> *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
             return if item.nil?
             Transmutation::transmute2(item)
             return
@@ -126,6 +134,72 @@ class CommandsAndInterpreters
             return if item["mikuType"] != "NxTask"
             parentuuid, position = Operations::decideParentAndPosition()
             Parenting::insertEntry(parentuuid, item["uuid"], position)
+            return
+        end
+
+        if Interpreting::match("replace *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+
+            if item["mikuType"] == "NxTask" then
+
+                parent = Parenting::parentOrNull(item["uuid"])
+                if parent.nil? then
+                    puts "Item '#{PolyFunctions::toString(item).green}' doesn't have a parent. Let's select one"
+                    packet = Operations::decideParentAndPositionOrNull()
+                    parent = packet["parent"]
+                    position = packet["position"]
+                else
+                    position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
+                end
+
+                # By now we have a parent and a position
+
+                position1 = (lambda{|parent, position|
+                    positions = Parenting::childrenPositions(parent["uuid"])
+                                    .select{|pos| pos < position }
+                    return position - 1 if positions.empty?
+                    positions.max
+
+                }).call(parent, position)
+
+                position2 = (lambda{|parent, position|
+                    positions = Parenting::childrenPositions(parent["uuid"])
+                                    .select{|pos| pos > position }
+                    return position + 1 if positions.empty?
+                    positions.min
+
+                }).call(parent, position)
+
+                puts "position1: #{position1}"
+                puts "position : #{position}"
+                puts "position2: #{position2}"
+
+                lines = Operations::interactivelyGetLines()
+                return if lines.empty?
+
+                size = lines.size
+
+                lines.each_with_index{|line, i|
+                    ix = NxTasks::descriptionToTask(line)
+                    pox = position1 + (position2-position1)*(i+1).to_f/(size+1)
+                    puts "pox: #{pox}"
+                    Parenting::insertEntry(parent["uuid"], ix["uuid"], pox)
+                    ListingService::ensure(ix)
+                }
+
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    Items::deleteItem(item["uuid"])
+                    ListingService::removeEntry(item["uuid"])
+                end
+
+                return
+            end
+
+            puts "I do not know how to replace a #{item["mikuType"]}"
+            LucilleCore::pressEnterToContinue()
+
             return
         end
 
@@ -203,6 +277,21 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("priority", input) then
+            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
+            return if description == ""
+            NxBalls::activeItems().each{|item|
+                NxBalls::pause(item)
+            }
+            item = NxTopPriorities::issueNewNoPayload(line)
+            item = Operations::interactivelySetDonation(item)
+            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
+            if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
+                NxBalls::start(item)
+            end
+            return
+        end
+
         if Interpreting::match("priorities", input) then
             NxBalls::activeItems().each{|item| 
                 NxBalls::pause(item)
@@ -218,7 +307,9 @@ class CommandsAndInterpreters
                     last_item = item
                 }
             if last_item then
-                NxBalls::start(last_item)
+                if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
+                    NxBalls::start(last_item)
+                end
             end
             return
         end

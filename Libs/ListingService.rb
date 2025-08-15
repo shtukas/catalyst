@@ -504,6 +504,11 @@ class ListingService
         entries.map{|entry| entry["position"] }.min
     end
 
+    # ListingService::f(x)
+    def self.f(x)
+        1.to_f / (1 + Math.exp(x))
+    end
+
     # ListingService::entriesForListing(excludeuuids)
     def self.entriesForListing(excludeuuids)
 
@@ -533,11 +538,11 @@ class ListingService
         }
 
         prepareNxCoreNxTasks = lambda{|entries|
-            lookUpRatio = lambda {|item|
+            position43 = lambda {|item|
                 if item["mikuType"] == "NxTask" then
                     parent = Parenting::parentOrNull(item["uuid"])
                     if parent["mikuType"] == "NxCore" then
-                        return NxCores::ratio(parent)
+                        return NxCores::ratio(parent) - ListingService::f(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/100_000
                     end
                     return 0
                 end
@@ -545,7 +550,7 @@ class ListingService
                     return NxCores::ratio(item)
                 end
             }
-            entries.sort_by{|entry| lookUpRatio.call(entry["item"]) }
+            entries.sort_by{|entry| position43.call(entry["item"]) }
         }
 
         entries = ListingService::entries()
