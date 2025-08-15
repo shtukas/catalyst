@@ -1,4 +1,3 @@
-
 # alter table listing rename column line to listing_lines;
 # alter table listing add column mikuType TEXT NOT NULL default "";
 
