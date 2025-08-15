@@ -165,35 +165,48 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::doubleDots(item)
-    def self.doubleDots(item)
-        if item["mikuType"] == "NxCore" then
-            PolyActions::access(item)
-            return
-        end
-
-        return if NxBalls::itemIsActive(item)
-
-        if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
-            if option == "access payload" then
-                # we continue here
+    # PolyActions::naturalAction(item)
+    def self.naturalAction(item)
+        if NxBalls::itemIsActive(item) then
+            if item["mikuType"] == "NxTask" then
+                if BankVault::getValue(item["uuid"]) > 0 then
+                    PolyActions::stop(item)
+                    return
+                else
+                    if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                        PolyActions::stop(item)
+                        Items::deleteItem(item["uuid"])
+                        ListingService::removeEntry(item["uuid"])
+                    end
+                    return
+                end
             end
-            if option == "dive" then
-                Operations::diveItem(item)
+            PolyActions::stop(item)
+        else
+            if item["mikuType"] == "NxCore" then
+                PolyActions::access(item)
                 return
             end
+
+            if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
+                if option == "access payload" then
+                    # we continue here
+                end
+                if option == "dive" then
+                    Operations::diveItem(item)
+                    return
+                end
+            end
+
+            if item["mikuType"] == "NxLambda" then
+                NxLambdas::run(item)
+                return
+            end
+
+            PolyActions::start(item)
+            PolyActions::access(item)
         end
-
-        if item["mikuType"] == "NxLambda" then
-            NxLambdas::run(item)
-            return
-        end
-
-        # Default
-
-        PolyActions::start(item)
-        PolyActions::access(item)
     end
 
     # PolyActions::tripleDots(item)
