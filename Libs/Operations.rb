@@ -119,20 +119,6 @@ class Operations
         LucilleCore::pressEnterToContinue()
     end
 
-    # Operations::interactivelySelectTargetForDonationOrNull()
-    def self.interactivelySelectTargetForDonationOrNull()
-        targets = NxCores::coresInRatioOrder()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
-    end
-
-    # Operations::interactivelySetDonation(item) -> Item
-    def self.interactivelySetDonation(item)
-        target = Operations::interactivelySelectTargetForDonationOrNull()
-        return item if target.nil?
-        Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
-        Items::itemOrNull(item["uuid"])
-    end
-
     # Operations::dispatchPickUp()
     def self.dispatchPickUp()
         directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Buffer-In"

@@ -31,7 +31,7 @@ class CommandsAndInterpreters
         if Interpreting::match("..", input) then
             item = store.getDefault()
             return if item.nil?
-            PolyActions::naturalAction(item)
+            PolyActions::doubleDots(item)
             return
         end
 
@@ -39,7 +39,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            PolyActions::naturalAction(item)
+            PolyActions::doubleDots(item)
             return
         end
 
@@ -182,7 +182,7 @@ class CommandsAndInterpreters
         if Interpreting::match("project", input) then
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
-            item = Operations::interactivelySetDonation(item)
+            item = Donations::interactivelySetDonation(item)
             ListingService::ensure(item)
             return
         end
@@ -217,7 +217,7 @@ class CommandsAndInterpreters
                 NxBalls::pause(item)
             }
             item = NxTasks::descriptionToTask(description)
-            item = Operations::interactivelySetDonation(item)
+            item = Donations::interactivelySetDonation(item)
             ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
                 NxBalls::start(item)
@@ -235,7 +235,7 @@ class CommandsAndInterpreters
                 .each{|line|
                     puts "processing: #{line}".green
                     item = NxTasks::descriptionToTask(line)
-                    item = Operations::interactivelySetDonation(item)
+                    item = Donations::interactivelySetDonation(item)
                     ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
                     last_item = item
                 }
@@ -281,7 +281,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Operations::interactivelySetDonation(item)
+            Donations::interactivelySetDonation(item)
             ListingService::evaluate(item["uuid"])
             return
         end
@@ -289,7 +289,7 @@ class CommandsAndInterpreters
         if Interpreting::match("today", input) then
             item = NxDateds::interactivelyIssueTodayOrNull()
             return if item.nil?
-            Operations::interactivelySetDonation(item)
+            Donations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
@@ -304,7 +304,7 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Operations::interactivelySetDonation(item)
+            Donations::interactivelySetDonation(item)
             return
         end
 
@@ -593,7 +593,7 @@ class CommandsAndInterpreters
             item = NxDateds::interactivelyIssueTomorrowOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Operations::interactivelySetDonation(item)
+            Donations::interactivelySetDonation(item)
             return
         end
 

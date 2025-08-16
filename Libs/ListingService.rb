@@ -311,7 +311,7 @@ class ListingService
         return [] if item.nil?
         lines = []
         hasChildren = Parenting::hasChildren(item["uuid"]) ? " [children]".red : ""
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{PolyFunctions::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow

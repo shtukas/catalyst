@@ -7,6 +7,13 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
+        if item["mikuType"] == "NxProject" and item["donation-1205"].nil? then
+            item = Donations::interactivelySetDonation(item)
+        end
+        if item["mikuType"] == "NxTask" and Parenting::parentOrNull(item["uuid"]).nil? and item["donation-1205"].nil? then
+            item = Donations::interactivelySetDonation(item)
+        end
+
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
