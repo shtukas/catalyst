@@ -220,7 +220,7 @@ class CommandsAndInterpreters
             item = Donations::interactivelySetDonation(item)
             ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
-                NxBalls::start(item)
+                PolyActions::start(item)
             end
             return
         end
@@ -241,7 +241,7 @@ class CommandsAndInterpreters
                 }
             if last_item then
                 if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
-                    NxBalls::start(last_item)
+                    PolyActions::start(last_item)
                 end
             end
             return
@@ -557,7 +557,7 @@ class CommandsAndInterpreters
         if Interpreting::match("start", input) then
             item = store.getDefault()
             return if item.nil?
-            NxBalls::start(item)
+            PolyActions::start(item)
             return
         end
 
@@ -565,7 +565,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            NxBalls::start(item)
+            PolyActions::start(item)
             return
         end
 
