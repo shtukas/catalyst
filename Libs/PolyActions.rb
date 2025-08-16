@@ -147,7 +147,15 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss for the day", "destroy"])
+            return if option.nil?
+            if option == "dismiss for the day" then
+                unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
+                puts "pushing until '#{Time.at(unixtime).to_s.green}'"
+                NxBalls::stop(item)
+                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            end
+            if option == "destroy" then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
             end
