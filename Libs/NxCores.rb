@@ -60,7 +60,7 @@ class NxCores
             .select{|core| NxCores::ratio(core) < 1 }
             .select{|core| DoNotShowUntil::isVisible(core["uuid"]) }
             .map{|core| 
-                Parenting::childrenInOrderHead(core["uuid"], 3, lambda{|item| item["mikuType"] == "NxTask" and BankData::recoveredAverageHoursPerDay(item["uuid"]) < 1 }) + [core]
+                Parenting::childrenInOrderHead(core["uuid"], 3, lambda{|item| DoNotShowUntil::isVisible(item["uuid"]) }) + [core]
             }
             .flatten
     end

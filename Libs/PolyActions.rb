@@ -167,13 +167,23 @@ class PolyActions
 
     # PolyActions::naturalAction(item)
     def self.naturalAction(item)
-        if NxBalls::itemIsActive(item) then
+        if item["mikuType"] == "NxFloat" then
+            PolyActions::done(item)
+            return
+        end
+
+        if NxBalls::itemIsPaused(item) then
+            NxBalls::pursue(item)
+            return
+        end
+
+        if NxBalls::itemIsRunning(item) then
             if item["mikuType"] == "NxTask" then
                 if BankVault::getValue(item["uuid"]) > 0 then
                     PolyActions::stop(item)
                     return
                 else
-                    if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                    if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
                         PolyActions::stop(item)
                         Items::deleteItem(item["uuid"])
                         ListingService::removeEntry(item["uuid"])
@@ -181,32 +191,36 @@ class PolyActions
                     return
                 end
             end
+            if item["mikuType"] == "Wave" then
+                PolyActions::done(item)
+            end
             PolyActions::stop(item)
-        else
-            if item["mikuType"] == "NxCore" then
-                PolyActions::access(item)
-                return
-            end
-
-            if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
-                option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
-                if option == "access payload" then
-                    # we continue here
-                end
-                if option == "dive" then
-                    Operations::diveItem(item)
-                    return
-                end
-            end
-
-            if item["mikuType"] == "NxLambda" then
-                NxLambdas::run(item)
-                return
-            end
-
-            PolyActions::start(item)
-            PolyActions::access(item)
+            return
         end
+
+        if item["mikuType"] == "NxCore" then
+            PolyActions::access(item)
+            return
+        end
+
+        if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
+            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
+            if option == "access payload" then
+                # we continue here
+            end
+            if option == "dive" then
+                Operations::diveItem(item)
+                return
+            end
+        end
+
+        if item["mikuType"] == "NxLambda" then
+            NxLambdas::run(item)
+            return
+        end
+
+        PolyActions::start(item)
+        PolyActions::access(item)
     end
 
     # PolyActions::tripleDots(item)
