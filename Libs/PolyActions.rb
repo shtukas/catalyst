@@ -164,8 +164,8 @@ class PolyActions
         raise "(error: f278f3e4-3f49-4f79-89d2-e5d3b8f728e6)"
     end
 
-    # PolyActions::naturalAction(item)
-    def self.naturalAction(item)
+    # PolyActions::doubleDots(item)
+    def self.doubleDots(item)
         if item["mikuType"] == "NxFloat" then
             PolyActions::done(item)
             return
@@ -177,26 +177,6 @@ class PolyActions
         end
 
         if NxBalls::itemIsRunning(item) then
-            if item["mikuType"] == "NxTask" then
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
-                    PolyActions::stop(item)
-                    Items::deleteItem(item["uuid"])
-                    ListingService::removeEntry(item["uuid"])
-                else
-                    Items::setAttribute(item["uuid"], "position-1654", NxProjects::lastPosition() + 1)
-                    item = Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-                    ListingService::ensure(item)
-                end
-            end
-            if item["mikuType"] == "Wave" then
-                PolyActions::done(item)
-            end
-            PolyActions::stop(item)
-            return
-        end
-
-        if item["mikuType"] == "NxCore" then
-            PolyActions::access(item)
             return
         end
 
@@ -213,6 +193,11 @@ class PolyActions
 
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
+            return
+        end
+
+        if item["mikuType"] == "NxCore" then
+            PolyActions::access(item)
             return
         end
 
