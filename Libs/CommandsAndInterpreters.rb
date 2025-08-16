@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | top todo-text-file-by-name-fragment | priority | priorities | stack @ *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive *",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -179,25 +179,11 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("stack @ *", input) then
-            _, _, position = Interpreting::tokenizer(input)
-            position = position.to_f
-            item = NxStacks::interactivelyIssueNewOrNull(position)
+        if Interpreting::match("project", input) then
+            item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             item = Operations::interactivelySetDonation(item)
-            ListingService::insertUpdateEntryComponents1(item, NxStacks::listingPosition(item), "override", ListingService::decideListingLines(item))
-            return
-        end
-
-        if Interpreting::match("top todo-text-file-by-name-fragment", input) then
-            NxBalls::activeItems().each{|item| 
-                NxBalls::pause(item)
-            }
-            item = NxTopPriorities::interactivelyIssueNewOrNull()
-            return if item.nil?
-            item = Operations::interactivelySetDonation(item)
-            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
-            NxBalls::start(item)
+            ListingService::ensure(item)
             return
         end
 
@@ -230,9 +216,9 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|item|
                 NxBalls::pause(item)
             }
-            item = NxTopPriorities::issueNewNoPayload(line)
+            item = NxTasks::descriptionToTask(description)
             item = Operations::interactivelySetDonation(item)
-            ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
+            ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
                 NxBalls::start(item)
             end
@@ -248,9 +234,9 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxTopPriorities::issueNewNoPayload(line)
+                    item = NxTasks::descriptionToTask(line)
                     item = Operations::interactivelySetDonation(item)
-                    ListingService::insertUpdateEntryComponents1(item, ListingService::firstPositionInDatabase()*0.9, "override", ListingService::decideListingLines(item))
+                    ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
                     last_item = item
                 }
             if last_item then

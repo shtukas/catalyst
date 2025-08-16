@@ -48,6 +48,13 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
+
+        if item["mikuType"] == "NxTask" then
+            Items::setAttribute(item["uuid"], "position-1654", NxProjects::lastPosition() + 1)
+            item = Items::setAttribute(item["uuid"], "mikuType", "NxProject")
+            ListingService::ensure(item)
+        end
+
         ListingService::evaluate(item["uuid"])
     end
 
@@ -116,14 +123,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTopPriority" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxDated" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -140,7 +139,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
@@ -179,16 +178,14 @@ class PolyActions
 
         if NxBalls::itemIsRunning(item) then
             if item["mikuType"] == "NxTask" then
-                if BankVault::getValue(item["uuid"]) > 0 then
+                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
                     PolyActions::stop(item)
-                    return
+                    Items::deleteItem(item["uuid"])
+                    ListingService::removeEntry(item["uuid"])
                 else
-                    if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ") then
-                        PolyActions::stop(item)
-                        Items::deleteItem(item["uuid"])
-                        ListingService::removeEntry(item["uuid"])
-                    end
-                    return
+                    Items::setAttribute(item["uuid"], "position-1654", NxProjects::lastPosition() + 1)
+                    item = Items::setAttribute(item["uuid"], "mikuType", "NxProject")
+                    ListingService::ensure(item)
                 end
             end
             if item["mikuType"] == "Wave" then
@@ -257,14 +254,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTopPriority" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
-            PolyActions::done(item)
-            return
-        end
-
         if item["mikuType"] == "NxTask" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -273,7 +262,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxProject" then
             PolyActions::start(item)
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
@@ -349,15 +338,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxTopPriority" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])

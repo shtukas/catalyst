@@ -1,7 +1,8 @@
 
-NxTopPriority
+NxProject
     - uuid        : String
-    - mikuType    : "NxTopPriority"
+    - mikuType    : "NxProject"
     - unixtime    : Integer
     - datetime    : DateTime Iso 8601 UTC Zulu
-    - description : String
+    - description  : String
+    - position-1654 : Float

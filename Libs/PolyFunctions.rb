@@ -100,9 +100,6 @@ class PolyFunctions
         if item["mikuType"] == "NxBackup" then
             return NxBackups::toString(item)
         end
-        if item["mikuType"] == "NxTopPriority" then
-            return NxTopPriorities::toString(item)
-        end
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
         end
@@ -121,8 +118,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "NxStack" then
-            return NxStacks::toString(item)
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

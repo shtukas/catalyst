@@ -284,13 +284,13 @@ class Operations
         }
     end
 
-    # Operations::sortStack()
-    def self.sortStack()
-        elements = NxStacks::itemsInOrder()
+    # Operations::sortProjects()
+    def self.sortProjects()
+        elements = NxProjects::itemsInOrder()
         return if elements.empty?
         selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
         selected.reverse.each{|i|
-            position = NxStacks::firstPosition() - 1
+            position = NxProjects::firstPosition() - 1
             Items::setAttribute(i["uuid"], "position-1654", position)
             ListingService::evaluate(i["uuid"])
         }
@@ -298,8 +298,8 @@ class Operations
 
     # Operations::generalSort(item)
     def self.generalSort(item)
-        if item["mikuType"] == "NxStack" then
-            Operations::sortStack()
+        if item["mikuType"] == "NxProject" then
+            Operations::sortProjects()
             return
         end
         if item["mikuType"] == "NxCore" then

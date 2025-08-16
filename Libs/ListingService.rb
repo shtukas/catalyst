@@ -207,10 +207,9 @@ class ListingService
     # ListingService::itemsForListing1()
     def self.itemsForListing1()
         items = [
-            NxTopPriorities::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-            NxStacks::listingItems(),
+            NxProjects::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItems(),
             NxFloats::listingItems(),
@@ -384,16 +383,12 @@ class ListingService
             return true
         end
 
-        if item["mikuType"] == "NxStack" then
+        if item["mikuType"] == "NxProject" then
             return true
         end
 
         if item["mikuType"] == "NxDeleted" then
             return false
-        end
-
-        if item["mikuType"] == "NxTopPriority" then
-            return true
         end
 
         puts "I do not know how to ListingService::isListable(#{JSON.pretty_generate(item)})"
@@ -413,7 +408,7 @@ class ListingService
         # 0.280 -> 0.300 NxLambda
         # 0.300 -> 0.320 Wave sticky
         # 0.320 -> 0.350 Wave interruption
-        # 0.360 -> 0.369 NxStack
+        # 0.360 -> 0.369 NxProject
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
 
@@ -471,12 +466,8 @@ class ListingService
                         # Will be dynamically computed by ListingService::entriesForListing
         end
 
-        if item["mikuType"] == "NxStack" then
-            return NxStacks::listingPosition(item)
-        end
-
-        if item["mikuType"] == "NxTopPriority" then
-            return 0.20
+        if item["mikuType"] == "NxProject" then
+            return NxProjects::listingPosition(item)
         end
 
         puts "I do not know how to ListingService::decidePosition(#{JSON.pretty_generate(item)})"
@@ -632,6 +623,12 @@ class ListingService
             position = ListingService::decidePosition(item)
             position_type = "standard"
         end
+        ListingService::insertUpdateItemAtPosition(item, position, position_type)
+    end
+
+    # ListingService::ensureAtOverridenPosition(item, position)
+    def self.ensureAtOverridenPosition(item, position)
+        position_type = "override"
         ListingService::insertUpdateItemAtPosition(item, position, position_type)
     end
 

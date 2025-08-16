@@ -248,13 +248,16 @@ class Items
         Items::insertUpdateItemAtFile(filepath, item)
     end
 
-    # Items::setAttribute(uuid, attrname, attrvalue)
+    # Items::setAttribute(uuid, attrname, attrvalue) -> updated item
     def self.setAttribute(uuid, attrname, attrvalue)
         item = Items::itemOrNull(uuid)
-        return if item.nil?
+        if item.nil? then
+            raise "(error: ce53d4c7) you are trying to set an attribute of an non existant item, uuid: #{uuid}, attrname: #{attrname}, attrvalue: #{attrvalue}"
+        end
         item[attrname] = attrvalue
         Items::commitItem(item)
         ListingService::evaluate(uuid)
+        item
     end
 
     # Items::items()

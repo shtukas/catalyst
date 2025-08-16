@@ -49,7 +49,7 @@ class NxTasks
     # NxTasks::icon(item)
     def self.icon(item)
         if Parenting::parentOrNull(item["uuid"]).nil? then
-            return "🦉"
+            return "🔺"
         end
         "🔹"
     end
