@@ -93,7 +93,12 @@ class CommandsAndInterpreters
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
-                ListingService::setPosition(i["uuid"], position, "override")
+                px17 = {
+                    "type"  => "overriden",
+                    "value" => position,
+                    "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+                }
+                ListingService::setPx17(i["uuid"], px17)
             }
             return
         end
@@ -218,7 +223,7 @@ class CommandsAndInterpreters
             }
             item = NxTasks::descriptionToTask(description)
             item = Donations::interactivelySetDonation(item)
-            ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
+            ListingService::ensureAtFirstPositionForTheDay(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
                 PolyActions::start(item)
             end
@@ -236,7 +241,7 @@ class CommandsAndInterpreters
                     puts "processing: #{line}".green
                     item = NxTasks::descriptionToTask(line)
                     item = Donations::interactivelySetDonation(item)
-                    ListingService::ensureAtOverridenPosition(item, ListingService::firstPositionInDatabase()*0.9)
+                    ListingService::ensureAtFirstPositionForTheDay(item)
                     last_item = item
                 }
             if last_item then

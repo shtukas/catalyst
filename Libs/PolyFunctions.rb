@@ -71,6 +71,13 @@ class PolyFunctions
             }
         end
 
+        if item["mikuType"] == "NxProject" then
+            accounts << {
+                "description" => "d4eb85c9-38b4-43a5-b920-ffd3000dacd6",
+                "number"      => "d4eb85c9-38b4-43a5-b920-ffd3000dacd6"
+            }
+        end
+
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as

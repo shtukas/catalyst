@@ -46,8 +46,8 @@ class NxProjects
         Items::mikuType("NxProject")
     end
 
-    # NxProjects::listingPosition(item)
-    def self.listingPosition(item)
-        0.365 + Math.atan(item["position-1654"]).to_f/100000
+    # NxProjects::position(item) -> [0, 1]
+    def self.position(item)
+        (2 + Math.atan(item["position-1654"])).to_f/10
     end
 end

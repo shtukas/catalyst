@@ -4,23 +4,24 @@
 =begin
 
 CREATE TABLE random (value REAL);
-CREATE TABLE listing (
-    itemuuid TEXT PRIMARY KEY NOT NULL,
-    utime REAL NOT NULL,
-    item TEXT NOT NULL,
-    mikuType TEXT NOT NULL,
-    position REAL NOT NULL,
-    position_type TEXT,
-    listing_lines TEXT NOT NULL
-);
+CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, item TEXT NOT NULL, mikuType TEXT NOT NULL, px17 TEXT NOT NULL, listing_lines TEXT NOT NULL);
 
 itemuuid      : string
 utime         : unixtime with decimals of the last update of that record
 item          : json encoded object
 mikuType      : string
-position      : float
-position_type : string
+px17          : json encoded object
 listing_lines : json encoded array
+
+position
+{
+    "type" : "compute"
+}
+{
+    "type"  : "overriden"
+    "value" : float
+    "expiry": unixtime
+}
 
 =end
 
@@ -63,7 +64,7 @@ class ListingService
         # Because we are doing content addressing we need the newly created database to be distinct that one that could already be there.
         db.execute("CREATE TABLE random (value REAL)", [])
         db.execute("insert into random (value) values (?)", [rand])
-        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, item TEXT NOT NULL, mikuType TEXT NOT NULL, position REAL NOT NULL, position_type TEXT, listing_lines TEXT NOT NULL)", [])
+        db.execute("CREATE TABLE listing (itemuuid TEXT PRIMARY KEY NOT NULL, utime REAL NOT NULL, item TEXT NOT NULL, mikuType TEXT NOT NULL, px17 TEXT NOT NULL, listing_lines TEXT NOT NULL)", [])
         db.commit
         db.close
         ListingService::ensureContentAddressing(filepath)
@@ -89,7 +90,7 @@ class ListingService
                 shouldInject = true
             end
             if shouldInject then
-                ListingService::insertUpdateEntryComponents2(filepath1, entry2["utime"], entry2["item"], entry2["position"], entry2["position_type"], entry2["listing_lines"])
+                ListingService::insertUpdateEntryComponents2(filepath1, entry2["utime"], entry2["item"], entry2["px17"], entry2["listing_lines"])
             end
         }
         # Then when we are done, we delete filepath2
@@ -125,21 +126,21 @@ class ListingService
     # ------------------------------------------------------
     # Database Ops
 
-    # ListingService::insertUpdateEntryComponents2(filepath, utime, item, position, position_type, listing_lines)
-    def self.insertUpdateEntryComponents2(filepath, utime, item, position, position_type, listing_lines)
+    # ListingService::insertUpdateEntryComponents2(filepath, utime, item, px17, listing_lines)
+    def self.insertUpdateEntryComponents2(filepath, utime, item, px17, listing_lines)
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
         db.execute("delete from listing where itemuuid=?", [item["uuid"]])
-        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_type, listing_lines) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], utime, JSON.generate(item), item["mikuType"], position, position_type, JSON.generate(listing_lines)])
+        db.execute("insert into listing (itemuuid, utime, item, mikuType, px17, listing_lines) values (?, ?, ?, ?, ?, ?)", [item["uuid"], utime, JSON.generate(item), item["mikuType"], JSON.generate(px17), JSON.generate(listing_lines)])
         db.commit
         db.close
     end
 
-    # ListingService::insertUpdateEntryComponents1(item, position, position_type, listing_lines)
-    def self.insertUpdateEntryComponents1(item, position, position_type, listing_lines)
+    # ListingService::insertUpdateEntryComponents1(item, px17, listing_lines)
+    def self.insertUpdateEntryComponents1(item, px17, listing_lines)
         filepath = ListingService::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
@@ -147,7 +148,7 @@ class ListingService
         db.results_as_hash = true
         db.transaction
         db.execute("delete from listing where itemuuid=?", [item["uuid"]])
-        db.execute("insert into listing (itemuuid, utime, item, mikuType, position, position_type, listing_lines) values (?, ?, ?, ?, ?, ?, ?)", [item["uuid"], Time.new.to_f, JSON.generate(item), item["mikuType"], position, position_type, JSON.generate(listing_lines)])
+        db.execute("insert into listing (itemuuid, utime, item, mikuType, px17, listing_lines) values (?, ?, ?, ?, ?, ?)", [item["uuid"], Time.new.to_f, JSON.generate(item), item["mikuType"], JSON.generate(px17), JSON.generate(listing_lines)])
         db.commit
         db.close
         ListingService::ensureContentAddressing(filepath)
@@ -163,14 +164,13 @@ class ListingService
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
-        db.execute("select * from listing order by position", []) do |row|
+        db.execute("select * from listing", []) do |row|
             data << {
                 "itemuuid" => row["itemuuid"],
                 "utime"    => row["utime"],
                 "item"     => JSON.parse(row["item"]),
                 "mikuType" => row["mikuType"],
-                "position" => row["position"],
-                "position_type" => row["position_type"],
+                "px17"     => JSON.parse(row["px17"]),
                 "listing_lines" => JSON.parse(row["listing_lines"])
             }
         end
@@ -192,8 +192,7 @@ class ListingService
                 "utime"    => row["utime"],
                 "item"     => item,
                 "mikuType" => row["mikuType"],
-                "position" => row["position"],
-                "position_type" => row["position_type"],
+                "px17"     => JSON.parse(row["px17"]),
                 "listing_lines" => JSON.parse(row["listing_lines"])
             }
         end
@@ -203,22 +202,6 @@ class ListingService
 
     # ------------------------------------------------------
     # Data
-
-    # ListingService::itemsForListing1()
-    def self.itemsForListing1()
-        items = [
-            Anniversaries::listingItems(),
-            Waves::listingItemsInterruption(),
-            NxProjects::listingItems(),
-            NxBackups::listingItems(),
-            NxDateds::listingItems(),
-            NxFloats::listingItems(),
-            Waves::nonInterruptionItemsForListing(),
-            NxCores::listingItems()
-        ]
-            .flatten
-            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-    end
 
     # ListingService::getEntryOrNull(itemuuid)
     def self.getEntryOrNull(itemuuid)
@@ -240,70 +223,22 @@ class ListingService
         answer
     end
 
-    # ListingService::getPosition(itemuuid)
-    def self.getPosition(itemuuid)
-        position = nil
+    # ListingService::getPx17(itemuuid)
+    def self.getPx17(itemuuid)
+        px17 = nil
         filepath = ListingService::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
         db.busy_timeout = 117
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
-            position = row["position"]
+            px17 = JSON.parse(row["px17"])
         end
         db.close
-        if position.nil? then
+        if px17.nil? then
             raise "(error: d330c4f1)"
         end
-        position
-    end
-
-    # ListingService::getPositionOrNull(itemuuid)
-    def self.getPositionOrNull(itemuuid)
-        position = nil
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
-            position = row["position"]
-        end
-        db.close
-        position
-    end
-
-    # ListingService::getPositionType(itemuuid)
-    def self.getPositionType(itemuuid)
-        position_type = nil
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
-            position_type = row["position_type"]
-        end
-        db.close
-        if position_type.nil? then
-            raise "(error: 41114599)"
-        end
-        position_type
-    end
-
-    # ListingService::getPositionTypeOrNull(itemuuid)
-    def self.getPositionTypeOrNull(itemuuid)
-        position_type = nil
-        filepath = ListingService::getDatabaseFilepath()
-        db = SQLite3::Database.new(filepath)
-        db.busy_timeout = 117
-        db.busy_handler { |count| true }
-        db.results_as_hash = true
-        db.execute("select * from listing where itemuuid=?", [itemuuid]) do |row|
-            position_type = row["position_type"]
-        end
-        db.close
-        position_type
+        px17
     end
 
     # ListingService::decideListingLines(item)
@@ -332,18 +267,19 @@ class ListingService
         lines
     end
 
-    # ListingService::determinePositionInInterval(item, x0, x1)
-    def self.determinePositionInInterval(item, x0, x1)
-        entries = ListingService::entries()
-        entries_similar_positions = entries
-            .select{|e| e["item"]["uuid"] != item["uuid"] }
-            .select{|e| e["item"]["mikuType"] == item["mikuType"] }
-            .select{|e| e["position"] >= x0 and e["position"] < x1 }
-            .map{|e| e["position"] }
-        if entries_similar_positions.empty? then
-            return x0
+    # ListingService::decidePositionForEntry(entry)
+    def self.decidePositionForEntry(entry)
+        px17 = entry["px17"]
+        if px17["type"] == "compute" then
+            return ListingService::itemToComputedPosition(entry["item"])
         end
-        0.5*( entries_similar_positions.max + x1 )
+        if px17["type"] == "overriden" then
+            if Time.new.to_i < px17["expiry"] then
+                return px17["value"]
+            else
+                return ListingService::itemToComputedPosition(entry["item"])
+            end
+        end
     end
 
     # ListingService::isListable(item)
@@ -395,8 +331,49 @@ class ListingService
         raise "(error: 3ae9fe86)"
     end
 
-    # ListingService::decidePosition(item)
-    def self.decidePosition(item)
+    # ListingService::determinePositionInInterval(item, x0, x1)
+    def self.determinePositionInInterval(item, x0, x1)
+        r = XCache::getOrNull("673474f9-f949-4eb1-866c-fb56090c5265:#{item["uuid"]}:#{x0}:#{x1}")
+        r = if r then
+            r.to_f
+        else
+            r = rand
+            XCache::set("673474f9-f949-4eb1-866c-fb56090c5265:#{item["uuid"]}:#{x0}:#{x1}", r)
+            r
+        end
+        x0 + r*(x1 - x0)
+    end
+
+    # ListingService::realLineTo01Increasing(x)
+    def self.realLineTo01Increasing(x)
+        (2 + Math.atan(x)).to_f/10
+    end
+
+    # ListingService::realLineTo01Decreasing(x)
+    def self.realLineTo01Decreasing(x)
+        1 - ListingService::realLineTo01Increasing(x)
+    end
+
+    # ListingService::itemTo01(item)
+    def self.itemTo01(item)
+        if item["mikuType"] == "NxTask" then
+            parent = Parenting::parentOrNull(item["uuid"])
+            if parent and parent["mikuType"] == "NxCore" then
+                return NxCores::ratio(parent) - ListingService::realLineTo01Decreasing(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/1000
+            end
+            return 0
+        end
+        if item["mikuType"] == "NxCore" then
+            return NxCores::ratio(item)
+        end
+        if item["mikuType"] == "NxProject" then
+            return ListingService::realLineTo01Increasing(item["position-1654"])
+        end
+        raise "(error: e9f93758)"
+    end
+
+    # ListingService::itemToComputedPosition(item)
+    def self.itemToComputedPosition(item)
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
@@ -408,18 +385,22 @@ class ListingService
         # 0.280 -> 0.300 NxLambda
         # 0.300 -> 0.320 Wave sticky
         # 0.320 -> 0.350 Wave interruption
-        # 0.360 -> 0.369 NxProject
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
 
-        # 0.48         NxTask Orphan
+        # 0.48         NxTask Orphan (mostly former priority items, who survived overnight)
 
         # 0.50 -> 0.80 Dynamic positioning of
         #              NxDated
-        #              Wave
+        #              Wave (non interruption)
         #              NxCore & NxTask
+        #              NxProject
 
-        # 0.80 -> 0.90 Not required but wonderful if done
+        # This is the source of this mapping, implemented in PolyFunctions::itemToBankingAccounts
+        # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
+        # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2 (non interruption)
+        # NxCore & NxTask 69297ca5-d92e-4a73-82cc-1d009e63f4fe
+        # NxProject       d4eb85c9-38b4-43a5-b920-ffd3000dacd6
 
         if item["mikuType"] == "NxLambda" then
             return ListingService::determinePositionInInterval(item, 0.28, 0.30)
@@ -447,142 +428,46 @@ class ListingService
         end
 
         if item["mikuType"] == "NxDated" then
-            return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by ListingService::entriesForListing
+            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
         end
 
         if item["mikuType"] == "Wave" then
-            return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by ListingService::entriesForListing
+            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
         end
 
         if item["mikuType"] == "NxCore" then
-            return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by ListingService::entriesForListing
+            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122") + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxTask" then
-            return 0.60 # Default positioning in 0.50 -> 0.80
-                        # Will be dynamically computed by ListingService::entriesForListing
+            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122") + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxProject" then
-            return NxProjects::listingPosition(item)
+            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("d4eb85c9-38b4-43a5-b920-ffd3000dacd6") + ListingService::itemTo01(item).to_f/1000
         end
 
-        puts "I do not know how to ListingService::decidePosition(#{JSON.pretty_generate(item)})"
+        puts "I do not know how to ListingService::itemToComputedPosition(#{JSON.pretty_generate(item)})"
         raise "(error: df253fc4)"
-    end
-
-    # ListingService::getExistingPositionOrDecideNew(item)
-    def self.getExistingPositionOrDecideNew(item)
-        existing = ListingService::getPositionOrNull(item["uuid"])
-        return existing if existing
-        ListingService::decidePosition(item)
     end
 
     # ListingService::entries()
     def self.entries()
         ListingService::extractDataFromFile(ListingService::getDatabaseFilepath())
-            .sort_by{|entry| entry["position"] }
     end
 
     # ListingService::firstPositionInDatabase()
     def self.firstPositionInDatabase()
         entries = ListingService::entries()
         return 1 if entries.empty?
-        entries.map{|entry| entry["position"] }.min
-    end
-
-    # ListingService::f(x)
-    def self.f(x)
-        1.to_f / (1 + Math.exp(x))
-    end
-
-    # ListingService::entriesForListing(excludeuuids)
-    def self.entriesForListing(excludeuuids)
-
-        # This is the source of this mapping, implemented in PolyFunctions::itemToBankingAccounts
-        # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
-        # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2 (non interruption)
-        # NxCore & NxTask 69297ca5-d92e-4a73-82cc-1d009e63f4fe
-
-        # 0.50 -> 0.80 Dynamic positioning of
-        #              NxDated
-        #              Wave (non interruption)
-        #              NxCore & NxTask
-
-        isDynamicallyPositioned = lambda {|entry|
-            return false if entry["position_type"] == "override"
-            return true if ["NxDated", "NxCore", "NxTask"].include?(entry["mikuType"])
-            return true if (entry["mikuType"] == "Wave" and !entry["item"]["interruption"])
-            false
-        }
-
-        prepareNxDateds = lambda{|entries|
-            entries.sort_by{|entry| entry["item"]["date"] }
-        }
-
-        prepareWaves = lambda{|entries|
-            entries.sort_by{|entry| entry["item"]["lastDoneUnixtime"] }
-        }
-
-        prepareNxCoreNxTasks = lambda{|entries|
-            position43 = lambda {|item|
-                if item["mikuType"] == "NxTask" then
-                    parent = Parenting::parentOrNull(item["uuid"])
-                    if parent["mikuType"] == "NxCore" then
-                        return NxCores::ratio(parent) - ListingService::f(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/1_000_000
-                    end
-                    return 0
-                end
-                if item["mikuType"] == "NxCore" then
-                    return NxCores::ratio(item)
-                end
-            }
-            entries.sort_by{|entry| position43.call(entry["item"]) }
-        }
-
-        entries = ListingService::entries()
-            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
-            .select{|entry| DoNotShowUntil::isVisible(entry["itemuuid"]) }
-
-        dynamically_positioned, statically_positioned = entries.partition{|entry| isDynamicallyPositioned.call(entry) }
-
-        d2 = [
-            {
-                "entries" => prepareNxDateds.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxDated" }),
-                "rt" => BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
-            },
-            {
-                "entries" => prepareWaves.call(dynamically_positioned.select{|entry| entry["mikuType"] == "Wave" }),
-                "rt" => BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
-            },
-            {
-                "entries" => prepareNxCoreNxTasks.call(dynamically_positioned.select{|entry| entry["mikuType"] == "NxCore" or entry["mikuType"] == "NxTask" }),
-                "rt" => BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
-            }
-        ].sort_by{|packet| packet["rt"] }
-         .map{|packet| packet["entries"] }
-         .flatten
-         .map{|entry|
-            entry["position"] = nil
-            entry
-         }
-
-        # The following works because every statically_positioned comes before any 
-        # dynamically positioned, regarless of their respective orderings
-        [
-            statically_positioned.sort_by{|entry| entry["position"] },
-            d2
-        ].flatten
+        entries.map{|entry| ListingService::decidePositionForEntry(entry) }.min
     end
 
     # ------------------------------------------------------
     # Setters
 
-    # ListingService::setPosition(itemuuid, position, position_type)
-    def self.setPosition(itemuuid, position, position_type)
+    # ListingService::setPx17(itemuuid, px17)
+    def self.setPx17(itemuuid, px17)
         return if !ListingService::hasItem(itemuuid)
         filepath = ListingService::getDatabaseFilepath()
         db = SQLite3::Database.new(filepath)
@@ -590,46 +475,72 @@ class ListingService
         db.busy_handler { |count| true }
         db.results_as_hash = true
         db.transaction
-        db.execute("update listing set position=?, position_type=?, utime=? where itemuuid=?", [position, position_type, Time.new.to_f, itemuuid])
+        db.execute("update listing set px17=?, utime=? where itemuuid=?", [JSON.generate(px17), Time.new.to_f, itemuuid])
         db.commit
         db.close
         ListingService::ensureContentAddressing(filepath)
     end
 
-    # ListingService::insertUpdateItemAtPosition(item, position, position_type)
-    def self.insertUpdateItemAtPosition(item, position, position_type)
+    # ListingService::insertUpdateItemAtPx17(item, px17)
+    def self.insertUpdateItemAtPx17(item, px17)
         listing_lines = ListingService::decideListingLines(item)
-        ListingService::insertUpdateEntryComponents1(item, position, position_type, listing_lines)
+        ListingService::insertUpdateEntryComponents1(item, px17, listing_lines)
+    end
+
+    # ------------------------------------------------------
+    # Listing
+
+    # ListingService::itemsForListing1()
+    def self.itemsForListing1()
+        items = [
+            Anniversaries::listingItems(),
+            Waves::listingItemsInterruption(),
+            NxProjects::listingItems(),
+            NxBackups::listingItems(),
+            NxDateds::listingItems(),
+            NxFloats::listingItems(),
+            Waves::nonInterruptionItemsForListing(),
+            NxCores::listingItems()
+        ]
+            .flatten
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+    end
+
+    # ListingService::entriesForListing(excludeuuids)
+    def self.entriesForListing(excludeuuids)
+        entries = ListingService::entries()
+            .reject{|entry| excludeuuids.include?(entry["itemuuid"]) }
+            .select{|entry| DoNotShowUntil::isVisible(entry["itemuuid"]) }
+            .map{|entry|
+                entry["position"] = ListingService::decidePositionForEntry(entry)
+                entry
+            }
+            .sort_by{|entry| entry["position"] }
     end
 
     # ------------------------------------------------------
     # Operations
 
-    # ListingService::updateIfPresent(item)
-    def self.updateIfPresent(item)
-        if ListingService::hasItem(item["uuid"]) then
-            position = ListingService::getPosition(item["uuid"])
-            position_type = ListingService::getPositionType(item["uuid"])
-            ListingService::insertUpdateItemAtPosition(item, position, position_type)
-        end
-    end
-
     # ListingService::ensure(item)
     def self.ensure(item)
         if ListingService::hasItem(item["uuid"]) then
-            position = ListingService::getPosition(item["uuid"])
-            position_type = ListingService::getPositionType(item["uuid"])
+            px17 = ListingService::getPx17(item["uuid"])
         else
-            position = ListingService::decidePosition(item)
-            position_type = "standard"
+            px17 = {
+                "type" => "compute"
+            }
         end
-        ListingService::insertUpdateItemAtPosition(item, position, position_type)
+        ListingService::insertUpdateItemAtPx17(item, px17)
     end
 
-    # ListingService::ensureAtOverridenPosition(item, position)
-    def self.ensureAtOverridenPosition(item, position)
-        position_type = "override"
-        ListingService::insertUpdateItemAtPosition(item, position, position_type)
+    # ListingService::ensureAtFirstPositionForTheDay(item)
+    def self.ensureAtFirstPositionForTheDay(item)
+        px17 = {
+            "type"  => "overriden",
+            "value" => ListingService::firstPositionInDatabase()*0.9,
+            "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+        }
+        ListingService::insertUpdateItemAtPx17(item, px17)
     end
 
     # ListingService::evaluate(itemuuid)
@@ -673,7 +584,12 @@ class ListingService
             end
         }
         NxTasks::orphan().each{|item|
-            ListingService::insertUpdateItemAtPosition(item, 0.48, "override")
+            px17 = {
+                "type"  => "overriden",
+                "value" => 0.48,
+                "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+            }
+            ListingService::insertUpdateItemAtPx17(item, px17)
         }
         archive_filepath = "#{ListingService::directory()}/archives/#{CommonUtils::today()}.sqlite3"
         if !File.exist?(archive_filepath) then
