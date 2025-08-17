@@ -142,7 +142,7 @@ class UxPayload
         if payload["type"] == "url" then
             url = payload["url"]
             puts "url: #{url}"
-            CommonUtils::openUrlUsingSafari(url)
+            CommonUtils::openUrlUsingChrome(url)
             LucilleCore::pressEnterToContinue()
             return
         end

@@ -522,7 +522,12 @@ class CommonUtils
 
     # CommonUtils::openUrlUsingSafari(url)
     def self.openUrlUsingSafari(url)
-        system("open -a Safari '#{url}'")
+        system("open -na Safari '#{url}'")
+    end
+
+    # CommonUtils::openUrlUsingChrome(url)
+    def self.openUrlUsingChrome(url)
+        system('open -na "Google Chrome" --args --new-window "'+url+'"')
     end
 
     # CommonUtils::onScreenNotification(title, message)
