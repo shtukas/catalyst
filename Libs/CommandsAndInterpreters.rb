@@ -205,6 +205,10 @@ class CommandsAndInterpreters
                 {
                     "prefix" => "NxCore & NxTask :",
                     "rt" => BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
+                },
+                {
+                    "prefix" => "NxProject       :",
+                    "rt" => BankData::recoveredAverageHoursPerDay("d4eb85c9-38b4-43a5-b920-ffd3000dacd6")
                 }
             ]
                 .sort_by{|packet| packet["rt"] }
