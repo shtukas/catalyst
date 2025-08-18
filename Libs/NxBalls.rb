@@ -147,9 +147,34 @@ class NxBalls
             .map{|ball|
                 (lambda {|ball|
                     itemuuid = ball["itemuuid"]
-                    ix = Items::itemOrNull(itemuuid)
-                    if ix then
-                        return ix
+                    item = Items::itemOrNull(itemuuid)
+                    if item then
+                        return item
+                    end
+                    filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
+                    if File.exist?(filepath) then
+                        puts "garbage collecting NxBall: #{filepath}".green
+                        FileUtils.rm(filepath)
+                    end
+                    nil
+                }).call(ball)
+            }
+            .compact
+    end
+
+    # NxBalls::runningPackets()
+    def self.runningPackets()
+        NxBalls::all()
+            .select{|nxball| nxball["type"] == "running" }
+            .map{|ball|
+                (lambda {|ball|
+                    itemuuid = ball["itemuuid"]
+                    item = Items::itemOrNull(itemuuid)
+                    if item then
+                        return {
+                            "item" => item,
+                            "startunixtime" => ball["startunixtime"]
+                        }
                     end
                     filepath = "#{NxBalls::repository()}/#{itemuuid}.ball"
                     if File.exist?(filepath) then

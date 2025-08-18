@@ -102,8 +102,11 @@ class FrontPage
 
         # Main listing
 
-        runningItems = NxBalls::runningItems()
-        NxBalls::runningItems()
+        runningPackets = NxBalls::runningPackets()
+        runningPackets
+            .sort_by{|packet| packet["startunixtime"] }
+            .reverse
+            .map{|packet| packet["item"] }
             .each{|item|
                 store.register(item, FrontPage::canBeDefault(item))
                 lines = FrontPage::toString2(store, item)
@@ -116,7 +119,7 @@ class FrontPage
                 break if sheight <= 4
             }
 
-        entries = ListingService::entriesForListing(runningItems.map{|i| i["uuid"]})
+        entries = ListingService::entriesForListing(runningPackets.map{|px| px["item"]["uuid"]})
         entries = CommonUtils::removeDuplicateObjectsOnAttribute(entries, "itemuuid")
         entries
             .each{|entry|
