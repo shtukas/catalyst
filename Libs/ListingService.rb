@@ -243,10 +243,15 @@ class ListingService
 
     # ListingService::decideListingLines(item)
     def self.decideListingLines(item)
+        # Edits to this function should be mirrored in FrontPage::toString2(store, item)
         return [] if item.nil?
         lines = []
+        parentingSuffix = Parenting::suffix(item)
+        if item["mikuType"] == "NxTask" then
+            parentingSuffix = ""
+        end
         hasChildren = Parenting::hasChildren(item["uuid"]) ? " [children]".red : ""
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{parentingSuffix}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow

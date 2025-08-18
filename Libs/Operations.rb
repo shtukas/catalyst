@@ -75,6 +75,8 @@ class Operations
         Items::maintenance()
         puts "Parenting::maintenance()"
         Parenting::maintenance()
+        puts "NxProjects::maintenance()"
+        NxProjects::maintenance()
     end
 
     # Operations::interactivelyGetLines()
@@ -110,12 +112,20 @@ class Operations
     # Operations::expose(item)
     def self.expose(item)
         puts JSON.pretty_generate(item)
+        puts ""
+        puts "do not show until:"
         unixtime = DoNotShowUntil::getUnixtimeOrNull(item["uuid"])
-        if unixtime then
-            puts "do not show until: #{Time.at(unixtime).to_s} "
-        end
+        puts "  unixtime: #{unixtime}"
+        puts "  datetime: #{Time.at(unixtime).to_s}"
+        puts ""
+        puts "listing service entry:"
         entry = ListingService::getEntryOrNull(item["uuid"])
         puts JSON.pretty_generate(entry)
+        puts ""
+        parent = Parenting::parentOrNull(item["uuid"])
+        puts "parent: #{parent}"
+        puts ""
+        puts "front page line: #{FrontPage::toString2(ItemStore.new(), item)}"
         LucilleCore::pressEnterToContinue()
     end
 
@@ -180,8 +190,8 @@ class Operations
     end
 
     # Operations::decideParentAndPositionOrNull()
-    def self.decideParentAndPositionOrNull()
-        parent = Operations::interactivelySelectParent()
+    def self.decideParentAndPositionOrNull()Operations::decideParentAndPosition()
+        parent = Operations::interactivelySelectParentOrNull()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         {
@@ -381,5 +391,19 @@ class Operations
 
         puts "I do not know how to replace a #{item["mikuType"]}"
         LucilleCore::pressEnterToContinue()
+    end
+
+    # Operations::relocateToNewParent(item)
+    def self.relocateToNewParent(item)
+        packet = Operations::decideParentAndPosition()
+        return if packet.nil?
+        Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
+    end
+
+    # Operations::relocateToNewParentOrNothing(item)
+    def self.relocateToNewParentOrNothing(item)
+        packet = Operations::decideParentAndPositionOrNull()
+        return if packet.nil?
+        Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
     end
 end

@@ -19,11 +19,16 @@ class FrontPage
 
     # FrontPage::toString2(store, item)
     def self.toString2(store, item)
+        # Edits to this function should be mirrored in ListingService::decideListingLines(item)
         return nil if item.nil?
         storePrefix = store ? "(#{store.prefixString()})" : ""
         hasChildren = Parenting::hasChildren(item["uuid"]) ? " [children]".red : ""
+        parentingSuffix = Parenting::suffix(item)
+        if item["mikuType"] == "NxTask" then
+            parentingSuffix = ""
+        end
         lines = []
-        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{parentingSuffix}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow

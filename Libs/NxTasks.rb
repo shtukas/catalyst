@@ -56,14 +56,8 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        parent = Parenting::parentOrNull(item["uuid"])
-        if parent then
-            position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
-            px2 = " (#{position} @ #{parent["description"]})".yellow
-        else
-            px2 = " (orphan)".yellow
-        end
-        "#{NxTasks::icon(item)} #{item["description"]}#{px2}"
+        parentingSuffix = Parenting::suffix(item)
+        "#{NxTasks::icon(item)} #{item["description"]}#{parentingSuffix}"
     end
 
     # NxTasks::orphan()

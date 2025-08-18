@@ -129,10 +129,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
-            packet = Operations::decideParentAndPositionOrNull()
-            return if packet.nil?
-            Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
+            Operations::relocateToNewParentOrNothing(item)
             return
         end
 
@@ -140,9 +137,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            return if item["mikuType"] != "NxTask"
-            parentuuid, position = Operations::decideParentAndPosition()
-            Parenting::insertEntry(parentuuid, item["uuid"], position)
+            Operations::relocateToNewParentOrNothing(item)
             return
         end
 

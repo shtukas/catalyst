@@ -60,4 +60,13 @@ class NxProjects
             Items::setAttribute(item["uuid"], "position-1654", position)
         }
     end
+
+    # NxProjects::maintenance()
+    def self.maintenance()
+        # We ensure that projects have a parent that is a core
+        Items::mikuType("NxProject").each{|project|
+            next if Parenting::parentOrNull(project["uuid"])
+            Operations::relocateToNewParent(project)
+        }
+    end
 end

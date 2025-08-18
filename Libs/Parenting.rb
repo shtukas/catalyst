@@ -257,6 +257,19 @@ class Parenting
         position
     end
 
+    # Parenting::suffix(item)
+    def self.suffix(item)
+        parent = Parenting::parentOrNull(item["uuid"])
+        if parent then
+            position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
+            return " (#{position} @ #{parent["description"]})".yellow
+        end
+        if item["mikuType"] == "NxTask" then
+            return " (orphan)".yellow
+        end
+        ""
+    end
+
     # ------------------------------------------------------
     # Ops
 
