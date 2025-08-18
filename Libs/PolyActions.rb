@@ -89,7 +89,7 @@ class PolyActions
 
         if item["mikuType"] == "NxFloat" then
             NxBalls::stop(item)
-            DoNotShowUntil::setUnixtime(item["uuid"], CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
+            PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
             ListingService::removeEntry(item["uuid"])
             return
         end
@@ -117,7 +117,7 @@ class PolyActions
         if item["mikuType"] == "NxBackup" then
             if LucilleCore::askQuestionAnswerAsBoolean("done: '#{item["description"].green}' ? ", true) then
                 NxBalls::stop(item)
-                DoNotShowUntil::setUnixtime(item["uuid"], Time.new.to_i + item["period"] * 86400 + rand)
+                PolyActions::doNotShowUntil(item, Time.new.to_i + item["period"] * 86400 + rand)
                 Items::setAttribute(item["uuid"], "last-done-unixtime", Time.new.to_i)
                 ListingService::removeEntry(item["uuid"])
             end
@@ -153,7 +153,7 @@ class PolyActions
                 unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
                 puts "pushing until '#{Time.at(unixtime).to_s.green}'"
                 NxBalls::stop(item)
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                PolyActions::doNotShowUntil(item, unixtime)
             end
             if option == "destroy" then
                 Items::deleteItem(item["uuid"])
@@ -415,5 +415,14 @@ class PolyActions
         description = CommonUtils::editTextSynchronously(item["description"]).strip
         return if description == ""
         Items::setAttribute(item["uuid"], "description", description)
+    end
+
+    # PolyActions::doNotShowUntil(item, unixtime)
+    def self.doNotShowUntil(item, unixtime)
+        if item["mikuType"] == "NxCore" then
+            children = Parenting::childrenInOrderHead(item["uuid"], 3, lambda{|i| DoNotShowUntil::isVisible(i["uuid"]) })
+            children.each{|i| DoNotShowUntil::setUnixtime(i["uuid"], unixtime) }
+        end
+        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 end

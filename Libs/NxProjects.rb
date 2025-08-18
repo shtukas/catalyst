@@ -50,4 +50,14 @@ class NxProjects
     def self.position(item)
         (2 + Math.atan(item["position-1654"])).to_f/10
     end
+
+    # NxProjects::sort()
+    def self.sort()
+        items = NxProjects::itemsInOrder()
+        selected, _ = LucilleCore::selectZeroOrMore("projects", [], items, lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|item|
+            position = NxProjects::firstPosition() - 1
+            Items::setAttribute(item["uuid"], "position-1654", position)
+        }
+    end
 end

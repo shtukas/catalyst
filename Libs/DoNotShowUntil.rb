@@ -9,7 +9,9 @@ class DoNotShowUntil
     end
 
     # DoNotShowUntil::setUnixtime(id, unixtime)
+    # Avoid calling directly and instead use: PolyActions::doNotShowUntil(item, unixtime)
     def self.setUnixtime(id, unixtime)
+        puts "do not show '#{id}' until #{Time.at(unixtime).to_s}".yellow
         filepath = "#{Config::pathToGalaxy()}/DataHub/Catalyst/data/DoNotShowUntil/#{id}.data"
         File.open(filepath, "w"){|f| f.write(unixtime) }
     end

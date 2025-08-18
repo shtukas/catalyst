@@ -104,7 +104,7 @@ class Operations
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()
         return if unixtime.nil?
         puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-        DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+        PolyActions::doNotShowUntil(item, unixtime)
     end
 
     # Operations::expose(item)

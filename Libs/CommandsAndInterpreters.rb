@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "NxTasks       : move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive *",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | maintenance",
         ].join("\n")
@@ -22,7 +22,7 @@ class CommandsAndInterpreters
             if (item = store.getDefault()) then
                 NxBalls::stop(item)
                 "dot not show until: #{Time.at(unixtime).to_s}".yellow
-                DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+                PolyActions::doNotShowUntil(item, unixtime)
                 ListingService::removeEntry(item["uuid"])
                 return
             end
@@ -79,7 +79,7 @@ class CommandsAndInterpreters
             return if item.nil?
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
-            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            PolyActions::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -90,6 +90,12 @@ class CommandsAndInterpreters
 
         if Interpreting::match("sort", input) then
             items = store.items()
+
+            if items.all?{|item| item["mikuType"] == "NxProject" } then
+                NxProjects::sort()
+                return
+            end
+
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
@@ -162,7 +168,7 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
             puts "pushing until '#{Time.at(unixtime).to_s.green}'"
             NxBalls::stop(item)
-            DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
+            PolyActions::doNotShowUntil(item, unixtime)
             return
         end
 
@@ -381,6 +387,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
+            return
+        end
+
+        if Interpreting::match("projects", input) then
+            Operations::program3(lambda { Items::mikuType("NxProject").sort_by{|item| item["position-1654"] } })
             return
         end
 

@@ -154,7 +154,7 @@ class Waves
         Items::setAttribute(item["uuid"], "lastDoneUnixtime", Time.new.to_i)
 
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
-        DoNotShowUntil::setUnixtime(item["uuid"], unixtime + rand)
+        PolyActions::doNotShowUntil(item, unixtime + rand)
 
         timespanInMinutes = LucilleCore::askQuestionAnswerAsString("padding timespan ? (in minutes, default 0): ")
         if timespanInMinutes != "" then
