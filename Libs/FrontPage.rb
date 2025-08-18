@@ -123,6 +123,9 @@ class FrontPage
                 if entry["position"] then
                     line = line + " (#{entry["position"]})".yellow
                 end
+                if NxBalls::itemIsRunning(item) then
+                    line = line.green
+                end
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
                 lines.each{|line|
