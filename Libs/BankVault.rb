@@ -148,7 +148,7 @@ class BankVault
             # The logic here is to read the items from filepath2 and 
             # possibly add them to filepath1.
             # We get an updated filepath1 because of content addressing.
-            filepath1 = ListingService::mergeTwoDatabaseFiles(filepath1, filepath)
+            filepath1 = BankVault::mergeTwoDatabaseFiles(filepath1, filepath)
         }
         filepath1
     end

@@ -35,6 +35,18 @@ class NxDateds
         Items::itemOrNull(uuid)
     end
 
+    # NxDateds::interactivelyIssueToday(description)
+    def self.interactivelyIssueToday(description)
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "date", CommonUtils::today())
+        Items::setAttribute(uuid, "mikuType", "NxDated")
+        Items::itemOrNull(uuid)
+    end
+
     # NxDateds::interactivelyIssueTomorrowOrNull()
     def self.interactivelyIssueTomorrowOrNull()
         uuid = SecureRandom.uuid
@@ -91,14 +103,20 @@ class NxDateds
 
     # NxDateds::toString(item)
     def self.toString(item)
-        "#{NxDateds::icon(item)} [#{item["date"][0, 10]}] #{item["description"]}"
+        "#{NxDateds::icon(item)} [#{item["date"][0, 10]}] (-> #{"%7.3f" % (item["position-0836"] || 0)}) #{item["description"]}"
     end
 
-    # NxDateds::listingItems()
-    def self.listingItems()
+    # NxDateds::listingItemsInOrder()
+    def self.listingItemsInOrder()
         items = Items::mikuType("NxDated")
             .select{|item| item["date"][0, 10] <= CommonUtils::today() }
-            .sort_by{|item| item["unixtime"] }
+            .sort_by{|item| item["position-0836"] || 0 }
+            .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
+    end
+
+    # NxDateds::firstPosition()
+    def self.firstPosition()
+        ([0] + Items::mikuType("NxDated").map{|item| item["position-0836"] || 0 }).min
     end
 
     # ---------------
@@ -109,5 +127,15 @@ class NxDateds
         NxBalls::stop(item)
         datetime = datetime || CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         Items::setAttribute(item["uuid"], "date", datetime)
+    end
+
+    # NxDateds::sort()
+    def self.sort()
+        items = NxDateds::listingItemsInOrder()
+        selected, _ = LucilleCore::selectZeroOrMore("dateds", [], items, lambda{|i| PolyFunctions::toString(i) })
+        selected.reverse.each{|item|
+            position = NxDateds::firstPosition() - 1
+            Items::setAttribute(item["uuid"], "position-0836", position)
+        }
     end
 end

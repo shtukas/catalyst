@@ -116,7 +116,9 @@ class Operations
         puts "do not show until:"
         unixtime = DoNotShowUntil::getUnixtimeOrNull(item["uuid"])
         puts "  unixtime: #{unixtime}"
-        puts "  datetime: #{Time.at(unixtime).to_s}"
+        if unixtime then
+            puts "  datetime: #{Time.at(unixtime).to_s}"
+        end
         puts ""
         puts "listing service entry:"
         entry = ListingService::getEntryOrNull(item["uuid"])

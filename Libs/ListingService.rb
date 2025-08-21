@@ -374,6 +374,9 @@ class ListingService
         if item["mikuType"] == "NxProject" then
             return ListingService::realLineTo01Increasing(item["position-1654"])
         end
+        if item["mikuType"] == "NxDated" then
+            return ListingService::realLineTo01Increasing(item["position-0836"] || 0)
+        end
         raise "(error: e9f93758)"
     end
 
@@ -433,7 +436,7 @@ class ListingService
         end
 
         if item["mikuType"] == "NxDated" then
-            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
+            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122") + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "Wave" then
@@ -502,7 +505,7 @@ class ListingService
             Waves::listingItemsInterruption(),
             NxProjects::listingItems(),
             NxBackups::listingItems(),
-            NxDateds::listingItems(),
+            NxDateds::listingItemsInOrder(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
             NxCores::listingItems()

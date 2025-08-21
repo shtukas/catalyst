@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project | todo today",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -93,6 +93,11 @@ class CommandsAndInterpreters
 
             if items.all?{|item| item["mikuType"] == "NxProject" } then
                 NxProjects::sort()
+                return
+            end
+
+            if items.all?{|item| item["mikuType"] == "NxDated" } then
+                NxDateds::sort()
                 return
             end
 
@@ -254,6 +259,17 @@ class CommandsAndInterpreters
                     PolyActions::start(last_item)
                 end
             end
+            return
+        end
+
+        if Interpreting::match("todo today", input) then
+            Operations::interactivelyGetLines()
+                .reverse
+                .each{|line|
+                    puts "processing: #{line}".green
+                    item = NxDateds::interactivelyIssueToday(line)
+                    item = Donations::interactivelySetDonation(item)
+                }
             return
         end
 
