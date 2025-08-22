@@ -385,8 +385,8 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todo", input) then
             todo = NxTasks::interactivelyIssueNewOrNull()
-            parentuuid, position = Operations::decideParentAndPosition()
-            Parenting::insertEntry(parentuuid, todo["uuid"], position)
+            parent, position = Operations::decideParentAndPosition()
+            Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
             ListingService::evaluate(todo["uuid"])
             return
         end

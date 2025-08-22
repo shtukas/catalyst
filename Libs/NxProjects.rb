@@ -66,6 +66,7 @@ class NxProjects
         # We ensure that projects have a parent that is a core
         Items::mikuType("NxProject").each{|project|
             next if Parenting::parentOrNull(project["uuid"])
+            puts "relocate to new parent: #{PolyFunctions::toString(project)}"
             Operations::relocateToNewParent(project)
         }
     end

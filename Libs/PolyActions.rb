@@ -186,15 +186,6 @@ class PolyActions
             return
         end
 
-        if NxBalls::itemIsPaused(item) then
-            NxBalls::pursue(item)
-            return
-        end
-
-        if NxBalls::itemIsRunning(item) then
-            return
-        end
-
         if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
             option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
             if option == "access payload" then
@@ -213,6 +204,15 @@ class PolyActions
 
         if item["mikuType"] == "NxCore" then
             PolyActions::access(item)
+            return
+        end
+
+        if NxBalls::itemIsPaused(item) then
+            NxBalls::pursue(item)
+            return
+        end
+
+        if NxBalls::itemIsRunning(item) then
             return
         end
 

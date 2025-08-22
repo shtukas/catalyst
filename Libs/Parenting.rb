@@ -123,6 +123,25 @@ class Parenting
         end
     end
 
+    # Parenting::detach(parentuuid, childuuid)
+    def self.detach(parentuuid, childuuid)
+        puts "Parenting::detach: #{[parentuuid, childuuid].join(', ')}"
+        filepath = Parenting::getDatabaseFilepath()
+        db = SQLite3::Database.new(filepath)
+        db.busy_timeout = 117
+        db.busy_handler { |count| true }
+        db.results_as_hash = true
+        db.transaction
+        db.execute("delete from index1 where parentuuid=? and childuuid=?", [parentuuid, childuuid])
+        db.commit
+        db.close
+        Parenting::ensureContentAddressing(filepath)
+
+        if Parenting::childrenuuidsInOrder(parentuuid).include?(childuuid) then
+            raise "(error: 2e1abe67) How did this happen? 🤔"
+        end
+    end
+
     # Parenting::removeIdentifierFromDatabase(uuid)
     def self.removeIdentifierFromDatabase(uuid)
         filepath = Parenting::getDatabaseFilepath()

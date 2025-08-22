@@ -38,6 +38,10 @@ class FrontPage
             line = line.yellow
         end
 
+        if NxBalls::itemIsRunning(item) then
+            line = line.green
+        end
+
         lines << line
 
         if item["uxpayload-b4e4"] and item["uxpayload-b4e4"]["type"] == "breakdown" then

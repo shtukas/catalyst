@@ -188,11 +188,11 @@ class Operations
     def self.decideParentAndPosition()
         parent = Operations::interactivelySelectParent()
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-        [parent["uuid"], position]
+        [parent, position]
     end
 
     # Operations::decideParentAndPositionOrNull()
-    def self.decideParentAndPositionOrNull()Operations::decideParentAndPosition()
+    def self.decideParentAndPositionOrNull()
         parent = Operations::interactivelySelectParentOrNull()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
@@ -397,9 +397,8 @@ class Operations
 
     # Operations::relocateToNewParent(item)
     def self.relocateToNewParent(item)
-        packet = Operations::decideParentAndPosition()
-        return if packet.nil?
-        Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
+        parent, position = Operations::decideParentAndPosition()
+        Parenting::insertEntry(parent["uuid"], item["uuid"], position)
     end
 
     # Operations::relocateToNewParentOrNothing(item)
