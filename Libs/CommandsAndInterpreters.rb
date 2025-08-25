@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | maintenance",
+            "misc          : search | commands | fsck | probe-head | sort | select | maintenance",
         ].join("\n")
     end
 
@@ -85,6 +85,20 @@ class CommandsAndInterpreters
 
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
+            return
+        end
+
+        if Interpreting::match("select", input) then
+            items = store.items()
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|i| PolyFunctions::toString(i) })
+            return if item.nil?
+            position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
+            px17 = {
+                "type"  => "overriden",
+                "value" => position,
+                "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+            }
+            ListingService::setPx17(item["uuid"], px17)
             return
         end
 
@@ -195,33 +209,6 @@ class CommandsAndInterpreters
             return if item.nil?
             item = Donations::interactivelySetDonation(item)
             ListingService::ensure(item)
-            return
-        end
-
-        if Interpreting::match("numbers", input) then
-            [
-                {
-                    "prefix" => "NxDated         :",
-                    "rt" => BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122")
-                },
-                {
-                    "prefix" => "Wave            :",
-                    "rt" => BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
-                },
-                {
-                    "prefix" => "NxCore & NxTask :",
-                    "rt" => BankData::recoveredAverageHoursPerDay("69297ca5-d92e-4a73-82cc-1d009e63f4fe")
-                },
-                {
-                    "prefix" => "NxProject       :",
-                    "rt" => BankData::recoveredAverageHoursPerDay("d4eb85c9-38b4-43a5-b920-ffd3000dacd6")
-                }
-            ]
-                .sort_by{|packet| packet["rt"] }
-                .each{|packet|
-                    puts "#{packet["prefix"]} #{packet["rt"]}"
-                }
-            LucilleCore::pressEnterToContinue()
             return
         end
 

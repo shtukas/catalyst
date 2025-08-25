@@ -272,21 +272,6 @@ class ListingService
         lines
     end
 
-    # ListingService::decidePositionForEntry(entry)
-    def self.decidePositionForEntry(entry)
-        px17 = entry["px17"]
-        if px17["type"] == "compute" then
-            return ListingService::itemToComputedPosition(entry["item"])
-        end
-        if px17["type"] == "overriden" then
-            if Time.new.to_i < px17["expiry"] then
-                return px17["value"]
-            else
-                return ListingService::itemToComputedPosition(entry["item"])
-            end
-        end
-    end
-
     # ListingService::isListable(item)
     def self.isListable(item)
         if item["mikuType"] == "NxLambda" then
@@ -377,6 +362,10 @@ class ListingService
         if item["mikuType"] == "NxDated" then
             return ListingService::realLineTo01Increasing(item["position-0836"] || 0)
         end
+        if item["mikuType"] == "Wave" then
+            timeSinceLastDone = Time.new.to_i - item['lastDoneUnixtime']
+            return ListingService::realLineTo01Increasing(-timeSinceLastDone)
+        end
         raise "(error: e9f93758)"
     end
 
@@ -398,17 +387,10 @@ class ListingService
 
         # 0.48         NxTask Orphan (mostly former priority items, who survived overnight)
 
-        # 0.50 -> 0.80 Dynamic positioning of
-        #              NxDated
-        #              Wave (non interruption)
-        #              NxCore & NxTask
-        #              NxProject
-
-        # This is the source of this mapping, implemented in PolyFunctions::itemToBankingAccounts
-        # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
-        # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2 (non interruption)
-        # NxCore & NxTask 69297ca5-d92e-4a73-82cc-1d009e63f4fe
-        # NxProject       d4eb85c9-38b4-43a5-b920-ffd3000dacd6
+        # 0.50 -> 0.60 NxDated
+        # 0.60 -> 0.70 Wave (non interruption)
+        # 0.70 -> 0.80 NxProject
+        # 0.80 -> 0.90 NxCore & NxTask
 
         if item["mikuType"] == "NxLambda" then
             return ListingService::determinePositionInInterval(item, 0.28, 0.30)
@@ -436,23 +418,23 @@ class ListingService
         end
 
         if item["mikuType"] == "NxDated" then
-            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122") + ListingService::itemTo01(item).to_f/1000
+            return 0.51 + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "Wave" then
-            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("e0d8f86a-1783-4eb7-8f63-11562d8972a2")
-        end
-
-        if item["mikuType"] == "NxCore" then
-            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122") + ListingService::itemTo01(item).to_f/1000
-        end
-
-        if item["mikuType"] == "NxTask" then
-            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("6a114b28-d6f2-4e92-9364-fadb3edc1122") + ListingService::itemTo01(item).to_f/1000
+            return 0.61 + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxProject" then
-            return 0.50 + 0.2 * BankData::recoveredAverageHoursPerDay("d4eb85c9-38b4-43a5-b920-ffd3000dacd6") + ListingService::itemTo01(item).to_f/1000
+            return 0.71 + ListingService::itemTo01(item).to_f/1000
+        end
+
+        if item["mikuType"] == "NxTask" then
+            return 0.81 + ListingService::itemTo01(item).to_f/1000
+        end
+
+        if item["mikuType"] == "NxCore" then
+            return 0.81 + ListingService::itemTo01(item).to_f/1000
         end
 
         puts "I do not know how to ListingService::itemToComputedPosition(#{JSON.pretty_generate(item)})"
@@ -469,6 +451,21 @@ class ListingService
         entries = ListingService::entries()
         return 1 if entries.empty?
         entries.map{|entry| ListingService::decidePositionForEntry(entry) }.min
+    end
+
+    # ListingService::decidePositionForEntry(entry)
+    def self.decidePositionForEntry(entry)
+        px17 = entry["px17"]
+        if px17["type"] == "compute" then
+            return ListingService::itemToComputedPosition(entry["item"])
+        end
+        if px17["type"] == "overriden" then
+            if Time.new.to_i < px17["expiry"] then
+                return px17["value"]
+            else
+                return ListingService::itemToComputedPosition(entry["item"])
+            end
+        end
     end
 
     # ------------------------------------------------------

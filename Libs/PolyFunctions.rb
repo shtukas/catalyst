@@ -38,46 +38,6 @@ class PolyFunctions
             end
         end
 
-        # This mapping is defined in ListingService::entriesForListing
-        # NxDated         6a114b28-d6f2-4e92-9364-fadb3edc1122
-        # Wave            e0d8f86a-1783-4eb7-8f63-11562d8972a2
-        # NxCore & NxTask 69297ca5-d92e-4a73-82cc-1d009e63f4fe
-
-        if item["mikuType"] == "NxDated" then
-            accounts << {
-                "description" => "6a114b28-d6f2-4e92-9364-fadb3edc1122",
-                "number"      => "6a114b28-d6f2-4e92-9364-fadb3edc1122"
-            }
-        end
-
-        if item["mikuType"] == "Wave" and !item["interruption"] then
-            accounts << {
-                "description" => "e0d8f86a-1783-4eb7-8f63-11562d8972a2",
-                "number"      => "e0d8f86a-1783-4eb7-8f63-11562d8972a2"
-            }
-        end
-
-        if item["mikuType"] == "NxCore" then
-            accounts << {
-                "description" => "69297ca5-d92e-4a73-82cc-1d009e63f4fe",
-                "number"      => "69297ca5-d92e-4a73-82cc-1d009e63f4fe"
-            }
-        end
-
-        if item["mikuType"] == "NxTask" then
-            accounts << {
-                "description" => "69297ca5-d92e-4a73-82cc-1d009e63f4fe",
-                "number"      => "69297ca5-d92e-4a73-82cc-1d009e63f4fe"
-            }
-        end
-
-        if item["mikuType"] == "NxProject" then
-            accounts << {
-                "description" => "d4eb85c9-38b4-43a5-b920-ffd3000dacd6",
-                "number"      => "d4eb85c9-38b4-43a5-b920-ffd3000dacd6"
-            }
-        end
-
         accounts.reduce([]){|as, account|
             if as.map{|a| a["number"] }.include?(account["number"]) then
                 as
