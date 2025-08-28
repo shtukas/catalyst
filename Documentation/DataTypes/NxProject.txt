@@ -1,8 +1,0 @@
-
-NxProject
-    - uuid        : String
-    - mikuType    : "NxProject"
-    - unixtime    : Integer
-    - datetime    : DateTime Iso 8601 UTC Zulu
-    - description  : String
-    - position-1654 : Float

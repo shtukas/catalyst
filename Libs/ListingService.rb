@@ -309,10 +309,6 @@ class ListingService
             return true
         end
 
-        if item["mikuType"] == "NxProject" then
-            return true
-        end
-
         if item["mikuType"] == "NxDeleted" then
             return false
         end
@@ -356,9 +352,6 @@ class ListingService
         if item["mikuType"] == "NxCore" then
             return NxCores::ratio(item)
         end
-        if item["mikuType"] == "NxProject" then
-            return ListingService::realLineTo01Increasing(item["position-1654"])
-        end
         if item["mikuType"] == "NxDated" then
             return ListingService::realLineTo01Increasing(item["position-0836"] || 0)
         end
@@ -389,7 +382,6 @@ class ListingService
 
         # 0.50 -> 0.60 NxDated
         # 0.60 -> 0.70 Wave (non interruption)
-        # 0.70 -> 0.80 NxProject
         # 0.80 -> 0.90 NxCore & NxTask
 
         if item["mikuType"] == "NxLambda" then
@@ -423,10 +415,6 @@ class ListingService
 
         if item["mikuType"] == "Wave" then
             return 0.61 + ListingService::itemTo01(item).to_f/1000
-        end
-
-        if item["mikuType"] == "NxProject" then
-            return 0.71 + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxTask" then
@@ -500,7 +488,6 @@ class ListingService
         items = [
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
-            NxProjects::listingItems(),
             NxBackups::listingItems(),
             NxDateds::listingItemsInOrder(),
             NxFloats::listingItems(),

@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project | todo today",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | todo today",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -105,11 +105,6 @@ class CommandsAndInterpreters
         if Interpreting::match("sort", input) then
             items = store.items()
 
-            if items.all?{|item| item["mikuType"] == "NxProject" } then
-                NxProjects::sort()
-                return
-            end
-
             if items.all?{|item| item["mikuType"] == "NxDated" } then
                 NxDateds::sort()
                 return
@@ -201,14 +196,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("probe-head", input) then
             Operations::probeHead()
-            return
-        end
-
-        if Interpreting::match("project", input) then
-            item = NxProjects::interactivelyIssueNewOrNull()
-            return if item.nil?
-            item = Donations::interactivelySetDonation(item)
-            ListingService::ensure(item)
             return
         end
 
@@ -385,11 +372,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("projects", input) then
-            Operations::program3(lambda { Items::mikuType("NxProject").sort_by{|item| item["position-1654"] } })
             return
         end
 

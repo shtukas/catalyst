@@ -75,8 +75,6 @@ class Operations
         Items::maintenance()
         puts "Parenting::maintenance()"
         Parenting::maintenance()
-        puts "NxProjects::maintenance()"
-        NxProjects::maintenance()
     end
 
     # Operations::interactivelyGetLines()
@@ -282,24 +280,8 @@ class Operations
         }
     end
 
-    # Operations::sortProjects()
-    def self.sortProjects()
-        elements = NxProjects::itemsInOrder()
-        return if elements.empty?
-        selected, _ = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
-        selected.reverse.each{|i|
-            position = NxProjects::firstPosition() - 1
-            Items::setAttribute(i["uuid"], "position-1654", position)
-            ListingService::evaluate(i["uuid"])
-        }
-    end
-
     # Operations::generalSort(item)
     def self.generalSort(item)
-        if item["mikuType"] == "NxProject" then
-            Operations::sortProjects()
-            return
-        end
         if item["mikuType"] == "NxCore" then
             Operations::sortChildrenOfThisParent(item)
             return

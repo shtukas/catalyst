@@ -7,9 +7,6 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        if item["mikuType"] == "NxProject" and Parenting::parentOrNull(item["uuid"]).nil? and item["donation-1205"].nil? then
-            item = Donations::interactivelySetDonation(item)
-        end
         if item["mikuType"] == "NxTask" and Parenting::parentOrNull(item["uuid"]).nil? and item["donation-1205"].nil? then
             item = Donations::interactivelySetDonation(item)
         end
@@ -57,13 +54,6 @@ class PolyActions
     # PolyActions::stop(item)
     def self.stop(item)
         NxBalls::stop(item)
-
-        if item["mikuType"] == "NxTask" then
-            Items::setAttribute(item["uuid"], "position-1654", NxProjects::lastPosition() + 1)
-            item = Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-            ListingService::ensure(item)
-        end
-
         ListingService::evaluate(item["uuid"])
     end
 
@@ -142,22 +132,6 @@ class PolyActions
 
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["dismiss for the day", "destroy"])
-            return if option.nil?
-            if option == "dismiss for the day" then
-                unixtime = CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone()
-                puts "pushing until '#{Time.at(unixtime).to_s.green}'"
-                NxBalls::stop(item)
-                PolyActions::doNotShowUntil(item, unixtime)
-            end
-            if option == "destroy" then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
             end
@@ -264,14 +238,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxProject" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
-            PolyActions::destroy(item)
-            return
-        end
-
         if item["mikuType"] == "NxDated" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -333,14 +299,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxTask" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxProject" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
