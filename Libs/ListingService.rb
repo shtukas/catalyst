@@ -381,7 +381,7 @@ class ListingService
         # 0.48         NxTask Orphan (mostly former priority items, who survived overnight)
 
         # 0.50 -> 0.60 NxDated
-        # 0.60 -> 0.70 Wave (non interruption)
+        # 0.60 -> 0.70 Wave (non interruption) (0.90 -> 1.00 when delisted)
         # 0.80 -> 0.90 NxCore & NxTask
 
         if item["mikuType"] == "NxLambda" then
@@ -414,7 +414,11 @@ class ListingService
         end
 
         if item["mikuType"] == "Wave" then
-            return 0.61 + ListingService::itemTo01(item).to_f/1000
+            if WavesHits::shouldDisplayWaves2() then
+                return 0.61 + ListingService::itemTo01(item).to_f/1000
+            else
+                return 0.91 + ListingService::itemTo01(item).to_f/1000
+            end
         end
 
         if item["mikuType"] == "NxTask" then
