@@ -39,6 +39,9 @@ class Transmutation
         if item["mikuType"] == "NxTask" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat", "NxDated"])
         end
+        if item["mikuType"] == "NxDated" then
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask"])
+        end
         return if targetMikuType.nil?
         Transmutation::transmute1(item, targetMikuType)
     end
