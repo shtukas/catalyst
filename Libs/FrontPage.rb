@@ -134,12 +134,14 @@ class FrontPage
                 Prefix::prefix(item).each{|child|
                     child['x:is-prefix'] = true
                     store.register(child, FrontPage::canBeDefault(child))
-                    line = FrontPage::toString2(store, child)
+                    lines = FrontPage::toString2(store, child)
                     if NxBalls::itemIsRunning(child) then
-                        line = line.green
+                        lines = lines.map{|line| line.green }
                     end
-                    printer.call(line)
-                    sheight = sheight - (line.size/swidth + 1)
+                    lines.each{|line|
+                        printer.call(line)
+                        sheight = sheight - (line.size/swidth + 1)
+                    }
                 }
                 store.register(item, FrontPage::canBeDefault(item))
                 lines = entry["listing_lines"]

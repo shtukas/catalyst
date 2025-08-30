@@ -414,11 +414,7 @@ class ListingService
         end
 
         if item["mikuType"] == "Wave" then
-            if WavesHits::shouldDisplayWaves2() then
-                return 0.61 + ListingService::itemTo01(item).to_f/1000
-            else
-                return 0.91 + ListingService::itemTo01(item).to_f/1000
-            end
+            return 0.61 + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxTask" then

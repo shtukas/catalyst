@@ -162,8 +162,6 @@ class Waves
             timespanInSeconds = 0
         end
         BankVault::insertValue(item["uuid"], CommonUtils::today(), timespanInSeconds)
-
-        WavesHits::issueNewHit(timespanInSeconds)
     end
 
     # Waves::program0(item)
@@ -222,54 +220,5 @@ class Waves
             i1 + i2
         }
         Operations::program3(l)
-    end
-end
-
-
-class WavesHits
-
-    # WavesHits::repository()
-    def self.repository()
-        "#{Config::pathToCatalystDataRepository()}/waves-hits"
-    end
-
-    # WavesHits::issueNewHit(timespanInSeconds)
-    def self.issueNewHit(timespanInSeconds)
-        filename = "#{(Time.new.to_f * 1000).to_i.to_s}.json"
-        filepath = "#{WavesHits::repository()}/#{filename}"
-        object = {
-            "unixtime" => Time.new.to_i,
-            "timespan" => timespanInSeconds
-        }
-        File.open(filepath, "w"){|f| f.puts(JSON.pretty_generate(object)) }
-    end
-
-    # WavesHits::getHits(horizonLookUpInHours)
-    def self.getHits(horizonLookUpInHours)
-        LucilleCore::locationsAtFolder(WavesHits::repository())
-            .select{|filepath| filepath[-5, 5] == ".json" }
-            .map{|filepath| 
-                hit = JSON.parse(IO.read(filepath))
-                if (Time.new.to_i - hit["unixtime"]) < horizonLookUpInHours*3600 then
-                    hit
-                else
-                    FileUtils.rm(filepath)
-                    nil
-                end
-            }
-            .compact
-    end
-
-    # WavesHits::shouldDisplayWaves1(horizonLookUpInHours, limitInSeconds)
-    def self.shouldDisplayWaves1(horizonLookUpInHours, limitInSeconds)
-        hits = WavesHits::getHits(horizonLookUpInHours)
-        hits.map{|hit| hit["timespan"] }.inject(0, :+) < limitInSeconds
-    end
-
-    # WavesHits::shouldDisplayWaves2()
-    def self.shouldDisplayWaves2()
-        return true if Time.new.hour < 8
-        return true if Time.new.hour >= 20
-        WavesHits::shouldDisplayWaves1(2, 60*30)
     end
 end
