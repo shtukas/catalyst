@@ -10,7 +10,7 @@ class PolyActions
         if item["mikuType"] == "NxTask" and Parenting::parentOrNull(item["uuid"]).nil? and item["donation-1205"].nil? then
             item = Donations::interactivelySetDonation(item)
         end
-        if item["mikuType"] == "NxDated" and item["donation-1205"].nil? then
+        if item["mikuType"] == "NxOnDate" and item["donation-1205"].nil? then
             item = Donations::interactivelySetDonation(item)
         end
         puts "start: '#{PolyFunctions::toString(item).green}'"
@@ -122,7 +122,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
@@ -238,7 +238,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             PolyActions::start(item)
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to destroy: ")
@@ -306,7 +306,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])

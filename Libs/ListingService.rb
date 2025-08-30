@@ -297,7 +297,7 @@ class ListingService
             return false # Will be displayed using Prefix
         end
 
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             return item["date"][0, 10] <= CommonUtils::today()
         end
 
@@ -352,7 +352,7 @@ class ListingService
         if item["mikuType"] == "NxCore" then
             return NxCores::ratio(item)
         end
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             return ListingService::realLineTo01Increasing(item["position-0836"] || 0)
         end
         if item["mikuType"] == "Wave" then
@@ -380,7 +380,7 @@ class ListingService
 
         # 0.48         NxTask Orphan (mostly former priority items, who survived overnight)
 
-        # 0.50 -> 0.60 NxDated
+        # 0.50 -> 0.60 NxOnDate
         # 0.60 -> 0.70 Wave (non interruption) (0.90 -> 1.00 when delisted)
         # 0.80 -> 0.90 NxCore & NxTask
 
@@ -409,7 +409,7 @@ class ListingService
             return ListingService::determinePositionInInterval(item, 0.40, 0.45)
         end
 
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             return 0.51 + ListingService::itemTo01(item).to_f/1000
         end
 
@@ -493,7 +493,7 @@ class ListingService
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxBackups::listingItems(),
-            NxDateds::listingItemsInOrder(),
+            NxOnDates::listingItemsInOrder(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
             NxTasks::orphan(),

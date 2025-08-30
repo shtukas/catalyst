@@ -6,21 +6,21 @@ class Transmutation
         return if targetMikuType.nil?
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
         
-        if item["mikuType"] == "NxDated" and targetMikuType == "NxTask" then
+        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTask" then
             NxTasks::performItemPositioning(item["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             ListingService::evaluate(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxDated" and targetMikuType == "NxFloat" then
+        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxFloat" then
             Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
             ListingService::evaluate(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxTask" and targetMikuType == "NxDated" then
+        if item["mikuType"] == "NxTask" and targetMikuType == "NxOnDate" then
             datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
             Items::setAttribute(uuid, "date", datetime)
-            Items::setAttribute(item["uuid"], "mikuType", "NxDated")
+            Items::setAttribute(item["uuid"], "mikuType", "NxOnDate")
             ListingService::evaluate(item["uuid"])
             return
         end
@@ -37,9 +37,9 @@ class Transmutation
     def self.transmute2(item)
         targetMikuType = nil
         if item["mikuType"] == "NxTask" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat", "NxDated"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat", "NxOnDate"])
         end
-        if item["mikuType"] == "NxDated" then
+        if item["mikuType"] == "NxOnDate" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask"])
         end
         return if targetMikuType.nil?

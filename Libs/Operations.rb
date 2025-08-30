@@ -149,7 +149,7 @@ class Operations
             LucilleCore::locationsAtFolder(directory).each{|location|
                 puts location.yellow
                 description = File.basename(location)
-                item = NxDateds::locationToItem(description, location)
+                item = NxOnDates::locationToItem(description, location)
                 #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)
                 #puts PolyFunctions::toString(item)
@@ -161,7 +161,7 @@ class Operations
             LucilleCore::locationsAtFolder(directory).each{|location|
                 puts location.yellow
                 description = File.basename(location)
-                item = NxDateds::locationToItem(description, location)
+                item = NxOnDates::locationToItem(description, location)
                 Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
                 #puts JSON.pretty_generate(item)
                 LucilleCore::removeFileSystemLocation(location)

@@ -76,8 +76,8 @@ class PolyFunctions
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
         end
-        if item["mikuType"] == "NxDated" then
-            return NxDateds::toString(item)
+        if item["mikuType"] == "NxOnDate" then
+            return NxOnDates::toString(item)
         end
         if item["mikuType"] == "NxIce" then
             return NxTasks::toString(item)

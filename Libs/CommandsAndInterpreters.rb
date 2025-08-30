@@ -105,8 +105,8 @@ class CommandsAndInterpreters
         if Interpreting::match("sort", input) then
             items = store.items()
 
-            if items.all?{|item| item["mikuType"] == "NxDated" } then
-                NxDateds::sort()
+            if items.all?{|item| item["mikuType"] == "NxOnDate" } then
+                NxOnDates::sort()
                 return
             end
 
@@ -241,7 +241,7 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxDateds::interactivelyIssueToday(line)
+                    item = NxOnDates::interactivelyIssueToday(line)
                     item = Donations::interactivelySetDonation(item)
                 }
             return
@@ -271,7 +271,7 @@ class CommandsAndInterpreters
             _, weekdayName = Interpreting::tokenizer(input)
             return if !["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].include?(weekdayName)
             date = CommonUtils::selectDateOfNextNonTodayWeekDay(weekdayName)
-            item = NxDateds::interactivelyIssueAtGivenDateOrNull(date)
+            item = NxOnDates::interactivelyIssueAtGivenDateOrNull(date)
             return if item.nil?
             puts JSON.pretty_generate(item)
             return
@@ -287,7 +287,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("today", input) then
-            item = NxDateds::interactivelyIssueTodayOrNull()
+            item = NxOnDates::interactivelyIssueTodayOrNull()
             return if item.nil?
             Donations::interactivelySetDonation(item)
             item = Items::itemOrNull(item["uuid"])
@@ -301,7 +301,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondate", input) then
-            item = NxDateds::interactivelyIssueNewOrNull()
+            item = NxOnDates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             Donations::interactivelySetDonation(item)
@@ -497,13 +497,13 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            Operations::program3(lambda { Items::mikuType("NxDated").sort_by{|item| item["date"][0, 10] }})
+            Operations::program3(lambda { Items::mikuType("NxOnDate").sort_by{|item| item["date"][0, 10] }})
             return
         end
 
         if Interpreting::match("todays", input) then
             Operations::program3(lambda { 
-                Items::mikuType("NxDated")
+                Items::mikuType("NxOnDate")
                     .select{|item| item["date"][0, 10] <= CommonUtils::today() }
                     .sort_by{|item| item["unixtime"] }
             })
@@ -590,7 +590,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("tomorrow", input) then
-            item = NxDateds::interactivelyIssueTomorrowOrNull()
+            item = NxOnDates::interactivelyIssueTomorrowOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             Donations::interactivelySetDonation(item)
