@@ -294,7 +294,7 @@ class ListingService
             return false if !DoNotShowUntil::isVisible(item["uuid"])
             parent = Parenting::parentOrNull(item["uuid"])
             return true if parent.nil?
-            return NxCores::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
+            return false # Will be displayed using Prefix
         end
 
         if item["mikuType"] == "NxDated" then
@@ -496,6 +496,7 @@ class ListingService
             NxDateds::listingItemsInOrder(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
+            NxTasks::orphan(),
             NxCores::listingItems()
         ]
             .flatten

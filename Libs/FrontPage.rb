@@ -27,6 +27,7 @@ class FrontPage
         if item["mikuType"] == "NxTask" then
             parentingSuffix = ""
         end
+
         lines = []
         line = "#{storePrefix} #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{parentingSuffix}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
 
@@ -128,8 +129,22 @@ class FrontPage
         entries
             .each{|entry|
                 item = entry["item"]
+
+                # Display the children
+                Prefix::prefix(item).each{|child|
+                    child['x:is-prefix'] = true
+                    store.register(child, FrontPage::canBeDefault(child))
+                    line = FrontPage::toString2(store, child)
+                    if NxBalls::itemIsRunning(child) then
+                        line = line.green
+                    end
+                    printer.call(line)
+                    sheight = sheight - (line.size/swidth + 1)
+                }
                 store.register(item, FrontPage::canBeDefault(item))
                 lines = entry["listing_lines"]
+
+                # Display the first line
                 line = lines.shift
                 line = line.gsub("STORE-PREFIX", "(#{store.prefixString()})")
                 if entry["position"] then
@@ -144,6 +159,8 @@ class FrontPage
                     sheight = sheight - (line.size/swidth + 1)
                 }
                 break if sheight <= 4
+
+                # Display the other lines
                 lines.each{|line|
                     printer.call(line)
                 }

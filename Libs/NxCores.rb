@@ -59,10 +59,6 @@ class NxCores
         NxCores::cores()
             .select{|core| NxCores::ratio(core) < 1 }
             .select{|core| DoNotShowUntil::isVisible(core["uuid"]) }
-            .map{|core| 
-                Parenting::childrenInOrderHead(core["uuid"], 3, lambda{|item| DoNotShowUntil::isVisible(item["uuid"]) }) + [core]
-            }
-            .flatten
     end
 
     # NxCores::interactivelySelectOneOrNull()
