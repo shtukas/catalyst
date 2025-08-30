@@ -162,10 +162,10 @@ class NxBalls
             .compact
     end
 
-    # NxBalls::runningPackets()
-    def self.runningPackets()
+    # NxBalls::activePackets()
+    def self.activePackets()
         NxBalls::all()
-            .select{|nxball| nxball["type"] == "running" }
+            .select{|nxball| nxball["type"] == "running" or nxball["type"] == "paused" }
             .map{|ball|
                 (lambda {|ball|
                     itemuuid = ball["itemuuid"]

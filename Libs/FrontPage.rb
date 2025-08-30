@@ -107,8 +107,8 @@ class FrontPage
 
         # Main listing
 
-        runningPackets = NxBalls::runningPackets()
-        runningPackets
+        activePackets = NxBalls::activePackets()
+        activePackets
             .sort_by{|packet| packet["startunixtime"] }
             .reverse
             .map{|packet| packet["item"] }
@@ -124,7 +124,7 @@ class FrontPage
                 break if sheight <= 4
             }
 
-        entries = ListingService::entriesForListing(runningPackets.map{|px| px["item"]["uuid"]})
+        entries = ListingService::entriesForListing(activePackets.map{|px| px["item"]["uuid"]})
         entries = CommonUtils::removeDuplicateObjectsOnAttribute(entries, "itemuuid")
         entries
             .each{|entry|
@@ -155,14 +155,13 @@ class FrontPage
                 end
                 printer.call(line)
                 sheight = sheight - (line.size/swidth + 1)
-                lines.each{|line|
-                    sheight = sheight - (line.size/swidth + 1)
-                }
-                break if sheight <= 4
+                break if sheight <= 3
 
                 # Display the other lines
                 lines.each{|line|
                     printer.call(line)
+                    sheight = sheight - (line.size/swidth + 1)
+                    break if sheight <= 3
                 }
             }
 
