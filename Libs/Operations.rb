@@ -316,8 +316,39 @@ class Operations
             }
     end
 
-    # Operations::replace(item)
-    def self.replace(item)
+    # Operations::replaceOne(item)
+    def self.replaceOne(item)
+        if item["mikuType"] == "NxTask" then
+
+            parent = Parenting::parentOrNull(item["uuid"])
+            if parent.nil? then
+                position = nil
+            else
+                position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
+            end
+
+            # We have identified the parent (optional) and if relevant the position
+
+            donationTarget = item["donation-1205"]
+
+            # We have identified the optional donation target
+
+            newItem = NxTasks::interactivelyIssueNewOrNull()
+            newItem["donation-1205"] = donationTarget
+
+            if parent then
+                Parenting::insertEntry(parent["uuid"], newItem["uuid"], position)
+            end
+
+            return
+        end
+
+        puts "I do not know how to replace a #{item["mikuType"]}"
+        LucilleCore::pressEnterToContinue()
+    end
+
+    # Operations::replaceWithMany(item)
+    def self.replaceWithMany(item)
         if item["mikuType"] == "NxTask" then
 
             parent = Parenting::parentOrNull(item["uuid"])

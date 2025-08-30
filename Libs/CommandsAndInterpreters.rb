@@ -158,7 +158,7 @@ class CommandsAndInterpreters
         if Interpreting::match("replace", input) then
             item = store.getDefault()
             return if item.nil?
-            Operations::replace(item)
+            Operations::replaceOne(item)
             return
         end
 
@@ -166,7 +166,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Operations::replace(item)
+            Operations::replaceOne(item)
             return
         end
 
