@@ -124,7 +124,9 @@ class FrontPage
                 break if sheight <= 4
             }
 
-        entries = ListingService::entriesForListing(activePackets.map{|px| px["item"]["uuid"]})
+        activeuuids = activePackets.map{|px| px["item"]["uuid"]}
+
+        entries = ListingService::entriesForListing(activeuuids)
         entries = CommonUtils::removeDuplicateObjectsOnAttribute(entries, "itemuuid")
         entries
             .each{|entry|
@@ -132,6 +134,7 @@ class FrontPage
 
                 # Display the children
                 Prefix::prefix(item).each{|child|
+                    next if activeuuids.include?(child["uuid"])
                     child['x:is-prefix'] = true
                     store.register(child, FrontPage::canBeDefault(child))
                     lines = FrontPage::toString2(store, child)
