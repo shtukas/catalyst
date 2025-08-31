@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation * | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation (*) | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
             "NxTasks       : move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | todo today",
             "              : transmute *",
@@ -274,6 +274,14 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueAtGivenDateOrNull(date)
             return if item.nil?
             puts JSON.pretty_generate(item)
+            return
+        end
+
+        if Interpreting::match("donation", input) then
+            item = store.getDefault()
+            return if item.nil?
+            Donations::interactivelySetDonation(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 

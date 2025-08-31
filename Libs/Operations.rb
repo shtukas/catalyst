@@ -192,7 +192,7 @@ class Operations
     # Operations::interactivelySelectThreadOrNull()
     def self.interactivelySelectThreadOrNull()
         targets = NxThreads::threadsInRatioOrder()
-        LucilleCore::selectEntityFromListOfEntities("parent", targets, lambda{|item| PolyFunctions::toString(item) })
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::decideParentAndPosition()

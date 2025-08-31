@@ -10,7 +10,6 @@ class Donations
 
     # Donations::donationSuffix(item)
     def self.donationSuffix(item)
-        return "" if item["mikuType"] == "NxTask" # we have dedicated display for NxTask
         return "" if item["donation-1205"].nil?
         " #{"(d: #{PolyFunctions::get_name_of_donation_target_or_identity(item["donation-1205"])})".yellow}"
     end
