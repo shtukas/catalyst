@@ -343,7 +343,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
-            Operations::diveItem(core)
+            Operations::diveItem(item)
             return
         end
 

@@ -297,9 +297,9 @@ class Operations
     # Operations::probeHead()
     def self.probeHead()
         NxThreads::threads()
-            .each{|core|
-                #puts "probing core #{core["description"]}"
-                Parenting::childrenInOrder(core["uuid"])
+            .each{|thread|
+                #puts "probing thread #{thread["description"]}"
+                Parenting::childrenInOrder(thread["uuid"])
                     .first(200)
                     .each{|item|
                         #puts "probing item #{item["description"]}"

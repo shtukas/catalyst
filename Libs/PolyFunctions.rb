@@ -167,9 +167,9 @@ class PolyFunctions
 
     # PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
     def self.makeInfinityuuidAndPositionNearTheTop()
-        coreuuid = NxThreads::infinityuuid()
-        core = Items::itemOrNull(coreuuid)
-        position = PolyFunctions::random_10_20_position_in_parent(core)
-        [coreuuid, position]
+        threaduuid = NxThreads::infinityuuid()
+        thread = Items::itemOrNull(threaduuid)
+        position = PolyFunctions::random_10_20_position_in_parent(thread)
+        [threaduuid, position]
     end
 end
