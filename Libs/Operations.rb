@@ -172,13 +172,13 @@ class Operations
 
     # Operations::interactivelySelectParent()
     def self.interactivelySelectParent()
-        targets = NxThreads::coresInRatioOrder()
+        targets = NxThreads::threadsInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::interactivelySelectParentOrNull()
     def self.interactivelySelectParentOrNull()
-        targets = NxThreads::coresInRatioOrder()
+        targets = NxThreads::threadsInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
@@ -296,7 +296,7 @@ class Operations
 
     # Operations::probeHead()
     def self.probeHead()
-        NxThreads::cores()
+        NxThreads::threads()
             .each{|core|
                 #puts "probing core #{core["description"]}"
                 Parenting::childrenInOrder(core["uuid"])

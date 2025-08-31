@@ -21,21 +21,21 @@ class NxThreads
         "⏱️  #{item["description"]} #{NxThreads::ratioString(item)}"
     end
 
-    # NxThreads::ratio(core)
-    def self.ratio(core)
-        hours = core["hours"].to_f
-        [BankData::recoveredAverageHoursPerDay(core["uuid"]), 0].max.to_f/(hours/7)
+    # NxThreads::ratio(thread)
+    def self.ratio(thread)
+        hours = thread["hours"].to_f
+        [BankData::recoveredAverageHoursPerDay(thread["uuid"]), 0].max.to_f/(hours/7)
     end
 
-    # NxThreads::shouldShow(core)
-    def self.shouldShow(core)
-        return false if !DoNotShowUntil::isVisible(core["uuid"])
-        BankData::recoveredAverageHoursPerDay(core["uuid"]) < (core["hours"].to_f/7)
+    # NxThreads::shouldShow(thread)
+    def self.shouldShow(thread)
+        return false if !DoNotShowUntil::isVisible(thread["uuid"])
+        BankData::recoveredAverageHoursPerDay(thread["uuid"]) < (thread["hours"].to_f/7)
     end
 
-    # NxThreads::ratioString(core)
-    def self.ratioString(core)
-        "(#{"%6.2f" % (100 * NxThreads::ratio(core))} %; #{"%5.2f" % core["hours"]} h/w)".yellow
+    # NxThreads::ratioString(thread)
+    def self.ratioString(thread)
+        "(#{"%6.2f" % (100 * NxThreads::ratio(thread))} %; #{"%5.2f" % thread["hours"]} h/w)".yellow
     end
 
     # NxThreads::infinityuuid()
@@ -43,32 +43,32 @@ class NxThreads
         "427bbceb-923e-4feb-8232-05883553bb28"
     end
 
-    # NxThreads::cores()
-    def self.cores()
+    # NxThreads::threads()
+    def self.threads()
         Items::mikuType("NxThread")
     end
 
-    # NxThreads::coresInRatioOrder()
-    def self.coresInRatioOrder()
-        NxThreads::cores()
-            .sort_by{|core| NxThreads::ratio(core) }
+    # NxThreads::threadsInRatioOrder()
+    def self.threadsInRatioOrder()
+        NxThreads::threads()
+            .sort_by{|thread| NxThreads::ratio(thread) }
     end
 
     # NxThreads::listingItems()
     def self.listingItems()
-        NxThreads::cores()
-            .select{|core| NxThreads::ratio(core) < 1 }
-            .select{|core| DoNotShowUntil::isVisible(core["uuid"]) }
-            .map{|core|
-                Parenting::childrenInOrderHead(core["uuid"], 3, lambda{|item| DoNotShowUntil::isVisible(item["uuid"]) }) + [core]
+        NxThreads::threads()
+            .select{|thread| NxThreads::ratio(thread) < 1 }
+            .select{|thread| DoNotShowUntil::isVisible(thread["uuid"]) }
+            .map{|thread|
+                Parenting::childrenInOrderHead(thread["uuid"], 3, lambda{|item| DoNotShowUntil::isVisible(item["uuid"]) }) + [thread]
             }
             .flatten
     end
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        l = lambda{|core| "#{NxThreads::ratioString(core)} #{core["description"]}#{DoNotShowUntil::suffix1(core["uuid"]).yellow}" }
-        cores = NxThreads::coresInRatioOrder()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("core", cores, l)
+        l = lambda{|thread| "#{NxThreads::ratioString(thread)} #{thread["description"]}#{DoNotShowUntil::suffix1(thread["uuid"]).yellow}" }
+        threads = NxThreads::threadsInRatioOrder()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, l)
     end
 end

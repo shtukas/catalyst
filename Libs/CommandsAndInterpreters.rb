@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "NxTasks       : move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | todo today",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | cores | todays | dive * | projects",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance",
         ].join("\n")
@@ -375,7 +375,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("cores", input) then
+        if Interpreting::match("threads", input) then
             Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| NxThreads::ratio(item) } })
             return
         end
