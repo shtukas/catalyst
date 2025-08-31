@@ -286,15 +286,15 @@ class ListingService
             return true
         end
 
-        if item["mikuType"] == "NxCore" then
-            return NxCores::ratio(item) < 1
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::ratio(item) < 1
         end
 
         if item["mikuType"] == "NxTask" then
             return false if !DoNotShowUntil::isVisible(item["uuid"])
             parent = Parenting::parentOrNull(item["uuid"])
             return true if parent.nil?
-            return NxCores::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
+            return NxThreads::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
         end
 
         if item["mikuType"] == "NxOnDate" then
@@ -344,13 +344,13 @@ class ListingService
     def self.itemTo01(item)
         if item["mikuType"] == "NxTask" then
             parent = Parenting::parentOrNull(item["uuid"])
-            if parent and parent["mikuType"] == "NxCore" then
-                return NxCores::ratio(parent) - ListingService::realLineTo01Decreasing(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/1000
+            if parent and parent["mikuType"] == "NxThread" then
+                return NxThreads::ratio(parent) - ListingService::realLineTo01Decreasing(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/1000
             end
             return 0
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::ratio(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::ratio(item)
         end
         if item["mikuType"] == "NxOnDate" then
             return ListingService::realLineTo01Increasing(item["position-0836"] || 0)
@@ -382,7 +382,7 @@ class ListingService
 
         # 0.50 -> 0.60 NxOnDate
         # 0.60 -> 0.70 Wave (non interruption) (0.90 -> 1.00 when delisted)
-        # 0.80 -> 0.90 NxCore & NxTask
+        # 0.80 -> 0.90 NxThread & NxTask
 
         if item["mikuType"] == "NxLambda" then
             return ListingService::determinePositionInInterval(item, 0.28, 0.30)
@@ -421,7 +421,7 @@ class ListingService
             return 0.81 + ListingService::itemTo01(item).to_f/1000
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             return 0.81 + ListingService::itemTo01(item).to_f/1000
         end
 
@@ -493,7 +493,7 @@ class ListingService
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
             NxTasks::orphan(),
-            NxCores::listingItems()
+            NxThreads::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }

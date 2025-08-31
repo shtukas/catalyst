@@ -156,7 +156,7 @@ require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
-require_relative "NxCores.rb"
+require_relative "NxThreads.rb"
 require_relative "NxOnDates.rb"
 require_relative "NxLambdas.rb"
 

@@ -376,7 +376,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("cores", input) then
-            Operations::program3(lambda { Items::mikuType("NxCore").sort_by{|item| NxCores::ratio(item) } })
+            Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| NxThreads::ratio(item) } })
             return
         end
 

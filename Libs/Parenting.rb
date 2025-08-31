@@ -225,7 +225,7 @@ class Parenting
 
     # Parenting::childrenInOrder(parentuuid)
     def self.childrenInOrder(parentuuid)
-        if parentuuid == NxCores::infinityuuid() then
+        if parentuuid == NxThreads::infinityuuid() then
             return Parenting::childrenInOrderHead(parentuuid, 100, lambda {|item| true })
         end
         Parenting::childrenuuidsInOrder(parentuuid)

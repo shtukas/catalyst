@@ -17,7 +17,7 @@ class Donations
 
     # Donations::interactivelySelectTargetForDonationOrNull()
     def self.interactivelySelectTargetForDonationOrNull()
-        targets = NxCores::coresInRatioOrder()
+        targets = NxThreads::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 end

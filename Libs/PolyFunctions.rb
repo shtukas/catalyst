@@ -70,8 +70,8 @@ class PolyFunctions
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
         end
-        if item["mikuType"] == "NxCore" then
-            return NxCores::toString(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::toString(item)
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
@@ -110,8 +110,8 @@ class PolyFunctions
 
     # PolyFunctions::ratio(item)
     def self.ratio(item)
-        if item["mikuType"] == "NxCore" then
-            return NxCores::ratio(item)
+        if item["mikuType"] == "NxThread" then
+            return NxThreads::ratio(item)
         end
         raise "(error: 1931-e258c72b)"
     end
@@ -167,7 +167,7 @@ class PolyFunctions
 
     # PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
     def self.makeInfinityuuidAndPositionNearTheTop()
-        coreuuid = NxCores::infinityuuid()
+        coreuuid = NxThreads::infinityuuid()
         core = Items::itemOrNull(coreuuid)
         position = PolyFunctions::random_10_20_position_in_parent(core)
         [coreuuid, position]

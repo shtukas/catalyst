@@ -172,13 +172,13 @@ class Operations
 
     # Operations::interactivelySelectParent()
     def self.interactivelySelectParent()
-        targets = NxCores::coresInRatioOrder()
+        targets = NxThreads::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::interactivelySelectParentOrNull()
     def self.interactivelySelectParentOrNull()
-        targets = NxCores::coresInRatioOrder()
+        targets = NxThreads::coresInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
@@ -282,7 +282,7 @@ class Operations
 
     # Operations::generalSort(item)
     def self.generalSort(item)
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             Operations::sortChildrenOfThisParent(item)
             return
         end
@@ -296,7 +296,7 @@ class Operations
 
     # Operations::probeHead()
     def self.probeHead()
-        NxCores::cores()
+        NxThreads::cores()
             .each{|core|
                 #puts "probing core #{core["description"]}"
                 Parenting::childrenInOrder(core["uuid"])

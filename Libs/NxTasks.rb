@@ -79,7 +79,7 @@ class NxTasks
     # NxTasks::maintenance()
     def self.maintenance()
         count1 = Items::mikuType("NxTask")
-                    .select{|item| Parenting::parentUuidOrNull(item["uuid"]) == NxCores::infinityuuid() }
+                    .select{|item| Parenting::parentUuidOrNull(item["uuid"]) == NxThreads::infinityuuid() }
                     .size
         #puts "count1: #{count1}"
         iced = Items::mikuType("NxIce")

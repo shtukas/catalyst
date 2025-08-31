@@ -36,7 +36,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             if item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
                 UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
                 return
@@ -92,7 +92,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             NxBalls::stop(item)
             ListingService::evaluate(item["uuid"])
             return
@@ -178,7 +178,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end
@@ -212,7 +212,7 @@ class PolyActions
             end
         end
 
-        if item["mikuType"] == "NxCore" and item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
+        if item["mikuType"] == "NxThread" and item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
             PolyActions::start(item)
             PolyActions::access(item)
             LucilleCore::pressEnterToContinue("Press [enter] to done: ")
@@ -220,7 +220,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             PolyActions::access(item)
             return
         end
@@ -290,7 +290,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
@@ -342,7 +342,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             Operations::diveItem(core)
             return
         end
@@ -379,7 +379,7 @@ class PolyActions
 
     # PolyActions::doNotShowUntil(item, unixtime)
     def self.doNotShowUntil(item, unixtime)
-        if item["mikuType"] == "NxCore" then
+        if item["mikuType"] == "NxThread" then
             children = Parenting::childrenInOrderHead(item["uuid"], 3, lambda{|i| DoNotShowUntil::isVisible(i["uuid"]) })
             children.each{|i| DoNotShowUntil::setUnixtime(i["uuid"], unixtime) }
         end
