@@ -132,20 +132,6 @@ class FrontPage
             .each{|entry|
                 item = entry["item"]
 
-                # Display the children
-                Prefix::prefix(item).each{|child|
-                    next if activeuuids.include?(child["uuid"])
-                    child['x:is-prefix'] = true
-                    store.register(child, FrontPage::canBeDefault(child))
-                    lines = FrontPage::toString2(store, child)
-                    if NxBalls::itemIsRunning(child) then
-                        lines = lines.map{|line| line.green }
-                    end
-                    lines.each{|line|
-                        printer.call(line)
-                        sheight = sheight - (line.size/swidth + 1)
-                    }
-                }
                 store.register(item, FrontPage::canBeDefault(item))
                 lines = entry["listing_lines"]
 

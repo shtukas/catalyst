@@ -294,7 +294,7 @@ class ListingService
             return false if !DoNotShowUntil::isVisible(item["uuid"])
             parent = Parenting::parentOrNull(item["uuid"])
             return true if parent.nil?
-            return false # Will be displayed using Prefix
+            return NxCores::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
         end
 
         if item["mikuType"] == "NxOnDate" then
