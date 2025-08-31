@@ -36,8 +36,8 @@ class Operations
         ListingService::evaluate(item["uuid"])
     end
 
-    # Operations::program3(lx)
-    def self.program3(lx)
+    # Operations::program3(lx, context)
+    def self.program3(lx, context)
         loop {
             elements = lx.call()
 
@@ -53,12 +53,25 @@ class Operations
                     }
                 }
 
+            announce = (lambda {|context|
+                if context == "threads" then
+                    return "set hours"
+                end
+                ""
+            }).call(context)
+
             puts ""
+            puts announce
+
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
 
-            puts ""
+            if input == "set hours" then
+                NxThreads::setHours()
+                return 
+            end
+
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
@@ -170,28 +183,28 @@ class Operations
         end
     end
 
-    # Operations::interactivelySelectParent()
-    def self.interactivelySelectParent()
+    # Operations::interactivelySelectThread()
+    def self.interactivelySelectThread()
         targets = NxThreads::threadsInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # Operations::interactivelySelectParentOrNull()
-    def self.interactivelySelectParentOrNull()
+    # Operations::interactivelySelectThreadOrNull()
+    def self.interactivelySelectThreadOrNull()
         targets = NxThreads::threadsInRatioOrder()
         LucilleCore::selectEntityFromListOfEntities("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
     # Operations::decideParentAndPosition()
     def self.decideParentAndPosition()
-        parent = Operations::interactivelySelectParent()
+        parent = Operations::interactivelySelectThread()
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         [parent, position]
     end
 
     # Operations::decideParentAndPositionOrNull()
     def self.decideParentAndPositionOrNull()
-        parent = Operations::interactivelySelectParentOrNull()
+        parent = Operations::interactivelySelectThreadOrNull()
         return nil if parent.nil?
         position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
         {
@@ -222,7 +235,13 @@ class Operations
 
             puts ""
 
-            puts "todo (here, with position selection) | pile | position * | sort"
+            commands ="todo (here, with position selection) | pile | position * | sort"
+
+            if parent["mikuType"] == "NxThread" then
+                commands ="todo (here, with position selection) | moves | pile | position * | sort"
+            end
+
+            puts commands
 
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
@@ -234,6 +253,23 @@ class Operations
                 puts JSON.pretty_generate(todo)
                 Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
                 ListingService::evaluate(todo["uuid"])
+                next
+            end
+
+            if input == "moves" then
+                puts "architect a parent, select some elements, and then we are going to put the elements in first positions"
+                LucilleCore::pressEnterToContinue()
+
+                thread = NxThreads::architectOrNull()
+                return if thread.nil?
+
+                childrenInOrder = Parenting::childrenInOrder(parent["uuid"])
+                selected, _ = LucilleCore::selectZeroOrMore("elements", [], childrenInOrder, lambda{|i| PolyFunctions::toString(i) })
+
+                selected.each{|child|
+                    position = PolyFunctions::firstPositionInParent(thread) - 1
+                    Parenting::insertEntry(thread["uuid"], child["uuid"], position)
+                }
                 next
             end
 

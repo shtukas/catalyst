@@ -15,7 +15,7 @@ class Search
             lx = lambda { Items::items()
                         .select{|item| item["description"] and item["description"].downcase.include?(fragment.downcase) }
                         .sort{|i1, i2| i1["unixtime"] <=> i2["unixtime"] } }
-            Operations::program3(lx)
+            Operations::program3(lx, nil)
         }
         nil
     end

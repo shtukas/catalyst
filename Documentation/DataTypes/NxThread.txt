@@ -1,5 +1,4 @@
 NxThread:
     - uuid           : String
     - description    : String
-    - hours          : Float # hours per week
-
+    - hoursPerDay    : Float

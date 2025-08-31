@@ -248,7 +248,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("backups", input) then
-            Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
+            Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } }, nil)
             return
         end
 
@@ -371,12 +371,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("floats", input) then
-            Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
+            Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } }, nil)
             return
         end
 
         if Interpreting::match("threads", input) then
-            Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| NxThreads::ratio(item) } })
+            Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| NxThreads::ratio(item) } }, "threads")
             return
         end
 
@@ -497,7 +497,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ondates", input) then
-            Operations::program3(lambda { Items::mikuType("NxOnDate").sort_by{|item| item["date"][0, 10] }})
+            Operations::program3(lambda { Items::mikuType("NxOnDate").sort_by{|item| item["date"][0, 10] }}, nil)
             return
         end
 
@@ -506,7 +506,7 @@ class CommandsAndInterpreters
                 Items::mikuType("NxOnDate")
                     .select{|item| item["date"][0, 10] <= CommonUtils::today() }
                     .sort_by{|item| item["unixtime"] }
-            })
+            }, nil)
             return
         end
 
