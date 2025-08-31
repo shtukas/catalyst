@@ -143,7 +143,7 @@ class CommandsAndInterpreters
         if Interpreting::match("move", input) then
             item = store.getDefault()
             return if item.nil?
-            Operations::relocateToNewParentOrNothing(item)
+            Operations::relocateToNewThreadOrNothing(item)
             return
         end
 
@@ -151,7 +151,7 @@ class CommandsAndInterpreters
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
-            Operations::relocateToNewParentOrNothing(item)
+            Operations::relocateToNewThreadOrNothing(item)
             return
         end
 

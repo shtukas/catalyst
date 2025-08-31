@@ -414,8 +414,10 @@ class Operations
         Parenting::insertEntry(parent["uuid"], item["uuid"], position)
     end
 
-    # Operations::relocateToNewParentOrNothing(item)
-    def self.relocateToNewParentOrNothing(item)
+    # Operations::relocateToNewThreadOrNothing(item)
+    def self.relocateToNewThreadOrNothing(item)
+        # At the moment parenting is only between a NxTask (child) and a NxThread (parent)
+        return if item["mikuType"] != "NxTask"
         packet = Operations::decideParentAndPositionOrNull()
         return if packet.nil?
         Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
