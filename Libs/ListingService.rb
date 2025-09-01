@@ -362,6 +362,18 @@ class ListingService
         raise "(error: e9f93758)"
     end
 
+    # ListingService::itemToCyclingPosition(item, a, b)
+    def self.itemToCyclingPosition(item, a , b)
+        if item["phase-1208"].nil? then
+            item["phase-1208"] = rand * 3.14 * 2
+            Items::setAttribute(item["uuid"], "phase-1208", item["phase-1208"])
+        end
+        middlePoint = (a+b).to_f/2
+        radius = (b-a).to_f/2
+        cursor = Time.new.to_f/86400
+        middlePoint + radius * Math.sin(cursor + item["phase-1208"])
+    end
+
     # ListingService::itemToComputedPosition(item)
     def self.itemToComputedPosition(item)
         # We return null if the item shouild not be listed at this time, because it has 
@@ -377,12 +389,11 @@ class ListingService
         # 0.320 -> 0.350 Wave interruption
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
+        # 0.480          NxTask Orphan (mostly former priority items, who survived overnight)
+        # 0.500 -> 0.600 NxOnDate
+        # 0.800 -> 0.900 NxThread & NxTask
 
-        # 0.48         NxTask Orphan (mostly former priority items, who survived overnight)
-
-        # 0.50 -> 0.60 NxOnDate
-        # 0.60 -> 0.70 Wave (non interruption) (0.90 -> 1.00 when delisted)
-        # 0.80 -> 0.90 NxThread & NxTask
+        # 0.390 -> 1.000 Wave (overlay)
 
         if item["mikuType"] == "NxLambda" then
             return ListingService::determinePositionInInterval(item, 0.28, 0.30)
@@ -399,6 +410,7 @@ class ListingService
             if item["nx46"]["type"] == "sticky" then
                 return ListingService::determinePositionInInterval(item, 0.30, 0.32)
             end
+            return ListingService::itemToCyclingPosition(item, 0.390, 1.000)
         end
 
         if item["mikuType"] == "NxAnniversary" then
@@ -411,10 +423,6 @@ class ListingService
 
         if item["mikuType"] == "NxOnDate" then
             return 0.51 + ListingService::itemTo01(item).to_f/1000
-        end
-
-        if item["mikuType"] == "Wave" then
-            return 0.61 + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxTask" then
