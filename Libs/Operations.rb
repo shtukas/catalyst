@@ -14,6 +14,7 @@ class Operations
         if item["uxpayload-b4e4"].nil? then
             puts "I could not find a payload on '#{PolyFunctions::toString(item)}'"
             LucilleCore::pressEnterToContinue()
+            return
         end
         payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
         return if payload.nil?

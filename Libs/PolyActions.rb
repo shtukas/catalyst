@@ -20,34 +20,31 @@ class PolyActions
     # PolyActions::access(item)
     def self.access(item)
 
-        if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
-            if option == "access payload" then
-                UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            end
-            if option == "dive" then
-                Operations::diveItem(item)
-                return
-            end
-        end
-
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            if item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
-                UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-                return
-            end
+        if item["uxpayload-b4e4"].nil? and !Parenting::hasChildren(item["uuid"]) then
+            return
+        end
+
+        if item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
+            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+            return
+        end
+
+        if item["uxpayload-b4e4"].nil? and Parenting::hasChildren(item["uuid"]) then
             Operations::diveItem(item)
             return
         end
 
-        if item["uxpayload-b4e4"] then
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
+        if option == "access payload" then
             UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
+        end
+        if option == "dive" then
+            Operations::diveItem(item)
         end
     end
 

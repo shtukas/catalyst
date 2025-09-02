@@ -7,6 +7,7 @@ class NxThreads
         return nil if description == ""
         hoursPerDay = LucilleCore::askQuestionAnswerAsString("hours per day: ").to_f
         Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "hoursPerDay", hoursPerDay)
         Items::setAttribute(uuid, "mikuType", "NxThread")
@@ -59,6 +60,16 @@ class NxThreads
     # NxThreads::listingItems()
     def self.listingItems()
         NxThreads::threads()
+            .map{|thread|
+                if !Parenting::hasChildren(thread["uuid"]) and (Time.new.to_i - thread["unixtime"]) > 86400 then
+                    puts "Garbage collecting: #{PolyFunctions::toString(item).green}"
+                    Items::deleteItem(thread["uuid"])
+                    nil
+                else
+                    thread
+                end
+            }
+            .compact
             .select{|thread| NxThreads::ratio(thread) < 1 }
             .select{|thread| DoNotShowUntil::isVisible(thread["uuid"]) }
             .map{|thread|
