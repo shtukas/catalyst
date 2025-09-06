@@ -353,7 +353,9 @@ class ListingService
             return NxThreads::ratio(item)
         end
         if item["mikuType"] == "NxOnDate" then
-            return ListingService::realLineTo01Increasing(item["position-0836"] || 0)
+            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
+            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
+            return ListingService::realLineTo01Increasing(idx)
         end
         if item["mikuType"] == "Wave" then
             timeSinceLastDone = Time.new.to_i - item['lastDoneUnixtime']
@@ -391,7 +393,8 @@ class ListingService
         # 0.400 -> 0.450 NxBackup
         # 0.480          NxTask Orphan (mostly former priority items, who survived overnight)
         # 0.500 -> 0.600 NxOnDate
-        # 0.800 -> 0.900 NxThread & NxTask
+        # 0.800 -> 0.880 NxThread & NxTask
+        # 0.880 -> 0.900 NxThread & NxTask
 
         # 0.390 -> 1.000 Wave (overlay)
 
@@ -426,11 +429,26 @@ class ListingService
         end
 
         if item["mikuType"] == "NxTask" then
+            if item["priorityLevel47"] and item["priorityLevel47"] == "today" then
+                # Same base as NxOnDate
+                return 0.51 + ListingService::itemTo01(item).to_f/1000
+            end
+
+            if NxTasks::isOrphan(item) then
+                if item["priorityLevel47"].nil? then
+                    puts PolyFunctions::toString(item).green
+                    Items::setAttribute(item["uuid"], "priorityLevel47", PriorityLevels::interactivelySelectOne())
+                    item = Items::itemOrNull(item["uuid"])
+                    return ListingService::itemToComputedPosition(item)
+                end
+                return PriorityLevels::itemToListingPosition(item["uuid"], item["priorityLevel47"], 0.81, 0.87)
+            end
+
             return 0.81 + ListingService::itemTo01(item).to_f/1000
         end
 
         if item["mikuType"] == "NxThread" then
-            return 0.81 + ListingService::itemTo01(item).to_f/1000
+            return 0.88 + ListingService::itemTo01(item).to_f/1000
         end
 
         puts "I do not know how to ListingService::itemToComputedPosition(#{JSON.pretty_generate(item)})"
@@ -497,7 +515,7 @@ class ListingService
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxBackups::listingItems(),
-            NxOnDates::listingItemsInOrder(),
+            NxOnDates::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
             NxTasks::orphan(),

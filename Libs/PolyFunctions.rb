@@ -22,6 +22,15 @@ class PolyFunctions
             accounts = accounts + PolyFunctions::itemToBankingAccounts(parent, depth-1)
         end
 
+        if item["priorityLevel47"] then
+            level = item["priorityLevel47"]
+            accountNumber = PriorityLevels::priorityLevelTobankAccount(item["priorityLevel47"])
+            accounts << {
+                "description" => "priority level: #{level}",
+                "number"      => accountNumber
+            }
+        end
+
         if item["donation-1205"] then
             target = Items::itemOrNull(item["donation-1205"])
             if target then

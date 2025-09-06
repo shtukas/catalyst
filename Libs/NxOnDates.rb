@@ -103,20 +103,14 @@ class NxOnDates
 
     # NxOnDates::toString(item)
     def self.toString(item)
-        "#{NxOnDates::icon(item)} [#{item["date"][0, 10]}] (-> #{"%7.3f" % (item["position-0836"] || 0)}) #{item["description"]}"
+        "#{NxOnDates::icon(item)} [#{item["date"][0, 10]}] #{item["description"]}"
     end
 
-    # NxOnDates::listingItemsInOrder()
-    def self.listingItemsInOrder()
+    # NxOnDates::listingItems()
+    def self.listingItems()
         items = Items::mikuType("NxOnDate")
             .select{|item| item["date"][0, 10] <= CommonUtils::today() }
-            .sort_by{|item| item["position-0836"] || 0 }
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
-    end
-
-    # NxOnDates::firstPosition()
-    def self.firstPosition()
-        ([0] + Items::mikuType("NxOnDate").map{|item| item["position-0836"] || 0 }).min
     end
 
     # ---------------
@@ -127,15 +121,5 @@ class NxOnDates
         NxBalls::stop(item)
         datetime = datetime || CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
         Items::setAttribute(item["uuid"], "date", datetime)
-    end
-
-    # NxOnDates::sort()
-    def self.sort()
-        items = NxOnDates::listingItemsInOrder()
-        selected, _ = LucilleCore::selectZeroOrMore("dateds", [], items, lambda{|i| PolyFunctions::toString(i) })
-        selected.reverse.each{|item|
-            position = NxOnDates::firstPosition() - 1
-            Items::setAttribute(item["uuid"], "position-0836", position)
-        }
     end
 end

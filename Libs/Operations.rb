@@ -89,6 +89,8 @@ class Operations
         Items::maintenance()
         puts "Parenting::maintenance()"
         Parenting::maintenance()
+        puts "NxThreads::maintenance()"
+        NxThreads::maintenance()
     end
 
     # Operations::interactivelyGetLines()

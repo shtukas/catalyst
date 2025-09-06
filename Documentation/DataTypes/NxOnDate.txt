@@ -6,6 +6,3 @@ NxOnDate:
     - datetime           : DateTime Iso 8601 UTC Zulu
     - description        : String
     - date               : YYYY-MM-DD
-    - position-0836      : Float or null [1]
-
-[1] We set it to order the todos of the day, if null the default value 0 is used

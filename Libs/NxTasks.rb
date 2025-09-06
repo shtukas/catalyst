@@ -60,10 +60,15 @@ class NxTasks
         "#{NxTasks::icon(item)} #{item["description"]}#{parentingSuffix}"
     end
 
+    # NxTasks::isOrphan(item)
+    def self.isOrphan(item)
+        Parenting::parentOrNull(item["uuid"]).nil?
+    end
+
     # NxTasks::orphan()
     def self.orphan()
         Items::mikuType("NxTask")
-            .select{|item| Parenting::parentOrNull(item["uuid"]).nil? }
+            .select{|item| NxTasks::isOrphan(item) }
     end
 
     # ------------------
@@ -78,6 +83,12 @@ class NxTasks
 
     # NxTasks::maintenance()
     def self.maintenance()
+        NxTasks::orphan().each{|item|
+            if item["priorityLevel47"].nil? then
+                puts PolyFunctions::toString(item)
+                Items::setAttribute(item["uuid"], "priorityLevel47", PriorityLevels::interactivelySelectOne())
+            end
+        }
         count1 = Items::mikuType("NxTask")
                     .select{|item| Parenting::parentUuidOrNull(item["uuid"]) == NxThreads::infinityuuid() }
                     .size

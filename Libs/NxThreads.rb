@@ -10,6 +10,7 @@ class NxThreads
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "hoursPerDay", hoursPerDay)
+        Items::setAttribute(uuid, "priorityLevel47", PriorityLevels::interactivelySelectOne())
         Items::setAttribute(uuid, "mikuType", "NxThread")
         Items::itemOrNull(uuid)
     end
@@ -60,16 +61,6 @@ class NxThreads
     # NxThreads::listingItems()
     def self.listingItems()
         NxThreads::threads()
-            .map{|thread|
-                if !Parenting::hasChildren(thread["uuid"]) and (Time.new.to_i - thread["unixtime"]) > 86400 then
-                    puts "Garbage collecting: #{PolyFunctions::toString(item).green}"
-                    Items::deleteItem(thread["uuid"])
-                    nil
-                else
-                    thread
-                end
-            }
-            .compact
             .select{|thread| NxThreads::ratio(thread) < 1 }
             .select{|thread| DoNotShowUntil::isVisible(thread["uuid"]) }
             .map{|thread|
@@ -111,6 +102,17 @@ class NxThreads
             puts PolyFunctions::toString(thread)
             hours = LucilleCore::askQuestionAnswerAsString("hours per day: ").to_f
             Items::setAttribute(thread["uuid"], "hoursPerDay", hours)
+        }
+    end
+
+    # NxThreads::maintenance()
+    def self.maintenance()
+        Items::mikuType("NxThread").each{|item|
+            if !Parenting::hasChildren(item["uuid"]) and item["uxpayload-b4e4"].nil? then
+                if LucilleCore::askQuestionAnswerAsBoolean("Thread '#{PolyFunctions::toString(item)}' is now empty. Going to delete it ", true) then
+                    Items::deleteItem(item["uuid"])
+                end
+            end
         }
     end
 end

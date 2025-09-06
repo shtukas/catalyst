@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation (*) | push * | dismiss * | * on <datecode> | edit * | replace * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | todo today",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -104,12 +104,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("sort", input) then
             items = store.items()
-
-            if items.all?{|item| item["mikuType"] == "NxOnDate" } then
-                NxOnDates::sort()
-                return
-            end
-
             selected, _ = LucilleCore::selectZeroOrMore("elements", [], items, lambda{|i| PolyFunctions::toString(i) })
             selected.reverse.each{|i|
                 position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
@@ -236,14 +230,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("todo today", input) then
-            Operations::interactivelyGetLines()
-                .reverse
-                .each{|line|
-                    puts "processing: #{line}".green
-                    item = NxOnDates::interactivelyIssueToday(line)
-                    item = Donations::interactivelySetDonation(item)
-                }
+        if Interpreting::match("thread", input) then
+            NxThreads::interactivelyIssueNewOrNull()
             return
         end
 
@@ -366,10 +354,17 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("todo", input) then
-            todo = NxTasks::interactivelyIssueNewOrNull()
-            parent, position = Operations::decideParentAndPosition()
-            Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-            ListingService::evaluate(todo["uuid"])
+            item = NxTasks::interactivelyIssueNewOrNull()
+            data = Operations::decideParentAndPositionOrNull()
+            if data then
+                parent = data["parent"]
+                position = data["position"]
+                Parenting::insertEntry(parent["uuid"], item["uuid"], position)
+            else
+                level = PriorityLevels::interactivelySelectOne()
+                Items::setAttribute(item["uuid"], "priorityLevel47", level)
+            end
+            ListingService::evaluate(item["uuid"])
             return
         end
 

@@ -1,7 +1,10 @@
 
 NxTask:
-    - uuid         : String
-    - mikuType     : "NxTask"
-    - unixtime     : Float
-    - datetime     : DateTime Iso 8601 UTC Zulu
-    - description  : String
+    - uuid            : String
+    - mikuType        : "NxTask"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - priorityLevel47 : null | "low" | "regular" | "high" | "today" # [1]
+
+[1] not null for orphans

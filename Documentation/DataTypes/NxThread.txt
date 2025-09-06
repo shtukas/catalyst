@@ -1,4 +1,5 @@
 NxThread:
-    - uuid           : String
-    - description    : String
-    - hoursPerDay    : Float
+    - uuid            : String
+    - description     : String
+    - hoursPerDay     : Float
+    - priorityLevel47 : "low" | "regular" | "high" | "today"
