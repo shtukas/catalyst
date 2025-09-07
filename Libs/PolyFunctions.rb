@@ -120,7 +120,7 @@ class PolyFunctions
     # PolyFunctions::ratio(item)
     def self.ratio(item)
         if item["mikuType"] == "NxThread" then
-            return NxThreads::ratio(item)
+            return ListingService::itemToComputedPosition(item)
         end
         raise "(error: 1931-e258c72b)"
     end

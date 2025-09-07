@@ -5,12 +5,21 @@ class NxThreads
         uuid = SecureRandom.uuid
         description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
         return nil if description == ""
-        hoursPerDay = LucilleCore::askQuestionAnswerAsString("hours per day: ").to_f
         Items::init(uuid)
         Items::setAttribute(uuid, "unixtime", Time.new.to_i)
         Items::setAttribute(uuid, "description", description)
-        Items::setAttribute(uuid, "hoursPerDay", hoursPerDay)
         Items::setAttribute(uuid, "priorityLevel47", PriorityLevels::interactivelySelectOne())
+        Items::setAttribute(uuid, "mikuType", "NxThread")
+        Items::itemOrNull(uuid)
+    end
+
+    # NxThreads::issue(description, priorityLevel)
+    def self.issue(description, priorityLevel)
+        uuid = SecureRandom.uuid
+        Items::init(uuid)
+        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
+        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "priorityLevel47", priorityLevel)
         Items::setAttribute(uuid, "mikuType", "NxThread")
         Items::itemOrNull(uuid)
     end
@@ -20,26 +29,7 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
-        "🔺 #{item["description"]} #{NxThreads::ratioString(item)}"
-    end
-
-    # NxThreads::ratio(thread)
-    def self.ratio(thread)
-        hoursPerDay = thread["hoursPerDay"]
-        [BankData::recoveredAverageHoursPerDay(thread["uuid"]), 0].max.to_f/hoursPerDay
-    end
-
-    # NxThreads::shouldShow(thread)
-    def self.shouldShow(thread)
-        return false if !DoNotShowUntil::isVisible(thread["uuid"])
-        hoursPerDay = thread["hoursPerDay"]
-        BankData::recoveredAverageHoursPerDay(thread["uuid"]) < hoursPerDay
-    end
-
-    # NxThreads::ratioString(thread)
-    def self.ratioString(thread)
-        hoursPerDay = thread["hoursPerDay"]
-        "(#{"%6.2f" % (100 * NxThreads::ratio(thread))} %; #{"%5.2f" % hoursPerDay} h/d)".yellow
+        "🔺 #{item["description"]}"
     end
 
     # NxThreads::infinityuuid()
@@ -55,17 +45,17 @@ class NxThreads
     # NxThreads::threadsInRatioOrder()
     def self.threadsInRatioOrder()
         NxThreads::threads()
-            .sort_by{|thread| NxThreads::ratio(thread) }
+            .sort_by{|thread| ListingService::itemToComputedPosition(thread) }
     end
 
     # NxThreads::listingItems()
     def self.listingItems()
         NxThreads::threads()
-            .select{|thread| NxThreads::ratio(thread) < 1 }
+            .select{|thread| ListingService::itemToComputedPosition(thread) < 1 }
             .select{|thread| DoNotShowUntil::isVisible(thread["uuid"]) }
             .map{|thread|
                 tasks = (lambda{|thread|
-                    if NxThreads::ratio(thread) < 1 then
+                    if ListingService::itemToComputedPosition(thread) < 1 then
                         Parenting::childrenInOrderHead(thread["uuid"], 3, lambda{|item| DoNotShowUntil::isVisible(item["uuid"]) })
                     else
                         []
@@ -78,7 +68,7 @@ class NxThreads
 
     # NxThreads::interactivelySelectOneOrNull()
     def self.interactivelySelectOneOrNull()
-        l = lambda{|thread| "#{NxThreads::ratioString(thread)} #{thread["description"]}#{DoNotShowUntil::suffix1(thread["uuid"]).yellow}" }
+        l = lambda{|thread| "#{thread["description"]}#{DoNotShowUntil::suffix1(thread["uuid"]).yellow}" }
         threads = NxThreads::threadsInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("thread", threads, l)
     end
@@ -93,17 +83,6 @@ class NxThreads
 
     # -----------------------------------------
     # Operations
-
-    # NxThreads::setHours()
-    def self.setHours()
-        loop {
-            thread = NxThreads::interactivelySelectOneOrNull()
-            return if thread.nil?
-            puts PolyFunctions::toString(thread)
-            hours = LucilleCore::askQuestionAnswerAsString("hours per day: ").to_f
-            Items::setAttribute(thread["uuid"], "hoursPerDay", hours)
-        }
-    end
 
     # NxThreads::maintenance()
     def self.maintenance()

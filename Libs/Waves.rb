@@ -206,7 +206,7 @@ class Waves
             i1, i2 = items.partition{|item| item["interruption"] }
             i1 + i2
         }
-        Operations::program3(l, nil)
+        Operations::program3(l)
     end
 
     # Waves::program2()
@@ -219,6 +219,6 @@ class Waves
             i1, i2 = items.partition{|item| item["interruption"] }
             i1 + i2
         }
-        Operations::program3(l, nil)
+        Operations::program3(l)
     end
 end

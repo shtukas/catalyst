@@ -37,15 +37,12 @@ class Operations
         ListingService::evaluate(item["uuid"])
     end
 
-    # Operations::program3(lx, context)
-    def self.program3(lx, context)
+    # Operations::program3(lx)
+    def self.program3(lx)
         loop {
             elements = lx.call()
-
             store = ItemStore.new()
-
             puts ""
-
             elements
                 .each{|item|
                     store.register(item, FrontPage::canBeDefault(item))
@@ -53,26 +50,10 @@ class Operations
                         puts line
                     }
                 }
-
-            announce = (lambda {|context|
-                if context == "threads" then
-                    return "set hours"
-                end
-                ""
-            }).call(context)
-
             puts ""
-            puts announce
-
             input = LucilleCore::askQuestionAnswerAsString("> ")
             return if input == "exit"
             return if input == ""
-
-            if input == "set hours" then
-                NxThreads::setHours()
-                return 
-            end
-
             CommandsAndInterpreters::interpreter(input, store)
         }
     end
@@ -355,69 +336,50 @@ class Operations
             }
     end
 
-    # Operations::replaceOne(item)
-    def self.replaceOne(item)
-        if item["mikuType"] == "NxTask" then
-
-            parent = Parenting::parentOrNull(item["uuid"])
-            if parent.nil? then
-                position = nil
-            else
-                position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
-            end
-
-            # We have identified the parent (optional) and if relevant the position
-
-            donationTarget = item["donation-1205"]
-
-            # We have identified the optional donation target
-
-            newItem = NxTasks::interactivelyIssueNewOrNull()
-            newItem["donation-1205"] = donationTarget
-
-            if parent then
-                Parenting::insertEntry(parent["uuid"], newItem["uuid"], position)
-            end
-
-            return
+    # Operations::expandOne(item)
+    def self.expandOne(item)
+        if item["uxpayload-b4e4"] then
+            return if !LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item)}' has a payload, are you ok to lose it ? ")
         end
 
-        puts "I do not know how to replace a #{item["mikuType"]}"
-        LucilleCore::pressEnterToContinue()
-    end
-
-    # Operations::replaceWithMany(item)
-    def self.replaceWithMany(item)
         if item["mikuType"] == "NxTask" then
 
-            parent = Parenting::parentOrNull(item["uuid"])
-            if parent.nil? then
-                puts "Item '#{PolyFunctions::toString(item).green}' doesn't have a parent. Let's select one"
-                packet = Operations::decideParentAndPositionOrNull()
-                parent = packet["parent"]
-                position = packet["position"]
-            else
-                position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
+            if NxTasks::isOrphan(item) then
+                thread_description = LucilleCore::askQuestionAnswerAsString("thread description: ")
+                puts "lines"
+                sleep 0.5
+                lines = Operations::interactivelyGetLines()
+                priorityLevel = PriorityLevels::interactivelySelectOne()
+                thread = NxThreads::issue(thread_description, priorityLevel)
+                ListingService::ensure(thread)
+                lines.reverse.each{|line|
+                    task = NxTasks::descriptionToTask(line)
+                    position = PolyFunctions::lastPositionInParent(thread) + 1
+                    Parenting::insertEntry(thread["uuid"], task["uuid"], position)
+                    ListingService::ensure(task)
+                }
+                Items::deleteItem(item["uuid"])
+                return
             end
 
-            # By now we have a parent and a position
+            parent = Parenting::parentOrNull(item["uuid"])
+            position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
 
             position1 = (lambda{|parent, position|
                 positions = Parenting::childrenPositions(parent["uuid"])
                                 .select{|pos| pos < position }
                 return position - 1 if positions.empty?
                 positions.max
-
+ 
             }).call(parent, position)
-
+ 
             position2 = (lambda{|parent, position|
                 positions = Parenting::childrenPositions(parent["uuid"])
                                 .select{|pos| pos > position }
                 return position + 1 if positions.empty?
                 positions.min
-
             }).call(parent, position)
-
+ 
             puts "position1: #{position1}"
             puts "position : #{position}"
             puts "position2: #{position2}"
@@ -427,19 +389,14 @@ class Operations
 
             size = lines.size
 
-            lines.each_with_index{|line, i|
+            lines.reverse.each_with_index{|line, i|
                 ix = NxTasks::descriptionToTask(line)
                 pox = position1 + (position2-position1)*(i+1).to_f/(size+1)
-                puts "pox: #{pox}"
                 Parenting::insertEntry(parent["uuid"], ix["uuid"], pox)
                 ListingService::ensure(ix)
             }
 
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-
+            Items::deleteItem(item["uuid"])
             return
         end
 

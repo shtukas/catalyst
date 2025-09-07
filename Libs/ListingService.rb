@@ -287,7 +287,7 @@ class ListingService
         end
 
         if item["mikuType"] == "NxThread" then
-            return NxThreads::ratio(item) < 1
+            return true
         end
 
         if item["mikuType"] == "NxTask" then
@@ -342,15 +342,10 @@ class ListingService
 
     # ListingService::itemTo01(item)
     def self.itemTo01(item)
-        if item["mikuType"] == "NxTask" then
-            parent = Parenting::parentOrNull(item["uuid"])
-            if parent and parent["mikuType"] == "NxThread" then
-                return NxThreads::ratio(parent) - ListingService::realLineTo01Decreasing(Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])).to_f/1000
-            end
-            return 0
-        end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::ratio(item)
+        if item["mikuType"] == "NxTask" and item["priorityLevel47"] == "today" then
+            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
+            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
+            return ListingService::realLineTo01Increasing(idx)
         end
         if item["mikuType"] == "NxOnDate" then
             dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
@@ -361,7 +356,7 @@ class ListingService
             timeSinceLastDone = Time.new.to_i - item['lastDoneUnixtime']
             return ListingService::realLineTo01Increasing(-timeSinceLastDone)
         end
-        raise "(error: e9f93758)"
+        raise "(error: e9f93758) item: #{item}"
     end
 
     # ListingService::itemToCyclingPosition(item, a, b)
@@ -391,10 +386,8 @@ class ListingService
         # 0.320 -> 0.350 Wave interruption
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
-        # 0.480          NxTask Orphan (mostly former priority items, who survived overnight)
-        # 0.500 -> 0.600 NxOnDate
+        # 0.500 -> 0.600 NxOnDate & NxTask#today
         # 0.800 -> 0.880 NxThread & NxTask
-        # 0.880 -> 0.900 NxThread & NxTask
 
         # 0.390 -> 1.000 Wave (overlay)
 
@@ -444,11 +437,14 @@ class ListingService
                 return PriorityLevels::itemToListingPosition(item["uuid"], item["priorityLevel47"], 0.81, 0.87)
             end
 
-            return 0.81 + ListingService::itemTo01(item).to_f/1000
+            # Standard NxTask display
+            parent = Parenting::parentOrNull(item["uuid"])
+            position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
+            return ListingService::itemToComputedPosition(parent) - ListingService::realLineTo01Increasing(position).to_f/1000
         end
 
         if item["mikuType"] == "NxThread" then
-            return 0.88 + ListingService::itemTo01(item).to_f/1000
+            return PriorityLevels::itemToListingPosition(item["uuid"], item["priorityLevel47"], 0.81, 0.87)
         end
 
         puts "I do not know how to ListingService::itemToComputedPosition(#{JSON.pretty_generate(item)})"
