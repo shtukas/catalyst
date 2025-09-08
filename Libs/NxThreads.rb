@@ -45,17 +45,17 @@ class NxThreads
     # NxThreads::threadsInRatioOrder()
     def self.threadsInRatioOrder()
         NxThreads::threads()
-            .sort_by{|thread| ListingService::itemToComputedPosition(thread) }
+            .sort_by{|thread| ListingService::computePositionForItem(thread) }
     end
 
     # NxThreads::listingItems()
     def self.listingItems()
         NxThreads::threads()
-            .select{|thread| ListingService::itemToComputedPosition(thread) < 1 }
+            .select{|thread| ListingService::computePositionForItem(thread) < 1 }
             .select{|thread| DoNotShowUntil::isVisible(thread["uuid"]) }
             .map{|thread|
                 tasks = (lambda{|thread|
-                    if ListingService::itemToComputedPosition(thread) < 1 then
+                    if ListingService::computePositionForItem(thread) < 1 then
                         Parenting::childrenInOrderHead(thread["uuid"], 3, lambda{|item| DoNotShowUntil::isVisible(item["uuid"]) })
                     else
                         []
@@ -81,15 +81,34 @@ class NxThreads
         NxThreads::interactivelyIssueNewOrNull()
     end
 
+    # NxThreads::ensureThreadParenting(item)
+    def self.ensureThreadParenting(item)
+        return item if Parenting::parentOrNull(item["uuid"])
+        data = Operations::decideParentAndPositionOrNull()
+        if data then
+            parent = data["parent"]
+            position = data["position"]
+            Parenting::insertEntry(parent["uuid"], item["uuid"], position)
+        else
+            level = PriorityLevels::interactivelySelectOne()
+            thread = PriorityLevels::levelToThread(level)
+            Parenting::insertEntry(thread["uuid"], item["uuid"], rand)
+        end
+        Items::itemOrNull(item["uuid"])
+    end
+
     # -----------------------------------------
     # Operations
 
     # NxThreads::maintenance()
     def self.maintenance()
         Items::mikuType("NxThread").each{|item|
-            if !Parenting::hasChildren(item["uuid"]) and item["uxpayload-b4e4"].nil? then
-                if LucilleCore::askQuestionAnswerAsBoolean("Thread '#{PolyFunctions::toString(item)}' is now empty. Going to delete it ", true) then
+            next if ["(low)", "(regular)", "(high)"].include?(item["description"])
+            if !Parenting::hasChildren(item["uuid"]) and item["uxpayload-b4e4"].nil? and (Time.new.to_i - item["unixtime"]) > 86400*5 then
+                if LucilleCore::askQuestionAnswerAsBoolean("Thread '#{PolyFunctions::toString(item)}' is now empty. Going to delete it ") then
                     Items::deleteItem(item["uuid"])
+                else
+                    Parenting::insertEntry(item["uuid"], "unixtime", Time.new.to_i)
                 end
             end
         }

@@ -94,6 +94,9 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
+        if item["mikuType"] == "NxOpenInterest" then
+            return NxOpenInterests::toString(item)
+        end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)
         end
@@ -120,7 +123,7 @@ class PolyFunctions
     # PolyFunctions::ratio(item)
     def self.ratio(item)
         if item["mikuType"] == "NxThread" then
-            return ListingService::itemToComputedPosition(item)
+            return ListingService::computePositionForItem(item)
         end
         raise "(error: 1931-e258c72b)"
     end

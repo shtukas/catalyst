@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "NxTasks       : move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects | ois",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -242,6 +242,11 @@ class CommandsAndInterpreters
             return
         end
 
+        if Interpreting::match("ois", input) then
+            Operations::program3(lambda { Items::mikuType("NxOpenInterest") })
+            return
+        end
+
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
             return
@@ -362,15 +367,7 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
-            data = Operations::decideParentAndPositionOrNull()
-            if data then
-                parent = data["parent"]
-                position = data["position"]
-                Parenting::insertEntry(parent["uuid"], item["uuid"], position)
-            else
-                level = PriorityLevels::interactivelySelectOne()
-                Items::setAttribute(item["uuid"], "priorityLevel47", level)
-            end
+            item = NxThreads::ensureThreadParenting(item)
             ListingService::evaluate(item["uuid"])
             return
         end
@@ -386,7 +383,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("threads", input) then
-            Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| ListingService::itemToComputedPosition(item) } })
+            Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| ListingService::computePositionForItem(item) } })
             return
         end
 

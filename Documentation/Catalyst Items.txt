@@ -6,6 +6,6 @@ Database:
     create table Items (_uuid_ TEXT primary key, _mikuType_ TEXT, _item_ TEXT)
 
 Cross types conventions (all optional):
-    - skip-0843         : unixtime (skipped until this time)
-    - uxpayload-b4e4    : UxPayload
-    - donation-1205     : String # uuid of target for donation
+    - skip-0843      : unixtime (skipped until this time)
+    - uxpayload-b4e4 : UxPayload
+    - donation-1205  : String # uuid of target for donation

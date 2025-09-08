@@ -375,8 +375,8 @@ class ListingService
         middlePoint + radius * Math.sin(cursor + item["phase-1208"])
     end
 
-    # ListingService::itemToComputedPosition(item)
-    def self.itemToComputedPosition(item)
+    # ListingService::computePositionForItem(item)
+    def self.computePositionForItem(item)
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
@@ -426,32 +426,17 @@ class ListingService
         end
 
         if item["mikuType"] == "NxTask" then
-            if item["priorityLevel47"] and item["priorityLevel47"] == "today" then
-                # Same base as NxOnDate
-                return 0.51 + ListingService::itemTo01(item).to_f/1000
-            end
-
-            if NxTasks::isOrphan(item) then
-                if item["priorityLevel47"].nil? then
-                    puts PolyFunctions::toString(item).green
-                    Items::setAttribute(item["uuid"], "priorityLevel47", "today")
-                    item = Items::itemOrNull(item["uuid"])
-                    return ListingService::itemToComputedPosition(item)
-                end
-                return PriorityLevels::itemToListingPosition(item["uuid"], item["priorityLevel47"], 0.81, 0.87)
-            end
-
-            # Standard NxTask display
+            item = NxThreads::ensureThreadParenting(item)
             parent = Parenting::parentOrNull(item["uuid"])
             position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
-            return ListingService::itemToComputedPosition(parent) - ListingService::realLineTo01Increasing(position).to_f/1000
+            return ListingService::computePositionForItem(parent) - ListingService::realLineTo01Increasing(position).to_f/1000
         end
 
         if item["mikuType"] == "NxThread" then
             return PriorityLevels::itemToListingPosition(item["uuid"], item["priorityLevel47"], 0.81, 0.87)
         end
 
-        puts "I do not know how to ListingService::itemToComputedPosition(#{JSON.pretty_generate(item)})"
+        puts "I do not know how to ListingService::computePositionForItem(#{JSON.pretty_generate(item)})"
         raise "(error: df253fc4)"
     end
 
@@ -471,13 +456,13 @@ class ListingService
     def self.decidePositionForEntry(entry)
         px17 = entry["px17"]
         if px17["type"] == "compute" then
-            return ListingService::itemToComputedPosition(entry["item"])
+            return ListingService::computePositionForItem(entry["item"])
         end
         if px17["type"] == "overriden" then
             if Time.new.to_i < px17["expiry"] then
                 return px17["value"]
             else
-                return ListingService::itemToComputedPosition(entry["item"])
+                return ListingService::computePositionForItem(entry["item"])
             end
         end
     end

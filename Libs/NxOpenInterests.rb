@@ -19,7 +19,7 @@ class NxOpenInterests
 
     # NxOpenInterests::toString(item)
     def self.toString(item)
-        "#{item["description"]}"
+        "☯︎ #{item["description"]}"
     end
 
     # NxOpenInterests::listingItems()

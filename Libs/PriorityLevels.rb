@@ -80,4 +80,20 @@ class PriorityLevels
             }
         LucilleCore::pressEnterToContinue()
     end
+
+    # PriorityLevels::levelToThread(level)
+    def self.levelToThread(level)
+        # {"uuid" => "04f2e85f-7157-435f-bf37-d91c8ae36976", "mikuType" => "NxThread", "unixtime" => 1757362983, "description" => "(low)", "priorityLevel47" => "low"}
+        # {"uuid" => "4392a2a7-04b6-4e35-be41-cf57c43b088e", "mikuType" => "NxThread", "unixtime" => 1757362983, "description" => "(regular)", "priorityLevel47" => "regular"}
+        # {"uuid" => "fccf059f-2ba0-41de-963e-34834ded1b74", "mikuType" => "NxThread", "unixtime" => 1757362983, "description" => "(high)", "priorityLevel47" => "high"}
+        if level == "low" then
+            return Items::itemOrNull("04f2e85f-7157-435f-bf37-d91c8ae36976")
+        end
+        if level == "regular" then
+            return Items::itemOrNull("4392a2a7-04b6-4e35-be41-cf57c43b088e")
+        end
+        if level == "high" then
+            return Items::itemOrNull("fccf059f-2ba0-41de-963e-34834ded1b74")
+        end
+    end
 end
