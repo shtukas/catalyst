@@ -5,7 +5,7 @@ class PriorityLevels
 
     # PriorityLevels::levels()
     def self.levels()
-        ["low", "regular", "high", "today"]
+        ["low", "regular", "high"]
     end
 
     # PriorityLevels::interactivelySelectOne()
@@ -23,8 +23,7 @@ class PriorityLevels
         mapping = {
             "low"     => "646cea41-0d35-4ef0-ba58-9c0258cdadba",
             "regular" => "db34db99-0b65-43e0-af74-156da7883521",
-            "high"    => "bc1c8cc5-d7df-4d2a-b355-566759a8dc7e",
-            "today"   => "170ef0a0-14a2-4286-8e29-25e7fddddf7a"
+            "high"    => "bc1c8cc5-d7df-4d2a-b355-566759a8dc7e"
         }
         mapping[level]
     end
@@ -43,17 +42,13 @@ class PriorityLevels
         mapping = {
             "low"     => 1,
             "regular" => 2,
-            "high"    => 4,
-            "today"   => nil
+            "high"    => 4
         }
         rt.to_f/mapping[level]
     end
 
     # PriorityLevels::levelToRatio(level)
     def self.levelToRatio(level)
-        if level == "today" then
-            raise "You cannot compute level ratio for priority level #{today}"
-        end
         account = PriorityLevels::priorityLevelTobankAccount(level)
         rt = BankData::recoveredAverageHoursPerDay(account)
         PriorityLevels::rtToRatio(rt, level)
@@ -68,7 +63,7 @@ class PriorityLevels
 
     # PriorityLevels::print_numbers()
     def self.print_numbers()
-        (PriorityLevels::levels() - ["today"])
+        PriorityLevels::levels()
             .map{|level|
                 account = PriorityLevels::levelToBankAccount(level)
                 rt = BankData::recoveredAverageHoursPerDay(account)

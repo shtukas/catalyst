@@ -5,6 +5,6 @@ NxTask:
     - unixtime        : Float
     - datetime        : DateTime Iso 8601 UTC Zulu
     - description     : String
-    - priorityLevel47 : null | "low" | "regular" | "high" | "today" # [1]
+    - priorityLevel47 : null | "low" | "regular" | "high" # [1]
 
 [1] not null for orphans

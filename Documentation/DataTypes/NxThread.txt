@@ -1,4 +1,4 @@
 NxThread:
     - uuid            : String
     - description     : String
-    - priorityLevel47 : "low" | "regular" | "high" | "today"
+    - priorityLevel47 : "low" | "regular" | "high"
