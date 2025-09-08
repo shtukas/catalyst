@@ -313,6 +313,10 @@ class ListingService
             return false
         end
 
+        if item["mikuType"] == "NxOpenInterest" then
+            return false
+        end
+
         puts "I do not know how to ListingService::isListable(#{JSON.pretty_generate(item)})"
         raise "(error: 3ae9fe86)"
     end

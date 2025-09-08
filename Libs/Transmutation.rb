@@ -17,11 +17,14 @@ class Transmutation
             ListingService::evaluate(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxTask" and targetMikuType == "NxOnDate" then
-            datetime = CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCode()
-            Items::setAttribute(uuid, "date", datetime)
-            Items::setAttribute(item["uuid"], "mikuType", "NxOnDate")
+        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxFloat" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
             ListingService::evaluate(item["uuid"])
+            return
+        end
+        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxOpenInterest" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxOpenInterest")
+            ListingService::removeEntry(item["uuid"])
             return
         end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxFloat" then
@@ -40,7 +43,7 @@ class Transmutation
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat", "NxOnDate"])
         end
         if item["mikuType"] == "NxOnDate" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxOpenInterest"])
         end
         return if targetMikuType.nil?
         Transmutation::transmute1(item, targetMikuType)
