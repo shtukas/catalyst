@@ -430,7 +430,7 @@ class ListingService
             if NxTasks::isOrphan(item) then
                 if item["priorityLevel47"].nil? then
                     puts PolyFunctions::toString(item).green
-                    Items::setAttribute(item["uuid"], "priorityLevel47", PriorityLevels::interactivelySelectOne())
+                    Items::setAttribute(item["uuid"], "priorityLevel47", "today")
                     item = Items::itemOrNull(item["uuid"])
                     return ListingService::itemToComputedPosition(item)
                 end

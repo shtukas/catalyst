@@ -11,7 +11,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | select | maintenance",
+            "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
     end
 
@@ -85,6 +85,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("maintenance", input) then
             Operations::globalMaintenance()
+            return
+        end
+
+        if Interpreting::match("numbers", input) then
+            PriorityLevels::print_numbers()
             return
         end
 

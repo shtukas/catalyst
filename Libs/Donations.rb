@@ -2,7 +2,7 @@
 class Donations
     # Donations::interactivelySetDonation(item) -> Item
     def self.interactivelySetDonation(item)
-        target = Donations::interactivelySelectTargetForDonationOrNull()
+        target = Donations::architectDonationTarget()
         return item if target.nil?
         Items::setAttribute(item["uuid"], "donation-1205", target["uuid"])
         Items::itemOrNull(item["uuid"])
@@ -18,5 +18,13 @@ class Donations
     def self.interactivelySelectTargetForDonationOrNull()
         targets = NxThreads::threadsInRatioOrder()
         LucilleCore::selectEntityFromListOfEntitiesOrNull("donation target", targets, lambda{|item| PolyFunctions::toString(item) })
+    end
+
+    # Donations::architectDonationTarget()
+    def self.architectDonationTarget()
+        target = Donations::interactivelySelectTargetForDonationOrNull()
+        return target if target
+        return if !LucilleCore::askQuestionAnswerAsBoolean("You have not selected a donation target, would you like to create a thread ? ", true)
+        NxThreads::interactivelyIssueNewOrNull()
     end
 end
