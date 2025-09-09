@@ -127,6 +127,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxLine" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+                ListingService::removeEntry(item["uuid"])
+            end
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -227,6 +235,14 @@ class PolyActions
             return
         end
 
+        if item["mikuType"] == "NxLine" then
+            PolyActions::start(item)
+            PolyActions::access(item)
+            LucilleCore::pressEnterToContinue("Press [enter] to done: ")
+            PolyActions::destroy(item)
+            return
+        end
+
         if item["mikuType"] == "NxTask" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -288,6 +304,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxThread" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+                ListingService::removeEntry(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxLine" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
