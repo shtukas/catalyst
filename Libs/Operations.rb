@@ -179,11 +179,11 @@ class Operations
         LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
     end
 
-    # Operations::decideParentAndPosition()
-    def self.decideParentAndPosition()
-        parent = Operations::interactivelySelectThread()
-        position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-        [parent, position]
+    # Operations::architectParentAndPosition()
+    def self.architectParentAndPosition()
+        data = Operations::architectParentAndPositionOrNull()
+        return data if data
+        Operations::architectParentAndPosition()
     end
 
     # Operations::architectParentAndPositionOrNull()
@@ -416,8 +416,8 @@ class Operations
 
     # Operations::relocateToNewParent(item)
     def self.relocateToNewParent(item)
-        parent, position = Operations::decideParentAndPosition()
-        Parenting::insertEntry(parent["uuid"], item["uuid"], position)
+        data = Operations::architectParentAndPosition()
+        Parenting::insertEntry(data["parent"]["uuid"], item["uuid"], data["position"])
     end
 
     # Operations::relocateToNewThreadOrNothing(item)
