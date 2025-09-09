@@ -189,7 +189,7 @@ class Operations
     # Operations::architectParentAndPositionOrNull()
     def self.architectParentAndPositionOrNull()
         parent = Operations::interactivelySelectThreadOrNull()
-        if parent.nil? then
+        if parent then
             position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
             return {
                 "parent" => parent,
@@ -422,7 +422,6 @@ class Operations
 
     # Operations::relocateToNewThreadOrNothing(item)
     def self.relocateToNewThreadOrNothing(item)
-        # At the moment parenting is only between a NxTask (child) and a NxThread (parent)
         return if item["mikuType"] != "NxTask"
         packet = Operations::architectParentAndPositionOrNull()
         return if packet.nil?
