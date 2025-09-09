@@ -9,7 +9,7 @@ class CommandsAndInterpreters
             "NxTasks       : move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects | ois",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects | ois | lines",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -201,13 +201,12 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("priority", input) then
-            description = LucilleCore::askQuestionAnswerAsString("description (empty to abort): ")
-            return if description == ""
-            NxBalls::activeItems().each{|item|
-                NxBalls::pause(item)
+            item = NxLines::interactivelyIssueNewOrNull()
+            return if item.nil?
+            NxBalls::activeItems().each{|i|
+                NxBalls::pause(i)
             }
-            item = NxTasks::descriptionToTask(description)
-            item = Donations::interactivelySetDonation(item)
+            item = Donations::interactivelySetDonationOrNoting(item)
             ListingService::ensureAtFirstPositionForTheDay(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
                 PolyActions::start(item)
@@ -374,6 +373,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("float", input) then
             NxFloats::interactivelyIssueNewOrNull()
+            return
+        end
+
+        if Interpreting::match("lines", input) then
+            Operations::program3(lambda { Items::mikuType("NxLine").sort_by{|item| item["unixtime"] } })
             return
         end
 

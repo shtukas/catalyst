@@ -141,6 +141,7 @@ require_relative "Donations.rb"
 require_relative "Elizabeth.rb"
 
 require_relative "Fsck.rb"
+require_relative "FrontPage.rb"
 
 require_relative "Galaxy.rb"
 
@@ -150,7 +151,6 @@ require_relative "Instances.rb"
 require_relative "Items.rb"
 
 require_relative "ListingService.rb"
-require_relative "FrontPage.rb"
 
 require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
@@ -160,6 +160,7 @@ require_relative "NxThreads.rb"
 require_relative "NxOnDates.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxOpenInterests.rb"
+require_relative "NxLines.rb"
 
 require_relative "Operations.rb"
 

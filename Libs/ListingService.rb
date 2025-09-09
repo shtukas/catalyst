@@ -274,6 +274,10 @@ class ListingService
 
     # ListingService::isListable(item)
     def self.isListable(item)
+        if item["mikuType"] == "NxLine" then
+            return true
+        end
+
         if item["mikuType"] == "NxLambda" then
             return true
         end
@@ -395,6 +399,10 @@ class ListingService
 
         # 0.390 -> 1.000 Wave (overlay)
 
+        if item["mikuType"] == "NxLine" then
+            return rand
+        end
+
         if item["mikuType"] == "NxLambda" then
             return ListingService::determinePositionInInterval(item, 0.28, 0.30)
         end
@@ -500,6 +508,7 @@ class ListingService
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxBackups::listingItems(),
+            Items::mikuType("NxLine"),
             NxOnDates::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
