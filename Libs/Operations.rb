@@ -186,15 +186,25 @@ class Operations
         [parent, position]
     end
 
-    # Operations::decideParentAndPositionOrNull()
-    def self.decideParentAndPositionOrNull()
+    # Operations::architectParentAndPositionOrNull()
+    def self.architectParentAndPositionOrNull()
         parent = Operations::interactivelySelectThreadOrNull()
-        return nil if parent.nil?
-        position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-        {
-            "parent" => parent,
-            "position" => position
-        }
+        if parent.nil? then
+            position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
+            return {
+                "parent" => parent,
+                "position" => position
+            }
+        end
+        thread = NxThreads::interactivelyIssueNewOrNull()
+        if thread then
+            position = PolyFunctions::interactivelySelectGlobalPositionInParent(thread)
+            return {
+                "parent" => thread,
+                "position" => position
+            }
+        end
+        nil
     end
 
     # Operations::diveItem(parent)
@@ -414,7 +424,7 @@ class Operations
     def self.relocateToNewThreadOrNothing(item)
         # At the moment parenting is only between a NxTask (child) and a NxThread (parent)
         return if item["mikuType"] != "NxTask"
-        packet = Operations::decideParentAndPositionOrNull()
+        packet = Operations::architectParentAndPositionOrNull()
         return if packet.nil?
         Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
     end

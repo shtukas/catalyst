@@ -84,16 +84,15 @@ class NxThreads
     # NxThreads::ensureThreadParenting(item)
     def self.ensureThreadParenting(item)
         return item if Parenting::parentOrNull(item["uuid"])
-        data = Operations::decideParentAndPositionOrNull()
+        data = Operations::architectParentAndPositionOrNull()
         if data then
             parent = data["parent"]
             position = data["position"]
             Parenting::insertEntry(parent["uuid"], item["uuid"], position)
-        else
-            level = PriorityLevels::interactivelySelectOne()
-            thread = PriorityLevels::levelToThread(level)
-            Parenting::insertEntry(thread["uuid"], item["uuid"], rand)
         end
+        level = PriorityLevels::interactivelySelectOne()
+        thread = PriorityLevels::levelToThread(level)
+        Parenting::insertEntry(thread["uuid"], item["uuid"], rand)
         Items::itemOrNull(item["uuid"])
     end
 
