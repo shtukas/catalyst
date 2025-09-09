@@ -131,6 +131,7 @@ class FrontPage
         entries
             .each{|entry|
                 item = entry["item"]
+                next if NxThreads::isStructuralThread(item)
 
                 store.register(item, FrontPage::canBeDefault(item))
                 lines = entry["listing_lines"]
