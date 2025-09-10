@@ -7,7 +7,7 @@ class CommandsAndInterpreters
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation (*) | push * | dismiss * | * on <datecode> | edit * | expand * | destroy *",
             "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread | open interest",
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects | ois | lines",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
@@ -314,6 +314,13 @@ class CommandsAndInterpreters
             return if item.nil?
             puts JSON.pretty_generate(item)
             Donations::interactivelySetDonation(item)
+            return
+        end
+
+        if Interpreting::match("open interest", input) then
+            item = NxOpenInterests::interactivelyIssueNewOrNull()
+            return if item.nil?
+            puts JSON.pretty_generate(item)
             return
         end
 
