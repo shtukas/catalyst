@@ -134,7 +134,7 @@ class Operations
                 puts location.yellow
                 parentuuid, position = PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
                 description = File.basename(location)
-                item = NxTasks::locationToTask(description, location)
+                item = NxTasks::locationToTask(description, location, "high")
                 Parenting::insertEntry(parentuuid, item["uuid"], position)
                 ListingService::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
@@ -229,10 +229,10 @@ class Operations
 
             puts ""
 
-            commands ="todo (here, with position selection) | pile | position * | sort"
+            commands ="todo (here, with position selection) | position * | sort"
 
             if parent["mikuType"] == "NxThread" then
-                commands ="todo (here, with position selection) | moves | pile | position * | sort"
+                commands ="todo (here, with position selection) | moves | position * | sort"
             end
 
             puts commands
@@ -264,19 +264,6 @@ class Operations
                     position = PolyFunctions::firstPositionInParent(thread) - 1
                     Parenting::insertEntry(thread["uuid"], child["uuid"], position)
                 }
-                next
-            end
-
-            if input == "pile" then
-                Operations::interactivelyGetLines()
-                    .reverse
-                    .each{|line|
-                        position = PolyFunctions::firstPositionInParent(parent) - 1
-                        todo = NxTasks::descriptionToTask(line, parent["uuid"], position)
-                        puts JSON.pretty_generate(todo)
-                        Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                        ListingService::evaluate(todo["uuid"])
-                    }
                 next
             end
 
@@ -344,74 +331,6 @@ class Operations
                         end
                     }
             }
-    end
-
-    # Operations::expandOne(item)
-    def self.expandOne(item)
-        if item["uxpayload-b4e4"] then
-            return if !LucilleCore::askQuestionAnswerAsBoolean("'#{PolyFunctions::toString(item)}' has a payload, are you ok to lose it ? ")
-        end
-
-        if item["mikuType"] == "NxTask" then
-
-            if NxTasks::isOrphan(item) then
-                thread_description = LucilleCore::askQuestionAnswerAsString("thread description: ")
-                puts "lines"
-                sleep 0.5
-                lines = Operations::interactivelyGetLines()
-                priorityLevel = PriorityLevels::interactivelySelectOne()
-                thread = NxThreads::issue(thread_description, priorityLevel)
-                ListingService::ensure(thread)
-                lines.reverse.each{|line|
-                    task = NxTasks::descriptionToTask(line)
-                    position = PolyFunctions::lastPositionInParent(thread) + 1
-                    Parenting::insertEntry(thread["uuid"], task["uuid"], position)
-                    ListingService::ensure(task)
-                }
-                Items::deleteItem(item["uuid"])
-                return
-            end
-
-            parent = Parenting::parentOrNull(item["uuid"])
-            position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
-
-            position1 = (lambda{|parent, position|
-                positions = Parenting::childrenPositions(parent["uuid"])
-                                .select{|pos| pos < position }
-                return position - 1 if positions.empty?
-                positions.max
- 
-            }).call(parent, position)
- 
-            position2 = (lambda{|parent, position|
-                positions = Parenting::childrenPositions(parent["uuid"])
-                                .select{|pos| pos > position }
-                return position + 1 if positions.empty?
-                positions.min
-            }).call(parent, position)
- 
-            puts "position1: #{position1}"
-            puts "position : #{position}"
-            puts "position2: #{position2}"
-
-            lines = Operations::interactivelyGetLines()
-            return if lines.empty?
-
-            size = lines.size
-
-            lines.reverse.each_with_index{|line, i|
-                ix = NxTasks::descriptionToTask(line)
-                pox = position1 + (position2-position1)*(i+1).to_f/(size+1)
-                Parenting::insertEntry(parent["uuid"], ix["uuid"], pox)
-                ListingService::ensure(ix)
-            }
-
-            Items::deleteItem(item["uuid"])
-            return
-        end
-
-        puts "I do not know how to replace a #{item["mikuType"]}"
-        LucilleCore::pressEnterToContinue()
     end
 
     # Operations::relocateToNewParent(item)

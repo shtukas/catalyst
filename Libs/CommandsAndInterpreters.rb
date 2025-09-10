@@ -5,7 +5,7 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation (*) | push * | dismiss * | * on <datecode> | edit * | expand * | destroy *",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation (*) | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "NxTasks       : move (*)",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread | open interest",
             "              : transmute *",
@@ -158,21 +158,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("expand", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Operations::expandOne(item)
-            return
-        end
-
-        if Interpreting::match("expand *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Operations::expandOne(item)
-            return
-        end
-
         if Interpreting::match("dismiss *", input) then
             _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
@@ -208,7 +193,6 @@ class CommandsAndInterpreters
             NxBalls::activeItems().each{|i|
                 NxBalls::pause(i)
             }
-            item = Donations::interactivelySetDonationOrNoting(item)
             ListingService::ensureAtFirstPositionForTheDay(item)
             if LucilleCore::askQuestionAnswerAsBoolean("start ? ", true) then
                 PolyActions::start(item)
@@ -225,8 +209,7 @@ class CommandsAndInterpreters
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green
-                    item = NxTasks::descriptionToTask(line)
-                    item = Donations::interactivelySetDonation(item)
+                    item = NxLines::issue(line)
                     ListingService::ensureAtFirstPositionForTheDay(item)
                     last_item = item
                 }

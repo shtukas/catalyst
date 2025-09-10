@@ -1,9 +1,9 @@
 
 NxTask:
-    - uuid          : String
-    - mikuType      : "NxTask"
-    - unixtime      : Float
-    - datetime      : DateTime Iso 8601 UTC Zulu
-    - description   : String
+    - uuid            : String
+    - mikuType        : "NxTask"
+    - unixtime        : Float
+    - datetime        : DateTime Iso 8601 UTC Zulu
+    - description     : String
+    - priorityLevel48 : "low" | "regular" | "high"
 
-A NxTask must have a parent

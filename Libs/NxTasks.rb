@@ -15,12 +15,13 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
+        Items::setAttribute(uuid, "priorityLevel48", PriorityLevels::interactivelySelectOne())
         Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::itemOrNull(uuid)
     end
 
-    # NxTasks::locationToTask(description, location)
-    def self.locationToTask(description, location)
+    # NxTasks::locationToTask(description, location, priorityLevel48)
+    def self.locationToTask(description, location, priorityLevel48)
         uuid = SecureRandom.uuid
         Items::init(uuid)
         payload = UxPayload::locationToPayload(uuid, location)
@@ -28,17 +29,7 @@ class NxTasks
         Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
         Items::setAttribute(uuid, "description", description)
         Items::setAttribute(uuid, "uxpayload-b4e4", payload)
-        Items::setAttribute(uuid, "mikuType", "NxTask")
-        Items::itemOrNull(uuid)
-    end
-
-    # NxTasks::descriptionToTask(description)
-    def self.descriptionToTask(description)
-        uuid = SecureRandom.uuid
-        Items::init(uuid)
-        Items::setAttribute(uuid, "unixtime", Time.new.to_i)
-        Items::setAttribute(uuid, "datetime", Time.new.utc.iso8601)
-        Items::setAttribute(uuid, "description", description)
+        Items::setAttribute(uuid, "priorityLevel48", priorityLevel48)
         Items::setAttribute(uuid, "mikuType", "NxTask")
         Items::itemOrNull(uuid)
     end
@@ -99,6 +90,7 @@ class NxTasks
         if count1 < 150 and count2 > 0 then
             iced.take(100).each{|item|
                 puts "moving from NxIce to NxTask: #{item["description"]}"
+                Items::setAttribute(item["uuid"], "priorityLevel48", "low")
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             }
         end
