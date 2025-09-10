@@ -97,8 +97,8 @@ class PolyFunctions
         if item["mikuType"] == "NxTask" then
             return NxTasks::toString(item)
         end
-        if item["mikuType"] == "NxOpenInterest" then
-            return NxOpenInterests::toString(item)
+        if item["mikuType"] == "NxTracker" then
+            return NxTrackers::toString(item)
         end
         if item["mikuType"] == "Wave" then
             return Waves::toString(item)

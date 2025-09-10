@@ -244,7 +244,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("ois", input) then
-            Operations::program3(lambda { Items::mikuType("NxOpenInterest") })
+            Operations::program3(lambda { Items::mikuType("NxTracker") })
             return
         end
 
@@ -318,7 +318,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("open interest", input) then
-            item = NxOpenInterests::interactivelyIssueNewOrNull()
+            item = NxTrackers::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             return

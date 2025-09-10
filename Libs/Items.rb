@@ -256,7 +256,9 @@ class Items
         end
         item[attrname] = attrvalue
         Items::commitItem(item)
-        ListingService::evaluate(uuid)
+        if !$IS_NSLOG then
+            ListingService::evaluate(uuid)
+        end
         item
     end
 

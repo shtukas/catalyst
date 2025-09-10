@@ -317,7 +317,7 @@ class ListingService
             return false
         end
 
-        if item["mikuType"] == "NxOpenInterest" then
+        if item["mikuType"] == "NxTracker" then
             return false
         end
 
