@@ -29,7 +29,7 @@ class NxThreads
 
     # NxThreads::toString(item)
     def self.toString(item)
-        "🔺 #{item["description"]}"
+        "🔺 #{item["description"]} (#{item["priorityLevel47"].yellow})"
     end
 
     # NxThreads::infinityuuid()
@@ -102,6 +102,7 @@ class NxThreads
             parent = data["parent"]
             position = data["position"]
             Parenting::insertEntry(parent["uuid"], item["uuid"], position)
+            return
         end
         level = PriorityLevels::interactivelySelectOne()
         thread = PriorityLevels::levelToThread(level)
