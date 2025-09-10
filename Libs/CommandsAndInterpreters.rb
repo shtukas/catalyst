@@ -5,11 +5,10 @@ class CommandsAndInterpreters
     # CommandsAndInterpreters::commands()
     def self.commands()
         [
-            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | donation (*) | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "NxTasks       : move (*)",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | thread | open interest",
+            "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | open interest",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | threads | todays | dive * | projects | ois | lines",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | ois | lines",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -124,37 +123,12 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("sort *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Operations::generalSort(item)
-            return
-        end
-
         if Interpreting::match("bank accounts *", input) then
             _, _, listord = Interpreting::tokenizer(input)
             item = store.get(listord.to_i)
             return if item.nil?
             puts JSON.pretty_generate(PolyFunctions::itemToBankingAccounts(item))
             LucilleCore::pressEnterToContinue()
-            return
-        end
-
-        if Interpreting::match("move", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Operations::relocateToNewThreadOrNothing(item)
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-
-        if Interpreting::match("move *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Operations::relocateToNewThreadOrNothing(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -221,11 +195,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("thread", input) then
-            NxThreads::interactivelyIssueNewOrNull()
-            return
-        end
-
         if Interpreting::match("ois", input) then
             Operations::program3(lambda { Items::mikuType("NxTracker") })
             return
@@ -261,28 +230,9 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("donation", input) then
-            item = store.getDefault()
-            return if item.nil?
-            Donations::interactivelySetDonation(item)
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-
-        if Interpreting::match("donation *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Donations::interactivelySetDonation(item)
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-
         if Interpreting::match("today", input) then
             item = NxOnDates::interactivelyIssueTodayOrNull()
             return if item.nil?
-            Donations::interactivelySetDonation(item)
-            item = Items::itemOrNull(item["uuid"])
             puts JSON.pretty_generate(item)
             return
         end
@@ -296,7 +246,6 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Donations::interactivelySetDonation(item)
             return
         end
 
@@ -358,7 +307,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
-            item = NxThreads::ensureThreadParenting(item)
             ListingService::evaluate(item["uuid"])
             return
         end
@@ -375,19 +323,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("threads", input) then
-            Operations::program3(lambda { Items::mikuType("NxThread").sort_by{|item| ListingService::computePositionForItem(item) } })
-            return
-        end
-
-        if Interpreting::match("dive *", input) then
-            _, listord = Interpreting::tokenizer(input)
-            item = store.get(listord.to_i)
-            return if item.nil?
-            Operations::diveItem(item)
             return
         end
 
@@ -596,7 +531,6 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueTomorrowOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
-            Donations::interactivelySetDonation(item)
             return
         end
 

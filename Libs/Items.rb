@@ -236,7 +236,6 @@ class Items
     def self.itemOrNull(uuid)
         entry = Items::entryOrNull(uuid)
         if entry.nil? then
-            Parenting::removeIdentifierFromDatabase(uuid)
             return nil
         end
         entry["item"]
@@ -307,8 +306,6 @@ class Items
     # Items::deleteItem(uuid)
     def self.deleteItem(uuid)
         Items::setAttribute(uuid, "mikuType", 'NxDeleted')
-
-        Parenting::removeIdentifierFromDatabase(uuid)
 
         # Version 1
         # This synchronous processing was taking too long, so we are doing version 2

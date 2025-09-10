@@ -1,4 +1,0 @@
-NxThread:
-    - uuid            : String
-    - description     : String
-    - priorityLevel47 : "low" | "regular" | "high"

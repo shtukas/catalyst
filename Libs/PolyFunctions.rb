@@ -13,15 +13,6 @@ class PolyFunctions
             "number"      => item["uuid"]
         }
 
-        parent = Parenting::parentOrNull(item["uuid"])
-        if parent then
-            accounts << {
-                "description" => "(parent: #{parent["description"]})",
-                "number"      => parent["uuid"]
-            }
-            accounts = accounts + PolyFunctions::itemToBankingAccounts(parent, depth-1)
-        end
-
         if item["priorityLevel48"] then
             level = item["priorityLevel48"]
             accountNumber = PriorityLevels::priorityLevelTobankAccount(item["priorityLevel48"])
@@ -29,22 +20,6 @@ class PolyFunctions
                 "description" => "priority level: #{level}",
                 "number"      => accountNumber
             }
-        end
-
-        if item["donation-1205"] then
-            target = Items::itemOrNull(item["donation-1205"])
-            if target then
-                accounts << {
-                    "description" => "(donation target: #{target["description"]})",
-                    "number"      => item["donation-1205"]
-                }
-                accounts = accounts + PolyFunctions::itemToBankingAccounts(target, depth - 1)
-            else
-                accounts << {
-                    "description" => "(donation target not found: #{item["donation-1205"]})",
-                    "number"      => item["donation-1205"]
-                }
-            end
         end
 
         accounts.reduce([]){|as, account|
@@ -78,9 +53,6 @@ class PolyFunctions
         end
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
-        end
-        if item["mikuType"] == "NxThread" then
-            return NxThreads::toString(item)
         end
         if item["mikuType"] == "NxFloat" then
             return NxFloats::toString(item)
@@ -125,66 +97,6 @@ class PolyFunctions
 
     # PolyFunctions::ratio(item)
     def self.ratio(item)
-        if item["mikuType"] == "NxThread" then
-            return ListingService::computePositionForItem(item)
-        end
         raise "(error: 1931-e258c72b)"
-    end
-
-    # PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-    def self.interactivelySelectGlobalPositionInParent(parent)
-        elements = Parenting::childrenInOrder(parent["uuid"])
-        elements.first(20).each{|item|
-            puts "#{PolyFunctions::toString(item)}"
-        }
-        position = LucilleCore::askQuestionAnswerAsString("position: 'near' (default), 'first', 'next', <position> : ")
-        if position == "" then # default does next
-            position = "near"
-        end
-        if position == "near" then
-            return PolyFunctions::random_10_20_position_in_parent(parent)
-        end
-        if position == "first" then
-            return ([0] + elements.map{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }).min - 1
-        end
-        if position == "next" then
-            return ([0] + elements.map{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }).max + 1
-        end
-        position = position.to_f
-        position
-    end
-
-    # PolyFunctions::firstPositionInParent(parent)
-    def self.firstPositionInParent(parent)
-        positions = Parenting::childrenPositions(parent["uuid"])
-        return 1 if positions.empty?
-        positions.min
-    end
-
-    # PolyFunctions::lastPositionInParent(parent)
-    def self.lastPositionInParent(parent)
-        positions = Parenting::childrenPositions(parent["uuid"])
-        return 1 if positions.empty?
-        positions.max
-    end
-
-    # PolyFunctions::random_10_20_position_in_parent(parent)
-    def self.random_10_20_position_in_parent(parent)
-        items = Parenting::childrenInOrder(parent["uuid"])
-        if items.size < 20 then
-            return PolyFunctions::lastPositionInParent(parent) + 1
-        end
-        positions = items.drop(10).take(10).map{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
-        first = positions.first
-        last = positions.last
-        first + rand * (last - first)
-    end
-
-    # PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
-    def self.makeInfinityuuidAndPositionNearTheTop()
-        threaduuid = NxThreads::infinityuuid()
-        thread = Items::itemOrNull(threaduuid)
-        position = PolyFunctions::random_10_20_position_in_parent(thread)
-        [threaduuid, position]
     end
 end

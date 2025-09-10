@@ -136,7 +136,6 @@ require_relative "Desktop"
 require_relative "DropBox.rb"
 require_relative "DoNotShowUntil.rb"
 require_relative "Datablocks.rb"
-require_relative "Donations.rb"
 
 require_relative "Elizabeth.rb"
 
@@ -156,7 +155,6 @@ require_relative "NxBalls.rb"
 require_relative "NxTasks.rb"
 require_relative "NxBackups.rb"
 require_relative "NxFloats.rb"
-require_relative "NxThreads.rb"
 require_relative "NxOnDates.rb"
 require_relative "NxLambdas.rb"
 require_relative "NxTrackers.rb"
@@ -164,7 +162,6 @@ require_relative "NxLines.rb"
 
 require_relative "Operations.rb"
 
-require_relative "Parenting.rb"
 require_relative "PolyActions.rb"
 require_relative "PolyFunctions.rb"
 require_relative "PriorityLevels.rb"

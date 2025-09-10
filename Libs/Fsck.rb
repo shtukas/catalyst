@@ -32,9 +32,6 @@ class Fsck
         if item["mikuType"] == "NxMonitor" then
             return
         end
-        if item["mikuType"] == "NxThread" then
-            return
-        end
         if item["mikuType"] == "NxIce" then
             return
         end

@@ -39,56 +39,21 @@ class NxTasks
 
     # NxTasks::icon(item)
     def self.icon(item)
-        if Parenting::parentOrNull(item["uuid"]).nil? then
-            return "▫️ "
-        end
         "🔹"
     end
 
     # NxTasks::toString(item)
     def self.toString(item)
-        parentingSuffix = Parenting::suffix(item)
-        "#{NxTasks::icon(item)} #{item["description"]}#{parentingSuffix}"
-    end
-
-    # NxTasks::isOrphan(item)
-    def self.isOrphan(item)
-        Parenting::parentOrNull(item["uuid"]).nil?
-    end
-
-    # NxTasks::orphan()
-    def self.orphan()
-        Items::mikuType("NxTask")
-            .select{|item| NxTasks::isOrphan(item) }
+        "#{NxTasks::icon(item)} #{item["description"]} (#{item["priorityLevel48"].yellow})"
     end
 
     # ------------------
     # Ops
 
-    # NxTasks::performItemPositioning(itemuuid)
-    def self.performItemPositioning(itemuuid)
-        data = Operations::architectParentAndPosition()
-        Parenting::insertEntry(data["parent"]["uuid"], itemuuid, data["position"])
-        ListingService::evaluate(itemuuid)
-    end
-
     # NxTasks::maintenance()
     def self.maintenance()
-        NxTasks::orphan().each{|item|
-            if item["priorityLevel47"].nil? then
-                puts PolyFunctions::toString(item)
-                Items::setAttribute(item["uuid"], "priorityLevel47", PriorityLevels::interactivelySelectOne())
-            end
-        }
-        count1 = Items::mikuType("NxTask")
-                    .select{|item| Parenting::parentUuidOrNull(item["uuid"]) == NxThreads::infinityuuid() }
-                    .size
-        #puts "count1: #{count1}"
-        iced = Items::mikuType("NxIce")
-        count2 = iced.size
-        #puts "count2: #{count2}"
-        if count1 < 150 and count2 > 0 then
-            iced.take(100).each{|item|
+        if Items::mikuType("NxTask").size < 150 then
+            Items::mikuType("NxIce").take(100).each{|item|
                 puts "moving from NxIce to NxTask: #{item["description"]}"
                 Items::setAttribute(item["uuid"], "priorityLevel48", "low")
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")

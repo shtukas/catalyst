@@ -7,12 +7,6 @@ class PolyActions
 
     # PolyActions::start(item)
     def self.start(item)
-        if item["mikuType"] == "NxTask" and Parenting::parentOrNull(item["uuid"]).nil? and item["donation-1205"].nil? then
-            item = Donations::interactivelySetDonation(item)
-        end
-        if item["mikuType"] == "NxOnDate" and item["donation-1205"].nil? then
-            item = Donations::interactivelySetDonation(item)
-        end
         puts "start: '#{PolyFunctions::toString(item).green}'"
         NxBalls::start(item)
     end
@@ -25,27 +19,7 @@ class PolyActions
             return
         end
 
-        if item["uxpayload-b4e4"].nil? and !Parenting::hasChildren(item["uuid"]) then
-            return
-        end
-
-        if item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-            return
-        end
-
-        if item["uxpayload-b4e4"].nil? and Parenting::hasChildren(item["uuid"]) then
-            Operations::diveItem(item)
-            return
-        end
-
-        option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
-        if option == "access payload" then
-            UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
-        end
-        if option == "dive" then
-            Operations::diveItem(item)
-        end
+        UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
     end
 
     # PolyActions::stop(item)
@@ -86,12 +60,6 @@ class PolyActions
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
             ListingService::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            NxBalls::stop(item)
-            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -167,24 +135,8 @@ class PolyActions
             return
         end
 
-        if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
-            if option == "access payload" then
-                # we continue here
-            end
-            if option == "dive" then
-                Operations::diveItem(item)
-                return
-            end
-        end
-
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
             return
         end
 
@@ -205,30 +157,6 @@ class PolyActions
     def self.tripleDots(item)
 
         return if NxBalls::itemIsActive(item)
-
-        if item["uxpayload-b4e4"] and Parenting::hasChildren(item["uuid"]) then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull('access mode', ["access payload", "dive"])
-            if option == "access payload" then
-                # we continue here
-            end
-            if option == "dive" then
-                Operations::diveItem(item)
-                return
-            end
-        end
-
-        if item["mikuType"] == "NxThread" and item["uxpayload-b4e4"] and !Parenting::hasChildren(item["uuid"]) then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to done: ")
-            PolyActions::done(item)
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
-            PolyActions::access(item)
-            return
-        end
 
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
@@ -276,12 +204,6 @@ class PolyActions
 
         NxBalls::stop(item)
 
-        if Parenting::hasChildren(item["uuid"]) then
-            puts "You cannot destroy an item that has children"
-            LucilleCore::pressEnterToContinue()
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             ListingService::removeEntry(item["uuid"])
             return
@@ -296,14 +218,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "Wave" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxThread" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
@@ -363,11 +277,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxThread" then
-            Operations::diveItem(item)
-            return
-        end
-
         if item["mikuType"] == "Wave" then
             Waves::program0(item)
             return
@@ -400,10 +309,6 @@ class PolyActions
 
     # PolyActions::doNotShowUntil(item, unixtime)
     def self.doNotShowUntil(item, unixtime)
-        if item["mikuType"] == "NxThread" then
-            children = Parenting::childrenInOrderHead(item["uuid"], 3, lambda{|i| DoNotShowUntil::isVisible(i["uuid"]) })
-            children.each{|i| DoNotShowUntil::setUnixtime(i["uuid"], unixtime) }
-        end
         DoNotShowUntil::setUnixtime(item["uuid"], unixtime)
     end
 end

@@ -246,12 +246,7 @@ class ListingService
         # Edits to this function should be mirrored in FrontPage::toString2(store, item)
         return [] if item.nil?
         lines = []
-        parentingSuffix = Parenting::suffix(item)
-        if item["mikuType"] == "NxTask" then
-            parentingSuffix = ""
-        end
-        hasChildren = Parenting::hasChildren(item["uuid"]) ? " [children]".red : ""
-        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{Donations::donationSuffix(item)}#{parentingSuffix}#{DoNotShowUntil::suffix2(item)}#{hasChildren}"
+        line = "STORE-PREFIX #{PolyFunctions::toString(item)}#{UxPayload::suffix_string(item)}#{NxBalls::nxballSuffixStatusIfRelevant(item)}#{DoNotShowUntil::suffix2(item)}"
 
         if TmpSkip1::isSkipped(item) then
             line = line.yellow
@@ -290,15 +285,8 @@ class ListingService
             return true
         end
 
-        if item["mikuType"] == "NxThread" then
-            return true
-        end
-
         if item["mikuType"] == "NxTask" then
-            return false if !DoNotShowUntil::isVisible(item["uuid"])
-            parent = Parenting::parentOrNull(item["uuid"])
-            return true if parent.nil?
-            return NxThreads::listingItems().map{|i| i["uuid"] }.include?(item["uuid"])
+            return DoNotShowUntil::isVisible(item["uuid"])
         end
 
         if item["mikuType"] == "NxOnDate" then
@@ -394,8 +382,8 @@ class ListingService
         # 0.320 -> 0.350 Wave interruption
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
-        # 0.500 -> 0.600 NxOnDate & NxTask#today
-        # 0.800 -> 0.880 NxThread & NxTask
+        # 0.500 -> 0.600 NxOnDate
+        # 0.800 -> 0.880 NxTask
 
         # 0.390 -> 1.000 Wave (overlay)
 
@@ -434,14 +422,14 @@ class ListingService
         end
 
         if item["mikuType"] == "NxTask" then
-            item = NxThreads::ensureThreadParenting(item)
-            parent = Parenting::parentOrNull(item["uuid"])
-            position = Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"])
-            return ListingService::computePositionForItem(parent) - ListingService::realLineTo01Increasing(position).to_f/1000
-        end
-
-        if item["mikuType"] == "NxThread" then
-            return PriorityLevels::itemToListingPosition(item["uuid"], item["priorityLevel47"], 0.81, 0.87)
+            puts item
+            level = item["priorityLevel48"]
+            ratio = PriorityLevels::levelToRatio(level)
+            a = 0.800
+            b = 0.880
+            primaryPosition = a + ratio*(b-a)
+            secondaryPosition = BankData::recoveredAverageHoursPerDay(item["uuid"]).to_f/1000
+            return primaryPosition + secondaryPosition
         end
 
         puts "I do not know how to ListingService::computePositionForItem(#{JSON.pretty_generate(item)})"
@@ -512,8 +500,6 @@ class ListingService
             NxOnDates::listingItems(),
             NxFloats::listingItems(),
             Waves::nonInterruptionItemsForListing(),
-            NxTasks::orphan(),
-            NxThreads::listingItems()
         ]
             .flatten
             .select{|item| DoNotShowUntil::isVisible(item["uuid"]) }
@@ -595,14 +581,6 @@ class ListingService
             if ListingService::isListable(item) then
                 ListingService::evaluate(item["uuid"])
             end
-        }
-        NxTasks::orphan().each{|item|
-            px17 = {
-                "type"  => "overriden",
-                "value" => 0.48,
-                "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
-            }
-            ListingService::insertUpdateItemAtPx17(item, px17)
         }
         archive_filepath = "#{ListingService::directory()}/archives/#{CommonUtils::today()}.sqlite3"
         if !File.exist?(archive_filepath) then

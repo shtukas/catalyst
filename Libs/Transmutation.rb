@@ -7,7 +7,6 @@ class Transmutation
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
         
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTask" then
-            NxTasks::performItemPositioning(item["uuid"])
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             ListingService::evaluate(item["uuid"])
             return

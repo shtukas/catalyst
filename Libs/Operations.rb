@@ -68,10 +68,6 @@ class Operations
         BankVault::maintenance()
         puts "Items::maintenance()"
         Items::maintenance()
-        puts "Parenting::maintenance()"
-        Parenting::maintenance()
-        puts "NxThreads::maintenance()"
-        NxThreads::maintenance()
     end
 
     # Operations::interactivelyGetLines()
@@ -119,9 +115,6 @@ class Operations
         entry = ListingService::getEntryOrNull(item["uuid"])
         puts JSON.pretty_generate(entry)
         puts ""
-        parent = Parenting::parentOrNull(item["uuid"])
-        puts "parent: #{parent}"
-        puts ""
         puts "front page line: #{FrontPage::toString2(ItemStore.new(), item)}"
         LucilleCore::pressEnterToContinue()
     end
@@ -132,10 +125,8 @@ class Operations
         if File.exist?(directory) then
             LucilleCore::locationsAtFolder(directory).each{|location|
                 puts location.yellow
-                parentuuid, position = PolyFunctions::makeInfinityuuidAndPositionNearTheTop()
                 description = File.basename(location)
                 item = NxTasks::locationToTask(description, location, "high")
-                Parenting::insertEntry(parentuuid, item["uuid"], position)
                 ListingService::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
@@ -167,183 +158,19 @@ class Operations
         end
     end
 
-    # Operations::interactivelySelectThread()
-    def self.interactivelySelectThread()
-        targets = NxThreads::threadsInRatioOrder()
-        LucilleCore::selectEntityFromListOfEntities_EnsureChoice("parent", targets, lambda{|item| PolyFunctions::toString(item) })
-    end
-
-    # Operations::interactivelySelectThreadOrNull()
-    def self.interactivelySelectThreadOrNull()
-        targets = NxThreads::threadsInRatioOrder()
-        LucilleCore::selectEntityFromListOfEntitiesOrNull("parent", targets, lambda{|item| PolyFunctions::toString(item) })
-    end
-
-    # Operations::architectParentAndPosition()
-    def self.architectParentAndPosition()
-        data = Operations::architectParentAndPositionOrNull()
-        return data if data
-        Operations::architectParentAndPosition()
-    end
-
-    # Operations::architectParentAndPositionOrNull()
-    def self.architectParentAndPositionOrNull()
-        parent = Operations::interactivelySelectThreadOrNull()
-        if parent then
-            position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-            return {
-                "parent" => parent,
-                "position" => position
-            }
-        end
-        thread = NxThreads::interactivelyIssueNewOrNull()
-        if thread then
-            position = PolyFunctions::interactivelySelectGlobalPositionInParent(thread)
-            return {
-                "parent" => thread,
-                "position" => position
-            }
-        end
-        nil
-    end
-
-    # Operations::diveItem(parent)
-    def self.diveItem(parent)
-        loop {
-            store = ItemStore.new()
-
-            puts ""
-            store.register(parent, false)
-            FrontPage::toString2(store, parent).each{|line|
-                puts line
-            }
-            puts ""
-
-            Parenting::childrenInOrder(parent["uuid"])
-                .each{|element|
-                    store.register(element, FrontPage::canBeDefault(element))
-                    FrontPage::toString2(store, element).each{|line|
-                        puts line
-                    }
-                }
-
-            puts ""
-
-            commands ="todo (here, with position selection) | position * | sort"
-
-            if parent["mikuType"] == "NxThread" then
-                commands ="todo (here, with position selection) | moves | position * | sort"
-            end
-
-            puts commands
-
-            input = LucilleCore::askQuestionAnswerAsString("> ")
-            return if input == "exit"
-            return if input == ""
-
-            if input == "todo" then
-                position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-                todo = NxTasks::interactivelyIssueNewOrNull()
-                puts JSON.pretty_generate(todo)
-                Parenting::insertEntry(parent["uuid"], todo["uuid"], position)
-                ListingService::evaluate(todo["uuid"])
-                next
-            end
-
-            if input == "moves" then
-                puts "architect a parent, select some elements, and then we are going to put the elements in first positions"
-                LucilleCore::pressEnterToContinue()
-
-                thread = NxThreads::architectOrNull()
-                return if thread.nil?
-
-                childrenInOrder = Parenting::childrenInOrder(parent["uuid"])
-                selected, _ = LucilleCore::selectZeroOrMore("elements", [], childrenInOrder, lambda{|i| PolyFunctions::toString(i) })
-
-                selected.each{|child|
-                    position = PolyFunctions::firstPositionInParent(thread) - 1
-                    Parenting::insertEntry(thread["uuid"], child["uuid"], position)
-                }
-                next
-            end
-
-            if input.start_with?("position") then
-                listord = input[8, input.size].strip.to_i
-                i = store.get(listord.to_i)
-                next if i.nil?
-                position = PolyFunctions::interactivelySelectGlobalPositionInParent(parent)
-                Parenting::insertEntry(parent["uuid"], i["uuid"], position)
-                next
-            end
-
-            if input == "sort" then
-                Operations::sortChildrenOfThisParent(parent)
-                next
-            end
-
-            CommandsAndInterpreters::interpreter(input, store)
-        }
-    end
-
-    # Operations::sortChildrenOfThisParent(parent)
-    def self.sortChildrenOfThisParent(parent)
-        childrenInOrder = Parenting::childrenInOrder(parent["uuid"]).sort_by{|item| Parenting::childPositionAtParentOrZero(parent["uuid"], item["uuid"]) }
-        return if childrenInOrder.empty?
-        selected, _ = LucilleCore::selectZeroOrMore("elements", [], childrenInOrder, lambda{|i| PolyFunctions::toString(i) })
-        selected.reverse.each{|i|
-            position = PolyFunctions::firstPositionInParent(parent) - 1
-            Parenting::insertEntry(parent["uuid"], i["uuid"], position)
-            ListingService::ensure(i)
-        }
-    end
-
-    # Operations::generalSort(item)
-    def self.generalSort(item)
-        if item["mikuType"] == "NxThread" then
-            Operations::sortChildrenOfThisParent(item)
-            return
-        end
-        if item["mikuType"] == "NxTask" then
-            Operations::sortChildrenOfThisParent(item)
-            return
-        end
-        puts "[486e8bd8] I do not know how to sort mikuType: #{item["mikuType"]}"
-        LucilleCore::pressEnterToContinue()
-    end
-
     # Operations::probeHead()
     def self.probeHead()
-        NxThreads::threads()
-            .each{|thread|
-                #puts "probing thread #{thread["description"]}"
-                Parenting::childrenInOrder(thread["uuid"])
-                    .first(200)
-                    .each{|item|
-                        #puts "probing item #{item["description"]}"
-                        next if item["uxpayload-b4e4"].nil?
-                        if item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
-                            unitId = item["uxpayload-b4e4"]["id"]
-                            location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
-                            puts "unit location: #{location}"
-                            payload2 = UxPayload::locationToPayload(item["uuid"], location)
-                            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
-                            LucilleCore::removeFileSystemLocation(location)
-                        end
-                    }
-            }
-    end
-
-    # Operations::relocateToNewParent(item)
-    def self.relocateToNewParent(item)
-        data = Operations::architectParentAndPosition()
-        Parenting::insertEntry(data["parent"]["uuid"], item["uuid"], data["position"])
-    end
-
-    # Operations::relocateToNewThreadOrNothing(item)
-    def self.relocateToNewThreadOrNothing(item)
-        return if item["mikuType"] != "NxTask"
-        packet = Operations::architectParentAndPositionOrNull()
-        return if packet.nil?
-        Parenting::insertEntry(packet["parent"]["uuid"], item["uuid"], packet["position"])
+        Items::mikuType("NxTask").each{|item|
+            #puts "probing item #{item["description"]}"
+            next if item["uxpayload-b4e4"].nil?
+            if item["uxpayload-b4e4"]["type"] == "Dx8Unit" then
+                unitId = item["uxpayload-b4e4"]["id"]
+                location = Dx8Units::acquireUnitFolderPathOrNull(unitId)
+                puts "unit location: #{location}"
+                payload2 = UxPayload::locationToPayload(item["uuid"], location)
+                Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload2)
+                LucilleCore::removeFileSystemLocation(location)
+            end
+        }
     end
 end

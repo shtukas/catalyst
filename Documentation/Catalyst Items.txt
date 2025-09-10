@@ -8,4 +8,3 @@ Database:
 Cross types conventions (all optional):
     - skip-0843      : unixtime (skipped until this time)
     - uxpayload-b4e4 : UxPayload
-    - donation-1205  : String # uuid of target for donation
