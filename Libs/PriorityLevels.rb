@@ -63,9 +63,14 @@ class PriorityLevels
     # ----------------------------------------
     # Ops
 
+    # PriorityLevels::interactivelySelectOneOrNull()
+    def self.interactivelySelectOneOrNull()
+        LucilleCore::selectEntityFromListOfEntitiesOrNull("level", PriorityLevels::levels())
+    end
+
     # PriorityLevels::interactivelySelectOne()
     def self.interactivelySelectOne()
-        level = LucilleCore::selectEntityFromListOfEntitiesOrNull("level", PriorityLevels::levels())
+        level = PriorityLevels::interactivelySelectOneOrNull()
         if level then
             return level
         else
