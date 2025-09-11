@@ -154,14 +154,6 @@ class Waves
 
         unixtime = Waves::nx46ToNextDisplayUnixtime(item["nx46"], Time.new.to_i)
         PolyActions::doNotShowUntil(item, unixtime + rand)
-
-        timespanInMinutes = LucilleCore::askQuestionAnswerAsString("padding timespan ? (in minutes, default 0): ")
-        if timespanInMinutes != "" then
-            timespanInSeconds = timespanInMinutes.to_f * 60
-        else
-            timespanInSeconds = 0
-        end
-        BankVault::insertValue(item["uuid"], CommonUtils::today(), timespanInSeconds)
     end
 
     # Waves::program0(item)
