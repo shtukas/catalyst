@@ -5,7 +5,16 @@ class Transmutation
     def self.transmute1(item, targetMikuType)
         return if targetMikuType.nil?
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
-        
+        if item["mikuType"] == "NxDeadline" and targetMikuType == "NxTask" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxTask")
+            ListingService::evaluate(item["uuid"])
+            return
+        end
+        if item["mikuType"] == "NxDeadline" and targetMikuType == "NxProject" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxProject")
+            ListingService::evaluate(item["uuid"])
+            return
+        end
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTask" then
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             ListingService::evaluate(item["uuid"])
@@ -26,6 +35,18 @@ class Transmutation
             ListingService::removeEntry(item["uuid"])
             return
         end
+        if item["mikuType"] == "NxProject" and targetMikuType == "NxDeadline" then
+            Items::setAttribute(item["uuid"], "date", CommonUtils::interactivelyMakeADateOrNull())
+            Items::setAttribute(item["uuid"], "mikuType", "NxDeadline")
+            ListingService::removeEntry(item["uuid"])
+            return
+        end
+        if item["mikuType"] == "NxProject" and targetMikuType == "NxTask" then
+            Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
+            Items::setAttribute(item["uuid"], "mikuType", "NxDeadline")
+            ListingService::removeEntry(item["uuid"])
+            return
+        end
         if item["mikuType"] == "NxTask" and targetMikuType == "NxFloat" then
             Items::setAttribute(item["uuid"], "mikuType", "NxFloat")
             ListingService::evaluate(item["uuid"])
@@ -40,6 +61,12 @@ class Transmutation
         targetMikuType = nil
         if item["mikuType"] == "NxTask" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxFloat", "NxOnDate"])
+        end
+        if item["mikuType"] == "NxProject" then
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxDeadline", "NxTask"])
+        end
+        if item["mikuType"] == "NxDeadline" then
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxProject"])
         end
         if item["mikuType"] == "NxOnDate" then
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxTracker"])

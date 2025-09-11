@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | tracker | project",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | tracker | project | deadline",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high | projects",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high | projects | deadlines",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -307,17 +307,29 @@ class CommandsAndInterpreters
 
         if Interpreting::match("todo", input) then
             item = NxTasks::interactivelyIssueNewOrNull()
+            return if item.nil?
             ListingService::evaluate(item["uuid"])
             return
         end
 
         if Interpreting::match("float", input) then
-            NxFloats::interactivelyIssueNewOrNull()
+            item = NxFloats::interactivelyIssueNewOrNull()
+            return if item.nil?
+            ListingService::evaluate(item["uuid"])
             return
         end
 
         if Interpreting::match("project", input) then
-            NxProjects::interactivelyIssueNewOrNull()
+            item = NxProjects::interactivelyIssueNewOrNull()
+            return if item.nil?
+            ListingService::evaluate(item["uuid"])
+            return
+        end
+
+        if Interpreting::match("deadline", input) then
+            item = NxDeadlines::interactivelyIssueNewOrNull()
+            return if item.nil?
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -328,6 +340,11 @@ class CommandsAndInterpreters
 
         if Interpreting::match("projects", input) then
             Operations::program3(lambda { Items::mikuType("NxProject").sort_by{|item| item["unixtime"] } })
+            return
+        end
+
+        if Interpreting::match("deadlines", input) then
+            Operations::program3(lambda { Items::mikuType("NxDeadline").sort_by{|item| item["unixtime"] } })
             return
         end
 

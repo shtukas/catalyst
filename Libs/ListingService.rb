@@ -305,6 +305,10 @@ class ListingService
             return true
         end
 
+        if item["mikuType"] == "NxDeadline" then
+            return true
+        end
+
         if item["mikuType"] == "NxDeleted" then
             return false
         end
@@ -317,8 +321,8 @@ class ListingService
         raise "(error: 3ae9fe86)"
     end
 
-    # ListingService::determinePositionInInterval(item, x0, x1)
-    def self.determinePositionInInterval(item, x0, x1)
+    # ListingService::memoizedRandomPositionInInterval(item, x0, x1)
+    def self.memoizedRandomPositionInInterval(item, x0, x1)
         r = XCache::getOrNull("673474f9-f949-4eb1-866c-fb56090c5265:#{item["uuid"]}:#{x0}:#{x1}")
         r = if r then
             r.to_f
@@ -338,25 +342,6 @@ class ListingService
     # ListingService::realLineTo01Decreasing(x)
     def self.realLineTo01Decreasing(x)
         1 - ListingService::realLineTo01Increasing(x)
-    end
-
-    # ListingService::itemTo01(item)
-    def self.itemTo01(item)
-        if item["mikuType"] == "NxTask" and item["priorityLevel47"] == "today" then
-            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
-            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
-            return ListingService::realLineTo01Increasing(idx)
-        end
-        if item["mikuType"] == "NxOnDate" then
-            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
-            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
-            return ListingService::realLineTo01Increasing(idx)
-        end
-        if item["mikuType"] == "Wave" then
-            timeSinceLastDone = Time.new.to_i - item['lastDoneUnixtime']
-            return ListingService::realLineTo01Increasing(-timeSinceLastDone)
-        end
-        raise "(error: e9f93758) item: #{item}"
     end
 
     # ListingService::itemToCyclingPosition(item, a, b)
@@ -387,7 +372,8 @@ class ListingService
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
         # 0.500 -> 0.600 NxOnDate
-        # 0.750 -> 0.750 NxProject
+        # 0.650 -> 0.680 NxDeadline
+        # 0.750 -> 0.780 NxProject
         # 0.800 -> 0.880 NxTask
 
         # 0.390 -> 1.000 Wave (overlay)
@@ -397,37 +383,45 @@ class ListingService
         end
 
         if item["mikuType"] == "NxLambda" then
-            return ListingService::determinePositionInInterval(item, 0.28, 0.30)
+            return ListingService::memoizedRandomPositionInInterval(item, 0.28, 0.30)
         end
 
         if item["mikuType"] == "NxFloat" then
-            return ListingService::determinePositionInInterval(item, 0.39, 0.40)
+            return ListingService::memoizedRandomPositionInInterval(item, 0.39, 0.40)
         end
 
         if item["mikuType"] == "Wave" then
             if item["interruption"] then
-                return ListingService::determinePositionInInterval(item, 0.32, 0.35)
+                return ListingService::memoizedRandomPositionInInterval(item, 0.32, 0.35)
             end
             if item["nx46"]["type"] == "sticky" then
-                return ListingService::determinePositionInInterval(item, 0.30, 0.32)
+                return ListingService::memoizedRandomPositionInInterval(item, 0.30, 0.32)
             end
             return ListingService::itemToCyclingPosition(item, 0.390, 1.000)
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            return ListingService::determinePositionInInterval(item, 0.26, 0.28)
+            return ListingService::memoizedRandomPositionInInterval(item, 0.26, 0.28)
         end
 
         if item["mikuType"] == "NxBackup" then
-            return ListingService::determinePositionInInterval(item, 0.40, 0.45)
+            return ListingService::memoizedRandomPositionInInterval(item, 0.40, 0.45)
         end
 
         if item["mikuType"] == "NxProject" then
-            return 0.750
+            return ListingService::memoizedRandomPositionInInterval(item, 0.75, 0.78)
+        end
+
+        if item["mikuType"] == "NxDeadline" then
+            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
+            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
+            return 0.66 + ListingService::realLineTo01Increasing(idx).to_f/1000
         end
 
         if item["mikuType"] == "NxOnDate" then
-            return 0.51 + ListingService::itemTo01(item).to_f/1000
+            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
+            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
+            return 0.51 + ListingService::realLineTo01Increasing(idx).to_f/1000
         end
 
         if item["mikuType"] == "NxTask" then
@@ -504,6 +498,7 @@ class ListingService
             Items::mikuType("NxLine"),
             NxOnDates::listingItems(),
             NxFloats::listingItems(),
+            NxDeadlines::listingItems(),
             NxProjects::listingItems(),
             Items::mikuType("NxTask"),
             Waves::nonInterruptionItemsForListing(),
