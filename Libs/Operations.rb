@@ -121,41 +121,49 @@ class Operations
 
     # Operations::dispatchPickUp()
     def self.dispatchPickUp()
-        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Buffer-In"
-        if File.exist?(directory) then
+        pathToCatalyst = "#{Config::pathToGalaxy()}/DataHub/Catalyst"
+
+        PriorityLevels::levels().each{|level|
+            directory = "#{pathToCatalyst}/Dispatch/#{level}"
+            if !File.exist?(directory) then
+                puts "I cannot see: #{directory}. Exit"
+                exit
+            end
             LucilleCore::locationsAtFolder(directory).each{|location|
                 puts location.yellow
                 description = File.basename(location)
-                item = NxTasks::locationToTask(description, location, "high")
+                item = NxTasks::locationToTask(description, location, level)
                 ListingService::evaluate(item["uuid"])
                 LucilleCore::removeFileSystemLocation(location)
             }
-        end
+        }
 
-        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Today"
-        if File.exist?(directory) then
-            LucilleCore::locationsAtFolder(directory).each{|location|
-                puts location.yellow
-                description = File.basename(location)
-                item = NxOnDates::locationToItem(description, location)
-                #puts JSON.pretty_generate(item)
-                LucilleCore::removeFileSystemLocation(location)
-                #puts PolyFunctions::toString(item)
-            }
-        end
 
-        directory = "#{Config::userHomeDirectory()}/Desktop/Dispatch/Tomorrow"
-        if File.exist?(directory) then
-            LucilleCore::locationsAtFolder(directory).each{|location|
-                puts location.yellow
-                description = File.basename(location)
-                item = NxOnDates::locationToItem(description, location)
-                Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
-                #puts JSON.pretty_generate(item)
-                LucilleCore::removeFileSystemLocation(location)
-                #puts PolyFunctions::toString(item)
-            }
+
+        directory = "#{pathToCatalyst}/Dispatch/Today"
+        if !File.exist?(directory) then
+            puts "I cannot see: #{directory}. Exit"
+            exit
         end
+        LucilleCore::locationsAtFolder(directory).each{|location|
+            puts location.yellow
+            description = File.basename(location)
+            item = NxOnDates::locationToItem(description, location)
+            LucilleCore::removeFileSystemLocation(location)
+        }
+
+        directory = "#{pathToCatalyst}/Dispatch/Tomorrow"
+        if !File.exist?(directory) then
+            puts "I cannot see: #{directory}. Exit"
+            exit
+        end
+        LucilleCore::locationsAtFolder(directory).each{|location|
+            puts location.yellow
+            description = File.basename(location)
+            item = NxOnDates::locationToItem(description, location)
+            Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
+            LucilleCore::removeFileSystemLocation(location)
+        }
     end
 
     # Operations::probeHead()
