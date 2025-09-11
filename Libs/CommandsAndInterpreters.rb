@@ -8,7 +8,7 @@ class CommandsAndInterpreters
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
             "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | open interest",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | ois | lines",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | ois | lines | low | regular | high",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -323,6 +323,38 @@ class CommandsAndInterpreters
 
         if Interpreting::match("floats", input) then
             Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
+            return
+        end
+
+        if Interpreting::match("level", input) then
+            item = store.getDefault()
+            return if item.nil?
+            level = PriorityLevels::interactivelySelectOne()
+            Items::setAttribute(item["uuid"], "priorityLevel48", level)
+            return
+        end
+
+        if Interpreting::match("level *", input) then
+            _, listord = Interpreting::tokenizer(input)
+            item = store.get(listord.to_i)
+            return if item.nil?
+            level = PriorityLevels::interactivelySelectOne()
+            Items::setAttribute(item["uuid"], "priorityLevel48", level)
+            return
+        end
+
+        if Interpreting::match("low", input) then
+            Operations::program3(lambda { Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "low" } })
+            return
+        end
+
+        if Interpreting::match("regular", input) then
+            Operations::program3(lambda { Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "regular" } })
+            return
+        end
+
+        if Interpreting::match("high", input) then
+            Operations::program3(lambda { Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" } })
             return
         end
 
