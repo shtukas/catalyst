@@ -44,7 +44,8 @@ class NxTasks
 
     # NxTasks::toString(item)
     def self.toString(item)
-        "#{NxTasks::icon(item)} #{item["description"]} (#{item["priorityLevel48"].yellow})"
+        pl = "(#{item["priorityLevel48"]})".yellow
+        "#{NxTasks::icon(item)} #{item["description"]} #{pl}"
     end
 
     # ------------------

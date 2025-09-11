@@ -422,13 +422,9 @@ class ListingService
         end
 
         if item["mikuType"] == "NxTask" then
-            puts item
             level = item["priorityLevel48"]
-            ratio = PriorityLevels::levelToRatio(level)
-            a = 0.800
-            b = 0.880
-            primaryPosition = a + ratio*(b-a)
-            secondaryPosition = BankData::recoveredAverageHoursPerDay(item["uuid"]).to_f/1000
+            primaryPosition = PriorityLevels::primaryPosition(level)
+            secondaryPosition = BankData::recoveredAverageHoursPerDay(item["uuid"]).to_f/1_000_000
             return primaryPosition + secondaryPosition
         end
 

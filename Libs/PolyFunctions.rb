@@ -15,7 +15,7 @@ class PolyFunctions
 
         if item["priorityLevel48"] then
             level = item["priorityLevel48"]
-            accountNumber = PriorityLevels::priorityLevelTobankAccount(item["priorityLevel48"])
+            accountNumber = PriorityLevels::levelToBankAccount(item["priorityLevel48"])
             accounts << {
                 "description" => "priority level: #{level}",
                 "number"      => accountNumber
