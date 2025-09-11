@@ -53,8 +53,9 @@ class NxTasks
 
     # NxTasks::maintenance()
     def self.maintenance()
-        if Items::mikuType("NxTask").size < 150 then
-            Items::mikuType("NxIce").take(100).each{|item|
+        size1 = Items::mikuType("NxTask").size
+        if size1 < 100 then
+            Items::mikuType("NxIce").take(100 - size1).each{|item|
                 puts "moving from NxIce to NxTask: #{item["description"]}"
                 Items::setAttribute(item["uuid"], "priorityLevel48", "low")
                 Items::setAttribute(item["uuid"], "mikuType", "NxTask")
