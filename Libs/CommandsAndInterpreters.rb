@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | open interest",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | tracker",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | ois | lines | low | regular | high",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -195,7 +195,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("ois", input) then
+        if Interpreting::match("trackers", input) then
             Operations::program3(lambda { Items::mikuType("NxTracker") })
             return
         end
@@ -249,7 +249,7 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("open interest", input) then
+        if Interpreting::match("tracker", input) then
             item = NxTrackers::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
