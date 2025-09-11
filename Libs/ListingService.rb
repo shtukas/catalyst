@@ -301,6 +301,10 @@ class ListingService
             return true
         end
 
+        if item["mikuType"] == "NxProject" then
+            return true
+        end
+
         if item["mikuType"] == "NxDeleted" then
             return false
         end
@@ -383,6 +387,7 @@ class ListingService
         # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
         # 0.500 -> 0.600 NxOnDate
+        # 0.750 -> 0.750 NxProject
         # 0.800 -> 0.880 NxTask
 
         # 0.390 -> 1.000 Wave (overlay)
@@ -415,6 +420,10 @@ class ListingService
 
         if item["mikuType"] == "NxBackup" then
             return ListingService::determinePositionInInterval(item, 0.40, 0.45)
+        end
+
+        if item["mikuType"] == "NxProject" then
+            return 0.750
         end
 
         if item["mikuType"] == "NxOnDate" then
@@ -495,6 +504,8 @@ class ListingService
             Items::mikuType("NxLine"),
             NxOnDates::listingItems(),
             NxFloats::listingItems(),
+            NxProjects::listingItems(),
+            Items::mikuType("NxTask"),
             Waves::nonInterruptionItemsForListing(),
         ]
             .flatten
