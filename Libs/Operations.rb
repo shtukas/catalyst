@@ -124,7 +124,7 @@ class Operations
         pathToCatalyst = "#{Config::pathToGalaxy()}/DataHub/Catalyst"
 
         PriorityLevels::levels().each{|level|
-            directory = "#{pathToCatalyst}/Dispatch/#{level}"
+            directory = "#{pathToCatalyst}/Dispatch/NxTask/#{level}"
             if !File.exist?(directory) then
                 puts "I cannot see: #{directory}. Exit"
                 exit
@@ -137,8 +137,6 @@ class Operations
                 LucilleCore::removeFileSystemLocation(location)
             }
         }
-
-
 
         directory = "#{pathToCatalyst}/Dispatch/Today"
         if !File.exist?(directory) then
