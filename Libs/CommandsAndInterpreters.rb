@@ -312,13 +312,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("float", input) then
-            item = NxFloats::interactivelyIssueNewOrNull()
-            return if item.nil?
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-
         if Interpreting::match("project", input) then
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
@@ -357,11 +350,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("deadlines", input) then
             Operations::program3(lambda { Items::mikuType("NxDeadline").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("floats", input) then
-            Operations::program3(lambda { Items::mikuType("NxFloat").sort_by{|item| item["unixtime"] } })
             return
         end
 

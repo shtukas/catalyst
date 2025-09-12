@@ -57,9 +57,6 @@ class PolyFunctions
         if item["mikuType"] == "NxDeleted" then
             return "NxDeleted: uuid: #{item["uuid"]}"
         end
-        if item["mikuType"] == "NxFloat" then
-            return NxFloats::toString(item)
-        end
         if item["mikuType"] == "NxOnDate" then
             return NxOnDates::toString(item)
         end

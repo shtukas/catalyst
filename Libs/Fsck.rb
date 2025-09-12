@@ -17,9 +17,6 @@ class Fsck
         if item["mikuType"] == "NxBackup" then
             return
         end
-        if item["mikuType"] == "NxFloat" then
-            return
-        end
         if item["mikuType"] == "NxTask" then
             return
         end

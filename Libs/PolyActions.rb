@@ -50,13 +50,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxFloat" then
-            NxBalls::stop(item)
-            PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtComingMidnightAtLocalTimezone() + 3600*6 + rand)
-            ListingService::removeEntry(item["uuid"])
-            return
-        end
-
         if item["mikuType"] == "DesktopTx1" then
             Desktop::done()
             ListingService::removeEntry(item["uuid"])
@@ -144,11 +137,6 @@ class PolyActions
 
     # PolyActions::doubleDots(item)
     def self.doubleDots(item)
-        if item["mikuType"] == "NxFloat" then
-            PolyActions::done(item)
-            return
-        end
-
         if item["mikuType"] == "NxLambda" then
             NxLambdas::run(item)
             return
@@ -236,14 +224,6 @@ class PolyActions
 
         if item["mikuType"] == "NxLambda" then
             ListingService::removeEntry(item["uuid"])
-            return
-        end
-
-        if item["mikuType"] == "NxFloat" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
             return
         end
 

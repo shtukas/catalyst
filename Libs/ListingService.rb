@@ -281,10 +281,6 @@ class ListingService
             return true
         end
 
-        if item["mikuType"] == "NxFloat" then
-            return true
-        end
-
         if item["mikuType"] == "Wave" then
             return true
         end
@@ -388,7 +384,6 @@ class ListingService
         # 0.280 -> 0.300 NxLambda
         # 0.300 -> 0.320 Wave sticky
         # 0.320 -> 0.350 Wave interruption
-        # 0.390 -> 0.400 NxFloat
         # 0.400 -> 0.450 NxBackup
         # 0.500 -> 0.600 NxOnDate
         # 0.650 -> 0.680 NxDeadline
@@ -409,10 +404,6 @@ class ListingService
 
         if item["mikuType"] == "NxLambda" then
             return ListingService::memoizedRandomPositionInInterval(item, 0.28, 0.30)
-        end
-
-        if item["mikuType"] == "NxFloat" then
-            return ListingService::memoizedRandomPositionInInterval(item, 0.39, 0.40)
         end
 
         if item["mikuType"] == "Wave" then
@@ -511,7 +502,6 @@ class ListingService
             NxBackups::listingItems(),
             Items::mikuType("NxLine"),
             NxOnDates::listingItems(),
-            NxFloats::listingItems(),
             NxDeadlines::listingItems(),
             NxProjects::listingItems(),
             Items::mikuType("NxTask"),
