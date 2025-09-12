@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | tracker | project | deadline",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | tracker | project | deadline | event",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high | projects | deadlines",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high | projects | deadlines | events",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
         ].join("\n")
@@ -323,6 +323,18 @@ class CommandsAndInterpreters
             item = NxProjects::interactivelyIssueNewOrNull()
             return if item.nil?
             ListingService::evaluate(item["uuid"])
+            return
+        end
+
+        if Interpreting::match("event", input) then
+            item = NxEvents::interactivelyIssueNewOrNull()
+            return if item.nil?
+            ListingService::evaluate(item["uuid"])
+            return
+        end
+
+        if Interpreting::match("events", input) then
+            Operations::program3(lambda { Items::mikuType("NxEvent").sort_by{|item| item["datetime"] } })
             return
         end
 

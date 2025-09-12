@@ -128,7 +128,6 @@ require_relative "BankData.rb"
 require_relative "BankVault.rb"
 
 require_relative "CommonUtils.rb"
-require_relative "Search.rb"
 require_relative "CommandsAndInterpreters.rb"
 
 require_relative "Dx8Units.rb"
@@ -161,6 +160,7 @@ require_relative "NxTrackers.rb"
 require_relative "NxLines.rb"
 require_relative "NxProjects.rb"
 require_relative "NxDeadlines.rb"
+require_relative "NxEvents.rb"
 
 require_relative "Operations.rb"
 
@@ -169,6 +169,7 @@ require_relative "PolyFunctions.rb"
 require_relative "PriorityLevels.rb"
 
 require_relative "SectionsType0141.rb"
+require_relative "Search.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"

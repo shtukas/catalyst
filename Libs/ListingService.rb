@@ -269,6 +269,10 @@ class ListingService
 
     # ListingService::isListable(item)
     def self.isListable(item)
+        if item["mikuType"] == "NxEvent" then
+            return true
+        end
+
         if item["mikuType"] == "NxLine" then
             return true
         end
@@ -356,13 +360,28 @@ class ListingService
         middlePoint + radius * Math.sin(cursor + item["phase-1208"])
     end
 
+    # ListingService::entries()
+    def self.entries()
+        ListingService::extractDataFromFile(ListingService::getDatabaseFilepath())
+    end
+
+    # ListingService::firstPositionInDatabase()
+    def self.firstPositionInDatabase()
+        entries = ListingService::entries()
+        return 1 if entries.empty?
+        entries.map{|entry| ListingService::decidePositionForEntry(entry) }.min
+    end
+
     # ListingService::computePositionForItem(item)
     def self.computePositionForItem(item)
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
+        # NxEvents
+        # -1.00 -> 0.000
+
         # Manually positioned
-        # 0.00 -> 0.20
+        # 0.000 -> 0.200
 
         # Natural Positions
         # 0.260 -> 0.280 NxAnniversary
@@ -377,6 +396,12 @@ class ListingService
         # 0.800 -> 0.880 NxTask
 
         # 0.390 -> 1.000 Wave (overlay)
+
+        if item["mikuType"] == "NxEvent" then
+            d1 = DateTime.parse(item["datetime"]).to_time.to_i - 1757661467
+            d2 = ListingService::realLineTo01Increasing(d1)
+            return -1 + d2
+        end
 
         if item["mikuType"] == "NxLine" then
             return rand
@@ -435,18 +460,6 @@ class ListingService
         raise "(error: df253fc4)"
     end
 
-    # ListingService::entries()
-    def self.entries()
-        ListingService::extractDataFromFile(ListingService::getDatabaseFilepath())
-    end
-
-    # ListingService::firstPositionInDatabase()
-    def self.firstPositionInDatabase()
-        entries = ListingService::entries()
-        return 1 if entries.empty?
-        entries.map{|entry| ListingService::decidePositionForEntry(entry) }.min
-    end
-
     # ListingService::decidePositionForEntry(entry)
     def self.decidePositionForEntry(entry)
         px17 = entry["px17"]
@@ -492,6 +505,7 @@ class ListingService
     # ListingService::itemsForListing1()
     def self.itemsForListing1()
         items = [
+            NxEvents::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxBackups::listingItems(),
