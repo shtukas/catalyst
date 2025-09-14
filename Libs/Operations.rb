@@ -179,4 +179,30 @@ class Operations
             end
         }
     end
+
+    # Operations::morning()
+    def self.morning()
+        puts "selecting ondates"
+        ondates, _ = LucilleCore::selectZeroOrMore("elements", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+        puts "selecting deadlines"
+        deadlines, _ = LucilleCore::selectZeroOrMore("elements", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+        puts "selecting projects"
+        projects, _ = LucilleCore::selectZeroOrMore("elements", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+        highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
+        puts "selecting highs"
+        highs, _ = LucilleCore::selectZeroOrMore("elements", [], highs, lambda{|i| PolyFunctions::toString(i) })
+        elements = [ondates, deadlines, projects, highs].flatten
+        puts "general ordering"
+        e1, e2 = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
+        elements = e1 + e2
+        elements.reverse.each{|item|
+            position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
+            px17 = {
+                "type"  => "overriden",
+                "value" => position,
+                "expiry"=> CommonUtils::unixtimeAtComingMidnightAtLocalTimezone()
+            }
+            ListingService::setPx17(item["uuid"], px17)
+        }
+    end
 end

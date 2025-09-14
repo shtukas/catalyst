@@ -10,7 +10,7 @@ class CommandsAndInterpreters
             "              : transmute *",
             "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high | projects | deadlines | events",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
-            "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers",
+            "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers | morning",
         ].join("\n")
     end
 
@@ -81,6 +81,11 @@ class CommandsAndInterpreters
             unixtime = CommonUtils::codeToUnixtimeOrNull(datecode)
             NxBalls::stop(item)
             PolyActions::doNotShowUntil(item, unixtime)
+            return
+        end
+
+        if Interpreting::match("morning", input) then
+            Operations::morning()
             return
         end
 
@@ -209,6 +214,7 @@ class CommandsAndInterpreters
             item = store.getDefault()
             return if item.nil?
             UxPayload::payloadProgram(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -217,6 +223,7 @@ class CommandsAndInterpreters
             item = store.get(listord.to_i)
             return if item.nil?
             UxPayload::payloadProgram(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -227,6 +234,7 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueAtGivenDateOrNull(date)
             return if item.nil?
             puts JSON.pretty_generate(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -234,6 +242,7 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueTodayOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -246,6 +255,7 @@ class CommandsAndInterpreters
             item = NxOnDates::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 
@@ -253,6 +263,7 @@ class CommandsAndInterpreters
             item = NxTrackers::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
+            ListingService::evaluate(item["uuid"])
             return
         end
 
