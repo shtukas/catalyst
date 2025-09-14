@@ -2,5 +2,5 @@
 NxEvent:
     - uuid            : String
     - mikuType        : "NxEvent"
-    - datetime        : DateTime Iso 8601 UTC Zulu
     - description     : String
+    - date            : DateTime Iso 8601 UTC Zulu

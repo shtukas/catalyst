@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | tracker | project | deadline | event",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | open | project | deadline | event",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | trackers | lines | low | regular | high | projects | deadlines | events",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | opens | lines | low | regular | high | projects | deadlines | events",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers | morning",
         ].join("\n")
@@ -200,8 +200,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("trackers", input) then
-            Operations::program3(lambda { Items::mikuType("NxTracker") })
+        if Interpreting::match("opens", input) then
+            Operations::program3(lambda { Items::mikuType("NxOpen") })
             return
         end
 
@@ -259,8 +259,8 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("tracker", input) then
-            item = NxTrackers::interactivelyIssueNewOrNull()
+        if Interpreting::match("open", input) then
+            item = NxOpens::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             ListingService::evaluate(item["uuid"])

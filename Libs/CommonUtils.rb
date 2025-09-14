@@ -131,6 +131,13 @@ class CommonUtils
         Time.at(unixtime).to_s[0, 10]
     end
 
+    # CommonUtils::interactivelyMakeADate()
+    def self.interactivelyMakeADate()
+        date = CommonUtils::interactivelyMakeADateOrNull()
+        return date if date
+        CommonUtils::interactivelyMakeADate()
+    end
+
     # CommonUtils::interactivelyMakeDateTimeIso8601UsingDateCodeOrNull()
     def self.interactivelyMakeDateTimeIso8601UsingDateCodeOrNull()
         unixtime = CommonUtils::interactivelyMakeUnixtimeUsingDateCodeOrNull()

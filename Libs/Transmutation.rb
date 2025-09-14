@@ -22,8 +22,8 @@ class Transmutation
             ListingService::evaluate(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTracker" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxTracker")
+        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxOpen" then
+            Items::setAttribute(item["uuid"], "mikuType", "NxOpen")
             ListingService::removeEntry(item["uuid"])
             return
         end
@@ -56,7 +56,7 @@ class Transmutation
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxProject"])
         end
         if item["mikuType"] == "NxOnDate" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxTracker"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxOpen"])
         end
         return if targetMikuType.nil?
         Transmutation::transmute1(item, targetMikuType)

@@ -313,8 +313,8 @@ class ListingService
             return false
         end
 
-        if item["mikuType"] == "NxTracker" then
-            return false
+        if item["mikuType"] == "NxOpen" then
+            return true
         end
 
         puts "I do not know how to ListingService::isListable(#{JSON.pretty_generate(item)})"
@@ -374,7 +374,10 @@ class ListingService
         # reached a time target or something.
 
         # NxEvents
-        # -1.00 -> 0.000
+        # -2.00 -> -1.000
+
+        # NxOpen
+        # -1.00 -> -0.000
 
         # Manually positioned
         # 0.000 -> 0.200
@@ -393,7 +396,13 @@ class ListingService
         # 0.390 -> 1.000 Wave (overlay)
 
         if item["mikuType"] == "NxEvent" then
-            d1 = DateTime.parse(item["datetime"]).to_time.to_i - 1757661467
+            d1 = DateTime.parse("#{item["date"]}T17:28:01Z").to_time.to_i - 1757661467
+            d2 = ListingService::realLineTo01Increasing(d1)
+            return -2 + d2
+        end
+
+        if item["mikuType"] == "NxOpen" then
+            d1 = item["unixtime"] - 1757661467
             d2 = ListingService::realLineTo01Increasing(d1)
             return -1 + d2
         end
@@ -497,6 +506,7 @@ class ListingService
     def self.itemsForListing1()
         items = [
             NxEvents::listingItems(),
+            NxOpens::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxBackups::listingItems(),

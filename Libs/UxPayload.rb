@@ -204,16 +204,11 @@ class UxPayload
             }
         end
         if payload["type"] == "aion-point" then
+            UxPayload::access(itemuuid, payload)
+            LucilleCore::pressEnterToContinue()
             location = CommonUtils::interactivelySelectDesktopLocationOrNull()
-            if location.nil? then
-                puts "There was no location chosen, the payload is going to be erased"
-                if LucilleCore::askQuestionAnswerAsBoolean("confirm: ", yes) then
-                    return nil
-                else
-                    return payload
-                end
-            end
-            return UxPayload::locationToPayload(uuid, location)
+            return nil if location.nil?
+            return UxPayload::locationToPayload(itemuuid, location)
         end
         if payload["type"] == "Dx8Unit" then
             puts "You can't edit a Dx8Unit"
@@ -318,19 +313,25 @@ class UxPayload
     # UxPayload::payloadProgram(item)
     def self.payloadProgram(item)
         payload = nil
-        if item["uxpayload-b4e4"] then
-            option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", ["update existing", "make new (default)"])
-            if option.nil? or option == "make new (default)" then
+        loop {
+            if item["uxpayload-b4e4"] then
+                options = ["access", "edit", "make new (default)"]
+                option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+                if option == "access" then
+                    payload = UxPayload::access(item["uuid"], item["uxpayload-b4e4"])
+                end
+                if option == "edit" then
+                    payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
+                end
+                if option.nil? or option == "make new (default)" then
+                    payload = UxPayload::makeNewOrNull(item["uuid"])
+                end
+            else
                 payload = UxPayload::makeNewOrNull(item["uuid"])
             end
-            if option.nil? or option == "update existing" then
-                payload = UxPayload::edit(item["uuid"], item["uxpayload-b4e4"])
-            end
-        else
-            payload = UxPayload::makeNewOrNull(item["uuid"])
-        end
-        return if payload.nil?
-        Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
-        ListingService::evaluate(item["uuid"])
+            return if payload.nil?
+            Items::setAttribute(item["uuid"], "uxpayload-b4e4", payload)
+            ListingService::evaluate(item["uuid"])
+        }
     end
 end
