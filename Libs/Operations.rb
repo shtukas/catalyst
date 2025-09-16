@@ -205,8 +205,12 @@ class Operations
         ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         deadlines, _ = LucilleCore::selectZeroOrMore("NxDeadlines", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         projects, _ = LucilleCore::selectZeroOrMore("NxProjects", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-        highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
-        highs, _ = LucilleCore::selectZeroOrMore("NxTask, high", [], highs, lambda{|i| PolyFunctions::toString(i) })
+        highs, _ = LucilleCore::selectZeroOrMore(
+            "NxTask, high",
+            [],
+            Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" },
+            lambda{|i| PolyFunctions::toString(i) }
+        )
         waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
         items = [ondates, deadlines, projects, highs, waves].flatten
 

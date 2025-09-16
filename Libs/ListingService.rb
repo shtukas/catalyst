@@ -13,7 +13,7 @@ mikuType      : string
 px17          : json encoded object
 listing_lines : json encoded array
 
-position
+px17
 {
     "type" : "compute"
 }
