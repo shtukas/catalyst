@@ -89,7 +89,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxEvent" then
-            if item["date"] == CommonUtils::today() then
+            if item["date"] <= CommonUtils::today() then
                 if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                     Items::deleteItem(item["uuid"])
                     ListingService::removeEntry(item["uuid"])

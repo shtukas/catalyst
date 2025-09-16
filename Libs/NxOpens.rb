@@ -21,7 +21,7 @@ class NxOpens
 
     # NxOpens::toString(item)
     def self.toString(item)
-        "🔅 #{item["description"]}"
+        "🍁 #{item["description"]}"
     end
 
     # NxOpens::listingItems()

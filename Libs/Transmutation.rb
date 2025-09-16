@@ -24,19 +24,19 @@ class Transmutation
         end
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxOpen" then
             Items::setAttribute(item["uuid"], "mikuType", "NxOpen")
-            ListingService::removeEntry(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxProject" and targetMikuType == "NxDeadline" then
             Items::setAttribute(item["uuid"], "date", CommonUtils::interactivelyMakeADateOrNull())
             Items::setAttribute(item["uuid"], "mikuType", "NxDeadline")
-            ListingService::removeEntry(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
         if item["mikuType"] == "NxProject" and targetMikuType == "NxTask" then
             Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
             Items::setAttribute(item["uuid"], "mikuType", "NxDeadline")
-            ListingService::removeEntry(item["uuid"])
+            ListingService::evaluate(item["uuid"])
             return
         end
         puts "I do not know how to transmute mikuType #{item["mikuType"]} to #{targetMikuType}. Aborting."

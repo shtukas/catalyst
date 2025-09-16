@@ -373,14 +373,16 @@ class ListingService
         # We return null if the item shouild not be listed at this time, because it has 
         # reached a time target or something.
 
-        # NxEvents
-        # -2.00 -> -1.000
+        # There should not be negative positions
 
         # NxOpen
-        # -1.00 -> -0.000
+        # 0.050 -> 0.100
 
-        # Manually positioned
-        # 0.000 -> 0.200
+        # NxEvents
+        # 0.100 -> 0.150
+
+        # Sorting
+        # 0.200 -> 0.250
 
         # Natural Positions
         # 0.260 -> 0.280 NxAnniversary
@@ -395,16 +397,16 @@ class ListingService
 
         # 0.390 -> 1.000 Wave (overlay)
 
-        if item["mikuType"] == "NxEvent" then
-            d1 = DateTime.parse("#{item["date"]}T17:28:01Z").to_time.to_i - 1757661467
-            d2 = ListingService::realLineTo01Increasing(d1)
-            return -2 + d2
-        end
-
         if item["mikuType"] == "NxOpen" then
             d1 = item["unixtime"] - 1757661467
             d2 = ListingService::realLineTo01Increasing(d1)
-            return -1 + d2
+            return 0.050 + d2.to_f/100
+        end
+
+        if item["mikuType"] == "NxEvent" then
+            d1 = DateTime.parse("#{item["date"]}T17:28:01Z").to_time.to_i - 1757661467
+            d2 = ListingService::realLineTo01Increasing(d1)
+            return 0.100 + d2.to_f/100
         end
 
         if item["mikuType"] == "NxLine" then

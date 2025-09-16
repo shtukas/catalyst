@@ -19,7 +19,7 @@ class NxEvents
 
     # NxEvents::icon(item)
     def self.icon(item)
-        "🗓️ "
+        "📆"
     end
 
     # NxEvents::toString(item)

@@ -180,18 +180,35 @@ class Operations
         }
     end
 
+    # Operations::frontRenames()
+    def self.frontRenames()
+        loop {
+            ondates = NxOnDates::listingItems()
+            deadlines = NxDeadlines::listingItems()
+            projects = NxProjects::listingItems()
+            highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
+            items = [ondates, deadlines, projects, highs].flatten
+            item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|i| PolyFunctions::toString(i) })
+            break if item.nil?
+            PolyActions::access(item)
+            PolyActions::editDescription(item)
+            ListingService::evaluate(item["uuid"])
+        }
+    end
+
     # Operations::morning()
     def self.morning()
-        puts "selecting ondates"
+        puts "We start with front renames (if needed)"
+        Operations::frontRenames()
+
+        puts "We now select the items we really need to do or work on today"
         ondates, _ = LucilleCore::selectZeroOrMore("elements", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-        puts "selecting deadlines"
         deadlines, _ = LucilleCore::selectZeroOrMore("elements", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-        puts "selecting projects"
         projects, _ = LucilleCore::selectZeroOrMore("elements", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
-        puts "selecting highs"
         highs, _ = LucilleCore::selectZeroOrMore("elements", [], highs, lambda{|i| PolyFunctions::toString(i) })
         elements = [ondates, deadlines, projects, highs].flatten
+
         puts "general ordering"
         e1, e2 = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
         elements = e1 + e2

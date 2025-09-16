@@ -338,7 +338,7 @@ class CommandsAndInterpreters
         end
 
         if Interpreting::match("events", input) then
-            Operations::program3(lambda { Items::mikuType("NxEvent").sort_by{|item| item["datetime"] } })
+            Operations::program3(lambda { Items::mikuType("NxEvent").sort_by{|item| item["date"] } })
             return
         end
 
