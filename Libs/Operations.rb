@@ -202,17 +202,18 @@ class Operations
         Operations::frontRenames()
 
         puts "We now select the items we really need to do or work on today"
-        ondates, _ = LucilleCore::selectZeroOrMore("elements", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-        deadlines, _ = LucilleCore::selectZeroOrMore("elements", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-        projects, _ = LucilleCore::selectZeroOrMore("elements", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+        ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+        deadlines, _ = LucilleCore::selectZeroOrMore("NxDeadlines", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
+        projects, _ = LucilleCore::selectZeroOrMore("NxProjects", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
-        highs, _ = LucilleCore::selectZeroOrMore("elements", [], highs, lambda{|i| PolyFunctions::toString(i) })
-        elements = [ondates, deadlines, projects, highs].flatten
+        highs, _ = LucilleCore::selectZeroOrMore("NxTask, high", [], highs, lambda{|i| PolyFunctions::toString(i) })
+        waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
+        items = [ondates, deadlines, projects, highs, waves].flatten
 
         puts "general ordering"
-        e1, e2 = LucilleCore::selectZeroOrMore("elements", [], elements, lambda{|i| PolyFunctions::toString(i) })
-        elements = e1 + e2
-        elements.reverse.each{|item|
+        e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
+        items = e1 + e2
+        items.reverse.each{|item|
             position = 0.9 * [ListingService::firstPositionInDatabase(), 0.20].min
             px17 = {
                 "type"  => "overriden",
