@@ -112,8 +112,7 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxProject" then
-            puts "You cannot destroy a NxProject, you can postpone it or destroy it"
-            LucilleCore::pressEnterToContinue()
+            Operations::postponeToTomorrowOrDestroy(item)
             return
         end
 
