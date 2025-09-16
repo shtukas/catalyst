@@ -222,4 +222,18 @@ class Operations
             ListingService::setPx17(item["uuid"], px17)
         }
     end
+
+    # Operations::postponeToTomorrowOrDestroy(item)
+    def self.postponeToTomorrowOrDestroy(item)
+        options = ["postpone to tomorrow", "destroy"]
+        option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
+        if option == "postpone to tomorrow" then
+            PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
+            ListingService::removeEntry(item["uuid"])
+        end
+        if option == "destroy" then
+            Items::deleteItem(item["uuid"])
+            ListingService::removeEntry(item["uuid"])
+        end
+    end
 end

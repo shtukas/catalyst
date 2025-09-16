@@ -81,29 +81,17 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxDeadline" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
+            Operations::postponeToTomorrowOrDestroy(item)
             return
         end
 
         if item["mikuType"] == "NxEvent" then
-            if item["date"] <= CommonUtils::today() then
-                if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                    Items::deleteItem(item["uuid"])
-                    ListingService::removeEntry(item["uuid"])
-                end
-            else
-                PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-                ListingService::removeEntry(item["uuid"])
-            end
+            Operations::postponeToTomorrowOrDestroy(item)
             return
         end
 
         if item["mikuType"] == "NxOpen" then
-            PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
-            ListingService::removeEntry(item["uuid"])
+            Operations::postponeToTomorrowOrDestroy(item)
             return
         end
 
@@ -303,6 +291,14 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
+            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
+                Items::deleteItem(item["uuid"])
+                ListingService::removeEntry(item["uuid"])
+            end
+            return
+        end
+
+        if item["mikuType"] == "NxDeadline" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
