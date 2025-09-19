@@ -8,10 +8,11 @@ class UxPayload
             "url",
             "breakdown",
             "aion-point",
-            "Dx8Unit",
             "todo-text-file-by-name-fragment",
             "open cycle",
-            "unique-string"
+            "stored-procedure",
+            "unique-string",
+            "Dx8Unit",
         ]
     end
 
@@ -86,6 +87,14 @@ class UxPayload
         end
         if type == "breakdown" then
             return UxPayload::interactivelyMakeBreakdown()
+        end
+        if type == "stored-procedure" then
+            ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
+            return nil if ticket == ""
+            return {
+                "type" => "stored-procedure",
+                "ticket" => ticket
+            }
         end
         raise "(error: 9dc106ff-44c6)"
     end
@@ -185,6 +194,11 @@ class UxPayload
             LucilleCore::pressEnterToContinue()
             return
         end
+        if payload["type"] == "stored-procedure" then
+            ticket = payload["ticket"]
+            StoredProcedures::run(ticket)
+            return
+        end
     end
 
     # UxPayload::edit(itemuuid, payload)
@@ -245,6 +259,14 @@ class UxPayload
                 "lines" => Operations::interactivelyRecompileLines(payload["lines"])
             }
         end
+        if type == "stored-procedure" then
+            ticket = LucilleCore::askQuestionAnswerAsString("ticket (empty to abort): ")
+            return nil if ticket == ""
+            return {
+                "type" => "stored-procedure",
+                "ticket" => ticket
+            }
+        end
         raise "(error: 9dc106ff-44c6)"
     end
 
@@ -292,6 +314,9 @@ class UxPayload
         if payload["type"] == "breakdown" then
             return
         end
+        if type == "stored-procedure" then
+            return
+        end
         raise "unkown payload type: #{payload["type"]} at #{payload}"
     end
 
@@ -306,7 +331,7 @@ class UxPayload
     def self.interactivelyMakeBreakdown()
         {
             "type"  => "breakdown",
-            "lines" => Operations::interactivelyGetLines()
+            "lines" => Operations::interactivelyGetLinesUsingTextEditor()
         }
     end
 

@@ -169,6 +169,7 @@ require_relative "PriorityLevels.rb"
 
 require_relative "SectionsType0141.rb"
 require_relative "Search.rb"
+require_relative "StoredProcedures.rb"
 
 require_relative "TmpSkip1.rb"
 require_relative "Transmutation.rb"

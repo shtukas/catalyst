@@ -42,3 +42,8 @@ UxPayloads are stored in attribute `uxpayload-b4e4`.
     "type"  : "breakdown"
     "lines" : Array[String]
 }
+
+{
+    "type"   : "stored-procedure"
+    "ticket" : String # URL
+}

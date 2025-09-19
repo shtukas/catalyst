@@ -130,7 +130,9 @@ class Waves
 
     # Waves::listingItemsInterruption()
     def self.listingItemsInterruption()
-        Items::mikuType("Wave").select{|item| item["interruption"]}
+        Items::mikuType("Wave")
+            .select{|item| item["interruption"]}
+            .select { |wave| DoNotShowUntil::isVisible(wave["uuid"]) }
     end
 
     # Waves::nonInterruptionItemsForListing()

@@ -184,7 +184,7 @@ class CommandsAndInterpreters
                 NxBalls::pause(item)
             }
             last_item = nil
-            Operations::interactivelyGetLines()
+            Operations::interactivelyGetLinesUsingTextEditor()
                 .reverse
                 .each{|line|
                     puts "processing: #{line}".green

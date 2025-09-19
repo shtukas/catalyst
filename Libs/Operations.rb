@@ -70,14 +70,24 @@ class Operations
         Items::maintenance()
     end
 
-    # Operations::interactivelyGetLines()
-    def self.interactivelyGetLines()
+    # Operations::interactivelyGetLinesUsingTextEditor()
+    def self.interactivelyGetLinesUsingTextEditor()
         text = CommonUtils::editTextSynchronously("").strip
         return [] if text == ""
         text
             .lines
             .map{|line| line.strip }
             .select{|line| line != "" }
+    end
+
+    # Operations::interactivelyGetLinesUsingTerminal()
+    def self.interactivelyGetLinesUsingTerminal()
+        lines = []
+        loop {
+            line = LucilleCore::askQuestionAnswerAsString("entry (empty to abort): ")
+            break if line.size == 0
+        }
+        lines
     end
 
     # Operations::interactivelyRecompileLines(lines)
@@ -201,6 +211,16 @@ class Operations
         puts "We start with front renames (if needed)"
         Operations::frontRenames()
 
+        puts "Input things you want/need to do today"
+        want1 = Operations::interactivelyGetLinesUsingTerminal()
+            .reverse
+            .map{|line|
+                puts "processing: #{line}".green
+                item = NxLines::issue(line)
+                ListingService::ensureAtFirstPositionForTheDay(item)
+                item
+            }
+
         puts "We now select the items we really need to do or work on today"
         ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         deadlines, _ = LucilleCore::selectZeroOrMore("NxDeadlines", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
@@ -212,7 +232,18 @@ class Operations
             lambda{|i| PolyFunctions::toString(i) }
         )
         waves, _ = LucilleCore::selectZeroOrMore("Waves", [], Waves::nonInterruptionItemsForListing(), lambda{|i| PolyFunctions::toString(i) })
-        items = [ondates, deadlines, projects, highs, waves].flatten
+
+        puts "Input things you want/need to do today"
+        want2 = Operations::interactivelyGetLinesUsingTerminal()
+            .reverse
+            .map{|line|
+                puts "processing: #{line}".green
+                item = NxLines::issue(line)
+                ListingService::ensureAtFirstPositionForTheDay(item)
+                item
+            }
+
+        items = [Waves::listingItemsInterruption(), want1, want2, ondates, deadlines, projects, highs, waves].flatten
 
         puts "general ordering"
         e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })
@@ -230,9 +261,9 @@ class Operations
 
     # Operations::postponeToTomorrowOrDestroy(item)
     def self.postponeToTomorrowOrDestroy(item)
-        options = ["postpone to tomorrow", "destroy"]
+        options = ["postpone to tomorrow (default)", "destroy"]
         option = LucilleCore::selectEntityFromListOfEntitiesOrNull("option", options)
-        if option == "postpone to tomorrow" then
+        if option.nil? or option == "postpone to tomorrow (default)" then
             PolyActions::doNotShowUntil(item, CommonUtils::unixtimeAtTomorrowMorningAtLocalTimezone())
             ListingService::removeEntry(item["uuid"])
         end
