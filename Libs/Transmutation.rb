@@ -5,25 +5,9 @@ class Transmutation
     def self.transmute1(item, targetMikuType)
         return if targetMikuType.nil?
         puts "Transmuting '#{PolyFunctions::toString(item)}' from #{item["mikuType"]} to #{targetMikuType}"
-        if item["mikuType"] == "NxDeadline" and targetMikuType == "NxTask" then
-            Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
-            Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-        if item["mikuType"] == "NxDeadline" and targetMikuType == "NxProject" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxProject")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
         if item["mikuType"] == "NxOnDate" and targetMikuType == "NxTask" then
             Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
             Items::setAttribute(item["uuid"], "mikuType", "NxTask")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-        if item["mikuType"] == "NxOnDate" and targetMikuType == "NxOpen" then
-            Items::setAttribute(item["uuid"], "mikuType", "NxOpen")
             ListingService::evaluate(item["uuid"])
             return
         end
@@ -32,15 +16,9 @@ class Transmutation
             ListingService::evaluate(item["uuid"])
             return
         end
-        if item["mikuType"] == "NxProject" and targetMikuType == "NxDeadline" then
-            Items::setAttribute(item["uuid"], "date", CommonUtils::interactivelyMakeADateOrNull())
-            Items::setAttribute(item["uuid"], "mikuType", "NxDeadline")
-            ListingService::evaluate(item["uuid"])
-            return
-        end
         if item["mikuType"] == "NxProject" and targetMikuType == "NxTask" then
             Items::setAttribute(item["uuid"], "priorityLevel48", PriorityLevels::interactivelySelectOne())
-            Items::setAttribute(item["uuid"], "mikuType", "NxDeadline")
+            Items::setAttribute(item["uuid"], "mikuType", "NxTask")
             ListingService::evaluate(item["uuid"])
             return
         end
@@ -66,13 +44,10 @@ class Transmutation
             targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxOnDate", "NxProject"])
         end
         if item["mikuType"] == "NxProject" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxDeadline", "NxTask"])
-        end
-        if item["mikuType"] == "NxDeadline" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxProject"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask"])
         end
         if item["mikuType"] == "NxOnDate" then
-            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxOpen", "NxProject"])
+            targetMikuType = LucilleCore::selectEntityFromListOfEntitiesOrNull("MikuType", ["NxTask", "NxProject"])
         end
         return if targetMikuType.nil?
         Transmutation::transmute1(item, targetMikuType)

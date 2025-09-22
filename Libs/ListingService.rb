@@ -305,16 +305,8 @@ class ListingService
             return true
         end
 
-        if item["mikuType"] == "NxDeadline" then
-            return true
-        end
-
         if item["mikuType"] == "NxDeleted" then
             return false
-        end
-
-        if item["mikuType"] == "NxOpen" then
-            return true
         end
 
         puts "I do not know how to ListingService::isListable(#{JSON.pretty_generate(item)})"
@@ -375,33 +367,16 @@ class ListingService
 
         # There should not be negative positions
 
-        # NxOpen
-        # 0.050 -> 0.100
-
-        # NxEvents
-        # 0.100 -> 0.150
-
-        # Sorting
-        # 0.200 -> 0.250
-
-        # Natural Positions
+        # 0.010 -> 0.020 Wave interruption
+        # 0.100 -> 0.150 NxEvents
         # 0.260 -> 0.280 NxAnniversary
         # 0.280 -> 0.300 NxLambda
         # 0.300 -> 0.320 Wave sticky
-        # 0.320 -> 0.350 Wave interruption
         # 0.400 -> 0.450 NxBackup
         # 0.500 -> 0.600 NxOnDate
-        # 0.650 -> 0.680 NxDeadline
         # 0.750 -> 0.780 NxProject
         # 0.800 -> 0.880 NxTask
-
         # 0.390 -> 1.000 Wave (overlay)
-
-        if item["mikuType"] == "NxOpen" then
-            d1 = item["unixtime"] - 1757661467
-            d2 = ListingService::realLineTo01Increasing(d1)
-            return 0.050 + d2.to_f/100
-        end
 
         if item["mikuType"] == "NxEvent" then
             d1 = DateTime.parse("#{item["date"]}T17:28:01Z").to_time.to_i - 1757661467
@@ -419,7 +394,7 @@ class ListingService
 
         if item["mikuType"] == "Wave" then
             if item["interruption"] then
-                return ListingService::memoizedRandomPositionInInterval(item, 0.32, 0.35)
+                return ListingService::memoizedRandomPositionInInterval(item, 0.010, 0.020)
             end
             if item["nx46"]["type"] == "sticky" then
                 return ListingService::memoizedRandomPositionInInterval(item, 0.30, 0.32)
@@ -437,12 +412,6 @@ class ListingService
 
         if item["mikuType"] == "NxProject" then
             return ListingService::memoizedRandomPositionInInterval(item, 0.75, 0.78)
-        end
-
-        if item["mikuType"] == "NxDeadline" then
-            dayNumber = (DateTime.parse("#{item["date"]}T00:00:00Z").to_time.to_f/86400).to_i - 20336
-            idx = dayNumber + ListingService::realLineTo01Increasing(item["unixtime"]-1757069447)
-            return 0.66 + ListingService::realLineTo01Increasing(idx).to_f/1000
         end
 
         if item["mikuType"] == "NxOnDate" then
@@ -508,13 +477,11 @@ class ListingService
     def self.itemsForListing1()
         items = [
             NxEvents::listingItems(),
-            NxOpens::listingItems(),
             Anniversaries::listingItems(),
             Waves::listingItemsInterruption(),
             NxBackups::listingItems(),
             Items::mikuType("NxLine"),
             NxOnDates::listingItems(),
-            NxDeadlines::listingItems(),
             NxProjects::listingItems(),
             Items::mikuType("NxTask"),
             Waves::nonInterruptionItemsForListing(),

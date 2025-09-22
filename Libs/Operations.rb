@@ -139,13 +139,15 @@ class Operations
                 puts "I cannot see: #{directory}. Exit"
                 exit
             end
-            LucilleCore::locationsAtFolder(directory).each{|location|
-                puts location.yellow
-                description = File.basename(location)
-                item = NxTasks::locationToTask(description, location, level)
-                ListingService::evaluate(item["uuid"])
-                LucilleCore::removeFileSystemLocation(location)
-            }
+            LucilleCore::locationsAtFolder(directory)
+                .select{|location| File.basename(location)[0, 1] != "." }
+                .each{|location|
+                    puts location.yellow
+                    description = File.basename(location)
+                    item = NxTasks::locationToTask(description, location, level)
+                    ListingService::evaluate(item["uuid"])
+                    LucilleCore::removeFileSystemLocation(location)
+                }
         }
 
         directory = "#{pathToCatalyst}/Dispatch/Today"
@@ -153,25 +155,29 @@ class Operations
             puts "I cannot see: #{directory}. Exit"
             exit
         end
-        LucilleCore::locationsAtFolder(directory).each{|location|
-            puts location.yellow
-            description = File.basename(location)
-            item = NxOnDates::locationToItem(description, location)
-            LucilleCore::removeFileSystemLocation(location)
-        }
+        LucilleCore::locationsAtFolder(directory)
+            .select{|location| File.basename(location)[0, 1] != "." }
+            .each{|location|
+                puts location.yellow
+                description = File.basename(location)
+                item = NxOnDates::locationToItem(description, location)
+                LucilleCore::removeFileSystemLocation(location)
+            }
 
         directory = "#{pathToCatalyst}/Dispatch/Tomorrow"
         if !File.exist?(directory) then
             puts "I cannot see: #{directory}. Exit"
             exit
         end
-        LucilleCore::locationsAtFolder(directory).each{|location|
-            puts location.yellow
-            description = File.basename(location)
-            item = NxOnDates::locationToItem(description, location)
-            Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
-            LucilleCore::removeFileSystemLocation(location)
-        }
+        LucilleCore::locationsAtFolder(directory)
+            .select{|location| File.basename(location)[0, 1] != "." }
+            .each{|location|
+                puts location.yellow
+                description = File.basename(location)
+                item = NxOnDates::locationToItem(description, location)
+                Items::setAttribute(item["uuid"], "date", CommonUtils::tomorrow())
+                LucilleCore::removeFileSystemLocation(location)
+            }
     end
 
     # Operations::probeHead()
@@ -194,10 +200,9 @@ class Operations
     def self.frontRenames()
         loop {
             ondates = NxOnDates::listingItems()
-            deadlines = NxDeadlines::listingItems()
             projects = NxProjects::listingItems()
             highs = Items::mikuType("NxTask").select{|item| item["priorityLevel48"] == "high" }
-            items = [ondates, deadlines, projects, highs].flatten
+            items = [ondates, projects, highs].flatten
             item = LucilleCore::selectEntityFromListOfEntitiesOrNull("item", items, lambda{|i| PolyFunctions::toString(i) })
             break if item.nil?
             PolyActions::access(item)
@@ -223,7 +228,6 @@ class Operations
 
         puts "We now select the items we really need to do or work on today"
         ondates, _ = LucilleCore::selectZeroOrMore("NxOnDates", [], NxOnDates::listingItems(), lambda{|i| PolyFunctions::toString(i) })
-        deadlines, _ = LucilleCore::selectZeroOrMore("NxDeadlines", [], NxDeadlines::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         projects, _ = LucilleCore::selectZeroOrMore("NxProjects", [], NxProjects::listingItems(), lambda{|i| PolyFunctions::toString(i) })
         highs, _ = LucilleCore::selectZeroOrMore(
             "NxTask, high",
@@ -243,7 +247,7 @@ class Operations
                 item
             }
 
-        items = [Waves::listingItemsInterruption(), want1, want2, ondates, deadlines, projects, highs, waves].flatten
+        items = [Waves::listingItemsInterruption(), want1, want2, ondates, projects, highs, waves].flatten
 
         puts "general ordering"
         e1, e2 = LucilleCore::selectZeroOrMore("items", [], items, lambda{|i| PolyFunctions::toString(i) })

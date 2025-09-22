@@ -8,3 +8,10 @@ Database:
 Cross types conventions (all optional):
     - skip-0843      : unixtime (skipped until this time)
     - uxpayload-b4e4 : UxPayload
+    - timespan-1308  : TimeSpan1308
+
+TimeSpan1308 {
+    "uuid"             : String,
+    "date"             : "YYYY-MM-DD",
+    "timespanInSecond" : Integer
+}

@@ -6,9 +6,9 @@ class CommandsAndInterpreters
     def self.commands()
         [
             "on items : .. | ... | <datecode> | access (*) | start (*) | done (*) | program (*) | expose (*) | add time * | skip * hours (default item) | bank accounts * | payload (*) | bank data * | push * | dismiss * | * on <datecode> | edit * | destroy *",
-            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | open | project | deadline | event",
+            "makers        : anniversary | wave | today | tomorrow | desktop | float | todo | ondate | on <weekday> | backup | priority | priorities | project | event",
             "              : transmute *",
-            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | opens | lines | low | regular | high | projects | deadlines | events",
+            "divings       : anniversaries | ondates | waves | desktop | backups | floats | todays | dive * | projects | lines | low | regular | high | projects | events",
             "NxBalls       : start (*) | stop (*) | pause (*) | pursue (*)",
             "misc          : search | commands | fsck | probe-head | sort | select | maintenance | numbers | morning",
         ].join("\n")
@@ -200,11 +200,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("opens", input) then
-            Operations::program3(lambda { Items::mikuType("NxOpen") })
-            return
-        end
-
         if Interpreting::match("backups", input) then
             Operations::program3(lambda { Items::mikuType("NxBackup").sort_by{|item| item["description"] } })
             return
@@ -253,14 +248,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("ondate", input) then
             item = NxOnDates::interactivelyIssueNewOrNull()
-            return if item.nil?
-            puts JSON.pretty_generate(item)
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-
-        if Interpreting::match("open", input) then
-            item = NxOpens::interactivelyIssueNewOrNull()
             return if item.nil?
             puts JSON.pretty_generate(item)
             ListingService::evaluate(item["uuid"])
@@ -342,13 +329,6 @@ class CommandsAndInterpreters
             return
         end
 
-        if Interpreting::match("deadline", input) then
-            item = NxDeadlines::interactivelyIssueNewOrNull()
-            return if item.nil?
-            ListingService::evaluate(item["uuid"])
-            return
-        end
-
         if Interpreting::match("lines", input) then
             Operations::program3(lambda { Items::mikuType("NxLine").sort_by{|item| item["unixtime"] } })
             return
@@ -356,11 +336,6 @@ class CommandsAndInterpreters
 
         if Interpreting::match("projects", input) then
             Operations::program3(lambda { Items::mikuType("NxProject").sort_by{|item| item["unixtime"] } })
-            return
-        end
-
-        if Interpreting::match("deadlines", input) then
-            Operations::program3(lambda { Items::mikuType("NxDeadline").sort_by{|item| item["unixtime"] } })
             return
         end
 

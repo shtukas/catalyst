@@ -80,17 +80,7 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDeadline" then
-            Operations::postponeToTomorrowOrDestroy(item)
-            return
-        end
-
         if item["mikuType"] == "NxEvent" then
-            Operations::postponeToTomorrowOrDestroy(item)
-            return
-        end
-
-        if item["mikuType"] == "NxOpen" then
             Operations::postponeToTomorrowOrDestroy(item)
             return
         end
@@ -195,14 +185,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxDeadline" then
-            PolyActions::start(item)
-            PolyActions::access(item)
-            LucilleCore::pressEnterToContinue("Press [enter] to stop: ")
-            PolyActions::stop(item)
-            return
-        end
-
         if item["mikuType"] == "NxEvent" then
             PolyActions::start(item)
             PolyActions::access(item)
@@ -273,14 +255,6 @@ class PolyActions
             return
         end
 
-        if item["mikuType"] == "NxOpen" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
         if item["mikuType"] == "NxOnDate" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
@@ -290,14 +264,6 @@ class PolyActions
         end
 
         if item["mikuType"] == "NxAnniversary" then
-            if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
-                Items::deleteItem(item["uuid"])
-                ListingService::removeEntry(item["uuid"])
-            end
-            return
-        end
-
-        if item["mikuType"] == "NxDeadline" then
             if LucilleCore::askQuestionAnswerAsBoolean("destroy: '#{PolyFunctions::toString(item).green}' ? ", true) then
                 Items::deleteItem(item["uuid"])
                 ListingService::removeEntry(item["uuid"])
